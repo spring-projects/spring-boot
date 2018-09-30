@@ -57,7 +57,7 @@ public class SessionAutoConfigurationRedisTests
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.redis.port=" + redis.getMappedPort())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
+				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:",
 						RedisFlushMode.ON_SAVE, "0 * * * * *"));
 	}
 
@@ -69,7 +69,7 @@ public class SessionAutoConfigurationRedisTests
 						MongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.redis.port=" + redis.getMappedPort())
-				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
+				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:",
 						RedisFlushMode.ON_SAVE, "0 * * * * *"));
 	}
 
@@ -82,7 +82,7 @@ public class SessionAutoConfigurationRedisTests
 						"spring.session.redis.flush-mode=immediate",
 						"spring.session.redis.cleanup-cron=0 0 12 * * *",
 						"spring.redis.port=" + redis.getMappedPort())
-				.run(validateSpringSessionUsesRedis("foo:event:created:",
+				.run(validateSpringSessionUsesRedis("foo:event:0:created:",
 						RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
 	}
 

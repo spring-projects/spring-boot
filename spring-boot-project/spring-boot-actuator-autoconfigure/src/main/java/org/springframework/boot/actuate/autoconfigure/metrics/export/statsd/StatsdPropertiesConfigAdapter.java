@@ -74,12 +74,6 @@ public class StatsdPropertiesConfigAdapter
 	}
 
 	@Override
-	@Deprecated
-	public int queueSize() {
-		return get(StatsdProperties::getQueueSize, StatsdConfig.super::queueSize);
-	}
-
-	@Override
 	public boolean publishUnchangedMeters() {
 		return get(StatsdProperties::isPublishUnchangedMeters,
 				StatsdConfig.super::publishUnchangedMeters);

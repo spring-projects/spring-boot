@@ -88,6 +88,12 @@
       "defaultValue": 0
     },
     {
+      "name": "logging.group",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Log groups to quickly change multiple loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
@@ -167,10 +173,11 @@
       "description": "Config file locations that replace the defaults."
     },
     {
-      "name": "spring.jta.narayana.expiry-scanners",
-      "defaultValue": [
-        "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"
-      ]
+      "name": "spring.main.allow-bean-definition-overriding",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed.",
+      "defaultValue": false
     },
     {
       "name": "spring.main.banner-mode",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
@@ -34,6 +38,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * Tests for the auto-configuration imported by {@link WebMvcTest}.
  *
  * @author Andy Wilkinson
+ * @author Levi Puot Paul
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -64,6 +69,22 @@ public class WebMvcTestAutoConfigurationIntegrationTests {
 	public void thymeleafAutoConfigurationWasImported() {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
+	}
+
+	@Test
+	public void taskExecutionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext)
+				.has(importedAutoConfiguration(TaskExecutionAutoConfiguration.class));
+	}
+
+	@Test
+	public void asyncTaskExecutorWithApplicationTaskExecutor() {
+		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class))
+				.hasSize(1);
+		assertThat(ReflectionTestUtils.getField(
+				this.applicationContext.getBean(RequestMappingHandlerAdapter.class),
+				"taskExecutor")).isSameAs(
+						this.applicationContext.getBean("applicationTaskExecutor"));
 	}
 
 }

@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -76,30 +74,6 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(StringPropertyTypeConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		assertBeanMethodDisabled(analysis,
-				"did not find property 'spring.string.enabled'",
-				TestPropertyAutoConfiguration.class, "string");
-		assertActionMissingType(analysis, String.class);
-	}
-
-	@Test
-	public void failureAnalysisForMissingCollectionType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(StringCollectionConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringCollectionHandler.class,
-				0, String.class);
-		assertBeanMethodDisabled(analysis,
-				"did not find property 'spring.string.enabled'",
-				TestPropertyAutoConfiguration.class, "string");
-		assertActionMissingType(analysis, String.class);
-	}
-
-	@Test
-	public void failureAnalysisForMissingMapType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(StringMapConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringMapHandler.class, 0,
 				String.class);
 		assertBeanMethodDisabled(analysis,
 				"did not find property 'spring.string.enabled'",
@@ -283,20 +257,6 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	@Configuration
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
-	@Import(StringCollectionHandler.class)
-	protected static class StringCollectionConfiguration {
-
-	}
-
-	@Configuration
-	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
-	@Import(StringMapHandler.class)
-	protected static class StringMapConfiguration {
-
-	}
-
-	@Configuration
-	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(NumberHandler.class)
 	protected static class IntegerPropertyTypeConfiguration {
 
@@ -398,20 +358,6 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 		public StringNameHandler(BeanFactory beanFactory) {
 			beanFactory.getBean("test-string");
-		}
-
-	}
-
-	protected static class StringCollectionHandler {
-
-		public StringCollectionHandler(Collection<String> collection) {
-		}
-
-	}
-
-	protected static class StringMapHandler {
-
-		public StringMapHandler(Map<String, String> map) {
 		}
 
 	}

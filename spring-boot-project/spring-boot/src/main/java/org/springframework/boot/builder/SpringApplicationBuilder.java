@@ -31,11 +31,13 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
@@ -289,19 +291,6 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Flag to explicitly request a web or non-web environment (auto detected based on
-	 * classpath if not set).
-	 * @param webEnvironment the flag to set
-	 * @return the current builder
-	 * @deprecated since 2.0.0 in favour of {@link #web(WebApplicationType)}
-	 */
-	@Deprecated
-	public SpringApplicationBuilder web(boolean webEnvironment) {
-		this.application.setWebEnvironment(webEnvironment);
-		return this;
-	}
-
-	/**
 	 * Flag to explicitly request a specific type of web application. Auto-detected based
 	 * on the classpath if not set.
 	 * @param webApplicationType the type of web application
@@ -380,6 +369,19 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder addCommandLineProperties(
 			boolean addCommandLineProperties) {
 		this.application.setAddCommandLineProperties(addCommandLineProperties);
+		return this;
+	}
+
+	/**
+	 * Flag to indicate if the {@link ApplicationConversionService} should be added to the
+	 * application context's {@link Environment}.
+	 * @param addConversionService if the conversion service should be added.
+	 * @return the current builder
+	 * @since 2.1.0
+	 */
+	public SpringApplicationBuilder setAddConversionService(
+			boolean addConversionService) {
+		this.application.setAddConversionService(addConversionService);
 		return this;
 	}
 

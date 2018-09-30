@@ -58,15 +58,13 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
-				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizerProvider,
+				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsMockMvcConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
-					.getIfAvailable();
-			if (configurationCustomizer != null) {
-				configurationCustomizer.customize(configurer);
-			}
+			configurationCustomizers.orderedStream()
+					.forEach((configurationCustomizer) -> configurationCustomizer
+							.customize(configurer));
 			return configurer;
 		}
 
@@ -90,15 +88,13 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RequestSpecification restDocsRestAssuredConfigurer(
-				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizerProvider,
+				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsRestAssuredConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
-					.getIfAvailable();
-			if (configurationCustomizer != null) {
-				configurationCustomizer.customize(configurer);
-			}
+			configurationCustomizers.orderedStream()
+					.forEach((configurationCustomizer) -> configurationCustomizer
+							.customize(configurer));
 			return new RequestSpecBuilder().addFilter(configurer).build();
 		}
 
@@ -119,15 +115,13 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
-				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider,
+				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsWebTestClientConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
-					.getIfAvailable();
-			if (configurationCustomizer != null) {
-				configurationCustomizer.customize(configurer);
-			}
+			configurationCustomizers.orderedStream()
+					.forEach((configurationCustomizer) -> configurationCustomizer
+							.customize(configurer));
 			return configurer;
 		}
 

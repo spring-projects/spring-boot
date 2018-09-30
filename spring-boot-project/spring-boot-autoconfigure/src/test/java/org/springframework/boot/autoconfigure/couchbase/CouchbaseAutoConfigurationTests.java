@@ -28,12 +28,9 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseConfiguration;
-import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -100,28 +97,14 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void customizeEnvEndpointsWithDeprecatedProperties() {
-		testCouchbaseEnv((env) -> {
-			assertThat(env.queryServiceConfig().minEndpoints()).isEqualTo(3);
-			assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(3);
-			assertThat(env.viewServiceConfig().minEndpoints()).isEqualTo(4);
-			assertThat(env.viewServiceConfig().maxEndpoints()).isEqualTo(4);
-		}, "spring.couchbase.env.endpoints.query=3",
-				"spring.couchbase.env.endpoints.view=4");
-	}
-
-	@Test
 	public void customizeEnvEndpointsUsesNewInfrastructure() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.queryServiceConfig().minEndpoints()).isEqualTo(3);
 			assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(5);
 			assertThat(env.viewServiceConfig().minEndpoints()).isEqualTo(4);
 			assertThat(env.viewServiceConfig().maxEndpoints()).isEqualTo(6);
-		}, "spring.couchbase.env.endpoints.query=33",
-				"spring.couchbase.env.endpoints.queryservice.min-endpoints=3",
+		}, "spring.couchbase.env.endpoints.queryservice.min-endpoints=3",
 				"spring.couchbase.env.endpoints.queryservice.max-endpoints=5",
-				"spring.couchbase.env.endpoints.view=44",
 				"spring.couchbase.env.endpoints.viewservice.min-endpoints=4",
 				"spring.couchbase.env.endpoints.viewservice.max-endpoints=6");
 	}
@@ -133,9 +116,7 @@ public class CouchbaseAutoConfigurationTests {
 			assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(5);
 			assertThat(env.viewServiceConfig().minEndpoints()).isEqualTo(1);
 			assertThat(env.viewServiceConfig().maxEndpoints()).isEqualTo(6);
-		}, "spring.couchbase.env.endpoints.query=33",
-				"spring.couchbase.env.endpoints.queryservice.max-endpoints=5",
-				"spring.couchbase.env.endpoints.view=44",
+		}, "spring.couchbase.env.endpoints.queryservice.max-endpoints=5",
 				"spring.couchbase.env.endpoints.viewservice.max-endpoints=6");
 	}
 
@@ -203,7 +184,6 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import(CouchbaseDataAutoConfiguration.class)
 	static class CustomCouchbaseConfiguration extends CouchbaseConfiguration {
 
 		CustomCouchbaseConfiguration(CouchbaseProperties properties) {

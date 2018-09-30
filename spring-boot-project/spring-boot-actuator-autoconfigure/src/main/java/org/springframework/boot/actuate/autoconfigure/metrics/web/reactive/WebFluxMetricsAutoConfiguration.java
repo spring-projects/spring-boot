@@ -37,7 +37,7 @@ import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
- * WebFlux MVC annotation-based programming model request mappings.
+ * WebFlux applications.
  *
  * @author Jon Schneider
  * @author Dmytro Nosan

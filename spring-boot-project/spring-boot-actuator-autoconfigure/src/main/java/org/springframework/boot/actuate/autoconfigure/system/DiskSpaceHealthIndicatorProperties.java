@@ -21,19 +21,17 @@ import java.io.File;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.util.unit.DataSize;
 
 /**
  * External configuration properties for {@link DiskSpaceHealthIndicator}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
-
-	private static final int MEGABYTES = 1024 * 1024;
-
-	private static final int DEFAULT_THRESHOLD = 10 * MEGABYTES;
 
 	/**
 	 * Path used to compute the available disk space.
@@ -41,9 +39,9 @@ public class DiskSpaceHealthIndicatorProperties {
 	private File path = new File(".");
 
 	/**
-	 * Minimum disk space, in bytes, that should be available.
+	 * Minimum disk space that should be available.
 	 */
-	private long threshold = DEFAULT_THRESHOLD;
+	private DataSize threshold = DataSize.ofMegabytes(10);
 
 	public File getPath() {
 		return this.path;
@@ -55,12 +53,12 @@ public class DiskSpaceHealthIndicatorProperties {
 		this.path = path;
 	}
 
-	public long getThreshold() {
+	public DataSize getThreshold() {
 		return this.threshold;
 	}
 
-	public void setThreshold(long threshold) {
-		Assert.isTrue(threshold >= 0, "threshold must be greater than 0");
+	public void setThreshold(DataSize threshold) {
+		Assert.isTrue(!threshold.isNegative(), "threshold must be greater than 0");
 		this.threshold = threshold;
 	}
 

@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.jooq.ConnectionProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListenerProvider;
+import org.jooq.ExecutorProvider;
 import org.jooq.RecordListenerProvider;
 import org.jooq.RecordMapperProvider;
 import org.jooq.RecordUnmapperProvider;
@@ -109,6 +110,8 @@ public class JooqAutoConfiguration {
 
 		private final TransactionListenerProvider[] transactionListenerProviders;
 
+		private final ExecutorProvider executorProvider;
+
 		public DslContextConfiguration(JooqProperties properties,
 				ConnectionProvider connectionProvider, DataSource dataSource,
 				ObjectProvider<TransactionProvider> transactionProvider,
@@ -118,7 +121,8 @@ public class JooqAutoConfiguration {
 				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
 				ExecuteListenerProvider[] executeListenerProviders,
 				ObjectProvider<VisitListenerProvider[]> visitListenerProviders,
-				ObjectProvider<TransactionListenerProvider[]> transactionListenerProviders) {
+				ObjectProvider<TransactionListenerProvider[]> transactionListenerProviders,
+				ObjectProvider<ExecutorProvider> executorProvider) {
 			this.properties = properties;
 			this.connection = connectionProvider;
 			this.dataSource = dataSource;
@@ -131,6 +135,7 @@ public class JooqAutoConfiguration {
 			this.visitListenerProviders = visitListenerProviders.getIfAvailable();
 			this.transactionListenerProviders = transactionListenerProviders
 					.getIfAvailable();
+			this.executorProvider = executorProvider.getIfAvailable();
 		}
 
 		@Bean
@@ -155,6 +160,9 @@ public class JooqAutoConfiguration {
 			}
 			if (this.settings != null) {
 				configuration.set(this.settings);
+			}
+			if (this.executorProvider != null) {
+				configuration.set(this.executorProvider);
 			}
 			configuration.set(this.recordListenerProviders);
 			configuration.set(this.executeListenerProviders);

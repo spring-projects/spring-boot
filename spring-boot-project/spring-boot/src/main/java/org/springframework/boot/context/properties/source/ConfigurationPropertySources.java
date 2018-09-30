@@ -18,13 +18,13 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
+import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
 
@@ -136,9 +136,8 @@ public final class ConfigurationPropertySources {
 	}
 
 	private static Stream<PropertySource<?>> streamPropertySources(
-			Iterable<PropertySource<?>> sources) {
-		return StreamSupport.stream(sources.spliterator(), false)
-				.flatMap(ConfigurationPropertySources::flatten)
+			PropertySources sources) {
+		return sources.stream().flatMap(ConfigurationPropertySources::flatten)
 				.filter(ConfigurationPropertySources::isIncluded);
 	}
 

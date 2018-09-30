@@ -27,11 +27,12 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import reactor.ipc.netty.http.HttpResources;
+import reactor.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -87,6 +88,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					HealthIndicatorAutoConfiguration.class,
 					HealthEndpointAutoConfiguration.class,
 					ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
@@ -282,8 +284,9 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(
 							context).getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.iterator().next();
-					WebOperation webOperation = endpoint.getOperations().iterator()
-							.next();
+					assertThat(endpoint.getOperations()).hasSize(3);
+					WebOperation webOperation = findOperationWithRequestPath(endpoint,
+							"health");
 					Object invoker = ReflectionTestUtils.getField(webOperation,
 							"invoker");
 					assertThat(ReflectionTestUtils.getField(invoker, "target"))
@@ -342,6 +345,17 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 			ApplicationContext context) {
 		return context.getBean("cloudFoundryWebFluxEndpointHandlerMapping",
 				CloudFoundryWebFluxEndpointHandlerMapping.class);
+	}
+
+	private WebOperation findOperationWithRequestPath(ExposableWebEndpoint endpoint,
+			String requestPath) {
+		for (WebOperation operation : endpoint.getOperations()) {
+			if (operation.getRequestPredicate().getPath().equals(requestPath)) {
+				return operation;
+			}
+		}
+		throw new IllegalStateException("No operation found with request path "
+				+ requestPath + " from " + endpoint.getOperations());
 	}
 
 	@Configuration

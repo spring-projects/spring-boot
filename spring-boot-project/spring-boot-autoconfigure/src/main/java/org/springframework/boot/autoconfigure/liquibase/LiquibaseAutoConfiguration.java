@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.liquibase;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -75,9 +73,8 @@ public class LiquibaseAutoConfiguration {
 
 	@Bean
 	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
-			ObjectProvider<List<SpringLiquibase>> liquibases) {
-		return new LiquibaseSchemaManagementProvider(
-				liquibases.getIfAvailable(Collections::emptyList));
+			ObjectProvider<SpringLiquibase> liquibases) {
+		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 
 	@Configuration
@@ -126,11 +123,18 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
+			liquibase.setLiquibaseSchema(this.properties.getLiquibaseSchema());
+			liquibase.setLiquibaseTablespace(this.properties.getLiquibaseTablespace());
+			liquibase.setDatabaseChangeLogTable(
+					this.properties.getDatabaseChangeLogTable());
+			liquibase.setDatabaseChangeLogLockTable(
+					this.properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
 			liquibase.setLabels(this.properties.getLabels());
 			liquibase.setChangeLogParameters(this.properties.getParameters());
 			liquibase.setRollbackFile(this.properties.getRollbackFile());
+			liquibase.setTestRollbackOnUpdate(this.properties.isTestRollbackOnUpdate());
 			return liquibase;
 		}
 

@@ -16,13 +16,14 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -34,6 +35,7 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.SchemaManagementProvider;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
@@ -57,6 +59,7 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 @Configuration
+@EnableConfigurationProperties(HibernateProperties.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
@@ -73,13 +76,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform" };
 
-	/**
-	 * {@code WebSphereExtendedJtaPlatform} implementations for various Hibernate
-	 * versions.
-	 */
-	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
-			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
-			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform" };
+	private final HibernateProperties hibernateProperties;
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
@@ -90,21 +87,22 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
+			HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
-			ObjectProvider<List<SchemaManagementProvider>> providers,
+			ObjectProvider<SchemaManagementProvider> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
 			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy,
-			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
+			ObjectProvider<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
-		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
-				providers.getIfAvailable(Collections::emptyList));
+		this.hibernateProperties = hibernateProperties;
+		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(providers);
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
 				metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
 				physicalNamingStrategy.getIfAvailable(),
-				implicitNamingStrategy.getIfAvailable(),
-				hibernatePropertiesCustomizers.getIfAvailable(Collections::emptyList));
+				implicitNamingStrategy.getIfAvailable(), hibernatePropertiesCustomizers
+						.orderedStream().collect(Collectors.toList()));
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
@@ -130,9 +128,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(
-				getProperties().getHibernateProperties(new HibernateSettings()
-						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(
+		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
+				getProperties().getProperties(),
+				new HibernateSettings().ddlAuto(defaultDdlMode)
+						.hibernatePropertiesCustomizers(
 								this.hibernatePropertiesCustomizers)));
 	}
 
@@ -150,19 +149,14 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private void configureJtaPlatform(Map<String, Object> vendorProperties)
 			throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
-		if (jtaTransactionManager != null) {
-			if (runningOnWebSphere()) {
-				// We can never use SpringJtaPlatform on WebSphere as
-				// WebSphereUowTransactionManager has a null TransactionManager
-				// which will cause Hibernate to NPE
-				configureWebSphereTransactionPlatform(vendorProperties);
-			}
-			else {
-				configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
-			}
-		}
-		else {
+		// Make sure Hibernate doesn't attempt to auto-detect a JTA platform
+		if (jtaTransactionManager == null) {
 			vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
+		}
+		// As of Hibernate 5.2, Hibernate can fully integrate with the WebSphere
+		// transaction manager on its own.
+		else if (!runningOnWebSphere()) {
+			configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
 		}
 	}
 
@@ -184,15 +178,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		return ClassUtils.isPresent(
 				"com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
 				getClass().getClassLoader());
-	}
-
-	private void configureWebSphereTransactionPlatform(
-			Map<String, Object> vendorProperties) {
-		vendorProperties.put(JTA_PLATFORM, getWebSphereJtaPlatformManager());
-	}
-
-	private Object getWebSphereJtaPlatformManager() {
-		return getJtaPlatformManager(WEBSPHERE_JTA_PLATFORM_CLASSES);
 	}
 
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
@@ -226,11 +211,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	}
 
 	private Object getNoJtaPlatformManager() {
-		return getJtaPlatformManager(NO_JTA_PLATFORM_CLASSES);
-	}
-
-	private Object getJtaPlatformManager(String[] candidates) {
-		for (String candidate : candidates) {
+		for (String candidate : NO_JTA_PLATFORM_CLASSES) {
 			try {
 				return Class.forName(candidate).newInstance();
 			}
@@ -238,7 +219,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				// Continue searching
 			}
 		}
-		throw new IllegalStateException("Could not configure JTA platform");
+		throw new IllegalStateException("No available JtaPlatform candidates amongst "
+				+ Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 
 	private static class NamingStrategiesHibernatePropertiesCustomizer

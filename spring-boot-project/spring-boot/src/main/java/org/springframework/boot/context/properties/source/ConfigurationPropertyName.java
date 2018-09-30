@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 /**
  * A configuration property name composed of elements separated by dots. User created
@@ -59,24 +58,17 @@ public final class ConfigurationPropertyName
 	 * An empty {@link ConfigurationPropertyName}.
 	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(
-			new String[0]);
+			Elements.EMPTY);
 
-	private final CharSequence[] elements;
+	private Elements elements;
 
 	private final CharSequence[] uniformElements;
 
-	private int[] elementHashCodes;
-
 	private String string;
 
-	private ConfigurationPropertyName(CharSequence[] elements) {
-		this(elements, new CharSequence[elements.length]);
-	}
-
-	private ConfigurationPropertyName(CharSequence[] elements,
-			CharSequence[] uniformElements) {
+	private ConfigurationPropertyName(Elements elements) {
 		this.elements = elements;
-		this.uniformElements = uniformElements;
+		this.uniformElements = new CharSequence[elements.getSize()];
 	}
 
 	/**
@@ -84,7 +76,7 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if the name is empty
 	 */
 	public boolean isEmpty() {
-		return this.elements.length == 0;
+		return this.elements.getSize() == 0;
 	}
 
 	/**
@@ -93,7 +85,7 @@ public final class ConfigurationPropertyName
 	 */
 	public boolean isLastElementIndexed() {
 		int size = getNumberOfElements();
-		return (size > 0 && isIndexed(this.elements[size - 1]));
+		return (size > 0 && isIndexed(size - 1));
 	}
 
 	/**
@@ -102,7 +94,7 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if the element is indexed
 	 */
 	boolean isIndexed(int elementIndex) {
-		return isIndexed(this.elements[elementIndex]);
+		return this.elements.getType(elementIndex).isIndexed();
 	}
 
 	/**
@@ -111,17 +103,7 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if the element is indexed and numeric
 	 */
 	public boolean isNumericIndex(int elementIndex) {
-		return isIndexed(elementIndex)
-				&& isNumeric(getElement(elementIndex, Form.ORIGINAL));
-	}
-
-	private boolean isNumeric(CharSequence element) {
-		for (int i = 0; i < element.length(); i++) {
-			if (!Character.isDigit(element.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
+		return this.elements.getType(elementIndex) == ElementType.NUMERICALLY_INDEXED;
 	}
 
 	/**
@@ -141,26 +123,57 @@ public final class ConfigurationPropertyName
 	 * @return the last element
 	 */
 	public String getElement(int elementIndex, Form form) {
+		CharSequence element = this.elements.get(elementIndex);
+		ElementType type = this.elements.getType(elementIndex);
+		if (type.isIndexed()) {
+			return element.toString();
+		}
 		if (form == Form.ORIGINAL) {
-			CharSequence result = this.elements[elementIndex];
-			if (isIndexed(result)) {
-				result = result.subSequence(1, result.length() - 1);
+			if (type != ElementType.NON_UNIFORM) {
+				return element.toString();
 			}
-			return result.toString();
+			return convertToOriginalForm(element).toString();
 		}
-		CharSequence result = this.uniformElements[elementIndex];
-		if (result == null) {
-			result = this.elements[elementIndex];
-			if (isIndexed(result)) {
-				result = result.subSequence(1, result.length() - 1);
+		if (form == Form.DASHED) {
+			if (type == ElementType.UNIFORM || type == ElementType.DASHED) {
+				return element.toString();
 			}
-			else {
-				result = cleanupCharSequence(result, (c, i) -> c == '-' || c == '_',
-						CharProcessor.LOWERCASE);
-			}
-			this.uniformElements[elementIndex] = result;
+			return convertToDashedElement(element).toString();
 		}
-		return result.toString();
+		CharSequence uniformElement = this.uniformElements[elementIndex];
+		if (uniformElement == null) {
+			uniformElement = (type != ElementType.UNIFORM)
+					? convertToUniformElement(element) : element;
+			this.uniformElements[elementIndex] = uniformElement.toString();
+		}
+		return uniformElement.toString();
+	}
+
+	private CharSequence convertToOriginalForm(CharSequence element) {
+		return convertElement(element, false, (ch, i) -> ch == '_'
+				|| ElementsParser.isValidChar(Character.toLowerCase(ch), i));
+	}
+
+	private CharSequence convertToDashedElement(CharSequence element) {
+		return convertElement(element, true, ElementsParser::isValidChar);
+	}
+
+	private CharSequence convertToUniformElement(CharSequence element) {
+		return convertElement(element, true,
+				(ch, i) -> ElementsParser.isAlphaNumeric(ch));
+	}
+
+	private CharSequence convertElement(CharSequence element, boolean lowercase,
+			ElementCharPredicate filter) {
+		StringBuilder result = new StringBuilder(element.length());
+		for (int i = 0; i < element.length(); i++) {
+			char ch = lowercase ? Character.toLowerCase(element.charAt(i))
+					: element.charAt(i);
+			if (filter.test(ch, i)) {
+				result.append(ch);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -168,7 +181,7 @@ public final class ConfigurationPropertyName
 	 * @return the number of elements
 	 */
 	public int getNumberOfElements() {
-		return this.elements.length;
+		return this.elements.getSize();
 	}
 
 	/**
@@ -182,20 +195,8 @@ public final class ConfigurationPropertyName
 		if (elementValue == null) {
 			return this;
 		}
-		process(elementValue, '.', (value, start, end, indexed) -> Assert.isTrue(
-				start == 0,
-				() -> "Element value '" + elementValue + "' must be a single item"));
-		if (!isIndexed(elementValue)) {
-			InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(elementValue,
-					ElementValidator.getInvalidChars(elementValue));
-		}
-		int length = this.elements.length;
-		CharSequence[] elements = new CharSequence[length + 1];
-		System.arraycopy(this.elements, 0, elements, 0, length);
-		elements[length] = elementValue;
-		CharSequence[] uniformElements = new CharSequence[length + 1];
-		System.arraycopy(this.uniformElements, 0, uniformElements, 0, length);
-		return new ConfigurationPropertyName(elements, uniformElements);
+		Elements additionalElements = of(elementValue).elements;
+		return new ConfigurationPropertyName(this.elements.append(additionalElements));
 	}
 
 	/**
@@ -209,11 +210,7 @@ public final class ConfigurationPropertyName
 		if (size >= getNumberOfElements()) {
 			return this;
 		}
-		CharSequence[] elements = new CharSequence[size];
-		System.arraycopy(this.elements, 0, elements, 0, size);
-		CharSequence[] uniformElements = new CharSequence[size];
-		System.arraycopy(this.uniformElements, 0, uniformElements, 0, size);
-		return new ConfigurationPropertyName(elements, uniformElements);
+		return new ConfigurationPropertyName(this.elements.chop(size));
 	}
 
 	/**
@@ -240,8 +237,8 @@ public final class ConfigurationPropertyName
 		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
-		for (int i = 0; i < this.elements.length; i++) {
-			if (!elementEquals(this.elements[i], name.elements[i])) {
+		for (int i = 0; i < this.elements.getSize(); i++) {
+			if (!elementEquals(this.elements, name.elements, i)) {
 				return false;
 			}
 		}
@@ -259,38 +256,39 @@ public final class ConfigurationPropertyName
 		int i1 = 0;
 		int i2 = 0;
 		while (i1 < l1 || i2 < l2) {
-			boolean indexed1 = (i1 < l1) ? n1.isIndexed(i2) : false;
-			boolean indexed2 = (i2 < l2) ? n2.isIndexed(i2) : false;
-			String e1 = (i1 < l1) ? n1.getElement(i1++, Form.UNIFORM) : null;
-			String e2 = (i2 < l2) ? n2.getElement(i2++, Form.UNIFORM) : null;
-			int result = compare(e1, indexed1, e2, indexed2);
-			if (result != 0) {
-				return result;
+			try {
+				ElementType type1 = (i1 < l1) ? n1.elements.getType(i1) : null;
+				ElementType type2 = (i2 < l2) ? n2.elements.getType(i2) : null;
+				String e1 = (i1 < l1) ? n1.getElement(i1++, Form.UNIFORM) : null;
+				String e2 = (i2 < l2) ? n2.getElement(i2++, Form.UNIFORM) : null;
+				int result = compare(e1, type1, e2, type2);
+				if (result != 0) {
+					return result;
+				}
+			}
+			catch (ArrayIndexOutOfBoundsException ex) {
+				throw new RuntimeException(ex);
 			}
 		}
 		return 0;
 	}
 
-	private int compare(String e1, boolean indexed1, String e2, boolean indexed2) {
+	private int compare(String e1, ElementType type1, String e2, ElementType type2) {
 		if (e1 == null) {
 			return -1;
 		}
 		if (e2 == null) {
 			return 1;
 		}
-		int result = Boolean.compare(indexed2, indexed1);
+		int result = Boolean.compare(type2.isIndexed(), type1.isIndexed());
 		if (result != 0) {
 			return result;
 		}
-		if (indexed1 && indexed2) {
-			try {
-				long v1 = Long.parseLong(e1);
-				long v2 = Long.parseLong(e2);
-				return Long.compare(v1, v2);
-			}
-			catch (NumberFormatException ex) {
-				// Fallback to string comparison
-			}
+		if (type1 == ElementType.NUMERICALLY_INDEXED
+				&& type2 == ElementType.NUMERICALLY_INDEXED) {
+			long v1 = Long.parseLong(e1);
+			long v2 = Long.parseLong(e2);
+			return Long.compare(v1, v2);
 		}
 		return e1.compareTo(e2);
 	}
@@ -307,33 +305,37 @@ public final class ConfigurationPropertyName
 		if (getNumberOfElements() != other.getNumberOfElements()) {
 			return false;
 		}
-		for (int i = 0; i < this.elements.length; i++) {
-			if (!elementEquals(this.elements[i], other.elements[i])) {
+		if (this.elements.canShortcutWithSource(ElementType.UNIFORM)
+				&& other.elements.canShortcutWithSource(ElementType.UNIFORM)) {
+			return toString().equals(other.toString());
+		}
+		for (int i = 0; i < this.elements.getSize(); i++) {
+			if (!elementEquals(this.elements, other.elements, i)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private boolean elementEquals(CharSequence e1, CharSequence e2) {
-		int l1 = e1.length();
-		int l2 = e2.length();
-		boolean indexed1 = isIndexed(e1);
-		int offset1 = indexed1 ? 1 : 0;
-		boolean indexed2 = isIndexed(e2);
-		int offset2 = indexed2 ? 1 : 0;
-		int i1 = offset1;
-		int i2 = offset2;
-		while (i1 < l1 - offset1) {
-			if (i2 >= l2 - offset2) {
+	private boolean elementEquals(Elements e1, Elements e2, int i) {
+		int l1 = e1.getLength(i);
+		int l2 = e2.getLength(i);
+		boolean indexed1 = e1.getType(i).isIndexed();
+		boolean indexed2 = e2.getType(i).isIndexed();
+		int i1 = 0;
+		int i2 = 0;
+		while (i1 < l1) {
+			if (i2 >= l2) {
 				return false;
 			}
-			char ch1 = indexed1 ? e1.charAt(i1) : Character.toLowerCase(e1.charAt(i1));
-			char ch2 = indexed2 ? e2.charAt(i2) : Character.toLowerCase(e2.charAt(i2));
-			if (!indexed1 && (ch1 == '-' || ch1 == '_')) {
+			char ch1 = indexed1 ? e1.charAt(i, i1)
+					: Character.toLowerCase(e1.charAt(i, i1));
+			char ch2 = indexed2 ? e2.charAt(i, i2)
+					: Character.toLowerCase(e2.charAt(i, i2));
+			if (!indexed1 && !ElementsParser.isAlphaNumeric(ch1)) {
 				i1++;
 			}
-			else if (!indexed2 && (ch2 == '-' || ch2 == '_')) {
+			else if (!indexed2 && !ElementsParser.isAlphaNumeric(ch2)) {
 				i2++;
 			}
 			else if (ch1 != ch2) {
@@ -344,9 +346,9 @@ public final class ConfigurationPropertyName
 				i2++;
 			}
 		}
-		while (i2 < l2 - offset2) {
-			char ch = e2.charAt(i2++);
-			if (indexed2 || (ch != '-' && ch != '_')) {
+		while (i2 < l2) {
+			char ch2 = e2.charAt(i, i2++);
+			if (indexed2 || !ElementsParser.isAlphaNumeric(ch2)) {
 				return false;
 			}
 		}
@@ -355,64 +357,38 @@ public final class ConfigurationPropertyName
 
 	@Override
 	public int hashCode() {
-		if (this.elementHashCodes == null) {
-			this.elementHashCodes = getElementHashCodes();
-		}
-		return ObjectUtils.nullSafeHashCode(this.elementHashCodes);
-	}
-
-	private int[] getElementHashCodes() {
-		int[] hashCodes = new int[this.elements.length];
-		for (int i = 0; i < this.elements.length; i++) {
-			hashCodes[i] = getElementHashCode(this.elements[i]);
-		}
-		return hashCodes;
-	}
-
-	private int getElementHashCode(CharSequence element) {
-		int hash = 0;
-		boolean indexed = isIndexed(element);
-		int offset = indexed ? 1 : 0;
-		for (int i = 0 + offset; i < element.length() - offset; i++) {
-			char ch = (indexed ? element.charAt(i)
-					: Character.toLowerCase(element.charAt(i)));
-			hash = (ch == '-' || ch == '_') ? hash : 31 * hash + Character.hashCode(ch);
-		}
-		return hash;
+		return 0;
 	}
 
 	@Override
 	public String toString() {
 		if (this.string == null) {
-			this.string = toString(this.elements);
+			this.string = buildToString();
 		}
 		return this.string;
 	}
 
-	private String toString(CharSequence[] elements) {
+	private String buildToString() {
+		if (this.elements.canShortcutWithSource(ElementType.UNIFORM,
+				ElementType.DASHED)) {
+			return this.elements.getSource().toString();
+		}
 		StringBuilder result = new StringBuilder();
-		for (CharSequence element : elements) {
-			boolean indexed = isIndexed(element);
+		for (int i = 0; i < getNumberOfElements(); i++) {
+			boolean indexed = isIndexed(i);
 			if (result.length() > 0 && !indexed) {
 				result.append('.');
 			}
 			if (indexed) {
-				result.append(element);
+				result.append("[");
+				result.append(getElement(i, Form.ORIGINAL));
+				result.append("]");
 			}
 			else {
-				for (int i = 0; i < element.length(); i++) {
-					char ch = Character.toLowerCase(element.charAt(i));
-					if (ch != '_') {
-						result.append(ch);
-					}
-				}
+				result.append(getElement(i, Form.DASHED));
 			}
 		}
 		return result.toString();
-	}
-
-	private static boolean isIndexed(CharSequence element) {
-		return element.charAt(0) == '[' && element.charAt(element.length() - 1) == ']';
 	}
 
 	/**
@@ -422,18 +398,7 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if the name is valid
 	 */
 	public static boolean isValid(CharSequence name) {
-		if (name == null) {
-			return false;
-		}
-		if (name.equals(EMPTY_STRING)) {
-			return true;
-		}
-		if (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.') {
-			return false;
-		}
-		ElementValidator validator = new ElementValidator();
-		process(name, '.', validator);
-		return validator.isValid();
+		return of(name, true) != null;
 	}
 
 	/**
@@ -443,26 +408,54 @@ public final class ConfigurationPropertyName
 	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
 	public static ConfigurationPropertyName of(CharSequence name) {
-		Assert.notNull(name, "Name must not be null");
-		if (name.length() >= 1
-				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
-			throw new InvalidConfigurationPropertyNameException(name,
-					Collections.singletonList('.'));
+		return of(name, false);
+	}
+
+	/**
+	 * Return a {@link ConfigurationPropertyName} for the specified string.
+	 * @param name the source name
+	 * @param returnNullIfInvalid if null should be returned if the name is not valid
+	 * @return a {@link ConfigurationPropertyName} instance
+	 * @throws InvalidConfigurationPropertyNameException if the name is not valid and
+	 * {@code returnNullIfInvalid} is {@code false}
+	 */
+	static ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
+		if (name == null) {
+			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
+			return null;
 		}
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<>(10);
-		process(name, '.', (elementValue, start, end, indexed) -> {
-			if (elementValue.length() > 0) {
-				if (!indexed) {
-					InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(name,
-							ElementValidator.getInvalidChars(elementValue));
-				}
-				elements.add(elementValue);
+		if (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.') {
+			if (returnNullIfInvalid) {
+				return null;
 			}
-		});
-		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
+			throw new InvalidConfigurationPropertyNameException(name,
+					Collections.singletonList('.'));
+		}
+		Elements elements = new ElementsParser(name, '.').parse();
+		for (int i = 0; i < elements.getSize(); i++) {
+			if (elements.getType(i) == ElementType.NON_UNIFORM) {
+				if (returnNullIfInvalid) {
+					return null;
+				}
+				throw new InvalidConfigurationPropertyNameException(name,
+						getInvalidChars(elements, i));
+			}
+		}
+		return new ConfigurationPropertyName(elements);
+	}
+
+	private static List<Character> getInvalidChars(Elements elements, int index) {
+		List<Character> invalidChars = new ArrayList<>();
+		for (int charIndex = 0; charIndex < elements.getLength(index); charIndex++) {
+			char ch = elements.charAt(index, charIndex);
+			if (!ElementsParser.isValidChar(ch, charIndex)) {
+				invalidChars.add(ch);
+			}
+		}
+		return invalidChars;
 	}
 
 	/**
@@ -473,7 +466,7 @@ public final class ConfigurationPropertyName
 	 * @return a {@link ConfigurationPropertyName}
 	 */
 	static ConfigurationPropertyName adapt(CharSequence name, char separator) {
-		return adapt(name, separator, Function.identity());
+		return adapt(name, separator, null);
 	}
 
 	/**
@@ -492,84 +485,15 @@ public final class ConfigurationPropertyName
 	static ConfigurationPropertyName adapt(CharSequence name, char separator,
 			Function<CharSequence, CharSequence> elementValueProcessor) {
 		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(elementValueProcessor, "ElementValueProcessor must not be null");
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<>();
-		process(name, separator, (elementValue, start, end, indexed) -> {
-			elementValue = elementValueProcessor.apply(elementValue);
-			if (!isIndexed(elementValue)) {
-				elementValue = cleanupCharSequence(elementValue,
-						(ch, index) -> ch != '_' && !ElementValidator
-								.isValidChar(Character.toLowerCase(ch), index),
-						CharProcessor.NONE);
-			}
-			if (elementValue.length() > 0) {
-				elements.add(elementValue);
-			}
-		});
-		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
-	}
-
-	private static void process(CharSequence name, char separator,
-			ElementProcessor processor) {
-		int start = 0;
-		boolean indexed = false;
-		int length = name.length();
-		int openBracketCount = 0;
-		for (int i = 0; i < length; i++) {
-			char ch = name.charAt(i);
-			if (ch == ']') {
-				openBracketCount--;
-				if (openBracketCount == 0) {
-					processElement(processor, name, start, i + 1, indexed);
-					start = i + 1;
-					indexed = false;
-				}
-			}
-			else if (ch == '[') {
-				openBracketCount++;
-				if (!indexed) {
-					processElement(processor, name, start, i, indexed);
-					start = i;
-					indexed = true;
-				}
-			}
-			else if (!indexed && ch == separator) {
-				processElement(processor, name, start, i, indexed);
-				start = i + 1;
-			}
+		Elements elements = new ElementsParser(name, separator)
+				.parse(elementValueProcessor);
+		if (elements.getSize() == 0) {
+			return EMPTY;
 		}
-		processElement(processor, name, start, length, false);
-	}
-
-	private static void processElement(ElementProcessor processor, CharSequence name,
-			int start, int end, boolean indexed) {
-		if ((end - start) >= 1) {
-			processor.process(name.subSequence(start, end), start, end, indexed);
-		}
-	}
-
-	private static CharSequence cleanupCharSequence(CharSequence name, CharFilter filter,
-			CharProcessor processor) {
-		for (int i = 0; i < name.length(); i++) {
-			char ch = name.charAt(i);
-			char processed = processor.process(ch, i);
-			if (filter.isExcluded(processed, i) || processed != ch) {
-				// We save memory by only creating the new result if necessary
-				StringBuilder result = new StringBuilder(name.length());
-				result.append(name.subSequence(0, i));
-				for (int j = i; j < name.length(); j++) {
-					processed = processor.process(name.charAt(j), j);
-					if (!filter.isExcluded(processed, j)) {
-						result.append(processed);
-					}
-				}
-				return result;
-			}
-		}
-		return name;
+		return new ConfigurationPropertyName(elements);
 	}
 
 	/**
@@ -578,7 +502,7 @@ public final class ConfigurationPropertyName
 	public enum Form {
 
 		/**
-		 * The original form as specified when the name was created or parsed. For
+		 * The original form as specified when the name was created or adapted. For
 		 * example:
 		 * <ul>
 		 * <li>"{@code foo-bar}" = "{@code foo-bar}"</li>
@@ -588,6 +512,18 @@ public final class ConfigurationPropertyName
 		 * </ul>
 		 */
 		ORIGINAL,
+
+		/**
+		 * The dashed configuration form (used for toString; lower-case with only
+		 * alphanumeric characters and dashes).
+		 * <ul>
+		 * <li>"{@code foo-bar}" = "{@code foo-bar}"</li>
+		 * <li>"{@code fooBar}" = "{@code foobar}"</li>
+		 * <li>"{@code foo_bar}" = "{@code foobar}"</li>
+		 * <li>"{@code [Foo.bar]}" = "{@code Foo.bar}"</li>
+		 * </ul>
+		 */
+		DASHED,
 
 		/**
 		 * The uniform configuration form (used for equals/hashCode; lower-case with only
@@ -604,79 +540,306 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
-	 * Internal functional interface used when processing names.
+	 * Allows access to the individual elements that make up the name. We store the
+	 * indexes in arrays rather than a list of object in order to conserve memory.
 	 */
-	@FunctionalInterface
-	private interface ElementProcessor {
+	private static class Elements {
 
-		void process(CharSequence elementValue, int start, int end, boolean indexed);
+		private static final int[] NO_POSITION = {};
 
-	}
+		private static final ElementType[] NO_TYPE = {};
 
-	/**
-	 * Internal filter used to strip out characters.
-	 */
-	private interface CharFilter {
+		public static final Elements EMPTY = new Elements("", 0, NO_POSITION, NO_POSITION,
+				NO_TYPE, null);
 
-		boolean isExcluded(char ch, int index);
+		private final CharSequence source;
 
-	}
+		private final int size;
 
-	/**
-	 * Internal processor used to change characters.
-	 */
-	private interface CharProcessor {
+		private final int[] start;
 
-		CharProcessor NONE = (c, i) -> c;
+		private final int[] end;
 
-		CharProcessor LOWERCASE = (c, i) -> Character.toLowerCase(c);
+		private final ElementType[] type;
 
-		char process(char c, int index);
+		/**
+		 * Contains any resolved elements or can be {@code null} if there aren't any.
+		 * Resolved elements allow us to modify the element values in some way (or example
+		 * when adapting with a mapping function, or when append has been called). Note
+		 * that this array is not used as a cache, in fact, when it's not null then
+		 * {@link #canShortcutWithSource} will always return false which may hurt
+		 * performance.
+		 */
+		private final CharSequence[] resolved;
 
-	}
+		Elements(CharSequence source, int size, int[] start, int[] end,
+				ElementType[] type, CharSequence[] resolved) {
+			super();
+			this.source = source;
+			this.size = size;
+			this.start = start;
+			this.end = end;
+			this.type = type;
+			this.resolved = resolved;
+		}
 
-	/**
-	 * {@link ElementProcessor} that checks if a name is valid.
-	 */
-	private static class ElementValidator implements ElementProcessor {
+		public Elements append(Elements additional) {
+			Assert.isTrue(additional.getSize() == 1, () -> "Element value '"
+					+ additional.getSource() + "' must be a single item");
+			ElementType[] type = new ElementType[this.size + 1];
+			System.arraycopy(this.type, 0, type, 0, this.size);
+			type[this.size] = additional.type[0];
+			CharSequence[] resolved = newResolved(this.size + 1);
+			resolved[this.size] = additional.get(0);
+			return new Elements(this.source, this.size + 1, this.start, this.end, type,
+					resolved);
+		}
 
-		private boolean valid = true;
+		public Elements chop(int size) {
+			CharSequence[] resolved = newResolved(size);
+			return new Elements(this.source, size, this.start, this.end, this.type,
+					resolved);
+		}
 
-		@Override
-		public void process(CharSequence elementValue, int start, int end,
-				boolean indexed) {
-			if (this.valid && !indexed) {
-				this.valid = isValidElement(elementValue);
+		private CharSequence[] newResolved(int size) {
+			CharSequence[] resolved = new CharSequence[size];
+			if (this.resolved != null) {
+				System.arraycopy(this.resolved, 0, resolved, 0,
+						Math.min(size, this.size));
 			}
+			return resolved;
 		}
 
-		public boolean isValid() {
-			return this.valid;
+		public int getSize() {
+			return this.size;
 		}
 
-		public static boolean isValidElement(CharSequence elementValue) {
-			for (int i = 0; i < elementValue.length(); i++) {
-				char ch = elementValue.charAt(i);
-				if (!isValidChar(ch, i)) {
+		public CharSequence get(int index) {
+			if (this.resolved != null && this.resolved[index] != null) {
+				return this.resolved[index];
+			}
+			int start = this.start[index];
+			int end = this.end[index];
+			return this.source.subSequence(start, end);
+		}
+
+		public int getLength(int index) {
+			if (this.resolved != null && this.resolved[index] != null) {
+				return this.resolved[index].length();
+			}
+			int start = this.start[index];
+			int end = this.end[index];
+			return end - start;
+		}
+
+		public char charAt(int index, int charIndex) {
+			if (this.resolved != null && this.resolved[index] != null) {
+				return this.resolved[index].charAt(charIndex);
+			}
+			int start = this.start[index];
+			return this.source.charAt(start + charIndex);
+		}
+
+		public ElementType getType(int index) {
+			return this.type[index];
+		}
+
+		public CharSequence getSource() {
+			return this.source;
+		}
+
+		/**
+		 * Returns if the element source can be used as a shortcut for an operation such
+		 * as {@code equals} or {@code toString}.
+		 * @param requiredType the required type
+		 * @return {@code true} if all elements match at least one of the types
+		 */
+		public boolean canShortcutWithSource(ElementType requiredType) {
+			return canShortcutWithSource(requiredType, requiredType);
+		}
+
+		/**
+		 * Returns if the element source can be used as a shortcut for an operation such
+		 * as {@code equals} or {@code toString}.
+		 * @param requiredType the required type
+		 * @param alternativeType and alternative required type
+		 * @return {@code true} if all elements match at least one of the types
+		 */
+		public boolean canShortcutWithSource(ElementType requiredType,
+				ElementType alternativeType) {
+			if (this.resolved != null) {
+				return false;
+			}
+			for (int i = 0; i < this.size; i++) {
+				ElementType type = this.type[i];
+				if (type != requiredType && type != alternativeType) {
+					return false;
+				}
+				if (i > 0 && this.end[i - 1] + 1 != this.start[i]) {
 					return false;
 				}
 			}
 			return true;
 		}
 
-		public static List<Character> getInvalidChars(CharSequence elementValue) {
-			List<Character> chars = new ArrayList<>();
-			for (int i = 0; i < elementValue.length(); i++) {
-				char ch = elementValue.charAt(i);
-				if (!isValidChar(ch, i)) {
-					chars.add(ch);
+	}
+
+	/**
+	 * Main parsing logic used to convert a {@link CharSequence} to {@link Elements}.
+	 */
+	private static class ElementsParser {
+
+		private static final int DEFAULT_CAPACITY = 6;
+
+		private final CharSequence source;
+
+		private final char separator;
+
+		private int size;
+
+		private int[] start;
+
+		private int[] end;
+
+		private ElementType[] type;
+
+		private CharSequence[] resolved;
+
+		ElementsParser(CharSequence source, char separator) {
+			this(source, separator, DEFAULT_CAPACITY);
+		}
+
+		ElementsParser(CharSequence source, char separator, int capacity) {
+			this.source = source;
+			this.separator = separator;
+			this.start = new int[capacity];
+			this.end = new int[capacity];
+			this.type = new ElementType[capacity];
+		}
+
+		public Elements parse() {
+			return parse(null);
+		}
+
+		public Elements parse(Function<CharSequence, CharSequence> valueProcessor) {
+			int length = this.source.length();
+			int openBracketCount = 0;
+			int start = 0;
+			ElementType type = ElementType.EMPTY;
+			for (int i = 0; i < length; i++) {
+				char ch = this.source.charAt(i);
+				if (ch == '[') {
+					if (openBracketCount == 0) {
+						add(start, i, type, valueProcessor);
+						start = i + 1;
+						type = ElementType.NUMERICALLY_INDEXED;
+					}
+					openBracketCount++;
+				}
+				else if (ch == ']') {
+					openBracketCount--;
+					if (openBracketCount == 0) {
+						add(start, i, type, valueProcessor);
+						start = i + 1;
+						type = ElementType.EMPTY;
+					}
+				}
+				else if (!type.isIndexed() && ch == this.separator) {
+					add(start, i, type, valueProcessor);
+					start = i + 1;
+					type = ElementType.EMPTY;
+				}
+				else {
+					type = updateType(type, ch, i - start);
 				}
 			}
-			return chars;
+			if (openBracketCount != 0) {
+				type = ElementType.NON_UNIFORM;
+			}
+			add(start, length, type, valueProcessor);
+			return new Elements(this.source, this.size, this.start, this.end, this.type,
+					this.resolved);
+		}
+
+		private ElementType updateType(ElementType existingType, char ch, int index) {
+			if (existingType.isIndexed()) {
+				if (existingType == ElementType.NUMERICALLY_INDEXED && !isNumeric(ch)) {
+					return ElementType.INDEXED;
+				}
+				return existingType;
+			}
+			if (existingType == ElementType.EMPTY && isValidChar(ch, index)) {
+				return (index == 0) ? ElementType.UNIFORM : ElementType.NON_UNIFORM;
+			}
+			if (existingType == ElementType.UNIFORM && ch == '-') {
+				return ElementType.DASHED;
+			}
+			if (!isValidChar(ch, index)) {
+				if (existingType == ElementType.EMPTY
+						&& !isValidChar(Character.toLowerCase(ch), index)) {
+					return ElementType.EMPTY;
+				}
+				return ElementType.NON_UNIFORM;
+			}
+			return existingType;
+		}
+
+		private void add(int start, int end, ElementType type,
+				Function<CharSequence, CharSequence> valueProcessor) {
+			if ((end - start) < 1 || type == ElementType.EMPTY) {
+				return;
+			}
+			if (this.start.length <= end) {
+				this.start = expand(this.start);
+				this.end = expand(this.end);
+				this.type = expand(this.type);
+				this.resolved = expand(this.resolved);
+			}
+			if (valueProcessor != null) {
+				if (this.resolved == null) {
+					this.resolved = new CharSequence[this.start.length];
+				}
+				CharSequence resolved = valueProcessor
+						.apply(this.source.subSequence(start, end));
+				Elements resolvedElements = new ElementsParser(resolved, '.').parse();
+				Assert.state(resolvedElements.getSize() == 1,
+						"Resolved element must not contain multiple elements");
+				this.resolved[this.size] = resolvedElements.get(0);
+				type = resolvedElements.getType(0);
+			}
+			this.start[this.size] = start;
+			this.end[this.size] = end;
+			this.type[this.size] = type;
+			this.size++;
+		}
+
+		private int[] expand(int[] src) {
+			int[] dest = new int[src.length + DEFAULT_CAPACITY];
+			System.arraycopy(src, 0, dest, 0, src.length);
+			return dest;
+		}
+
+		private ElementType[] expand(ElementType[] src) {
+			ElementType[] dest = new ElementType[src.length + DEFAULT_CAPACITY];
+			System.arraycopy(src, 0, dest, 0, src.length);
+			return dest;
+		}
+
+		private CharSequence[] expand(CharSequence[] src) {
+			if (src == null) {
+				return null;
+			}
+			CharSequence[] dest = new CharSequence[src.length + DEFAULT_CAPACITY];
+			System.arraycopy(src, 0, dest, 0, src.length);
+			return dest;
 		}
 
 		public static boolean isValidChar(char ch, int index) {
 			return isAlpha(ch) || isNumeric(ch) || (index != 0 && ch == '-');
+		}
+
+		public static boolean isAlphaNumeric(char ch) {
+			return isAlpha(ch) || isNumeric(ch);
 		}
 
 		private static boolean isAlpha(char ch) {
@@ -686,6 +849,63 @@ public final class ConfigurationPropertyName
 		private static boolean isNumeric(char ch) {
 			return ch >= '0' && ch <= '9';
 		}
+
+	}
+
+	/**
+	 * The various types of element that we can detect.
+	 */
+	private enum ElementType {
+
+		/**
+		 * The element is logically empty (contains no valid chars).
+		 */
+		EMPTY(false),
+
+		/**
+		 * The element is a uniform name (a-z, 0-9, no dashes, lowercase).
+		 */
+		UNIFORM(false),
+
+		/**
+		 * The element is almost uniform, but it contains (but does not start with) at
+		 * least one dash.
+		 */
+		DASHED(false),
+
+		/**
+		 * The element contains non uniform characters and will need to be converted.
+		 */
+		NON_UNIFORM(false),
+
+		/**
+		 * The element is non-numerically indexed.
+		 */
+		INDEXED(true),
+
+		/**
+		 * The element is numerically indexed.
+		 */
+		NUMERICALLY_INDEXED(true);
+
+		private final boolean indexed;
+
+		ElementType(boolean indexed) {
+			this.indexed = indexed;
+		}
+
+		public boolean isIndexed() {
+			return this.indexed;
+		}
+
+	}
+
+	/**
+	 * Predicate used to filter element chars.
+	 */
+	private interface ElementCharPredicate {
+
+		boolean test(char ch, int index);
 
 	}
 

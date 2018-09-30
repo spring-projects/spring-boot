@@ -27,6 +27,7 @@ import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebSer
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Customization for Undertow-specific features common for both Servlet and Reactive
@@ -63,7 +64,8 @@ public class UndertowWebServerFactoryCustomizer implements
 		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
 				.getAccesslog();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		propertyMapper.from(undertowProperties::getBufferSize).to(factory::setBufferSize);
+		propertyMapper.from(undertowProperties::getBufferSize).whenNonNull()
+				.asInt(DataSize::toBytes).to(factory::setBufferSize);
 		propertyMapper.from(undertowProperties::getIoThreads).to(factory::setIoThreads);
 		propertyMapper.from(undertowProperties::getWorkerThreads)
 				.to(factory::setWorkerThreads);
@@ -81,12 +83,14 @@ public class UndertowWebServerFactoryCustomizer implements
 				.to(factory::setAccessLogSuffix);
 		propertyMapper.from(accesslogProperties::isRotate)
 				.to(factory::setAccessLogRotate);
-		propertyMapper.from(() -> getOrDeduceUseForwardHeaders())
+		propertyMapper.from(this::getOrDeduceUseForwardHeaders)
 				.to(factory::setUseForwardHeaders);
-		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
+		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
+				.asInt(DataSize::toBytes)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(this::isPositive)
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
 		propertyMapper.from(properties::getConnectionTimeout)

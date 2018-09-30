@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +34,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Michael McFadyen
  * @since 2.0.0
  */
 public final class WebMvcTags {
@@ -48,7 +51,23 @@ public final class WebMvcTags {
 
 	private static final Tag STATUS_UNKNOWN = Tag.of("status", "UNKNOWN");
 
+	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+
+	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
+
+	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
+
+	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
+
+	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
+
 	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
+
+	private static final Pattern TRAILING_SLASH_PATTERN = Pattern.compile("/$");
+
+	private static final Pattern MULTIPLE_SLASH_PATTERN = Pattern.compile("//+");
 
 	private WebMvcTags() {
 	}
@@ -124,7 +143,8 @@ public final class WebMvcTags {
 	private static String getPathInfo(HttpServletRequest request) {
 		String pathInfo = request.getPathInfo();
 		String uri = StringUtils.hasText(pathInfo) ? pathInfo : "/";
-		return uri.replaceAll("//+", "/").replaceAll("/$", "");
+		uri = MULTIPLE_SLASH_PATTERN.matcher(uri).replaceAll("/");
+		return TRAILING_SLASH_PATTERN.matcher(uri).replaceAll("");
 	}
 
 	/**
@@ -140,6 +160,31 @@ public final class WebMvcTags {
 					: exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
+	}
+
+	/**
+	 * Creates a {@code outcome} tag based on the status of the given {@code response}.
+	 * @param response the HTTP response
+	 * @return the outcome tag derived from the status of the response
+	 */
+	public static Tag outcome(HttpServletResponse response) {
+		if (response != null) {
+			int status = response.getStatus();
+			if (status < 200) {
+				return OUTCOME_INFORMATIONAL;
+			}
+			if (status < 300) {
+				return OUTCOME_SUCCESS;
+			}
+			if (status < 400) {
+				return OUTCOME_REDIRECTION;
+			}
+			else if (status < 500) {
+				return OUTCOME_CLIENT_ERROR;
+			}
+			return OUTCOME_SERVER_ERROR;
+		}
+		return OUTCOME_UNKNOWN;
 	}
 
 }

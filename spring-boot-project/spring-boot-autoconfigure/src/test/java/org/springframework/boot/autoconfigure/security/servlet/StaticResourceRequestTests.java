@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -75,11 +74,9 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationWhenHasServletPathShouldMatchLocation() {
-		ServerProperties serverProperties = new ServerProperties();
-		serverProperties.getServlet().setPath("/foo");
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
-		assertMatcher(matcher, serverProperties).matches("/foo", "/css/file.css");
-		assertMatcher(matcher, serverProperties).doesNotMatch("/foo", "/js/file.js");
+		assertMatcher(matcher, "/foo").matches("/foo", "/css/file.css");
+		assertMatcher(matcher, "/foo").doesNotMatch("/foo", "/js/file.js");
 	}
 
 	@Test
@@ -99,17 +96,13 @@ public class StaticResourceRequestTests {
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
 		DispatcherServletPath dispatcherServletPath = () -> "";
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
-		context.registerBean(ServerProperties.class);
 		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			ServerProperties serverProperties) {
-		DispatcherServletPath dispatcherServletPath = () -> serverProperties.getServlet()
-				.getPath();
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, String path) {
+		DispatcherServletPath dispatcherServletPath = () -> path;
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
-		context.registerBean(ServerProperties.class, () -> serverProperties);
 		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}

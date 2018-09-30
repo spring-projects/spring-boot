@@ -42,7 +42,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -70,22 +69,22 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private final javax.cache.configuration.Configuration<?, ?> defaultCacheConfiguration;
 
-	private final List<JCacheManagerCustomizer> cacheManagerCustomizers;
+	private final ObjectProvider<JCacheManagerCustomizer> cacheManagerCustomizers;
 
-	private final List<JCachePropertiesCustomizer> cachePropertiesCustomizers;
+	private final ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers;
 
 	private ClassLoader beanClassLoader;
 
 	JCacheCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
 			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfiguration,
-			ObjectProvider<List<JCacheManagerCustomizer>> cacheManagerCustomizers,
-			ObjectProvider<List<JCachePropertiesCustomizer>> cachePropertiesCustomizers) {
+			ObjectProvider<JCacheManagerCustomizer> cacheManagerCustomizers,
+			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
 		this.defaultCacheConfiguration = defaultCacheConfiguration.getIfAvailable();
-		this.cacheManagerCustomizers = cacheManagerCustomizers.getIfAvailable();
-		this.cachePropertiesCustomizers = cachePropertiesCustomizers.getIfAvailable();
+		this.cacheManagerCustomizers = cacheManagerCustomizers;
+		this.cachePropertiesCustomizers = cachePropertiesCustomizers;
 	}
 
 	@Override
@@ -135,11 +134,8 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private Properties createCacheManagerProperties() {
 		Properties properties = new Properties();
-		if (this.cachePropertiesCustomizers != null) {
-			for (JCachePropertiesCustomizer customizer : this.cachePropertiesCustomizers) {
-				customizer.customize(this.cacheProperties, properties);
-			}
-		}
+		this.cachePropertiesCustomizers.orderedStream().forEach(
+				(customizer) -> customizer.customize(this.cacheProperties, properties));
 		return properties;
 	}
 
@@ -151,12 +147,8 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	private void customize(CacheManager cacheManager) {
-		if (this.cacheManagerCustomizers != null) {
-			AnnotationAwareOrderComparator.sort(this.cacheManagerCustomizers);
-			for (JCacheManagerCustomizer customizer : this.cacheManagerCustomizers) {
-				customizer.customize(cacheManager);
-			}
-		}
+		this.cacheManagerCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(cacheManager));
 	}
 
 	/**

@@ -60,7 +60,7 @@ abstract class AggregateBinder<T> {
 		if (result == null || value == null) {
 			return result;
 		}
-		return merge(value, (T) result);
+		return merge((Supplier<T>) value, (T) result);
 	}
 
 	/**
@@ -79,7 +79,7 @@ abstract class AggregateBinder<T> {
 	 * @param additional the additional elements to merge
 	 * @return the merged result
 	 */
-	protected abstract T merge(Supplier<?> existing, T additional);
+	protected abstract T merge(Supplier<T> existing, T additional);
 
 	/**
 	 * Return the context being used by this binder.

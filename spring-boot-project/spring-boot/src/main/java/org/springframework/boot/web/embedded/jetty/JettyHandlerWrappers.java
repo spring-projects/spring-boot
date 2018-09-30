@@ -41,7 +41,7 @@ final class JettyHandlerWrappers {
 
 	static HandlerWrapper createGzipHandlerWrapper(Compression compression) {
 		GzipHandler handler = new GzipHandler();
-		handler.setMinGzipSize(compression.getMinResponseSize());
+		handler.setMinGzipSize((int) compression.getMinResponseSize().toBytes());
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
 		for (HttpMethod httpMethod : HttpMethod.values()) {
 			handler.addIncludedMethods(httpMethod.name());

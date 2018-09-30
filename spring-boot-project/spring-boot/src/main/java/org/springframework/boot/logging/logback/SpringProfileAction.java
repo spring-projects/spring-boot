@@ -29,6 +29,7 @@ import ch.qos.logback.core.util.OptionHelper;
 import org.xml.sax.Attributes;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -78,7 +79,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 		for (int i = 0; i < profileNames.length; i++) {
 			profileNames[i] = OptionHelper.substVars(profileNames[i], ic, this.context);
 		}
-		return this.environment.acceptsProfiles(profileNames);
+		return this.environment.acceptsProfiles(Profiles.of(profileNames));
 	}
 
 	@Override

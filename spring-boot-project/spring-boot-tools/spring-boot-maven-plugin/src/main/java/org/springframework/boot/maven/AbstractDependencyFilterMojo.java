@@ -26,7 +26,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
-import org.apache.maven.shared.artifact.filter.collection.ArtifactIdFilter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 
@@ -64,15 +63,6 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	@Parameter(property = "spring-boot.excludeGroupIds", defaultValue = "")
 	private String excludeGroupIds;
 
-	/**
-	 * Comma separated list of artifact names to exclude (exact match).
-	 * @since 1.1
-	 * @deprecated as of 2.0.2 in favour of {@code excludes}
-	 */
-	@Parameter(property = "spring-boot.excludeArtifactIds", defaultValue = "")
-	@Deprecated
-	private String excludeArtifactIds;
-
 	protected void setExcludes(List<Exclude> excludes) {
 		this.excludes = excludes;
 	}
@@ -83,11 +73,6 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	protected void setExcludeGroupIds(String excludeGroupIds) {
 		this.excludeGroupIds = excludeGroupIds;
-	}
-
-	@Deprecated
-	protected void setExcludeArtifactIds(String excludeArtifactIds) {
-		this.excludeArtifactIds = excludeArtifactIds;
 	}
 
 	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
@@ -112,8 +97,6 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		for (ArtifactsFilter additionalFilter : additionalFilters) {
 			filters.addFilter(additionalFilter);
 		}
-		filters.addFilter(
-				new ArtifactIdFilter("", cleanFilterConfig(this.excludeArtifactIds)));
 		filters.addFilter(
 				new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
 		if (this.includes != null && !this.includes.isEmpty()) {

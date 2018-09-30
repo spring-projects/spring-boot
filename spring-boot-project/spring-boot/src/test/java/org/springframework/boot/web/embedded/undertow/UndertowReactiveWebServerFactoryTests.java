@@ -88,6 +88,13 @@ public class UndertowReactiveWebServerFactoryTests
 	}
 
 	@Test
+	public void useForwardedHeaders() {
+		UndertowReactiveWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
 	public void accessLogCanBeEnabled()
 			throws IOException, URISyntaxException, InterruptedException {
 		testAccessLog(null, null, "access_log.log");

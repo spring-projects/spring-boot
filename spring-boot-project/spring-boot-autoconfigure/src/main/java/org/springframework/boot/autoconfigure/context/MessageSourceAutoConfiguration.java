@@ -64,8 +64,7 @@ public class MessageSourceAutoConfiguration {
 	}
 
 	@Bean
-	public MessageSource messageSource() {
-		MessageSourceProperties properties = messageSourceProperties();
+	public MessageSource messageSource(MessageSourceProperties properties) {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(properties.getBasename())) {
 			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(

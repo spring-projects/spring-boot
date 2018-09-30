@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.client;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -32,6 +33,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
@@ -59,6 +61,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dmytro Nosan
  */
 public class RestTemplateBuilderTests {
 
@@ -389,6 +392,31 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void customizerShouldBeAppliedAtTheEnd() {
+		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		this.builder.interceptors(this.interceptor)
+				.messageConverters(this.messageConverter).rootUri("http://localhost:8080")
+				.errorHandler(errorHandler).basicAuthorization("spring", "boot")
+				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
+					assertThat(restTemplate.getInterceptors()).hasSize(2)
+							.contains(this.interceptor).anyMatch(
+									(ic) -> ic instanceof BasicAuthorizationInterceptor);
+					assertThat(restTemplate.getMessageConverters())
+							.contains(this.messageConverter);
+					assertThat(restTemplate.getUriTemplateHandler())
+							.isInstanceOf(RootUriTemplateHandler.class);
+					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
+					ClientHttpRequestFactory actualRequestFactory = restTemplate
+							.getRequestFactory();
+					assertThat(actualRequestFactory)
+							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+					assertThat(ReflectionTestUtils.getField(actualRequestFactory,
+							"requestFactory")).isSameAs(requestFactory);
+				}).build();
+	}
+
+	@Test
 	public void buildShouldReturnRestTemplate() {
 		RestTemplate template = this.builder.build();
 		assertThat(template.getClass()).isEqualTo(RestTemplate.class);
@@ -409,10 +437,28 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void connectTimeoutCanBeNullToUseDefault() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setConnectTimeout(null).build().getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
+				.isEqualTo(-1);
+	}
+
+	@Test
+	public void readTimeoutCanBeNullToUseDefault() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(null)
+				.build().getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
+				.isEqualTo(-1);
+	}
+
+	@Test
 	public void connectTimeoutCanBeConfiguredOnHttpComponentsRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
+				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory,
 				"requestConfig")).getConnectTimeout()).isEqualTo(1234);
 	}
@@ -421,7 +467,7 @@ public class RestTemplateBuilderTests {
 	public void readTimeoutCanBeConfiguredOnHttpComponentsRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setReadTimeout(1234).build().getRequestFactory();
+				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory,
 				"requestConfig")).getSocketTimeout()).isEqualTo(1234);
 	}
@@ -430,7 +476,7 @@ public class RestTemplateBuilderTests {
 	public void connectTimeoutCanBeConfiguredOnSimpleRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
+				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
 				.isEqualTo(1234);
 	}
@@ -438,8 +484,8 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void readTimeoutCanBeConfiguredOnSimpleRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(1234);
 	}
@@ -448,7 +494,7 @@ public class RestTemplateBuilderTests {
 	public void connectTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(OkHttp3ClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
+				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(
 				ReflectionTestUtils.getField(requestFactory, "client"), "connectTimeout"))
 						.isEqualTo(1234);
@@ -458,7 +504,7 @@ public class RestTemplateBuilderTests {
 	public void readTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(OkHttp3ClientHttpRequestFactory.class)
-				.setReadTimeout(1234).build().getRequestFactory();
+				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(
 				ReflectionTestUtils.getField(requestFactory, "client"), "readTimeout"))
 						.isEqualTo(1234);
@@ -470,7 +516,7 @@ public class RestTemplateBuilderTests {
 		this.builder
 				.requestFactory(
 						() -> new BufferingClientHttpRequestFactory(requestFactory))
-				.setConnectTimeout(1234).build();
+				.setConnectTimeout(Duration.ofMillis(1234)).build();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
 				.isEqualTo(1234);
 	}
@@ -481,7 +527,7 @@ public class RestTemplateBuilderTests {
 		this.builder
 				.requestFactory(
 						() -> new BufferingClientHttpRequestFactory(requestFactory))
-				.setReadTimeout(1234).build();
+				.setReadTimeout(Duration.ofMillis(1234)).build();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(1234);
 	}
@@ -495,6 +541,26 @@ public class RestTemplateBuilderTests {
 				.build();
 		assertThat(template.getRequestFactory())
 				.isInstanceOf(BufferingClientHttpRequestFactory.class);
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void connectTimeoutCanBeSetWithInteger() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setConnectTimeout(1234).build().getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
+				.isEqualTo(1234);
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void readTimeoutCanBeSetWithInteger() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
+				.build().getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
+				.isEqualTo(1234);
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {

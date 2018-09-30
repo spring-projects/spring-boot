@@ -13,7 +13,7 @@ assertTrue 'backup file should exist', backup.exists()
 
 def file = new File(basedir, "build.log")
 assertTrue 'main artifact should have been updated',
-		file.text.contains("Updating main artifact " + main + " to " + backup)
+		file.text.contains("Updating artifact " + main + " to " + backup)
 return file.text.contains ("Installing "+backup)
 
 

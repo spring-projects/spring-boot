@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.jdbc;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -73,9 +74,10 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 
 	public DataSourceHealthIndicatorAutoConfiguration(
 			ObjectProvider<Map<String, DataSource>> dataSources,
-			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders) {
+			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 		this.dataSources = filterDataSources(dataSources.getIfAvailable());
-		this.metadataProviders = metadataProviders.getIfAvailable();
+		this.metadataProviders = metadataProviders.orderedStream()
+				.collect(Collectors.toList());
 	}
 
 	private Map<String, DataSource> filterDataSources(

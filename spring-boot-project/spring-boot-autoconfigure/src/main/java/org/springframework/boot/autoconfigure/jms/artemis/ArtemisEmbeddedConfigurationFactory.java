@@ -83,7 +83,7 @@ class ArtemisEmbeddedConfigurationFactory {
 		return new CoreAddressConfiguration().setName(name)
 				.addRoutingType(RoutingType.ANYCAST)
 				.addQueueConfiguration(new CoreQueueConfiguration().setName(name)
-						.setRoutingType(RoutingType.ANYCAST));
+						.setRoutingType(RoutingType.ANYCAST).setAddress(name));
 	}
 
 	private String getDataDir() {

@@ -50,6 +50,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-elasticsearch[spring-boot-sample-data-elasticsearch]
 | Stores data using Spring Data Elasticsearch
 
+| link:spring-boot-sample-data-jdbc[spring-boot-sample-data-jdbc]
+| Stores data using Spring Data JDBC
+
 | link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
 | Stores data using Spring Data JPA with Hibernate
 
@@ -84,9 +87,6 @@ The following sample applications are provided:
 | Integration application built using Spring Integration and its Java DSL
 
 | link:spring-boot-sample-jersey[spring-boot-sample-jersey]
-| RESTful service built using Jersey 2
-
-| link:spring-boot-sample-jersey1[spring-boot-sample-jersey1]
 | RESTful service built using Jersey
 
 | link:spring-boot-sample-jetty[spring-boot-sample-jetty]
@@ -113,9 +113,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-jta-jndi[spring-boot-sample-jta-jndi]
 | JTA transactions using a `TransactionManager` and `DataSource` from JNDI
 
-| link:spring-boot-sample-jta-narayana[spring-boot-sample-jta-narayana]
-| JTA transactions with Narayana
-
 | link:spring-boot-sample-junit-jupiter[spring-boot-sample-junit-jupiter]
 | Demonstrates JUnit Jupiter-based testing
 
@@ -136,6 +133,18 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-metrics-redis[spring-boot-sample-metrics-redis]
 | Exports metrics to Redis
+
+| link:spring-boot-sample-oauth2-client[spring-boot-sample-oauth2-client]
+| Configure an OAuth2 login client
+
+| link:spring-boot-sample-reactive-oauth2-client[spring-boot-sample-reactive-oauth2-client]
+| Configure a Reactive OAuth2 login client
+
+| link:spring-boot-sample-oauth2-resource-server[spring-boot-sample-oauth2-resource-server]
+| Configure an OAuth2 resource server
+
+| link:spring-boot-sample-reactive-oauth2-resource-server[spring-boot-sample-reactive-oauth2-resource-server]
+| Configure a Reactive OAuth2 resource server
 
 | link:spring-boot-sample-parent-context[spring-boot-sample-parent-context]
 | Application that uses an `ApplicationContext` with a parent

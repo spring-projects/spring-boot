@@ -67,8 +67,8 @@ public enum DatabaseDriver {
 	/**
 	 * MySQL.
 	 */
-	MYSQL("MySQL", "com.mysql.jdbc.Driver",
-			"com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "/* ping */ SELECT 1"),
+	MYSQL("MySQL", "com.mysql.cj.jdbc.Driver", "com.mysql.cj.jdbc.MysqlXADataSource",
+			"/* ping */ SELECT 1"),
 
 	/**
 	 * Maria DB.
@@ -98,6 +98,12 @@ public enum DatabaseDriver {
 	 */
 	POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "org.postgresql.xa.PGXADataSource",
 			"SELECT 1"),
+
+	/**
+	 * SAP - SAP Hana Database - HDB.
+	 */
+	SAP("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
+			"SELECT 1 FROM DUMMY"),
 
 	/**
 	 * jTDS. As it can be used for several databases, there isn't a single product name we

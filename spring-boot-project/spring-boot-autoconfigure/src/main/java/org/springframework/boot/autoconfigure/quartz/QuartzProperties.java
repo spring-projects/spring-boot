@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,33 @@ public class QuartzProperties {
 	private JobStoreType jobStoreType = JobStoreType.MEMORY;
 
 	/**
+	 * Name of the scheduler.
+	 */
+	private String schedulerName;
+
+	/**
+	 * Whether to automatically start the scheduler after initialization.
+	 */
+	private boolean autoStartup = true;
+
+	/**
+	 * Delay after which the scheduler is started once initialization completes. Setting
+	 * this property makes sense if no jobs should be run before the entire application
+	 * has started up.
+	 */
+	private Duration startupDelay = Duration.ofSeconds(0);
+
+	/**
+	 * Whether to wait for running jobs to complete on shutdown.
+	 */
+	private boolean waitForJobsToCompleteOnShutdown = false;
+
+	/**
+	 * Whether configured jobs should overwrite existing job definitions.
+	 */
+	private boolean overwriteExistingJobs = false;
+
+	/**
 	 * Additional Quartz Scheduler properties.
 	 */
 	private final Map<String, String> properties = new HashMap<>();
@@ -50,6 +78,47 @@ public class QuartzProperties {
 
 	public void setJobStoreType(JobStoreType jobStoreType) {
 		this.jobStoreType = jobStoreType;
+	}
+
+	public String getSchedulerName() {
+		return this.schedulerName;
+	}
+
+	public void setSchedulerName(String schedulerName) {
+		this.schedulerName = schedulerName;
+	}
+
+	public boolean isAutoStartup() {
+		return this.autoStartup;
+	}
+
+	public void setAutoStartup(boolean autoStartup) {
+		this.autoStartup = autoStartup;
+	}
+
+	public Duration getStartupDelay() {
+		return this.startupDelay;
+	}
+
+	public void setStartupDelay(Duration startupDelay) {
+		this.startupDelay = startupDelay;
+	}
+
+	public boolean isWaitForJobsToCompleteOnShutdown() {
+		return this.waitForJobsToCompleteOnShutdown;
+	}
+
+	public void setWaitForJobsToCompleteOnShutdown(
+			boolean waitForJobsToCompleteOnShutdown) {
+		this.waitForJobsToCompleteOnShutdown = waitForJobsToCompleteOnShutdown;
+	}
+
+	public boolean isOverwriteExistingJobs() {
+		return this.overwriteExistingJobs;
+	}
+
+	public void setOverwriteExistingJobs(boolean overwriteExistingJobs) {
+		this.overwriteExistingJobs = overwriteExistingJobs;
 	}
 
 	public Map<String, String> getProperties() {

@@ -25,7 +25,7 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.spec.javax.servlet</groupId>
-					<artifactId>jboss-servlet-api_3.1_spec</artifactId>
+					<artifactId>jboss-servlet-api_4.0_spec</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

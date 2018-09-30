@@ -58,13 +58,23 @@ public class CloudFoundryWebEndpointDiscovererTests {
 			assertThat(endpoints.size()).isEqualTo(2);
 			for (ExposableWebEndpoint endpoint : endpoints) {
 				if (endpoint.getId().equals("health")) {
-					WebOperation operation = endpoint.getOperations().iterator().next();
+					WebOperation operation = findMainReadOperation(endpoint);
 					assertThat(operation.invoke(new InvocationContext(
 							mock(SecurityContext.class), Collections.emptyMap())))
 									.isEqualTo("cf");
 				}
 			}
 		});
+	}
+
+	private WebOperation findMainReadOperation(ExposableWebEndpoint endpoint) {
+		for (WebOperation operation : endpoint.getOperations()) {
+			if (operation.getRequestPredicate().getPath().equals("health")) {
+				return operation;
+			}
+		}
+		throw new IllegalStateException(
+				"No main read operation found from " + endpoint.getOperations());
 	}
 
 	private void load(Class<?> configuration,

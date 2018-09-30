@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -55,7 +56,7 @@ public class EntityManagerFactoryBuilder {
 
 	private final URL persistenceUnitRootLocation;
 
-	private EntityManagerFactoryBeanCallback callback;
+	private AsyncTaskExecutor bootstrapExecutor;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -95,12 +96,13 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
-	 * An optional callback for new entity manager factory beans.
-	 * @param callback the entity manager factory bean callback
+	 * Configure the bootstrap executor to be used by the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param bootstrapExecutor the executor
+	 * @since 2.1.0
 	 */
-	@Deprecated
-	public void setCallback(EntityManagerFactoryBeanCallback callback) {
-		this.callback = callback;
+	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
+		this.bootstrapExecutor = bootstrapExecutor;
 	}
 
 	/**
@@ -201,7 +203,6 @@ public class EntityManagerFactoryBuilder {
 			return this;
 		}
 
-		@SuppressWarnings("deprecation")
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
@@ -232,23 +233,12 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean
 						.setPersistenceUnitRootLocation(rootLocation.toString());
 			}
-			if (EntityManagerFactoryBuilder.this.callback != null) {
-				EntityManagerFactoryBuilder.this.callback
-						.execute(entityManagerFactoryBean);
+			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
+				entityManagerFactoryBean.setBootstrapExecutor(
+						EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
 			return entityManagerFactoryBean;
 		}
-
-	}
-
-	/**
-	 * A callback for new entity manager factory beans created by a Builder.
-	 */
-	@FunctionalInterface
-	@Deprecated
-	public interface EntityManagerFactoryBeanCallback {
-
-		void execute(LocalContainerEntityManagerFactoryBean factory);
 
 	}
 

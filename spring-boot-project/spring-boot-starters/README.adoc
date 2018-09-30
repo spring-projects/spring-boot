@@ -61,6 +61,9 @@ do as they were designed before this was clarified.
 | https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
 | https://github.com/jliu666/docker-api-spring-boot
 
+| https://dozermapper.github.io/[Dozer]
+| https://github.com/DozerMapper/dozer
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
@@ -109,6 +112,9 @@ do as they were designed before this was clarified.
 | http://mybatis.org/mybatis-3/[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
+| http://narayana.io/[Narayana]
+| https://github.com/snowdrop/narayana-spring-boot
+
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
@@ -130,14 +136,23 @@ do as they were designed before this was clarified.
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
+| https://projects.spring.io/spring-shell/[Spring Shell]
+| https://github.com/fonimus/ssh-shell-spring-boot
+
 | https://github.com/savantly-net/sprout-platform[Sprout Platform]
 | https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
 
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
 
+| https://github.com/stripe/stripe-java[Stripe API]
+| https://github.com/pankajtandon/stripe-starter
+
 | https://github.com/StripesFramework/stripes[Stripes]
 | https://github.com/juanpablo-santos/stripes-spring-boot
+
+| https://github.com/structurizr/java[Structurizr]
+| https://github.com/Catalysts/structurizr-extensions
 
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter

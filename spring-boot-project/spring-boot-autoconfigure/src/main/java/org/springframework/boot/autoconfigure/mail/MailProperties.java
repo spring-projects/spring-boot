@@ -76,11 +76,6 @@ public class MailProperties {
 	 */
 	private String jndiName;
 
-	/**
-	 * Whether to test that the mail server is available on startup.
-	 */
-	private boolean testConnection;
-
 	public String getHost() {
 		return this.host;
 	}
@@ -139,14 +134,6 @@ public class MailProperties {
 
 	public String getJndiName() {
 		return this.jndiName;
-	}
-
-	public boolean isTestConnection() {
-		return this.testConnection;
-	}
-
-	public void setTestConnection(boolean testConnection) {
-		this.testConnection = testConnection;
 	}
 
 }

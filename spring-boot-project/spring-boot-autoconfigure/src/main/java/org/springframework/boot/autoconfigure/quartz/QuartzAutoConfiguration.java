@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -61,7 +60,7 @@ public class QuartzAutoConfiguration {
 
 	private final QuartzProperties properties;
 
-	private final List<SchedulerFactoryBeanCustomizer> customizers;
+	private final ObjectProvider<SchedulerFactoryBeanCustomizer> customizers;
 
 	private final JobDetail[] jobDetails;
 
@@ -72,12 +71,12 @@ public class QuartzAutoConfiguration {
 	private final ApplicationContext applicationContext;
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
-			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
+			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
 			ObjectProvider<JobDetail[]> jobDetails,
 			ObjectProvider<Map<String, Calendar>> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
-		this.customizers = customizers.getIfAvailable();
+		this.customizers = customizers;
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
@@ -90,6 +89,16 @@ public class QuartzAutoConfiguration {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		schedulerFactoryBean.setJobFactory(new AutowireCapableBeanJobFactory(
 				this.applicationContext.getAutowireCapableBeanFactory()));
+		if (this.properties.getSchedulerName() != null) {
+			schedulerFactoryBean.setSchedulerName(this.properties.getSchedulerName());
+		}
+		schedulerFactoryBean.setAutoStartup(this.properties.isAutoStartup());
+		schedulerFactoryBean
+				.setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
+		schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(
+				this.properties.isWaitForJobsToCompleteOnShutdown());
+		schedulerFactoryBean
+				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
 		if (!this.properties.getProperties().isEmpty()) {
 			schedulerFactoryBean
 					.setQuartzProperties(asProperties(this.properties.getProperties()));
@@ -114,11 +123,8 @@ public class QuartzAutoConfiguration {
 	}
 
 	private void customize(SchedulerFactoryBean schedulerFactoryBean) {
-		if (this.customizers != null) {
-			for (SchedulerFactoryBeanCustomizer customizer : this.customizers) {
-				customizer.customize(schedulerFactoryBean);
-			}
-		}
+		this.customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(schedulerFactoryBean));
 	}
 
 	@Configuration

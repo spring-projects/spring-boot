@@ -92,7 +92,9 @@ public class LoggingApplicationListenerTests {
 
 	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
-	private final Log logger = new SLF4JLogFactory().getInstance(getClass());
+	private final SLF4JLogFactory logFactory = new SLF4JLogFactory();
+
+	private final Log logger = this.logFactory.getInstance(getClass());
 
 	private final SpringApplication springApplication = new SpringApplication();
 
@@ -556,6 +558,34 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		assertThat(this.outputCapture.toString()).contains("testatdebug");
+	}
+
+	@Test
+	public void loggingGroupsDefaultsAreApplied() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.level.web=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertTraceEnabled("org.springframework.core", false);
+		assertTraceEnabled("org.springframework.core.codec", true);
+		assertTraceEnabled("org.springframework.http", true);
+		assertTraceEnabled("org.springframework.web", true);
+	}
+
+	@Test
+	public void loggingGroupsCanBeDefined() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.group.foo=com.foo.bar,com.foo.baz", "logging.level.foo=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertTraceEnabled("com.foo", false);
+		assertTraceEnabled("com.foo.bar", true);
+		assertTraceEnabled("com.foo.baz", true);
+	}
+
+	private void assertTraceEnabled(String name, boolean expected) {
+		assertThat(this.logFactory.getInstance(name).isTraceEnabled())
+				.isEqualTo(expected);
 	}
 
 	private void multicastEvent(ApplicationEvent event) {

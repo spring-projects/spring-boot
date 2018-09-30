@@ -25,8 +25,10 @@ import javax.net.ssl.TrustManagerFactory;
 
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
-import reactor.ipc.netty.http.server.HttpServerOptions;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.SslProvider;
 
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.ResourceUtils;
@@ -41,36 +43,49 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private final Ssl ssl;
 
+	private final Http2 http2;
+
 	private final SslStoreProvider sslStoreProvider;
 
-	public SslServerCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
+	public SslServerCustomizer(Ssl ssl, Http2 http2, SslStoreProvider sslStoreProvider) {
 		this.ssl = ssl;
+		this.http2 = http2;
 		this.sslStoreProvider = sslStoreProvider;
 	}
 
 	@Override
-	public void customize(HttpServerOptions.Builder builder) {
-		SslContextBuilder sslBuilder = SslContextBuilder
-				.forServer(getKeyManagerFactory(this.ssl, this.sslStoreProvider))
-				.trustManager(getTrustManagerFactory(this.ssl, this.sslStoreProvider));
-		if (this.ssl.getEnabledProtocols() != null) {
-			sslBuilder.protocols(this.ssl.getEnabledProtocols());
-		}
-		if (this.ssl.getCiphers() != null) {
-			sslBuilder = sslBuilder.ciphers(Arrays.asList(this.ssl.getCiphers()));
-		}
-		if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-			sslBuilder = sslBuilder.clientAuth(ClientAuth.REQUIRE);
-		}
-		else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-			sslBuilder = sslBuilder.clientAuth(ClientAuth.OPTIONAL);
-		}
+	public HttpServer apply(HttpServer server) {
 		try {
-			builder.sslContext(sslBuilder.build());
+			return server.secure((contextSpec) -> {
+				SslProvider.DefaultConfigurationSpec spec = contextSpec
+						.sslContext(getContextBuilder());
+				if (this.http2 != null && this.http2.isEnabled()) {
+					spec.defaultConfiguration(SslProvider.DefaultConfigurationType.H2);
+				}
+			});
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	protected SslContextBuilder getContextBuilder() {
+		SslContextBuilder builder = SslContextBuilder
+				.forServer(getKeyManagerFactory(this.ssl, this.sslStoreProvider))
+				.trustManager(getTrustManagerFactory(this.ssl, this.sslStoreProvider));
+		if (this.ssl.getEnabledProtocols() != null) {
+			builder.protocols(this.ssl.getEnabledProtocols());
+		}
+		if (this.ssl.getCiphers() != null) {
+			builder.ciphers(Arrays.asList(this.ssl.getCiphers()));
+		}
+		if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
+			builder.clientAuth(ClientAuth.REQUIRE);
+		}
+		else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
+			builder.clientAuth(ClientAuth.OPTIONAL);
+		}
+		return builder;
 	}
 
 	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl,

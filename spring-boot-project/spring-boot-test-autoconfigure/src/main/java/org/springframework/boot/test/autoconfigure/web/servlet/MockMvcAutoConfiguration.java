@@ -55,21 +55,18 @@ public class MockMvcAutoConfiguration {
 
 	private final WebApplicationContext context;
 
-	private final ServerProperties serverProperties;
-
 	private final WebMvcProperties webMvcProperties;
 
 	MockMvcAutoConfiguration(WebApplicationContext context,
-			ServerProperties serverProperties, WebMvcProperties webMvcProperties) {
+			WebMvcProperties webMvcProperties) {
 		this.context = context;
-		this.serverProperties = serverProperties;
 		this.webMvcProperties = webMvcProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public DispatcherServletPath dispatcherServletPath() {
-		return () -> this.serverProperties.getServlet().getPath();
+		return () -> this.webMvcProperties.getServlet().getPath();
 	}
 
 	@Bean
@@ -95,6 +92,12 @@ public class MockMvcAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MockMvc mockMvc(MockMvcBuilder builder) {
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DispatcherServlet dispatcherServlet(MockMvc mockMvc) {
+		return mockMvc.getDispatcherServlet();
 	}
 
 	private static class MockMvcDispatcherServletCustomizer

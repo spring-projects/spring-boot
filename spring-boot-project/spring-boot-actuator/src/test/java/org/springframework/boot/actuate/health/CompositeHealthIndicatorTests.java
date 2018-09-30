@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,9 +46,6 @@ public class CompositeHealthIndicatorTests {
 	@Mock
 	private HealthIndicator two;
 
-	@Mock
-	private HealthIndicator three;
-
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -55,8 +53,6 @@ public class CompositeHealthIndicatorTests {
 				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
 		given(this.two.health())
 				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
-		given(this.three.health())
-				.willReturn(new Health.Builder().unknown().withDetail("3", "3").build());
 
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
@@ -77,38 +73,6 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWithIndicatorsAndAdd() {
-		Map<String, HealthIndicator> indicators = new HashMap<>();
-		indicators.put("one", this.one);
-		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
-		composite.addHealthIndicator("three", this.three);
-		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(3);
-		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
-		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
-		assertThat(result.getDetails()).containsEntry("three",
-				new Health.Builder().unknown().withDetail("3", "3").build());
-	}
-
-	@Test
-	public void createWithoutAndAdd() {
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
-		composite.addHealthIndicator("one", this.one);
-		composite.addHealthIndicator("two", this.two);
-		Health result = composite.health();
-		assertThat(result.getDetails().size()).isEqualTo(2);
-		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
-		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
-	}
-
-	@Test
 	public void testSerialization() throws Exception {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("db1", this.one);
@@ -116,8 +80,7 @@ public class CompositeHealthIndicatorTests {
 		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(
 				this.healthAggregator, indicators);
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
-		composite.addHealthIndicator("db", innerComposite);
+				this.healthAggregator, Collections.singletonMap("db", innerComposite));
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
 		assertThat(mapper.writeValueAsString(result)).isEqualTo(

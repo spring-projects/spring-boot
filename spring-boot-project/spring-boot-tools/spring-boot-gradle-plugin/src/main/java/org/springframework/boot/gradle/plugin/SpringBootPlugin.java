@@ -84,8 +84,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private void verifyGradleVersion() {
-		if (GradleVersion.current().compareTo(GradleVersion.version("4.0")) < 0) {
-			throw new GradleException("Spring Boot plugin requires Gradle 4.0 or later."
+		if (GradleVersion.current().compareTo(GradleVersion.version("4.4")) < 0) {
+			throw new GradleException("Spring Boot plugin requires Gradle 4.4 or later."
 					+ " The current version is " + GradleVersion.current());
 		}
 	}

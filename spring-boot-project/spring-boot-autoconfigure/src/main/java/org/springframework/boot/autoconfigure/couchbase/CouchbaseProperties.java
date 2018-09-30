@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -128,16 +127,6 @@ public class CouchbaseProperties {
 		 */
 		private final CouchbaseService viewservice = new CouchbaseService();
 
-		/**
-		 * Number of sockets per node against the query (N1QL) service.
-		 */
-		private Integer query;
-
-		/**
-		 * Number of sockets per node against the view service.
-		 */
-		private Integer view;
-
 		public int getKeyValue() {
 			return this.keyValue;
 		}
@@ -146,30 +135,8 @@ public class CouchbaseProperties {
 			this.keyValue = keyValue;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice.max-endpoints")
-		public Integer getQuery() {
-			return this.query;
-		}
-
-		@Deprecated
-		public void setQuery(Integer query) {
-			this.query = query;
-		}
-
 		public CouchbaseService getQueryservice() {
 			return this.queryservice;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice.max-endpoints")
-		public Integer getView() {
-			return this.view;
-		}
-
-		@Deprecated
-		public void setView(Integer view) {
-			this.view = view;
 		}
 
 		public CouchbaseService getViewservice() {

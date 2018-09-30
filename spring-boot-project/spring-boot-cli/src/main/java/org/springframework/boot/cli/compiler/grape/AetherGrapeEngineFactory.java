@@ -79,7 +79,6 @@ public abstract class AetherGrapeEngineFactory {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(
 					repositoryConfiguration.getName(), "default",
 					repositoryConfiguration.getUri().toASCIIString());
-
 			if (!repositoryConfiguration.getSnapshotsEnabled()) {
 				builder.setSnapshotPolicy(
 						new RepositoryPolicy(false, RepositoryPolicy.UPDATE_POLICY_NEVER,

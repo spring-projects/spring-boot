@@ -33,6 +33,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @ConfigurationProperties(prefix = "accesslevel.overwrite.default")
 public class LombokAccessLevelOverwriteDefaultProperties {
 
+	@SuppressWarnings("unused")
 	private String name0;
 
 	@Getter(AccessLevel.PUBLIC)

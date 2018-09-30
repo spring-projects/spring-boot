@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.util.List;
+import java.util.stream.StreamSupport;
 
 import javax.sql.DataSource;
 
@@ -32,9 +32,9 @@ import org.springframework.boot.jdbc.SchemaManagementProvider;
  */
 class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 
-	private final List<SchemaManagementProvider> providers;
+	private final Iterable<SchemaManagementProvider> providers;
 
-	HibernateDefaultDdlAutoProvider(List<SchemaManagementProvider> providers) {
+	HibernateDefaultDdlAutoProvider(Iterable<SchemaManagementProvider> providers) {
 		this.providers = providers;
 	}
 
@@ -52,13 +52,10 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
-		for (SchemaManagementProvider provider : this.providers) {
-			SchemaManagement schemaManagement = provider.getSchemaManagement(dataSource);
-			if (SchemaManagement.MANAGED.equals(schemaManagement)) {
-				return schemaManagement;
-			}
-		}
-		return SchemaManagement.UNMANAGED;
+		return StreamSupport.stream(this.providers.spliterator(), false)
+				.map((provider) -> provider.getSchemaManagement(dataSource))
+				.filter(SchemaManagement.MANAGED::equals).findFirst()
+				.orElse(SchemaManagement.UNMANAGED);
 	}
 
 }

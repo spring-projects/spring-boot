@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link AggregateBinder} for Maps.
@@ -83,7 +82,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	protected Map<Object, Object> merge(Supplier<?> existing,
+	protected Map<Object, Object> merge(Supplier<Map<Object, Object>> existing,
 			Map<Object, Object> additional) {
 		Map<Object, Object> existingMap = getExistingIfPossible(existing);
 		if (existingMap == null) {
@@ -100,10 +99,10 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private Map<Object, Object> getExistingIfPossible(Supplier<?> existing) {
+	private Map<Object, Object> getExistingIfPossible(
+			Supplier<Map<Object, Object>> existing) {
 		try {
-			return (Map<Object, Object>) existing.get();
+			return existing.get();
 		}
 		catch (Exception ex) {
 			return null;
@@ -199,8 +198,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		private boolean isScalarValue(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
 			Class<?> resolved = this.valueType.resolve(Object.class);
-			String packageName = ClassUtils.getPackageName(resolved);
-			if (!packageName.startsWith("java.lang") && !resolved.isEnum()) {
+			if (!resolved.getName().startsWith("java.lang") && !resolved.isEnum()) {
 				return false;
 			}
 			ConfigurationProperty property = source.getConfigurationProperty(name);

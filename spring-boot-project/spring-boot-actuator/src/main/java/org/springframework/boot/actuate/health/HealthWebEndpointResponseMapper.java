@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -41,6 +42,28 @@ public class HealthWebEndpointResponseMapper {
 		this.statusHttpMapper = statusHttpMapper;
 		this.showDetails = showDetails;
 		this.authorizedRoles = authorizedRoles;
+	}
+
+	/**
+	 * Maps the given {@code health} details to a {@link WebEndpointResponse}, honouring
+	 * the mapper's default {@link ShowDetails} using the given {@code securityContext}.
+	 * <p>
+	 * If the current user does not have the right to see the details, the
+	 * {@link Supplier} is not invoked and a 404 response is returned instead.
+	 * @param health the provider of health details, invoked if the current user has the
+	 * right to see them
+	 * @param securityContext the security context
+	 * @return the mapped response
+	 */
+	public WebEndpointResponse<Health> mapDetails(Supplier<Health> health,
+			SecurityContext securityContext) {
+		if (canSeeDetails(securityContext, this.showDetails)) {
+			Health healthDetails = health.get();
+			if (healthDetails != null) {
+				return createWebEndpointResponse(healthDetails);
+			}
+		}
+		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}
 
 	/**
@@ -71,8 +94,23 @@ public class HealthWebEndpointResponseMapper {
 								|| !isUserInRole(securityContext)))) {
 			health = Health.status(health.getStatus()).build();
 		}
+		return createWebEndpointResponse(health);
+	}
+
+	private WebEndpointResponse<Health> createWebEndpointResponse(Health health) {
 		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
 		return new WebEndpointResponse<>(health, status);
+	}
+
+	private boolean canSeeDetails(SecurityContext securityContext,
+			ShowDetails showDetails) {
+		if (showDetails == ShowDetails.NEVER
+				|| (showDetails == ShowDetails.WHEN_AUTHORIZED
+						&& (securityContext.getPrincipal() == null
+								|| !isUserInRole(securityContext)))) {
+			return false;
+		}
+		return true;
 	}
 
 	private boolean isUserInRole(SecurityContext securityContext) {

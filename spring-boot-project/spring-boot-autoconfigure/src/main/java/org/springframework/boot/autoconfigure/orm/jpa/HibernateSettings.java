@@ -37,18 +37,6 @@ public class HibernateSettings {
 		return this;
 	}
 
-	/**
-	 * Specify the default ddl auto value to use.
-	 * @param ddlAuto the default ddl auto if none is provided
-	 * @return this instance
-	 * @see #ddlAuto(Supplier)
-	 * @deprecated as of 2.0.1 in favour of {@link #ddlAuto(Supplier)}
-	 */
-	@Deprecated
-	public HibernateSettings ddlAuto(String ddlAuto) {
-		return ddlAuto(() -> ddlAuto);
-	}
-
 	public String getDdlAuto() {
 		return (this.ddlAuto != null) ? this.ddlAuto.get() : null;
 	}

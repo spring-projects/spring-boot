@@ -69,6 +69,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private URL url;
 
+	private String urlString;
+
 	private JarFileEntries entries;
 
 	private Supplier<Manifest> manifestSupplier;
@@ -299,6 +301,13 @@ public class JarFile extends java.util.jar.JarFile {
 		if (this.type == JarFileType.DIRECT) {
 			this.rootFile.close();
 		}
+	}
+
+	String getUrlString() throws MalformedURLException {
+		if (this.urlString == null) {
+			this.urlString = getUrl().toString();
+		}
+		return this.urlString;
 	}
 
 	/**

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
@@ -67,8 +67,9 @@ public class CacheAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManagerCustomizers cacheManagerCustomizers(
-			ObjectProvider<List<CacheManagerCustomizer<?>>> customizers) {
-		return new CacheManagerCustomizers(customizers.getIfAvailable());
+			ObjectProvider<CacheManagerCustomizer<?>> customizers) {
+		return new CacheManagerCustomizers(
+				customizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean

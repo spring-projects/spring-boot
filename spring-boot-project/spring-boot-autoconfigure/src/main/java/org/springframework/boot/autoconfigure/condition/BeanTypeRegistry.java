@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
@@ -93,8 +94,11 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 		Assert.isTrue(listableBeanFactory.isAllowEagerClassLoading(),
 				"Bean factory must allow eager class loading");
 		if (!listableBeanFactory.containsLocalBean(BEAN_NAME)) {
-			BeanDefinition bd = new RootBeanDefinition(BeanTypeRegistry.class);
-			bd.getConstructorArgumentValues().addIndexedArgumentValue(0, beanFactory);
+			BeanDefinition bd = BeanDefinitionBuilder
+					.genericBeanDefinition(BeanTypeRegistry.class,
+							() -> new BeanTypeRegistry(
+									(DefaultListableBeanFactory) beanFactory))
+					.getBeanDefinition();
 			listableBeanFactory.registerBeanDefinition(BEAN_NAME, bd);
 
 		}

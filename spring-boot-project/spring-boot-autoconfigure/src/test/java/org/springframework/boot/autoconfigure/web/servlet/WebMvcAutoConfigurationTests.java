@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -36,6 +37,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
@@ -43,7 +45,7 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
+import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +54,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -68,13 +71,15 @@ import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.web.filter.FormContentFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -90,8 +95,8 @@ import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
 import org.springframework.web.servlet.resource.ContentVersionStrategy;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
+import org.springframework.web.servlet.resource.EncodedResourceResolver;
 import org.springframework.web.servlet.resource.FixedVersionStrategy;
-import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
@@ -114,6 +119,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Eddú Meléndez
  * @author Kristine Jetzke
+ * @author Artsiom Yudovin
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -138,7 +144,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerMappingsCreated() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.getBeans(HandlerMapping.class).hasSize(7));
+				.getBeans(HandlerMapping.class).hasSize(5));
 	}
 
 	@Test
@@ -190,11 +196,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void resourceHandlerMappingDisabled() {
 		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
-				.run((context) -> {
-					Map<String, List<Resource>> locations = getResourceMappingLocations(
-							context);
-					assertThat(locations).isEmpty();
-				});
+				.run((context) -> assertThat(context.getBean("resourceHandlerMapping"))
+						.isEqualTo(null));
 	}
 
 	@Test
@@ -276,21 +279,21 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
 				"spring.resources.chain.html-application-cache:true",
-				"spring.resources.chain.gzipped:true").run((context) -> {
+				"spring.resources.chain.compressed:true").run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**"))
 							.hasSize(2);
 					assertThat(getResourceResolvers(context, "/**"))
 							.extractingResultOf("getClass")
-							.containsOnly(VersionResourceResolver.class,
-									GzipResourceResolver.class,
+							.containsOnly(EncodedResourceResolver.class,
+									VersionResourceResolver.class,
 									PathResourceResolver.class);
 					assertThat(getResourceTransformers(context, "/**"))
 							.extractingResultOf("getClass")
 							.containsOnly(CssLinkResourceTransformer.class,
 									AppCacheManifestTransformer.class);
 					VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
-							context, "/**").get(0);
+							context, "/**").get(1);
 					Map<String, VersionStrategy> strategyMap = resolver.getStrategyMap();
 					assertThat(strategyMap.get("/*.png"))
 							.isInstanceOf(ContentVersionStrategy.class);
@@ -475,6 +478,63 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void asyncTaskExecutorWithApplicationTaskExecutor() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor"))
+									.isSameAs(context.getBean("applicationTaskExecutor"));
+				});
+	}
+
+	@Test
+	public void asyncTaskExecutorWithNonMatchApplicationTaskExecutorBean() {
+		this.contextRunner
+				.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor")).isNotSameAs(
+									context.getBean("applicationTaskExecutor"));
+				});
+	}
+
+	@Test
+	public void asyncTaskExecutorWithMvcConfigurerCanOverrideExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor"))
+									.isSameAs(context.getBean(
+											CustomAsyncTaskExecutorConfigurer.class).taskExecutor);
+				});
+	}
+
+	@Test
+	public void asyncTaskExecutorWithCustomNonApplicationTaskExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor"))
+									.isNotSameAs(context.getBean("customTaskExecutor"));
+				});
+	}
+
+	@Test
 	public void customMediaTypes() {
 		this.contextRunner
 				.withPropertyValues(
@@ -491,27 +551,40 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void httpPutFormContentFilterIsAutoConfigured() {
+	public void formContentFilterIsAutoConfigured() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(OrderedHttpPutFormContentFilter.class));
+				.hasSingleBean(OrderedFormContentFilter.class));
 	}
 
 	@Test
-	public void httpPutFormContentFilterCanBeOverridden() {
-		this.contextRunner.withUserConfiguration(CustomHttpPutFormContentFilter.class)
+	public void formContentFilterCanBeOverridden() {
+		this.contextRunner.withUserConfiguration(CustomFormContentFilter.class)
 				.run((context) -> {
-					assertThat(context)
-							.doesNotHaveBean(OrderedHttpPutFormContentFilter.class);
-					assertThat(context).hasSingleBean(HttpPutFormContentFilter.class);
+					assertThat(context).doesNotHaveBean(OrderedFormContentFilter.class);
+					assertThat(context).hasSingleBean(FormContentFilter.class);
 				});
 	}
 
 	@Test
-	public void httpPutFormContentFilterCanBeDisabled() {
+	public void formContentFilterCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
+				.withPropertyValues("spring.mvc.formcontent.filter.enabled=false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpPutFormContentFilter.class));
+						.doesNotHaveBean(FormContentFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterCanBeDisabled() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.hiddenmethod.filter.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(HiddenHttpMethodFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterEnabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
@@ -1002,11 +1075,11 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomHttpPutFormContentFilter {
+	static class CustomFormContentFilter {
 
 		@Bean
-		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
-			return new HttpPutFormContentFilter();
+		public FormContentFilter customFormContentFilter() {
+			return new FormContentFilter();
 		}
 
 	}
@@ -1123,6 +1196,38 @@ public class WebMvcAutoConfigurationTests {
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			configurer.favorPathExtension(true);
+		}
+
+	}
+
+	@Configuration
+	static class CustomApplicationTaskExecutorConfig {
+
+		@Bean
+		public Executor applicationTaskExecutor() {
+			return mock(Executor.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomAsyncTaskExecutorConfig {
+
+		@Bean
+		public AsyncTaskExecutor customTaskExecutor() {
+			return mock(AsyncTaskExecutor.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomAsyncTaskExecutorConfigurer implements WebMvcConfigurer {
+
+		private final AsyncTaskExecutor taskExecutor = mock(AsyncTaskExecutor.class);
+
+		@Override
+		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			configurer.setTaskExecutor(this.taskExecutor);
 		}
 
 	}

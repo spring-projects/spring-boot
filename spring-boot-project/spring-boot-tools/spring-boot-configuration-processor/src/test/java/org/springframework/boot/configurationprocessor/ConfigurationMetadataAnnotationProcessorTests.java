@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -822,9 +824,26 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(SimpleProperties.class,
 				SimpleConflictingProperties.class);
 		assertThat(metadata.getItems()).hasSize(6);
-		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
-				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
-				.withDeprecation(null, null).withDefaultValue(true));
+		List<ItemMetadata> items = metadata.getItems().stream()
+				.filter((item) -> item.getName().equals("simple.flag"))
+				.collect(Collectors.toList());
+		assertThat(items).hasSize(2);
+		ItemMetadata matchingProperty = items.stream()
+				.filter((item) -> item.getType().equals(Boolean.class.getName()))
+				.findFirst().orElse(null);
+		assertThat(matchingProperty).isNotNull();
+		assertThat(matchingProperty.getDefaultValue()).isEqualTo(true);
+		assertThat(matchingProperty.getSourceType())
+				.isEqualTo(SimpleProperties.class.getName());
+		assertThat(matchingProperty.getDescription()).isEqualTo("A simple flag.");
+		ItemMetadata nonMatchingProperty = items.stream()
+				.filter((item) -> item.getType().equals(String.class.getName()))
+				.findFirst().orElse(null);
+		assertThat(nonMatchingProperty).isNotNull();
+		assertThat(nonMatchingProperty.getDefaultValue()).isEqualTo("hello");
+		assertThat(nonMatchingProperty.getSourceType())
+				.isEqualTo(SimpleConflictingProperties.class.getName());
+		assertThat(nonMatchingProperty.getDescription()).isNull();
 	}
 
 	@Test

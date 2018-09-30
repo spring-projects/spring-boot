@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.data.rest.webmvc.BaseUri;
-import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -192,7 +192,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
-	static class TestRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+	static class TestRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 		@Override
 		public void configureRepositoryRestConfiguration(

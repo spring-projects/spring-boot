@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,14 @@ import org.junit.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.messaging.handler.annotation.Header;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link KafkaAutoConfiguration}.
  *
  * @author Gary Russell
+ * @author Stephane Nicoll
  */
 public class KafkaAutoConfigurationIntegrationTests {
 
@@ -49,7 +53,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
 	@ClassRule
-	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true,
+	public static final EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true,
 			TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
@@ -65,7 +69,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	@Test
 	public void testEndToEnd() throws Exception {
 		load(KafkaConfig.class,
-				"spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
+				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		KafkaTemplate<String, String> template = this.context
@@ -83,6 +87,14 @@ public class KafkaAutoConfigurationIntegrationTests {
 		producer.close();
 	}
 
+	@Test
+	public void testStreams() {
+		load(KafkaStreamsConfig.class, "spring.application.name:my-app",
+				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString());
+		assertThat(this.context.getBean(StreamsBuilderFactoryBean.class).isAutoStartup())
+				.isTrue();
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
@@ -97,7 +109,12 @@ public class KafkaAutoConfigurationIntegrationTests {
 		return applicationContext;
 	}
 
-	public static class KafkaConfig {
+	private String getEmbeddedKafkaBrokersAsString() {
+		return embeddedKafka.getEmbeddedKafka().getBrokersAsString();
+	}
+
+	@Configuration
+	static class KafkaConfig {
 
 		@Bean
 		public Listener listener() {
@@ -108,6 +125,12 @@ public class KafkaAutoConfigurationIntegrationTests {
 		public NewTopic adminCreated() {
 			return new NewTopic(ADMIN_CREATED_TOPIC, 10, (short) 1);
 		}
+
+	}
+
+	@Configuration
+	@EnableKafkaStreams
+	static class KafkaStreamsConfig {
 
 	}
 

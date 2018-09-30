@@ -27,7 +27,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -73,6 +75,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Sebastien Deleuze
  * @author Johannes Edmeier
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -210,7 +213,7 @@ public class JacksonAutoConfiguration {
 					jacksonProperties);
 		}
 
-		private static final class StandardJackson2ObjectMapperBuilderCustomizer
+		static final class StandardJackson2ObjectMapperBuilderCustomizer
 				implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
 			private final ApplicationContext applicationContext;
@@ -240,6 +243,7 @@ public class JacksonAutoConfiguration {
 					builder.timeZone(this.jacksonProperties.getTimeZone());
 				}
 				configureFeatures(builder, FEATURE_DEFAULTS);
+				configureVisibility(builder, this.jacksonProperties.getVisibility());
 				configureFeatures(builder, this.jacksonProperties.getDeserialization());
 				configureFeatures(builder, this.jacksonProperties.getSerialization());
 				configureFeatures(builder, this.jacksonProperties.getMapper());
@@ -263,6 +267,11 @@ public class JacksonAutoConfiguration {
 						}
 					}
 				});
+			}
+
+			private void configureVisibility(Jackson2ObjectMapperBuilder builder,
+					Map<PropertyAccessor, JsonAutoDetect.Visibility> visibilities) {
+				visibilities.forEach(builder::visibility);
 			}
 
 			private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {

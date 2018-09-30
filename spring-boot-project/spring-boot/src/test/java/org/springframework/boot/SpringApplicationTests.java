@@ -45,9 +45,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -55,6 +57,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -84,6 +87,7 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
@@ -122,6 +126,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Craig Burke
  * @author Madhura Bhave
  * @author Brian Clozel
+ * @author Artsiom Yudovin
  */
 public class SpringApplicationTests {
 
@@ -380,6 +385,8 @@ public class SpringApplicationTests {
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartingEvent.class));
 		inOrder.verify(listener)
 				.onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
+		inOrder.verify(listener)
+				.onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
@@ -545,7 +552,7 @@ public class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(environment.acceptsProfiles("foo")).isTrue();
+		assertThat(environment.acceptsProfiles(Profiles.of("foo"))).isTrue();
 	}
 
 	@Test
@@ -593,6 +600,28 @@ public class SpringApplicationTests {
 		this.context = application.run("--foo=bar");
 		assertThat(environment).doesNotHave(
 				matchingPropertySource(PropertySource.class, "commandLineArgs"));
+	}
+
+	@Test
+	public void contextUsesApplicationConversionService() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		assertThat(this.context.getBeanFactory().getConversionService())
+				.isInstanceOf(ApplicationConversionService.class);
+		assertThat(this.context.getEnvironment().getConversionService())
+				.isInstanceOf(ApplicationConversionService.class);
+	}
+
+	@Test
+	public void contextWhenHasAddConversionServiceFalseUsesRegularConversionService() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAddConversionService(false);
+		this.context = application.run();
+		assertThat(this.context.getBeanFactory().getConversionService()).isNull();
+		assertThat(this.context.getEnvironment().getConversionService())
+				.isNotInstanceOf(ApplicationConversionService.class);
 	}
 
 	@Test
@@ -975,6 +1004,7 @@ public class SpringApplicationTests {
 		catch (ApplicationContextException ex) {
 			verifyListenerEvents(listener, ApplicationStartingEvent.class,
 					ApplicationEnvironmentPreparedEvent.class,
+					ApplicationContextInitializedEvent.class,
 					ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
 		}
 	}
@@ -994,6 +1024,7 @@ public class SpringApplicationTests {
 		catch (BeanCreationException ex) {
 			verifyListenerEvents(listener, ApplicationStartingEvent.class,
 					ApplicationEnvironmentPreparedEvent.class,
+					ApplicationContextInitializedEvent.class,
 					ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
 		}
 	}
@@ -1166,6 +1197,21 @@ public class SpringApplicationTests {
 		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
 	}
 
+	@Test
+	public void beanDefinitionOverridingIsDisabledByDefault() {
+		this.thrown.expect(BeanDefinitionOverrideException.class);
+		new SpringApplication(ExampleConfig.class, OverrideConfig.class).run();
+	}
+
+	@Test
+	public void beanDefinitionOverridingCanBeEnabled() {
+		assertThat(
+				new SpringApplication(ExampleConfig.class, OverrideConfig.class)
+						.run("--spring.main.allow-bean-definition-overriding=true",
+								"--spring.main.web-application-type=none")
+						.getBean("someBean")).isEqualTo("override");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final Class<?> propertySourceClass, final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
@@ -1275,6 +1321,21 @@ public class SpringApplicationTests {
 
 	@Configuration
 	static class ExampleConfig {
+
+		@Bean
+		public String someBean() {
+			return "test";
+		}
+
+	}
+
+	@Configuration
+	static class OverrideConfig {
+
+		@Bean
+		public String someBean() {
+			return "override";
+		}
 
 	}
 

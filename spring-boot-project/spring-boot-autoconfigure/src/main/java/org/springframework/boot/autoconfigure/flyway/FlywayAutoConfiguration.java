@@ -23,12 +23,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.FlywayCallback;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -74,6 +76,7 @@ import org.springframework.util.StringUtils;
  * @author Dominic Gunn
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
@@ -90,9 +93,8 @@ public class FlywayAutoConfiguration {
 
 	@Bean
 	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(
-			ObjectProvider<List<Flyway>> flyways) {
-		return new FlywaySchemaManagementProvider(
-				flyways.getIfAvailable(Collections::emptyList));
+			ObjectProvider<Flyway> flyways) {
+		return new FlywaySchemaManagementProvider(flyways);
 	}
 
 	@Configuration
@@ -112,21 +114,26 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
-		private List<FlywayCallback> flywayCallbacks;
+		private final List<Callback> callbacks;
+
+		private final List<FlywayCallback> flywayCallbacks;
 
 		public FlywayConfiguration(FlywayProperties properties,
 				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
-				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
+				ObjectProvider<Callback> callbacks,
+				ObjectProvider<FlywayCallback> flywayCallbacks) {
 			this.properties = properties;
 			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
-			this.flywayCallbacks = flywayCallbacks.getIfAvailable(Collections::emptyList);
+			this.callbacks = callbacks.orderedStream().collect(Collectors.toList());
+			this.flywayCallbacks = flywayCallbacks.orderedStream()
+					.collect(Collectors.toList());
 		}
 
 		@Bean
@@ -149,11 +156,21 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
-			String[] locations = new LocationResolver(flyway.getDataSource())
-					.resolveLocations(this.properties.getLocations());
-			checkLocationExists(locations);
-			flyway.setLocations(locations);
+			if (this.flywayCallbacks.isEmpty()) {
+				flyway.setCallbacks(this.callbacks.toArray(new Callback[0]));
+			}
+			else {
+				if (this.callbacks.isEmpty()) {
+					flyway.setCallbacks(
+							this.flywayCallbacks.toArray(new FlywayCallback[0]));
+				}
+				else {
+					throw new IllegalStateException(
+							"Found a mixture of Callback and FlywayCallback beans."
+									+ " One type must be used exclusively.");
+				}
+			}
+			checkLocationExists(flyway);
 			return flyway;
 		}
 
@@ -163,8 +180,10 @@ public class FlywayAutoConfiguration {
 			return (value != null) ? value : defaultValue.get();
 		}
 
-		private void checkLocationExists(String... locations) {
+		private void checkLocationExists(Flyway flyway) {
 			if (this.properties.isCheckLocation()) {
+				String[] locations = new LocationResolver(flyway.getDataSource())
+						.resolveLocations(this.properties.getLocations());
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);

@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -35,16 +34,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MongoReactiveDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					PropertyPlaceholderAutoConfiguration.class,
-					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-					MongoReactiveAutoConfiguration.class,
-					MongoReactiveDataAutoConfiguration.class));
+			.withConfiguration(
+					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+							MongoReactiveAutoConfiguration.class,
+							MongoReactiveDataAutoConfiguration.class));
 
 	@Test
 	public void templateExists() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(ReactiveMongoTemplate.class));
+	}
+
+	@Test
+	public void backsOffIfMongoClientBeanIsNotPresent() {
+		ApplicationContextRunner runner = new ApplicationContextRunner()
+				.withConfiguration(
+						AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+								MongoReactiveDataAutoConfiguration.class));
+		runner.run((context) -> assertThat(context)
+				.doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
 	}
 
 }

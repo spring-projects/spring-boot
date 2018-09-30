@@ -124,7 +124,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 		KeyScalarNode(ScalarNode node) {
 			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(),
-					node.getStyle());
+					node.getScalarStyle());
 		}
 
 		public static NodeTuple get(NodeTuple nodeTuple) {

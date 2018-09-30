@@ -459,6 +459,18 @@ public class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	public void writeWithVisibility() {
+		this.contextRunner.withPropertyValues("spring.jackson.visibility.getter:none",
+				"spring.jackson.visibility.field:any").run((context) -> {
+					ObjectMapper mapper = context.getBean(ObjectMapper.class);
+					String json = mapper.writeValueAsString(new VisibilityBean());
+					assertThat(json).contains("property1");
+					assertThat(json).contains("property2");
+					assertThat(json).doesNotContain("property3");
+				});
+	}
+
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode,
 			Class<?>... configClasses) {
 		this.contextRunner.withUserConfiguration(configClasses).run((context) -> {
@@ -610,6 +622,19 @@ public class JacksonAutoConfigurationTests {
 
 		Set<ObjectCodec> getOwners() {
 			return this.owners;
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	private static class VisibilityBean {
+
+		private String property1;
+
+		public String property2;
+
+		public String getProperty3() {
+			return null;
 		}
 
 	}

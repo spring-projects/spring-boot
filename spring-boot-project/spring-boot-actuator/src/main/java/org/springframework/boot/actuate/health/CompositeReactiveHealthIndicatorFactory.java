@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,20 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Factory to create a {@link CompositeReactiveHealthIndicator}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.1.0 in favor of
+ * {@link CompositeReactiveHealthIndicator#CompositeReactiveHealthIndicator(HealthAggregator, ReactiveHealthIndicatorRegistry)}
  */
+@Deprecated
 public class CompositeReactiveHealthIndicatorFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
@@ -62,30 +63,11 @@ public class CompositeReactiveHealthIndicatorFactory {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(reactiveHealthIndicators,
 				"ReactiveHealthIndicators must not be null");
-		CompositeReactiveHealthIndicator healthIndicator = new CompositeReactiveHealthIndicator(
-				healthAggregator);
-		merge(reactiveHealthIndicators, healthIndicators)
-				.forEach((beanName, indicator) -> {
-					String name = this.healthIndicatorNameFactory.apply(beanName);
-					healthIndicator.addHealthIndicator(name, indicator);
-				});
-		return healthIndicator;
-	}
-
-	private Map<String, ReactiveHealthIndicator> merge(
-			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
-			Map<String, HealthIndicator> healthIndicators) {
-		if (ObjectUtils.isEmpty(healthIndicators)) {
-			return reactiveHealthIndicators;
-		}
-		Map<String, ReactiveHealthIndicator> allIndicators = new LinkedHashMap<>(
-				reactiveHealthIndicators);
-		healthIndicators.forEach((beanName, indicator) -> {
-			String name = this.healthIndicatorNameFactory.apply(beanName);
-			allIndicators.computeIfAbsent(name,
-					(n) -> new HealthIndicatorReactiveAdapter(indicator));
-		});
-		return allIndicators;
+		ReactiveHealthIndicatorRegistryFactory factory = new ReactiveHealthIndicatorRegistryFactory(
+				this.healthIndicatorNameFactory);
+		return new CompositeReactiveHealthIndicator(healthAggregator,
+				factory.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators,
+						healthIndicators));
 	}
 
 }

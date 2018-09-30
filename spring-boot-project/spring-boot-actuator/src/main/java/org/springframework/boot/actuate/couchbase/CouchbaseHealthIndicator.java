@@ -58,17 +58,6 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 		this.timeout = timeout.toMillis();
 	}
 
-	/**
-	 * Create an indicator with the specified {@link CouchbaseOperations}.
-	 * @param couchbaseOperations the couchbase operations
-	 * @deprecated as of 2.0.5 in favour of
-	 * {@link #CouchbaseHealthIndicator(CouchbaseOperations, Duration)}
-	 */
-	@Deprecated
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
-		this(couchbaseOperations, Duration.ofSeconds(1));
-	}
-
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();

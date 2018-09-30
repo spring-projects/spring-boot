@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
@@ -36,14 +37,60 @@ import org.springframework.web.context.WebApplicationContext;
  * {@link WebApplicationContext}.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  * @see ConditionalOnWebApplication
  * @see ConditionalOnNotWebApplication
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnWebApplicationCondition extends SpringBootCondition {
+class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
-	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context."
-			+ "support.GenericWebApplicationContext";
+	private static final String SERVLET_WEB_APPLICATION_CLASS = "org.springframework.web.context.support.GenericWebApplicationContext";
+
+	private static final String REACTIVE_WEB_APPLICATION_CLASS = "org.springframework.web.reactive.HandlerResult";
+
+	@Override
+	protected ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
+			AutoConfigurationMetadata autoConfigurationMetadata) {
+		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
+		for (int i = 0; i < outcomes.length; i++) {
+			String autoConfigurationClass = autoConfigurationClasses[i];
+			if (autoConfigurationClass != null) {
+				outcomes[i] = getOutcome(autoConfigurationMetadata
+						.get(autoConfigurationClass, "ConditionalOnWebApplication"));
+			}
+		}
+		return outcomes;
+	}
+
+	private ConditionOutcome getOutcome(String type) {
+		if (type == null) {
+			return null;
+		}
+		ConditionMessage.Builder message = ConditionMessage
+				.forCondition(ConditionalOnWebApplication.class);
+		if (ConditionalOnWebApplication.Type.SERVLET.name().equals(type)) {
+			if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS,
+					getBeanClassLoader())) {
+				return ConditionOutcome.noMatch(
+						message.didNotFind("servlet web application classes").atAll());
+			}
+		}
+		if (ConditionalOnWebApplication.Type.REACTIVE.name().equals(type)) {
+			if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS,
+					getBeanClassLoader())) {
+				return ConditionOutcome.noMatch(
+						message.didNotFind("reactive web application classes").atAll());
+			}
+		}
+		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS,
+				getBeanClassLoader())
+				&& !ClassUtils.isPresent(REACTIVE_WEB_APPLICATION_CLASS,
+						getBeanClassLoader())) {
+			return ConditionOutcome.noMatch(message
+					.didNotFind("reactive or servlet web application classes").atAll());
+		}
+		return null;
+	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -93,9 +140,10 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isServletWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
-		if (!ClassUtils.isPresent(WEB_CONTEXT_CLASS, context.getClassLoader())) {
-			return ConditionOutcome
-					.noMatch(message.didNotFind("web application classes").atAll());
+		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS,
+				context.getClassLoader())) {
+			return ConditionOutcome.noMatch(
+					message.didNotFind("servlet web application classes").atAll());
 		}
 		if (context.getBeanFactory() != null) {
 			String[] scopes = context.getBeanFactory().getRegisteredScopeNames();
@@ -115,6 +163,11 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
+		if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS,
+				context.getClassLoader())) {
+			return ConditionOutcome.noMatch(
+					message.didNotFind("reactive web application classes").atAll());
+		}
 		if (context.getEnvironment() instanceof ConfigurableReactiveWebEnvironment) {
 			return ConditionOutcome
 					.match(message.foundExactly("ConfigurableReactiveWebEnvironment"));

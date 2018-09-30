@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -38,8 +38,8 @@ import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings).
@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Chentao Qu
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -83,9 +84,9 @@ public class ServerProperties {
 	private String serverHeader;
 
 	/**
-	 * Maximum size in bytes of the HTTP message header.
+	 * Maximum size of the HTTP message header.
 	 */
-	private int maxHttpHeaderSize = 0; // bytes
+	private DataSize maxHttpHeaderSize = DataSize.ofKilobytes(8);
 
 	/**
 	 * Time that connectors wait for another HTTP request before closing the connection.
@@ -143,11 +144,11 @@ public class ServerProperties {
 		this.serverHeader = serverHeader;
 	}
 
-	public int getMaxHttpHeaderSize() {
+	public DataSize getMaxHttpHeaderSize() {
 		return this.maxHttpHeaderSize;
 	}
 
-	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+	public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
@@ -215,11 +216,6 @@ public class ServerProperties {
 		 */
 		private String applicationDisplayName = "application";
 
-		/**
-		 * Path of the main dispatcher servlet.
-		 */
-		private String path = "/";
-
 		@NestedConfigurationProperty
 		private final Jsp jsp = new Jsp();
 
@@ -249,15 +245,6 @@ public class ServerProperties {
 			this.applicationDisplayName = displayName;
 		}
 
-		public String getPath() {
-			return this.path;
-		}
-
-		public void setPath(String path) {
-			Assert.notNull(path, "Path must not be null");
-			this.path = path;
-		}
-
 		public Map<String, String> getContextParameters() {
 			return this.contextParameters;
 		}
@@ -268,95 +255,6 @@ public class ServerProperties {
 
 		public Session getSession() {
 			return this.session;
-		}
-
-		/**
-		 * Return the mapping used to map a servlet to the path.
-		 * @return the servlet mapping
-		 * @deprecated since 2.0.4 in favor of
-		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getServletUrlMapping}
-		 */
-		@Deprecated
-		public String getServletMapping() {
-			if (this.path.equals("") || this.path.equals("/")) {
-				return "/";
-			}
-			if (this.path.contains("*")) {
-				return this.path;
-			}
-			if (this.path.endsWith("/")) {
-				return this.path + "*";
-			}
-			return this.path + "/*";
-		}
-
-		/**
-		 * Return a path relative to the servlet prefix.
-		 * @param path the path to make relative
-		 * @return the relative path
-		 * @deprecated since 2.0.4 in favor of
-		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getRelativePath(String)}
-		 */
-		@Deprecated
-		public String getPath(String path) {
-			String prefix = getServletPrefix();
-			if (!path.startsWith("/")) {
-				path = "/" + path;
-			}
-			return prefix + path;
-		}
-
-		/**
-		 * Return the servlet prefix.
-		 * @return the servlet prefix
-		 * @deprecated since 2.0.4 in favor of
-		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getPrefix()}
-		 */
-		@Deprecated
-		public String getServletPrefix() {
-			String result = this.path;
-			int index = result.indexOf('*');
-			if (index != -1) {
-				result = result.substring(0, index);
-			}
-			if (result.endsWith("/")) {
-				result = result.substring(0, result.length() - 1);
-			}
-			return result;
-		}
-
-		/**
-		 * Create a array of relative paths from the given source.
-		 * @param paths the source paths
-		 * @return the relative paths
-		 * @deprecated since 2.0.4 in favor of
-		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getRelativePath(String)}
-		 */
-		@Deprecated
-		public String[] getPathsArray(Collection<String> paths) {
-			String[] result = new String[paths.size()];
-			int i = 0;
-			for (String path : paths) {
-				result[i++] = getPath(path);
-			}
-			return result;
-		}
-
-		/**
-		 * Create a array of relative paths from the given source.
-		 * @param paths the source paths
-		 * @return the relative paths
-		 * @deprecated since 2.0.4 in favor of
-		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getRelativePath(String)}
-		 */
-		@Deprecated
-		public String[] getPathsArray(String[] paths) {
-			String[] result = new String[paths.length];
-			int i = 0;
-			for (String path : paths) {
-				result[i++] = getPath(path);
-			}
-			return result;
 		}
 
 	}
@@ -427,14 +325,19 @@ public class ServerProperties {
 		private int minSpareThreads = 10;
 
 		/**
-		 * Maximum size in bytes of the HTTP post content.
+		 * Maximum size of the HTTP post content.
 		 */
-		private int maxHttpPostSize = 2097152;
+		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Maximum size in bytes of the HTTP message header.
 		 */
-		private int maxHttpHeaderSize = 0;
+		private DataSize maxHttpHeaderSize = DataSize.ofBytes(0);
+
+		/**
+		 * Maximum amount of request body to swallow.
+		 */
+		private DataSize maxSwallowSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to
@@ -494,11 +397,11 @@ public class ServerProperties {
 			this.minSpareThreads = minSpareThreads;
 		}
 
-		public int getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(int maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
@@ -594,12 +497,23 @@ public class ServerProperties {
 			this.maxConnections = maxConnections;
 		}
 
-		public int getMaxHttpHeaderSize() {
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
+		public DataSize getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
 		}
 
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+		@Deprecated
+		public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 			this.maxHttpHeaderSize = maxHttpHeaderSize;
+		}
+
+		public DataSize getMaxSwallowSize() {
+			return this.maxSwallowSize;
+		}
+
+		public void setMaxSwallowSize(DataSize maxSwallowSize) {
+			this.maxSwallowSize = maxSwallowSize;
 		}
 
 		public int getAcceptCount() {
@@ -768,9 +682,22 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
+			 * Whether static resource caching is permitted for this web application.
+			 */
+			private boolean allowCaching = true;
+
+			/**
 			 * Time-to-live of the static resource cache.
 			 */
 			private Duration cacheTtl;
+
+			public boolean isAllowCaching() {
+				return this.allowCaching;
+			}
+
+			public void setAllowCaching(boolean allowCaching) {
+				this.allowCaching = allowCaching;
+			}
 
 			public Duration getCacheTtl() {
 				return this.cacheTtl;
@@ -795,9 +722,9 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Maximum size in bytes of the HTTP post or put content.
+		 * Maximum size of the HTTP post or put content.
 		 */
-		private int maxHttpPostSize = 200000; // bytes
+		private DataSize maxHttpPostSize = DataSize.ofBytes(200000);
 
 		/**
 		 * Number of acceptor threads to use. When the value is -1, the default, the
@@ -815,11 +742,11 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
-		public int getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(int maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
@@ -1010,16 +937,16 @@ public class ServerProperties {
 	public static class Undertow {
 
 		/**
-		 * Maximum size in bytes of the HTTP post content. When the value is -1, the
-		 * default, the size is unlimited.
+		 * Maximum size of the HTTP post content. When the value is -1, the default, the
+		 * size is unlimited.
 		 */
-		private long maxHttpPostSize = -1; // bytes
+		private DataSize maxHttpPostSize = DataSize.ofBytes(-1);
 
 		/**
-		 * Size of each buffer, in bytes. The default is derived from the maximum amount
-		 * of memory that is available to the JVM.
+		 * Size of each buffer. The default is derived from the maximum amount of memory
+		 * that is available to the JVM.
 		 */
-		private Integer bufferSize;
+		private DataSize bufferSize;
 
 		/**
 		 * Number of I/O threads to create for the worker. The default is derived from the
@@ -1045,19 +972,19 @@ public class ServerProperties {
 
 		private final Accesslog accesslog = new Accesslog();
 
-		public long getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(long maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
-		public Integer getBufferSize() {
+		public DataSize getBufferSize() {
 			return this.bufferSize;
 		}
 
-		public void setBufferSize(Integer bufferSize) {
+		public void setBufferSize(DataSize bufferSize) {
 			this.bufferSize = bufferSize;
 		}
 

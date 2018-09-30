@@ -37,18 +37,18 @@ public class OnWsdlLocationsConditionTests {
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
-	public void bootstrapHostsNotDefined() {
+	public void wsdlLocationsNotDefined() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void bootstrapHostsDefinedAsCommaSeparated() {
+	public void wsdlLocationsDefinedAsCommaSeparated() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void bootstrapHostsDefinedAsList() {
+	public void wsdlLocationsDefinedAsList() {
 		this.contextRunner
 				.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));

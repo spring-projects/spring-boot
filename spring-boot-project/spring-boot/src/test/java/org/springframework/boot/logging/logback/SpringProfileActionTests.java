@@ -16,6 +16,9 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.ContextBase;
 import ch.qos.logback.core.joran.action.Action;
@@ -23,10 +26,13 @@ import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.xml.sax.Attributes;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -59,7 +65,14 @@ public class SpringProfileActionTests {
 			throws ActionException {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("dev");
 		this.action.begin(this.interpretationContext, null, this.attributes);
-		verify(this.environment).acceptsProfiles("dev");
+		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
+		verify(this.environment).acceptsProfiles(profiles.capture());
+		List<String> profileNames = new ArrayList<String>();
+		profiles.getValue().matches((profile) -> {
+			profileNames.add(profile);
+			return false;
+		});
+		assertThat(profileNames).containsExactly("dev");
 	}
 
 	@Test
@@ -67,7 +80,14 @@ public class SpringProfileActionTests {
 			throws ActionException {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("dev,qa");
 		this.action.begin(this.interpretationContext, null, this.attributes);
-		verify(this.environment).acceptsProfiles("dev", "qa");
+		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
+		verify(this.environment).acceptsProfiles(profiles.capture());
+		List<String> profileNames = new ArrayList<String>();
+		profiles.getValue().matches((profile) -> {
+			profileNames.add(profile);
+			return false;
+		});
+		assertThat(profileNames).containsExactly("dev", "qa");
 	}
 
 	@Test
@@ -76,7 +96,14 @@ public class SpringProfileActionTests {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("${profile}");
 		this.context.putProperty("profile", "dev");
 		this.action.begin(this.interpretationContext, null, this.attributes);
-		verify(this.environment).acceptsProfiles("dev");
+		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
+		verify(this.environment).acceptsProfiles(profiles.capture());
+		List<String> profileNames = new ArrayList<String>();
+		profiles.getValue().matches((profile) -> {
+			profileNames.add(profile);
+			return false;
+		});
+		assertThat(profileNames).containsExactly("dev");
 	}
 
 	@Test
@@ -87,7 +114,14 @@ public class SpringProfileActionTests {
 		this.context.putProperty("profile1", "dev");
 		this.context.putProperty("profile2", "qa");
 		this.action.begin(this.interpretationContext, null, this.attributes);
-		verify(this.environment).acceptsProfiles("dev", "qa");
+		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
+		verify(this.environment).acceptsProfiles(profiles.capture());
+		List<String> profileNames = new ArrayList<String>();
+		profiles.getValue().matches((profile) -> {
+			profileNames.add(profile);
+			return false;
+		});
+		assertThat(profileNames).containsExactly("dev", "qa");
 	}
 
 }

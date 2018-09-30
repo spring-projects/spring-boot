@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -24,8 +27,10 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistryFactory;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
@@ -34,6 +39,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.util.unit.DataSize;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -46,8 +53,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for generating documentation describing the {@link HealthEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+
+	private static final List<FieldDescriptor> componentFields = Arrays.asList(
+			fieldWithPath("status")
+					.description("Status of a specific part of the application"),
+			subsectionWithPath("details").description(
+					"Details of the health of a specific part of the" + " application."));
 
 	@Test
 	public void health() throws Exception {
@@ -65,6 +79,19 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 										+ " application."))));
 	}
 
+	@Test
+	public void healthComponent() throws Exception {
+		this.mockMvc.perform(get("/actuator/health/db")).andExpect(status().isOk())
+				.andDo(document("health/component", responseFields(componentFields)));
+	}
+
+	@Test
+	public void healthComponentInstance() throws Exception {
+		this.mockMvc.perform(get("/actuator/health/broker/us1"))
+				.andExpect(status().isOk())
+				.andDo(document("health/instance", responseFields(componentFields)));
+	}
+
 	@Configuration
 	@Import(BaseDocumentationConfiguration.class)
 	@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
@@ -73,18 +100,29 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		@Bean
 		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(new CompositeHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators));
+					new OrderedHealthAggregator(), new HealthIndicatorRegistryFactory()
+							.createHealthIndicatorRegistry(healthIndicators)));
 		}
 
 		@Bean
 		public DiskSpaceHealthIndicator diskSpaceHealthIndicator() {
-			return new DiskSpaceHealthIndicator(new File("."), 1024 * 1024 * 10);
+			return new DiskSpaceHealthIndicator(new File("."), DataSize.ofMegabytes(10));
 		}
 
 		@Bean
-		public DataSourceHealthIndicator dataSourceHealthIndicator(
-				DataSource dataSource) {
+		public DataSourceHealthIndicator dbHealthIndicator(DataSource dataSource) {
 			return new DataSourceHealthIndicator(dataSource);
+		}
+
+		@Bean
+		public CompositeHealthIndicator brokerHealthIndicator() {
+			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
+			indicators.put("us1",
+					() -> Health.up().withDetail("version", "1.0.2").build());
+			indicators.put("us2",
+					() -> Health.up().withDetail("version", "1.0.4").build());
+			return new CompositeHealthIndicator(new OrderedHealthAggregator(),
+					indicators);
 		}
 
 	}

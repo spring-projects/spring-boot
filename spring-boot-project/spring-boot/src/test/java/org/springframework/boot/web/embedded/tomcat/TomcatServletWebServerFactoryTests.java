@@ -63,7 +63,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -174,19 +173,13 @@ public class TomcatServletWebServerFactoryTests
 	public void tomcatAdditionalConnectors() {
 		TomcatServletWebServerFactory factory = getFactory();
 		Connector[] listeners = new Connector[4];
-		Arrays.setAll(listeners, (i) -> stoppedConnector());
+		Arrays.setAll(listeners, (i) -> new Connector());
 		factory.addAdditionalTomcatConnectors(listeners);
 		this.webServer = factory.getWebServer();
 		Map<Service, Connector[]> connectors = ((TomcatWebServer) this.webServer)
 				.getServiceConnectors();
 		assertThat(connectors.values().iterator().next().length)
 				.isEqualTo(listeners.length + 1);
-	}
-
-	private Connector stoppedConnector() {
-		Connector connector = mock(Connector.class);
-		given(connector.getState()).willReturn(LifecycleState.STOPPED);
-		return connector;
 	}
 
 	@Test

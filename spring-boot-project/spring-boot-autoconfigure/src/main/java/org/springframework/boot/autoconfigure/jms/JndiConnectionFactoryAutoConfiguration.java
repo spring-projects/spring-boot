@@ -57,14 +57,17 @@ public class JndiConnectionFactoryAutoConfiguration {
 
 	private final JmsProperties properties;
 
+	private final JndiLocatorDelegate jndiLocatorDelegate;
+
 	public JndiConnectionFactoryAutoConfiguration(JmsProperties properties) {
 		this.properties = properties;
+		this.jndiLocatorDelegate = JndiLocatorDelegate.createDefaultResourceRefLocator();
 	}
 
 	@Bean
 	public ConnectionFactory connectionFactory() throws NamingException {
 		if (StringUtils.hasLength(this.properties.getJndiName())) {
-			return new JndiLocatorDelegate().lookup(this.properties.getJndiName(),
+			return this.jndiLocatorDelegate.lookup(this.properties.getJndiName(),
 					ConnectionFactory.class);
 		}
 		return findJndiConnectionFactory();
@@ -73,7 +76,7 @@ public class JndiConnectionFactoryAutoConfiguration {
 	private ConnectionFactory findJndiConnectionFactory() {
 		for (String name : JNDI_LOCATIONS) {
 			try {
-				return new JndiLocatorDelegate().lookup(name, ConnectionFactory.class);
+				return this.jndiLocatorDelegate.lookup(name, ConnectionFactory.class);
 			}
 			catch (NamingException ex) {
 				// Swallow and continue
