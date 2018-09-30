@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ public class SampleSolrApplicationTests {
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-
 		try {
 			SampleSolrApplication.main(new String[0]);
 		}
@@ -44,9 +43,8 @@ public class SampleSolrApplicationTests {
 		assertThat(output).contains("name=Sony Playstation");
 	}
 
+	@SuppressWarnings("serial")
 	private boolean serverNotRunning(IllegalStateException ex) {
-
-		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		Throwable root = nested.getRootCause();

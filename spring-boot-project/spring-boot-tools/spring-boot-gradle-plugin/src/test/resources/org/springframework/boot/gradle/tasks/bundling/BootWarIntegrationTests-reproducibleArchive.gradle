@@ -1,0 +1,14 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+
+bootWar {
+	mainClassName = 'com.example.Application'
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
+}

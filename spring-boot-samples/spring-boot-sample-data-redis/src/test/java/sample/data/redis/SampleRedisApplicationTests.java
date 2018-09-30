@@ -35,7 +35,7 @@ public class SampleRedisApplicationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		try {
 			SampleRedisApplication.main(new String[0]);
 		}

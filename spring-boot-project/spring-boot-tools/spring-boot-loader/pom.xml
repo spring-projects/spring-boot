@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-tools</artifactId>
+		<version>${revision}</version>
+	</parent>
+	<artifactId>spring-boot-loader</artifactId>
+	<name>Spring Boot Loader</name>
+	<description>Spring Boot Loader</description>
+	<properties>
+		<main.basedir>${basedir}/../../..</main.basedir>
+	</properties>
+	<dependencies>
+		<!-- Optional (must never have compile/runtime time dependencies) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- Used to provide a signed jar -->
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>1.46</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-support</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-invoker-plugin</artifactId>
+						<configuration>
+							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+						</configuration>
+						<executions>
+							<execution>
+								<id>prepare-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>install</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>integration-test</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+									<settingsFile>src/it/settings.xml</settingsFile>
+									<postBuildHookScript>verify</postBuildHookScript>
+									<addTestClassPath>true</addTestClassPath>
+									<skipInvocation>${skipTests}</skipInvocation>
+									<streamLogs>true</streamLogs>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>cleanup-local-integration-repo</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<replaceregexp match="\$\{revision\}" replace="${project.version}"
+											flags="g" byline="true">
+											<fileset
+												dir="${project.build.directory}/local-repo/org/springframework/boot/"
+												includes="**/*.pom" />
+										</replaceregexp>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

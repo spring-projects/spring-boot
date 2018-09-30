@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -47,7 +46,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SampleAtmosphereApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleAtmosphereApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleAtmosphereApplicationTests.class);
@@ -56,12 +54,12 @@ public class SampleAtmosphereApplicationTests {
 	private int port = 1234;
 
 	@Test
-	public void chatEndpoint() throws Exception {
+	public void chatEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/chat/websocket")
-						.run("--spring.main.web_environment=false");
+						.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;

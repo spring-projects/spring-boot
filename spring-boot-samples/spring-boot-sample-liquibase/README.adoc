@@ -2,7 +2,7 @@
 
 This sample demonstrates the liquibase auto-configuration support.
 
-You can look at `http://localhost:8080/application/liquibase` to review the list of
+You can look at `http://localhost:8080/actuator/liquibase` to review the list of
 scripts.
 
 This sample also enables the H2 console (at `http://localhost:8080/h2-console`)

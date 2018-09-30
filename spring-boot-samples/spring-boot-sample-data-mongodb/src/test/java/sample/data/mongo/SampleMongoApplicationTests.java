@@ -40,7 +40,7 @@ public class SampleMongoApplicationTests {
 	public static OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		String output = SampleMongoApplicationTests.outputCapture.toString();
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}

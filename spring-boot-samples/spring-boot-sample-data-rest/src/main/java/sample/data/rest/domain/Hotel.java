@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class Hotel implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="hotel_generator", sequenceName="hotel_sequence", initialValue = 28)
+	@SequenceGenerator(name = "hotel_generator", sequenceName = "hotel_sequence", initialValue = 28)
 	@GeneratedValue(generator = "hotel_generator")
 	private Long id;
 
@@ -74,4 +74,5 @@ public class Hotel implements Serializable {
 	public String getZip() {
 		return this.zip;
 	}
+
 }

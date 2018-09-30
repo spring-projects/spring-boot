@@ -1,0 +1,24 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'maven'
+
+bootWar {
+	mainClassName = 'com.example.Application'
+}
+
+group = 'com.example'
+version = '1.0'
+
+uploadBootArchives {
+	repositories {
+		mavenDeployer {
+		 	repository(url: "file:$buildDir/repo")
+		}
+	}
+}

@@ -1,0 +1,39 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.2.10'
+}
+
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+	resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.springframework.boot') {
+				it.useVersion project.bootVersion
+			}
+		}
+	}
+}
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+}
+
+dependencies {
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+}
+
+task kotlinVersion {
+	doLast {
+		def kotlinVersion = project.hasProperty('kotlin.version') ? project.getProperty('kotlin.version') : 'none'
+		println "Kotlin version: ${kotlinVersion}"
+	}
+}

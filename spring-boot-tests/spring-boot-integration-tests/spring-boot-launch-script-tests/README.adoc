@@ -1,0 +1,61 @@
+= Spring Boot Launch Script Tests
+
+This module contains integration tests for the default launch script that is used
+to make a jar file fully executable on Linux. The tests use Docker to verify the
+functionality in a variety of Linux distributions.
+
+
+
+== Setting up Docker
+
+The setup that's required varies depending on your operating system.
+
+
+
+=== Docker on OS X
+
+Install Docker for Mac. See the https://docs.docker.com/docker-for-mac/install/[macOS
+installation instructions] for details.
+
+
+
+=== Docker on Linux
+
+Install Docker as appropriate for your Linux distribution. See the
+https://docs.docker.com/engine/installation/[Linux installation instructions] for more
+information.
+
+Next, add your user to the `docker` group. For example:
+
+----
+$ sudo usermod -a -G docker awilkinson
+----
+
+You may need to log out and back in again for this change to take affect and for your
+user to be able to connect to the daemon.
+
+
+
+== Running the tests
+
+You're now ready to run the tests. Assuming that you're in the same directory as this
+README, the tests can be launched as follows:
+
+----
+$ mvn -Pdocker clean verify
+----
+
+The first time the tests are run, Docker will create the container images that are used to
+run the tests. This can take several minutes, particularly if you have a slow network
+connection. Subsequent runs will be faster as the images are cached locally. You can run
+`docker images` to see a list of the cached images. Images created by these tests will be
+tagged with `spring-boot-it` prefix to easily distinguish them.
+
+
+
+== Cleaning up
+
+If you want to reclaim the disk space used by the cached images (at the expense of having
+to wait for them to be downloaded and rebuilt the next time you run the tests), you can
+use `docker images` to list the images and `docker rmi <image>` to delete them (look for
+`spring-boot-it` tag). See `docker rmi --help` for further details.

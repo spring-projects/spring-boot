@@ -1,0 +1,90 @@
+= Spring Boot Reference Guide
+Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson; Marcel Overdijk; Christian Dupuis; Sébastien Deleuze; Michael Simons; Vedran Pavić; Jay Bryant; Madhura Bhave
+:doctype: book
+:toc:
+:toclevels: 4
+:source-highlighter: prettify
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:spring-boot-repo: snapshot
+:github-tag: master
+:spring-boot-docs-version: current
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/reference
+:spring-boot-docs-current: https://docs.spring.io/spring-boot/docs/current/reference
+:github-repo: spring-projects/spring-boot
+:github-raw: https://raw.github.com/{github-repo}/{github-tag}
+:github-code: https://github.com/{github-repo}/tree/{github-tag}
+:github-issues: https://github.com/{github-repo}/issues/
+:github-wiki: https://github.com/{github-repo}/wiki
+:github-master-code: https://github.com/{github-repo}/tree/master
+:sc-ext: java
+:sc-spring-boot: {github-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
+:sc-spring-boot-autoconfigure: {github-code}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+:sc-spring-boot-actuator: {github-code}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+:sc-spring-boot-actuator-autoconfigure: {github-code}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
+:sc-spring-boot-cli: {github-code}/spring-boot-project/spring-boot-cli/src/main/java/org/springframework/boot/cli
+:sc-spring-boot-devtools: {github-code}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
+:sc-spring-boot-test: {github-code}/spring-boot-project/spring-boot-test/src/main/java/org/springframework/boot/test
+:sc-spring-boot-test-autoconfigure: {github-code}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
+:dc-ext: html
+:dc-root: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/api
+:dc-spring-boot: {dc-root}/org/springframework/boot
+:dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
+:dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
+:dc-spring-boot-test: {dc-root}/org/springframework/boot/test
+:dc-spring-boot-test-autoconfigure: {dc-root}/org/springframework/boot/test/autoconfigure
+:dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
+:dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
+:java-javadoc: https://docs.oracle.com/javase/8/docs/api/
+:spring-boot-actuator-api: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/actuator-api/
+:spring-boot-maven-plugin-site: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin
+:spring-boot-gradle-plugin: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin
+:spring-boot-gradle-plugin-reference: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/reference/html
+:spring-reference: https://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/
+:spring-initializr-reference: https://docs.spring.io/initializr/docs/current/reference/htmlsingle
+:spring-rest-docs: https://projects.spring.io/spring-restdocs/
+:spring-integration: https://projects.spring.io/spring-integration/
+:spring-session: https://projects.spring.io/spring-session/
+:spring-framework: http://projects.spring.io/spring-framework/
+:spring-security: http://projects.spring.io/spring-security/
+:spring-data-jpa: http://projects.spring.io/spring-data-jpa/
+:spring-security-reference: https://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
+:spring-security-oauth2-reference: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
+:spring-webservices-reference: https://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/
+:spring-javadoc: https://docs.spring.io/spring/docs/{spring-docs-version}/javadoc-api/org/springframework
+:spring-amqp-javadoc: https://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
+:spring-batch-javadoc: https://docs.spring.io/spring-batch/apidocs/org/springframework/batch
+:spring-data-javadoc: https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
+:spring-data-commons-javadoc: https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
+:spring-data-mongo-javadoc: https://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+:spring-data-mongo: https://projects.spring.io/spring-data-mongodb/
+:spring-data: https://projects.spring.io/spring-data/
+:spring-data-rest-javadoc: https://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
+:gradle-userguide: https://www.gradle.org/docs/current/userguide
+:ant-manual: http://ant.apache.org/manual
+:code-examples: ../java/org/springframework/boot/docs
+:test-examples: ../../test/java/org/springframework/boot/docs
+:gradle-user-guide: https://docs.gradle.org/4.2.1/userguide
+:hibernate-documentation: https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html
+:jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
+:jooq-manual: https://www.jooq.org/doc/{jooq-version}/manual-single-page
+:micrometer-concepts-documentation: https://micrometer.io/docs/concepts
+:micrometer-registry-documentation: http://micrometer.io/docs/registry
+:tomcat-documentation: https://tomcat.apache.org/tomcat-8.5-doc
+:kotlin-documentation: https://kotlinlang.org/docs/reference/
+:junit5-documentation: https://junit.org/junit5/docs/current/user-guide
+// ======================================================================================
+
+include::documentation-overview.adoc[]
+include::getting-started.adoc[]
+include::using-spring-boot.adoc[]
+include::spring-boot-features.adoc[]
+include::production-ready-features.adoc[]
+include::deployment.adoc[]
+include::spring-boot-cli.adoc[]
+include::build-tool-plugins.adoc[]
+include::howto.adoc[]
+include::appendix.adoc[]
+
+// ======================================================================================

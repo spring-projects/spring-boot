@@ -1,1 +1,0 @@
-provides: spring-orm,hibernate-entity-manager,spring-data-jpa

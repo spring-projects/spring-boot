@@ -31,7 +31,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,14 +43,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleWebFreeMarkerApplicationTests {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 
 	@Test
-	public void testFreeMarkerTemplate() throws Exception {
+	public void testFreeMarkerTemplate() {
 		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("/",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -59,7 +57,7 @@ public class SampleWebFreeMarkerApplicationTests {
 	}
 
 	@Test
-	public void testFreeMarkerErrorTemplate() throws Exception {
+	public void testFreeMarkerErrorTemplate() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);

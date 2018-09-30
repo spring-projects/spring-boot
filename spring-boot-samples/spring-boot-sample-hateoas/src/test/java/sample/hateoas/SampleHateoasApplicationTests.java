@@ -41,7 +41,7 @@ public class SampleHateoasApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void hasHalLinks() throws Exception {
+	public void hasHalLinks() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/customers/1",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -51,7 +51,7 @@ public class SampleHateoasApplicationTests {
 	}
 
 	@Test
-	public void producesJsonWhenXmlIsPreferred() throws Exception {
+	public void producesJsonWhenXmlIsPreferred() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, "application/xml;q=0.9,application/json;q=0.8");
 		HttpEntity<?> request = new HttpEntity<>(headers);

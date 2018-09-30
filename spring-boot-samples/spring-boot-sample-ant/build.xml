@@ -11,7 +11,7 @@
 		actual jars). Run with '$ java -jar target/*.jar'.
 	</description>
 
-	<property name="spring-boot.version" value="2.0.0.BUILD-SNAPSHOT" />
+	<property name="ant-spring-boot.version" value="${revision}" />
 	<property name="lib.dir" location="${basedir}/target/lib" />
 	<property name="start-class" value="sample.ant.SampleAntApplication" />
 
@@ -38,7 +38,7 @@
 	</target>
 
 	<target name="build" depends="compile">
-		<spring-boot:exejar destfile="target/${ant.project.name}-${spring-boot.version}.jar" classes="target/classes">
+		<spring-boot:exejar destfile="target/${ant.project.name}-${ant-spring-boot.version}.jar" classes="target/classes">
 			<spring-boot:lib>
 				<fileset dir="${lib.dir}/runtime" />
 			</spring-boot:lib>
@@ -46,7 +46,7 @@
 	</target>
 	<!-- Manual equivalent of the build target -->
 	<target name="manual" depends="compile">
-		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+		<jar destfile="target/${ant.project.name}-${ant-spring-boot.version}.jar" compress="false">
 			<mappedresources>
 				<fileset dir="target/classes" />
 				<globmapper from="*" to="BOOT-INF/classes/*"/>
@@ -59,7 +59,7 @@
 				<fileset dir="${lib.dir}/runtime" />
 				<globmapper from="*" to="BOOT-INF/lib/*"/>
 			</mappedresources>
-			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${ant-spring-boot.version}.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
 				<attribute name="Start-Class" value="${start-class}" />

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.util.Collections;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.atmosphere.cpr.AtmosphereInitializer;
 import org.atmosphere.cpr.AtmosphereServlet;
+import org.atmosphere.cpr.ContainerInitializer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -48,8 +48,10 @@ public class SampleAtmosphereApplication {
 	public ServletRegistrationBean<AtmosphereServlet> atmosphereServlet() {
 		// Dispatcher servlet is mapped to '/home' to allow the AtmosphereServlet
 		// to be mapped to '/chat'
+		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
+		atmosphereServlet.framework().setHandlersPath("/");
 		ServletRegistrationBean<AtmosphereServlet> registration = new ServletRegistrationBean<>(
-				new AtmosphereServlet(), "/chat/*");
+				atmosphereServlet, "/chat/*");
 		registration.addInitParameter("org.atmosphere.cpr.packages", "sample");
 		registration.addInitParameter("org.atmosphere.interceptor.HeartbeatInterceptor"
 				+ ".clientHeartbeatFrequencyInSeconds", "10");
@@ -57,6 +59,10 @@ public class SampleAtmosphereApplication {
 		// Need to occur before the EmbeddedAtmosphereInitializer
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		return registration;
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleAtmosphereApplication.class, args);
 	}
 
 	@Configuration
@@ -69,18 +75,14 @@ public class SampleAtmosphereApplication {
 
 	}
 
-	private static class EmbeddedAtmosphereInitializer extends AtmosphereInitializer
+	private static class EmbeddedAtmosphereInitializer extends ContainerInitializer
 			implements ServletContextInitializer {
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
-			onStartup(Collections.<Class<?>>emptySet(), servletContext);
+			onStartup(Collections.emptySet(), servletContext);
 		}
 
-	}
-
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleAtmosphereApplication.class, args);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -52,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SampleJettyWebSocketsApplication.class,
 		CustomContainerConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class CustomContainerWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory
@@ -62,12 +60,12 @@ public class CustomContainerWebSocketsApplicationTests {
 	private int port;
 
 	@Test
-	public void echoEndpoint() throws Exception {
+	public void echoEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/ws/echo/websocket")
-						.run("--spring.main.web_environment=false");
+						.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;
@@ -78,12 +76,12 @@ public class CustomContainerWebSocketsApplicationTests {
 	}
 
 	@Test
-	public void reverseEndpoint() throws Exception {
+	public void reverseEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/ws/reverse")
-						.run("--spring.main.web_environment=false");
+						.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;

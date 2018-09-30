@@ -1,8 +1,8 @@
 == Spring Boot - Samples - Web Services
 
-This sample project demonstrates how to use http://projects.spring.io/spring-ws/[Spring Web Services]
+This sample project demonstrates how to use https://projects.spring.io/spring-ws/[Spring Web Services]
 with Spring Boot. It is an implementation of the
-http://docs.spring.io/spring-ws/site/reference/html/tutorial.html#tutorial.implementing.endpoint[Holiday Request sample]
+https://docs.spring.io/spring-ws/site/reference/html/tutorial.html#tutorial.implementing.endpoint[Holiday Request sample]
 in the Spring Web Services reference guide.
 
 The sample uses Maven. It can be built and run from the command line:

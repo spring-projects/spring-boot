@@ -39,7 +39,7 @@ public class SampleLdapApplicationTests {
 	public static OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		String output = outputCapture.toString();
 		assertThat(output).contains("cn=Alice Smith");
 	}

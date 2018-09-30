@@ -28,7 +28,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -42,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleGroovyTemplateApplicationTests {
 
 	@LocalServerPort
@@ -52,7 +50,7 @@ public class SampleGroovyTemplateApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Messages");
@@ -60,7 +58,7 @@ public class SampleGroovyTemplateApplicationTests {
 	}
 
 	@Test
-	public void testCreate() throws Exception {
+	public void testCreate() {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
@@ -69,7 +67,7 @@ public class SampleGroovyTemplateApplicationTests {
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

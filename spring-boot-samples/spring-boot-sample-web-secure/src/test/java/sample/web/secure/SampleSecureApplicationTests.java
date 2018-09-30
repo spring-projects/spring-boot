@@ -34,7 +34,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleSecureApplicationTests {
 
 	@Autowired
@@ -58,7 +56,7 @@ public class SampleSecureApplicationTests {
 	private int port;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
@@ -69,7 +67,7 @@ public class SampleSecureApplicationTests {
 	}
 
 	@Test
-	public void testLoginPage() throws Exception {
+	public void testLoginPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
@@ -79,13 +77,13 @@ public class SampleSecureApplicationTests {
 	}
 
 	@Test
-	public void testLogin() throws Exception {
+	public void testLogin() {
 		HttpHeaders headers = getHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
-		form.set("password", "user");
+		form.set("password", "password");
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
 				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
@@ -109,7 +107,7 @@ public class SampleSecureApplicationTests {
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

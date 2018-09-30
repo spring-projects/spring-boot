@@ -1,0 +1,43 @@
+[[getting-started]]
+== Getting started
+
+To get started with the plugin it needs to be applied to your project.
+
+ifeval::["{version-type}" == "RELEASE"]
+The plugin is https://plugins.gradle.org/plugin/org.springframework.boot[published to
+Gradle's plugin portal] and can be applied using the `plugins` block:
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/getting-started/apply-plugin-release.gradle[]
+----
+endif::[]
+ifeval::["{version-type}" == "MILESTONE"]
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/getting-started/apply-plugin-milestone.gradle[]
+----
+endif::[]
+ifeval::["{version-type}" == "SNAPSHOT"]
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/getting-started/apply-plugin-snapshot.gradle[]
+----
+endif::[]
+
+Applied in isolation the plugin makes few changes to a project. Instead, the plugin
+detects when certain other plugins are applied and reacts accordingly. For example, when
+the `java` plugin is applied a task for building an executable jar is automatically
+configured.
+
+A typical Spring Boot project will apply the {groovy-plugin}[`groovy`],
+{java-plugin}java_plugin.html[`java`], or {kotlin-plugin}[`org.jetbrains.kotlin.jvm`]
+plugin and the {dependency-management-plugin}[`io.spring.dependency-management`] plugin as
+a minimum. For example:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/getting-started/typical-plugins.gradle[tags=apply]
+----
+
+To learn more about how the Spring Boot plugin behaves when other plugins are applied
+please see the section on <<reacting-to-other-plugins, reacting to other plugins>>.

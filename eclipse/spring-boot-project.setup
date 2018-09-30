@@ -55,8 +55,7 @@
   <setupTask
       xsi:type="setup.p2:P2Task">
     <requirement
-        name="epp.package.java"
-        versionRange="[4.5.0,4.6.0)"/>
+        name="epp.package.java"/>
     <requirement
         name="org.eclipse.platform.feature.group"/>
     <requirement
@@ -64,13 +63,7 @@
     <requirement
         name="AnyEditTools.feature.group"/>
     <requirement
-        name="org.eclipse.m2e.maveneclipse.feature.feature.group"/>
-    <requirement
-        name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
-    <requirement
-        name="org.springframework.ide.eclipse.feature.feature.group"/>
-    <requirement
-        name="org.springframework.ide.eclipse.maven.feature.feature.group"/>
+        name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
@@ -86,44 +79,34 @@
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
-        name="org.eclipse.mylyn.github.feature.feature.group"/>
-    <requirement
-        name="org.springframework.ide.eclipse.jdt.formatter.feature.feature.group"/>
+        name="org.springframework.ide.eclipse.boot.feature.feature.group"/>
     <repository
-        url="http://download.eclipse.org/technology/epp/packages/mars/R"/>
+        url="http://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
     <repository
-        url="http://download.eclipse.org/releases/mars"/>
+        url="http://download.eclipse.org/releases/oxygen/"/>
     <repository
-        url="http://andrei.gmxhome.de/eclipse"/>
+        url="http://andrei.gmxhome.de/eclipse/"/>
     <repository
-        url="https://dl.bintray.com/philwebb/m2eclipse-maveneclipse"/>
-    <repository
-        url="https://dl.bintray.com/philwebb/spring-eclipse-code-formatter"/>
-    <repository
-        url="http://dist.springsource.com/release/TOOLS/update/e4.5"/>
+        url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
         url="http://download.eclipse.org/egit/github/updates/"/>
+    <repository
+        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+    <repository
+        url="http://dist.springsource.com/release/TOOLS/update/e4.7"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
     </description>
   </setupTask>
   <setupTask
-      xsi:type="maven:MavenImportTask"
-      id="">
+      xsi:type="maven:MavenImportTask">
     <sourceLocator
-        rootFolder="${checkout.location}"/>
+        rootFolder="${checkout.location}"
+        locateNestedProjects="true">
+        <excludedPath>spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin</excludedPath>
+    </sourceLocator>
     <description></description>
-  </setupTask>
-  <setupTask
-      xsi:type="maven:MavenImportTask">
-    <sourceLocator
-        rootFolder="${checkout.location}/spring-boot-samples"/>
-  </setupTask>
-  <setupTask
-      xsi:type="maven:MavenImportTask">
-    <sourceLocator
-        rootFolder="${checkout.location}/spring-boot-deployment-tests"/>
   </setupTask>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
@@ -136,7 +119,7 @@
             pattern="spring-boot.*"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.9/@workingSets.3 //@setupTasks.9/@workingSets.2 //@setupTasks.9/@workingSets.4 //@setupTasks.9/@workingSets.1"/>
+            excludedWorkingSet="//@setupTasks.7/@workingSets.3 //@setupTasks.7/@workingSets.2 //@setupTasks.7/@workingSets.4 //@setupTasks.7/@workingSets.1"/>
       </predicate>
     </workingSet>
     <workingSet
@@ -224,9 +207,9 @@
         key="/instance/org.eclipse.jdt.ui/smartPaste"
         value="true"/>
     <setupTask
-          xsi:type="setup:PreferenceTask"
-          key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.text.custom_templates"
-          value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?>&lt;templates>&lt;template autoinsert=&quot;false&quot; context=&quot;java&quot; deleted=&quot;false&quot; description=&quot;Surround code with formatter off and formatter on tags&quot; enabled=&quot;true&quot; name=&quot;noformat&quot;>// @formatter:off&#xA;$${cursor} $${line_selection}&#xA;// @formatter:on&lt;/template>&lt;/templates>"/>
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.text.custom_templates"
+        value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?>&lt;templates>&lt;template autoinsert=&quot;false&quot; context=&quot;java&quot; deleted=&quot;false&quot; description=&quot;Surround code with formatter off and formatter on tags&quot; enabled=&quot;true&quot; name=&quot;noformat&quot;>// @formatter:off&#xA;$${cursor} $${line_selection}&#xA;// @formatter:on&lt;/template>&lt;/templates>"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"

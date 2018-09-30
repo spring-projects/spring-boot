@@ -16,6 +16,8 @@
 
 package sample.actuator.log4j2;
 
+import java.util.Base64;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Rule;
@@ -63,10 +65,16 @@ public class SampleActuatorLog4J2ApplicationTests {
 
 	@Test
 	public void validateLoggersEndpoint() throws Exception {
-		this.mvc.perform(get("/application/loggers/org.apache.coyote.http11.Http11NioProtocol"))
+		this.mvc.perform(
+				get("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol")
+						.header("Authorization", "Basic " + getBasicAuth()))
 				.andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"configuredLevel\":\"WARN\","
 						+ "\"effectiveLevel\":\"WARN\"}")));
+	}
+
+	private String getBasicAuth() {
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
 	}
 
 }

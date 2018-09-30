@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,6 @@ package sample.integration.consumer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,6 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,16 +51,14 @@ public class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void deleteInputAndOutput() throws InterruptedException, IOException {
+	public void deleteInputAndOutput() {
 		deleteIfExists(new File("target/input"));
 		deleteIfExists(new File("target/output"));
 	}
 
-	private void deleteIfExists(File directory) throws InterruptedException, IOException {
+	private void deleteIfExists(File directory) {
 		if (directory.exists()) {
-			Files.walk(directory.toPath(), FileVisitOption.FOLLOW_LINKS)
-					.sorted(Comparator.reverseOrder()).map(Path::toFile)
-					.forEach(File::delete);
+			assertThat(FileSystemUtils.deleteRecursively(directory)).isTrue();
 		}
 	}
 
@@ -124,4 +119,5 @@ public class SampleIntegrationApplicationTests {
 		}
 		return candidates;
 	}
+
 }

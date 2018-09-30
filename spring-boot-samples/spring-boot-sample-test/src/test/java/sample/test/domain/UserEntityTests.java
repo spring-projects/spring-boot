@@ -47,28 +47,28 @@ public class UserEntityTests {
 	private TestEntityManager entityManager;
 
 	@Test
-	public void createWhenUsernameIsNullShouldThrowException() throws Exception {
+	public void createWhenUsernameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be empty");
 		new User(null, VIN);
 	}
 
 	@Test
-	public void createWhenUsernameIsEmptyShouldThrowException() throws Exception {
+	public void createWhenUsernameIsEmptyShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be empty");
 		new User("", VIN);
 	}
 
 	@Test
-	public void createWhenVinIsNullShouldThrowException() throws Exception {
+	public void createWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("VIN must not be null");
 		new User("sboot", null);
 	}
 
 	@Test
-	public void saveShouldPersistData() throws Exception {
+	public void saveShouldPersistData() {
 		User user = this.entityManager.persistFlushFind(new User("sboot", VIN));
 		assertThat(user.getUsername()).isEqualTo("sboot");
 		assertThat(user.getVin()).isEqualTo(VIN);

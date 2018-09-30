@@ -1,0 +1,60 @@
+= Spring Boot Spring Session Sample
+
+This sample demonstrates the Spring Session auto-configuration support. Spring Session
+supports multiple session store types, including:
+
+* `Redis`
+* `JDBC`
+* `Hazelcast`
+* `MongoDB`
+
+
+
+== Using a different session store
+Initially, the project uses JDBC session store backed by an in-memory embedded H2
+database. You can try out your favorite session store as explained below.
+
+
+
+=== Redis
+Add `org.springframework.session:spring-session-data-redis` and
+`spring-boot-starter-data-redis` dependencies to the project and make sure it is
+configured properly (by default, a Redis instance with the default settings is expected
+on your local box).
+
+TIP: Run sample application using Redis session store using
+`$mvn spring-boot:run -Predis`.
+
+
+
+=== JDBC
+Add `org.springframework.session:spring-session-jdbc`,
+`org.springframework.boot:spring-boot-starter-jdbc` and `com.h2database:h2` dependencies
+to the project. An in-memory embedded H2 database is automatically configured.
+
+TIP: Run sample application using JDBC session store with
+`$mvn spring-boot:run -Pjdbc`.
+
+Note that this profile is active by default.
+
+
+
+=== Hazelcast
+Add `org.springframework.session:spring-session-hazelcast` and `com.hazelcast:hazelcast`
+dependencies to the project to enable support for Hazelcast. Since there is a default
+`hazelcast.xml` configuration file at the root of the classpath, it is used to
+automatically configure the underlying `HazelcastInstance`.
+
+TIP: Run sample application using Hazelcast session store with
+`$mvn spring-boot:run -Phazelcast`.
+
+
+
+=== MongoDB
+Add `org.springframework.session:spring-session-data-mongodb` and
+`spring-boot-starter-data-mongodb` dependencies to the project and make sure it is
+configured properly (by default, a MongoDB instance with the default settings is expected
+on your local box).
+
+TIP: Run sample application using MongoDB session store using
+`$mvn spring-boot:run -Pmongodb`.
