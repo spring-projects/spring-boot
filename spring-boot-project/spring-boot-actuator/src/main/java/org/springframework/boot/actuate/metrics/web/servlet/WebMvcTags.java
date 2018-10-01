@@ -109,13 +109,15 @@ public final class WebMvcTags {
 			if (pattern != null) {
 				return Tag.of("uri", pattern);
 			}
-			else if (response != null) {
+			if (response != null) {
 				HttpStatus status = extractStatus(response);
-				if (status != null && status.is3xxRedirection()) {
-					return URI_REDIRECTION;
-				}
-				if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
-					return URI_NOT_FOUND;
+				if (status != null) {
+					if (status.is3xxRedirection()) {
+						return URI_REDIRECTION;
+					}
+					if (status == HttpStatus.NOT_FOUND) {
+						return URI_NOT_FOUND;
+					}
 				}
 			}
 			String pathInfo = getPathInfo(request);

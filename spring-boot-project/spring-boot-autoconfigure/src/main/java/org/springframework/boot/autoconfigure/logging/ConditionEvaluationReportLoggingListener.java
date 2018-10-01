@@ -128,12 +128,11 @@ public class ConditionEvaluationReportLoggingListener
 				}
 			}
 			else {
-				if (isCrashReport && this.logger.isInfoEnabled()
-						&& !this.logger.isDebugEnabled()) {
-					logMessage("debug");
-				}
 				if (this.logger.isDebugEnabled()) {
 					this.logger.debug(new ConditionEvaluationReportMessage(this.report));
+				}
+				else if (isCrashReport) {
+					logMessage("debug");
 				}
 			}
 		}
