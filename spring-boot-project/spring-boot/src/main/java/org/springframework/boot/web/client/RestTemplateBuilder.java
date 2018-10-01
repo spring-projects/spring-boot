@@ -154,7 +154,8 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be used with
 	 * the {@link RestTemplate}. Setting this value will replace any previously configured
-	 * converters.
+	 * converters and any converters configured on the builder will replace RestTemplate's
+	 * default converters.
 	 * @param messageConverters the converters to set
 	 * @return a new builder instance
 	 * @see #additionalMessageConverters(HttpMessageConverter...)
@@ -168,7 +169,8 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be used with
 	 * the {@link RestTemplate}. Setting this value will replace any previously configured
-	 * converters.
+	 * converters and any converters configured on the builder will replace RestTemplate's
+	 * default converters.
 	 * @param messageConverters the converters to set
 	 * @return a new builder instance
 	 * @see #additionalMessageConverters(HttpMessageConverter...)
@@ -186,7 +188,8 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Add additional {@link HttpMessageConverter HttpMessageConverters} that should be
-	 * used with the {@link RestTemplate}.
+	 * used with the {@link RestTemplate}. Any converters configured on the builder will
+	 * replace RestTemplate's default converters.
 	 * @param messageConverters the converters to add
 	 * @return a new builder instance
 	 * @see #messageConverters(HttpMessageConverter...)
@@ -199,7 +202,8 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Add additional {@link HttpMessageConverter HttpMessageConverters} that should be
-	 * used with the {@link RestTemplate}.
+	 * used with the {@link RestTemplate}. Any converters configured on the builder will
+	 * replace RestTemplate's default converters.
 	 * @param messageConverters the converters to add
 	 * @return a new builder instance
 	 * @see #messageConverters(HttpMessageConverter...)
