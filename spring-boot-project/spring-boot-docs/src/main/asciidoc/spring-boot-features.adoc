@@ -8105,11 +8105,11 @@ to print the report in auto-configuration tests.
 	@Test
 	public void autoConfigTest {
 		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
-					LogLevel.INFO);
-			ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-					.withInitializer(initializer).run((context -> {
-							// Do something...
-					}));
+				LogLevel.INFO);
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withInitializer(initializer).run((context) -> {
+						// Do something...
+				});
 	}
 ----
 
