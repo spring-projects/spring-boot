@@ -29,9 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -108,24 +106,11 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
 		ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(
 				this.context);
-		for (ServletContextInitializer initializer : initializers) {
-			if (initializer instanceof FilterRegistrationBean) {
-				addFilter(builder, (FilterRegistrationBean<?>) initializer);
-			}
-			if (initializer instanceof DelegatingFilterProxyRegistrationBean) {
-				addFilter(builder, (DelegatingFilterProxyRegistrationBean) initializer);
-			}
-		}
-	}
-
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			FilterRegistrationBean<?> registration) {
-		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
-	}
-
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			DelegatingFilterProxyRegistrationBean registration) {
-		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
+		initializers.stream().filter(AbstractFilterRegistrationBean.class::isInstance)
+				.map(AbstractFilterRegistrationBean.class::cast)
+				.filter(AbstractFilterRegistrationBean::isEnabled)
+				.forEach((registration) -> addFilter(builder, registration.getFilter(),
+						registration.getUrlPatterns()));
 	}
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter,
