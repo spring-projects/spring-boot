@@ -123,8 +123,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	private void addSessionIdIfNecessary(HttpServletRequest request,
 			Map<String, Object> trace) {
 		HttpSession session = request.getSession(false);
-		add(trace, Include.SESSION_ID, "sessionId",
-				(session != null) ? session.getId() : null);
+		if (isIncluded(Include.SESSION_ID)) {
+			add(trace, "sessionId", (session != null) ? session.getId() : null);
+		}
 	}
 
 	protected Map<String, Object> getTrace(HttpServletRequest request) {
@@ -139,22 +140,37 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (isIncluded(Include.REQUEST_HEADERS)) {
 			headers.put("request", getRequestHeaders(request));
 		}
-		add(trace, Include.PATH_INFO, "pathInfo", request.getPathInfo());
-		add(trace, Include.PATH_TRANSLATED, "pathTranslated",
-				request.getPathTranslated());
-		add(trace, Include.CONTEXT_PATH, "contextPath", request.getContextPath());
-		add(trace, Include.USER_PRINCIPAL, "userPrincipal",
-				(userPrincipal != null) ? userPrincipal.getName() : null);
-		if (isIncluded(Include.PARAMETERS)) {
-			trace.put("parameters", getParameterMapCopy(request));
+		if (isIncluded(Include.PATH_INFO)) {
+			add(trace, "pathInfo", request.getPathInfo());
 		}
-		add(trace, Include.QUERY_STRING, "query", request.getQueryString());
-		add(trace, Include.AUTH_TYPE, "authType", request.getAuthType());
-		add(trace, Include.REMOTE_ADDRESS, "remoteAddress", request.getRemoteAddr());
-		add(trace, Include.REMOTE_USER, "remoteUser", request.getRemoteUser());
+		if (isIncluded(Include.PATH_TRANSLATED)) {
+			add(trace, "pathTranslated", request.getPathTranslated());
+		}
+		if (isIncluded(Include.CONTEXT_PATH)) {
+			add(trace, "contextPath", request.getContextPath());
+		}
+		if (isIncluded(Include.USER_PRINCIPAL)) {
+			add(trace, "userPrincipal",
+					(userPrincipal != null) ? userPrincipal.getName() : null);
+		}
+		if (isIncluded(Include.PARAMETERS)) {
+			add(trace, "parameters", getParameterMapCopy(request));
+		}
+		if (isIncluded(Include.QUERY_STRING)) {
+			add(trace, "query", request.getQueryString());
+		}
+		if (isIncluded(Include.AUTH_TYPE)) {
+			add(trace, "authType", request.getAuthType());
+		}
+		if (isIncluded(Include.REMOTE_ADDRESS)) {
+			add(trace, "remoteAddress", request.getRemoteAddr());
+		}
+		if (isIncluded(Include.REMOTE_USER)) {
+			add(trace, "remoteUser", request.getRemoteUser());
+		}
 		if (isIncluded(Include.ERRORS) && exception != null
 				&& this.errorAttributes != null) {
-			trace.put("error", this.errorAttributes
+			add(trace, "error", this.errorAttributes
 					.getErrorAttributes(new ServletRequestAttributes(request), true));
 		}
 		return trace;
@@ -210,8 +226,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private void addTimeTaken(Map<String, Object> trace, long startTime) {
 		long timeTaken = System.nanoTime() - startTime;
-		add(trace, Include.TIME_TAKEN, "timeTaken",
-				"" + TimeUnit.NANOSECONDS.toMillis(timeTaken));
+		if (isIncluded(Include.TIME_TAKEN)) {
+			add(trace, "timeTaken", "" + TimeUnit.NANOSECONDS.toMillis(timeTaken));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -245,9 +262,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		}
 	}
 
-	private void add(Map<String, Object> trace, Include include, String name,
-			Object value) {
-		if (isIncluded(include) && value != null) {
+	private void add(Map<String, Object> trace, String name, Object value) {
+		if (value != null) {
 			trace.put(name, value);
 		}
 	}
