@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,12 +119,16 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
 			FilterRegistrationBean registration) {
-		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
+		if (registration.isEnabled()) {
+			addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
+		}
 	}
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
 			DelegatingFilterProxyRegistrationBean registration) {
-		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
+		if (registration.isEnabled()) {
+			addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
+		}
 	}
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter,
