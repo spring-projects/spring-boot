@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.util.function.Predicate;
-
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -27,6 +24,7 @@ import org.neo4j.ogm.session.event.Event;
 import org.neo4j.ogm.session.event.EventListener;
 import org.neo4j.ogm.session.event.PersistenceEvent;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
@@ -36,7 +34,6 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -160,18 +157,14 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void providesARequestScopedBookmarkManangerIfNecessaryAndPossible() {
-		Predicate<ConfigurableApplicationContext> hasRequestScopedBookmarkManager = (
-				context) -> context.getBeanFactory() //
-						.getBeanDefinition("scopedTarget."
-								+ Neo4jBookmarkManagementConfiguration.BOOKMARK_MANAGER_BEAN_NAME) //
-						.getScope() //
-						.equals(WebApplicationContext.SCOPE_REQUEST);
-
 		this.contextRunner
 				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
-				.run((context) -> assertThat(context)
-						.satisfies(new Condition<>(hasRequestScopedBookmarkManager,
-								"hasRequestScopedBookmarkManager")));
+				.run((context) -> {
+					BeanDefinition bookmarkManagerBean = context.getBeanFactory()
+							.getBeanDefinition("scopedTarget.bookmarkManager");
+					assertThat(bookmarkManagerBean.getScope())
+							.isEqualTo(WebApplicationContext.SCOPE_REQUEST);
+				});
 	}
 
 	@Test
@@ -181,8 +174,11 @@ public class Neo4jDataAutoConfigurationTests {
 						BookmarkManagementEnabledConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
 						TransactionAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(BookmarkManager.class));
+				.run((context) -> {
+					assertThat(context).hasSingleBean(BookmarkManager.class);
+					assertThat(context.getBeanDefinitionNames())
+							.doesNotContain("scopedTarget.bookmarkManager");
+				});
 	}
 
 	@Test

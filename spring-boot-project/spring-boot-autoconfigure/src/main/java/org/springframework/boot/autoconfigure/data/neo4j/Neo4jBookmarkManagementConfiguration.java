@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,7 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
  * bound to the application or the request, as recommend by Spring Data Neo4j.
  *
  * @author Michael Simons
- * @since 2.1
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
@@ -50,17 +49,16 @@ import org.springframework.web.context.WebApplicationContext;
 		BookmarkInterceptor.class })
 class Neo4jBookmarkManagementConfiguration {
 
-	static final String BOOKMARK_MANAGER_BEAN_NAME = "bookmarkManager";
+	private static final String BOOKMARK_MANAGER_BEAN_NAME = "bookmarkManager";
 
 	@Bean(BOOKMARK_MANAGER_BEAN_NAME)
-	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.INTERFACES)
 	@ConditionalOnWebApplication
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.INTERFACES)
 	public BookmarkManager requestScopedBookmarkManager() {
 		return new CaffeineBookmarkManager();
 	}
 
 	@Bean(BOOKMARK_MANAGER_BEAN_NAME)
-	@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnNotWebApplication
 	public BookmarkManager singletonScopedBookmarkManager() {
 		return new CaffeineBookmarkManager();

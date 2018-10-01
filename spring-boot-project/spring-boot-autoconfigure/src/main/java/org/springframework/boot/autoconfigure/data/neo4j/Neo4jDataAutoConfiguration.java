@@ -53,7 +53,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Vince Bickers
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @author Michael Simons
  * @since 1.4.0
  */
 @Configuration
