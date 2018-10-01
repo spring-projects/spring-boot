@@ -19,13 +19,12 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link AnnotationsPropertySource}.
@@ -35,14 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AnnotationsPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Property source must not be null");
-		new AnnotationsPropertySource(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new AnnotationsPropertySource(null))
+				.withMessageContaining("Property source must not be null");
 	}
 
 	@Test

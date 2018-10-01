@@ -16,11 +16,10 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link FilteredClassLoader}.
@@ -29,25 +28,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FilteredClassLoaderTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound()
 			throws Exception {
-		FilteredClassLoader classLoader = new FilteredClassLoader(
-				FilteredClassLoaderTests.class.getPackage().getName());
-		this.thrown.expect(ClassNotFoundException.class);
-		classLoader.loadClass(getClass().getName());
-		classLoader.close();
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				FilteredClassLoaderTests.class.getPackage().getName())) {
+			assertThatExceptionOfType(ClassNotFoundException.class)
+					.isThrownBy(() -> classLoader.loadClass(getClass().getName()));
+		}
 	}
 
 	@Test
 	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class)) {
-			this.thrown.expect(ClassNotFoundException.class);
-			classLoader.loadClass(getClass().getName());
+			assertThatExceptionOfType(ClassNotFoundException.class)
+					.isThrownBy(() -> classLoader.loadClass(getClass().getName()));
 		}
 	}
 

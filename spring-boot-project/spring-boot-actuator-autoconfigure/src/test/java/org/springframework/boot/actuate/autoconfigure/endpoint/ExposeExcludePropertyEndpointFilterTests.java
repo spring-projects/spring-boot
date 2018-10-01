@@ -17,9 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
@@ -28,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -38,9 +37,6 @@ import static org.mockito.Mockito.mock;
  */
 public class ExposeExcludePropertyEndpointFilterTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private ExposeExcludePropertyEndpointFilter<?> filter;
 
 	@Before
@@ -50,32 +46,34 @@ public class ExposeExcludePropertyEndpointFilterTests {
 
 	@Test
 	public void createWhenEndpointTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("EndpointType must not be null");
-		new ExposeExcludePropertyEndpointFilter<>(null, new MockEnvironment(), "foo");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ExposeExcludePropertyEndpointFilter<>(null,
+						new MockEnvironment(), "foo"))
+				.withMessageContaining("EndpointType must not be null");
 	}
 
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
-		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class, null, "foo");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ExposeExcludePropertyEndpointFilter<>(
+						ExposableEndpoint.class, null, "foo"))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWhenPrefixIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Prefix must not be empty");
-		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class,
-				new MockEnvironment(), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ExposeExcludePropertyEndpointFilter<>(
+						ExposableEndpoint.class, new MockEnvironment(), null))
+				.withMessageContaining("Prefix must not be empty");
 	}
 
 	@Test
 	public void createWhenPrefixIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Prefix must not be empty");
-		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class,
-				new MockEnvironment(), "");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ExposeExcludePropertyEndpointFilter<>(
+						ExposableEndpoint.class, new MockEnvironment(), ""))
+				.withMessageContaining("Prefix must not be empty");
 	}
 
 	@Test

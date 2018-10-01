@@ -16,9 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.override;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -33,6 +31,7 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for {@link OverrideAutoConfiguration} when {@code enabled} is
@@ -46,9 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ImportAutoConfiguration(ExampleTestConfig.class)
 public class OverrideAutoConfigurationEnabledFalseIntegrationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private ApplicationContext context;
 
@@ -56,8 +52,8 @@ public class OverrideAutoConfigurationEnabledFalseIntegrationTests {
 	public void disabledAutoConfiguration() {
 		ApplicationContext context = this.context;
 		assertThat(context.getBean(ExampleTestConfig.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		context.getBean(ConfigurationPropertiesBindingPostProcessor.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(
+				() -> context.getBean(ConfigurationPropertiesBindingPostProcessor.class));
 	}
 
 }

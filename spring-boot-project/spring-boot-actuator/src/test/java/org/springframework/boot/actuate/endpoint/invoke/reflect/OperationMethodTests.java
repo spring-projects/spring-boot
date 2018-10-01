@@ -18,15 +18,14 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link OperationMethod}.
@@ -35,24 +34,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class OperationMethodTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example",
 			String.class);
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Method must not be null");
-		new OperationMethod(null, OperationType.READ);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OperationMethod(null, OperationType.READ))
+				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	public void createWhenOperationTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("OperationType must not be null");
-		new OperationMethod(this.exampleMethod, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
+				.withMessageContaining("OperationType must not be null");
 	}
 
 	@Test

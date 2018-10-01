@@ -21,9 +21,7 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
@@ -38,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for the configuration of development-time properties
@@ -45,9 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class DevToolPropertiesIntegrationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ConfigurableApplicationContext context;
 
@@ -90,8 +86,8 @@ public class DevToolPropertiesIntegrationTests {
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(MyBean.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test

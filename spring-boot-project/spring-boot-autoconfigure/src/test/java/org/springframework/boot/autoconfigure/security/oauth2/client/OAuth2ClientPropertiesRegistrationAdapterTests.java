@@ -23,9 +23,7 @@ import java.util.Map;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.LoginClientRegistration;
@@ -40,6 +38,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link OAuth2ClientPropertiesRegistrationAdapter}.
@@ -58,9 +57,6 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 			this.server.shutdown();
 		}
 	}
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
@@ -195,9 +191,10 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		login.setProvider("missing");
 		properties.getRegistration().getLogin().put("registration", login);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unknown provider ID 'missing'");
-		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
+						.getClientRegistrations(properties))
+				.withMessageContaining("Unknown provider ID 'missing'");
 	}
 
 	@Test
@@ -276,10 +273,11 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		properties.getRegistration().getLogin().put("missing", login);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Provider ID must be specified for client registration 'missing'");
-		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
+						.getClientRegistrations(properties))
+				.withMessageContaining(
+						"Provider ID must be specified for client registration 'missing'");
 	}
 
 	@Test

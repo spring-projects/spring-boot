@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -38,6 +36,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -47,9 +46,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Phillip Webb
  */
 public class HttpRestartServerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private RestartServer delegate;
@@ -67,16 +63,16 @@ public class HttpRestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SourceFolderUrlFilter must not be null");
-		new HttpRestartServer((SourceFolderUrlFilter) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
+				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
 	@Test
 	public void restartServerMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("RestartServer must not be null");
-		new HttpRestartServer((RestartServer) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpRestartServer((RestartServer) null))
+				.withMessageContaining("RestartServer must not be null");
 	}
 
 	@Test

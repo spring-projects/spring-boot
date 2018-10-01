@@ -19,9 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -30,6 +28,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -41,22 +40,20 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringIterableConfigurationPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySource must not be null");
-		new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new SpringIterableConfigurationPropertySource(null,
+						mock(PropertyMapper.class)))
+				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Mapper must not be null");
-		new SpringIterableConfigurationPropertySource(
-				mock(EnumerablePropertySource.class), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new SpringIterableConfigurationPropertySource(
+						mock(EnumerablePropertySource.class), null))
+				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test

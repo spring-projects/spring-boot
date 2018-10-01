@@ -31,10 +31,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link RandomAccessDataFile}.
@@ -52,9 +54,6 @@ public class RandomAccessDataFileTests {
 			BYTES[i] = (byte) i;
 		}
 	}
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -83,18 +82,17 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void fileNotNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new RandomAccessDataFile(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new RandomAccessDataFile(null))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void fileExists() {
 		File file = new File("/does/not/exist");
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
-				String.format("File %s must exist", file.getAbsolutePath()));
-		new RandomAccessDataFile(file);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new RandomAccessDataFile(file)).withMessageContaining(
+						String.format("File %s must exist", file.getAbsolutePath()));
 	}
 
 	@Test
@@ -105,31 +103,31 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void readWhenOffsetIsBeyondEOFShouldThrowException() throws Exception {
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.read(257, 0);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.read(257, 0));
 	}
 
 	@Test
 	public void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException()
 			throws Exception {
-		this.thrown.expect(IndexOutOfBoundsException.class);
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
-		subsection.read(11, 0);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> subsection.read(11, 0));
 	}
 
 	@Test
 	public void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException()
 			throws Exception {
-		this.thrown.expect(EOFException.class);
-		this.file.read(256, 1);
+		assertThatExceptionOfType(EOFException.class)
+				.isThrownBy(() -> this.file.read(256, 1));
 	}
 
 	@Test
 	public void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException()
 			throws Exception {
-		this.thrown.expect(EOFException.class);
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
-		subsection.read(10, 1);
+		assertThatExceptionOfType(EOFException.class)
+				.isThrownBy(() -> subsection.read(10, 1));
 	}
 
 	@Test
@@ -141,16 +139,15 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void inputStreamReadNullBytes() throws Exception {
-		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Bytes must not be null");
-		this.inputStream.read(null);
+		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null))
+				.withMessage("Bytes must not be null");
 	}
 
 	@Test
 	public void inputStreamReadNullBytesWithOffset() throws Exception {
-		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Bytes must not be null");
-		this.inputStream.read(null, 0, 1);
+		assertThatNullPointerException()
+				.isThrownBy(() -> this.inputStream.read(null, 0, 1))
+				.withMessage("Bytes must not be null");
 	}
 
 	@Test
@@ -218,14 +215,14 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void subsectionNegativeOffset() {
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(-1, 1);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(-1, 1));
 	}
 
 	@Test
 	public void subsectionNegativeLength() {
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(0, -1);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(0, -1));
 	}
 
 	@Test
@@ -237,15 +234,15 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsectionTooBig() {
 		this.file.getSubsection(0, 256);
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(0, 257);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(0, 257));
 	}
 
 	@Test
 	public void subsectionTooBigWithOffset() {
 		this.file.getSubsection(1, 255);
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(1, 256);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(1, 256));
 	}
 
 	@Test

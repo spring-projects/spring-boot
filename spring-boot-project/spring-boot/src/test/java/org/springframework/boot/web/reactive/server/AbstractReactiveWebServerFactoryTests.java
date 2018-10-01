@@ -37,7 +37,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
@@ -70,9 +69,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();

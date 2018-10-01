@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ package org.springframework.boot.test.context.assertj;
 import java.util.function.Supplier;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -30,7 +28,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -40,9 +39,6 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 public class ApplicationContextAssertProviderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private ConfigurableApplicationContext mockContext;
@@ -65,43 +61,45 @@ public class ApplicationContextAssertProviderTests {
 
 	@Test
 	public void getWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		ApplicationContextAssertProvider.get(null, ApplicationContext.class,
-				this.mockContextSupplier);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ApplicationContextAssertProvider.get(null,
+						ApplicationContext.class, this.mockContextSupplier))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void getWhenTypeIsClassShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		ApplicationContextAssertProvider.get(null, ApplicationContext.class,
-				this.mockContextSupplier);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ApplicationContextAssertProvider.get(null,
+						ApplicationContext.class, this.mockContextSupplier))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void getWhenContextTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must be an interface");
-		ApplicationContextAssertProvider.get(
-				TestAssertProviderApplicationContextClass.class, ApplicationContext.class,
-				this.mockContextSupplier);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ApplicationContextAssertProvider.get(
+						TestAssertProviderApplicationContextClass.class,
+						ApplicationContext.class, this.mockContextSupplier))
+				.withMessageContaining("Type must be an interface");
 	}
 
 	@Test
 	public void getWhenContextTypeIsClassShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ContextType must not be null");
-		ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
-				null, this.mockContextSupplier);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ApplicationContextAssertProvider.get(
+						TestAssertProviderApplicationContext.class, null,
+						this.mockContextSupplier))
+				.withMessageContaining("ContextType must not be null");
 	}
 
 	@Test
 	public void getWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ContextType must be an interface");
-		ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
-				StaticApplicationContext.class, this.mockContextSupplier);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ApplicationContextAssertProvider.get(
+						TestAssertProviderApplicationContext.class,
+						StaticApplicationContext.class, this.mockContextSupplier))
+				.withMessageContaining("ContextType must be an interface");
 	}
 
 	@Test
@@ -118,8 +116,8 @@ public class ApplicationContextAssertProviderTests {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
 		assertThat((Object) context).isNotNull();
-		expectStartupFailure();
-		context.getBean("foo");
+		assertThatIllegalStateException().isThrownBy(() -> context.getBean("foo"))
+				.withCause(this.startupFailure).withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -133,8 +131,9 @@ public class ApplicationContextAssertProviderTests {
 	public void getSourceContextWhenContextFailsShouldThrowException() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
-		expectStartupFailure();
-		context.getSourceApplicationContext();
+		assertThatIllegalStateException()
+				.isThrownBy(() -> context.getSourceApplicationContext())
+				.withCause(this.startupFailure).withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -149,8 +148,9 @@ public class ApplicationContextAssertProviderTests {
 	public void getSourceContextOfTypeWhenContextFailsToStartShouldThrowException() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
-		expectStartupFailure();
-		context.getSourceApplicationContext(ApplicationContext.class);
+		assertThatIllegalStateException().isThrownBy(
+				() -> context.getSourceApplicationContext(ApplicationContext.class))
+				.withCause(this.startupFailure).withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -211,12 +211,6 @@ public class ApplicationContextAssertProviderTests {
 				this.mockContextSupplier);
 		context.close();
 		verify(this.mockContext).close();
-	}
-
-	private void expectStartupFailure() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("failed to start");
-		this.thrown.expectCause(equalTo(this.startupFailure));
 	}
 
 	private ApplicationContextAssertProvider<ApplicationContext> get(

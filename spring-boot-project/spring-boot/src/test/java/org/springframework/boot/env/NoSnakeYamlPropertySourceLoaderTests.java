@@ -16,14 +16,14 @@
 
 package org.springframework.boot.env;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.core.io.ByteArrayResource;
+
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link YamlPropertySourceLoader} when snakeyaml is not available.
@@ -34,19 +34,16 @@ import org.springframework.core.io.ByteArrayResource;
 @ClassPathExclusions("snakeyaml-*.jar")
 public class NoSnakeYamlPropertySourceLoaderTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test
 	public void load() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Attempted to load resource but snakeyaml was not found on the classpath");
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
-		this.loader.load("resource", resource);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.loader.load("resource", resource))
+				.withMessageContaining(
+						"Attempted to load resource but snakeyaml was not found on the classpath");
 	}
 
 }

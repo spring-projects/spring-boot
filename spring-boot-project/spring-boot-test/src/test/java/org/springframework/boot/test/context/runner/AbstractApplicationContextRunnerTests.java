@@ -21,9 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.Gson;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -39,6 +37,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.junit.Assert.fail;
 
 /**
@@ -51,9 +50,6 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  */
 public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void runWithInitializerShouldInitialize() {
@@ -178,11 +174,9 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void thrownRuleWorksWithCheckedException() {
-		get().run((context) -> {
-			this.thrown.expect(IOException.class);
-			this.thrown.expectMessage("Expected message");
-			throwCheckedException("Expected message");
-		});
+		get().run((context) -> assertThatIOException()
+				.isThrownBy(() -> throwCheckedException("Expected message"))
+				.withMessageContaining("Expected message"));
 	}
 
 	protected abstract T get();

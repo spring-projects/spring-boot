@@ -16,9 +16,7 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -30,6 +28,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link StringToDataSizeConverter}.
@@ -38,9 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(Parameterized.class)
 public class StringToDataSizeConverterTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final ConversionService conversionService;
 
@@ -102,9 +98,9 @@ public class StringToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class);
-		this.thrown.expectMessage("'10WB' is not a valid data size");
-		convert("10WB");
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> convert("10WB"))
+				.withMessageContaining("'10WB' is not a valid data size");
 	}
 
 	@Test

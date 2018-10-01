@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package org.springframework.boot.context;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.filtersample.ExampleComponent;
@@ -32,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link TypeExcludeFilter}.
@@ -39,9 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class TypeExcludeFilterTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -62,8 +58,8 @@ public class TypeExcludeFilterTests {
 		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleComponent.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(ExampleFilteredComponent.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(ExampleFilteredComponent.class));
 	}
 
 	@Configuration

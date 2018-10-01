@@ -31,7 +31,6 @@ import java.util.zip.ZipEntry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -39,7 +38,7 @@ import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JarFileArchive}.
@@ -51,9 +50,6 @@ public class JarFileArchiveTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private File rootJarFile;
 
@@ -135,8 +131,8 @@ public class JarFileArchiveTests {
 	public void zip64ArchivesAreHandledGracefully() throws IOException {
 		File file = this.temporaryFolder.newFile("test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		this.thrown.expectMessage(equalTo("Zip64 archives are not supported"));
-		new JarFileArchive(file);
+		assertThatIllegalStateException().isThrownBy(() -> new JarFileArchive(file))
+				.withMessageContaining("Zip64 archives are not supported");
 	}
 
 	@Test
@@ -156,10 +152,11 @@ public class JarFileArchiveTests {
 		output.closeEntry();
 		output.close();
 		JarFileArchive jarFileArchive = new JarFileArchive(file);
-		this.thrown.expectMessage(
-				equalTo("Failed to get nested archive for entry nested/zip64.jar"));
-		jarFileArchive
-				.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> jarFileArchive.getNestedArchive(
+						getEntriesMap(jarFileArchive).get("nested/zip64.jar")))
+				.withMessageContaining(
+						"Failed to get nested archive for entry nested/zip64.jar");
 	}
 
 	private byte[] writeZip64Jar() throws IOException {

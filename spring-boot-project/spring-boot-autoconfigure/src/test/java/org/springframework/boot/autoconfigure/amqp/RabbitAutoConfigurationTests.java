@@ -28,9 +28,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.SslContextFactory;
 import com.rabbitmq.client.TrustEverythingTrustManager;
 import org.aopalliance.aop.Advice;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -69,6 +67,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -84,9 +83,6 @@ import static org.mockito.Mockito.verify;
  * @author Gary Russell
  */
 public class RabbitAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
@@ -413,15 +409,14 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testStaticQueues() {
+		// There should NOT be an AmqpAdmin bean when dynamic is switch to false
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.dynamic:false").run((context) -> {
-					// There should NOT be an AmqpAdmin bean when dynamic is switch to
-					// false
-					this.thrown.expect(NoSuchBeanDefinitionException.class);
-					this.thrown.expectMessage("No qualifying bean of type");
-					this.thrown.expectMessage(AmqpAdmin.class.getName());
-					context.getBean(AmqpAdmin.class);
-				});
+				.withPropertyValues("spring.rabbitmq.dynamic:false")
+				.run((context) -> assertThatExceptionOfType(
+						NoSuchBeanDefinitionException.class)
+								.isThrownBy(() -> context.getBean(AmqpAdmin.class))
+								.withMessageContaining("No qualifying bean of type '"
+										+ AmqpAdmin.class.getName() + "'"));
 	}
 
 	@Test

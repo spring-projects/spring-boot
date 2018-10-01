@@ -20,9 +20,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.core.task.TaskDecorator;
@@ -30,6 +28,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -41,9 +40,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  */
 public class TaskExecutorBuilderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private TaskExecutorBuilder builder = new TaskExecutorBuilder();
 
@@ -77,16 +73,17 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.customizers((TaskExecutorCustomizer[]) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> this.builder.customizers((TaskExecutorCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.customizers((Set<TaskExecutorCustomizer>) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -127,16 +124,17 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.additionalCustomizers((Set<TaskExecutorCustomizer>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder
+						.additionalCustomizers((Set<TaskExecutorCustomizer>) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

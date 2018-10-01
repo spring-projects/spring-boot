@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -34,6 +32,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ValidationErrors}.
@@ -46,28 +45,28 @@ public class ValidationErrorsTests {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
 			.of("foo");
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be null");
-		new ValidationErrors(null, Collections.emptySet(), Collections.emptyList());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(),
+						Collections.emptyList()))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenBoundPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("BoundProperties must not be null");
-		new ValidationErrors(NAME, null, Collections.emptyList());
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new ValidationErrors(NAME, null, Collections.emptyList()))
+				.withMessageContaining("BoundProperties must not be null");
 	}
 
 	@Test
 	public void createWhenErrorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Errors must not be null");
-		new ValidationErrors(NAME, Collections.emptySet(), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new ValidationErrors(NAME, Collections.emptySet(), null))
+				.withMessageContaining("Errors must not be null");
 	}
 
 	@Test

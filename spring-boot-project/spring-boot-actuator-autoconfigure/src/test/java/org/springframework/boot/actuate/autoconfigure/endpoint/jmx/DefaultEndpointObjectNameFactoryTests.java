@@ -22,15 +22,14 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -40,9 +39,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 public class DefaultEndpointObjectNameFactoryTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -101,10 +97,10 @@ public class DefaultEndpointObjectNameFactoryTests {
 	public void generateObjectNameWithUniqueNamesDeprecatedPropertyMismatchMainProperty() {
 		this.environment.setProperty("spring.jmx.unique-names", "false");
 		this.properties.setUniqueNames(true);
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("spring.jmx.unique-names");
-		this.thrown.expectMessage("management.endpoints.jmx.unique-names");
-		generateObjectName(endpoint("test"));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> generateObjectName(endpoint("test")))
+				.withMessageContaining("spring.jmx.unique-names")
+				.withMessageContaining("management.endpoints.jmx.unique-names");
 	}
 
 	@Test

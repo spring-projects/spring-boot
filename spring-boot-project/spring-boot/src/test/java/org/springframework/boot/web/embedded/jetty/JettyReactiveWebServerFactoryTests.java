@@ -29,6 +29,7 @@ import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFac
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -50,17 +51,17 @@ public class JettyReactiveWebServerFactoryTests
 	@Test
 	public void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		factory.setServerCustomizers(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.setServerCustomizers(null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		factory.addServerCustomizers((JettyServerCustomizer[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link JacksonTester}.
@@ -34,16 +35,17 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void initFieldsWhenTestIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TestInstance must not be null");
-		JacksonTester.initFields(null, new ObjectMapper());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> JacksonTester.initFields(null, new ObjectMapper()))
+				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Marshaller must not be null");
-		JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> JacksonTester.initFields(new InitFieldsTestClass(),
+						(ObjectMapper) null))
+				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test

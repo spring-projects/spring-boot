@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ package org.springframework.boot.origin;
 
 import java.util.HashMap;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
@@ -37,28 +36,27 @@ import static org.mockito.Mockito.withSettings;
  */
 public class PropertySourceOriginTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySource must not be null");
-		new PropertySourceOrigin(null, "name");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PropertySourceOrigin(null, "name"))
+				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertyName must not be empty");
-		new PropertySourceOrigin(mock(PropertySource.class), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new PropertySourceOrigin(mock(PropertySource.class), null))
+				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertyName must not be empty");
-		new PropertySourceOrigin(mock(PropertySource.class), "");
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
+				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test

@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import javax.validation.Valid;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -43,7 +41,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for {@link DefaultErrorWebExceptionHandler}
@@ -62,9 +60,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			.withPropertyValues("spring.main.web-application-type=reactive",
 					"server.port=0")
 			.withUserConfiguration(Application.class);
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void jsonError() {
@@ -241,9 +236,11 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = WebTestClient.bindToApplicationContext(context)
 					.build();
-			this.thrown.expectCause(instanceOf(IllegalStateException.class));
-			this.thrown.expectMessage("already committed!");
-			client.get().uri("/commit").exchange().expectStatus();
+			assertThatExceptionOfType(RuntimeException.class)
+					.isThrownBy(
+							() -> client.get().uri("/commit").exchange().expectStatus())
+					.withCauseInstanceOf(IllegalStateException.class)
+					.withMessageContaining("already committed!");
 		});
 	}
 

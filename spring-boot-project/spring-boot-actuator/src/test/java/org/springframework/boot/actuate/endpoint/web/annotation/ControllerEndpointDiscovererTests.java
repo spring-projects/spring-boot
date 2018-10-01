@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
@@ -41,6 +39,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ControllerEndpointDiscoverer}.
@@ -49,9 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class ControllerEndpointDiscovererTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
@@ -140,12 +136,10 @@ public class ControllerEndpointDiscovererTests {
 	@Test
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage(
-							"ControllerEndpoints must not declare operations");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(
+						IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining(
+										"ControllerEndpoints must not declare operations")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

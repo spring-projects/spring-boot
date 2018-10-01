@@ -25,9 +25,7 @@ import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -37,6 +35,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PropertiesMeterFilter}.
@@ -45,9 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  */
 public class PropertiesMeterFilterTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private DistributionStatisticConfig config;
@@ -59,9 +55,9 @@ public class PropertiesMeterFilterTests {
 
 	@Test
 	public void createWhenPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Properties must not be null");
-		new PropertiesMeterFilter(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PropertiesMeterFilter(null))
+				.withMessageContaining("Properties must not be null");
 	}
 
 	@Test

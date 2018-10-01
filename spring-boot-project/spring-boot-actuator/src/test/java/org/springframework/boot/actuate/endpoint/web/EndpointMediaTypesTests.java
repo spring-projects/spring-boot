@@ -20,11 +20,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link EndpointMediaTypes}.
@@ -33,21 +32,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class EndpointMediaTypesTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenProducedIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Produced must not be null");
-		new EndpointMediaTypes(null, Collections.emptyList());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
+				.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
 	public void createWhenConsumedIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Consumed must not be null");
-		new EndpointMediaTypes(Collections.emptyList(), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
+				.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test

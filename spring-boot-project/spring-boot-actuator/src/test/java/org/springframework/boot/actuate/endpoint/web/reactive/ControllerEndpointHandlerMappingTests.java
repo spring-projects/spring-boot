@@ -18,9 +18,7 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import java.util.Arrays;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
@@ -36,6 +34,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.MethodNotAllowedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -46,9 +45,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 public class ControllerEndpointHandlerMappingTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
@@ -92,8 +88,8 @@ public class ControllerEndpointHandlerMappingTests {
 	public void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
-		this.thrown.expect(MethodNotAllowedException.class);
-		getHandler(mapping, HttpMethod.POST, "/actuator/first");
+		assertThatExceptionOfType(MethodNotAllowedException.class).isThrownBy(
+				() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
 	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method,

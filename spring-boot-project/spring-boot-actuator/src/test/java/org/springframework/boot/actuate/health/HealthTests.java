@@ -20,11 +20,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -36,14 +35,11 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class HealthTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void statusMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Status must not be null");
-		new Health.Builder(null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Health.Builder(null, null))
+				.withMessageContaining("Status must not be null");
 	}
 
 	@Test

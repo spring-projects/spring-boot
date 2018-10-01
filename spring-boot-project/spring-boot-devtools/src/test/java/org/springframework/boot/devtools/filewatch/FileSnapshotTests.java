@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link FileSnapshot}.
@@ -43,23 +43,19 @@ public class FileSnapshotTests {
 			- TimeUnit.DAYS.toMillis(10);
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
 	public void fileMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new FileSnapshot(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(null))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeAFolder() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be a folder");
-		new FileSnapshot(this.temporaryFolder.newFolder());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
+				.withMessageContaining("File must not be a folder");
 	}
 
 	@Test

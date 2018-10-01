@@ -19,9 +19,7 @@ package org.springframework.boot.actuate.system;
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -44,9 +42,6 @@ public class DiskSpaceHealthIndicatorTests {
 	private static final DataSize THRESHOLD = DataSize.ofKilobytes(1);
 
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
-
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
 	private File fileMock;

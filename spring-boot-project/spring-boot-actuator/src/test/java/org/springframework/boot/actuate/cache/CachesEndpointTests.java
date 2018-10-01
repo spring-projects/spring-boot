@@ -22,9 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheManagerDescriptor;
@@ -34,6 +32,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -45,9 +44,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  */
 public class CachesEndpointTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void allCachesWithSingleCacheManager() {
@@ -94,11 +90,10 @@ public class CachesEndpointTests {
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "dupe-cache"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "dupe-cache"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		this.thrown.expect(NonUniqueCacheException.class);
-		this.thrown.expectMessage("dupe-cache");
-		this.thrown.expectMessage("test");
-		this.thrown.expectMessage("another");
-		endpoint.cache("dupe-cache", null);
+		assertThatExceptionOfType(NonUniqueCacheException.class)
+				.isThrownBy(() -> endpoint.cache("dupe-cache", null))
+				.withMessageContaining("dupe-cache").withMessageContaining("test")
+				.withMessageContaining("another");
 	}
 
 	@Test
@@ -159,11 +154,10 @@ public class CachesEndpointTests {
 		cacheManagers.put("test", cacheManager(mockCache("dupe-cache"), mockCache("b")));
 		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-
-		this.thrown.expectMessage("dupe-cache");
-		this.thrown.expectMessage("test");
-		this.thrown.expectMessage("another");
-		endpoint.clearCache("dupe-cache", null);
+		assertThatExceptionOfType(NonUniqueCacheException.class)
+				.isThrownBy(() -> endpoint.clearCache("dupe-cache", null))
+				.withMessageContaining("dupe-cache").withMessageContaining("test")
+				.withMessageContaining("another");
 	}
 
 	@Test

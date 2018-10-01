@@ -22,9 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -41,6 +39,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link DefaultErrorAttributes}.
@@ -53,9 +52,6 @@ public class DefaultErrorAttributesTests {
 	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(
 			HttpStatus.NOT_FOUND);
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
 	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create()
@@ -63,12 +59,13 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void missingExceptionAttribute() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Missing exception attribute in ServerWebExchange");
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
-		this.errorAttributes.getErrorAttributes(request, false);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
+				.withMessageContaining(
+						"Missing exception attribute in ServerWebExchange");
 	}
 
 	@Test

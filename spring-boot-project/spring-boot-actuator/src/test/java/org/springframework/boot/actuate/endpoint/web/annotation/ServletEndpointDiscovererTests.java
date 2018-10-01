@@ -29,9 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
@@ -50,6 +48,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ServletEndpointDiscoverer}.
@@ -58,9 +57,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class ServletEndpointDiscovererTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
@@ -116,43 +112,36 @@ public class ServletEndpointDiscovererTests {
 	@Test
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage(
-							"ServletEndpoints must not declare operations");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(
+						IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining(
+										"ServletEndpoints must not declare operations")));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointNotASupplierShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("must be a supplier");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(
+						IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("must be a supplier")));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointSuppliesWrongTypeShouldThrowException() {
 		this.contextRunner
 				.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("must supply an EndpointServlet");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(
+						IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining(
+										"must supply an EndpointServlet")));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("must not supply null");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(
+						IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("must not supply null")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

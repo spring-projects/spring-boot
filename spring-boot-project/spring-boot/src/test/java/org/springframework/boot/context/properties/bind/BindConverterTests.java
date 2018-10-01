@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -39,6 +37,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -50,9 +50,6 @@ import static org.mockito.Mockito.verify;
  */
 public class BindConverterTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Mock
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
@@ -63,9 +60,9 @@ public class BindConverterTests {
 
 	@Test
 	public void createWhenConversionServiceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ConversionService must not be null");
-		BindConverter.get(null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> BindConverter.get(null, null))
+				.withMessageContaining("ConversionService must not be null");
 	}
 
 	@Test
@@ -191,8 +188,9 @@ public class BindConverterTests {
 	public void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
 		BindConverter bindConverter = BindConverter
 				.get(ApplicationConversionService.getSharedInstance(), null);
-		this.thrown.expect(ConverterNotFoundException.class);
-		bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+				.isThrownBy(() -> bindConverter.convert("test",
+						ResolvableType.forClass(SampleType.class)));
 	}
 
 	@Test

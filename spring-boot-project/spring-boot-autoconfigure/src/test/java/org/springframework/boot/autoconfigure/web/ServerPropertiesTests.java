@@ -292,7 +292,7 @@ public class ServerPropertiesTests {
 		jetty.start();
 		org.eclipse.jetty.server.Connector connector = jetty.getServer()
 				.getConnectors()[0];
-		final AtomicReference<Throwable> failure = new AtomicReference<Throwable>();
+		final AtomicReference<Throwable> failure = new AtomicReference<>();
 		connector.addBean(new HttpChannel.Listener() {
 
 			@Override
@@ -318,14 +318,14 @@ public class ServerPropertiesTests {
 			});
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			StringBuilder data = new StringBuilder();
 			for (int i = 0; i < 250000; i++) {
 				data.append("a");
 			}
 			body.add("data", data.toString());
-			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(
-					body, headers);
+			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body,
+					headers);
 			template.postForEntity(
 					URI.create("http://localhost:" + jetty.getPort() + "/form"), entity,
 					Void.class);

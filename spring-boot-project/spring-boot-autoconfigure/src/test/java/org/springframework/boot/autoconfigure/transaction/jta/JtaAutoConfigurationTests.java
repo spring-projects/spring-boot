@@ -36,9 +36,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -60,6 +58,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -72,9 +71,6 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  */
 public class JtaAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -94,8 +90,8 @@ public class JtaAutoConfigurationTests {
 	public void customPlatformTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(
 				CustomTransactionManagerConfig.class, JtaAutoConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(JtaTransactionManager.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(JtaTransactionManager.class));
 	}
 
 	@Test

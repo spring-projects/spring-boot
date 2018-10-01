@@ -19,9 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -32,6 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link StaticResourceRequest}.
@@ -42,9 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void atCommonLocationsShouldMatchCommonLocations() {
@@ -81,16 +77,17 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Locations must not be null");
-		this.resourceRequest.at(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.resourceRequest.at(null))
+				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Locations must not be null");
-		this.resourceRequest.atCommonLocations().excluding(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> this.resourceRequest.atCommonLocations().excluding(null))
+				.withMessageContaining("Locations must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {

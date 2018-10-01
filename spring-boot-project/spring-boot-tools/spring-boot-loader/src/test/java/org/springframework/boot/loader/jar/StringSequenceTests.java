@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link StringSequence}.
@@ -29,33 +29,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StringSequenceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Source must not be null");
-		new StringSequence(null);
+		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null))
+				.withMessage("Source must not be null");
 	}
 
 	@Test
 	public void createWithIndexWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Source must not be null");
-		new StringSequence(null, 0, 0);
+		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null, 0, 0))
+				.withMessage("Source must not be null");
 	}
 
 	@Test
 	public void createWhenStartIsLessThanZeroShouldThrowException() {
-		this.thrown.expect(StringIndexOutOfBoundsException.class);
-		new StringSequence("x", -1, 0);
+		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
+				.isThrownBy(() -> new StringSequence("x", -1, 0));
 	}
 
 	@Test
 	public void createWhenEndIsGreaterThanLengthShouldThrowException() {
-		this.thrown.expect(StringIndexOutOfBoundsException.class);
-		new StringSequence("x", 0, 2);
+		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
+				.isThrownBy(() -> new StringSequence("x", 0, 2));
 	}
 
 	@Test
@@ -88,8 +83,8 @@ public class StringSequenceTests {
 		StringSequence sequence = new StringSequence("abcde").subSequence(1, 4);
 		assertThat(sequence.toString()).isEqualTo("bcd");
 		assertThat(sequence.subSequence(2, 3).toString()).isEqualTo("d");
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		sequence.subSequence(3, 4);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> sequence.subSequence(3, 4));
 	}
 
 	@Test
@@ -97,8 +92,8 @@ public class StringSequenceTests {
 		StringSequence sequence = new StringSequence("abcde").subSequence(1, 4);
 		assertThat(sequence.toString()).isEqualTo("bcd");
 		assertThat(sequence.subSequence(2, 3).toString()).isEqualTo("d");
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		sequence.subSequence(4, 3);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> sequence.subSequence(4, 3));
 	}
 
 	@Test

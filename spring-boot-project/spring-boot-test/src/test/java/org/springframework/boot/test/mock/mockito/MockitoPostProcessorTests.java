@@ -16,9 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.FactoryBean;
@@ -33,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Test for {@link MockitoPostProcessor}. See also the integration tests.
@@ -43,20 +42,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MockitoPostProcessorTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace "
-						+ "but found [example1, example2]");
-		context.refresh();
+		assertThatIllegalStateException().isThrownBy(context::refresh)
+				.withMessageContaining(
+						"Unable to register mock bean " + ExampleService.class.getName()
+								+ " expected a single matching bean to replace "
+								+ "but found [example1, example2]");
 	}
 
 	@Test
@@ -64,12 +59,11 @@ public class MockitoPostProcessorTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace "
-						+ "but found [example1, example3]");
-		context.refresh();
+		assertThatIllegalStateException().isThrownBy(context::refresh)
+				.withMessageContaining(
+						"Unable to register mock bean " + ExampleService.class.getName()
+								+ " expected a single matching bean to replace "
+								+ "but found [example1, example3]");
 	}
 
 	@Test

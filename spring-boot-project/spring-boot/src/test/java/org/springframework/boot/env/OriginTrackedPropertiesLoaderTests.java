@@ -20,9 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
@@ -30,6 +28,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link OriginTrackedPropertiesLoader}.
@@ -38,9 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class OriginTrackedPropertiesLoaderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ClassPathResource resource;
 
@@ -93,10 +89,11 @@ public class OriginTrackedPropertiesLoaderTests {
 	@Test
 	public void getMalformedUnicodeProperty() throws Exception {
 		// gh-12716
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Malformed \\uxxxx encoding");
-		new OriginTrackedPropertiesLoader(new ClassPathResource(
-				"test-properties-malformed-unicode.properties", getClass())).load();
+		ClassPathResource resource = new ClassPathResource(
+				"test-properties-malformed-unicode.properties", getClass());
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new OriginTrackedPropertiesLoader(resource).load())
+				.withMessageContaining("Malformed \\uxxxx encoding");
 	}
 
 	@Test

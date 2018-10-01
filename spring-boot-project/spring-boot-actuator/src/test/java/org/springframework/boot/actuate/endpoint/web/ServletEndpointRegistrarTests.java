@@ -27,15 +27,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -49,9 +48,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  */
 public class ServletEndpointRegistrarTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private ServletContext servletContext;
@@ -71,9 +67,9 @@ public class ServletEndpointRegistrarTests {
 
 	@Test
 	public void createWhenServletEndpointsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ServletEndpoints must not be null");
-		new ServletEndpointRegistrar(null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ServletEndpointRegistrar(null, null))
+				.withMessageContaining("ServletEndpoints must not be null");
 	}
 
 	@Test

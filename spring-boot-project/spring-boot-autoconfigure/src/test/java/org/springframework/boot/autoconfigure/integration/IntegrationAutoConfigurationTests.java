@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.integration;
 
 import javax.management.MBeanServer;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -47,6 +45,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,9 +56,6 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  */
 public class IntegrationAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
@@ -189,8 +185,8 @@ public class IntegrationAutoConfigurationTests {
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					this.thrown.expect(BadSqlGrammarException.class);
-					jdbc.queryForList("select * from INT_MESSAGE");
+					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
+							() -> jdbc.queryForList("select * from INT_MESSAGE"));
 				});
 	}
 

@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -95,6 +94,7 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.
@@ -109,9 +109,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private TestCompiler compiler;
 
@@ -502,9 +499,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void invalidDoubleRegistration() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Compilation failed");
-		compile(InvalidDoubleRegistrationProperties.class);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> compile(InvalidDoubleRegistrationProperties.class))
+				.withMessageContaining("Compilation failed");
 	}
 
 	@Test
@@ -904,10 +901,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergeOfInvalidAdditionalMetadata() throws IOException {
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
-
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Compilation failed");
-		compile(SimpleProperties.class);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> compile(SimpleProperties.class))
+				.withMessage("Compilation failed");
 	}
 
 	@Test

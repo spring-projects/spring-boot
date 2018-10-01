@@ -24,14 +24,13 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -43,9 +42,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  */
 public class ReactiveMongoClientFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockEnvironment environment = new MockEnvironment();
 
@@ -126,10 +122,9 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
+		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties))
+				.withMessageContaining("Invalid mongo configuration, "
+						+ "either uri or host/port/credentials must be specified");
 	}
 
 	@Test
@@ -138,10 +133,9 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
 		properties.setPort(4567);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
+		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties))
+				.withMessageContaining("Invalid mongo configuration, "
+						+ "either uri or host/port/credentials must be specified");
 	}
 
 	@Test

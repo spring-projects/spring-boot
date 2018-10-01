@@ -25,9 +25,7 @@ import java.util.Map;
 import javax.servlet.Filter;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -44,6 +42,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpEncodingAutoConfiguration}
@@ -51,9 +50,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class HttpEncodingAutoConfigurationTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -75,8 +71,8 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void disableConfiguration() {
 		load(EmptyConfiguration.class, "spring.http.encoding.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(CharacterEncodingFilter.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test

@@ -38,9 +38,7 @@ import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionalRunnable;
 import org.jooq.VisitListener;
 import org.jooq.VisitListenerProvider;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -68,9 +66,6 @@ public class JooqAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.name:jooqtest");
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void noDataSource() {

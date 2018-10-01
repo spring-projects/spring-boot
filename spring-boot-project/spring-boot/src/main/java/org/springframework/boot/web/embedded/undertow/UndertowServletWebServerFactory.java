@@ -307,7 +307,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			EventListener listener = new AccessLogShutdownListener(worker,
 					accessLogReceiver);
 			deploymentInfo.addListener(new ListenerInfo(AccessLogShutdownListener.class,
-					new ImmediateInstanceFactory<EventListener>(listener)));
+					new ImmediateInstanceFactory<>(listener)));
 			deploymentInfo.addInitialHandlerChainWrapper(
 					(handler) -> createAccessLogHandler(handler, accessLogReceiver));
 		}

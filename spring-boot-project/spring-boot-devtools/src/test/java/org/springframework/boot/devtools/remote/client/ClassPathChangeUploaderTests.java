@@ -29,7 +29,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
@@ -46,6 +45,7 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ClassPathChangeUploader}.
@@ -54,9 +54,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class ClassPathChangeUploaderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -74,30 +71,32 @@ public class ClassPathChangeUploaderTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must not be empty");
-		new ClassPathChangeUploader(null, this.requestFactory);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must not be empty");
-		new ClassPathChangeUploader("", this.requestFactory);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("RequestFactory must not be null");
-		new ClassPathChangeUploader("http://localhost:8080", null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new ClassPathChangeUploader("http://localhost:8080", null))
+				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Malformed URL 'htttttp:///ttest'");
-		new ClassPathChangeUploader("htttttp:///ttest", this.requestFactory);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest",
+						this.requestFactory))
+				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package org.springframework.boot.cli.compiler;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ExtendedGroovyClassLoader}.
@@ -29,9 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class ExtendedGroovyClassLoaderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ClassLoader contextClassLoader;
 
@@ -54,9 +50,9 @@ public class ExtendedGroovyClassLoaderTests {
 	@Test
 	public void filtersNonGroovy() throws Exception {
 		this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
-		this.thrown.expect(ClassNotFoundException.class);
-		this.defaultScopeGroovyClassLoader
-				.loadClass("org.springframework.util.StringUtils");
+		assertThatExceptionOfType(ClassNotFoundException.class)
+				.isThrownBy(() -> this.defaultScopeGroovyClassLoader
+						.loadClass("org.springframework.util.StringUtils"));
 	}
 
 	@Test

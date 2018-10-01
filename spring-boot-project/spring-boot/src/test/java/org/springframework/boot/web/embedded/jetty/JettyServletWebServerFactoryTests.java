@@ -50,7 +50,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -262,8 +262,9 @@ public class JettyServletWebServerFactoryTests
 			threadPool.setMaxThreads(2);
 			threadPool.setMinThreads(2);
 		});
-		this.thrown.expectCause(isA(IllegalStateException.class));
-		factory.getWebServer().start();
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(factory.getWebServer()::start)
+				.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
@@ -314,23 +315,23 @@ public class JettyServletWebServerFactoryTests
 
 					@Override
 					public void contextDestroyed(ServletContextEvent sce) {
-
 					}
 
 				});
 			}
 
 		});
-		this.thrown.expect(WebServerException.class);
-		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		try {
-			jettyWebServer.start();
-		}
-		finally {
-			QueuedThreadPool threadPool = (QueuedThreadPool) jettyWebServer.getServer()
-					.getThreadPool();
-			assertThat(threadPool.isRunning()).isFalse();
-		}
+		assertThatExceptionOfType(WebServerException.class).isThrownBy(() -> {
+			JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
+			try {
+				jettyWebServer.start();
+			}
+			finally {
+				QueuedThreadPool threadPool = (QueuedThreadPool) jettyWebServer
+						.getServer().getThreadPool();
+				assertThat(threadPool.isRunning()).isFalse();
+			}
+		});
 	}
 
 	@Override

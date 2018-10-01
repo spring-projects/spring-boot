@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import java.io.File;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link TriggerFileFilter}.
@@ -33,16 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TriggerFileFilterTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void nameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be null");
-		new TriggerFileFilter(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new TriggerFileFilter(null))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test

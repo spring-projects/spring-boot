@@ -24,7 +24,6 @@ import javax.servlet.ServletContext;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
@@ -45,6 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -55,9 +55,6 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 public class SpringBootServletInitializerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -74,10 +71,10 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	public void failsWithoutConfigure() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No SpringApplication sources have been defined");
-		new MockSpringBootServletInitializer()
-				.createRootApplicationContext(this.servletContext);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new MockSpringBootServletInitializer()
+						.createRootApplicationContext(this.servletContext))
+				.withMessageContaining("No SpringApplication sources have been defined");
 	}
 
 	@Test

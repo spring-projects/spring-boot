@@ -32,7 +32,6 @@ import java.util.zip.ZipEntry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -40,6 +39,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link RestartClassLoader}.
@@ -53,9 +54,6 @@ public class RestartClassLoaderTests {
 			.getName();
 
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -95,16 +93,16 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void parentMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Parent must not be null");
-		new RestartClassLoader(null, new URL[] {});
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
+				.withMessageContaining("Parent must not be null");
 	}
 
 	@Test
 	public void updatedFilesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("UpdatedFiles must not be null");
-		new RestartClassLoader(this.parentClassLoader, new URL[] {}, null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
+				.withMessageContaining("UpdatedFiles must not be null");
 	}
 
 	@Test
@@ -185,16 +183,16 @@ public class RestartClassLoaderTests {
 	public void getDeletedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		this.thrown.expect(ClassNotFoundException.class);
-		this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+		assertThatExceptionOfType(ClassNotFoundException.class)
+				.isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test
 	public void getUpdatedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
-		this.thrown.expect(ClassFormatError.class);
-		this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+		assertThatExceptionOfType(ClassFormatError.class)
+				.isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test

@@ -19,11 +19,10 @@ package org.springframework.boot.context.properties;
 import java.util.function.Supplier;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PropertyMapper}.
@@ -33,9 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PropertyMapperTests {
 
 	private PropertyMapper map = PropertyMapper.get();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void fromNullValue() {
@@ -65,16 +61,16 @@ public class PropertyMapperTests {
 
 	@Test
 	public void fromWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Supplier must not be null");
-		this.map.from((Supplier<?>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.map.from((Supplier<?>) null))
+				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void toWhenConsumerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Consumer must not be null");
-		this.map.from(() -> "").to(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.map.from(() -> "").to(null))
+				.withMessageContaining("Consumer must not be null");
 	}
 
 	@Test
@@ -94,9 +90,9 @@ public class PropertyMapperTests {
 
 	@Test
 	public void asWhenAdapterIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Adapter must not be null");
-		this.map.from(() -> "").as(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.map.from(() -> "").as(null))
+				.withMessageContaining("Adapter must not be null");
 	}
 
 	@Test

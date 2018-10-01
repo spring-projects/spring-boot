@@ -20,15 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -39,21 +38,20 @@ import static org.mockito.Mockito.mock;
  */
 public class PathMappedEndpointsTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Supplier must not be null");
-		new PathMappedEndpoints(null, (WebEndpointsSupplier) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
+				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void createWhenSuppliersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Suppliers must not be null");
-		new PathMappedEndpoints(null, (Collection<EndpointsSupplier<?>>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PathMappedEndpoints(null,
+						(Collection<EndpointsSupplier<?>>) null))
+				.withMessageContaining("Suppliers must not be null");
 	}
 
 	@Test

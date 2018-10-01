@@ -16,11 +16,10 @@
 
 package org.springframework.boot.jdbc;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DatabaseDriver}.
@@ -30,9 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class DatabaseDriverTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void classNameForKnownDatabase() {
@@ -56,9 +52,9 @@ public class DatabaseDriverTests {
 
 	@Test
 	public void failureOnMalformedJdbcUrl() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must start with");
-		DatabaseDriver.fromJdbcUrl("malformed:url");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DatabaseDriver.fromJdbcUrl("malformed:url"))
+				.withMessageContaining("URL must start with");
 	}
 
 	@Test
