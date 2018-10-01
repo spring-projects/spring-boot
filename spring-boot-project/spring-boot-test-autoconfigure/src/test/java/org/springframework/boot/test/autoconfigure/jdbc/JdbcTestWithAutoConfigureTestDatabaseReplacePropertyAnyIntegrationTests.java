@@ -62,9 +62,8 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplacePropertyAnyIntegrationT
 
 		@Bean
 		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-					.generateUniqueName(true).setType(EmbeddedDatabaseType.H2);
-			return builder.build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
+					.setType(EmbeddedDatabaseType.H2).build();
 		}
 
 	}
