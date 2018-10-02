@@ -53,6 +53,7 @@
 									<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 									<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 									<includeTestSourceDirectory>true</includeTestSourceDirectory>
+									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 								</configuration>
 								<goals>
 									<goal>check</goal>

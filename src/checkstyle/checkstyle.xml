@@ -11,5 +11,11 @@
 			<property name="illegalClasses"
 				value="^reactor\.core\.support\.Assert" />
 		</module>
+		<module
+			name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">
+			<property name="file"
+				value="${main.basedir}/src/checkstyle/import-control.xml" />
+			<property name="path" value="^.*[\\/]src[\\/]main[\\/].*$" />
+		</module>
 	</module>
 </module>

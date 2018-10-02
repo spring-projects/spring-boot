@@ -5,12 +5,12 @@
 
 	<subpackage name="autoconfigure">
 		<subpackage name="web">
+			<allow pkg="org.springframework.boot.web.server" />
+			<allow pkg="org.springframework.boot.web.servlet.server" />
 			<disallow pkg="org.springframework.boot.web" />
 			<disallow pkg="org.springframework.web.servlet" />
 			<disallow pkg="org.springframework.web.reactive" />
 			<disallow pkg="javax.servlet" />
-			<allow pkg="org.springframework.boot.web.server" />
-			<allow pkg="org.springframework.boot.web.servlet.server" />
 			<subpackage name="client">
 				<allow pkg="org.springframework.boot.web.client" />
 			</subpackage>
