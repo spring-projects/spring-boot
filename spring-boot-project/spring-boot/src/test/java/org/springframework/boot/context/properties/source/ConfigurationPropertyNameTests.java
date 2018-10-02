@@ -601,6 +601,15 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	public void equalsWhenStartsWith() {
+		// gh-14665
+		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("my.sources[0].xame");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName
+				.of("my.sources[0].xamespace");
+		assertThat(n1).isNotEqualTo(n2);
+	}
+
+	@Test
 	public void isValidWhenValidShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
