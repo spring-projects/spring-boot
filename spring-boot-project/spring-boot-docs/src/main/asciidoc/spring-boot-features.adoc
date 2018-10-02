@@ -4578,6 +4578,9 @@ used to customize the connection. Generally, you provide `keyspace-name` and
 	spring.data.cassandra.contact-points=cassandrahost1,cassandrahost2
 ----
 
+You can also register an arbitrary number of beans that implement
+`ClusterBuilderCustomizer` for more advanced customizations.
+
 The following code listing shows how to inject a Cassandra bean:
 
 [source,java,indent=0]

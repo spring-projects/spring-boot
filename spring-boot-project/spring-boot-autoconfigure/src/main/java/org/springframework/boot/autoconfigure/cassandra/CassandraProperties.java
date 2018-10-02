@@ -31,6 +31,7 @@ import com.datastax.driver.core.policies.ReconnectionPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -188,10 +189,13 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
+	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
+	@Deprecated
 	public Class<? extends LoadBalancingPolicy> getLoadBalancingPolicy() {
 		return this.loadBalancingPolicy;
 	}
 
+	@Deprecated
 	public void setLoadBalancingPolicy(
 			Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
 		this.loadBalancingPolicy = loadBalancingPolicy;
@@ -221,19 +225,25 @@ public class CassandraProperties {
 		this.fetchSize = fetchSize;
 	}
 
+	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
+	@Deprecated
 	public Class<? extends ReconnectionPolicy> getReconnectionPolicy() {
 		return this.reconnectionPolicy;
 	}
 
+	@Deprecated
 	public void setReconnectionPolicy(
 			Class<? extends ReconnectionPolicy> reconnectionPolicy) {
 		this.reconnectionPolicy = reconnectionPolicy;
 	}
 
+	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
+	@Deprecated
 	public Class<? extends RetryPolicy> getRetryPolicy() {
 		return this.retryPolicy;
 	}
 
+	@Deprecated
 	public void setRetryPolicy(Class<? extends RetryPolicy> retryPolicy) {
 		this.retryPolicy = retryPolicy;
 	}
