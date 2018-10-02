@@ -439,8 +439,10 @@ The following table summarizes the list of supported providers:
  parameter.
 
 |`logger-name`
-|Auto-completes valid logger names. Typically, package and class names available in
- the current project can be auto-completed.
+|Auto-completes valid logger names and
+ <<spring-boot-features.adoc#boot-features-custom-log-groups,logger groups>>. Typically,
+ package and class names available in the current project can be auto-completed as well as
+ defined groups.
 
 |`spring-bean-reference`
 |Auto-completes the available bean names in the current project. Usually constrained
