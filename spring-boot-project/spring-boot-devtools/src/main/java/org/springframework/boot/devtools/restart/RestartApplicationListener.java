@@ -16,6 +16,9 @@
 
 package org.springframework.boot.devtools.restart;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -35,9 +38,11 @@ import org.springframework.core.Ordered;
 public class RestartApplicationListener
 		implements ApplicationListener<ApplicationEvent>, Ordered {
 
-	private int order = HIGHEST_PRECEDENCE;
-
 	private static final String ENABLED_PROPERTY = "spring.devtools.restart.enabled";
+
+	private static final Log logger = LogFactory.getLog(RestartApplicationListener.class);
+
+	private int order = HIGHEST_PRECEDENCE;
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -67,6 +72,7 @@ public class RestartApplicationListener
 			Restarter.initialize(args, false, initializer, restartOnInitialize);
 		}
 		else {
+			logger.info("RestartApplicationListener is disabled.");
 			Restarter.disable();
 		}
 	}
