@@ -157,6 +157,9 @@ do as they were designed before this was clarified.
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
 
+| https://github.com/valiktor/valiktor[Valiktor]
+| https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter
+
 | http://www.wiremock.org[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
