@@ -1075,7 +1075,7 @@ public class ConfigurationPropertiesTests {
 		@Override
 		public Resource resolve(String location, ResourceLoader resourceLoader) {
 			if (location.startsWith(PREFIX)) {
-				String path = location.substring(PREFIX.length(), location.length());
+				String path = location.substring(PREFIX.length());
 				return new ClassPathResource(path);
 			}
 			return null;

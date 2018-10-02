@@ -521,7 +521,7 @@ public class PropertiesLauncher extends Launcher {
 				file = new File(root.substring("jar:file:".length(), index));
 			}
 			parent = new JarFileArchive(file);
-			root = root.substring(index + 1, root.length());
+			root = root.substring(index + 1);
 			while (root.startsWith("/")) {
 				root = root.substring(1);
 			}
