@@ -348,7 +348,7 @@ public final class ConfigurationPropertyName
 		}
 		while (i2 < l2) {
 			char ch2 = e2.charAt(i, i2++);
-			if (indexed2 || !ElementsParser.isAlphaNumeric(ch2)) {
+			if (indexed2 || ElementsParser.isAlphaNumeric(ch2)) {
 				return false;
 			}
 		}
