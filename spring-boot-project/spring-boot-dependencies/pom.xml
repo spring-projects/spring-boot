@@ -32,6 +32,7 @@
 		</developer>
 	</developers>
 	<properties>
+		<main.basedir>${basedir}/../..</main.basedir>
 		<!-- Dependency versions -->
 		<activemq.version>5.15.6</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
