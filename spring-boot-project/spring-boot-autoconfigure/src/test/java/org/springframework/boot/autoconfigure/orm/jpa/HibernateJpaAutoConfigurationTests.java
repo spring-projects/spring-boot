@@ -35,6 +35,7 @@ import javax.transaction.UserTransaction;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -361,6 +362,27 @@ public class HibernateJpaAutoConfigurationTests
 				});
 	}
 
+	@Test
+	public void eventListenerCanBeRegisteredAsBeans() {
+		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
+				.withClassLoader(new HideDataScriptClassLoader())
+				.withPropertyValues("spring.jpa.show-sql=true",
+						"spring.jpa.hibernate.ddl-auto:create-drop",
+						"spring.datasource.data:classpath:/city.sql")
+				.run((context) -> {
+					// See CityListener
+					assertThat(context).hasSingleBean(City.class);
+					assertThat(context.getBean(City.class).getName())
+							.isEqualTo("Washington");
+				});
+	}
+
+	@Test
+	public void hibernatePropertiesCustomizerCanDisableBeanContainer() {
+		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(City.class));
+	}
+
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
 	static class TestInitializedJpaConfiguration {
@@ -416,6 +438,17 @@ public class HibernateJpaAutoConfigurationTests
 				hibernateProperties.put("hibernate.implicit_naming_strategy",
 						this.implicitNamingStrategy);
 			};
+		}
+
+	}
+
+	@Configuration
+	static class DisableBeanContainerConfiguration {
+
+		@Bean
+		public HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
+			return (hibernateProperties) -> hibernateProperties
+					.remove(AvailableSettings.BEAN_CONTAINER);
 		}
 
 	}

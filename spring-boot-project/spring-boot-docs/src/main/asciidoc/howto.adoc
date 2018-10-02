@@ -2000,6 +2000,17 @@ for more details.
 
 
 
+[[howto-use-dependency-injection-hibernate-components]]
+=== Use Dependency Injection in Hibernate Components
+By default, Spring Boot registers a `BeanContainer` implementation that uses the
+`BeanFactory` so that converters and entity listeners can use regular dependency
+injection.
+
+You can disable or tune this behaviour by registering a `HibernatePropertiesCustomizer`
+that remove or change the `hibernate.resource.beans.container` property.
+
+
+
 [[howto-use-custom-entity-manager]]
 === Use a Custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add
