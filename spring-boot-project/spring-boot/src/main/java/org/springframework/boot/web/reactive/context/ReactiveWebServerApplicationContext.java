@@ -16,6 +16,10 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import java.util.function.Supplier;
+
+import reactor.core.publisher.Mono;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
@@ -23,6 +27,8 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,6 +43,8 @@ public class ReactiveWebServerApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
 	private volatile WebServer webServer;
+
+	private volatile DeferredHttpHandler httpHandler;
 
 	private String serverNamespace;
 
@@ -78,6 +86,17 @@ public class ReactiveWebServerApplicationContext
 		}
 	}
 
+	private void createWebServer() {
+		WebServer localServer = this.webServer;
+		if (localServer == null) {
+			DeferredHttpHandler localHandler = new DeferredHttpHandler(
+					this::getHttpHandler);
+			this.webServer = getWebServerFactory().getWebServer(localHandler);
+			this.httpHandler = localHandler;
+		}
+		initPropertySources();
+	}
+
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
@@ -91,14 +110,6 @@ public class ReactiveWebServerApplicationContext
 	protected void onClose() {
 		super.onClose();
 		stopAndReleaseReactiveWebServer();
-	}
-
-	private void createWebServer() {
-		WebServer localServer = this.webServer;
-		if (localServer == null) {
-			this.webServer = getWebServerFactory().getWebServer(getHttpHandler());
-		}
-		initPropertySources();
 	}
 
 	/**
@@ -157,7 +168,12 @@ public class ReactiveWebServerApplicationContext
 
 	private WebServer startReactiveWebServer() {
 		WebServer localServer = this.webServer;
+		DeferredHttpHandler localHandler = this.httpHandler;
 		if (localServer != null) {
+			if (localHandler != null) {
+				localHandler.initialize();
+				this.httpHandler = null;
+			}
 			localServer.start();
 		}
 		return localServer;
@@ -184,6 +200,42 @@ public class ReactiveWebServerApplicationContext
 	@Override
 	public void setServerNamespace(String serverNamespace) {
 		this.serverNamespace = serverNamespace;
+	}
+
+	/**
+	 * {@link HttpHandler} that defers to a supplied handler which is initialized only
+	 * when the server starts.
+	 */
+	static class DeferredHttpHandler implements HttpHandler {
+
+		private Supplier<HttpHandler> factory;
+
+		private HttpHandler handler;
+
+		DeferredHttpHandler(Supplier<HttpHandler> factory) {
+			this.factory = factory;
+			this.handler = this::handleUninitialized;
+		}
+
+		public void initialize() {
+			this.handler = this.factory.get();
+		}
+
+		private Mono<Void> handleUninitialized(ServerHttpRequest request,
+				ServerHttpResponse response) {
+			throw new IllegalStateException(
+					"The HttpHandler has not yet been initialized");
+		}
+
+		@Override
+		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
+			return this.handler.handle(request, response);
+		}
+
+		public HttpHandler getHandler() {
+			return this.handler;
+		}
+
 	}
 
 }
