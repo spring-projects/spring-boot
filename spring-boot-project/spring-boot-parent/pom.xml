@@ -36,9 +36,6 @@
 		<system>Github</system>
 		<url>https://github.com/spring-projects/spring-boot/issues</url>
 	</issueManagement>
-	<prerequisites>
-		<maven>3.5</maven>
-	</prerequisites>
 	<dependencyManagement>
 		<dependencies>
 			<!-- Internal unpublished Spring Boot dependencies -->
