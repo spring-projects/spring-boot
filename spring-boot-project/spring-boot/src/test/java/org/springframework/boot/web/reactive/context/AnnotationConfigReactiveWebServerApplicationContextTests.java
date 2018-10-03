@@ -18,11 +18,16 @@ package org.springframework.boot.web.reactive.context;
 
 import org.junit.Test;
 
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.DeferredHttpHandler;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;
 import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,11 +85,23 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		verifyContext();
 	}
 
+	@Test
+	public void httpHandlerInitialization() {
+		// gh-14666
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
+				InitializationTestConfig.class);
+		verifyContext();
+	}
+
 	private void verifyContext() {
 		MockReactiveWebServerFactory factory = this.context
 				.getBean(MockReactiveWebServerFactory.class);
-		HttpHandler httpHandler = this.context.getBean(HttpHandler.class);
-		assertThat(factory.getWebServer().getHttpHandler()).isEqualTo(httpHandler);
+		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
+		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();
+		if (actualHandler instanceof DeferredHttpHandler) {
+			actualHandler = ((DeferredHttpHandler) actualHandler).getHandler();
+		}
+		assertThat(actualHandler).isEqualTo(expectedHandler);
 	}
 
 	@Configuration
@@ -103,6 +120,56 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		@Bean
 		public HttpHandler httpHandler() {
 			return mock(HttpHandler.class);
+		}
+
+	}
+
+	@Configuration
+	public static class InitializationTestConfig {
+
+		private static boolean addedListener;
+
+		@Bean
+		public ReactiveWebServerFactory webServerFactory() {
+			return new MockReactiveWebServerFactory();
+		}
+
+		@Bean
+		public HttpHandler httpHander() {
+			if (!addedListener) {
+				throw new RuntimeException(
+						"Handlers should be added after listeners, we're being initialized too early!");
+			}
+			return mock(HttpHandler.class);
+		}
+
+		@Bean
+		public Listener listener() {
+			return new Listener();
+		}
+
+		@Bean
+		public ApplicationEventMulticaster applicationEventMulticaster() {
+			return new SimpleApplicationEventMulticaster() {
+
+				@Override
+				public void addApplicationListenerBean(String listenerBeanName) {
+					super.addApplicationListenerBean(listenerBeanName);
+					if ("listener".equals(listenerBeanName)) {
+						addedListener = true;
+					}
+				}
+
+			};
+		}
+
+		private static class Listener
+				implements ApplicationListener<ContextRefreshedEvent> {
+
+			@Override
+			public void onApplicationEvent(ContextRefreshedEvent event) {
+			}
+
 		}
 
 	}
