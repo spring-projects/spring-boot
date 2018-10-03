@@ -432,6 +432,34 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void subclassBuilderMethodsShouldReturnCustomizableInstance() {
+		RestTemplateBuilder builder = new RestTemplateBuilderSubclass();
+		assertThat(builder.defaultMessageConverters()).isSameAs(builder);
+		assertThat(builder.detectRequestFactory(true)).isSameAs(builder);
+		assertThat(builder.interceptors(mock(ClientHttpRequestInterceptor.class)))
+				.isSameAs(builder);
+		assertThat(builder.requestFactory(ClientHttpRequestFactory.class))
+				.isSameAs(builder);
+		assertThat(builder.additionalCustomizers(mock(RestTemplateCustomizer.class)))
+				.isSameAs(builder);
+		assertThat(
+				builder.additionalInterceptors(mock(ClientHttpRequestInterceptor.class)))
+						.isSameAs(builder);
+		assertThat(builder.additionalMessageConverters(mock(HttpMessageConverter.class)))
+				.isSameAs(builder);
+		assertThat(builder.basicAuthorization("", "")).isSameAs(builder);
+		assertThat(builder.customizers(mock(RestTemplateCustomizer.class)))
+				.isSameAs(builder);
+		assertThat(builder.errorHandler(mock(ResponseErrorHandler.class)))
+				.isSameAs(builder);
+		assertThat(builder.rootUri("")).isSameAs(builder);
+		assertThat(builder.setConnectTimeout(Duration.ofSeconds(1))).isSameAs(builder);
+		assertThat(builder.setReadTimeout(Duration.ofSeconds(1))).isSameAs(builder);
+		assertThat(builder.uriTemplateHandler(mock(UriTemplateHandler.class)))
+				.isSameAs(builder);
+	}
+
+	@Test
 	public void configureShouldApply() {
 		RestTemplate template = new RestTemplate();
 		this.builder.configure(template);
@@ -571,6 +599,27 @@ public class RestTemplateBuilderTests {
 	}
 
 	static class TestClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
+
+	}
+
+	public static class RestTemplateBuilderSubclass extends RestTemplateBuilder {
+
+		public RestTemplateBuilderSubclass() {
+			super(((restTemplate) -> {
+			}));
+		}
+
+		@Override
+		protected RestTemplateBuilder newInstance(boolean detectRequestFactory,
+				String rootUri, Set<HttpMessageConverter<?>> messageConverters,
+				Supplier<ClientHttpRequestFactory> requestFactorySupplier,
+				UriTemplateHandler uriTemplateHandler, ResponseErrorHandler errorHandler,
+				BasicAuthorizationInterceptor basicAuthorization,
+				Set<RestTemplateCustomizer> restTemplateCustomizers,
+				RequestFactoryCustomizer requestFactoryCustomizer,
+				Set<ClientHttpRequestInterceptor> interceptors) {
+			return this;
+		}
 
 	}
 
