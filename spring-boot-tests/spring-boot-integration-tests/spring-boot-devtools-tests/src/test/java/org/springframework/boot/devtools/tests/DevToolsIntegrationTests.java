@@ -161,15 +161,13 @@ public class DevToolsIntegrationTests {
 				String.class)).isEqualTo("two");
 		controller("com.example.ControllerOne").withRequestMapping("one")
 				.withRequestMapping("three").build();
-		int port = awaitServerPort();
-		assertThat(
-				template.getForObject("http://localhost:" + port + "/one", String.class))
-						.isEqualTo("one");
-		assertThat(
-				template.getForObject("http://localhost:" + port + "/two", String.class))
-						.isEqualTo("two");
-		assertThat(template.getForObject("http://localhost:" + port + "/three",
-				String.class)).isEqualTo("three");
+		urlBase = "http://localhost:" + awaitServerPort();
+		assertThat(template.getForObject(urlBase + "/one", String.class))
+				.isEqualTo("one");
+		assertThat(template.getForObject(urlBase + "/two", String.class))
+				.isEqualTo("two");
+		assertThat(template.getForObject(urlBase + "/three", String.class))
+				.isEqualTo("three");
 	}
 
 	@Test
