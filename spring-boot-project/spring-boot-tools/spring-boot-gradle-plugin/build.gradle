@@ -22,11 +22,11 @@ repositories {
 
 dependencies {
 	implementation localGroovy()
-    implementation gradleApi()
-    implementation fileTree(dir: 'target/dependencies/compile', include: '*.jar')
+	implementation gradleApi()
+	implementation fileTree(dir: 'target/dependencies/compile', include: '*.jar')
 	testImplementation gradleTestKit()
-    testImplementation 'org.apache.commons:commons-compress:1.13'
-    testImplementation fileTree(dir: 'target/dependencies/test', include: '*.jar')
+	testImplementation 'org.apache.commons:commons-compress:1.13'
+	testImplementation fileTree(dir: 'target/dependencies/test', include: '*.jar')
 }
 
 jar {

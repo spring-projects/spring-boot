@@ -156,7 +156,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void providesARequestScopedBookmarkManangerIfNecessaryAndPossible() {
+	public void providesARequestScopedBookmarkManagerIfNecessaryAndPossible() {
 		this.contextRunner
 				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
 				.run((context) -> {
@@ -168,7 +168,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void providesASingletonScopedBookmarkManangerIfNecessaryAndPossible() {
+	public void providesASingletonScopedBookmarkManagerIfNecessaryAndPossible() {
 		new ApplicationContextRunner()
 				.withUserConfiguration(TestConfiguration.class,
 						BookmarkManagementEnabledConfiguration.class)

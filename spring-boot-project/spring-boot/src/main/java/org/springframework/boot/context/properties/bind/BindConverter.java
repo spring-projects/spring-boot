@@ -99,17 +99,15 @@ final class BindConverter {
 				new ResolvableTypeDescriptor(type, annotations));
 	}
 
-	public static BindConverter get(ConversionService conversionService,
+	static BindConverter get(ConversionService conversionService,
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		if (conversionService == ApplicationConversionService.getSharedInstance()
 				&& propertyEditorInitializer == null) {
-			BindConverter instance = sharedInstance;
-			if (instance == null) {
-				instance = new BindConverter(conversionService,
+			if (sharedInstance == null) {
+				sharedInstance = new BindConverter(conversionService,
 						propertyEditorInitializer);
-				sharedInstance = instance;
 			}
-			return instance;
+			return sharedInstance;
 		}
 		return new BindConverter(conversionService, propertyEditorInitializer);
 	}

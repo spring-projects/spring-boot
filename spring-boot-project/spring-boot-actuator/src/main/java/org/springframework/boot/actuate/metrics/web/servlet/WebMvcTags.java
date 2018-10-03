@@ -165,9 +165,10 @@ public final class WebMvcTags {
 	}
 
 	/**
-	 * Creates a {@code outcome} tag based on the status of the given {@code response}.
+	 * Creates an {@code outcome} tag based on the status of the given {@code response}.
 	 * @param response the HTTP response
 	 * @return the outcome tag derived from the status of the response
+	 * @since 2.1.0
 	 */
 	public static Tag outcome(HttpServletResponse response) {
 		if (response != null) {
@@ -181,7 +182,7 @@ public final class WebMvcTags {
 			if (status < 400) {
 				return OUTCOME_REDIRECTION;
 			}
-			else if (status < 500) {
+			if (status < 500) {
 				return OUTCOME_CLIENT_ERROR;
 			}
 			return OUTCOME_SERVER_ERROR;

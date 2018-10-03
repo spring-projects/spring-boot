@@ -101,6 +101,7 @@ public enum DatabaseDriver {
 
 	/**
 	 * SAP - SAP Hana Database - HDB.
+	 * @since 2.1.0
 	 */
 	SAP("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
 			"SELECT 1 FROM DUMMY"),
