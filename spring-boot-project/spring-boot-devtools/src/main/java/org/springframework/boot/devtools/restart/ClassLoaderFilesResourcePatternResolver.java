@@ -130,7 +130,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {
 				String name = entry.getKey();
 				ClassLoaderFile file = entry.getValue();
-				if (entry.getValue().getKind() != Kind.DELETED
+				if (file.getKind() != Kind.DELETED
 						&& this.antPathMatcher.match(trimmedLocationPattern, name)) {
 					URL url = new URL("reloaded", null, -1, "/" + name,
 							new ClassLoaderFileURLStreamHandler(file));
