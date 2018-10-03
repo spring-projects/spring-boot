@@ -361,10 +361,10 @@ exclude) all endpoints, as shown in the following example:
 [source,yaml,indent=0]
 ----
 	management:
-		endpoints:
-			web:
-				exposure:
-					include: "*"
+	  endpoints:
+	    web:
+	      exposure:
+	        include: "*"
 ----
 ====
 
