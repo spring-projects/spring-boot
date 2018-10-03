@@ -7,6 +7,10 @@ your `application.yml` file, or as command line switches. This appendix provides
 of common Spring Boot properties and references to the underlying classes that consume
 them.
 
+TIP: Spring Boot provides various conversion mechanism with advanced value formatting,
+make sure to review <<spring-boot-features.adoc#boot-features-external-config-conversion,
+the properties conversion section>>.
+
 NOTE: Property contributions can come from additional jar files on your classpath, so you
 should not consider this an exhaustive list. Also, you can define your own properties.
 
