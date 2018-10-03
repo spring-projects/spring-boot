@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the specified bean class is already
+ * {@link Conditional} that only matches when a bean of the specified class is already
  * contained in the {@link BeanFactory} and a single candidate can be determined.
  * <p>
  * The condition will also match if multiple matching bean instances are already contained
@@ -49,8 +48,8 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnSingleCandidate {
 
 	/**
-	 * The class type of bean that should be checked. The condition match if the class
-	 * specified is contained in the {@link ApplicationContext} and a primary candidate
+	 * The class type of bean that should be checked. The condition matches if a bean of
+	 * the class specified is contained in the {@link BeanFactory} and a primary candidate
 	 * exists in case of multiple instances.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
@@ -60,8 +59,8 @@ public @interface ConditionalOnSingleCandidate {
 	Class<?> value() default Object.class;
 
 	/**
-	 * The class type name of bean that should be checked. The condition matches if the
-	 * class specified is contained in the {@link ApplicationContext} and a primary
+	 * The class type name of bean that should be checked. The condition matches if a bean
+	 * of the class specified is contained in the {@link BeanFactory} and a primary
 	 * candidate exists in case of multiple instances.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
