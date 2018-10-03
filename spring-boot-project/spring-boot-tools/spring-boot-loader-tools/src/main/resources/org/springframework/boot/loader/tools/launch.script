@@ -57,6 +57,9 @@ configfile="$(basename "${jarfile%.*}.conf")"
 # shellcheck source=/dev/null
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
+# Initialize ENVIRONMENT_PROPERTIES value if not provided by the config file
+[[ -z "$ENVIRONMENT_PROPERTIES" ]] && ENVIRONMENT_PROPERTIES="{{environmentProperties:}}"
+
 # Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="{{pidFolder:/var/run}}"
 [[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="{{logFolder:/var/log}}"
@@ -143,6 +146,7 @@ else
     exit 1
 fi
 
+environment_properties=($ENVIRONMENT_PROPERTIES)
 arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar "$jarfile" $RUN_ARGS "$@")
 
 # Action functions
@@ -172,23 +176,42 @@ do_start() {
   if [[ -n "$run_user" ]]; then
     checkPermissions || return $?
     if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then
+      cmd_line="$javaexe ${arguments[@]}"
+
+      if (( ${#environment_properties[@]} )); then
+        cmd_line="${environment_properties[@]} ${cmd_line}"
+      fi
+
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \
         --name "$identity" \
         --make-pidfile --pidfile "$pid_file" \
         --background --no-close \
-        --startas "$javaexe" \
         --chdir "$working_dir" \
-        -- "${arguments[@]}" \
+        --startas "$env_exe" \
+        -- $cmd_line \
         >> "$log_file" 2>&1
       await_file "$pid_file"
     else
-      su -s /bin/sh -c "$javaexe $(printf "\"%s\" " "${arguments[@]}") >> \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
+      env_cmd_line="$env_exe"
+
+      if (( ${#environment_properties[@]} )); then
+        env_cmd_line="$env_cmd_line ${environment_properties[@]}"
+      fi
+
+      su -s /bin/sh -c "$env_cmd_line $javaexe $(printf "\"%s\" " "${arguments[@]}") >> \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
     fi
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
-    "$javaexe" "${arguments[@]}" >> "$log_file" 2>&1 &
+
+    cmd_line="$javaexe ${arguments[@]}"
+
+    if (( ${#environment_properties[@]} )); then
+      cmd_line="$env_exe ${environment_properties[@]} ${cmd_line}"
+    fi
+
+    $cmd_line >> "$log_file" 2>&1 &
     pid=$!
     disown $pid
     echo "$pid" > "$pid_file"
@@ -262,7 +285,7 @@ status() {
 
 run() {
   pushd "$(dirname "$jarfile")" > /dev/null
-  "$javaexe" "${arguments[@]}"
+  "$env_exe" "${environment_properties[@]}" "$javaexe" "${arguments[@]}"
   result=$?
   popd > /dev/null
   return "$result"

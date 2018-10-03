@@ -129,6 +129,11 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void environmentProperties() throws Exception {
+		assertThatPlaceholderCanBeReplaced("environmentProperties");
+	}
+
+	@Test
 	public void inlinedConfScriptFileLoad() throws IOException {
 		DefaultLaunchScript script = new DefaultLaunchScript(null,
 				createProperties("inlinedConfScript:src/test/resources/example.script"));
@@ -155,6 +160,13 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
 		assertThat(content).contains("STOP_WAIT_TIME=\"60\"");
+	}
+
+	@Test
+	public void defaultForEnvironmentPropertiesIsEmptyString() throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("ENVIRONMENT_PROPERTIES=\"\"");
 	}
 
 	@Test
