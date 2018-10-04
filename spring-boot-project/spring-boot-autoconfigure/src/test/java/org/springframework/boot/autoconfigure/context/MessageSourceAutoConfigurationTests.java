@@ -32,6 +32,9 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.DelegatingMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -218,6 +221,38 @@ public class MessageSourceAutoConfigurationTests {
 				.run((context) -> assertThat(
 						context.getMessage("foo", null, "Foo message", Locale.UK))
 								.isEqualTo("bar")));
+	}
+
+	@Test
+	public void testDefaultReloadableValueMessageSource() {
+		testReloadableMessageSource(ResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages");
+	}
+
+	@Test
+	public void testNotReloadableMessageSource() {
+		testReloadableMessageSource(ResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages",
+				"spring.messages.reloadable:false");
+	}
+
+	@Test
+	public void testReloadableMessageSource() {
+		testReloadableMessageSource(ReloadableResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages",
+				"spring.messages.reloadable:true");
+	}
+
+	private void testReloadableMessageSource(Class<?> expectedInstance,
+			String... propertyValues) {
+		this.contextRunner.withPropertyValues(propertyValues).run((context) -> {
+			MessageSource messageSource = context.getBean(MessageSource.class);
+			if (messageSource instanceof DelegatingMessageSource) {
+				messageSource = ((DelegatingMessageSource) messageSource)
+						.getParentMessageSource();
+			}
+			assertThat(messageSource).isInstanceOf(expectedInstance);
+		});
 	}
 
 	@Configuration
