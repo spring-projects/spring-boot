@@ -42,9 +42,7 @@ public class ReactiveWebServerApplicationContext
 		extends GenericReactiveWebApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
-	private volatile WebServer webServer;
-
-	private volatile DeferredHttpHandler httpHandler;
+	private volatile ServerManager serverManager;
 
 	private String serverNamespace;
 
@@ -87,39 +85,11 @@ public class ReactiveWebServerApplicationContext
 	}
 
 	private void createWebServer() {
-		WebServer localServer = this.webServer;
-		if (localServer == null) {
-			DeferredHttpHandler localHandler = new DeferredHttpHandler(
-					this::getHttpHandler);
-			this.webServer = getWebServerFactory().getWebServer(localHandler);
-			this.httpHandler = localHandler;
+		ServerManager serverManager = this.serverManager;
+		if (serverManager == null) {
+			this.serverManager = ServerManager.get(getWebServerFactory());
 		}
 		initPropertySources();
-	}
-
-	@Override
-	protected void finishRefresh() {
-		super.finishRefresh();
-		WebServer localServer = startReactiveWebServer();
-		if (localServer != null) {
-			publishEvent(new ReactiveWebServerInitializedEvent(localServer, this));
-		}
-	}
-
-	@Override
-	protected void onClose() {
-		super.onClose();
-		stopAndReleaseReactiveWebServer();
-	}
-
-	/**
-	 * Returns the {@link WebServer} that was created by the context or {@code null} if
-	 * the server has not yet been created.
-	 * @return the web server
-	 */
-	@Override
-	public WebServer getWebServer() {
-		return this.webServer;
 	}
 
 	/**
@@ -146,6 +116,21 @@ public class ReactiveWebServerApplicationContext
 		return getBeanFactory().getBean(beanNames[0], ReactiveWebServerFactory.class);
 	}
 
+	@Override
+	protected void finishRefresh() {
+		super.finishRefresh();
+		WebServer webServer = startReactiveWebServer();
+		if (webServer != null) {
+			publishEvent(new ReactiveWebServerInitializedEvent(webServer, this));
+		}
+	}
+
+	private WebServer startReactiveWebServer() {
+		ServerManager serverManager = this.serverManager;
+		ServerManager.start(serverManager, this::getHttpHandler);
+		return ServerManager.getWebServer(serverManager);
+	}
+
 	/**
 	 * Return the {@link HttpHandler} that should be used to process the reactive web
 	 * server. By default this method searches for a suitable bean in the context itself.
@@ -166,30 +151,30 @@ public class ReactiveWebServerApplicationContext
 		return getBeanFactory().getBean(beanNames[0], HttpHandler.class);
 	}
 
-	private WebServer startReactiveWebServer() {
-		WebServer localServer = this.webServer;
-		DeferredHttpHandler localHandler = this.httpHandler;
-		if (localServer != null) {
-			if (localHandler != null) {
-				localHandler.initialize();
-				this.httpHandler = null;
-			}
-			localServer.start();
-		}
-		return localServer;
+	@Override
+	protected void onClose() {
+		super.onClose();
+		stopAndReleaseReactiveWebServer();
 	}
 
 	private void stopAndReleaseReactiveWebServer() {
-		WebServer localServer = this.webServer;
-		if (localServer != null) {
-			try {
-				localServer.stop();
-				this.webServer = null;
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
+		ServerManager serverManager = this.serverManager;
+		try {
+			ServerManager.stop(serverManager);
 		}
+		finally {
+			this.serverManager = null;
+		}
+	}
+
+	/**
+	 * Returns the {@link WebServer} that was created by the context or {@code null} if
+	 * the server has not yet been created.
+	 * @return the web server
+	 */
+	@Override
+	public WebServer getWebServer() {
+		return ServerManager.getWebServer(this.serverManager);
 	}
 
 	@Override
@@ -203,22 +188,18 @@ public class ReactiveWebServerApplicationContext
 	}
 
 	/**
-	 * {@link HttpHandler} that defers to a supplied handler which is initialized only
-	 * when the server starts.
+	 * Internal class used to manage the server and the {@link HttpHandler}, taking care
+	 * not to initialize the hander too early.
 	 */
-	static class DeferredHttpHandler implements HttpHandler {
+	static final class ServerManager implements HttpHandler {
 
-		private Supplier<HttpHandler> factory;
+		private final WebServer server;
 
-		private HttpHandler handler;
+		private volatile HttpHandler handler;
 
-		DeferredHttpHandler(Supplier<HttpHandler> factory) {
-			this.factory = factory;
+		private ServerManager(ReactiveWebServerFactory factory) {
 			this.handler = this::handleUninitialized;
-		}
-
-		public void initialize() {
-			this.handler = this.factory.get();
+			this.server = factory.getWebServer(this);
 		}
 
 		private Mono<Void> handleUninitialized(ServerHttpRequest request,
@@ -234,6 +215,33 @@ public class ReactiveWebServerApplicationContext
 
 		public HttpHandler getHandler() {
 			return this.handler;
+		}
+
+		public static ServerManager get(ReactiveWebServerFactory factory) {
+			return new ServerManager(factory);
+		}
+
+		public static WebServer getWebServer(ServerManager manager) {
+			return (manager != null) ? manager.server : null;
+		}
+
+		public static void start(ServerManager manager,
+				Supplier<HttpHandler> handlerSupplier) {
+			if (manager != null) {
+				manager.handler = handlerSupplier.get();
+				manager.server.start();
+			}
+		}
+
+		public static void stop(ServerManager manager) {
+			if (manager != null) {
+				try {
+					manager.server.stop();
+				}
+				catch (Exception ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
 		}
 
 	}
