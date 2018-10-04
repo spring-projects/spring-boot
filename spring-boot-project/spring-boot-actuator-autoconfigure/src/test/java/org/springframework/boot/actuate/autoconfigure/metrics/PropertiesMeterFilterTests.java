@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Jon Schneider
+ * @author Artsiom Yudovin
  */
 public class PropertiesMeterFilterTests {
 
@@ -116,14 +117,6 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	public void acceptWhenHasAllEnableFalseShouldReturnDeny() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("enable.all=false"));
-		assertThat(filter.accept(createMeterId("spring.boot")))
-				.isEqualTo(MeterFilterReply.DENY);
-	}
-
-	@Test
 	public void acceptWhenHasAllEnableFalseButHigherEnableTrueShouldReturnNeutral() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("enable.all=false", "enable.spring=true"));
@@ -182,14 +175,6 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	public void configureWhenAllHistogramTrueSetPercentilesHistogramToTrue() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.percentiles-histogram.all=true"));
-		assertThat(filter.configure(createMeterId("spring.boot"),
-				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isTrue();
-	}
-
-	@Test
 	public void configureWhenHasPercentilesShouldSetPercentilesToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles.spring.boot=1,1.5,2"));
@@ -218,15 +203,6 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	public void configureWhenAllPercentilesSetShouldSetPercentilesToValue() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.percentiles.all=1,1.5,2"));
-		assertThat(filter.configure(createMeterId("spring.boot"),
-				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(1,
-						1.5, 2);
-	}
-
-	@Test
 	public void configureWhenHasSlaShouldSetSlaToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.spring.boot=1,2,3"));
@@ -251,45 +227,6 @@ public class PropertiesMeterFilterTests {
 		assertThat(filter.configure(createMeterId("spring.boot"),
 				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
 						.containsExactly(4000000, 5000000, 6000000);
-	}
-
-	@Test
-	public void configureWhenAllSlaSetShouldSetSlaToValue() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.all=1,2,3"));
-		assertThat(filter.configure(createMeterId("spring.boot"),
-				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
-						.containsExactly(1000000, 2000000, 3000000);
-	}
-
-	@Test
-	public void configureWhenSlaDurationShouldOnlyApplyToTimer() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.all=1ms,2ms,3ms"));
-		Meter.Id timer = createMeterId("spring.boot", Meter.Type.TIMER);
-		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
-		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
-		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
-		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isNullOrEmpty();
-		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isNullOrEmpty();
-	}
-
-	@Test
-	public void configureWhenSlaLongShouldOnlyApplyToTimerAndDistributionSummary() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.all=1,2,3"));
-		Meter.Id timer = createMeterId("spring.boot", Meter.Type.TIMER);
-		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
-		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
-		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
-		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1, 2, 3);
-		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isNullOrEmpty();
 	}
 
 	private Id createMeterId(String name) {

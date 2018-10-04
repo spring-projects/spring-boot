@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Jon Schneider
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class PropertiesMeterFilter implements MeterFilter {
@@ -110,7 +111,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 			int lastDot = name.lastIndexOf('.');
 			name = (lastDot != -1) ? name.substring(0, lastDot) : "";
 		}
-		return values.getOrDefault("all", defaultValue);
+		return defaultValue;
 	}
 
 }
