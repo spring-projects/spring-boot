@@ -18,7 +18,7 @@ package org.springframework.boot.web.reactive.context;
 
 import org.junit.Test;
 
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.DeferredHttpHandler;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;
 import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -98,8 +98,8 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 				.getBean(MockReactiveWebServerFactory.class);
 		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
 		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();
-		if (actualHandler instanceof DeferredHttpHandler) {
-			actualHandler = ((DeferredHttpHandler) actualHandler).getHandler();
+		if (actualHandler instanceof ServerManager) {
+			actualHandler = ((ServerManager) actualHandler).getHandler();
 		}
 		assertThat(actualHandler).isEqualTo(expectedHandler);
 	}
