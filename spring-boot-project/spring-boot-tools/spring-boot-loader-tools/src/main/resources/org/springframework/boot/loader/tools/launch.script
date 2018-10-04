@@ -67,8 +67,8 @@ echoYellow() { echo $'\e[0;33m'"$1"$'\e[0m'; }
 [[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="{{logFolder:/var/log}}"
 ! [[ "$PID_FOLDER" == /* ]] && PID_FOLDER="$(dirname "$jarfile")"/"$PID_FOLDER"
 ! [[ "$LOG_FOLDER" == /* ]] && LOG_FOLDER="$(dirname "$jarfile")"/"$LOG_FOLDER"
-! [[ -x "$PID_FOLDER" ]] && echoYellow "Warning: PID_FOLDER=$PID_FOLDER does not exists fallback to /tmp" && PID_FOLDER="/tmp"
-! [[ -x "$LOG_FOLDER" ]] && echoYellow "Warning: LOG_FOLDER=$LOG_FOLDER does not exists fallback to /tmp" && LOG_FOLDER="/tmp"
+! [[ -x "$PID_FOLDER" ]] && echoYellow "PID_FOLDER $PID_FOLDER does not exist. Falling back to /tmp" && PID_FOLDER="/tmp"
+! [[ -x "$LOG_FOLDER" ]] && echoYellow "LOG_FOLDER $LOG_FOLDER does not exist. Falling back to /tmp" && LOG_FOLDER="/tmp"
 
 # Set up defaults
 [[ -z "$MODE" ]] && MODE="{{mode:auto}}" # modes are "auto", "service" or "run"
