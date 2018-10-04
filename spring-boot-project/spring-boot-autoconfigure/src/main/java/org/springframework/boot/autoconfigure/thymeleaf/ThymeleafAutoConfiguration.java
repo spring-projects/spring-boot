@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.DispatcherType;
 
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -52,6 +53,7 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,6 +72,7 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
  * @author Eddú Meléndez
  * @author Daniel Fernández
  * @author Kazuki Shimizu
+ * @author Artsiom Yudovin
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -166,8 +169,11 @@ public class ThymeleafAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledResourceChain
-		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
-			return new ResourceUrlEncodingFilter();
+		public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
+			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
+					new ResourceUrlEncodingFilter());
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
+			return registration;
 		}
 
 		@Configuration
