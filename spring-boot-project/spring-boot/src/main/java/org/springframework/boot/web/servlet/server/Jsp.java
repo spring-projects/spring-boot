@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,21 +23,17 @@ import java.util.Map;
  * Configuration for the server's JSP servlet.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class Jsp {
 
 	/**
-	 * The class name of the servlet to use for JSPs. If registered is true and this class
-	 * is on the classpath then it will be registered. Since both Tomcat and Jetty use
-	 * Jasper for their JSP implementation the default is
-	 * org.apache.jasper.servlet.JspServlet.
+	 * Class name of the servlet to use for JSPs. If registered is true and this class is
+	 * on the classpath then it will be registered.
 	 */
 	private String className = "org.apache.jasper.servlet.JspServlet";
 
-	/**
-	 * Init parameters used to configure the JSP servlet.
-	 */
 	private Map<String, String> initParameters = new HashMap<>();
 
 	/**
@@ -49,6 +45,12 @@ public class Jsp {
 		this.initParameters.put("development", "false");
 	}
 
+	/**
+	 * Return the class name of the servlet to use for JSPs. If {@link #getRegistered()
+	 * registered} is {@code true} and this class is on the classpath then it will be
+	 * registered.
+	 * @return the class name of the servlet to use for JSPs
+	 */
 	public String getClassName() {
 		return this.className;
 	}
@@ -57,6 +59,10 @@ public class Jsp {
 		this.className = className;
 	}
 
+	/**
+	 * Return the init parameters used to configure the JSP servlet.
+	 * @return the init parameters
+	 */
 	public Map<String, String> getInitParameters() {
 		return this.initParameters;
 	}
@@ -65,6 +71,10 @@ public class Jsp {
 		this.initParameters = initParameters;
 	}
 
+	/**
+	 * Return whether the JSP servlet is registered.
+	 * @return {@code true} to register the JSP servlet
+	 */
 	public boolean getRegistered() {
 		return this.registered;
 	}
