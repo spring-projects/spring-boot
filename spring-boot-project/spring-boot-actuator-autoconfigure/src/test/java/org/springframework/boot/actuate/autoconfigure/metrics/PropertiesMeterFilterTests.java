@@ -254,6 +254,14 @@ public class PropertiesMeterFilterTests {
 						.containsExactly(4000000, 5000000, 6000000);
 	}
 
+	@Test
+	public void acceptWhenHasNoMatchingEnabledPropertyShouldReturnNeutral() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("enable.something.else=false"));
+		assertThat(filter.accept(createMeterId("spring.boot")))
+				.isEqualTo(MeterFilterReply.NEUTRAL);
+	}
+
 	private Id createMeterId(String name) {
 		Meter.Type meterType = Type.TIMER;
 		return createMeterId(name, meterType);
