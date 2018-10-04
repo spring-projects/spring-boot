@@ -66,10 +66,11 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 						.fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
-				distribution.getContents()
-						.with(project.copySpec().into("lib")
-								.from((Callable<FileCollection>) () -> configuration
-										.getArtifacts().getFiles()));
+				CopySpec libCopySpec = project.copySpec().into("lib")
+						.from((Callable<FileCollection>) () -> configuration
+								.getArtifacts().getFiles());
+				libCopySpec.setFileMode(0644);
+				distribution.getContents().with(libCopySpec);
 				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
