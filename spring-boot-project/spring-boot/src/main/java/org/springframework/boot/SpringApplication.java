@@ -447,7 +447,7 @@ public class SpringApplication {
 
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, Object... args) {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
 		Set<String> names = new LinkedHashSet<>(
 				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
