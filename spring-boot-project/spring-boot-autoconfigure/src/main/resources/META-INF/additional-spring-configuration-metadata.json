@@ -30,9 +30,31 @@
       }
     },
     {
+      "name": "server.compression.enabled",
+      "description": "Whether response compression is enabled.",
+      "defaultValue": false
+    },
+    {
+      "name": "server.compression.excluded-user-agents",
+      "description": "Comma-separated list of user agents for which responses should not be compressed."
+    },
+    {
+      "name": "server.compression.mime-types",
+      "description": "Comma-separated list of MIME types that should be compressed.",
+      "defaultValue": [
+        "text/html",
+        "text/xml",
+        "text/plain",
+        "text/css",
+        "text/javascript",
+        "application/javascript",
+        "application/json",
+        "application/xml"
+      ]
+    },
+    {
       "name": "server.compression.min-response-size",
       "description": "Minimum \"Content-Length\" value that is required for compression to be performed.",
-      "type": "org.springframework.util.unit.DataSize",
       "defaultValue": "2KB"
     },
     {
@@ -40,8 +62,135 @@
       "defaultValue": "never"
     },
     {
+      "name": "server.http2.enabled",
+      "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
+      "defaultValue": false
+    },
+    {
       "name": "server.port",
       "defaultValue": 8080
+    },
+    {
+      "name": "server.servlet.jsp.class-name",
+      "description": "Class name of the servlet to use for JSPs. If registered is true and this class\n\t * is on the classpath then it will be registered.",
+      "defaultValue": "org.apache.jasper.servlet.JspServlet"
+    },
+    {
+      "name": "server.servlet.jsp.init-parameters",
+      "description": "Init parameters used to configure the JSP servlet."
+    },
+    {
+      "name": "server.servlet.jsp.registered",
+      "description": "Whether the JSP servlet is registered.",
+      "defaultValue": true
+    },
+    {
+      "name": "server.servlet.session.cookie.comment",
+      "description": "Comment for the session cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.domain",
+      "description": " Domain for the session cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.http-only",
+      "description": "Whether to use \"HttpOnly\" cookies for session cookies."
+    },
+    {
+      "name": "server.servlet.session.cookie.max-age",
+      "description": "Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used."
+    },
+    {
+      "name": "server.servlet.session.cookie.name",
+      "description": "Session cookie name."
+    },
+    {
+      "name": "server.servlet.session.cookie.path",
+      "description": "Path of the session cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.secure",
+      "description": "Whether to always mark the session cookie as secure."
+    },
+    {
+      "name": "server.servlet.session.persistent",
+      "description": "Whether to persist session data between restarts.",
+      "defaultValue": false
+    },
+    {
+      "name": "server.servlet.session.store-dir",
+      "description": "Directory used to store session data."
+    },
+    {
+      "name": "server.servlet.session.timeout",
+      "description": "Session timeout. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue": "30m"
+    },
+    {
+      "name": "server.servlet.session.tracking-modes",
+      "description": "Session tracking modes."
+    },
+    {
+      "name": "server.ssl.ciphers",
+      "description": "Supported SSL ciphers."
+    },
+    {
+      "name": "server.ssl.client-auth",
+      "description": "Whether client authentication is wanted (\"want\") or needed (\"need\"). Requires a trust store."
+    },
+    {
+      "name": "server.ssl.enabled",
+      "description": "Whether to enable SSL support.",
+      "defaultValue": true
+    },
+    {
+      "name": "server.ssl.enabled-protocols",
+      "description": "Enabled SSL protocols."
+    },
+    {
+      "name": "server.ssl.key-alias",
+      "description": "Alias that identifies the key in the key store."
+    },
+    {
+      "name": "server.ssl.key-password",
+      "description": "Password used to access the key in the key store."
+    },
+    {
+      "name": "server.ssl.key-store",
+      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
+    },
+    {
+      "name": "server.ssl.key-store-password",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "server.ssl.key-store-provider",
+      "description": "Provider for the key store."
+    },
+    {
+      "name": "server.ssl.key-store-type",
+      "description": "Type of the key store."
+    },
+    {
+      "name": "server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue":  "TLS"
+    },
+    {
+      "name": "server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "server.ssl.trust-store-type",
+      "description": "Type of the trust store."
     },
     {
       "name": "spring.aop.auto",

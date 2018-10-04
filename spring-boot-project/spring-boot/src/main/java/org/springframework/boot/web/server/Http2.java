@@ -24,11 +24,12 @@ package org.springframework.boot.web.server;
  */
 public class Http2 {
 
-	/**
-	 * Whether to enable HTTP/2 support, if the current environment supports it.
-	 */
 	private boolean enabled = false;
 
+	/**
+	 * Return whether to enable HTTP/2 support, if the current environment supports it.
+	 * @return {@code true} to enable HTTP/2 support
+	 */
 	public boolean isEnabled() {
 		return this.enabled;
 	}

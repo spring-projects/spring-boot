@@ -298,6 +298,68 @@
       }
     },
     {
+      "name": "management.server.ssl.ciphers",
+      "description": "Supported SSL ciphers."
+    },
+    {
+      "name": "management.server.ssl.client-auth",
+      "description": "Whether client authentication is wanted (\"want\") or needed (\"need\"). Requires a trust store."
+    },
+    {
+      "name": "management.server.ssl.enabled",
+      "description": "Whether to enable SSL support.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.server.ssl.enabled-protocols",
+      "description": "Enabled SSL protocols."
+    },
+    {
+      "name": "management.server.ssl.key-alias",
+      "description": "Alias that identifies the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-password",
+      "description": "Password used to access the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store",
+      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
+    },
+    {
+      "name": "management.server.ssl.key-store-password",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-provider",
+      "description": "Provider for the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-type",
+      "description": "Type of the key store."
+    },
+    {
+      "name": "management.server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue":  "TLS"
+    },
+    {
+      "name": "management.server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "management.server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-type",
+      "description": "Type of the trust store."
+    },
+    {
       "name": "management.trace.http.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",
