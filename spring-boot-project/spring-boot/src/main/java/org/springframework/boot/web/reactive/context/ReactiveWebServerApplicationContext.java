@@ -227,14 +227,14 @@ public class ReactiveWebServerApplicationContext
 
 		public static void start(ServerManager manager,
 				Supplier<HttpHandler> handlerSupplier) {
-			if (manager != null) {
+			if (manager != null && manager.server != null) {
 				manager.handler = handlerSupplier.get();
 				manager.server.start();
 			}
 		}
 
 		public static void stop(ServerManager manager) {
-			if (manager != null) {
+			if (manager != null && manager.server != null) {
 				try {
 					manager.server.stop();
 				}
