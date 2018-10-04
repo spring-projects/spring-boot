@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SpringBootTestRandomPortEnvironmentPostProcessor}.
  *
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
 public class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 
@@ -128,6 +129,16 @@ public class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 		assertThat(this.environment.getProperty("server.port")).isEqualTo("0");
 		assertThat(this.environment.getProperty("management.server.port"))
 				.isEqualTo("-1");
+	}
+
+	@Test
+	public void postProcessWhenTestServerPortIsZeroAndManagementPortIsAnInteger() {
+		addTestPropertySource("0", null);
+		this.propertySources.addLast(new MapPropertySource("other",
+				Collections.singletonMap("management.server.port", 8081)));
+		this.postProcessor.postProcessEnvironment(this.environment, null);
+		assertThat(this.environment.getProperty("server.port")).isEqualTo("0");
+		assertThat(this.environment.getProperty("management.server.port")).isEqualTo("0");
 	}
 
 	private void addTestPropertySource(String serverPort, String managementPort) {

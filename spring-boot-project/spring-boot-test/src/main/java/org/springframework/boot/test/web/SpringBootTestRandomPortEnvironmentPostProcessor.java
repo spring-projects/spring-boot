@@ -19,10 +19,12 @@ import java.util.Objects;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnvironmentPostProcessor} implementation to start the management context on a
@@ -44,15 +46,18 @@ class SpringBootTestRandomPortEnvironmentPostProcessor
 			SpringApplication application) {
 		MapPropertySource source = (MapPropertySource) environment.getPropertySources()
 				.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
-		if (source == null || isTestServerPortFixed(source)
+		if (source == null
+				|| isTestServerPortFixed(source, environment.getConversionService())
 				|| isTestManagementPortConfigured(source)) {
 			return;
 		}
-		String managementPort = getProperty(environment, MANAGEMENT_PORT_PROPERTY, null);
-		if (managementPort == null || managementPort.equals("-1")) {
+		Integer managementPort = getPropertyAsInteger(environment,
+				MANAGEMENT_PORT_PROPERTY, null);
+		if (managementPort == null || managementPort.equals(-1)) {
 			return;
 		}
-		String serverPort = getProperty(environment, SERVER_PORT_PROPERTY, "8080");
+		Integer serverPort = getPropertyAsInteger(environment, SERVER_PORT_PROPERTY,
+				8080);
 		if (!managementPort.equals(serverPort)) {
 			source.getSource().put(MANAGEMENT_PORT_PROPERTY, "0");
 		}
@@ -61,21 +66,36 @@ class SpringBootTestRandomPortEnvironmentPostProcessor
 		}
 	}
 
-	private boolean isTestServerPortFixed(MapPropertySource source) {
-		return !"0".equals(source.getProperty(SERVER_PORT_PROPERTY));
+	private boolean isTestServerPortFixed(MapPropertySource source,
+			ConversionService conversionService) {
+		return !Integer.valueOf(0).equals(
+				getPropertyAsInteger(source, SERVER_PORT_PROPERTY, conversionService));
 	}
 
 	private boolean isTestManagementPortConfigured(PropertySource<?> source) {
 		return source.getProperty(MANAGEMENT_PORT_PROPERTY) != null;
 	}
 
-	private String getProperty(ConfigurableEnvironment environment, String property,
-			String defaultValue) {
+	private Integer getPropertyAsInteger(ConfigurableEnvironment environment,
+			String property, Integer defaultValue) {
 		return environment.getPropertySources().stream()
 				.filter((source) -> !source.getName().equals(
 						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME))
-				.map((source) -> (String) source.getProperty(property))
+				.map((source) -> getPropertyAsInteger(source, property,
+						environment.getConversionService()))
 				.filter(Objects::nonNull).findFirst().orElse(defaultValue);
+	}
+
+	private Integer getPropertyAsInteger(PropertySource<?> source, String property,
+			ConversionService conversionService) {
+		Object value = source.getProperty(property);
+		if (value == null) {
+			return null;
+		}
+		if (ClassUtils.isAssignableValue(Integer.class, value)) {
+			return (Integer) value;
+		}
+		return conversionService.convert(value, Integer.class);
 	}
 
 }
