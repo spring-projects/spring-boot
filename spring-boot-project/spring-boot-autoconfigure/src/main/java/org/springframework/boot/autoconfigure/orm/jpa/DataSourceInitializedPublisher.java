@@ -82,6 +82,12 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof HibernateProperties) {
 			this.hibernateProperties = (HibernateProperties) bean;
 		}
+		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
+			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
+			if (factory.getBootstrapExecutor() == null) {
+				publishEventIfRequired(factory.getNativeEntityManagerFactory());
+			}
+		}
 		return bean;
 	}
 
@@ -194,9 +200,6 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 			if (bootstrapExecutor != null) {
 				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this
 						.publishEventIfRequired(emf));
-			}
-			else {
-				DataSourceInitializedPublisher.this.publishEventIfRequired(emf);
 			}
 		}
 

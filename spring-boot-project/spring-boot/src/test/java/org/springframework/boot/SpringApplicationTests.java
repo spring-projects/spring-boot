@@ -60,6 +60,7 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
@@ -99,6 +100,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -317,6 +319,32 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(StaticApplicationContext.class);
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
+	}
+
+	@Test
+	public void specificWebApplicationContextClassDetectWebApplicationType() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application
+				.setApplicationContextClass(AnnotationConfigWebApplicationContext.class);
+		assertThat(application.getWebApplicationType())
+				.isEqualTo(WebApplicationType.SERVLET);
+	}
+
+	@Test
+	public void specificReactiveApplicationContextClassDetectReactiveApplicationType() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextClass(
+				AnnotationConfigReactiveWebApplicationContext.class);
+		assertThat(application.getWebApplicationType())
+				.isEqualTo(WebApplicationType.REACTIVE);
+	}
+
+	@Test
+	public void nonWebNorReactiveApplicationContextClassDetectNoneApplicationType() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextClass(StaticApplicationContext.class);
+		assertThat(application.getWebApplicationType())
+				.isEqualTo(WebApplicationType.NONE);
 	}
 
 	@Test

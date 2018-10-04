@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -79,6 +80,7 @@ public class JooqAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
 		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
 	}

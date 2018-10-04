@@ -46,6 +46,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -1195,18 +1196,19 @@ public class SpringApplication {
 	public void setApplicationContextClass(
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
-		if (!isWebApplicationContext(applicationContextClass)) {
-			this.webApplicationType = WebApplicationType.NONE;
-		}
+		this.webApplicationType = deduceWebApplicationType(applicationContextClass);
 	}
 
-	private boolean isWebApplicationContext(Class<?> applicationContextClass) {
-		try {
-			return WebApplicationContext.class.isAssignableFrom(applicationContextClass);
+	private WebApplicationType deduceWebApplicationType(
+			Class<?> applicationContextClass) {
+		if (WebApplicationContext.class.isAssignableFrom(applicationContextClass)) {
+			return WebApplicationType.SERVLET;
 		}
-		catch (NoClassDefFoundError ex) {
-			return false;
+		if (ReactiveWebApplicationContext.class
+				.isAssignableFrom(applicationContextClass)) {
+			return WebApplicationType.REACTIVE;
 		}
+		return WebApplicationType.NONE;
 	}
 
 	/**

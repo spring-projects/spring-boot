@@ -128,10 +128,11 @@ public final class WebFluxTags {
 	}
 
 	/**
-	 * Creates a {@code outcome} tag based on the response status of the given
+	 * Creates an {@code outcome} tag based on the response status of the given
 	 * {@code exchange}.
 	 * @param exchange the exchange
 	 * @return the outcome tag derived from the response status
+	 * @since 2.1.0
 	 */
 	public static Tag outcome(ServerWebExchange exchange) {
 		HttpStatus status = exchange.getResponse().getStatusCode();
