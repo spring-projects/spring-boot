@@ -169,12 +169,11 @@ public class ThymeleafAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledResourceChain
-		public FilterRegistrationBean resourceUrlEncodingFilter() {
-			FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegistrationBean = new FilterRegistrationBean<>(
+		public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
+			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
 					new ResourceUrlEncodingFilter());
-			filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST,
-					DispatcherType.ERROR);
-			return filterRegistrationBean;
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
+			return registration;
 		}
 
 		@Configuration
