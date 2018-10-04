@@ -242,6 +242,7 @@ public class WebMvcProperties {
 
 		public void setPath(String path) {
 			Assert.notNull(path, "Path must not be null");
+			Assert.isTrue(!path.contains("*"), "Path must not contain wildcards");
 			this.path = path;
 		}
 
@@ -256,9 +257,6 @@ public class WebMvcProperties {
 		public String getServletMapping() {
 			if (this.path.equals("") || this.path.equals("/")) {
 				return "/";
-			}
-			if (this.path.contains("*")) {
-				return this.path;
 			}
 			if (this.path.endsWith("/")) {
 				return this.path + "*";
