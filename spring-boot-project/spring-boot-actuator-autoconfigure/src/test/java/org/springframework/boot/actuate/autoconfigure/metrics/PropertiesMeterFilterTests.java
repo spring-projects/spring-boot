@@ -117,6 +117,14 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
+	public void acceptWhenHasAllEnableFalseShouldReturnDeny() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("enable.all=false"));
+		assertThat(filter.accept(createMeterId("spring.boot")))
+				.isEqualTo(MeterFilterReply.DENY);
+	}
+
+	@Test
 	public void acceptWhenHasAllEnableFalseButHigherEnableTrueShouldReturnNeutral() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("enable.all=false", "enable.spring=true"));
@@ -175,6 +183,14 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
+	public void configureWhenAllHistogramTrueSetPercentilesHistogramToTrue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.percentiles-histogram.all=true"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isTrue();
+	}
+
+	@Test
 	public void configureWhenHasPercentilesShouldSetPercentilesToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles.spring.boot=1,1.5,2"));
@@ -200,6 +216,15 @@ public class PropertiesMeterFilterTests {
 		assertThat(filter.configure(createMeterId("spring.boot"),
 				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(3,
 						3.5, 4);
+	}
+
+	@Test
+	public void configureWhenAllPercentilesSetShouldSetPercentilesToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.percentiles.all=1,1.5,2"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(1,
+						1.5, 2);
 	}
 
 	@Test
