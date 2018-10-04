@@ -1,11 +1,7 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'application'
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'application'
-apply plugin: 'org.springframework.boot'
 
 applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
 

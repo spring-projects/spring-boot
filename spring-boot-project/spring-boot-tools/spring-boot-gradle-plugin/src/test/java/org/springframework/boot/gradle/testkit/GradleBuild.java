@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,11 @@ import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
+import org.jetbrains.kotlin.cli.common.PropertiesKt;
+import org.jetbrains.kotlin.compilerRunner.KotlinCompilerRunner;
+import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -114,17 +119,18 @@ public class GradleBuild implements TestRule {
 		GradleBuild.this.script = null;
 	}
 
-	private String pluginClasspath() {
-		return absolutePath("bin") + "," + absolutePath("build/classes/java/main") + ","
-				+ absolutePath("build/resources/main") + ","
-				+ pathOfJarContaining(LaunchScript.class) + ","
-				+ pathOfJarContaining(ClassVisitor.class) + ","
-				+ pathOfJarContaining(DependencyManagementPlugin.class) + ","
-				+ pathOfJarContaining(ArchiveEntry.class);
-	}
-
-	private String absolutePath(String path) {
-		return new File(path).getAbsolutePath();
+	private List<File> pluginClasspath() {
+		return Arrays.asList(new File("bin"), new File("build/classes/java/main"),
+				new File("build/resources/main"),
+				new File(pathOfJarContaining(LaunchScript.class)),
+				new File(pathOfJarContaining(ClassVisitor.class)),
+				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
+				new File(pathOfJarContaining(KotlinPluginWrapper.class)),
+				new File(pathOfJarContaining(PropertiesKt.class)),
+				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
+				new File(pathOfJarContaining(KotlinPlugin.class)),
+				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
+				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {
@@ -160,12 +166,12 @@ public class GradleBuild implements TestRule {
 		FileCopyUtils.copy(scriptContent,
 				new FileWriter(new File(this.projectDir, "build.gradle")));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withDebug(true);
+				.withDebug(true).withPluginClasspath(pluginClasspath());
+
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
 		List<String> allArguments = new ArrayList<>();
-		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
