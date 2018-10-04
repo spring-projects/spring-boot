@@ -34,6 +34,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * properties are defined.
  *
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 public class ClientsConfiguredCondition extends SpringBootCondition {
@@ -44,6 +45,10 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 	private static final Bindable<Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration>> STRING_AUTHORIZATION_CODE_REGISTRATION_MAP = Bindable
 			.mapOf(String.class,
 					OAuth2ClientProperties.AuthorizationCodeClientRegistration.class);
+
+	private static final Bindable<Map<String, OAuth2ClientProperties.CredentialsClientRegistration>> STRING_CREDENTIALS_REGISTRATION_MAP = Bindable
+			.mapOf(String.class,
+					OAuth2ClientProperties.CredentialsClientRegistration.class);
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -73,8 +78,14 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 				.bind("spring.security.oauth2.client.registration.authorizationcode",
 						STRING_AUTHORIZATION_CODE_REGISTRATION_MAP)
 				.orElse(Collections.emptyMap());
+		Map<String, OAuth2ClientProperties.CredentialsClientRegistration> credentialsClientRegistration = Binder
+				.get(environment)
+				.bind("spring.security.oauth2.client.registration.clientcredentials",
+						STRING_CREDENTIALS_REGISTRATION_MAP)
+				.orElse(Collections.emptyMap());
 		registrations.putAll(loginClientRegistrations);
 		registrations.putAll(authCodeClientRegistrations);
+		registrations.putAll(credentialsClientRegistration);
 		return registrations;
 	}
 

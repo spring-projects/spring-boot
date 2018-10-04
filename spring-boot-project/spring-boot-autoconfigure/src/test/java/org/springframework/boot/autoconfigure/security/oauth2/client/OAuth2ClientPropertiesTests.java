@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.AuthorizationCodeClientRegistration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.CredentialsClientRegistration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.LoginClientRegistration;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -68,6 +69,26 @@ public class OAuth2ClientPropertiesTests {
 		registration.setClientId("foo");
 		registration.setProvider("google");
 		this.properties.getRegistration().getAuthorizationCode().put("foo", registration);
+		this.properties.validate();
+	}
+
+	@Test
+	public void clientIdAbsentForClientCredentialsThrowsException() {
+		CredentialsClientRegistration registration = new CredentialsClientRegistration();
+		registration.setClientSecret("secret");
+		registration.setProvider("google");
+		this.properties.getRegistration().getClientCredentials().put("foo", registration);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Client id must not be empty.");
+		this.properties.validate();
+	}
+
+	@Test
+	public void clientSecretAbsentForClientCredentialsDoesNotThrowException() {
+		CredentialsClientRegistration registration = new CredentialsClientRegistration();
+		registration.setClientId("foo");
+		registration.setProvider("google");
+		this.properties.getRegistration().getClientCredentials().put("foo", registration);
 		this.properties.validate();
 	}
 
