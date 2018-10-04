@@ -50,35 +50,20 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 	public static Map<String, ClientRegistration> getClientRegistrations(
 			OAuth2ClientProperties properties) {
 		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
-		properties.getRegistration().getLogin()
-				.forEach((key, value) -> clientRegistrations.put(key,
-						getLoginClientRegistration(key, value,
-								properties.getProvider())));
-		properties.getRegistration().getAuthorizationCode()
-				.forEach((key, value) -> clientRegistrations.put(key,
-						getAuthorizationCodeClientRegistration(key, value,
-								properties.getProvider())));
+		properties.getRegistration().forEach((key, value) -> clientRegistrations.put(key,
+				getClientRegistration(key, value, properties.getProvider())));
 		return clientRegistrations;
 	}
 
-	private static ClientRegistration getAuthorizationCodeClientRegistration(
-			String registrationId,
-			OAuth2ClientProperties.AuthorizationCodeClientRegistration properties,
-			Map<String, Provider> providers) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		Builder builder = getBuilder(map, registrationId, properties, providers);
-		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
-		return builder.build();
-	}
-
-	private static Builder getBuilder(PropertyMapper map, String registrationId,
-			OAuth2ClientProperties.BaseClientRegistration properties,
+	private static ClientRegistration getClientRegistration(String registrationId,
+			OAuth2ClientProperties.Registration properties,
 			Map<String, Provider> providers) {
 		Builder builder = getBuilderFromIssuerIfPossible(registrationId,
 				properties.getProvider(), providers);
 		if (builder == null) {
 			builder = getBuilder(registrationId, properties.getProvider(), providers);
 		}
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getClientId).to(builder::clientId);
 		map.from(properties::getClientSecret).to(builder::clientSecret);
 		map.from(properties::getClientAuthenticationMethod)
@@ -86,18 +71,10 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 				.to(builder::clientAuthenticationMethod);
 		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
+		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
 		map.from(properties::getScope).as((scope) -> StringUtils.toStringArray(scope))
 				.to(builder::scope);
 		map.from(properties::getClientName).to(builder::clientName);
-		return builder;
-	}
-
-	private static ClientRegistration getLoginClientRegistration(String registrationId,
-			OAuth2ClientProperties.LoginClientRegistration properties,
-			Map<String, Provider> providers) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		Builder builder = getBuilder(map, registrationId, properties, providers);
-		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
 		return builder.build();
 	}
 

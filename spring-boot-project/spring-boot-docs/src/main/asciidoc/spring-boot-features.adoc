@@ -3264,13 +3264,31 @@ Spring.
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of
 some auto-configuration to make it easy to set up an OAuth2/Open ID Connect clients. This configuration
-makes use of the properties under `OAuth2ClientProperties`.
+makes use of the properties under `OAuth2ClientProperties`. The same properties are applicable to both servlet and reactive applications.
 
-You can register multiple OAuth2/OpenID Connect providers under the `spring.security.oauth2.client.provider`
-prefix, as shown in the following example:
+You can register multiple OAuth2 clients and providers under the
+`spring.security.oauth2.client` prefix, as shown in the following example:
 
 [source,properties,indent=0]
 ----
+	spring.security.oauth2.client.registration.my-client-1.client-id=abcd
+	spring.security.oauth2.client.registration.my-client-1.client-secret=password
+	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
+	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.my-client-1.scope=user
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
+	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.registration.my-client-2.client-id=abcd
+	spring.security.oauth2.client.registration.my-client-2.client-secret=password
+	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
+	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.my-client-2.scope=email
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
+	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
+
 	spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=http://my-auth-server/oauth/authorize
 	spring.security.oauth2.client.provider.my-oauth-provider.token-uri=http://my-auth-server/oauth/token
 	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
@@ -3293,33 +3311,6 @@ Provider can be configured with the `issuer-uri`:
 ----
 
 
-
-[[boot-features-security-oauth2-login-client-registration]]
-===== OpenID Connect Login client registration
-
-You can register multiple Open ID Connect clients under the
-`spring.security.oauth2.client.registration.login` prefix, as shown in the following example:
-
-[source,properties,indent=0]
-----
-	spring.security.oauth2.client.registration.login.my-client-1.client-id=abcd
-	spring.security.oauth2.client.registration.login.my-client-1.client-secret=password
-	spring.security.oauth2.client.registration.login.my-client-1.client-name=Client for user scope
-	spring.security.oauth2.client.registration.login.my-client-1.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.login.my-client-1.scope=user
-	spring.security.oauth2.client.registration.login.my-client-1.redirect-uri=http://localhost:8080/login/oauth2/code/my-client-1
-	spring.security.oauth2.client.registration.login.my-client-1.client-authentication-method=basic
-	spring.security.oauth2.client.registration.login.my-client-1.authorization-grant-type=authorization_code
-
-	spring.security.oauth2.client.registration.login.my-client-2.client-id=abcd
-	spring.security.oauth2.client.registration.login.my-client-2.client-secret=password
-	spring.security.oauth2.client.registration.login.my-client-2.client-name=Client for email scope
-	spring.security.oauth2.client.registration.login.my-client-2.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.login.my-client-2.scope=email
-	spring.security.oauth2.client.registration.login.my-client-2.redirect-uri=http://localhost:8080/login/oauth2/code/my-client-2
-	spring.security.oauth2.client.registration.login.my-client-2.client-authentication-method=basic
-	spring.security.oauth2.client.registration.login.my-client-2.authorization-grant-type=authorization_code
-----
 
 By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs
 matching `/login/oauth2/code/*`. If you want to customize the `redirect-uri` to
@@ -3344,36 +3335,6 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ----
 
-The same properties are applicable to both servlet and reactive applications.
-
-
-[[boot-features-security-oauth2-authorization-code-client-registration]]
-===== OAuth2 Authorization Code client registration
-
-You can register multiple OAuth2 `authorization_code` clients under the
-`spring.security.oauth2.client.registration.authorization-code` prefix, as shown in the following example:
-
-[source,properties,indent=0]
-----
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-id=abcd
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-secret=password
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-name=Client for user scope
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.scope=user
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.redirect-uri=http://my-redirect-uri.com
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-authentication-method=basic
-	spring.security.oauth2.client.registration.authorization-code.my-client-1.authorization-grant-type=authorization_code
-
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-id=abcd
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-secret=password
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-name=Client for email scope
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.scope=email
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.redirect-uri=http://my-redirect-uri.com
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-authentication-method=basic
-	spring.security.oauth2.client.registration.authorization-code.my-client-2.authorization-grant-type=authorization_code
-----
-
 
 
 [[boot-features-security-oauth2-common-providers]]
@@ -3383,19 +3344,19 @@ we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta
 respectively).
 
 If you do not need to customize these providers, you can set the `provider` attribute to
-the one for which you need to infer defaults. Also, if the ID of your client matches the
+the one for which you need to infer defaults. Also, if the key for the client registration matches a
 default supported provider, Spring Boot infers that as well.
 
 In other words, the two configurations in the following example use the Google provider:
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.client.registration.login.my-client.client-id=abcd
-	spring.security.oauth2.client.registration.login.my-client.client-secret=password
-	spring.security.oauth2.client.registration.login.my-client.provider=google
+	spring.security.oauth2.client.registration.my-client.client-id=abcd
+	spring.security.oauth2.client.registration.my-client.client-secret=password
+	spring.security.oauth2.client.registration.my-client.provider=google
 
-	spring.security.oauth2.client.registration.login.google.client-id=abcd
-	spring.security.oauth2.client.registration.login.google.client-secret=password
+	spring.security.oauth2.client.registration.google.client-id=abcd
+	spring.security.oauth2.client.registration.google.client-secret=password
 ----
 
 

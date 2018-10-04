@@ -18,9 +18,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.AuthorizationCodeClientRegistration;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.LoginClientRegistration;
-
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -34,40 +31,21 @@ public class OAuth2ClientPropertiesTests {
 	private OAuth2ClientProperties properties = new OAuth2ClientProperties();
 
 	@Test
-	public void clientIdAbsentForLoginClientsThrowsException() {
-		LoginClientRegistration registration = new LoginClientRegistration();
+	public void clientIdAbsentThrowsException() {
+		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientSecret("secret");
 		registration.setProvider("google");
-		this.properties.getRegistration().getLogin().put("foo", registration);
+		this.properties.getRegistration().put("foo", registration);
 		assertThatIllegalStateException().isThrownBy(this.properties::validate)
 				.withMessageContaining("Client id must not be empty.");
 	}
 
 	@Test
 	public void clientSecretAbsentShouldNotThrowException() {
-		LoginClientRegistration registration = new LoginClientRegistration();
+		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientId("foo");
 		registration.setProvider("google");
-		this.properties.getRegistration().getLogin().put("foo", registration);
-		this.properties.validate();
-	}
-
-	@Test
-	public void clientIdAbsentForAuthorizationCodeClientsThrowsException() {
-		AuthorizationCodeClientRegistration registration = new AuthorizationCodeClientRegistration();
-		registration.setClientSecret("secret");
-		registration.setProvider("google");
-		this.properties.getRegistration().getAuthorizationCode().put("foo", registration);
-		assertThatIllegalStateException().isThrownBy(this.properties::validate)
-				.withMessageContaining("Client id must not be empty.");
-	}
-
-	@Test
-	public void clientSecretAbsentForAuthorizationCodeClientDoesNotThrowException() {
-		AuthorizationCodeClientRegistration registration = new AuthorizationCodeClientRegistration();
-		registration.setClientId("foo");
-		registration.setProvider("google");
-		this.properties.getRegistration().getAuthorizationCode().put("foo", registration);
+		this.properties.getRegistration().put("foo", registration);
 		this.properties.validate();
 	}
 

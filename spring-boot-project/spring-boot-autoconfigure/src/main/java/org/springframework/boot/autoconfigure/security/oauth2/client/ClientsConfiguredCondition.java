@@ -16,7 +16,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -36,46 +35,32 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Madhura Bhave
  * @since 2.1.0
  */
+
 public class ClientsConfiguredCondition extends SpringBootCondition {
 
-	private static final Bindable<Map<String, OAuth2ClientProperties.LoginClientRegistration>> STRING_LOGIN_REGISTRATION_MAP = Bindable
-			.mapOf(String.class, OAuth2ClientProperties.LoginClientRegistration.class);
-
-	private static final Bindable<Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration>> STRING_AUTHORIZATION_CODE_REGISTRATION_MAP = Bindable
-			.mapOf(String.class,
-					OAuth2ClientProperties.AuthorizationCodeClientRegistration.class);
+	private static final Bindable<Map<String, OAuth2ClientProperties.Registration>> STRING_REGISTRATION_MAP = Bindable
+			.mapOf(String.class, OAuth2ClientProperties.Registration.class);
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("OAuth2 Clients Configured Condition");
-		Map<String, OAuth2ClientProperties.BaseClientRegistration> registrations = getRegistrations(
+		Map<String, OAuth2ClientProperties.Registration> registrations = getRegistrations(
 				context.getEnvironment());
 		if (!registrations.isEmpty()) {
-			return ConditionOutcome.match(message.foundExactly(
-					"registered clients " + registrations.values().stream().map(
-							OAuth2ClientProperties.BaseClientRegistration::getClientId)
+			return ConditionOutcome.match(message
+					.foundExactly("registered clients " + registrations.values().stream()
+							.map(OAuth2ClientProperties.Registration::getClientId)
 							.collect(Collectors.joining(", "))));
 		}
 		return ConditionOutcome.noMatch(message.notAvailable("registered clients"));
 	}
 
-	private Map<String, OAuth2ClientProperties.BaseClientRegistration> getRegistrations(
+	private Map<String, OAuth2ClientProperties.Registration> getRegistrations(
 			Environment environment) {
-		Map<String, OAuth2ClientProperties.BaseClientRegistration> registrations = new HashMap<>();
-		Map<String, OAuth2ClientProperties.LoginClientRegistration> loginClientRegistrations = Binder
-				.get(environment).bind("spring.security.oauth2.client.registration.login",
-						STRING_LOGIN_REGISTRATION_MAP)
-				.orElse(Collections.emptyMap());
-		Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration> authCodeClientRegistrations = Binder
-				.get(environment)
-				.bind("spring.security.oauth2.client.registration.authorizationcode",
-						STRING_AUTHORIZATION_CODE_REGISTRATION_MAP)
-				.orElse(Collections.emptyMap());
-		registrations.putAll(loginClientRegistrations);
-		registrations.putAll(authCodeClientRegistrations);
-		return registrations;
+		return Binder.get(environment).bind("spring.security.oauth2.client.registration",
+				STRING_REGISTRATION_MAP).orElse(Collections.emptyMap());
 	}
 
 }
