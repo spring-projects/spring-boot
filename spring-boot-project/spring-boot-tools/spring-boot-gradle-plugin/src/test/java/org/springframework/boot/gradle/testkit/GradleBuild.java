@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
@@ -35,6 +34,11 @@ import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
+import org.jetbrains.kotlin.cli.common.PropertiesKt;
+import org.jetbrains.kotlin.compilerRunner.KotlinCompilerRunner;
+import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -121,12 +125,12 @@ public class GradleBuild implements TestRule {
 				new File(pathOfJarContaining(LaunchScript.class)),
 				new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
+				new File(pathOfJarContaining(KotlinPluginWrapper.class)),
+				new File(pathOfJarContaining(PropertiesKt.class)),
+				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
+				new File(pathOfJarContaining(KotlinPlugin.class)),
+				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)));
-	}
-
-	private String pluginClasspathAsString() {
-		return pluginClasspath().stream().map(File::getAbsolutePath)
-				.collect(Collectors.joining(","));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {
@@ -170,20 +174,6 @@ public class GradleBuild implements TestRule {
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
-
-		// this is necessary for the tests checking that we react correctly to the Kotlin
-		// plugin.
-		// Indeed, when using the plugins block to load the Boot plugin under test,
-		// relying on the plugin
-		// classpath set by withPluginClasspath(pluginClasspath()), the Boot plugin and
-		// the Kotlin plugin
-		// are loaded using two separate classloaders, and the Boot plugin thus doesn't
-		// see the Kotlin plugin
-		// class and can't react to it. To circumvent this test kit limitation, we set the
-		// classpath
-		// from the buildscript block of the build script, thanks to this pluginClasspath
-		// property
-		allArguments.add("-PpluginClasspath=" + pluginClasspathAsString());
 		allArguments.addAll(Arrays.asList(arguments));
 		return gradleRunner.withArguments(allArguments);
 	}

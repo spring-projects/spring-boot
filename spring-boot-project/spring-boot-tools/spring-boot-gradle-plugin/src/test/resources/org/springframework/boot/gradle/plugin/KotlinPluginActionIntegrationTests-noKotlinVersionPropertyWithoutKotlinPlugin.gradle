@@ -1,15 +1,6 @@
-// this is necessary for the tests checking that we react correctly to the Kotlin plugin.
-// Indeed, when using the plugins block to load the Boot plugin under test, relying on the plugin
-// classpath set by the test kit gradle runner, the Boot plugin and the Kotlin plugin
-// are loaded using two separate classloaders, and the Boot plugin thus doesn't see the Kotlin plugin
-// class and can't react to it. To circumvent this test kit limitation, we set the classpath here.
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'org.springframework.boot'
 
 task kotlinVersion {
 	doLast {
