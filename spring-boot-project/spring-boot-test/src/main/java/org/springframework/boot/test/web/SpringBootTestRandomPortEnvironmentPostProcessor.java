@@ -21,6 +21,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 /**
@@ -29,9 +30,9 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
  * different port.
  *
  * @author Madhura Bhave
- * @since 2.1.0
+ * @author Andy Wilkinson
  */
-public class SpringBootTestRandomPortEnvironmentPostProcessor
+class SpringBootTestRandomPortEnvironmentPostProcessor
 		implements EnvironmentPostProcessor {
 
 	private static final String MANAGEMENT_PORT_PROPERTY = "management.server.port";
@@ -43,27 +44,29 @@ public class SpringBootTestRandomPortEnvironmentPostProcessor
 			SpringApplication application) {
 		MapPropertySource source = (MapPropertySource) environment.getPropertySources()
 				.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
-		if (isTestServerPortRandom(source)) {
-			if (source.getProperty(MANAGEMENT_PORT_PROPERTY) == null) {
-				String managementPort = getProperty(environment, MANAGEMENT_PORT_PROPERTY,
-						null);
-				if (managementPort != null && !managementPort.equals("-1")) {
-					String serverPort = getProperty(environment, SERVER_PORT_PROPERTY,
-							"8080");
-					if (!managementPort.equals(serverPort)) {
-						source.getSource().put(MANAGEMENT_PORT_PROPERTY, "0");
-					}
-					else {
-						source.getSource().put(MANAGEMENT_PORT_PROPERTY, "");
-					}
-				}
-			}
+		if (source == null || isTestServerPortFixed(source)
+				|| isTestManagementPortConfigured(source)) {
+			return;
 		}
-
+		String managementPort = getProperty(environment, MANAGEMENT_PORT_PROPERTY, null);
+		if (managementPort == null || managementPort.equals("-1")) {
+			return;
+		}
+		String serverPort = getProperty(environment, SERVER_PORT_PROPERTY, "8080");
+		if (!managementPort.equals(serverPort)) {
+			source.getSource().put(MANAGEMENT_PORT_PROPERTY, "0");
+		}
+		else {
+			source.getSource().put(MANAGEMENT_PORT_PROPERTY, "");
+		}
 	}
 
-	private boolean isTestServerPortRandom(MapPropertySource source) {
-		return (source != null && "0".equals(source.getProperty(SERVER_PORT_PROPERTY)));
+	private boolean isTestServerPortFixed(MapPropertySource source) {
+		return !"0".equals(source.getProperty(SERVER_PORT_PROPERTY));
+	}
+
+	private boolean isTestManagementPortConfigured(PropertySource<?> source) {
+		return source.getProperty(MANAGEMENT_PORT_PROPERTY) != null;
 	}
 
 	private String getProperty(ConfigurableEnvironment environment, String property,
