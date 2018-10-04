@@ -21,7 +21,6 @@ import java.util.Locale;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -226,39 +225,34 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void testDefaultReloadableValueMessageSource() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(getDeclaredMessageSource(context))
-						.isInstanceOf(ResourceBundleMessageSource.class));
+		testReloadableMessageSource(ResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages");
 	}
 
 	@Test
 	public void testNotReloadableMessageSource() {
-		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages",
-						"spring.messages.reloadable:false")
-				.run((context) -> assertThat(getDeclaredMessageSource(context))
-						.isInstanceOf(ResourceBundleMessageSource.class));
+		testReloadableMessageSource(ResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages",
+				"spring.messages.reloadable:false");
 	}
 
 	@Test
 	public void testReloadableMessageSource() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages",
-				"spring.messages.reloadable:true").run((context) -> {
-					assertThat(getDeclaredMessageSource(context))
-							.isInstanceOf(ReloadableResourceBundleMessageSource.class);
-					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
-							.isEqualTo("bar");
-				});
+		testReloadableMessageSource(ReloadableResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages",
+				"spring.messages.reloadable:true");
 	}
 
-	private MessageSource getDeclaredMessageSource(AssertableApplicationContext context)
-			throws BeansException {
-		MessageSource messageSource = context.getBean(MessageSource.class);
-		if (messageSource instanceof DelegatingMessageSource) {
-			messageSource = ((DelegatingMessageSource) messageSource)
-					.getParentMessageSource();
-		}
-		return messageSource;
+	private void testReloadableMessageSource(Class<?> expectedInstance,
+			String... propertyValues) {
+		this.contextRunner.withPropertyValues(propertyValues).run((context) -> {
+			MessageSource messageSource = context.getBean(MessageSource.class);
+			if (messageSource instanceof DelegatingMessageSource) {
+				messageSource = ((DelegatingMessageSource) messageSource)
+						.getParentMessageSource();
+			}
+			assertThat(messageSource).isInstanceOf(expectedInstance);
+		});
 	}
 
 	@Configuration
