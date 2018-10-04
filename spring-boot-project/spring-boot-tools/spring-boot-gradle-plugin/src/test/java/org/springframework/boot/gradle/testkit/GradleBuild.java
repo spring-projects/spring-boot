@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
@@ -114,17 +115,18 @@ public class GradleBuild implements TestRule {
 		GradleBuild.this.script = null;
 	}
 
-	private String pluginClasspath() {
-		return absolutePath("bin") + "," + absolutePath("build/classes/java/main") + ","
-				+ absolutePath("build/resources/main") + ","
-				+ pathOfJarContaining(LaunchScript.class) + ","
-				+ pathOfJarContaining(ClassVisitor.class) + ","
-				+ pathOfJarContaining(DependencyManagementPlugin.class) + ","
-				+ pathOfJarContaining(ArchiveEntry.class);
+	private List<File> pluginClasspath() {
+		return Arrays.asList(new File("bin"), new File("build/classes/java/main"),
+				new File("build/resources/main"),
+				new File(pathOfJarContaining(LaunchScript.class)),
+				new File(pathOfJarContaining(ClassVisitor.class)),
+				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
+				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}
 
-	private String absolutePath(String path) {
-		return new File(path).getAbsolutePath();
+	private String pluginClasspathAsString() {
+		return pluginClasspath().stream().map(File::getAbsolutePath)
+				.collect(Collectors.joining(","));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {
@@ -160,14 +162,28 @@ public class GradleBuild implements TestRule {
 		FileCopyUtils.copy(scriptContent,
 				new FileWriter(new File(this.projectDir, "build.gradle")));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withDebug(true);
+				.withDebug(true).withPluginClasspath(pluginClasspath());
+
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
 		List<String> allArguments = new ArrayList<>();
-		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
+
+		// this is necessary for the tests checking that we react correctly to the Kotlin
+		// plugin.
+		// Indeed, when using the plugins block to load the Boot plugin under test,
+		// relying on the plugin
+		// classpath set by withPluginClasspath(pluginClasspath()), the Boot plugin and
+		// the Kotlin plugin
+		// are loaded using two separate classloaders, and the Boot plugin thus doesn't
+		// see the Kotlin plugin
+		// class and can't react to it. To circumvent this test kit limitation, we set the
+		// classpath
+		// from the buildscript block of the build script, thanks to this pluginClasspath
+		// property
+		allArguments.add("-PpluginClasspath=" + pluginClasspathAsString());
 		allArguments.addAll(Arrays.asList(arguments));
 		return gradleRunner.withArguments(allArguments);
 	}
