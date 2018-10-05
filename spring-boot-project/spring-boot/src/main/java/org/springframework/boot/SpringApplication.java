@@ -167,11 +167,8 @@ public class SpringApplication {
 	 * The class name of application context that will be used by default for web
 	 * environments.
 	 */
-	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework.boot."
+	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
 			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
-
-	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
-			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
 	/**
 	 * The class name of application context that will be used by default for reactive web
@@ -179,14 +176,6 @@ public class SpringApplication {
 	 */
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
 			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
-
-	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
-			+ "web.reactive.DispatcherHandler";
-
-	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
-			+ "web.servlet.DispatcherServlet";
-
-	private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
 
 	/**
 	 * Default banner location.
@@ -273,25 +262,11 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		this.webApplicationType = deduceWebApplicationType();
+		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
-	}
-
-	private WebApplicationType deduceWebApplicationType() {
-		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
-				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)
-				&& !ClassUtils.isPresent(JERSEY_WEB_ENVIRONMENT_CLASS, null)) {
-			return WebApplicationType.REACTIVE;
-		}
-		for (String className : WEB_ENVIRONMENT_CLASSES) {
-			if (!ClassUtils.isPresent(className, null)) {
-				return WebApplicationType.NONE;
-			}
-		}
-		return WebApplicationType.SERVLET;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -609,7 +584,7 @@ public class SpringApplication {
 			try {
 				switch (this.webApplicationType) {
 				case SERVLET:
-					contextClass = Class.forName(DEFAULT_WEB_CONTEXT_CLASS);
+					contextClass = Class.forName(DEFAULT_SERVLET_WEB_CONTEXT_CLASS);
 					break;
 				case REACTIVE:
 					contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
@@ -1187,38 +1162,16 @@ public class SpringApplication {
 
 	/**
 	 * Sets the type of Spring {@link ApplicationContext} that will be created. If not
-	 * specified defaults to {@link #DEFAULT_WEB_CONTEXT_CLASS} for web based applications
-	 * or {@link AnnotationConfigApplicationContext} for non web based applications.
+	 * specified defaults to {@link #DEFAULT_SERVLET_WEB_CONTEXT_CLASS} for web based
+	 * applications or {@link AnnotationConfigApplicationContext} for non web based
+	 * applications.
 	 * @param applicationContextClass the context class to set
 	 */
 	public void setApplicationContextClass(
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
-		this.webApplicationType = deduceWebApplicationType(applicationContextClass);
-	}
-
-	private WebApplicationType deduceWebApplicationType(
-			Class<?> applicationContextClass) {
-		if (safeIsAssignableFrom("org.springframework.web.context.WebApplicationContext",
-				applicationContextClass)) {
-			return WebApplicationType.SERVLET;
-		}
-		if (safeIsAssignableFrom(
-				"org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext",
-				applicationContextClass)) {
-			return WebApplicationType.REACTIVE;
-		}
-		return WebApplicationType.NONE;
-	}
-
-	private boolean safeIsAssignableFrom(String target, Class<?> type) {
-		try {
-			Class<?> targetClass = ClassUtils.forName(target, getClassLoader());
-			return targetClass.isAssignableFrom(type);
-		}
-		catch (Throwable ex) {
-			return false;
-		}
+		this.webApplicationType = WebApplicationType
+				.deduceFromApplicationContext(applicationContextClass);
 	}
 
 	/**
