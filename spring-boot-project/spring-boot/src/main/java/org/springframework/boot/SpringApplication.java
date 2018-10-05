@@ -46,7 +46,6 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
-import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -79,7 +78,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
@@ -1201,14 +1199,26 @@ public class SpringApplication {
 
 	private WebApplicationType deduceWebApplicationType(
 			Class<?> applicationContextClass) {
-		if (WebApplicationContext.class.isAssignableFrom(applicationContextClass)) {
+		if (safeIsAssignableFrom("org.springframework.web.context.WebApplicationContext",
+				applicationContextClass)) {
 			return WebApplicationType.SERVLET;
 		}
-		if (ReactiveWebApplicationContext.class
-				.isAssignableFrom(applicationContextClass)) {
+		if (safeIsAssignableFrom(
+				"org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext",
+				applicationContextClass)) {
 			return WebApplicationType.REACTIVE;
 		}
 		return WebApplicationType.NONE;
+	}
+
+	private boolean safeIsAssignableFrom(String target, Class<?> type) {
+		try {
+			Class<?> targetClass = ClassUtils.forName(target, getClassLoader());
+			return targetClass.isAssignableFrom(type);
+		}
+		catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	/**
