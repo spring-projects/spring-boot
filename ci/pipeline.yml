@@ -375,7 +375,6 @@ jobs:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
-  - get: release-notes-repo
   - task: stage
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/stage.yml
@@ -388,22 +387,12 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
-  - task: publish-release-notes
-    image: spring-boot-ci-image
-    file: git-repo/ci/tasks/publish-release-notes.yml
-    params:
-      RELEASE_TYPE: M
-      GITHUB_ORGANIZATION: spring-projects
-      GITHUB_REPO: spring-boot
-      GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: stage-rc
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
-  - get: release-notes-repo
   - task: stage
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/stage.yml
@@ -416,22 +405,12 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
-  - task: publish-release-notes
-    image: spring-boot-ci-image
-    file: git-repo/ci/tasks/publish-release-notes.yml
-    params:
-      RELEASE_TYPE: RC
-      GITHUB_ORGANIZATION: spring-projects
-      GITHUB_REPO: spring-boot
-      GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: stage-release
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
-  - get: release-notes-repo
   - task: stage
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/stage.yml
@@ -444,21 +423,13 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
-  - task: publish-release-notes
-    image: spring-boot-ci-image
-    file: git-repo/ci/tasks/publish-release-notes.yml
-    params:
-      RELEASE_TYPE: RELEASE
-      GITHUB_ORGANIZATION: spring-projects
-      GITHUB_REPO: spring-boot
-      GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: promote-milestone
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
+  - get: release-notes-repo
   - get: artifactory-repo
     trigger: false
     passed: [stage-milestone]
@@ -472,12 +443,22 @@ jobs:
       ARTIFACTORY_SERVER: ((artifactory-server))
       ARTIFACTORY_USERNAME: ((artifactory-username))
       ARTIFACTORY_PASSWORD: ((artifactory-password))
+  - task: publish-release-notes
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/publish-release-notes.yml
+    params:
+      RELEASE_TYPE: M
+      GITHUB_ORGANIZATION: spring-projects
+      GITHUB_REPO: spring-boot
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: promote-rc
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
+  - get: release-notes-repo
   - get: artifactory-repo
     trigger: false
     passed: [stage-rc]
@@ -491,12 +472,22 @@ jobs:
       ARTIFACTORY_SERVER: ((artifactory-server))
       ARTIFACTORY_USERNAME: ((artifactory-username))
       ARTIFACTORY_PASSWORD: ((artifactory-password))
+  - task: publish-release-notes
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/publish-release-notes.yml
+    params:
+      RELEASE_TYPE: RC
+      GITHUB_ORGANIZATION: spring-projects
+      GITHUB_REPO: spring-boot
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: promote-release
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
+  - get: release-notes-repo
   - get: artifactory-repo
     trigger: false
     passed: [stage-release]
@@ -512,6 +503,15 @@ jobs:
       ARTIFACTORY_PASSWORD: ((artifactory-password))
       BINTRAY_SUBJECT: ((bintray-subject))
       BINTRAY_REPO: ((bintray-repo))
+  - task: publish-release-notes
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/publish-release-notes.yml
+    params:
+      RELEASE_TYPE: RELEASE
+      GITHUB_ORGANIZATION: spring-projects
+      GITHUB_REPO: spring-boot
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: sync-to-maven-central
   serial: true
   plan:
