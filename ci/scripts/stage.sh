@@ -51,4 +51,3 @@ fi;
 echo "DONE"
 
 popd > /dev/null
-echo $stageVersion > version/stageVersion

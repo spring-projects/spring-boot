@@ -3,7 +3,7 @@ set -e
 
 source $(dirname $0)/common.sh
 
-milestone=$( cat version/stageVersion )
+milestone=$( cat version/version )
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	milestone=${milestone%.RELEASE}
 fi

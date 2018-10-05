@@ -66,3 +66,4 @@ fi
 
 
 echo "Promotion complete"
+echo $version > version/version
