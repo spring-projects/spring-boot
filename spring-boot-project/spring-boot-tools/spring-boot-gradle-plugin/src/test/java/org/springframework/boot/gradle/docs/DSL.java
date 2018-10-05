@@ -13,36 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.gradle.docs;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.gradle.testkit.GradleBuild;
-
 /**
- * Tests for the getting started documentation.
- *
- * @author Andy Wilkinson
- * @author Jean-Baptiste Nizet
+ * The DSLs supported by Gradle and demonstrated in the documentation samples
  */
-@RunWith(GradleMultiDslSuite.class)
-public class GettingStartedDocumentationTests {
+public enum DSL {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GROOVY("Groovy", ".gradle"), KOTLIN("Kotlin", ".gradle.kts");
 
-	public DSL dsl;
+	private final String name;
 
-	// NOTE: We can't run any `apply-plugin` tests because during a release the
-	// jar won't be there
+	private final String extension;
 
-	@Test
-	public void typicalPluginsAppliesExceptedPlugins() {
-		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins"
-				+ this.dsl.getExtension()).build("verify");
+	DSL(String name, String extension) {
+		this.name = name;
+		this.extension = extension;
+	}
+
+	/**
+	 * Gets the user-friendly name of the DSL
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Gets the file extension of build scripts (starting with a dot)
+	 */
+	public String getExtension() {
+		return this.extension;
 	}
 
 }

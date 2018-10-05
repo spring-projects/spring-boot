@@ -12,10 +12,18 @@ default, the `bootArchives` configuration contains the archive produced by the `
 or `bootWar` task. The `uploadBootArchives` task can be configured to publish the archive
 to a Maven repository:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/publishing/maven.gradle[tags=upload]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/publishing/maven.gradle.kts[tags=upload]
+----
+
 
 [[publishing-your-application-maven-publish]]
 === Publishing with the `maven-publish` plugin
@@ -25,11 +33,17 @@ method on `MavenPublication`. Pass the task that produces that artifact that you
 to publish to the `artifact` method. For example, to publish the artifact produced by the
 default `bootJar` task:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/publishing/maven-publish.gradle[tags=publishing]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/publishing/maven-publish.gradle.kts[tags=publishing]
+----
 
 
 [[publishing-your-application-distribution]]

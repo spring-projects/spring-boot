@@ -26,6 +26,7 @@
 		<maven.version>3.5.4</maven.version>
 		<maven-resolver.version>1.1.1</maven-resolver.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
+		<dependency-management-plugin.version>1.0.6.RELEASE</dependency-management-plugin.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -108,7 +109,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>1.0.6.RELEASE</version>
+				<version>${dependency-management-plugin.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>

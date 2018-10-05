@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
@@ -32,16 +33,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for the generating build info documentation.
  *
  * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
+@RunWith(GradleMultiDslSuite.class)
 public class IntegratingWithActuatorDocumentationTests {
 
 	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
+
+	public DSL dsl;
 
 	@Test
 	public void basicBuildInfo() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-basic.gradle")
+		this.gradleBuild
+				.script("src/main/gradle/integrating-with-actuator/build-info-basic"
+						+ this.dsl.getExtension())
 				.build("bootBuildInfo");
 		assertThat(new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties")).isFile();
@@ -50,7 +56,8 @@ public class IntegratingWithActuatorDocumentationTests {
 	@Test
 	public void buildInfoCustomValues() throws IOException {
 		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-custom-values.gradle")
+				"src/main/gradle/integrating-with-actuator/build-info-custom-values"
+						+ this.dsl.getExtension())
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties");
@@ -64,8 +71,9 @@ public class IntegratingWithActuatorDocumentationTests {
 
 	@Test
 	public void buildInfoAdditional() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-additional.gradle")
+		this.gradleBuild
+				.script("src/main/gradle/integrating-with-actuator/build-info-additional"
+						+ this.dsl.getExtension())
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties");
