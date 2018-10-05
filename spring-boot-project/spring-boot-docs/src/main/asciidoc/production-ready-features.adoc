@@ -1835,9 +1835,9 @@ To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
 Auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS
-implementation. When `management.metrics.jersey2.server.auto-time-requests` is `true`,
-this instrumentation occurs for all requests. Alternatively, when set to `false`, you
-can enable instrumentation by adding `@Timed` to a request-handling method:
+implementation. When `management.metrics.web.server.auto-time-requests` is `true`, this
+instrumentation occurs for all requests. Alternatively, when set to `false`, you can
+enable instrumentation by adding `@Timed` to a request-handling method:
 
 [source,java,indent=0]
 ----
@@ -1858,7 +1858,7 @@ the class, but can be used to further customize the timer for this particular en
 timers require a separate metric name, and can be stacked with a short task timer.
 
 By default, metrics are generated with the name, `http.server.requests`. The name can be
-customized by setting the `management.metrics.jersey2.server.requests-metric-name` property.
+customized by setting the `management.metrics.web.server.requests-metric-name` property.
 
 By default, Jersey server metrics are tagged with the following information:
 

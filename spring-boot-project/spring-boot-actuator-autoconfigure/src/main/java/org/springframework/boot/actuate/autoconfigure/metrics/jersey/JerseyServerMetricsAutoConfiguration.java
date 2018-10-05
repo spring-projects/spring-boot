@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.jersey2.server;
+package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.jersey2.server.AnnotationFinder;
 import io.micrometer.jersey2.server.DefaultJerseyTagsProvider;
 import io.micrometer.jersey2.server.JerseyTagsProvider;
@@ -27,6 +28,9 @@ import io.micrometer.jersey2.server.MetricsApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
+import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,12 +43,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Jersey server instrumentation.
  *
  * @author Michael Weirauch
  * @author Michael Simons
+ * @author Andy Wilkinson
  * @since 2.1.0
  */
 @Configuration
@@ -53,8 +59,14 @@ import org.springframework.core.annotation.AnnotationUtils;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
-@EnableConfigurationProperties(JerseyServerMetricsProperties.class)
+@EnableConfigurationProperties(MetricsProperties.class)
 public class JerseyServerMetricsAutoConfiguration {
+
+	private final MetricsProperties properties;
+
+	public JerseyServerMetricsAutoConfiguration(MetricsProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(JerseyTagsProvider.class)
@@ -64,18 +76,36 @@ public class JerseyServerMetricsAutoConfiguration {
 
 	@Bean
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(
-			MeterRegistry meterRegistry, JerseyServerMetricsProperties properties,
-			JerseyTagsProvider tagsProvider) {
-		return (config) -> config.register(new MetricsApplicationEventListener(
-				meterRegistry, tagsProvider, properties.getRequestsMetricName(),
-				properties.isAutoTimeRequests(), new AnnotationFinder() {
-					@Override
-					public <A extends Annotation> A findAnnotation(
-							AnnotatedElement annotatedElement, Class<A> annotationType) {
-						return AnnotationUtils.findAnnotation(annotatedElement,
-								annotationType);
-					}
-				}));
+			MeterRegistry meterRegistry, JerseyTagsProvider tagsProvider) {
+		Server server = this.properties.getWeb().getServer();
+		return (config) -> {
+			config.register(new MetricsApplicationEventListener(meterRegistry,
+					tagsProvider, server.getRequestsMetricName(),
+					server.isAutoTimeRequests(), new AnnotationUtilsAnnotationFinder()));
+		};
+	}
+
+	@Bean
+	@Order(0)
+	public MeterFilter jerseyMetricsUriTagFilter() {
+		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
+				.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri",
+				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+	}
+
+	/**
+	 * An {@link AnnotationFinder} that uses {@link AnnotationUtils}.
+	 */
+	private static class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
+
+		@Override
+		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement,
+				Class<A> annotationType) {
+			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
+		}
+
 	}
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.jersey2.server;
+package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
 import java.net.URI;
 
@@ -97,7 +97,6 @@ public class JerseyServerMetricsAutoConfigurationTests {
 	public void httpRequestsAreTimed() {
 		this.webContextRunner.run((context) -> {
 			doRequest(context);
-
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			Timer timer = registry.get("http.server.requests").tag("uri", "/users/{id}")
 					.timer();
