@@ -73,6 +73,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("server.error.include-stacktrace", "ALWAYS");
 		properties.put("server.servlet.jsp.init-parameters.development", "true");
 		properties.put("spring.reactor.stacktrace-mode.enabled", "true");
+		properties.put("spring.messages.reloadable", "true");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
