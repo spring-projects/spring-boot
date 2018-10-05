@@ -33,8 +33,8 @@ class ElasticPropertiesConfigAdapter extends
 	}
 
 	@Override
-	public String[] hosts() {
-		return get(ElasticProperties::getHosts, ElasticConfig.super::hosts);
+	public String host() {
+		return get(ElasticProperties::getHost, ElasticConfig.super::host);
 	}
 
 	@Override

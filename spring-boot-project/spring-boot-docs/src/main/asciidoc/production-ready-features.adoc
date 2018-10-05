@@ -1490,7 +1490,7 @@ using the following property:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.elastic.hosts=http://elastic.example.com:8086
+	management.metrics.export.elastic.host=http://elastic.example.com:8086
 ----
 
 
