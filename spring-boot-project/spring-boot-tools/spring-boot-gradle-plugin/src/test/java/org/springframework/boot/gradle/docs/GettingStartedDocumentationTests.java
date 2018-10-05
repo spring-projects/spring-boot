@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 /**
@@ -34,15 +35,13 @@ public class GettingStartedDocumentationTests {
 	@Rule
 	public GradleBuild gradleBuild;
 
-	public DSL dsl;
-
 	// NOTE: We can't run any `apply-plugin` tests because during a release the
 	// jar won't be there
 
 	@Test
 	public void typicalPluginsAppliesExceptedPlugins() {
-		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins"
-				+ this.dsl.getExtension()).build("verify");
+		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins")
+				.build("verify");
 	}
 
 }

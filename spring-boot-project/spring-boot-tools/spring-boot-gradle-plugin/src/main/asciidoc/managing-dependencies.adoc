@@ -121,13 +121,12 @@ include::../gradle/managing-dependencies/configure-bom.gradle.kts[tags=configure
 ----
 
 
-The Kotlin code above is a bit awkward. That's because we're using the imperative way of applying
-the dependency management plugin.
+The Kotlin code above is a bit awkward. That's because we're using the imperative way of
+applying the dependency management plugin.
 
-We can make the code less awkward by applying the plugin from
-the root parent project, or by using the `plugins` block as we're doing for the spring boot plugin.
-The downside of this method, though, is that it forces us to specify the version of the
-dependency management plugin, even though it's a dependency of the spring boot plugin:
+We can make the code less awkward by applying the plugin from the root parent project, or
+by using the `plugins` block as we're doing for the Spring Boot plugin. A downside of this
+method is that it forces us to specify the version of the dependency management plugin:
 
 [source,kotlin,indent=0,subs="verbatim,attributes"]
 ----

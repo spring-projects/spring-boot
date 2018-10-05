@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.docs;
+package org.springframework.boot.gradle.junit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +26,16 @@ import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
+import org.springframework.boot.gradle.testkit.Dsl;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 /**
  * Custom {@link Suite} that runs tests against the Groovy and the Kotlin DSLs. Test
- * classes using the suite must have a public {@link DSL} field named {@code dsl} and a
- * public {@link GradleBuild} field named {@code gradleBuild} and annotated with
- * {@link Rule}
+ * classes using the suite must have a public {@link GradleBuild} field named
+ * {@code gradleBuild} and annotated with {@link Rule}.
  *
  * @author Jean-Baptiste Nizet
+ * @author Andy Wilkinson
  */
 public final class GradleMultiDslSuite extends Suite {
 
@@ -44,9 +45,8 @@ public final class GradleMultiDslSuite extends Suite {
 
 	private static List<Runner> createRunners(Class<?> clazz) throws InitializationError {
 		List<Runner> runners = new ArrayList<>();
-		runners.add(new GradleDslClassRunner(clazz, new GradleBuild(), DSL.GROOVY));
-		runners.add(new GradleDslClassRunner(clazz,
-				new GradleBuild().withMinimalGradleVersionForKotlinDSL(), DSL.KOTLIN));
+		runners.add(new GradleDslClassRunner(clazz, new GradleBuild(Dsl.GROOVY)));
+		runners.add(new GradleDslClassRunner(clazz, new GradleBuild(Dsl.KOTLIN)));
 		return runners;
 	}
 
@@ -54,13 +54,10 @@ public final class GradleMultiDslSuite extends Suite {
 
 		private final GradleBuild gradleBuild;
 
-		private final DSL dsl;
-
-		private GradleDslClassRunner(Class<?> klass, GradleBuild gradleBuild, DSL dsl)
+		private GradleDslClassRunner(Class<?> klass, GradleBuild gradleBuild)
 				throws InitializationError {
 			super(klass);
 			this.gradleBuild = gradleBuild;
-			this.dsl = dsl;
 		}
 
 		@Override
@@ -72,12 +69,11 @@ public final class GradleMultiDslSuite extends Suite {
 
 		private void configureTest(Object test) throws Exception {
 			test.getClass().getField("gradleBuild").set(test, this.gradleBuild);
-			test.getClass().getField("dsl").set(test, this.dsl);
 		}
 
 		@Override
 		protected String getName() {
-			return this.dsl.getName() + " DSL";
+			return this.gradleBuild.getDsl().getName() + " DSL";
 		}
 
 		@Override

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.gradle.docs;
+package org.springframework.boot.gradle.testkit;
 
 /**
  * The DSLs supported by Gradle and demonstrated in the documentation samples
  */
-public enum DSL {
+public enum Dsl {
 
 	GROOVY("Groovy", ".gradle"), KOTLIN("Kotlin", ".gradle.kts");
 
@@ -26,7 +26,7 @@ public enum DSL {
 
 	private final String extension;
 
-	DSL(String name, String extension) {
+	Dsl(String name, String extension) {
 		this.name = name;
 		this.extension = extension;
 	}
@@ -41,7 +41,7 @@ public enum DSL {
 	/**
 	 * Gets the file extension of build scripts (starting with a dot)
 	 */
-	public String getExtension() {
+	String getExtension() {
 		return this.extension;
 	}
 

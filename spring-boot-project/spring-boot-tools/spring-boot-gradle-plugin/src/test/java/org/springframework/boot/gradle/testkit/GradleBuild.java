@@ -65,11 +65,25 @@ public class GradleBuild implements TestRule {
 
 	private final TemporaryFolder temp = new TemporaryFolder();
 
+	private final Dsl dsl;
+
 	private File projectDir;
 
 	private String script;
 
 	private String gradleVersion;
+
+	public GradleBuild() {
+		this(Dsl.GROOVY);
+	}
+
+	public GradleBuild(Dsl dsl) {
+		this.dsl = dsl;
+	}
+
+	public Dsl getDsl() {
+		return this.dsl;
+	}
 
 	@Override
 	public Statement apply(Statement base, Description description) {
@@ -103,7 +117,8 @@ public class GradleBuild implements TestRule {
 
 	private URL getScriptForTestMethod(Description description) {
 		String name = description.getTestClass().getSimpleName() + "-"
-				+ removeGradleVersion(description.getMethodName()) + ".gradle";
+				+ removeGradleVersion(description.getMethodName())
+				+ this.dsl.getExtension();
 		return description.getTestClass().getResource(name);
 	}
 
@@ -112,7 +127,7 @@ public class GradleBuild implements TestRule {
 	}
 
 	private URL getScriptForTestClass(Class<?> testClass) {
-		return testClass.getResource(testClass.getSimpleName() + ".gradle");
+		return testClass.getResource(testClass.getSimpleName() + this.dsl.getExtension());
 	}
 
 	private void before() throws IOException {
@@ -142,7 +157,8 @@ public class GradleBuild implements TestRule {
 	}
 
 	public GradleBuild script(String script) {
-		this.script = script;
+		this.script = script.endsWith(this.dsl.getExtension()) ? script
+				: script + this.dsl.getExtension();
 		return this;
 	}
 
@@ -169,18 +185,19 @@ public class GradleBuild implements TestRule {
 				.replace("{version}", getBootVersion())
 				.replace("{dependency-management-plugin-version}",
 						getDependencyManagementPluginVersion());
-		boolean isKotlin = this.script.endsWith(".kts");
-		String extension = isKotlin ? ".kts" : "";
-		FileCopyUtils.copy(scriptContent,
-				new FileWriter(new File(this.projectDir, "build.gradle" + extension)));
+		FileCopyUtils.copy(scriptContent, new FileWriter(
+				new File(this.projectDir, "build" + this.dsl.getExtension())));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
-		if (!isKotlin) {
+		if (this.dsl != Dsl.KOTLIN) {
 			// see https://github.com/gradle/gradle/issues/6862
 			gradleRunner.withDebug(true);
 		}
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
+		}
+		else if (this.dsl == Dsl.KOTLIN) {
+			gradleRunner.withGradleVersion("4.10.2");
 		}
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());
@@ -199,11 +216,6 @@ public class GradleBuild implements TestRule {
 
 	public GradleBuild gradleVersion(String version) {
 		this.gradleVersion = version;
-		return this;
-	}
-
-	public GradleBuild withMinimalGradleVersionForKotlinDSL() {
-		this.gradleVersion = "4.10.2";
 		return this;
 	}
 

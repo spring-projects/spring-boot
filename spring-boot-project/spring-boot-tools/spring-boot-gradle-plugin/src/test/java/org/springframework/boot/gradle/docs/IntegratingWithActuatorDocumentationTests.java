@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,13 +42,10 @@ public class IntegratingWithActuatorDocumentationTests {
 	@Rule
 	public GradleBuild gradleBuild;
 
-	public DSL dsl;
-
 	@Test
 	public void basicBuildInfo() throws IOException {
 		this.gradleBuild
-				.script("src/main/gradle/integrating-with-actuator/build-info-basic"
-						+ this.dsl.getExtension())
+				.script("src/main/gradle/integrating-with-actuator/build-info-basic")
 				.build("bootBuildInfo");
 		assertThat(new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties")).isFile();
@@ -56,8 +54,7 @@ public class IntegratingWithActuatorDocumentationTests {
 	@Test
 	public void buildInfoCustomValues() throws IOException {
 		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-custom-values"
-						+ this.dsl.getExtension())
+				"src/main/gradle/integrating-with-actuator/build-info-custom-values")
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties");
@@ -72,8 +69,7 @@ public class IntegratingWithActuatorDocumentationTests {
 	@Test
 	public void buildInfoAdditional() throws IOException {
 		this.gradleBuild
-				.script("src/main/gradle/integrating-with-actuator/build-info-additional"
-						+ this.dsl.getExtension())
+				.script("src/main/gradle/integrating-with-actuator/build-info-additional")
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties");
