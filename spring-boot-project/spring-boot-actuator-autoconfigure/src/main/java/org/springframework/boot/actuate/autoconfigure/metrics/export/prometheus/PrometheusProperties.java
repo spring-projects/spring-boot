@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -42,7 +43,7 @@ public class PrometheusProperties {
 	 * Configuration options for using Prometheus Pushgateway, allowing metrics to be
 	 * pushed when they cannot be scraped.
 	 */
-	private PushgatewayProperties pushgateway = new PushgatewayProperties();
+	private Pushgateway pushgateway = new Pushgateway();
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -65,18 +66,18 @@ public class PrometheusProperties {
 		this.step = step;
 	}
 
-	public PushgatewayProperties getPushgateway() {
+	public Pushgateway getPushgateway() {
 		return this.pushgateway;
 	}
 
-	public void setPushgateway(PushgatewayProperties pushgateway) {
+	public void setPushgateway(Pushgateway pushgateway) {
 		this.pushgateway = pushgateway;
 	}
 
 	/**
 	 * Configuration options for push-based interaction with Prometheus.
 	 */
-	public static class PushgatewayProperties {
+	public static class Pushgateway {
 
 		/**
 		 * Enable publishing via a Prometheus Pushgateway.
@@ -84,34 +85,29 @@ public class PrometheusProperties {
 		private Boolean enabled = false;
 
 		/**
-		 * Required host:port or ip:port of the Pushgateway.
+		 * Base URL for the Pushgateway.
 		 */
 		private String baseUrl = "localhost:9091";
 
 		/**
-		 * Required identifier for this application instance.
-		 */
-		private String job;
-
-		/**
-		 * Frequency with which to push metrics to Pushgateway.
+		 * Frequency with which to push metrics.
 		 */
 		private Duration pushRate = Duration.ofMinutes(1);
 
 		/**
-		 * Push metrics right before shut-down. Mostly useful for batch jobs.
+		 * Job identifier for this application instance.
 		 */
-		private boolean pushOnShutdown = true;
+		private String job;
 
 		/**
-		 * Delete metrics from Pushgateway when application is shut-down.
+		 * Grouping key for the pushed metrics.
 		 */
-		private boolean deleteOnShutdown = true;
+		private Map<String, String> groupingKey = new HashMap<>();
 
 		/**
-		 * Used to group metrics in pushgateway. A common example is setting
+		 * Operation that should be performed on shutdown.
 		 */
-		private Map<String, String> groupingKeys = new HashMap<>();
+		private ShutdownOperation shutdownOperation = ShutdownOperation.NONE;
 
 		public Boolean getEnabled() {
 			return this.enabled;
@@ -129,14 +125,6 @@ public class PrometheusProperties {
 			this.baseUrl = baseUrl;
 		}
 
-		public String getJob() {
-			return this.job;
-		}
-
-		public void setJob(String job) {
-			this.job = job;
-		}
-
 		public Duration getPushRate() {
 			return this.pushRate;
 		}
@@ -145,28 +133,28 @@ public class PrometheusProperties {
 			this.pushRate = pushRate;
 		}
 
-		public boolean isPushOnShutdown() {
-			return this.pushOnShutdown;
+		public String getJob() {
+			return this.job;
 		}
 
-		public void setPushOnShutdown(boolean pushOnShutdown) {
-			this.pushOnShutdown = pushOnShutdown;
+		public void setJob(String job) {
+			this.job = job;
 		}
 
-		public boolean isDeleteOnShutdown() {
-			return this.deleteOnShutdown;
+		public Map<String, String> getGroupingKey() {
+			return this.groupingKey;
 		}
 
-		public void setDeleteOnShutdown(boolean deleteOnShutdown) {
-			this.deleteOnShutdown = deleteOnShutdown;
+		public void setGroupingKey(Map<String, String> groupingKey) {
+			this.groupingKey = groupingKey;
 		}
 
-		public Map<String, String> getGroupingKeys() {
-			return this.groupingKeys;
+		public ShutdownOperation getShutdownOperation() {
+			return this.shutdownOperation;
 		}
 
-		public void setGroupingKeys(Map<String, String> groupingKeys) {
-			this.groupingKeys = groupingKeys;
+		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
+			this.shutdownOperation = shutdownOperation;
 		}
 
 	}

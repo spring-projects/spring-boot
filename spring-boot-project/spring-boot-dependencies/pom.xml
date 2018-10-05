@@ -143,7 +143,6 @@
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<pooled-jms-version>1.0.3</pooled-jms-version>
 		<postgresql.version>42.2.5</postgresql.version>
-		<!-- need to take care that this version harmonizes with micrometer ones -->
 		<prometheus-pushgateway.version>0.5.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>

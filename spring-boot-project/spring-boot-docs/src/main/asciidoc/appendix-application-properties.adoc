@@ -1480,6 +1480,12 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.prometheus.descriptions=true # Whether to enable publishing descriptions as part of the scrape payload to Prometheus. Turn this off to minimize the amount of data sent on each scrape.
 	management.metrics.export.prometheus.enabled=true # Whether exporting of metrics to Prometheus is enabled.
 	management.metrics.export.prometheus.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.prometheus.pushgateway.base-url=localhost:9091 # Base URL for the Pushgateway.
+	management.metrics.export.prometheus.pushgateway.enabled=false # Enable publishing via a Prometheus Pushgateway.
+	management.metrics.export.prometheus.pushgateway.grouping-key= # Grouping key for the pushed metrics.
+	management.metrics.export.prometheus.pushgateway.job= # Job identifier for this application instance.
+	management.metrics.export.prometheus.pushgateway.push-rate=1m # Frequency with which to push metrics.
+	management.metrics.export.prometheus.pushgateway.shutdown-operation= # Operation that should be performed on shutdown (none, push, delete).
 	management.metrics.export.signalfx.access-token= # SignalFX access token.
 	management.metrics.export.signalfx.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.signalfx.connect-timeout=1s # Connection timeout for requests to this backend.
