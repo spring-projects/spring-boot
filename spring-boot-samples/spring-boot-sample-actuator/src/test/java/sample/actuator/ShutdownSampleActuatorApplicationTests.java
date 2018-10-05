@@ -28,8 +28,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -42,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-		ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
 		SampleActuatorApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ShutdownSampleActuatorApplicationTests {
 
@@ -77,14 +74,6 @@ public class ShutdownSampleActuatorApplicationTests {
 		return "password";
 	}
 
-	@Configuration
-	static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.csrf().disable();
-		}
-
-	}
+	
 
 }

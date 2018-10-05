@@ -21,32 +21,43 @@ import java.util.Map;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthIndicatorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.redis.RedisReactiveHealthIndicator;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 
 /**
- * Configuration for {@link RedisReactiveHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link RedisReactiveHealthIndicator}.
  *
  * @author Christian Dupuis
  * @author Richard Santana
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass({ ReactiveRedisConnectionFactory.class, Flux.class })
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
-class RedisReactiveHealthIndicatorConfiguration extends
+@ConditionalOnEnabledHealthIndicator("redis")
+@AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
+@AutoConfigureAfter(RedisReactiveAutoConfiguration.class)
+public class RedisReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
 
 	private final Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories;
 
-	RedisReactiveHealthIndicatorConfiguration(
+	RedisReactiveHealthIndicatorAutoConfiguration(
 			Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories) {
 		this.redisConnectionFactories = redisConnectionFactories;
 	}

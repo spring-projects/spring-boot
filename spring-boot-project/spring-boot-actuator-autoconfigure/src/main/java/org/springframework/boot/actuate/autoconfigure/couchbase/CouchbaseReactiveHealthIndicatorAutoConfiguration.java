@@ -17,38 +17,49 @@ package org.springframework.boot.actuate.autoconfigure.couchbase;
 
 import java.util.Map;
 
+import com.couchbase.client.java.Bucket;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthIndicatorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 
 /**
- * Configuration for {@link CouchbaseReactiveHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link CouchbaseReactiveHealthIndicator}.
  *
  * @author Mikalai Lushchytski
  * @author Stephane Nicoll
  * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass({ RxJavaCouchbaseOperations.class, Flux.class })
+@ConditionalOnClass({ Bucket.class, RxJavaCouchbaseOperations.class, Flux.class })
 @ConditionalOnBean(RxJavaCouchbaseOperations.class)
+@ConditionalOnEnabledHealthIndicator("couchbase")
+@AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
+@AutoConfigureAfter(CouchbaseReactiveDataAutoConfiguration.class)
 @EnableConfigurationProperties(CouchbaseHealthIndicatorProperties.class)
-public class CouchbaseReactiveHealthIndicatorConfiguration extends
+public class CouchbaseReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<CouchbaseReactiveHealthIndicator, RxJavaCouchbaseOperations> {
 
 	private final Map<String, RxJavaCouchbaseOperations> couchbaseOperations;
 
 	private final CouchbaseHealthIndicatorProperties properties;
 
-	CouchbaseReactiveHealthIndicatorConfiguration(
+	public CouchbaseReactiveHealthIndicatorAutoConfiguration(
 			Map<String, RxJavaCouchbaseOperations> couchbaseOperations,
 			CouchbaseHealthIndicatorProperties properties) {
 		this.couchbaseOperations = couchbaseOperations;

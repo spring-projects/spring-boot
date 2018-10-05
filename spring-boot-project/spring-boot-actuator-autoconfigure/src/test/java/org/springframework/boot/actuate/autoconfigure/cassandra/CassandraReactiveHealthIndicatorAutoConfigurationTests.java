@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,47 +14,61 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.redis;
+package org.springframework.boot.actuate.autoconfigure.cassandra;
 
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
+import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
-import org.springframework.boot.actuate.redis.RedisHealthIndicator;
-import org.springframework.boot.actuate.redis.RedisReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link RedisReactiveHealthIndicatorConfiguration}.
+ * Tests for {@link CassandraReactiveHealthIndicatorAutoConfiguration}.
  *
- * @author Phillip Webb
+ * @author Artsiom Yudovin
+ * @author Stephane Nicoll
  */
-public class RedisReactiveHealthIndicatorConfigurationTests {
+public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-					RedisHealthIndicatorAutoConfiguration.class,
+			.withUserConfiguration(CassandraMockConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(
+					CassandraReactiveHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(RedisReactiveHealthIndicatorConfiguration.class)
-				.doesNotHaveBean(RedisHealthIndicator.class)
+				.hasSingleBean(CassandraReactiveHealthIndicator.class)
+				.doesNotHaveBean(CassandraHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
+		this.contextRunner.withPropertyValues("management.health.cassandra.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(RedisReactiveHealthIndicator.class)
-						.doesNotHaveBean(RedisHealthIndicator.class)
+						.doesNotHaveBean(CassandraReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
+	}
+
+	@Configuration
+	protected static class CassandraMockConfiguration {
+
+		@Bean
+		public ReactiveCassandraOperations cassandraOperations() {
+			return mock(ReactiveCassandraOperations.class);
+		}
+
 	}
 
 }

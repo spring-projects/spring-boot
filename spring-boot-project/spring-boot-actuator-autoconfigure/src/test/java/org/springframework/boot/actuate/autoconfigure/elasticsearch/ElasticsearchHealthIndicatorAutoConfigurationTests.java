@@ -35,7 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ElasticsearchHealthIndicatorAutoConfiguration}.
+ * Tests for {@link ElasticSearchClientHealthIndicatorAutoConfiguration} and
+ * {@link ElasticSearchJestHealthIndicatorAutoConfiguration}.
  *
  * @author Phillip Webb
  */
@@ -43,7 +44,8 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
-					ElasticsearchHealthIndicatorAutoConfiguration.class,
+					ElasticSearchClientHealthIndicatorAutoConfiguration.class,
+					ElasticSearchJestHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test

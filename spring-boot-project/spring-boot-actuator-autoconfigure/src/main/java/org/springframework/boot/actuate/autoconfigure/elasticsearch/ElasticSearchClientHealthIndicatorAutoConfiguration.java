@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.actuate.autoconfigure.couchbase;
 
+package org.springframework.boot.actuate.autoconfigure.elasticsearch;
+
+import java.time.Duration;
 import java.util.Map;
 
-import com.couchbase.client.java.Bucket;
+import org.elasticsearch.client.Client;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
+import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -30,55 +32,51 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link CouchbaseHealthIndicator}.
+ * {@link ElasticsearchHealthIndicator} using the Elasticsearch {@link Client}.
  *
- * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass({ Bucket.class, CouchbaseOperations.class })
-@ConditionalOnBean(CouchbaseOperations.class)
-@ConditionalOnEnabledHealthIndicator("couchbase")
+@ConditionalOnClass(Client.class)
+@ConditionalOnBean(Client.class)
+@ConditionalOnEnabledHealthIndicator("elasticsearch")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class,
-		CouchbaseDataAutoConfiguration.class,
-		CouchbaseReactiveHealthIndicatorAutoConfiguration.class })
-@EnableConfigurationProperties(CouchbaseHealthIndicatorProperties.class)
-public class CouchbaseHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<CouchbaseHealthIndicator, CouchbaseOperations> {
+@AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
+@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
+public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
+		CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 
-	private final Map<String, CouchbaseOperations> couchbaseOperations;
+	private final Map<String, Client> clients;
 
-	private final CouchbaseHealthIndicatorProperties properties;
+	private final ElasticsearchHealthIndicatorProperties properties;
 
-	public CouchbaseHealthIndicatorAutoConfiguration(
-			Map<String, CouchbaseOperations> couchbaseOperations,
-			CouchbaseHealthIndicatorProperties properties) {
-		this.couchbaseOperations = couchbaseOperations;
+	public ElasticSearchClientHealthIndicatorAutoConfiguration(
+			Map<String, Client> clients,
+			ElasticsearchHealthIndicatorProperties properties) {
+		this.clients = clients;
 		this.properties = properties;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "couchbaseHealthIndicator")
-	public HealthIndicator couchbaseHealthIndicator() {
-		return createHealthIndicator(this.couchbaseOperations);
+	@ConditionalOnMissingBean(name = "elasticsearchHealthIndicator")
+	public HealthIndicator elasticsearchHealthIndicator() {
+		return createHealthIndicator(this.clients);
 	}
 
 	@Override
-	protected CouchbaseHealthIndicator createHealthIndicator(
-			CouchbaseOperations couchbaseOperations) {
-		return new CouchbaseHealthIndicator(couchbaseOperations,
-				this.properties.getTimeout());
+	protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
+		Duration responseTimeout = this.properties.getResponseTimeout();
+		return new ElasticsearchHealthIndicator(client,
+				(responseTimeout != null) ? responseTimeout.toMillis() : 100,
+				this.properties.getIndices());
 	}
 
 }

@@ -18,30 +18,43 @@ package org.springframework.boot.actuate.autoconfigure.mongo;
 
 import java.util.Map;
 
+import reactor.core.publisher.Flux;
+
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthIndicatorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.mongo.MongoReactiveHealthIndicator;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 /**
- * Configuration for {@link MongoReactiveHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link MongoReactiveHealthIndicator}.
  *
  * @author Stephane Nicoll
+ * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass(ReactiveMongoTemplate.class)
+@ConditionalOnClass({ ReactiveMongoTemplate.class, Flux.class })
 @ConditionalOnBean(ReactiveMongoTemplate.class)
-class MongoReactiveHealthIndicatorConfiguration extends
+@ConditionalOnEnabledHealthIndicator("mongo")
+@AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
+@AutoConfigureAfter(MongoReactiveDataAutoConfiguration.class)
+public class MongoReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<MongoReactiveHealthIndicator, ReactiveMongoTemplate> {
 
 	private final Map<String, ReactiveMongoTemplate> reactiveMongoTemplate;
 
-	MongoReactiveHealthIndicatorConfiguration(
+	MongoReactiveHealthIndicatorAutoConfiguration(
 			Map<String, ReactiveMongoTemplate> reactiveMongoTemplate) {
 		this.reactiveMongoTemplate = reactiveMongoTemplate;
 	}

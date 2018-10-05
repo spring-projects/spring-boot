@@ -15,8 +15,6 @@
  */
 package org.springframework.boot.actuate.autoconfigure.couchbase;
 
-import java.time.Duration;
-
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -27,17 +25,19 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
+import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CouchbaseReactiveHealthIndicatorConfiguration}.
+ * Tests for {@link CouchbaseHealthIndicatorAutoConfiguration}.
  *
- * @author Mikalai Lushchytski
+ * @author Phillip Webb
+ * @author Stephane Nicoll
  */
-public class CouchbaseReactiveHealthIndicatorConfigurationTests {
+public class CouchbaseHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(CouchbaseMockConfiguration.class).withConfiguration(
@@ -47,8 +47,8 @@ public class CouchbaseReactiveHealthIndicatorConfigurationTests {
 	@Test
 	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(CouchbaseReactiveHealthIndicator.class)
-				.doesNotHaveBean(CouchbaseHealthIndicator.class)
+				.hasSingleBean(CouchbaseHealthIndicator.class)
+				.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
@@ -56,11 +56,10 @@ public class CouchbaseReactiveHealthIndicatorConfigurationTests {
 	public void runWithCustomTimeoutShouldCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.timeout=2s")
 				.run((context) -> {
-					assertThat(context)
-							.hasSingleBean(CouchbaseReactiveHealthIndicator.class);
-					assertThat(context.getBean(CouchbaseReactiveHealthIndicator.class))
-							.hasFieldOrPropertyWithValue("timeout",
-									Duration.ofSeconds(2));
+					assertThat(context).hasSingleBean(CouchbaseHealthIndicator.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(CouchbaseHealthIndicator.class), "timeout"))
+									.isEqualTo(2000L);
 				});
 	}
 
@@ -68,7 +67,7 @@ public class CouchbaseReactiveHealthIndicatorConfigurationTests {
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
+						.doesNotHaveBean(CouchbaseHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
@@ -76,8 +75,8 @@ public class CouchbaseReactiveHealthIndicatorConfigurationTests {
 	protected static class CouchbaseMockConfiguration {
 
 		@Bean
-		public RxJavaCouchbaseOperations couchbaseOperations() {
-			return mock(RxJavaCouchbaseOperations.class);
+		public CouchbaseOperations couchbaseOperations() {
+			return mock(CouchbaseOperations.class);
 		}
 
 	}

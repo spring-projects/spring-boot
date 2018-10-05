@@ -14,53 +14,61 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.mongo;
+package org.springframework.boot.actuate.autoconfigure.elasticsearch;
 
 import java.util.Map;
+
+import io.searchbox.client.JestClient;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicator;
+import org.springframework.boot.actuate.elasticsearch.ElasticsearchJestHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.mongo.MongoHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link MongoHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link ElasticsearchHealthIndicator} using the {@link JestClient}.
  *
  * @author Stephane Nicoll
  * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass(MongoTemplate.class)
-@ConditionalOnBean(MongoTemplate.class)
-@ConditionalOnEnabledHealthIndicator("mongo")
+@ConditionalOnClass(JestClient.class)
+@ConditionalOnBean(JestClient.class)
+@ConditionalOnEnabledHealthIndicator("elasticsearch")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({ MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		MongoReactiveHealthIndicatorAutoConfiguration.class })
-public class MongoHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
+@AutoConfigureAfter({ JestAutoConfiguration.class,
+		ElasticSearchClientHealthIndicatorAutoConfiguration.class })
+public class ElasticSearchJestHealthIndicatorAutoConfiguration extends
+		CompositeHealthIndicatorConfiguration<ElasticsearchJestHealthIndicator, JestClient> {
 
-	private final Map<String, MongoTemplate> mongoTemplates;
+	private final Map<String, JestClient> clients;
 
-	MongoHealthIndicatorAutoConfiguration(Map<String, MongoTemplate> mongoTemplates) {
-		this.mongoTemplates = mongoTemplates;
+	public ElasticSearchJestHealthIndicatorAutoConfiguration(
+			Map<String, JestClient> clients) {
+		this.clients = clients;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "mongoHealthIndicator")
-	public HealthIndicator mongoHealthIndicator() {
-		return createHealthIndicator(this.mongoTemplates);
+	@ConditionalOnMissingBean(name = "elasticsearchHealthIndicator")
+	public HealthIndicator elasticsearchHealthIndicator() {
+		return createHealthIndicator(this.clients);
+	}
+
+	@Override
+	protected ElasticsearchJestHealthIndicator createHealthIndicator(JestClient client) {
+		return new ElasticsearchJestHealthIndicator(client);
 	}
 
 }

@@ -32,18 +32,18 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MongoReactiveHealthIndicatorConfiguration}.
+ * Tests for {@link MongoReactiveHealthIndicatorAutoConfiguration}.
  *
  * @author Yulin Qin
  */
-public class MongoReactiveHealthIndicatorConfigurationTests {
+public class MongoReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
 					MongoDataAutoConfiguration.class,
 					MongoReactiveAutoConfiguration.class,
 					MongoReactiveDataAutoConfiguration.class,
-					MongoHealthIndicatorAutoConfiguration.class,
+					MongoReactiveHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test

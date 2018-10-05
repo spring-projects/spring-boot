@@ -16,39 +16,57 @@
 
 package org.springframework.boot.actuate.autoconfigure.cassandra;
 
+import java.util.Map;
+
 import com.datastax.driver.core.Cluster;
 
+import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
-import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.data.cassandra.core.CassandraOperations;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link CassandraHealthIndicator}
- * and {@link CassandraReactiveHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link CassandraHealthIndicator}.
  *
  * @author Julien Dubois
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass(Cluster.class)
+@ConditionalOnClass({ Cluster.class, CassandraOperations.class })
+@ConditionalOnBean(CassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ CassandraAutoConfiguration.class,
 		CassandraDataAutoConfiguration.class,
-		CassandraReactiveDataAutoConfiguration.class })
-@Import({ CassandraReactiveHealthIndicatorConfiguration.class,
-		CassandraHealthIndicatorConfiguration.class })
-public class CassandraHealthIndicatorAutoConfiguration {
+		CassandraReactiveHealthIndicatorAutoConfiguration.class })
+public class CassandraHealthIndicatorAutoConfiguration extends
+		CompositeHealthIndicatorConfiguration<CassandraHealthIndicator, CassandraOperations> {
+
+	private final Map<String, CassandraOperations> cassandraOperations;
+
+	public CassandraHealthIndicatorAutoConfiguration(
+			Map<String, CassandraOperations> cassandraOperations) {
+		this.cassandraOperations = cassandraOperations;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "cassandraHealthIndicator")
+	public HealthIndicator cassandraHealthIndicator() {
+		return createHealthIndicator(this.cassandraOperations);
+	}
 
 }
