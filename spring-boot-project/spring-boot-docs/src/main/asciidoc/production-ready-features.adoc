@@ -750,6 +750,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/cassandra/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
 |Checks that a Cassandra database is up.
 
+|{sc-spring-boot-actuator}/couchbase/CouchbaseHealthIndicator.{sc-ext}[`CouchbaseHealthIndicator`]
+|Checks that a Couchbase cluster is up.
+
 |{sc-spring-boot-actuator}/system/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
 |Checks for low disk space.
 
