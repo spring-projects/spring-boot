@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
+import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
@@ -70,10 +72,15 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void customFeatures() {
-		load("spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY, ONLY_WITH_SSL, NO_HTTP_INTERFACE_ARG");
+		EnumSet<Feature> features = EnumSet.of(Feature.TEXT_SEARCH, Feature.SYNC_DELAY,
+				Feature.ONLY_WITH_SSL, Feature.NO_HTTP_INTERFACE_ARG);
+		if (isWindows()) {
+			features.add(Feature.ONLY_WINDOWS_2008_SERVER);
+		}
+		load("spring.mongodb.embedded.features=" + String.join(", ",
+				features.stream().map(Feature::name).collect(Collectors.toList())));
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
-				.containsExactly(Feature.TEXT_SEARCH, Feature.SYNC_DELAY,
-						Feature.ONLY_WITH_SSL, Feature.NO_HTTP_INTERFACE_ARG);
+				.containsExactlyElementsOf(features);
 	}
 
 	@Test
@@ -191,6 +198,10 @@ public class EmbeddedMongoAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
+	}
+
+	private boolean isWindows() {
+		return File.separatorChar == '\\';
 	}
 
 	@Configuration
