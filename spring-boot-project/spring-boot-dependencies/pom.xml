@@ -1387,6 +1387,12 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>artemis-jms-client</artifactId>
 				<version>${artemis.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-json_1.0_spec</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
