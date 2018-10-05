@@ -192,10 +192,9 @@ public class MetricsProperties {
 
 		/**
 		 * Specific SLA boundaries for meter IDs starting-with the specified name. The
-		 * longest match wins, the key `all` can also be used to configure all meters.
-		 * Counters will be published for each specified boundary. Values can be specified
-		 * as a long or as a Duration value (for timer meters, defaulting to ms if no unit
-		 * specified).
+		 * longest match wins. Counters will be published for each specified boundary.
+		 * Values can be specified as a long or as a Duration value (for timer meters,
+		 * defaulting to ms if no unit specified).
 		 */
 		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
 
