@@ -13,42 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.actuate.autoconfigure.couchbase;
+
+import java.time.Duration;
 
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
+import org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CouchbaseHealthIndicatorAutoConfiguration}.
+ * Tests for {@link CouchbaseReactiveHealthIndicatorConfiguration}.
  *
- * @author Phillip Webb
- * @author Stephane Nicoll
+ * @author Mikalai Lushchytski
  */
-public class CouchbaseHealthIndicatorAutoConfigurationTests {
+public class CouchbaseReactiveHealthIndicatorConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CouchbaseConfiguration.class,
-					CouchbaseHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+			.withUserConfiguration(CouchbaseMockConfiguration.class).withConfiguration(
+					AutoConfigurations.of(CouchbaseHealthIndicatorAutoConfiguration.class,
+							HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(CouchbaseHealthIndicator.class)
+				.hasSingleBean(CouchbaseReactiveHealthIndicator.class)
+				.doesNotHaveBean(CouchbaseHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
@@ -56,10 +56,11 @@ public class CouchbaseHealthIndicatorAutoConfigurationTests {
 	public void runWithCustomTimeoutShouldCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.timeout=2s")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(CouchbaseHealthIndicator.class);
-					assertThat(ReflectionTestUtils.getField(
-							context.getBean(CouchbaseHealthIndicator.class), "timeout"))
-									.isEqualTo(2000L);
+					assertThat(context)
+							.hasSingleBean(CouchbaseReactiveHealthIndicator.class);
+					assertThat(context.getBean(CouchbaseReactiveHealthIndicator.class))
+							.hasFieldOrPropertyWithValue("timeout",
+									Duration.ofSeconds(2));
 				});
 	}
 
@@ -67,17 +68,16 @@ public class CouchbaseHealthIndicatorAutoConfigurationTests {
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CouchbaseHealthIndicator.class)
+						.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
 	@Configuration
-	@AutoConfigureBefore(CouchbaseHealthIndicatorAutoConfiguration.class)
-	protected static class CouchbaseConfiguration {
+	protected static class CouchbaseMockConfiguration {
 
 		@Bean
-		public CouchbaseOperations couchbaseOperations() {
-			return mock(CouchbaseOperations.class);
+		public RxJavaCouchbaseOperations couchbaseOperations() {
+			return mock(RxJavaCouchbaseOperations.class);
 		}
 
 	}
