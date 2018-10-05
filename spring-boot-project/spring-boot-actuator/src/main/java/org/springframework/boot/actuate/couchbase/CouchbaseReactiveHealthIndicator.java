@@ -15,6 +15,9 @@
  */
 package org.springframework.boot.actuate.couchbase;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import com.couchbase.client.java.bucket.BucketInfo;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import reactor.core.publisher.Mono;
@@ -24,27 +27,32 @@ import rx.Single;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link org.springframework.boot.actuate.health.ReactiveHealthIndicator} for
- * Couchbase.
+ * A {@link ReactiveHealthIndicator} for Couchbase.
  *
  * @author Mikalai Lushchytski
+ * @author Stephane Nicoll
  * @since 2.1.0
  */
 public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 
 	private final RxJavaCouchbaseOperations couchbaseOperations;
 
+	private final Duration timeout;
+
 	/**
 	 * Create a new {@link CouchbaseReactiveHealthIndicator} instance.
-	 * @param couchbaseOperations Reactive couchbase client.
+	 * @param couchbaseOperations the reactive couchbase operations
+	 * @param timeout the request timeout
 	 */
-	public CouchbaseReactiveHealthIndicator(
-			RxJavaCouchbaseOperations couchbaseOperations) {
+	public CouchbaseReactiveHealthIndicator(RxJavaCouchbaseOperations couchbaseOperations,
+			Duration timeout) {
 		this.couchbaseOperations = couchbaseOperations;
+		this.timeout = timeout;
 	}
 
 	@Override
@@ -53,21 +61,14 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 		String versions = StringUtils
 				.collectionToCommaDelimitedString(cluster.getAllVersions());
 		Observable<BucketInfo> bucket = this.couchbaseOperations.getCouchbaseBucket()
-				.bucketManager().async().info();
+				.bucketManager().async().info()
+				.timeout(this.timeout.toMillis(), TimeUnit.MILLISECONDS);
 		Single<Health> health = bucket.map(BucketInfo::nodeList)
 				.map(StringUtils::collectionToCommaDelimitedString)
-				.map((nodes) -> up(builder, versions, nodes))
-				.onErrorReturn((error) -> down(builder, error)).toSingle();
+				.map((nodes) -> builder.up().withDetail("versions", versions)
+						.withDetail("nodes", nodes).build())
+				.toSingle();
 		return Mono.from(RxReactiveStreams.toPublisher(health));
-	}
-
-	private Health up(Health.Builder builder, String versions, String nodes) {
-		return builder.up().withDetail("versions", versions).withDetail("nodes", nodes)
-				.build();
-	}
-
-	private Health down(Health.Builder builder, Throwable error) {
-		return builder.down(error).build();
 	}
 
 }

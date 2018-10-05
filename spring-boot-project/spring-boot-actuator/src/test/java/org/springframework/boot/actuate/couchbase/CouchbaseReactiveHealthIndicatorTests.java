@@ -16,8 +16,10 @@
 package org.springframework.boot.actuate.couchbase;
 
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.bucket.AsyncBucketManager;
@@ -45,32 +47,20 @@ import static org.mockito.Mockito.mock;
 public class CouchbaseReactiveHealthIndicatorTests {
 
 	@Test
-	public void testCouchbaseIsUp() {
-		ClusterInfo clusterInfo = mock(ClusterInfo.class);
+	public void couchbaseIsUp() {
 		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(
 				RxJavaCouchbaseOperations.class);
-		given(rxJavaCouchbaseOperations.getCouchbaseClusterInfo())
-				.willReturn(clusterInfo);
-		given(clusterInfo.getAllVersions())
-				.willReturn(Arrays.asList(new Version(5, 5, 0), new Version(6, 0, 0)));
-		Bucket bucket = mock(Bucket.class);
-		BucketManager bucketManager = mock(BucketManager.class);
-		AsyncBucketManager asyncBucketManager = mock(AsyncBucketManager.class);
-		given(rxJavaCouchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
-		given(bucket.bucketManager()).willReturn(bucketManager);
-		given(bucketManager.async()).willReturn(asyncBucketManager);
+		AsyncBucketManager asyncBucketManager = mockAsyncBucketManager(
+				rxJavaCouchbaseOperations);
 		BucketInfo info = mock(BucketInfo.class);
-		given(asyncBucketManager.info()).willReturn(Observable.just(info));
-
 		InetAddress node1Address = mock(InetAddress.class);
 		InetAddress node2Address = mock(InetAddress.class);
 		given(info.nodeList()).willReturn(Arrays.asList(node1Address, node2Address));
 		given(node1Address.toString()).willReturn("127.0.0.1");
 		given(node2Address.toString()).willReturn("127.0.0.2");
-
+		given(asyncBucketManager.info()).willReturn(Observable.just(info));
 		CouchbaseReactiveHealthIndicator couchbaseReactiveHealthIndicator = new CouchbaseReactiveHealthIndicator(
-				rxJavaCouchbaseOperations);
-
+				rxJavaCouchbaseOperations, Duration.ofSeconds(2));
 		Mono<Health> health = couchbaseReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -81,25 +71,34 @@ public class CouchbaseReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void testCouchbaseIsDown() {
-		ClusterInfo clusterInfo = mock(ClusterInfo.class);
+	public void couchbaseTimeout() {
 		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(
 				RxJavaCouchbaseOperations.class);
-		given(rxJavaCouchbaseOperations.getCouchbaseClusterInfo())
-				.willReturn(clusterInfo);
-		given(clusterInfo.getAllVersions())
-				.willReturn(Collections.singletonList(new Version(5, 5, 0)));
-		BucketManager bucketManager = mock(BucketManager.class);
-		AsyncBucketManager asyncBucketManager = mock(AsyncBucketManager.class);
-		Bucket bucket = mock(Bucket.class);
-		given(rxJavaCouchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
-		given(bucket.bucketManager()).willReturn(bucketManager);
-		given(bucketManager.async()).willReturn(asyncBucketManager);
+		AsyncBucketManager asyncBucketManager = mockAsyncBucketManager(
+				rxJavaCouchbaseOperations);
+		given(asyncBucketManager.info()).willReturn(
+				Observable.just(mock(BucketInfo.class)).delay(20, TimeUnit.MILLISECONDS));
+		CouchbaseReactiveHealthIndicator couchbaseReactiveHealthIndicator = new CouchbaseReactiveHealthIndicator(
+				rxJavaCouchbaseOperations, Duration.ofMillis(10));
+		Mono<Health> health = couchbaseReactiveHealthIndicator.health();
+		StepVerifier.create(health).consumeNextWith((h) -> {
+			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
+			assertThat(h.getDetails()).containsOnlyKeys("error");
+			assertThat(h.getDetails().get("error")).asString()
+					.contains(TimeoutException.class.getName());
+		}).verifyComplete();
+	}
+
+	@Test
+	public void couchbaseIsDown() {
+		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(
+				RxJavaCouchbaseOperations.class);
+		AsyncBucketManager asyncBucketManager = mockAsyncBucketManager(
+				rxJavaCouchbaseOperations);
 		given(asyncBucketManager.info())
 				.willReturn(Observable.error(new TranscodingException("Failure")));
 		CouchbaseReactiveHealthIndicator couchbaseReactiveHealthIndicator = new CouchbaseReactiveHealthIndicator(
-				rxJavaCouchbaseOperations);
-
+				rxJavaCouchbaseOperations, Duration.ofSeconds(2));
 		Mono<Health> health = couchbaseReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
@@ -107,6 +106,22 @@ public class CouchbaseReactiveHealthIndicatorTests {
 			assertThat(h.getDetails().get("error"))
 					.isEqualTo(TranscodingException.class.getName() + ": Failure");
 		}).verifyComplete();
+	}
+
+	private AsyncBucketManager mockAsyncBucketManager(
+			RxJavaCouchbaseOperations rxJavaCouchbaseOperations) {
+		ClusterInfo clusterInfo = mock(ClusterInfo.class);
+		given(rxJavaCouchbaseOperations.getCouchbaseClusterInfo())
+				.willReturn(clusterInfo);
+		given(clusterInfo.getAllVersions())
+				.willReturn(Arrays.asList(new Version(5, 5, 0), new Version(6, 0, 0)));
+		Bucket bucket = mock(Bucket.class);
+		BucketManager bucketManager = mock(BucketManager.class);
+		AsyncBucketManager asyncBucketManager = mock(AsyncBucketManager.class);
+		given(rxJavaCouchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
+		given(bucket.bucketManager()).willReturn(bucketManager);
+		given(bucketManager.async()).willReturn(asyncBucketManager);
+		return asyncBucketManager;
 	}
 
 }

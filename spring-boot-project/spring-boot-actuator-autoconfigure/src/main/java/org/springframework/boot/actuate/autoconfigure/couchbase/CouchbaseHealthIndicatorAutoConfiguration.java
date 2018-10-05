@@ -46,8 +46,8 @@ import org.springframework.context.annotation.Import;
 @AutoConfigureAfter({ CouchbaseAutoConfiguration.class,
 		CouchbaseDataAutoConfiguration.class,
 		CouchbaseReactiveDataAutoConfiguration.class })
-@Import({ CouchbaseHealthIndicatorConfiguration.class,
-		CouchbaseReactiveHealthIndicatorConfiguration.class })
+@Import({ CouchbaseReactiveHealthIndicatorConfiguration.class,
+		CouchbaseHealthIndicatorConfiguration.class })
 public class CouchbaseHealthIndicatorAutoConfiguration {
 
 }

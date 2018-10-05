@@ -31,8 +31,9 @@ import org.springframework.data.couchbase.core.CouchbaseOperations;
 /**
  * Configuration for {@link CouchbaseHealthIndicator}.
  *
- * @author Mikalai Lushchytski
- * @since 2.1.0
+ * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(CouchbaseOperations.class)

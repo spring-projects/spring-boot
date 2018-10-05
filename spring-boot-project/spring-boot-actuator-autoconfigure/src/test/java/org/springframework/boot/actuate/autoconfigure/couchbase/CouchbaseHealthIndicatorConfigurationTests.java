@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -33,7 +34,8 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link CouchbaseHealthIndicatorConfiguration}.
  *
- * @author Mikalai Lushchytski
+ * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class CouchbaseHealthIndicatorConfigurationTests {
 
@@ -48,6 +50,17 @@ public class CouchbaseHealthIndicatorConfigurationTests {
 				.hasSingleBean(CouchbaseHealthIndicator.class)
 				.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
+	}
+
+	@Test
+	public void runWithCustomTimeoutShouldCreateIndicator() {
+		this.contextRunner.withPropertyValues("management.health.couchbase.timeout=2s")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CouchbaseHealthIndicator.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(CouchbaseHealthIndicator.class), "timeout"))
+									.isEqualTo(2000L);
+				});
 	}
 
 	@Test

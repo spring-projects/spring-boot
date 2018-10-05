@@ -62,6 +62,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.reactivex</groupId>
+			<artifactId>rxjava-reactive-streams</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.searchbox</groupId>
 			<artifactId>jest</artifactId>
 			<optional>true</optional>
@@ -76,11 +81,6 @@
 					<artifactId>jboss-servlet-api_3.1_spec</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.reactivex</groupId>
-			<artifactId>rxjava-reactive-streams</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>javax.cache</groupId>
