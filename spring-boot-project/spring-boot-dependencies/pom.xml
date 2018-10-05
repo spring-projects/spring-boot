@@ -894,7 +894,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-jersey2</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-registry-atlas</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-azure-monitor</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
@@ -919,17 +929,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-registry-influx</artifactId>
-				<version>${micrometer.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-registry-ganglia</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-registry-graphite</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-influx</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
@@ -960,6 +970,11 @@
 			<dependency>
 				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-registry-wavefront</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-test</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
