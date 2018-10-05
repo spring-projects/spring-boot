@@ -206,7 +206,7 @@ can also watch files, automatically recompiling and restarting when they change.
 Actuator endpoints let you monitor and interact with your application.
 Spring Boot Actuator provides the infrastructure required for actuator endpoints. It contains
 annotation support for actuator endpoints. Out of the box, this module provides a number of endpoints
-including the `HealthEndpoint`, `EnvironmentEndpoint`, `BeansEndpoints` and many more.
+including the `HealthEndpoint`, `EnvironmentEndpoint`, `BeansEndpoint` and many more.
 
 
 
