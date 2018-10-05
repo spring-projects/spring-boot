@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -43,6 +44,9 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import org.springframework.asm.ClassVisitor;
@@ -61,11 +65,25 @@ public class GradleBuild implements TestRule {
 
 	private final TemporaryFolder temp = new TemporaryFolder();
 
+	private final Dsl dsl;
+
 	private File projectDir;
 
 	private String script;
 
 	private String gradleVersion;
+
+	public GradleBuild() {
+		this(Dsl.GROOVY);
+	}
+
+	public GradleBuild(Dsl dsl) {
+		this.dsl = dsl;
+	}
+
+	public Dsl getDsl() {
+		return this.dsl;
+	}
 
 	@Override
 	public Statement apply(Statement base, Description description) {
@@ -99,7 +117,8 @@ public class GradleBuild implements TestRule {
 
 	private URL getScriptForTestMethod(Description description) {
 		String name = description.getTestClass().getSimpleName() + "-"
-				+ removeGradleVersion(description.getMethodName()) + ".gradle";
+				+ removeGradleVersion(description.getMethodName())
+				+ this.dsl.getExtension();
 		return description.getTestClass().getResource(name);
 	}
 
@@ -108,7 +127,7 @@ public class GradleBuild implements TestRule {
 	}
 
 	private URL getScriptForTestClass(Class<?> testClass) {
-		return testClass.getResource(testClass.getSimpleName() + ".gradle");
+		return testClass.getResource(testClass.getSimpleName() + this.dsl.getExtension());
 	}
 
 	private void before() throws IOException {
@@ -138,7 +157,8 @@ public class GradleBuild implements TestRule {
 	}
 
 	public GradleBuild script(String script) {
-		this.script = script;
+		this.script = script.endsWith(this.dsl.getExtension()) ? script
+				: script + this.dsl.getExtension();
 		return this;
 	}
 
@@ -162,14 +182,22 @@ public class GradleBuild implements TestRule {
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
-				.replace("{version}", getBootVersion());
-		FileCopyUtils.copy(scriptContent,
-				new FileWriter(new File(this.projectDir, "build.gradle")));
+				.replace("{version}", getBootVersion())
+				.replace("{dependency-management-plugin-version}",
+						getDependencyManagementPluginVersion());
+		FileCopyUtils.copy(scriptContent, new FileWriter(
+				new File(this.projectDir, "build" + this.dsl.getExtension())));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withDebug(true).withPluginClasspath(pluginClasspath());
-
+				.withPluginClasspath(pluginClasspath());
+		if (this.dsl != Dsl.KOTLIN) {
+			// see https://github.com/gradle/gradle/issues/6862
+			gradleRunner.withDebug(true);
+		}
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
+		}
+		else if (this.dsl == Dsl.KOTLIN) {
+			gradleRunner.withGradleVersion("4.10.2");
 		}
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());
@@ -201,13 +229,34 @@ public class GradleBuild implements TestRule {
 						+ "/text()");
 	}
 
+	private static String getDependencyManagementPluginVersion() {
+		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
+			Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+					.parse(new InputSource(pomReader));
+			NodeList dependencyElements = pom.getElementsByTagName("dependency");
+			for (int i = 0; i < dependencyElements.getLength(); i++) {
+				Element dependency = (Element) dependencyElements.item(i);
+				if (dependency.getElementsByTagName("artifactId").item(0).getTextContent()
+						.equals("dependency-management-plugin")) {
+					return dependency.getElementsByTagName("version").item(0)
+							.getTextContent();
+				}
+			}
+			throw new IllegalStateException(
+					"dependency management plugin version not found");
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Failed to find dependency management plugin version", ex);
+		}
+	}
+
 	private static String evaluateExpression(String expression) {
-		try {
+		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
-			String version = expr
-					.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
+			String version = expr.evaluate(new InputSource(pomReader));
 			return version;
 		}
 		catch (Exception ex) {

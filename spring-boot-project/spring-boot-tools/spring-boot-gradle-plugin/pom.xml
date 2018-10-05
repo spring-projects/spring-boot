@@ -128,6 +128,13 @@
 			</plugin>
 		</plugins>
 	</build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>springio</id>
+			<name>Spring IO releases repository</name>
+			<url>https://repo.spring.io/release</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<profiles>
 		<profile>
 			<id>windows</id>
@@ -275,6 +282,7 @@
 								<github-tag>${github-tag}</github-tag>
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>
+								<dependency-management-plugin-version>${dependency-management-plugin.version}</dependency-management-plugin-version>
 							</attributes>
 						</configuration>
 						<dependencies>
@@ -282,6 +290,11 @@
 								<groupId>org.asciidoctor</groupId>
 								<artifactId>asciidoctorj-pdf</artifactId>
 								<version>1.5.0-alpha.11</version>
+							</dependency>
+							<dependency>
+								<groupId>io.spring.asciidoctor</groupId>
+								<artifactId>spring-asciidoctor-extensions</artifactId>
+								<version>0.1.3.RELEASE</version>
 							</dependency>
 						</dependencies>
 					</plugin>
