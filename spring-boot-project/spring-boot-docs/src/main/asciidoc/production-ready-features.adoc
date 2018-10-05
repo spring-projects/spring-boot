@@ -1832,6 +1832,47 @@ To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 
 
+[[production-ready-metrics-jersey-server]]
+==== Jersey Server Metrics
+Auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS
+implementation. When `management.metrics.web.server.auto-time-requests` is `true`, this
+instrumentation occurs for all requests. Alternatively, when set to `false`, you can
+enable instrumentation by adding `@Timed` to a request-handling method:
+
+[source,java,indent=0]
+----
+	@Component
+	@Path("/api/people")
+	@Timed <1>
+	public class Endpoint {
+		@GET
+		@Timed(extraTags = { "region", "us-east-1" }) <2>
+		@Timed(value = "all.people", longTask = true) <3>
+		public List<Person> listPeople() { ... }
+	}
+----
+<1> On a resource class to enable timings on every request handler in the resource.
+<2> On a method to enable for an individual endpoint. This is not necessary if you have it on
+the class, but can be used to further customize the timer for this particular endpoint.
+<3> On a method with `longTask = true` to enable a long task timer for the method. Long task
+timers require a separate metric name, and can be stacked with a short task timer.
+
+By default, metrics are generated with the name, `http.server.requests`. The name can be
+customized by setting the `management.metrics.web.server.requests-metric-name` property.
+
+By default, Jersey server metrics are tagged with the following information:
+
+* `method`, the request's method (for example, `GET` or `POST`).
+* `uri`,  the request's URI template prior to variable substitution, if possible (for
+example, `/api/person/{id}`).
+* `status`, the response's HTTP status code (for example, `200` or `500`).
+* `exception`, the simple class name of any exception that was thrown while handling the
+request.
+
+To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
+
+
+
 [[production-ready-metrics-http-clients]]
 ==== HTTP Client Metrics
 Spring Boot Actuator manages the instrumentation of both `RestTemplate` and `WebClient`.
