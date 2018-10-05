@@ -68,6 +68,14 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
+	public void acceptWhenHasNoMatchingEnabledPropertyShouldReturnNeutral() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("enable.something.else=false"));
+		assertThat(filter.accept(createMeterId("spring.boot")))
+				.isEqualTo(MeterFilterReply.NEUTRAL);
+	}
+
+	@Test
 	public void acceptWhenHasEnableFalseShouldReturnDeny() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("enable.spring.boot=false"));
