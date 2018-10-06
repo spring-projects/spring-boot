@@ -277,6 +277,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_pushgateway</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.reactivex</groupId>
 			<artifactId>rxjava-reactive-streams</artifactId>
 			<optional>true</optional>
