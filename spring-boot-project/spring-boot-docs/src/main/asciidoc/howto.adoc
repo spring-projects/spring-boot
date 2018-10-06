@@ -2494,11 +2494,11 @@ of how to register handlers in the servlet container.
 === Sanitize sensible values
 Information returned by the `env` and `configprops` endpoints can be somewhat sensitive
 so keys matching a certain pattern are sanitized by default (i.e. their values are
-replaced by `******`).
+replaced by `+******+`).
 
 Spring Boot uses sensible defaults for such keys: for instance, any key ending with the
 word "password", "secret", "key" or "token" is sanitized. It is also possible to use a
-regular expression instead, such as `*credentials.*` to sanitize any key that holds the
+regular expression instead, such as `+*credentials.*+` to sanitize any key that holds the
 word `credentials` as part of the key.
 
 The patterns to use can be customized using the `management.endpoint.env.keys-to-sanitize`
