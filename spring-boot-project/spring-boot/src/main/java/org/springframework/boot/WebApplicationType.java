@@ -54,7 +54,7 @@ public enum WebApplicationType {
 	private static final String WEBFLUX_INDICATOR_CLASS = "org."
 			+ "springframework.web.reactive.DispatcherHandler";
 
-	private static final String JERSEY_INDICATOR_CLASS = "org.glassfish.jersey.server.ResourceConfig";
+	private static final String JERSEY_INDICATOR_CLASS = "org.glassfish.jersey.servlet.ServletContainer";
 
 	private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
