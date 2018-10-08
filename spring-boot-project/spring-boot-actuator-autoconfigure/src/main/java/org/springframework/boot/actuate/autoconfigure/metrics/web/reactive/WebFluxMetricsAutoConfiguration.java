@@ -66,7 +66,8 @@ public class WebFluxMetricsAutoConfiguration {
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
 			WebFluxTagsProvider tagConfigurer) {
 		return new MetricsWebFilter(registry, tagConfigurer,
-				this.properties.getWeb().getServer().getRequestsMetricName());
+				this.properties.getWeb().getServer().getRequestsMetricName(),
+				this.properties.getWeb().getServer().isAutoTimeRequests());
 	}
 
 	@Bean
