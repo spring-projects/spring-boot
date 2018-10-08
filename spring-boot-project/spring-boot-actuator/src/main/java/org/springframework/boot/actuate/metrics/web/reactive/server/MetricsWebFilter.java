@@ -46,16 +46,36 @@ public class MetricsWebFilter implements WebFilter {
 
 	private final String metricName;
 
+	private final boolean autoTimeRequests;
+
+	/**
+	 * Create a new {@code MetricsWebFilter}.
+	 * @param registry the registry to which metrics are recorded
+	 * @param tagsProvider provider for metrics tags
+	 * @param metricName name of the metric to record
+	 * @deprecated since 2.0.6 in favour of
+	 * {@link #MetricsWebFilter(MeterRegistry, WebFluxTagsProvider, String, boolean)}
+	 */
+	@Deprecated
 	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
 			String metricName) {
+		this(registry, tagsProvider, metricName, true);
+	}
+
+	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
+			String metricName, boolean autoTimeRequests) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
+		this.autoTimeRequests = autoTimeRequests;
 	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		return chain.filter(exchange).compose((call) -> filter(exchange, call));
+		if (this.autoTimeRequests) {
+			return chain.filter(exchange).compose((call) -> filter(exchange, call));
+		}
+		return chain.filter(exchange);
 	}
 
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
