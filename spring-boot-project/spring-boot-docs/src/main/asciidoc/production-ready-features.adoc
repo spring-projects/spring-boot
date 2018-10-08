@@ -228,6 +228,10 @@ endpoints:
 |Yes
 |No
 
+|`caches`
+|Yes
+|No
+
 |`conditions`
 |Yes
 |No
@@ -262,7 +266,7 @@ endpoints:
 
 |`integrationgraph`
 |Yes
-|Yes
+|No
 
 |`jolokia`
 |N/A
