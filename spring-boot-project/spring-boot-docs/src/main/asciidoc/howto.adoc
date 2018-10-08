@@ -1326,6 +1326,9 @@ See the
 {sc-spring-boot-autoconfigure}/web/servlet/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
 source for more details.
 
+NOTE: It is recommended to use the container's built-in support for multipart uploads
+rather than introducing an additional dependency such as Apache Commons File Upload.
+
 
 
 [[howto-switch-off-the-spring-mvc-dispatcherservlet]]
