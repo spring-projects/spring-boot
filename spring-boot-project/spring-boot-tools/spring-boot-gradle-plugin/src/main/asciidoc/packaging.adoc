@@ -102,7 +102,7 @@ include::../gradle/packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
 ----
 
 If the {application-plugin}[`application` plugin] has been applied its `mainClassName`
-project property can be used for the same purpose:
+project property must be configured and can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----
