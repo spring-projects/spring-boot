@@ -38,7 +38,7 @@ public class SslServerCustomizerTests {
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
-		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null);
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		try {
 			customizer.getKeyManagerFactory(ssl, null);
 			fail();
@@ -56,7 +56,7 @@ public class SslServerCustomizerTests {
 		ssl.setTrustStorePassword("password");
 		ssl.setTrustStore("src/test/resources/test.jks");
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
-		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null);
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		try {
 			customizer.getTrustManagerFactory(ssl, null);
 			fail();
