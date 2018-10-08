@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -54,6 +55,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -192,6 +194,41 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	public void accessLogCanBeCustomized()
 			throws IOException, URISyntaxException, InterruptedException {
 		testAccessLog("my_access.", "logz", "my_access.logz");
+	}
+
+	@Test
+	public void sslKeyStoreProvider() {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		Ssl ssl = getSsl(null, "password", "classpath:test.jks");
+		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
+		factory.setSsl(ssl);
+		try {
+			factory.getEmbeddedServletContainer();
+			fail();
+		}
+		catch (Exception ex) {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
+			assertThat(cause).hasMessageContaining("com.example.KeyStoreProvider");
+		}
+	}
+
+	@Test
+	public void sslTrustStoreProvider() {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		Ssl ssl = getSsl(null, null, null);
+		ssl.setTrustStore("classpath:test.jks");
+		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
+		factory.setSsl(ssl);
+		try {
+			factory.getEmbeddedServletContainer();
+			fail();
+		}
+		catch (Exception ex) {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
+			assertThat(cause).hasMessageContaining("com.example.TrustStoreProvider");
+		}
 	}
 
 	private void testAccessLog(String prefix, String suffix, String expectedFile)

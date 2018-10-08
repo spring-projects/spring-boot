@@ -347,8 +347,8 @@ public class UndertowEmbeddedServletContainerFactory
 			return getSslStoreProvider().getKeyStore();
 		}
 		Ssl ssl = getSsl();
-		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStore(),
-				ssl.getKeyStorePassword());
+		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
+				ssl.getKeyStore(), ssl.getKeyStorePassword());
 	}
 
 	private TrustManager[] getTrustManagers() {
@@ -369,17 +369,18 @@ public class UndertowEmbeddedServletContainerFactory
 			return getSslStoreProvider().getTrustStore();
 		}
 		Ssl ssl = getSsl();
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStore(),
-				ssl.getTrustStorePassword());
+		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
+				ssl.getTrustStore(), ssl.getTrustStorePassword());
 	}
 
-	private KeyStore loadKeyStore(String type, String resource, String password)
-			throws Exception {
+	private KeyStore loadKeyStore(String type, String provider, String resource,
+			String password) throws Exception {
 		type = (type != null) ? type : "JKS";
 		if (resource == null) {
 			return null;
 		}
-		KeyStore store = KeyStore.getInstance(type);
+		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider)
+				: KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
 		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
 		return store;
