@@ -52,9 +52,6 @@ public class CommandRunnerTests {
 	private Command regularCommand;
 
 	@Mock
-	private Command shellCommand;
-
-	@Mock
 	private Command anotherCommand;
 
 	private final Set<Call> calls = EnumSet.noneOf(Call.class);
