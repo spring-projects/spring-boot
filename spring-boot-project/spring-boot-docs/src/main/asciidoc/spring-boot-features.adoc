@@ -6709,6 +6709,11 @@ NOTE: While Spring's test framework caches application contexts between tests an
 a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean`
 influences the cache key, which will most likely increase the number of contexts.
 
+TIP: If you are using `@SpyBean` to spy on a bean with `@Cachable` methods that refer
+to parameter's by name, your application must be compiled with `-parameters`. This
+ensures that the parameter names are available to the caching infrastructure once the
+bean has been spied upon.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]
