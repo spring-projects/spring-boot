@@ -344,6 +344,14 @@
         {
           "value": "root",
           "description": "Root logger used to assign the default logging level."
+        },
+        {
+          "value": "sql",
+          "description": "SQL logging groups including Hibernate SQL logger."
+        },
+        {
+          "value": "web",
+          "description": "Web logging groups including codecs."
         }
       ],
       "providers": [
