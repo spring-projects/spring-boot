@@ -1,0 +1,1 @@
+{"timestamp":1539058586.979000000,"principal":{"name":"principal"},"session":{"id":"sessionId"},"request":{"method":"GET","uri":"http://example.com","headers":{"X-Resp-Header":["respHeaderValue"]},"remoteAddress":"192.168.0.1"},"response":{"status":200,"headers":{"X-Req-Header":["reqHeaderValue"]}},"timeTaken":100}

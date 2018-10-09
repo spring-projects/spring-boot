@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.StringUtils;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 /**
  * A trace event for handling of an HTTP request and response exchange. Can be used for
@@ -33,13 +36,13 @@ import org.springframework.util.StringUtils;
  */
 public final class HttpTrace {
 
-	private final Instant timestamp = Instant.now();
+	private volatile Instant timestamp = Instant.now();
 
 	private volatile Principal principal;
 
 	private volatile Session session;
 
-	private final Request request;
+	private volatile Request request;
 
 	private volatile Response response;
 
@@ -47,6 +50,12 @@ public final class HttpTrace {
 
 	HttpTrace(TraceableRequest request) {
 		this.request = new Request(request);
+	}
+
+	public HttpTrace() {}
+
+	public void setTimestamp(Instant timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public Instant getTimestamp() {
@@ -57,6 +66,11 @@ public final class HttpTrace {
 		if (principal != null) {
 			this.principal = new Principal(principal.getName());
 		}
+	}
+
+	@JsonSetter
+	public void setPrincipal(Principal principal) {
+		this.principal = principal;
 	}
 
 	public Principal getPrincipal() {
@@ -71,6 +85,10 @@ public final class HttpTrace {
 		if (StringUtils.hasText(sessionId)) {
 			this.session = new Session(sessionId);
 		}
+	}
+
+	public void setRequest(org.springframework.boot.actuate.trace.http.HttpTrace.Request request) {
+		this.request = request;
 	}
 
 	public Request getRequest() {
@@ -113,6 +131,17 @@ public final class HttpTrace {
 			this.remoteAddress = request.getRemoteAddress();
 		}
 
+		@JsonCreator
+		public Request(@JsonProperty("method") String method,
+				@JsonProperty("uri") URI uri,
+				@JsonProperty("headers") Map<String, List<String>> headers,
+				@JsonProperty("remoteAddress") String remoteAddress) {
+			this.method = method;
+			this.uri = uri;
+			this.headers = headers;
+			this.remoteAddress = remoteAddress;
+		}
+
 		public String getMethod() {
 			return this.method;
 		}
@@ -145,6 +174,12 @@ public final class HttpTrace {
 			this.headers = response.getHeaders();
 		}
 
+		@JsonCreator
+		public Response(@JsonProperty("status") int status, @JsonProperty("headers") Map<String, List<String>> headers) {
+			this.status = status;
+			this.headers = headers;
+		}
+
 		public int getStatus() {
 			return this.status;
 		}
@@ -162,7 +197,8 @@ public final class HttpTrace {
 
 		private final String id;
 
-		private Session(String id) {
+		@JsonCreator
+		public Session(@JsonProperty("id") String id) {
 			this.id = id;
 		}
 
@@ -179,7 +215,8 @@ public final class HttpTrace {
 
 		private final String name;
 
-		private Principal(String name) {
+		@JsonCreator
+		public Principal(@JsonProperty("name") String name) {
 			this.name = name;
 		}
 
