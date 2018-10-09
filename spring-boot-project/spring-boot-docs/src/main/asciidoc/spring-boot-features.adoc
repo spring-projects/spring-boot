@@ -4829,7 +4829,7 @@ If the connection to InfluxDB requires a user and password, you can set the
 `spring.influx.user` and `spring.influx.password` properties accordingly.
 
 InfluxDB relies on OkHttp. If you need to tune the http client `InfluxDB` uses behind the
-scenes, you can register an `OkHttpClient.Builder` bean.
+scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
 
 
 
