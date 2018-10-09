@@ -20,14 +20,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
@@ -71,9 +77,29 @@ public class CodecsAutoConfiguration {
 	static class LoggingCodecConfiguration {
 
 		@Bean
+		@Conditional(LogRequestDetailsConfiguredCondition.class)
 		public CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
 			return (configurer) -> configurer.defaultCodecs()
 					.enableLoggingRequestDetails(properties.isLogRequestDetails());
+		}
+
+	}
+
+	static class LogRequestDetailsConfiguredCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("Log Request Details");
+			String property = context.getEnvironment()
+					.getProperty("spring.http.log-request-details");
+			if (property == null) {
+				return ConditionOutcome.noMatch(message.because(
+						"did not find spring.http.log-request-details property"));
+			}
+			return ConditionOutcome
+					.match(message.because("spring.http.log-request-details property"));
 		}
 
 	}
