@@ -1970,6 +1970,45 @@ However, properties can be added to the `Environment` by using the relaxed rules
 
 
 
+[[boot-features-json]]
+== JSON
+Spring Boot provides integration with three JSON mapping libraries:
+
+- Gson
+- Jackson
+- JSON-B
+
+Jackson is the preferred and default library.
+
+
+
+[[boot-features-json-jackson]]
+=== Jackson
+Auto-configuration for Jackson is provided and Jackson is part of
+`spring-boot-starer-json`. When Jackson is on the classpath an `ObjectMapper`
+bean is automatically configured. Several configuration properties are provided for
+<<howto.adoc#howto-customize-the-jackson-objectmapper,customizing the configuration of the
+`ObjectMapper`>>.
+
+
+
+[[boot-features-json-gson]]
+=== Gson
+Auto-configuration for Gson is provided. When Gson is on the classpath a `Gson` bean is
+automatically configured.  Several `+spring.gson.*+` configuration properties are
+provided for customizing the configuration. To take more control, one or more
+`GsonBuilderCustomizer` beans can be used.
+
+
+
+[[boot-features-json-json-b]]
+=== JSON-B
+Auto-configuration for JSON-B is provided. When the JSON-B API and an implementation are
+on the classpath a `Jsonb` bean will be automatically configured. The preferred JSON-B
+implementation is Apache Johnzon for which dependency management is provided.
+
+
+
 [[boot-features-developing-web-applications]]
 == Developing Web Applications
 Spring Boot is well suited for web application development. You can create a
@@ -6709,7 +6748,7 @@ NOTE: While Spring's test framework caches application contexts between tests an
 a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean`
 influences the cache key, which will most likely increase the number of contexts.
 
-TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer
+PTIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer
 to parameters by name, your application must be compiled with `-parameters`. This
 ensures that the parameter names are available to the caching infrastructure once the
 bean has been spied upon.
