@@ -2140,6 +2140,14 @@ the annotations and flags accordingly.
 
 
 
+[[howto-use-customize-spring-datas-web-support]]
+=== Customize Spring Data's Web Support
+Spring Data provides web support that simplifies the use of Spring Data repositories in a
+web application. Spring Boot provides properties in the `spring.data.web` namespace
+for customizing its configuration. Note that if you are using Spring Data REST, you must
+use the properties in the `spring.data.rest` namespace instead.
+
+
 [[howto-use-exposing-spring-data-repositories-rest-endpoint]]
 === Expose Spring Data Repositories as REST Endpoint
 Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
