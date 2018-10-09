@@ -149,14 +149,16 @@ public class WebFluxAutoConfiguration {
 				return;
 			}
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
+			CacheControl cacheControl = this.resourceProperties.getCache()
+					.getCachecontrol().toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				ResourceHandlerRegistration registration = registry
 						.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl
-							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
+					cacheControl.sMaxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS);
 				}
+				registration.setCacheControl(cacheControl);
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
@@ -165,9 +167,9 @@ public class WebFluxAutoConfiguration {
 						.addResourceHandler(staticPathPattern).addResourceLocations(
 								this.resourceProperties.getStaticLocations());
 				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl
-							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
+					cacheControl.sMaxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS);
 				}
+				registration.setCacheControl(cacheControl);
 				customizeResourceHandlerRegistration(registration);
 			}
 		}
