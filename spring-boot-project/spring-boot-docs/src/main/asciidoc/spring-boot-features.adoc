@@ -1875,6 +1875,45 @@ However, properties can be added to the `Environment` by using the relaxed rules
 
 
 
+[[boot-features-json]]
+== JSON
+Spring Boot provides integration with three JSON mapping libraries:
+
+- Gson
+- Jackson
+- JSON-B
+
+Jackson is the preferred and default library.
+
+
+
+[[boot-features-json-jackson]]
+=== Jackson
+Auto-configuration for Jackson is provided and Jackson is part of
+`spring-boot-starer-json`. When Jackson is on the classpath an `ObjectMapper`
+bean is automatically configured. Several configuration properties are provided for
+<<howto.adoc#howto-customize-the-jackson-objectmapper,customizing the configuration of the
+`ObjectMapper`>>.
+
+
+
+[[boot-features-json-gson]]
+=== Gson
+Auto-configuration for Gson is provided. When Gson is on the classpath a `Gson` bean is
+automatically configured.  Several `+spring.gson.*+` configuration properties are
+provided for customizing the configuration. To take more control, one or more
+`GsonBuilderCustomizer` beans can be used.
+
+
+
+[[boot-features-json-json-b]]
+=== JSON-B
+Auto-configuration for JSON-B is provided. When the JSON-B API and an implementation are
+on the classpath a `Jsonb` bean will be automatically configured. The preferred JSON-B
+implementation is Apache Johnzon for which dependency management is provided.
+
+
+
 [[boot-features-developing-web-applications]]
 == Developing Web Applications
 Spring Boot is well suited for web application development. You can create a
@@ -4096,19 +4135,19 @@ You can take full control over the session creation by adding a
 ==== Using the Embedded Mode
 If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application,
 Spring Boot automatically configures an in-process embedded instance of Neo4j that does
-not persist any data when your application shuts down. 
+not persist any data when your application shuts down.
 
 [NOTE]
 ====
-As the embedded Neo4j OGM  driver  does not provide the Neo4j kernel itself, you have 
-to declare `org.neo4j:neo4j` as dependency yourself. Refer to 
+As the embedded Neo4j OGM  driver  does not provide the Neo4j kernel itself, you have
+to declare `org.neo4j:neo4j` as dependency yourself. Refer to
 https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the
 Neo4j OGM documentation] for a list of compatible versions.
 ====
 
 The embedded driver takes precedence over the other drivers when there are multiple
-drivers on the classpath. You can explicitly disable the embedded mode by setting 
-`spring.data.neo4j.embedded.enabled=false`. 
+drivers on the classpath. You can explicitly disable the embedded mode by setting
+`spring.data.neo4j.embedded.enabled=false`.
 
 <<boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test,Data Neo4j Tests>>
 automatically make use of an embedded Neo4j instance if the embedded driver and Neo4j
@@ -4116,7 +4155,7 @@ kernel are on the classpath as described above.
 
 [NOTE]
 ====
-You can enable persistence for the embedded mode by providing a path to a database file 
+You can enable persistence for the embedded mode by providing a path to a database file
 in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
 ====
 
@@ -4160,9 +4199,9 @@ abstraction works in the same way, as shown in the following example:
 	}
 ----
 
-The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well 
+The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well
 as transaction management. You can customize the locations to look for repositories and
-entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a 
+entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a
 `@Configuration`-bean.
 
 TIP: For complete details of Spring Data Neo4j, including its object mapping
@@ -6392,7 +6431,7 @@ NOTE: While Spring's test framework caches application contexts between tests an
 a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean`
 influences the cache key, which will most likely increase the number of contexts.
 
-TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer
+PTIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer
 to parameters by name, your application must be compiled with `-parameters`. This
 ensures that the parameter names are available to the caching infrastructure once the
 bean has been spied upon.
