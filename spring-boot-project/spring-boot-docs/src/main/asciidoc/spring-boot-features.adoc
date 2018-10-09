@@ -5979,6 +5979,11 @@ NOTE: By default, the database is detected and initialized by using the standard
 provided with the Quartz library. It is also possible to provide a custom script by
 setting the `spring.quartz.jdbc.schema` property.
 
+To have Quartz use a `DataSource` other than the application's main `DataSource`, declare
+a `DataSource` bean, annotating its `@Bean` method with `@QuartzDataSource`. Doing so
+ensures that the Quartz-specific `DataSource` is used by both the `SchedulerFactoryBean`
+and for schema initialization.
+
 Quartz Scheduler configuration can be customized by using Quartz configuration properties
 ()`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
 programmatic `SchedulerFactoryBean` customization.
