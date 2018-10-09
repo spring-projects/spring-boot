@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;

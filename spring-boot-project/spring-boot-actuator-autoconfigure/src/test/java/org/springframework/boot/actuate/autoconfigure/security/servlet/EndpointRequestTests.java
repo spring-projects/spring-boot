@@ -25,6 +25,7 @@ import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.security.web.servlet.EndpointRequest;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -32,7 +33,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
-import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
+import org.springframework.boot.autoconfigure.security.web.servlet.RequestMatcherProvider;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
