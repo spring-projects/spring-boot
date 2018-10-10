@@ -483,7 +483,7 @@ public class UndertowEmbeddedServletContainerFactory
 			DeploymentInfo deployment, ServletContextInitializer... initializers) {
 		ServletContextInitializer[] mergedInitializers = mergeInitializers(initializers);
 		Initializer initializer = new Initializer(mergedInitializers);
-		deployment.addServletContainerInitalizer(new ServletContainerInitializerInfo(
+		deployment.addServletContainerInitializer(new ServletContainerInitializerInfo(
 				Initializer.class,
 				new ImmediateInstanceFactory<ServletContainerInitializer>(initializer),
 				NO_CLASSES));
