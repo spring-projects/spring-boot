@@ -78,7 +78,7 @@
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
-		<infinispan.version>9.3.3.Final</infinispan.version>
+		<infinispan.version>9.4.0.Final</infinispan.version>
 		<influxdb-java.version>2.13</influxdb-java.version>
 		<jackson.version>2.9.7</jackson.version>
 		<janino.version>3.0.10</janino.version>
@@ -2181,6 +2181,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-management-console</artifactId>
+				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-objectfilter</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
@@ -2242,11 +2247,6 @@
 			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-server-router</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-server-websocket</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
@@ -3142,6 +3142,11 @@
 					<groupId>org.flywaydb</groupId>
 					<artifactId>flyway-maven-plugin</artifactId>
 					<version>${flyway.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.infinispan</groupId>
+					<artifactId>infinispan-protocol-parser-generator-maven-plugin</artifactId>
+					<version>${infinispan.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
