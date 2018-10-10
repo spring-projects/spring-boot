@@ -98,7 +98,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
+	spring.info.build.encoding=UTF-8 # File encoding.
 	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
+	spring.info.git.encoding=UTF-8 # File encoding.
 	spring.info.git.location=classpath:git.properties # Location of the generated git.properties file.
 
 	# JMX
