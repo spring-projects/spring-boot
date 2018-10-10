@@ -597,9 +597,12 @@ keep the original String value to pass it to the Liquibase API.
 
 
 ===== Logger Name
-The **logger-name** provider auto-completes valid logger names. Typically, package and
-class names available in the current project can be auto-completed. Specific frameworks
-may have extra magic logger names that can be supported as well.
+The **logger-name** provider auto-completes valid logger names and
+<<spring-boot-features.adoc#boot-features-custom-log-groups,logger groups>>. Typically,
+package and class names available in the current project can be auto-completed. If a
+custom logger group is identified in the configuration, auto-completion for it should
+be provided. Specific frameworks may have extra magic logger names that can be supported
+as well.
 
 Since a logger name can be any arbitrary name, this provider should allow any
 value but could highlight valid package and class names that are not available in the
@@ -607,7 +610,8 @@ project's classpath.
 
 The following metadata snippet corresponds to the standard `logging.level` property. Keys
 are _logger names_, and values correspond to the standard log levels or any custom
-level.
+level. As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints
+have been added for those.
 
 [source,json,indent=0]
 ----
@@ -616,8 +620,16 @@ level.
 			"name": "logging.level.keys",
 			"values": [
 				{
-					"value": "root",
-					"description": "Root logger used to assign the default logging level."
+				  "value": "root",
+				  "description": "Root logger used to assign the default logging level."
+				},
+				{
+				  "value": "sql",
+				  "description": "SQL logging groups including Hibernate SQL logger."
+				},
+				{
+				  "value": "web",
+				  "description": "Web logging groups including codecs."
 				}
 			],
 			"providers": [
