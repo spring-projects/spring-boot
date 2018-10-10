@@ -42,7 +42,7 @@
 		<assertj.version>3.11.1</assertj.version>
 		<atomikos.version>4.0.6</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
-		<byte-buddy.version>1.8.22</byte-buddy.version>
+		<byte-buddy.version>1.9.1</byte-buddy.version>
 		<caffeine.version>2.6.2</caffeine.version>
 		<cassandra-driver.version>3.6.0</cassandra-driver.version>
 		<classmate.version>1.4.0</classmate.version>
