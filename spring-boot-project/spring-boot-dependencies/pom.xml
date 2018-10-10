@@ -55,7 +55,7 @@
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
-		<dropwizard-metrics.version>3.2.6</dropwizard-metrics.version>
+		<dropwizard-metrics.version>4.0.3</dropwizard-metrics.version>
 		<ehcache.version>2.10.5</ehcache.version>
 		<ehcache3.version>3.6.1</ehcache3.version>
 		<embedded-mongo.version>2.1.1</embedded-mongo.version>
@@ -800,11 +800,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.dropwizard.metrics</groupId>
-				<artifactId>metrics-ganglia</artifactId>
-				<version>${dropwizard-metrics.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.dropwizard.metrics</groupId>
 				<artifactId>metrics-graphite</artifactId>
 				<version>${dropwizard-metrics.version}</version>
 			</dependency>
@@ -846,6 +841,11 @@
 			<dependency>
 				<groupId>io.dropwizard.metrics</groupId>
 				<artifactId>metrics-jetty9-legacy</artifactId>
+				<version>${dropwizard-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.dropwizard.metrics</groupId>
+				<artifactId>metrics-jmx</artifactId>
 				<version>${dropwizard-metrics.version}</version>
 			</dependency>
 			<dependency>

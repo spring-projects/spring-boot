@@ -79,7 +79,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
+			<artifactId>metrics-jmx</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
