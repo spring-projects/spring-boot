@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import org.springframework.util.Assert;
  * Subclass of {@link SpringBeanJobFactory} that supports auto-wiring job beans.
  *
  * @author Vedran Pavic
+ * @author Marten Deinum
+ *
  * @see <a href="http://blog.btmatthews.com/?p=40#comment-33797">Inject application
  * context dependencies in Quartz job beans</a>
  */
@@ -42,8 +44,6 @@ class AutowireCapableBeanJobFactory extends SpringBeanJobFactory {
 	protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
 		Object jobInstance = super.createJobInstance(bundle);
 		this.beanFactory.autowireBean(jobInstance);
-		this.beanFactory.initializeBean(jobInstance, null);
-		return jobInstance;
+		return this.beanFactory.initializeBean(jobInstance, null);
 	}
-
 }
