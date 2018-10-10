@@ -786,6 +786,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-ogm-embedded-driver</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
 			<scope>test</scope>
