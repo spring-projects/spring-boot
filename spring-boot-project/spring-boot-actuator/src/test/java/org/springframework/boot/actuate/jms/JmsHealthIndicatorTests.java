@@ -30,8 +30,8 @@ import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -106,11 +106,11 @@ public class JmsHealthIndicatorTests {
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
 		UnresponsiveStartAnswer unresponsiveStartAnswer = new UnresponsiveStartAnswer();
-		doAnswer(unresponsiveStartAnswer).when(connection).start();
-		doAnswer((invocation) -> {
+		willAnswer(unresponsiveStartAnswer).given(connection).start();
+		willAnswer((invocation) -> {
 			unresponsiveStartAnswer.connectionClosed();
 			return null;
-		}).when(connection).close();
+		}).given(connection).close();
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willReturn(connection);
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
