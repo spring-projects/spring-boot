@@ -52,12 +52,25 @@ public class ProjectInfoProperties {
 		private Resource location = new ClassPathResource(
 				"META-INF/build-info.properties");
 
+		/**
+		 * build-info.properties file encoding.
+		 */
+		private String encoding;
+
 		public Resource getLocation() {
 			return this.location;
 		}
 
 		public void setLocation(Resource location) {
 			this.location = location;
+		}
+
+		public String getEncoding() {
+			return this.encoding;
+		}
+
+		public void setEncoding(String encoding) {
+			this.encoding = encoding;
 		}
 
 	}
@@ -72,12 +85,25 @@ public class ProjectInfoProperties {
 		 */
 		private Resource location = new ClassPathResource("git.properties");
 
+		/**
+		 * git.properties file encoding.
+		 */
+		private String encoding;
+
 		public Resource getLocation() {
 			return this.location;
 		}
 
 		public void setLocation(Resource location) {
 			this.location = location;
+		}
+
+		public String getEncoding() {
+			return this.encoding;
+		}
+
+		public void setEncoding(String encoding) {
+			this.encoding = encoding;
 		}
 
 	}
