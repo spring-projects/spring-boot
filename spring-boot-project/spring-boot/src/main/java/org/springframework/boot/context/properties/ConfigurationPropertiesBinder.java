@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -126,7 +127,16 @@ class ConfigurationPropertiesBinder {
 			handler = new ValidationBindHandler(handler,
 					validators.toArray(new Validator[0]));
 		}
+		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
+			handler = advisor.apply(handler);
+		}
 		return handler;
+	}
+
+	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
+		return this.applicationContext
+				.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
+				.orderedStream().collect(Collectors.toList());
 	}
 
 	private Binder getBinder() {

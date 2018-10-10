@@ -76,12 +76,12 @@ public class ProjectInfoAutoConfiguration {
 
 	protected Properties loadFrom(Resource location, String prefix, Charset encoding)
 			throws IOException {
-		String p = prefix.endsWith(".") ? prefix : prefix + ".";
+		prefix = prefix.endsWith(".") ? prefix : prefix + ".";
 		Properties source = loadSource(location, encoding);
 		Properties target = new Properties();
 		for (String key : source.stringPropertyNames()) {
-			if (key.startsWith(p)) {
-				target.put(key.substring(p.length()), source.get(key));
+			if (key.startsWith(prefix)) {
+				target.put(key.substring(prefix.length()), source.get(key));
 			}
 		}
 		return target;
@@ -93,9 +93,7 @@ public class ProjectInfoAutoConfiguration {
 			return PropertiesLoaderUtils
 					.loadProperties(new EncodedResource(location, encoding));
 		}
-		else {
-			return PropertiesLoaderUtils.loadProperties(location);
-		}
+		return PropertiesLoaderUtils.loadProperties(location);
 	}
 
 	static class GitResourceAvailableCondition extends SpringBootCondition {

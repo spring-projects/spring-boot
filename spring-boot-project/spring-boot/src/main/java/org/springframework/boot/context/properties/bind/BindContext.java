@@ -29,6 +29,12 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 public interface BindContext {
 
 	/**
+	 * Return the source binder that is performing the bind operation.
+	 * @return the source binder
+	 */
+	Binder getBinder();
+
+	/**
 	 * Return the current depth of the binding. Root binding starts with a depth of
 	 * {@code 0}. Each subsequent property binding increases the depth by {@code 1}.
 	 * @return the depth of the current binding
