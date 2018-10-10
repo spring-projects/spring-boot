@@ -171,7 +171,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForUnmatchedQualfier() {
+	public void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(QualifiedBeanConfiguration.class));
 		assertThat(analysis.getDescription()).contains(
