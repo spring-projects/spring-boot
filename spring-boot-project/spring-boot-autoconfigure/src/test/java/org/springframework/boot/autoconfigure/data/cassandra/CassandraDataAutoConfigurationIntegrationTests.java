@@ -95,8 +95,8 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		Cluster cluster = Cluster.builder().withPort(cassandra.getMappedPort())
-				.addContactPoint("localhost").build();
+		Cluster cluster = Cluster.builder().withoutJMXReporting()
+				.withPort(cassandra.getMappedPort()).addContactPoint("localhost").build();
 		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");

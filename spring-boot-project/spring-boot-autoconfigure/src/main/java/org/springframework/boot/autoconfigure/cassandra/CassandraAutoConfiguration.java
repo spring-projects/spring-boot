@@ -83,6 +83,8 @@ public class CassandraAutoConfiguration {
 		map.from(properties::getContactPoints)
 				.as((list) -> StringUtils.toStringArray(list))
 				.to(builder::addContactPoints);
+		map.from(properties::isJmxReporting).whenFalse()
+				.toCall(builder::withoutJMXReporting);
 		customize(builder);
 		return builder.build();
 	}
