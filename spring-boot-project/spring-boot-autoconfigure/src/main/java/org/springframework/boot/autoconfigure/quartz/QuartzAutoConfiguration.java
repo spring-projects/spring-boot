@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -88,8 +89,9 @@ public class QuartzAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SchedulerFactoryBean quartzScheduler() {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-		schedulerFactoryBean.setJobFactory(new AutowireCapableBeanJobFactory(
-				this.applicationContext.getAutowireCapableBeanFactory()));
+		SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
+		jobFactory.setApplicationContext(this.applicationContext);
+		schedulerFactoryBean.setJobFactory(jobFactory);
 		if (this.properties.getSchedulerName() != null) {
 			schedulerFactoryBean.setSchedulerName(this.properties.getSchedulerName());
 		}
