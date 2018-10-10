@@ -339,6 +339,18 @@
   ],
   "hints": [
     {
+      "name": "logging.group.values",
+      "providers": [
+        {
+          "name": "logger-name",
+          "parameters": {
+            "group": false
+          }
+
+        }
+      ]
+    },
+    {
       "name": "logging.level.keys",
       "values": [
         {
