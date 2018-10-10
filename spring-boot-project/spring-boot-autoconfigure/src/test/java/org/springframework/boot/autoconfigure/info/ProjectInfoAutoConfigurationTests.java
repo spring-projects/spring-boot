@@ -72,11 +72,23 @@ public class ProjectInfoAutoConfigurationTests {
 	}
 
 	@Test
-	public void gitPropertiesWithUnicode() {
-		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties",
-				"spring.info.git.encoding=utf-8");
-		GitProperties gitProperties = this.context.getBean(GitProperties.class);
-		assertThat(gitProperties.get("commit.unicode")).isEqualTo("中文");
+	public void gitPropertiesUsesUtf8ByDefault() {
+		this.contextRunner.withPropertyValues(
+				"spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties")
+				.run((context) -> {
+					GitProperties gitProperties = context.getBean(GitProperties.class);
+					assertThat(gitProperties.get("commit.charset")).isEqualTo("test™");
+				});
+	}
+
+	@Test
+	public void gitPropertiesEncodingCanBeConfigured() {
+		this.contextRunner.withPropertyValues("spring.info.git.encoding=US-ASCII",
+				"spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties")
+				.run((context) -> {
+					GitProperties gitProperties = context.getBean(GitProperties.class);
+					assertThat(gitProperties.get("commit.charset")).isNotEqualTo("test™");
+				});
 	}
 
 	@Test
@@ -125,6 +137,28 @@ public class ProjectInfoAutoConfigurationTests {
 							.getBean(BuildProperties.class);
 					assertThat(buildProperties)
 							.isSameAs(context.getBean("customBuildProperties"));
+				});
+	}
+
+	@Test
+	public void buildPropertiesUsesUtf8ByDefault() {
+		this.contextRunner.withPropertyValues(
+				"spring.info.build.location=classpath:/org/springframework/boot/autoconfigure/info/build-info.properties")
+				.run((context) -> {
+					BuildProperties buildProperties = context
+							.getBean(BuildProperties.class);
+					assertThat(buildProperties.get("charset")).isEqualTo("test™");
+				});
+	}
+
+	@Test
+	public void buildPropertiesEncodingCanBeConfigured() {
+		this.contextRunner.withPropertyValues("spring.info.build.encoding=US-ASCII",
+				"spring.info.build.location=classpath:/org/springframework/boot/autoconfigure/info/build-info.properties")
+				.run((context) -> {
+					BuildProperties buildProperties = context
+							.getBean(BuildProperties.class);
+					assertThat(buildProperties.get("charset")).isNotEqualTo("test™");
 				});
 	}
 
