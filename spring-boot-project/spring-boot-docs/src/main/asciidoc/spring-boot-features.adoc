@@ -6657,6 +6657,10 @@ that the driver exits after each test and that a new instance is injected. If yo
 not want this behavior, you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
 definition.
 
+WARNING: The `webDriver` scope created by Spring Boot will replace any user defined scope
+of the same name. If you define your own `webDriver` scope you may find it stops working
+when you use `@WebMvcTest`.
+
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run
 <<boot-features-testing-spring-boot-applications-testing-with-running-server,
 full end-to-end tests with an actual server>>.
