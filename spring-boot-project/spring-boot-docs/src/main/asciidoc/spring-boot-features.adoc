@@ -652,6 +652,21 @@ details.
 
 
 
+[[boot-features-encrypting-properties]]
+=== Encrypting Properties
+Spring Boot does not provide any built in support for encrypting property values, however,
+it does provide the hook points necessary to modify values contained in the Spring
+`Environment`. The `EnvironmentPostProcessor` interface allows you to manipulate the
+`Environment` before the application starts. See <<howto-customize-the-environment-or-application-context>>
+for details.
+
+If you're looking for a secure way to store credentials and passwords, the
+https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides
+support for storing externalized configuration in
+https://www.vaultproject.io/[HashiCorp Vault].
+
+
+
 [[boot-features-external-config-yaml]]
 === Using YAML Instead of Properties
 http://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for
@@ -6958,6 +6973,10 @@ NOTE: By default, Spring Boot puts `WebDriver` beans in a special "`scope`" to e
 that the driver exits after each test and that a new instance is injected. If you do
 not want this behavior, you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
 definition.
+
+WARNING: The `webDriver` scope created by Spring Boot will replace any user defined scope
+of the same name. If you define your own `webDriver` scope you may find it stops working
+when you use `@WebMvcTest`.
 
 If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer`
 beans. Instead of disabling security completely for such tests, you can use Spring Security's test support.
