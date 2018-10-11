@@ -519,6 +519,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING WEBFLUX ({sc-spring-boot-autoconfigure}/web/reactive/WebFluxProperties.{sc-ext}[WebFluxProperties])
 	spring.webflux.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
+	spring.webflux.hiddenmethod.filter.enabled=true # Whether to enable Spring's HiddenHttpMethodFilter.
 	spring.webflux.static-path-pattern=/** # Path pattern used for static resources.
 
 	# SPRING WEB SERVICES ({sc-spring-boot-autoconfigure}/webservices/WebServicesProperties.{sc-ext}[WebServicesProperties])

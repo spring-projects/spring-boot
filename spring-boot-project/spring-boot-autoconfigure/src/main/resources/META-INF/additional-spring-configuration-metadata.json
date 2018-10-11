@@ -1790,6 +1790,12 @@
       "name": "spring.webservices.wsdl-locations",
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
+    },
+    {
+      "name": "spring.webflux.hiddenmethod.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
+      "defaultValue": true
     }
   ],
   "hints": [
