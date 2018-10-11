@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
@@ -37,19 +37,19 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  */
 class MeterRegistryPostProcessor implements BeanPostProcessor {
 
-	private final ObjectProvider<List<MeterBinder>> meterBinders;
+	private final ObjectProvider<MeterBinder> meterBinders;
 
-	private final ObjectProvider<List<MeterFilter>> meterFilters;
+	private final ObjectProvider<MeterFilter> meterFilters;
 
-	private final ObjectProvider<List<MeterRegistryCustomizer<?>>> meterRegistryCustomizers;
+	private final ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers;
 
 	private final ObjectProvider<MetricsProperties> metricsProperties;
 
 	private volatile MeterRegistryConfigurer configurer;
 
-	MeterRegistryPostProcessor(ObjectProvider<List<MeterBinder>> meterBinders,
-			ObjectProvider<List<MeterFilter>> meterFilters,
-			ObjectProvider<List<MeterRegistryCustomizer<?>>> meterRegistryCustomizers,
+	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders,
+			ObjectProvider<MeterFilter> meterFilters,
+			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
 			ObjectProvider<MetricsProperties> metricsProperties) {
 		this.meterBinders = meterBinders;
 		this.meterFilters = meterFilters;
@@ -69,12 +69,15 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
 			this.configurer = new MeterRegistryConfigurer(
-					this.meterBinders.getIfAvailable(Collections::emptyList),
-					this.meterFilters.getIfAvailable(Collections::emptyList),
-					this.meterRegistryCustomizers.getIfAvailable(Collections::emptyList),
+					asOrderedList(this.meterBinders), asOrderedList(this.meterFilters),
+					asOrderedList(this.meterRegistryCustomizers),
 					this.metricsProperties.getObject().isUseGlobalRegistry());
 		}
 		return this.configurer;
+	}
+
+	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
+		return provider.orderedStream().collect(Collectors.toList());
 	}
 
 }

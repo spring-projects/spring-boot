@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.List;
-
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.MeterBinder;
@@ -54,9 +52,9 @@ public class MetricsAutoConfiguration {
 
 	@Bean
 	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ObjectProvider<List<MeterBinder>> meterBinders,
-			ObjectProvider<List<MeterFilter>> meterFilters,
-			ObjectProvider<List<MeterRegistryCustomizer<?>>> meterRegistryCustomizers,
+			ObjectProvider<MeterBinder> meterBinders,
+			ObjectProvider<MeterFilter> meterFilters,
+			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
 			ObjectProvider<MetricsProperties> metricsProperties) {
 		return new MeterRegistryPostProcessor(meterBinders, meterFilters,
 				meterRegistryCustomizers, metricsProperties);
