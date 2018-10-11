@@ -98,30 +98,21 @@ public class MetricsEndpointTests {
 	@Test
 	public void findFirstMatchingMetersFromNestedRegistries() {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
-		SimpleMeterRegistry reg1 = new SimpleMeterRegistry();
-		CompositeMeterRegistry reg2 = new CompositeMeterRegistry();
-		SimpleMeterRegistry reg3 = new SimpleMeterRegistry();
-
-		// 1st level nesting
-		composite.add(reg1);
-
-		// 2st level nesting
-		reg2.add(reg3);
-		composite.add(reg2);
-
-		// 2nd level registry has metrics
-		reg3.counter("cache", "result", "hit", "host", "1").increment(2);
-		reg3.counter("cache", "result", "miss", "host", "1").increment(2);
-		reg3.counter("cache", "result", "hit", "host", "2").increment(2);
-
+		SimpleMeterRegistry firstLevel0 = new SimpleMeterRegistry();
+		CompositeMeterRegistry firstLevel1 = new CompositeMeterRegistry();
+		SimpleMeterRegistry secondLevel = new SimpleMeterRegistry();
+		composite.add(firstLevel0);
+		composite.add(firstLevel1);
+		firstLevel1.add(secondLevel);
+		secondLevel.counter("cache", "result", "hit", "host", "1").increment(2);
+		secondLevel.counter("cache", "result", "miss", "host", "1").increment(2);
+		secondLevel.counter("cache", "result", "hit", "host", "2").increment(2);
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
-
 		MetricsEndpoint.MetricResponse response = endpoint.metric("cache",
 				Collections.emptyList());
 		assertThat(response.getName()).isEqualTo("cache");
 		assertThat(availableTagKeys(response)).containsExactly("result", "host");
 		assertThat(getCount(response)).hasValue(6.0);
-
 		response = endpoint.metric("cache", Collections.singletonList("result:hit"));
 		assertThat(availableTagKeys(response)).containsExactly("host");
 		assertThat(getCount(response)).hasValue(4.0);
@@ -130,15 +121,11 @@ public class MetricsEndpointTests {
 	@Test
 	public void matchingMeterNotFoundInNestedRegistries() {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
-		CompositeMeterRegistry reg2 = new CompositeMeterRegistry();
-		SimpleMeterRegistry reg3 = new SimpleMeterRegistry();
-
-		// nested registries
-		reg2.add(reg3);
-		composite.add(reg2);
-
+		CompositeMeterRegistry firstLevel = new CompositeMeterRegistry();
+		SimpleMeterRegistry secondLevel = new SimpleMeterRegistry();
+		composite.add(firstLevel);
+		firstLevel.add(secondLevel);
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
-
 		MetricsEndpoint.MetricResponse response = endpoint.metric("invalid.metric.name",
 				Collections.emptyList());
 		assertThat(response).isNull();

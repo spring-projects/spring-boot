@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,19 +116,17 @@ public class MetricsEndpoint {
 	private Collection<Meter> findFirstMatchingMeters(MeterRegistry registry, String name,
 			Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
-			return ((CompositeMeterRegistry) registry).getRegistries().stream()
-					.map((r) -> findFirstMatchingMeters(r, name, tags))
-					.filter((match) -> !match.isEmpty()).findFirst()
-					.orElse(Collections.emptyList());
+			return findFirstMatchingMeters((CompositeMeterRegistry) registry, name, tags);
+		}
+		return registry.find(name).tags(tags).meters();
+	}
 
-		}
-		else {
-			Collection<Meter> metersFound = registry.find(name).tags(tags).meters();
-			if (!metersFound.isEmpty()) {
-				return metersFound;
-			}
-		}
-		return Collections.emptyList();
+	private Collection<Meter> findFirstMatchingMeters(CompositeMeterRegistry composite,
+			String name, Iterable<Tag> tags) {
+		return composite.getRegistries().stream()
+				.map((registry) -> findFirstMatchingMeters(registry, name, tags))
+				.filter((matching) -> !matching.isEmpty()).findFirst()
+				.orElse(Collections.emptyList());
 	}
 
 	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
