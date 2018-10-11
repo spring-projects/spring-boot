@@ -61,6 +61,14 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	if [[ $ARTIFACTS_PUBLISHED = "false" ]]; then
 		echo "Failed to publish"
 		exit 1
+	else
+		curl \
+			-s \
+			-u ${BINTRAY_USERNAME}:${BINTRAY_PASSWORD} \
+			-H "Content-Type: application/json" \
+			-d '[ { "name": "gradle-plugin", "values": ["org.springframework.boot:org.springframework.boot:spring-boot-gradle-plugin"] } ]' \
+			-X POST \
+			https://api.bintray.com/packages/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/${groupId}/versions/${version}/attributes  > /dev/null || { echo "Failed to add attributes" >&2; exit 1; }
 	fi
 fi
 
