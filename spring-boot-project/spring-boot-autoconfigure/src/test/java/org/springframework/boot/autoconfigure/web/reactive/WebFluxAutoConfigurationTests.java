@@ -63,7 +63,6 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.util.pattern.PathPattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -423,11 +422,9 @@ public class WebFluxAutoConfigurationTests {
 		Map<PathPattern, Object> handlerMap = getHandlerMap(
 				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.keySet()) {
-			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds())
-						.isEqualTo(-1);
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl())
+		for (Object handler : handlerMap.values()) {
+			if (handler instanceof ResourceWebHandler) {
+				assertThat(((ResourceWebHandler) handler).getCacheControl())
 						.isEqualToComparingFieldByField(
 								CacheControl.maxAge(5, TimeUnit.SECONDS));
 			}
@@ -445,11 +442,9 @@ public class WebFluxAutoConfigurationTests {
 		Map<PathPattern, Object> handlerMap = getHandlerMap(
 				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.keySet()) {
-			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds())
-						.isEqualTo(-1);
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl())
+		for (Object handler : handlerMap.values()) {
+			if (handler instanceof ResourceWebHandler) {
+				assertThat(((ResourceWebHandler) handler).getCacheControl())
 						.isEqualToComparingFieldByField(CacheControl
 								.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
 			}

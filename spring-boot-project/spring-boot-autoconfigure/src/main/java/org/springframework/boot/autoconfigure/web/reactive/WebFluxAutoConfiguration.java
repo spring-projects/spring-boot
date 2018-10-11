@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +48,6 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
@@ -149,16 +147,16 @@ public class WebFluxAutoConfiguration {
 				return;
 			}
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			CacheControl cacheControl = this.resourceProperties.getCache()
-					.getCachecontrol().toHttpCacheControl();
+			ResourceProperties.Cache.Cachecontrol cacheControl = this.resourceProperties
+					.getCache().getCachecontrol();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				ResourceHandlerRegistration registration = registry
 						.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
-				if (cachePeriod != null) {
-					cacheControl.sMaxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS);
+				if (cachePeriod != null && cacheControl.getMaxAge() == null) {
+					cacheControl.setMaxAge(cachePeriod);
 				}
-				registration.setCacheControl(cacheControl);
+				registration.setCacheControl(cacheControl.toHttpCacheControl());
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
@@ -166,10 +164,10 @@ public class WebFluxAutoConfiguration {
 				ResourceHandlerRegistration registration = registry
 						.addResourceHandler(staticPathPattern).addResourceLocations(
 								this.resourceProperties.getStaticLocations());
-				if (cachePeriod != null) {
-					cacheControl.sMaxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS);
+				if (cachePeriod != null && cacheControl.getMaxAge() == null) {
+					cacheControl.setMaxAge(cachePeriod);
 				}
-				registration.setCacheControl(cacheControl);
+				registration.setCacheControl(cacheControl.toHttpCacheControl());
 				customizeResourceHandlerRegistration(registration);
 			}
 		}
