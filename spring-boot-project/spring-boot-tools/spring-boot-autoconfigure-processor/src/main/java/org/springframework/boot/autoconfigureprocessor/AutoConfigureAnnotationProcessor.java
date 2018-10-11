@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -98,7 +99,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
 		attributes.put("Configuration", ValueExtractor.allFrom("value"));
-		attributes.put("ConditionalOnClass", ValueExtractor.allFrom("value", "name"));
+		attributes.put("ConditionalOnClass", new OnClassConditionValueExtractor());
 		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
 		attributes.put("ConditionalOnSingleCandidate",
 				new OnBeanConditionValueExtractor());
@@ -206,22 +207,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 		List<Object> getValues(AnnotationMirror annotation);
 
-		static ValueExtractor allFrom(String... attributes) {
-			Set<String> names = new HashSet<>(Arrays.asList(attributes));
-			return new AbstractValueExtractor() {
-
-				@Override
-				public List<Object> getValues(AnnotationMirror annotation) {
-					List<Object> result = new ArrayList<>();
-					annotation.getElementValues().forEach((key, value) -> {
-						if (names.contains(key.getSimpleName().toString())) {
-							extractValues(value).forEach(result::add);
-						}
-					});
-					return result;
-				}
-
-			};
+		static ValueExtractor allFrom(String... names) {
+			return new NamedValuesExtractor(names);
 		}
 
 	}
@@ -250,6 +237,27 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
+	private static class NamedValuesExtractor extends AbstractValueExtractor {
+
+		private final Set<String> names;
+
+		NamedValuesExtractor(String... names) {
+			this.names = new HashSet<>(Arrays.asList(names));
+		};
+
+		@Override
+		public List<Object> getValues(AnnotationMirror annotation) {
+			List<Object> result = new ArrayList<>();
+			annotation.getElementValues().forEach((key, value) -> {
+				if (this.names.contains(key.getSimpleName().toString())) {
+					extractValues(value).forEach(result::add);
+				}
+			});
+			return result;
+		}
+
+	}
+
 	private static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
 
 		@Override
@@ -264,6 +272,31 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			extractValues(attributes.get("value")).forEach(result::add);
 			extractValues(attributes.get("type")).forEach(result::add);
 			return result;
+		}
+
+	}
+
+	private static class OnClassConditionValueExtractor extends NamedValuesExtractor {
+
+		OnClassConditionValueExtractor() {
+			super("value", "name");
+		}
+
+		@Override
+		public List<Object> getValues(AnnotationMirror annotation) {
+			List<Object> values = super.getValues(annotation);
+			Collections.sort(values, this::compare);
+			return values;
+		}
+
+		private int compare(Object o1, Object o2) {
+			return Comparator.comparing(this::isSpringClass)
+					.thenComparing(String.CASE_INSENSITIVE_ORDER)
+					.compare(o1.toString(), o2.toString());
+		}
+
+		private boolean isSpringClass(String type) {
+			return type.startsWith("org.springframework");
 		}
 
 	}

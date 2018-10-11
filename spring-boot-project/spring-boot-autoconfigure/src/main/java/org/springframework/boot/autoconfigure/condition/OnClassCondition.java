@@ -20,7 +20,6 @@ import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
@@ -31,6 +30,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} and {@link AutoConfigurationImportFilter} that checks for the
@@ -200,8 +200,8 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			for (int i = start; i < end; i++) {
 				String autoConfigurationClass = autoConfigurationClasses[i];
 				if (autoConfigurationClass != null) {
-					Set<String> candidates = autoConfigurationMetadata
-							.getSet(autoConfigurationClass, "ConditionalOnClass");
+					String candidates = autoConfigurationMetadata
+							.get(autoConfigurationClass, "ConditionalOnClass");
 					if (candidates != null) {
 						outcomes[i - start] = getOutcome(candidates);
 					}
@@ -210,19 +210,33 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			return outcomes;
 		}
 
-		private ConditionOutcome getOutcome(Set<String> candidates) {
+		private ConditionOutcome getOutcome(String candidates) {
 			try {
-				List<String> missing = filter(candidates, ClassNameFilter.MISSING,
-						this.beanClassLoader);
-				if (!missing.isEmpty()) {
-					return ConditionOutcome.noMatch(
-							ConditionMessage.forCondition(ConditionalOnClass.class)
-									.didNotFind("required class", "required classes")
-									.items(Style.QUOTE, missing));
+				if (!candidates.contains(",")) {
+					return getOutcome(candidates, ClassNameFilter.MISSING,
+							this.beanClassLoader);
+				}
+				for (String candidate : StringUtils
+						.commaDelimitedListToStringArray(candidates)) {
+					ConditionOutcome outcome = getOutcome(candidate,
+							ClassNameFilter.MISSING, this.beanClassLoader);
+					if (outcome != null) {
+						return outcome;
+					}
 				}
 			}
 			catch (Exception ex) {
 				// We'll get another chance later
+			}
+			return null;
+		}
+
+		private ConditionOutcome getOutcome(String className,
+				ClassNameFilter classNameFilter, ClassLoader classLoader) {
+			if (classNameFilter.matches(className, classLoader)) {
+				return ConditionOutcome.noMatch(ConditionMessage
+						.forCondition(ConditionalOnClass.class)
+						.didNotFind("required class").items(Style.QUOTE, className));
 			}
 			return null;
 		}
