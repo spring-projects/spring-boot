@@ -161,8 +161,8 @@ public class FlywayAutoConfiguration {
 					flyway.setCallbacks(this.callbacks.toArray(new Callback[0]));
 				}
 				else if (this.callbacks.isEmpty()) {
-						flyway.setCallbacks(
-								this.flywayCallbacks.toArray(new FlywayCallback[0]));
+					flyway.setCallbacks(
+							this.flywayCallbacks.toArray(new FlywayCallback[0]));
 				}
 				else {
 					throw new IllegalStateException(
