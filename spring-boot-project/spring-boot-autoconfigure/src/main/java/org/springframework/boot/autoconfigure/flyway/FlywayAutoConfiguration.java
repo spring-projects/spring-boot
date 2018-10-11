@@ -156,13 +156,13 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			if (this.flywayCallbacks.isEmpty()) {
-				flyway.setCallbacks(this.callbacks.toArray(new Callback[0]));
-			}
-			else {
-				if (this.callbacks.isEmpty()) {
-					flyway.setCallbacks(
-							this.flywayCallbacks.toArray(new FlywayCallback[0]));
+			if (!this.callbacks.isEmpty() || !this.flywayCallbacks.isEmpty()) {
+				if (this.flywayCallbacks.isEmpty()) {
+					flyway.setCallbacks(this.callbacks.toArray(new Callback[0]));
+				}
+				else if (this.callbacks.isEmpty()) {
+						flyway.setCallbacks(
+								this.flywayCallbacks.toArray(new FlywayCallback[0]));
 				}
 				else {
 					throw new IllegalStateException(
