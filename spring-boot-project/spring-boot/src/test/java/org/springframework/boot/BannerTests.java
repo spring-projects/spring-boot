@@ -31,7 +31,6 @@ import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +45,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Michael Simons
+ * @author Artsiom Yudovin
  */
 public class BannerTests {
 
@@ -105,8 +105,7 @@ public class BannerTests {
 		application.setBanner(banner);
 		this.context = application.run();
 		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
-		assertThat(ReflectionTestUtils.getField(printedBanner, "banner"))
-				.isEqualTo(banner);
+		assertThat(printedBanner).hasFieldOrPropertyWithValue("banner", banner);
 		verify(banner).printBanner(any(Environment.class),
 				this.sourceClassCaptor.capture(), any(PrintStream.class));
 		reset(banner);
