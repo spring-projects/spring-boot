@@ -2327,11 +2327,11 @@ according to the type of the database (such as `db/migration/mysql` for MySQL). 
 of supported databases is available in
 {sc-spring-boot}/jdbc/DatabaseDriver.{sc-ext}[`DatabaseDriver`].
 
-See the Flyway class from flyway-core for details of available settings such as schemas
-and others. In addition, Spring Boot provides a small set of properties (in
-{sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`])
-that can be used to disable the migrations or switch off the location checking. Spring
-Boot calls `Flyway.migrate()` to perform the database migration. If you would like
+{sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
+provides most of Flyway's settings and a small set of additional properties that can be
+used to disable the migrations or switch off the location checking.
+
+Spring Boot calls `Flyway.migrate()` to perform the database migration. If you would like
 more control, provide a `@Bean` that implements
 {sc-spring-boot-autoconfigure}/flyway/FlywayMigrationStrategy.{sc-ext}[`FlywayMigrationStrategy`].
 

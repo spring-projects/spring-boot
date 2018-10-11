@@ -1440,17 +1440,17 @@
     },
     {
       "name": "spring.flyway.locations",
-      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
       "defaultValue": [
         "classpath:db/migration"
       ]
     },
     {
-      "name": "spring.flyway.sql-migration-suffix",
-      "deprecation": {
-        "replacement": "spring.flyway.sql-migration-suffixes",
-        "level": "warning"
-      }
+      "name": "spring.flyway.sql-migration-suffixes",
+      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "defaultValue": [
+        ".sql"
+      ]
     },
     {
       "name": "spring.git.properties",
