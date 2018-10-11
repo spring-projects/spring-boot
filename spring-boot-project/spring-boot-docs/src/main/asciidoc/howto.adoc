@@ -2329,7 +2329,9 @@ of supported databases is available in
 
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
 provides most of Flyway's settings and a small set of additional properties that can be
-used to disable the migrations or switch off the location checking.
+used to disable the migrations or switch off the location checking. If you need more
+control over the configuration, consider registering a `FlywayConfigurationCustomizer`
+bean.
 
 Spring Boot calls `Flyway.migrate()` to perform the database migration. If you would like
 more control, provide a `@Bean` that implements

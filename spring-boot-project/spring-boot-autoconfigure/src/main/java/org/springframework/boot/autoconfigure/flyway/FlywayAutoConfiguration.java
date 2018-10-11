@@ -116,6 +116,8 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
+		private final List<FlywayConfigurationCustomizer> configurationCustomizers;
+
 		private final List<Callback> callbacks;
 
 		private final List<FlywayCallback> flywayCallbacks;
@@ -125,6 +127,7 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
+				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<Callback> callbacks,
 				ObjectProvider<FlywayCallback> flywayCallbacks) {
 			this.properties = properties;
@@ -133,6 +136,8 @@ public class FlywayAutoConfiguration {
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
+			this.configurationCustomizers = fluentConfigurationCustomizers.orderedStream()
+					.collect(Collectors.toList());
 			this.callbacks = callbacks.orderedStream().collect(Collectors.toList());
 			this.flywayCallbacks = flywayCallbacks.orderedStream()
 					.collect(Collectors.toList());
@@ -145,6 +150,8 @@ public class FlywayAutoConfiguration {
 			checkLocationExists(dataSource);
 			configureProperties(configuration);
 			configureCallbacks(configuration);
+			this.configurationCustomizers
+					.forEach((customizer) -> customizer.customize(configuration));
 			Flyway flyway = configuration.load();
 			configureFlywayCallbacks(flyway);
 			return flyway;
