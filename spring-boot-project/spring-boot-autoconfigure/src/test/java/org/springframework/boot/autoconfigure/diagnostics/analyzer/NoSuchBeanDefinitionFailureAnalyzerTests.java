@@ -200,8 +200,8 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	public void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(QualifiedBeanConfiguration.class));
-		assertThat(analysis.getDescription()).contains(
-				"@org.springframework.beans.factory.annotation.Qualifier(value=alpha)");
+		assertThat(analysis.getDescription()).containsPattern(
+				"@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
 	}
 
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis,
