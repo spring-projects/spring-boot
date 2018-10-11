@@ -30,7 +30,6 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.lang.Nullable;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +42,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 public class CachingOperationInvokerAdvisorTests {
 
@@ -124,9 +124,8 @@ public class CachingOperationInvokerAdvisorTests {
 		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
 				parameters, this.invoker);
 		assertThat(advised).isInstanceOf(CachingOperationInvoker.class);
-		assertThat(ReflectionTestUtils.getField(advised, "invoker"))
-				.isEqualTo(this.invoker);
-		assertThat(ReflectionTestUtils.getField(advised, "timeToLive")).isEqualTo(100L);
+		assertThat(advised).hasFieldOrPropertyWithValue("invoker", this.invoker);
+		assertThat(advised).hasFieldOrPropertyWithValue("timeToLive", 100L);
 	}
 
 	private OperationParameters getParameters(String methodName,

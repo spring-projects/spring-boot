@@ -61,6 +61,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Dmytro Nosan
+ * @author Artsiom Yudovin
  */
 public class RestTemplateBuilderTests {
 
@@ -414,8 +415,8 @@ public class RestTemplateBuilderTests {
 							.getRequestFactory();
 					assertThat(actualRequestFactory)
 							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-					assertThat(ReflectionTestUtils.getField(actualRequestFactory,
-							"requestFactory")).isSameAs(requestFactory);
+					assertThat(actualRequestFactory).hasFieldOrPropertyWithValue(
+							"requestFactory", requestFactory);
 				}).build();
 	}
 
@@ -444,8 +445,7 @@ public class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setConnectTimeout(null).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(-1);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", -1);
 	}
 
 	@Test
@@ -453,8 +453,7 @@ public class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(null)
 				.build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(-1);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", -1);
 	}
 
 	@Test
@@ -480,8 +479,7 @@ public class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
 	}
 
 	@Test
@@ -489,8 +487,7 @@ public class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
 
 	@Test
@@ -520,8 +517,7 @@ public class RestTemplateBuilderTests {
 				.requestFactory(
 						() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setConnectTimeout(Duration.ofMillis(1234)).build();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
 	}
 
 	@Test
@@ -531,8 +527,7 @@ public class RestTemplateBuilderTests {
 				.requestFactory(
 						() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setReadTimeout(Duration.ofMillis(1234)).build();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
 
 	@Test
@@ -552,8 +547,7 @@ public class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
 	}
 
 	@Test
@@ -562,8 +556,7 @@ public class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
 				.build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {
