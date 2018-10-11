@@ -16,9 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.List;
+
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
@@ -27,9 +30,11 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import io.micrometer.core.instrument.config.MeterFilter;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -39,7 +44,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -68,8 +72,12 @@ public class MetricsAutoConfiguration {
 
 	@Bean
 	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ApplicationContext context) {
-		return new MeterRegistryPostProcessor(context);
+			ObjectProvider<List<MeterBinder>> meterBinders,
+			ObjectProvider<List<MeterFilter>> meterFilters,
+			ObjectProvider<List<MeterRegistryCustomizer<?>>> meterRegistryCustomizers,
+			ObjectProvider<MetricsProperties> metricsProperties) {
+		return new MeterRegistryPostProcessor(meterBinders, meterFilters,
+				meterRegistryCustomizers, metricsProperties);
 	}
 
 	@Bean
