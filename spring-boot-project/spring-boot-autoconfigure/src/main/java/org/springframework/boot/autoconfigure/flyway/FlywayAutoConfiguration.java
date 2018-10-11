@@ -149,7 +149,9 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
+			if (!this.flywayCallbacks.isEmpty()) {
+				flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
+			}
 			String[] locations = new LocationResolver(flyway.getDataSource())
 					.resolveLocations(this.properties.getLocations());
 			checkLocationExists(locations);
