@@ -200,20 +200,18 @@ public class MetricsProperties {
 		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
 
 		/**
-		 * The minimum value that this distribution summary is expected to observe.
-		 * Controls the number of buckets shipped by percentilesHistogram. Can be
-		 * specified as a long or as a Duration value (for timer meters, defaulting to ms
-		 * if no unit specified).
+		 * Minimum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
-		private final Map<String, ServiceLevelAgreementBoundary> minimumExpectedValue = new LinkedHashMap<>();
+		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
 
 		/**
-		 * The maximum value that this distribution summary is expected to observe.
-		 * Controls the number of buckets shipped by percentilesHistogram. Can be
-		 * specified as a long or as a Duration value (for timer meters, defaulting to ms
-		 * if no unit specified).
+		 * Maximum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
-		private final Map<String, ServiceLevelAgreementBoundary> maximumExpectedValue = new LinkedHashMap<>();
+		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
@@ -227,11 +225,11 @@ public class MetricsProperties {
 			return this.sla;
 		}
 
-		public Map<String, ServiceLevelAgreementBoundary> getMinimumExpectedValue() {
+		public Map<String, String> getMinimumExpectedValue() {
 			return this.minimumExpectedValue;
 		}
 
-		public Map<String, ServiceLevelAgreementBoundary> getMaximumExpectedValue() {
+		public Map<String, String> getMaximumExpectedValue() {
 			return this.maximumExpectedValue;
 		}
 

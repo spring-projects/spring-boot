@@ -88,9 +88,9 @@ public class PropertiesMeterFilter implements MeterFilter {
 				.percentiles(
 						lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
 				.sla(convertSla(id.getType(), lookup(distribution.getSla(), id, null)))
-				.minimumExpectedValue(convertSla(id.getType(),
+				.minimumExpectedValue(convertMeterValue(id.getType(),
 						lookup(distribution.getMinimumExpectedValue(), id, null)))
-				.maximumExpectedValue(convertSla(id.getType(),
+				.maximumExpectedValue(convertMeterValue(id.getType(),
 						lookup(distribution.getMaximumExpectedValue(), id, null)))
 				.build().merge(config);
 	}
@@ -105,8 +105,8 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return (converted.length != 0) ? converted : null;
 	}
 
-	private Long convertSla(Meter.Type meterType, ServiceLevelAgreementBoundary sla) {
-		return (sla != null) ? sla.getValue(meterType) : null;
+	private Long convertMeterValue(Meter.Type meterType, String value) {
+		return (value != null) ? MeterValue.valueOf(value).getValue(meterType) : null;
 	}
 
 	private <T> T lookup(Map<String, T> values, Id id, T defaultValue) {
