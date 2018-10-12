@@ -20,12 +20,15 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.function.Predicate;
 
+import org.springframework.core.io.ClassPathResource;
+
 /**
- * Test {@link URLClassLoader} that can filter the classes it can load.
+ * Test {@link URLClassLoader} that can filter the classes and resources it can load.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Roy Jacobs
  * @since 2.0.0
  */
 public class FilteredClassLoader extends URLClassLoader {
@@ -49,9 +52,18 @@ public class FilteredClassLoader extends URLClassLoader {
 	}
 
 	/**
+	 * Create a {@link FilteredClassLoader} that hides resources from the given packages.
+	 * @param hiddenResources the resources to hide
+	 */
+	public FilteredClassLoader(ClassPathResource... hiddenResources) {
+		this(ClassPathResourceFilter.of(hiddenResources));
+	}
+
+	/**
 	 * Create a {@link FilteredClassLoader} that filters based on the given predicate.
-	 * @param filters a set of filters to determine when a class name should be hidden. A
-	 * {@link Predicate#test(Object) result} of {@code true} indicates a filtered class.
+	 * @param filters a set of filters to determine when a class name or resource should
+	 * be hidden. A {@link Predicate#test(Object) result} of {@code true} indicates a
+	 * filtered class or resource.
 	 */
 	@SafeVarargs
 	public FilteredClassLoader(Predicate<String>... filters) {
@@ -68,6 +80,16 @@ public class FilteredClassLoader extends URLClassLoader {
 			}
 		}
 		return super.loadClass(name, resolve);
+	}
+
+	@Override
+	public URL getResource(String name) {
+		for (Predicate<String> filter : this.filters) {
+			if (filter.test(name)) {
+				return null;
+			}
+		}
+		return super.getResource(name);
 	}
 
 	/**
@@ -120,6 +142,34 @@ public class FilteredClassLoader extends URLClassLoader {
 
 		public static PackageFilter of(String... hiddenPackages) {
 			return new PackageFilter(hiddenPackages);
+		}
+
+	}
+
+	/**
+	 * Filter to restrict the resources that can be loaded.
+	 */
+	public static final class ClassPathResourceFilter implements Predicate<String> {
+
+		private final ClassPathResource[] hiddenResources;
+
+		private ClassPathResourceFilter(ClassPathResource[] hiddenResources) {
+			this.hiddenResources = hiddenResources;
+		}
+
+		@Override
+		public boolean test(String resourceName) {
+			for (ClassPathResource hiddenResource : this.hiddenResources) {
+				if (hiddenResource.getFilename() != null
+						&& resourceName.equals(hiddenResource.getPath())) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static ClassPathResourceFilter of(ClassPathResource... hiddenResources) {
+			return new ClassPathResourceFilter(hiddenResources);
 		}
 
 	}
