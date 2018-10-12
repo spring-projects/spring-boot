@@ -223,10 +223,15 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private void checkThatConnectorsHaveStarted() {
+		checkConnectorHasStarted(this.tomcat.getConnector());
 		for (Connector connector : this.tomcat.getService().findConnectors()) {
-			if (LifecycleState.FAILED.equals(connector.getState())) {
-				throw new ConnectorStartFailedException(connector.getPort());
-			}
+			checkConnectorHasStarted(connector);
+		}
+	}
+
+	private void checkConnectorHasStarted(Connector connector) {
+		if (LifecycleState.FAILED.equals(connector.getState())) {
+			throw new ConnectorStartFailedException(connector.getPort());
 		}
 	}
 
