@@ -154,9 +154,8 @@ public class JettyWebServer implements WebServer {
 					}
 				}
 				this.started = true;
-				JettyWebServer.logger
-						.info("Jetty started on port(s) " + getActualPortsDescription()
-								+ " with context path '" + getContextPath() + "'");
+				logger.info("Jetty started on port(s) " + getActualPortsDescription()
+						+ " with context path '" + getContextPath() + "'");
 			}
 			catch (WebServerException ex) {
 				stopSilently();
@@ -188,8 +187,7 @@ public class JettyWebServer implements WebServer {
 					connector);
 		}
 		catch (Exception ex) {
-			JettyWebServer.logger
-					.info("could not determine port ( " + ex.getMessage() + ")");
+			logger.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
 		}
 	}

@@ -51,19 +51,26 @@ class TomcatEmbeddedContext extends StandardContext {
 	}
 
 	public void deferredLoadOnStartup() throws LifecycleException {
-		// Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
-		// loader to create servlet instances in this phase. If they do that and then try
-		// to initialize them later the class loader may have changed, so wrap the call to
-		// loadOnStartup in what we think its going to be the main webapp classloader at
-		// runtime.
-		ClassLoader classLoader = getLoader().getClassLoader();
-		ClassLoader existingLoader = null;
-		if (classLoader != null) {
-			existingLoader = ClassUtils.overrideThreadContextClassLoader(classLoader);
-		}
-		try {
+		doWithThreadContextClassLoader(getLoader().getClassLoader(), () -> {
 			boolean started = super.loadOnStartup(findChildren());
 			Assert.state(started, "Unable to start embedded tomcat context " + getName());
+		});
+	}
+
+	/**
+	 * Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
+	 * loader to create servlet instances in this phase. If they do that and then try to
+	 * initialize them later the class loader may have changed, so wrap the call to
+	 * loadOnStartup in what we think its going to be the main webapp classloader at
+	 * runtime.
+	 * @param classLoader the class loader to use
+	 * @param code the code to run
+	 */
+	private void doWithThreadContextClassLoader(ClassLoader classLoader, Runnable code) {
+		ClassLoader existingLoader = (classLoader != null)
+				? ClassUtils.overrideThreadContextClassLoader(classLoader) : null;
+		try {
+			code.run();
 		}
 		finally {
 			if (existingLoader != null) {
