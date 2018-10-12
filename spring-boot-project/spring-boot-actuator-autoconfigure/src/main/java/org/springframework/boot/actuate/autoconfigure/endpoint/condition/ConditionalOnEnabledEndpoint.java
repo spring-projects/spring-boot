@@ -101,7 +101,7 @@ public @interface ConditionalOnEnabledEndpoint {
 	 * The endpoint type that should be checked. Inferred when the return type of the
 	 * {@code @Bean} method is either an {@link Endpoint} or an {@link EndpointExtension}.
 	 * @return the endpoint type to check
-	 * @since 2.1.0
+	 * @since 2.0.6
 	 */
 	Class<?> endpoint() default Void.class;
 
