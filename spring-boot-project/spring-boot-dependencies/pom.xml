@@ -181,7 +181,7 @@
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<saaj-impl.version>1.5.0</saaj-impl.version>
-		<thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
+		<thymeleaf.version>3.0.10.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
