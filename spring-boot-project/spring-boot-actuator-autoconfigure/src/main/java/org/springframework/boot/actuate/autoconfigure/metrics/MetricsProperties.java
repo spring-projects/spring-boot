@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
  *
  * @author Jon Schneider
+ * @author Alexander Abramov
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -198,6 +199,20 @@ public class MetricsProperties {
 		 */
 		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
 
+		/**
+		 * Minimum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
+
+		/**
+		 * Maximum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
+
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
 		}
@@ -208,6 +223,14 @@ public class MetricsProperties {
 
 		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
 			return this.sla;
+		}
+
+		public Map<String, String> getMinimumExpectedValue() {
+			return this.minimumExpectedValue;
+		}
+
+		public Map<String, String> getMaximumExpectedValue() {
+			return this.maximumExpectedValue;
 		}
 
 	}

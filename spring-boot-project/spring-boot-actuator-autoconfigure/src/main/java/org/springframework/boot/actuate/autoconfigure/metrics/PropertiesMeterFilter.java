@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
+ * @author Alexander Abramov
  * @since 2.0.0
  */
 public class PropertiesMeterFilter implements MeterFilter {
@@ -87,6 +88,10 @@ public class PropertiesMeterFilter implements MeterFilter {
 				.percentiles(
 						lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
 				.sla(convertSla(id.getType(), lookup(distribution.getSla(), id, null)))
+				.minimumExpectedValue(convertMeterValue(id.getType(),
+						lookup(distribution.getMinimumExpectedValue(), id, null)))
+				.maximumExpectedValue(convertMeterValue(id.getType(),
+						lookup(distribution.getMaximumExpectedValue(), id, null)))
 				.build().merge(config);
 	}
 
@@ -98,6 +103,10 @@ public class PropertiesMeterFilter implements MeterFilter {
 				.map((candidate) -> candidate.getValue(meterType))
 				.filter(Objects::nonNull).mapToLong(Long::longValue).toArray();
 		return (converted.length != 0) ? converted : null;
+	}
+
+	private Long convertMeterValue(Meter.Type meterType, String value) {
+		return (value != null) ? MeterValue.valueOf(value).getValue(meterType) : null;
 	}
 
 	private <T> T lookup(Map<String, T> values, Id id, T defaultValue) {
