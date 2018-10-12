@@ -16,7 +16,11 @@
 
 package org.springframework.boot.test.context;
 
+import java.net.URL;
+
 import org.junit.Test;
+
+import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -25,8 +29,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link FilteredClassLoader}.
  *
  * @author Phillip Webb
+ * @author Roy Jacobs
  */
 public class FilteredClassLoaderTests {
+
+	private static ClassPathResource TEST_RESOURCE = new ClassPathResource(
+			"org/springframework/boot/test/context/FilteredClassLoaderTestsResource.txt");
 
 	@Test
 	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound()
@@ -53,6 +61,24 @@ public class FilteredClassLoaderTests {
 		Class<?> loaded = classLoader.loadClass(getClass().getName());
 		assertThat(loaded.getName()).isEqualTo(getClass().getName());
 		classLoader.close();
+	}
+
+	@Test
+	public void loadResourceWhenFilteredOnResourceShouldReturnNotFound()
+			throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(TEST_RESOURCE)) {
+			final URL loaded = classLoader.getResource(TEST_RESOURCE.getPath());
+			assertThat(loaded).isNull();
+		}
+	}
+
+	@Test
+	public void loadResourceWhenNotFilteredShouldLoadResource() throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				(resourceName) -> false)) {
+			final URL loaded = classLoader.getResource(TEST_RESOURCE.getPath());
+			assertThat(loaded).isNotNull();
+		}
 	}
 
 }
