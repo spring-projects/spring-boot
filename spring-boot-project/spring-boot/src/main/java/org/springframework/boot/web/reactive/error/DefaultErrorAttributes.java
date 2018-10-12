@@ -94,14 +94,11 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
 		}
-
 		ResponseStatus responseStatus = AnnotatedElementUtils
 				.findMergedAnnotation(error.getClass(), ResponseStatus.class);
-
 		if (responseStatus != null) {
 			return responseStatus.code();
 		}
-
 		return HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
@@ -109,18 +106,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof WebExchangeBindException) {
 			return error.getMessage();
 		}
-
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-
 		ResponseStatus responseStatus = AnnotatedElementUtils
 				.findMergedAnnotation(error.getClass(), ResponseStatus.class);
-
 		if (responseStatus != null) {
 			return responseStatus.reason();
 		}
-
 		return error.getMessage();
 	}
 
