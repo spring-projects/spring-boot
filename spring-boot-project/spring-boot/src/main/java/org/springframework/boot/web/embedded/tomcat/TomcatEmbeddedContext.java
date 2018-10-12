@@ -16,13 +16,23 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Stream;
+
+import javax.servlet.ServletException;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Manager;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.ManagerBase;
 
-import org.springframework.util.Assert;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -52,9 +62,35 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	public void deferredLoadOnStartup() throws LifecycleException {
 		doWithThreadContextClassLoader(getLoader().getClassLoader(), () -> {
-			boolean started = super.loadOnStartup(findChildren());
-			Assert.state(started, "Unable to start embedded tomcat context " + getName());
+			getLoadOnStartupWrappers(findChildren()).forEach(this::load);
 		});
+	}
+
+	private Stream<Wrapper> getLoadOnStartupWrappers(Container[] children) {
+		Map<Integer, List<Wrapper>> grouped = new TreeMap<>();
+		for (Container child : children) {
+			Wrapper wrapper = (Wrapper) child;
+			int order = wrapper.getLoadOnStartup();
+			if (order >= 0) {
+				grouped.computeIfAbsent(order, ArrayList::new);
+				grouped.get(order).add(wrapper);
+			}
+		}
+		return grouped.values().stream().flatMap(List::stream);
+	}
+
+	private void load(Wrapper wrapper) {
+		try {
+			wrapper.load();
+		}
+		catch (ServletException ex) {
+			String message = sm.getString("standardContext.loadOnStartup.loadException",
+					getName(), wrapper.getName());
+			if (getComputedFailCtxIfServletStartFails()) {
+				throw new WebServerException(message, ex);
+			}
+			getLogger().error(message, StandardWrapper.getRootCause(ex));
+		}
 	}
 
 	/**

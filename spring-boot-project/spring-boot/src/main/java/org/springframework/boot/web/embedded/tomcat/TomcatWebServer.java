@@ -284,7 +284,9 @@ public class TomcatWebServer implements WebServer {
 			}
 		}
 		catch (Exception ex) {
-			logger.error("Cannot start connector: ", ex);
+			if (ex instanceof WebServerException) {
+				throw (WebServerException) ex;
+			}
 			throw new WebServerException("Unable to start embedded Tomcat connectors",
 					ex);
 		}
