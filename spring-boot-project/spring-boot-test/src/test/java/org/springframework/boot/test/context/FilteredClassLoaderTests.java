@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class FilteredClassLoaderTests {
 
 	private static ClassPathResource TEST_RESOURCE = new ClassPathResource(
-			"org/springframework/boot/test/context/FilteredClassLoaderTestResource.txt");
+			"org/springframework/boot/test/context/FilteredClassLoaderTestsResource.txt");
 
 	@Test
 	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound()
