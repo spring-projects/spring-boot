@@ -637,6 +637,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.consistency-level= # Queries consistency level.
 	spring.data.cassandra.contact-points=localhost # Cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
+	spring.data.cassandra.jmx-enabled=false # Whether to enable JMX reporting.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
