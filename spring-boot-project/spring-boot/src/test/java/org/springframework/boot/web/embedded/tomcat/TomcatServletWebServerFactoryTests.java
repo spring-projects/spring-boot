@@ -41,6 +41,7 @@ import org.apache.catalina.SessionIdGenerator;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
@@ -421,6 +422,35 @@ public class TomcatServletWebServerFactoryTests
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		assertThat(context.getUseHttpOnly()).isFalse();
+	}
+
+	@Test
+	public void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsTrue() {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.addContextCustomizers((context) -> {
+			if (context instanceof StandardContext) {
+				((StandardContext) context).setFailCtxIfServletStartFails(true);
+			}
+		});
+		this.webServer = factory.getWebServer((context) -> {
+			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
+		});
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(this.webServer::start);
+	}
+
+	@Test
+	public void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsFalse() {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.addContextCustomizers((context) -> {
+			if (context instanceof StandardContext) {
+				((StandardContext) context).setFailCtxIfServletStartFails(false);
+			}
+		});
+		this.webServer = factory.getWebServer((context) -> {
+			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
+		});
+		this.webServer.start();
 	}
 
 	@Override

@@ -1046,6 +1046,28 @@ public abstract class AbstractServletWebServerFactoryTests {
 		verify(listener).contextDestroyed(any(ServletContextEvent.class));
 	}
 
+	@Test
+	public void exceptionThrownOnLoadFailureIsRethrown() {
+		AbstractServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer((context) -> {
+			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
+		});
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(this.webServer::start)
+				.satisfies(this::wrapsFailingServletException);
+	}
+
+	private void wrapsFailingServletException(WebServerException ex) {
+		Throwable cause = ex.getCause();
+		while (cause != null) {
+			if (cause instanceof FailingServletException) {
+				return;
+			}
+			cause = cause.getCause();
+		}
+		fail("Exception did not wrap FailingServletException");
+	}
+
 	protected abstract void addConnector(int port,
 			AbstractServletWebServerFactory factory);
 
@@ -1340,6 +1362,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 			String hexSerialNumber = chain[0].getSerialNumber().toString(16);
 			boolean isMatch = hexSerialNumber.equals(this.serialNumber);
 			return super.isTrusted(chain, authType) && isMatch;
+		}
+
+	}
+
+	public static class FailingServlet extends HttpServlet {
+
+		@Override
+		public void init() throws ServletException {
+			throw new FailingServletException();
+		}
+
+	}
+
+	private static class FailingServletException extends RuntimeException {
+
+		FailingServletException() {
+			super("Init Failure");
 		}
 
 	}

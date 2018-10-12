@@ -14,33 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.autoconfigure.flyway;
 
-import org.springframework.core.Ordered;
-import org.springframework.web.filter.CharacterEncodingFilter;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 
 /**
- * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
+ * Callback interface that can be implemented by beans wishing to customize the flyway
+ * configuration.
  *
- * @author Phillip Webb
- * @since 2.0.0
+ * @author Stephane Nicoll
+ * @since 2.1.0
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements OrderedFilter {
-
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+@FunctionalInterface
+public interface FlywayConfigurationCustomizer {
 
 	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
+	 * Customize the flyway configuration.
+	 * @param configuration the {@link FluentConfiguration} to customize
 	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	void customize(FluentConfiguration configuration);
 
 }

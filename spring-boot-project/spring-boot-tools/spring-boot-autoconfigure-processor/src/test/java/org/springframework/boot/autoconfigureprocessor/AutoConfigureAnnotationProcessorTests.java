@@ -55,7 +55,7 @@ public class AutoConfigureAnnotationProcessorTests {
 				"org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration$Nested");
+						+ "TestClassConfiguration$Nested,org.springframework.foo");
 		assertThat(properties)
 				.containsKey("org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration");

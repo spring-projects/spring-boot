@@ -749,16 +749,23 @@ listings for Maven and Gradle:
 .Gradle
 [source,groovy,indent=0,subs="attributes"]
 ----
+	configurations {
+		developmentOnly
+		runtimeClasspath {
+			extendsFrom developmentOnly
+		}
+	}
 	dependencies {
-		compile("org.springframework.boot:spring-boot-devtools")
+		developmentOnly("org.springframework.boot:spring-boot-devtools")
 	}
 ----
 
 NOTE: Developer tools are automatically disabled when running a fully packaged
 application. If your application is launched from `java -jar` or if it is started from a
 special classloader, then it is considered a "`production application`". Flagging the
-dependency as optional in Maven or using `compileOnly` in Gradle is a best practice that
-prevents devtools from being transitively applied to other modules that use your project.
+dependency as optional in Maven or using a custom`developmentOnly` configuration in
+Gradle  (as shown above) is a best practice that prevents devtools from being transitively
+applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default. If you want to use a
 <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the

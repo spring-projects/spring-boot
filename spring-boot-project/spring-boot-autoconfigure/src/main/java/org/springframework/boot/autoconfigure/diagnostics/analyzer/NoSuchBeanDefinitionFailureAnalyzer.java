@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -89,11 +91,23 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		message.append(String.format("%s required %s that could not be found.%n",
 				(description != null) ? description : "A component",
 				getBeanDescription(cause)));
-		for (AutoConfigurationResult result : autoConfigurationResults) {
-			message.append(String.format("\t- %s%n", result));
+		List<Annotation> injectionAnnotations = findInjectionAnnotations(rootFailure);
+		if (!injectionAnnotations.isEmpty()) {
+			message.append(String
+					.format("%nThe injection point has the following annotations:%n"));
+			for (Annotation injectionAnnotation : injectionAnnotations) {
+				message.append(String.format("\t- %s%n", injectionAnnotation));
+			}
 		}
-		for (UserConfigurationResult result : userConfigurationResults) {
-			message.append(String.format("\t- %s%n", result));
+		if (!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty()) {
+			message.append(String.format(
+					"%nThe following candidates were found but could not be injected:%n"));
+			for (AutoConfigurationResult result : autoConfigurationResults) {
+				message.append(String.format("\t- %s%n", result));
+			}
+			for (UserConfigurationResult result : userConfigurationResults) {
+				message.append(String.format("\t- %s%n", result));
+			}
 		}
 		String action = String.format("Consider %s %s in your configuration.",
 				(!autoConfigurationResults.isEmpty()
@@ -164,7 +178,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 			if (!conditionAndOutcome.getOutcome().isMatch()) {
 				for (MethodMetadata method : methods) {
 					results.add(new AutoConfigurationResult(method,
-							conditionAndOutcome.getOutcome(), source.isMethod()));
+							conditionAndOutcome.getOutcome()));
 				}
 			}
 		}
@@ -179,9 +193,19 @@ class NoSuchBeanDefinitionFailureAnalyzer
 				String message = String.format("auto-configuration '%s' was excluded",
 						ClassUtils.getShortName(excludedClass));
 				results.add(new AutoConfigurationResult(method,
-						new ConditionOutcome(false, message), false));
+						new ConditionOutcome(false, message)));
 			}
 		}
+	}
+
+	private List<Annotation> findInjectionAnnotations(Throwable failure) {
+		UnsatisfiedDependencyException unsatisfiedDependencyException = findCause(failure,
+				UnsatisfiedDependencyException.class);
+		if (unsatisfiedDependencyException == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(
+				unsatisfiedDependencyException.getInjectionPoint().getAnnotations());
 	}
 
 	private class Source {
@@ -202,10 +226,6 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 		public String getMethodName() {
 			return this.methodName;
-		}
-
-		public boolean isMethod() {
-			return this.methodName != null;
 		}
 
 	}
@@ -295,26 +315,17 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 		private final ConditionOutcome conditionOutcome;
 
-		private final boolean methodEvaluated;
-
 		AutoConfigurationResult(MethodMetadata methodMetadata,
-				ConditionOutcome conditionOutcome, boolean methodEvaluated) {
+				ConditionOutcome conditionOutcome) {
 			this.methodMetadata = methodMetadata;
 			this.conditionOutcome = conditionOutcome;
-			this.methodEvaluated = methodEvaluated;
 		}
 
 		@Override
 		public String toString() {
-			if (this.methodEvaluated) {
-				return String.format("Bean method '%s' in '%s' not loaded because %s",
-						this.methodMetadata.getMethodName(),
-						ClassUtils.getShortName(
-								this.methodMetadata.getDeclaringClassName()),
-						this.conditionOutcome.getMessage());
-			}
-			return String.format("Bean method '%s' not loaded because %s",
+			return String.format("Bean method '%s' in '%s' not loaded because %s",
 					this.methodMetadata.getMethodName(),
+					ClassUtils.getShortName(this.methodMetadata.getDeclaringClassName()),
 					this.conditionOutcome.getMessage());
 		}
 

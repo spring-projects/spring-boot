@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.Test;
+import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
@@ -63,6 +64,7 @@ import static org.mockito.Mockito.verify;
 public class Neo4jDataAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
 			.withUserConfiguration(TestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
 					TransactionAutoConfiguration.class));
@@ -120,6 +122,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void usesAutoConfigurationPackageToPickUpDomainTypes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(context, cityPackage);
 		context.register(Neo4jDataAutoConfiguration.class,
@@ -170,6 +173,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void providesASingletonScopedBookmarkManagerIfNecessaryAndPossible() {
 		new ApplicationContextRunner()
+				.withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
 				.withUserConfiguration(TestConfiguration.class,
 						BookmarkManagementEnabledConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
@@ -183,7 +187,9 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void doesNotProvideABookmarkManagerIfNotPossible() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(Caffeine.class))
+		this.contextRunner
+				.withClassLoader(
+						new FilteredClassLoader(Caffeine.class, EmbeddedDriver.class))
 				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(BookmarkManager.class));

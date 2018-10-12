@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
@@ -71,6 +72,7 @@ public class CodecsAutoConfiguration {
 	static class LoggingCodecConfiguration {
 
 		@Bean
+		@Order(0)
 		public CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
 			return (configurer) -> configurer.defaultCodecs()
 					.enableLoggingRequestDetails(properties.isLogRequestDetails());

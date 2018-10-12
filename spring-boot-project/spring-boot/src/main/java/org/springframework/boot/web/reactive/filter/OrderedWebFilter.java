@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.web.reactive.filter;
 
 import org.springframework.core.Ordered;
-import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.server.WebFilter;
 
 /**
- * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
+ * An {@link Ordered} {@link org.springframework.web.server.WebFilter}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 2.1.0
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements OrderedFilter {
-
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+public interface OrderedWebFilter extends WebFilter, Ordered {
 
 	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
+	 * Filters that wrap the request should be ordered less than or equal to this.
 	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
 
 }

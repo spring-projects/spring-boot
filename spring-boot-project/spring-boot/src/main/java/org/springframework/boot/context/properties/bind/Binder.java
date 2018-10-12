@@ -214,7 +214,8 @@ public class Binder {
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
 		context.clearConfigurationProperty();
 		try {
-			if (!handler.onStart(name, target, context)) {
+			target = handler.onStart(name, target, context);
+			if (target == null) {
 				return null;
 			}
 			Object bound = bindObject(name, target, handler, context,
@@ -465,6 +466,11 @@ public class Binder {
 
 		public BindConverter getConverter() {
 			return this.converter;
+		}
+
+		@Override
+		public Binder getBinder() {
+			return Binder.this;
 		}
 
 		@Override

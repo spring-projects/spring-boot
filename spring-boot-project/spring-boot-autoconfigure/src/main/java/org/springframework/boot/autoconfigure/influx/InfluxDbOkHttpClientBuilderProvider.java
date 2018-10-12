@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.autoconfigure.influx;
 
-import org.springframework.core.Ordered;
-import org.springframework.web.filter.CharacterEncodingFilter;
+import java.util.function.Supplier;
+
+import okhttp3.OkHttpClient;
+import org.influxdb.InfluxDB;
 
 /**
- * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
+ * Provide the {@link OkHttpClient.Builder} to use to customize the auto-configured
+ * {@link InfluxDB} instance.
  *
- * @author Phillip Webb
- * @since 2.0.0
+ * @author Stephane Nicoll
+ * @since 2.1.0
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements OrderedFilter {
-
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+@FunctionalInterface
+public interface InfluxDbOkHttpClientBuilderProvider
+		extends Supplier<OkHttpClient.Builder> {
 
 }

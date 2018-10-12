@@ -87,8 +87,7 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private void initialize() throws WebServerException {
-		TomcatWebServer.logger
-				.info("Tomcat initialized with port(s): " + getPortsDescription(false));
+		logger.info("Tomcat initialized with port(s): " + getPortsDescription(false));
 		synchronized (this.monitor) {
 			try {
 				addInstanceIdToEngineName();
@@ -202,9 +201,8 @@ public class TomcatWebServer implements WebServer {
 				}
 				checkThatConnectorsHaveStarted();
 				this.started = true;
-				TomcatWebServer.logger
-						.info("Tomcat started on port(s): " + getPortsDescription(true)
-								+ " with context path '" + getContextPath() + "'");
+				logger.info("Tomcat started on port(s): " + getPortsDescription(true)
+						+ " with context path '" + getContextPath() + "'");
 			}
 			catch (ConnectorStartFailedException ex) {
 				stopSilently();
@@ -223,10 +221,15 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private void checkThatConnectorsHaveStarted() {
+		checkConnectorHasStarted(this.tomcat.getConnector());
 		for (Connector connector : this.tomcat.getService().findConnectors()) {
-			if (LifecycleState.FAILED.equals(connector.getState())) {
-				throw new ConnectorStartFailedException(connector.getPort());
-			}
+			checkConnectorHasStarted(connector);
+		}
+	}
+
+	private void checkConnectorHasStarted(Connector connector) {
+		if (LifecycleState.FAILED.equals(connector.getState())) {
+			throw new ConnectorStartFailedException(connector.getPort());
 		}
 	}
 
@@ -268,7 +271,7 @@ public class TomcatWebServer implements WebServer {
 			connector.getProtocolHandler().stop();
 		}
 		catch (Exception ex) {
-			TomcatWebServer.logger.error("Cannot pause connector: ", ex);
+			logger.error("Cannot pause connector: ", ex);
 		}
 	}
 
@@ -281,7 +284,9 @@ public class TomcatWebServer implements WebServer {
 			}
 		}
 		catch (Exception ex) {
-			TomcatWebServer.logger.error("Cannot start connector: ", ex);
+			if (ex instanceof WebServerException) {
+				throw (WebServerException) ex;
+			}
 			throw new WebServerException("Unable to start embedded Tomcat connectors",
 					ex);
 		}
