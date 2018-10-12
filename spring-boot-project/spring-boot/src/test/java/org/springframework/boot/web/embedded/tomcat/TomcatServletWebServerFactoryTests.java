@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -41,6 +42,7 @@ import org.apache.catalina.SessionIdGenerator;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
@@ -423,6 +425,21 @@ public class TomcatServletWebServerFactoryTests
 		assertThat(context.getUseHttpOnly()).isFalse();
 	}
 
+	@Test
+	public void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsTrue() {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.addContextCustomizers((context) -> {
+			if (context instanceof StandardContext) {
+				((StandardContext) context).setFailCtxIfServletStartFails(true);
+			}
+		});
+		this.webServer = factory.getWebServer((context) -> {
+			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
+		});
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(this.webServer::start);
+	}
+
 	@Override
 	protected JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
@@ -469,6 +486,15 @@ public class TomcatServletWebServerFactoryTests
 			int blockedPort) {
 		assertThat(ex).isInstanceOf(ConnectorStartFailedException.class);
 		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	static class FailingServlet extends HttpServlet {
+
+		@Override
+		public void init() throws ServletException {
+			throw new RuntimeException("Init Failure");
+		}
+
 	}
 
 }
