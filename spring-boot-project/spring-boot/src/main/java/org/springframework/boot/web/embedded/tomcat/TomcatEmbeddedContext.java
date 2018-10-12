@@ -24,7 +24,6 @@ import org.apache.catalina.session.ManagerBase;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatWebServer} to support deferred
@@ -37,20 +36,10 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	private TomcatStarter starter;
 
-	private final boolean overrideLoadOnStart;
-
-	TomcatEmbeddedContext() {
-		this.overrideLoadOnStart = ReflectionUtils
-				.findMethod(StandardContext.class, "loadOnStartup", Container[].class)
-				.getReturnType() == boolean.class;
-	}
-
 	@Override
 	public boolean loadOnStartup(Container[] children) {
-		if (this.overrideLoadOnStart) {
-			return true;
-		}
-		return super.loadOnStartup(children);
+		// deferred until later (see deferredLoadOnStartup)
+		return true;
 	}
 
 	@Override
@@ -73,14 +62,8 @@ class TomcatEmbeddedContext extends StandardContext {
 			existingLoader = ClassUtils.overrideThreadContextClassLoader(classLoader);
 		}
 		try {
-			if (this.overrideLoadOnStart) {
-				// Earlier versions of Tomcat used a version that returned void. If that
-				// version is used our overridden loadOnStart method won't have been
-				// called and the original will have already run.
-				boolean started = super.loadOnStartup(findChildren());
-				Assert.state(started,
-						"Unable to start embedded tomcat context " + getName());
-			}
+			boolean started = super.loadOnStartup(findChildren());
+			Assert.state(started, "Unable to start embedded tomcat context " + getName());
 		}
 		finally {
 			if (existingLoader != null) {
