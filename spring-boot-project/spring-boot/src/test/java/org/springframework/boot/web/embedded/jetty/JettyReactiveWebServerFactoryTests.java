@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,6 +98,22 @@ public class JettyReactiveWebServerFactoryTests
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	public void useServerResources() throws Exception {
+		JettyResourceFactory resourceFactory = new JettyResourceFactory();
+		resourceFactory.afterPropertiesSet();
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setResourceFactory(resourceFactory);
+		JettyWebServer webServer = (JettyWebServer) factory
+				.getWebServer(new EchoHandler());
+		webServer.start();
+		Connector connector = webServer.getServer().getConnectors()[0];
+		assertThat(connector.getByteBufferPool())
+				.isEqualTo(resourceFactory.getByteBufferPool());
+		assertThat(connector.getExecutor()).isEqualTo(resourceFactory.getExecutor());
+		assertThat(connector.getScheduler()).isEqualTo(resourceFactory.getScheduler());
 	}
 
 }

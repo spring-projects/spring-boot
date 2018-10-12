@@ -3211,6 +3211,35 @@ instead.
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
 that you can see how to set things up.
 
+[[boot-features-reactive-server]]
+=== Embedded Reactive Server Support
+
+Spring Boot includes support for the following embedded reactive web servers:
+Reactor Netty, Tomcat, Jetty, and Undertow. Most developers use the appropriate “Starter”
+to obtain a fully configured instance. By default, the embedded server listens for HTTP
+requests on port 8080.
+
+[[boot-features-reactive-server-resources]]
+=== Reactive Server Resources Configuration
+
+When auto-configuring a Reactor Netty or Jetty server, Spring Boot will create specific
+beans that will provide HTTP resources to the server instance: `ReactorResourceFactory`
+or `JettyResourceFactory`.
+
+By default, those resources will be also shared with the Reactor Netty and Jetty clients
+for optimal performances, given:
+
+* the same technology is used for server and client
+* the client instance is built using the `WebClient.Builder` bean auto-configured by
+Spring Boot
+
+Developers can override the resource configuration for Jetty and Reactor Netty by providing
+a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to
+both clients and servers.
+
+You can learn more about the resource configuration on the client side in the
+<<boot-features-webclient-runtime, WebClient Runtime section>>.
+
 
 
 [[boot-features-security]]
@@ -5955,19 +5984,23 @@ The following code shows a typical example:
 
 [[boot-features-webclient-runtime]]
 === WebClient Runtime
-Spring Boot will auto-detect which `ClientHttpConnector` to drive `WebClient`, depending
-on the libraries available on the application classpath.
+Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient`,
+depending on the libraries available on the application classpath. For now, Reactor
+Netty and Jetty RS client are supported.
 
-The `spring-boot-starter-webflux` depends on `io.projectreactor.netty:reactor-netty` by
-default, which brings both server and client implementations. If you choose to use Jetty
+The `spring-boot-starter-webflux` starter depends on `io.projectreactor.netty:reactor-netty`
+by default, which brings both server and client implementations. If you choose to use Jetty
 as a reactive server instead, you should add a dependency on the Jetty Reactive HTTP
-client library, `org.eclipse.jetty:jetty-reactive-httpclient`, because it will
-automatically share HTTP resources with the server.
+client library, `org.eclipse.jetty:jetty-reactive-httpclient`. Using the same technology
+for server and client has it advantages, as it will automatically share HTTP resources
+between client and server.
 
-Developers can override this choice by defining their own `ClientHttpConnector` bean;
-in this case, and depending on your HTTP client library of choice, you should also
-define a resource factory bean that manages the HTTP resources for that client.
-For example, a `ReactorResourceFactory` bean for the Reactor Netty client.
+Developers can override the resource configuration for Jetty and Reactor Netty by providing
+a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to
+both clients and servers.
+
+If you wish to override that choice for the client, you can define your own
+`ClientHttpConnector` bean and have full control over the client configuration.
 
 You can learn more about the
 {spring-reference}web-reactive.html#webflux-client-builder[`WebClient` configuration
