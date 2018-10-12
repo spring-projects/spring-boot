@@ -211,7 +211,7 @@ public class ServerProperties
 		if (getJspServlet() != null) {
 			container.setJspServlet(getJspServlet());
 		}
-		if (getCompression() != null) {
+		if (getCompression() != null && getCompression().getEnabled()) {
 			container.setCompression(getCompression());
 		}
 		container.setServerHeader(getServerHeader());
