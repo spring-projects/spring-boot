@@ -3063,7 +3063,7 @@ If a specific order is required, you should avoid configuring a Filter that read
 request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character
 encoding configuration of your application. If a Servlet filter wraps the request, it
 should be configured with an order that is less than or equal to
-`FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
+`OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 
 
 

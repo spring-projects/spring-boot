@@ -16,31 +16,21 @@
 
 package org.springframework.boot.web.servlet.filter;
 
+import javax.servlet.Filter;
+
 import org.springframework.core.Ordered;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
- * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
+ * An {@link Ordered} {@link javax.servlet.Filter}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 2.1.0
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements OrderedFilter {
-
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+public interface OrderedFilter extends Filter, Ordered {
 
 	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
+	 * Filters that wrap the servlet request should be ordered less than or equal to this.
 	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
 
 }

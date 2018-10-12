@@ -7,6 +7,8 @@
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
 	<suppress files=".+Application\.java" checks="HideUtilityClassConstructor" />
 	<suppress files="SignalUtils\.java" checks="IllegalImport" />
+	<suppress files="OrderedFilter\.java" checks="InterfaceIsType" />
+	<suppress files="OrderedWebFilter\.java" checks="InterfaceIsType" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />

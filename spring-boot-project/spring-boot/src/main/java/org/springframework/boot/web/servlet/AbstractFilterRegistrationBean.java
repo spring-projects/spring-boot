@@ -48,7 +48,10 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 
 	/**
 	 * Filters that wrap the servlet request should be ordered less than or equal to this.
+	 * @deprecated since 2.1.0 in favor of
+	 * {@code OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER}
 	 */
+	@Deprecated
 	protected static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
 
 	private final Log logger = LogFactory.getLog(getClass());
