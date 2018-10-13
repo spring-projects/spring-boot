@@ -33,7 +33,7 @@ public interface ConfigurationPropertiesBindHandlerAdvisor {
 	/**
 	 * Apply additional functionality to the source bind handler.
 	 * @param bindHandler the source bind handler
-	 * @return a replacement bind hander that delegates to the source and provides
+	 * @return a replacement bind handler that delegates to the source and provides
 	 * additional functionality
 	 */
 	BindHandler apply(BindHandler bindHandler);

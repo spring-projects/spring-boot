@@ -41,7 +41,7 @@ public interface BindHandler {
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @return {@code true} if binding should proceed
+	 * @return the actual item that should be used for binding (may be {@code null})
 	 */
 	default <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
 			BindContext context) {
