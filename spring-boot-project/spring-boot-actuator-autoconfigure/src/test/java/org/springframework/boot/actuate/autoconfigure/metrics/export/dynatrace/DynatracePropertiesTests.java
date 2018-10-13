@@ -32,7 +32,7 @@ public class DynatracePropertiesTests extends StepRegistryPropertiesTests {
 	@Override
 	public void defaultValuesAreConsistent() {
 		DynatraceProperties properties = new DynatraceProperties();
-		DynatraceConfig config = DynatraceConfig.DEFAULT;
+		DynatraceConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getTechnologyType()).isEqualTo(config.technologyType());
 	}
