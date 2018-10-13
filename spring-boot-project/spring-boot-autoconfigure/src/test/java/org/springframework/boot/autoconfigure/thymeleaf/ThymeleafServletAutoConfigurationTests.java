@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
@@ -48,6 +49,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.ViewResolver;
@@ -181,6 +185,23 @@ public class ThymeleafServletAutoConfigurationTests {
 		Context attrs = new Context(Locale.UK);
 		String result = engine.process("java8time-dialect", attrs);
 		assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
+	}
+
+	@Test
+	public void useSecurityDialect() {
+		load(BaseConfiguration.class);
+		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		WebContext attrs = new WebContext(new MockHttpServletRequest(),
+				new MockHttpServletResponse(), new MockServletContext());
+		try {
+			SecurityContextHolder.setContext(new SecurityContextImpl(
+					new TestingAuthenticationToken("alice", "admin")));
+			String result = engine.process("security-dialect", attrs);
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>\n");
+		}
+		finally {
+			SecurityContextHolder.clearContext();
+		}
 	}
 
 	@Test

@@ -27,8 +27,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxContext;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -42,6 +45,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -188,6 +195,22 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		Context attrs = new Context(Locale.UK);
 		String result = engine.process("java8time-dialect", attrs);
 		assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
+	}
+
+	@Test
+	public void useSecurityDialect() {
+		load(BaseConfiguration.class);
+		ISpringWebFluxTemplateEngine engine = this.context
+				.getBean(ISpringWebFluxTemplateEngine.class);
+		MockServerWebExchange exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
+		exchange.getAttributes().put(
+				SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
+				new SecurityContextImpl(
+						new TestingAuthenticationToken("alice", "admin")));
+		IContext attrs = new SpringWebFluxContext(exchange);
+		String result = engine.process("security-dialect", attrs);
+		assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>\n");
 	}
 
 	@Test
