@@ -1350,6 +1350,7 @@ monitoring systems, including:
 - <<production-ready-metrics-export-dynatrace,Elastic>>
 - <<production-ready-metrics-export-ganglia,Ganglia>>
 - <<production-ready-metrics-export-graphite,Graphite>>
+- <<production-ready-metrics-export-humio,Humio>>
 - <<production-ready-metrics-export-influx,Influx>>
 - <<production-ready-metrics-export-jmx,JMX>>
 - <<production-ready-metrics-export-kairos,KairosDB>>
@@ -1540,6 +1541,28 @@ are provided unless you define your own:
 public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
 	return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
 }
+----
+
+
+
+[[production-ready-metrics-export-humio]]
+==== Humio
+By default, the Humio registry pushes metrics to https://cloud.humio.com periodically. To
+export metrics to SaaS {micrometer-registry-documentation}/humio[Humio], your API token
+must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.humio.api-token=YOUR_TOKEN
+----
+
+You should also configure one or more tags to identify the data source to which metrics
+will be pushed:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.humio.tags.alpha=a
+	management.metrics.export.humio.tags.bravo=b
 ----
 
 
