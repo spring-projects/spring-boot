@@ -23,7 +23,7 @@ import org.springframework.http.codec.CodecConfigurer;
  * client and/or server with a {@link CodecConfigurer}.
  *
  * @author Brian Clozel
- * @since 2.0
+ * @since 2.0.0
  */
 @FunctionalInterface
 public interface CodecCustomizer {
