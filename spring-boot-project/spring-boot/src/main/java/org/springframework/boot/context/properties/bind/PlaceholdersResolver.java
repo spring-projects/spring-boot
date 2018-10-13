@@ -35,9 +35,9 @@ public interface PlaceholdersResolver {
 	PlaceholdersResolver NONE = (value) -> value;
 
 	/**
-	 * Called to resolve any place holders in the given value.
+	 * Called to resolve any placeholders in the given value.
 	 * @param value the source value
-	 * @return a value with place holders resolved
+	 * @return a value with placeholders resolved
 	 */
 	Object resolvePlaceholders(Object value);
 

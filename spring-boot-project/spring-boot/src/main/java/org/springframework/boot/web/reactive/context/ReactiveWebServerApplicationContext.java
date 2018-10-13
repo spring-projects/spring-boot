@@ -189,7 +189,7 @@ public class ReactiveWebServerApplicationContext
 
 	/**
 	 * Internal class used to manage the server and the {@link HttpHandler}, taking care
-	 * not to initialize the hander too early.
+	 * not to initialize the handler too early.
 	 */
 	static final class ServerManager implements HttpHandler {
 

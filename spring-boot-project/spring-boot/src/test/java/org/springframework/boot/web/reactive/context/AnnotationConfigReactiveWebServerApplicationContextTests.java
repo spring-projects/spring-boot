@@ -135,7 +135,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		}
 
 		@Bean
-		public HttpHandler httpHander() {
+		public HttpHandler httpHandler() {
 			if (!addedListener) {
 				throw new RuntimeException(
 						"Handlers should be added after listeners, we're being initialized too early!");

@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * A container object to return result of a {@link Binder} bind operation. May contain
+ * A container object to return the result of a {@link Binder} bind operation. May contain
  * either a successfully bound object or an empty result.
  *
  * @param <T> the result type

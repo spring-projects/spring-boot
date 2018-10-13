@@ -97,7 +97,7 @@ public class Binder {
 	/**
 	 * Create a new {@link Binder} instance for the specified sources.
 	 * @param sources the sources used for binding
-	 * @param placeholdersResolver strategy to resolve any property place-holders
+	 * @param placeholdersResolver strategy to resolve any property placeholders
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources,
 			PlaceholdersResolver placeholdersResolver) {
@@ -107,7 +107,7 @@ public class Binder {
 	/**
 	 * Create a new {@link Binder} instance for the specified sources.
 	 * @param sources the sources used for binding
-	 * @param placeholdersResolver strategy to resolve any property place-holders
+	 * @param placeholdersResolver strategy to resolve any property placeholders
 	 * @param conversionService the conversion service to convert values (or {@code null}
 	 * to use {@link ApplicationConversionService})
 	 */
@@ -120,7 +120,7 @@ public class Binder {
 	/**
 	 * Create a new {@link Binder} instance for the specified sources.
 	 * @param sources the sources used for binding
-	 * @param placeholdersResolver strategy to resolve any property place-holders
+	 * @param placeholdersResolver strategy to resolve any property placeholders
 	 * @param conversionService the conversion service to convert values (or {@code null}
 	 * to use {@link ApplicationConversionService})
 	 * @param propertyEditorInitializer initializer used to configure the property editors
@@ -141,7 +141,7 @@ public class Binder {
 	}
 
 	/**
-	 * Bind the specified target {@link Class} using this binders
+	 * Bind the specified target {@link Class} using this binder's
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target class
@@ -154,7 +154,7 @@ public class Binder {
 	}
 
 	/**
-	 * Bind the specified target {@link Bindable} using this binders
+	 * Bind the specified target {@link Bindable} using this binder's
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
@@ -167,7 +167,7 @@ public class Binder {
 	}
 
 	/**
-	 * Bind the specified target {@link Bindable} using this binders
+	 * Bind the specified target {@link Bindable} using this binder's
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
@@ -180,7 +180,7 @@ public class Binder {
 	}
 
 	/**
-	 * Bind the specified target {@link Bindable} using this binders
+	 * Bind the specified target {@link Bindable} using this binder's
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
@@ -193,7 +193,7 @@ public class Binder {
 	}
 
 	/**
-	 * Bind the specified target {@link Bindable} using this binders
+	 * Bind the specified target {@link Bindable} using this binder's
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
