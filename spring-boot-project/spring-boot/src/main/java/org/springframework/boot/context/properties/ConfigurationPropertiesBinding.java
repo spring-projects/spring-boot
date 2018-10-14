@@ -30,10 +30,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
  *
  * @author Dave Syer
  */
-@Qualifier
+@Qualifier(ConfigurationPropertiesBinding.VALUE)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurationPropertiesBinding {
+
+	/**
+	 * Concrete value for the <code>@Qualifier</code>.
+	 */
+	String VALUE = "org.springframework.boot.context.properties.ConfigurationPropertiesBinding";
 
 }
