@@ -73,8 +73,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 		this.load((id) -> null, (id) -> id, configuration, consumer);
 	}
 
-	private void load(Function<String, Long> timeToLive, PathMapper endpointPathMapper,
-			Class<?> configuration,
+	private void load(Function<EndpointId, Long> timeToLive,
+			PathMapper endpointPathMapper, Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);

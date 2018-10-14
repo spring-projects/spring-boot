@@ -51,7 +51,7 @@ public class CachingOperationInvokerAdvisorTests {
 	private OperationInvoker invoker;
 
 	@Mock
-	private Function<String, Long> timeToLive;
+	private Function<EndpointId, Long> timeToLive;
 
 	private CachingOperationInvokerAdvisor advisor;
 
@@ -85,7 +85,7 @@ public class CachingOperationInvokerAdvisorTests {
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
 				OperationType.READ, parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
-		verify(this.timeToLive).apply("foo");
+		verify(this.timeToLive).apply(EndpointId.of("foo"));
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class CachingOperationInvokerAdvisorTests {
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
 				OperationType.READ, parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
-		verify(this.timeToLive).apply("foo");
+		verify(this.timeToLive).apply(EndpointId.of("foo"));
 	}
 
 	@Test

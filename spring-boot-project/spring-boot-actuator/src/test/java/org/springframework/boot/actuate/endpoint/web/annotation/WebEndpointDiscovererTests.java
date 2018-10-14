@@ -257,8 +257,9 @@ public class WebEndpointDiscovererTests {
 		this.load((id) -> null, (id) -> id, configuration, consumer);
 	}
 
-	private void load(Function<String, Long> timeToLive, PathMapper endpointPathMapper,
-			Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
+	private void load(Function<EndpointId, Long> timeToLive,
+			PathMapper endpointPathMapper, Class<?> configuration,
+			Consumer<WebEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
 		try {

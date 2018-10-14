@@ -306,7 +306,7 @@ public class JmxEndpointDiscovererTests {
 		load(configuration, (id) -> null, consumer);
 	}
 
-	private void load(Class<?> configuration, Function<String, Long> timeToLive,
+	private void load(Class<?> configuration, Function<EndpointId, Long> timeToLive,
 			Consumer<JmxEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration)) {

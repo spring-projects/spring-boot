@@ -500,12 +500,12 @@ public class EndpointDiscovererTests {
 		}
 
 		TestEndpointDiscoverer(ApplicationContext applicationContext,
-				Function<String, Long> timeToLive) {
+				Function<EndpointId, Long> timeToLive) {
 			this(applicationContext, timeToLive, Collections.emptyList());
 		}
 
 		TestEndpointDiscoverer(ApplicationContext applicationContext,
-				Function<String, Long> timeToLive,
+				Function<EndpointId, Long> timeToLive,
 				Collection<EndpointFilter<TestExposableEndpoint>> filters) {
 			this(applicationContext, new ConversionServiceParameterValueMapper(),
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
