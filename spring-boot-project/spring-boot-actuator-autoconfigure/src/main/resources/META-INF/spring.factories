@@ -12,7 +12,6 @@ org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoin
 org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseHealthIndicatorAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseReactiveHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchClientHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchJestHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration,\
