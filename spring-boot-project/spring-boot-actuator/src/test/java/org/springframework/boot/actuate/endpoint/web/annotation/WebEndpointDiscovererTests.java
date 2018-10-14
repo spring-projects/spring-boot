@@ -182,18 +182,19 @@ public class WebEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenHasCacheWithTtlShouldCacheReadOperationWithTtlValue() {
-		load((id) -> 500L, (id) -> id, TestEndpointConfiguration.class, (discoverer) -> {
-			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(
-					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
-			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
-			assertThat(endpoint.getOperations()).hasSize(1);
-			WebOperation operation = endpoint.getOperations().iterator().next();
-			Object invoker = ReflectionTestUtils.getField(operation, "invoker");
-			assertThat(invoker).isInstanceOf(CachingOperationInvoker.class);
-			assertThat(((CachingOperationInvoker) invoker).getTimeToLive())
-					.isEqualTo(500);
-		});
+		load((id) -> 500L, (id) -> id.toString(), TestEndpointConfiguration.class,
+				(discoverer) -> {
+					Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(
+							discoverer.getEndpoints());
+					assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+					ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+					assertThat(endpoint.getOperations()).hasSize(1);
+					WebOperation operation = endpoint.getOperations().iterator().next();
+					Object invoker = ReflectionTestUtils.getField(operation, "invoker");
+					assertThat(invoker).isInstanceOf(CachingOperationInvoker.class);
+					assertThat(((CachingOperationInvoker) invoker).getTimeToLive())
+							.isEqualTo(500);
+				});
 	}
 
 	@Test
@@ -245,7 +246,7 @@ public class WebEndpointDiscovererTests {
 	}
 
 	private void load(Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
-		this.load((id) -> null, (id) -> id, configuration, consumer);
+		this.load((id) -> null, (id) -> id.toString(), configuration, consumer);
 	}
 
 	private void load(Function<EndpointId, Long> timeToLive,

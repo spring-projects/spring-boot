@@ -55,25 +55,10 @@ public class JmxEndpointDiscoverer
 	}
 
 	@Override
-	@Deprecated
-	protected ExposableJmxEndpoint createEndpoint(Object endpointBean, String id,
-			boolean enabledByDefault, Collection<JmxOperation> operations) {
-		return createEndpoint(endpointBean, EndpointId.of(id), enabledByDefault,
-				operations);
-	}
-
-	@Override
 	protected ExposableJmxEndpoint createEndpoint(Object endpointBean, EndpointId id,
 			boolean enabledByDefault, Collection<JmxOperation> operations) {
 		return new DiscoveredJmxEndpoint(this, endpointBean, id, enabledByDefault,
 				operations);
-	}
-
-	@Override
-	@Deprecated
-	protected JmxOperation createOperation(String endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		return createOperation(EndpointId.of(endpointId), operationMethod, invoker);
 	}
 
 	@Override

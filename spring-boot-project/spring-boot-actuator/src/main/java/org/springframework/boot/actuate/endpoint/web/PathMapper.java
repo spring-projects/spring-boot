@@ -33,40 +33,15 @@ public interface PathMapper {
 	 * Resolve the root path for the endpoint with the specified {@code endpointId}.
 	 * @param endpointId the id of an endpoint
 	 * @return the path of the endpoint
-	 * @since 2.0.6
 	 */
-	default String getRootPath(EndpointId endpointId) {
-		return getRootPath((endpointId != null) ? endpointId.toString() : null);
-	}
-
-	/**
-	 * Resolve the root path for the endpoint with the specified {@code endpointId}.
-	 * @param endpointId the id of an endpoint
-	 * @return the path of the endpoint
-	 * @deprecated since 2.0.6 in favor of {@link #getRootPath(EndpointId)}
-	 */
-	@Deprecated
-	String getRootPath(String endpointId);
+	String getRootPath(EndpointId endpointId);
 
 	/**
 	 * Returns an {@link PathMapper} that uses the endpoint ID as the path.
 	 * @return an {@link PathMapper} that uses the lowercase endpoint ID as the path
 	 */
 	static PathMapper useEndpointId() {
-		return new PathMapper() {
-
-			@Override
-			@Deprecated
-			public String getRootPath(String endpointId) {
-				return getRootPath(EndpointId.of(endpointId));
-			}
-
-			@Override
-			public String getRootPath(EndpointId endpointId) {
-				return endpointId.toLowerCaseString();
-			}
-
-		};
+		return (id) -> id.toLowerCaseString();
 
 	}
 

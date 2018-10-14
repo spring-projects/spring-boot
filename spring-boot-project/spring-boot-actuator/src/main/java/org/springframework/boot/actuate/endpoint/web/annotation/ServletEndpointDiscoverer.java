@@ -67,26 +67,11 @@ public class ServletEndpointDiscoverer
 	}
 
 	@Override
-	@Deprecated
-	protected ExposableServletEndpoint createEndpoint(Object endpointBean, String id,
-			boolean enabledByDefault, Collection<Operation> operations) {
-		return createEndpoint(endpointBean, EndpointId.of(id), enabledByDefault,
-				operations);
-	}
-
-	@Override
 	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id,
 			boolean enabledByDefault, Collection<Operation> operations) {
 		String rootPath = this.endpointPathMapper.getRootPath(id);
 		return new DiscoveredServletEndpoint(this, endpointBean, id, rootPath,
 				enabledByDefault);
-	}
-
-	@Override
-	@Deprecated
-	protected Operation createOperation(String endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		return createOperation(EndpointId.of(endpointId), operationMethod, invoker);
 	}
 
 	@Override

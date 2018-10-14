@@ -68,26 +68,11 @@ public class ControllerEndpointDiscoverer
 	}
 
 	@Override
-	@Deprecated
-	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, String id,
-			boolean enabledByDefault, Collection<Operation> operations) {
-		return createEndpoint(endpointBean, (id != null) ? EndpointId.of(id) : null,
-				enabledByDefault, operations);
-	}
-
-	@Override
 	protected ExposableControllerEndpoint createEndpoint(Object endpointBean,
 			EndpointId id, boolean enabledByDefault, Collection<Operation> operations) {
 		String rootPath = this.endpointPathMapper.getRootPath(id);
 		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath,
 				enabledByDefault);
-	}
-
-	@Override
-	@Deprecated
-	protected Operation createOperation(String endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		return createOperation(EndpointId.of(endpointId), operationMethod, invoker);
 	}
 
 	@Override

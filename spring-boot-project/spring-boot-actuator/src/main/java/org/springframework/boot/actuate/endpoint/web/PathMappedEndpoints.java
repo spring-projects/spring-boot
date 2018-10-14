@@ -90,19 +90,6 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * endpoint cannot be found.
 	 * @param endpointId the endpoint ID
 	 * @return the root path or {@code null}
-	 * @deprecated since 2.0.6 in favor of {@link #getRootPath(EndpointId)}
-	 */
-	@Deprecated
-	public String getRootPath(String endpointId) {
-		return getRootPath(EndpointId.of(endpointId));
-	}
-
-	/**
-	 * Return the root path for the endpoint with the given ID or {@code null} if the
-	 * endpoint cannot be found.
-	 * @param endpointId the endpoint ID
-	 * @return the root path or {@code null}
-	 * @since 2.0.6
 	 */
 	public String getRootPath(EndpointId endpointId) {
 		PathMappedEndpoint endpoint = getEndpoint(endpointId);
@@ -114,19 +101,6 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * endpoint cannot be found.
 	 * @param endpointId the endpoint ID
 	 * @return the full path or {@code null}
-	 * @deprecated since 2.0.6 in favor of {@link #getPath(EndpointId)}
-	 */
-	@Deprecated
-	public String getPath(String endpointId) {
-		return getPath(EndpointId.of(endpointId));
-	}
-
-	/**
-	 * Return the full path for the endpoint with the given ID or {@code null} if the
-	 * endpoint cannot be found.
-	 * @param endpointId the endpoint ID
-	 * @return the full path or {@code null}
-	 * @since 2.0.6
 	 */
 	public String getPath(EndpointId endpointId) {
 		return getPath(getEndpoint(endpointId));
@@ -153,19 +127,6 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * endpoint cannot be found.
 	 * @param endpointId the endpoint ID
 	 * @return the path mapped endpoint or {@code null}
-	 * @deprecated since 2.0.6 in favor of {@link #getEndpoint(EndpointId)}
-	 */
-	@Deprecated
-	public PathMappedEndpoint getEndpoint(String endpointId) {
-		return getEndpoint(EndpointId.of(endpointId));
-	}
-
-	/**
-	 * Return the {@link PathMappedEndpoint} with the given ID or {@code null} if the
-	 * endpoint cannot be found.
-	 * @param endpointId the endpoint ID
-	 * @return the path mapped endpoint or {@code null}
-	 * @since 2.0.6
 	 */
 	public PathMappedEndpoint getEndpoint(EndpointId endpointId) {
 		return this.endpoints.get(endpointId);

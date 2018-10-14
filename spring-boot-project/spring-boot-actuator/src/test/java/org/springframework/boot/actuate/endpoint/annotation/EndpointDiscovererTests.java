@@ -263,8 +263,8 @@ public class EndpointDiscovererTests {
 	public void getEndpointsShouldApplyFilters() {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedExposableEndpoint> filter = (endpoint) -> {
-				String id = endpoint.getId();
-				return !id.equals("specialized");
+				EndpointId id = endpoint.getEndpointId();
+				return !id.equals(EndpointId.of("specialized"));
 			};
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(
 					context, Collections.singleton(filter));
@@ -520,12 +520,6 @@ public class EndpointDiscovererTests {
 		}
 
 		@Override
-		protected TestExposableEndpoint createEndpoint(Object endpointBean, String id,
-				boolean enabledByDefault, Collection<TestOperation> operations) {
-			throw new IllegalStateException();
-		}
-
-		@Override
 		protected TestExposableEndpoint createEndpoint(Object endpointBean, EndpointId id,
 				boolean enabledByDefault, Collection<TestOperation> operations) {
 			return new TestExposableEndpoint(this, endpointBean, id, enabledByDefault,
@@ -533,7 +527,7 @@ public class EndpointDiscovererTests {
 		}
 
 		@Override
-		protected TestOperation createOperation(String endpointId,
+		protected TestOperation createOperation(EndpointId endpointId,
 				DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 			return new TestOperation(operationMethod, invoker);
 		}
@@ -561,13 +555,6 @@ public class EndpointDiscovererTests {
 
 		@Override
 		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean,
-				String id, boolean enabledByDefault,
-				Collection<SpecializedOperation> operations) {
-			throw new IllegalStateException();
-		}
-
-		@Override
-		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean,
 				EndpointId id, boolean enabledByDefault,
 				Collection<SpecializedOperation> operations) {
 			return new SpecializedExposableEndpoint(this, endpointBean, id,
@@ -575,7 +562,7 @@ public class EndpointDiscovererTests {
 		}
 
 		@Override
-		protected SpecializedOperation createOperation(String endpointId,
+		protected SpecializedOperation createOperation(EndpointId endpointId,
 				DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 			return new SpecializedOperation(operationMethod, invoker);
 		}

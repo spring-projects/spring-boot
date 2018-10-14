@@ -69,26 +69,11 @@ public class WebEndpointDiscoverer
 	}
 
 	@Override
-	@Deprecated
-	protected ExposableWebEndpoint createEndpoint(Object endpointBean, String id,
-			boolean enabledByDefault, Collection<WebOperation> operations) {
-		return createEndpoint(endpointBean, EndpointId.of(id), enabledByDefault,
-				operations);
-	}
-
-	@Override
 	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id,
 			boolean enabledByDefault, Collection<WebOperation> operations) {
 		String rootPath = this.endpointPathMapper.getRootPath(id);
 		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath,
 				enabledByDefault, operations);
-	}
-
-	@Override
-	@Deprecated
-	protected WebOperation createOperation(String endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		return createOperation(EndpointId.of(endpointId), operationMethod, invoker);
 	}
 
 	@Override

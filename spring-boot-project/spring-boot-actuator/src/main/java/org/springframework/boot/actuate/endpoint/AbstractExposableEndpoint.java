@@ -44,21 +44,6 @@ public abstract class AbstractExposableEndpoint<O extends Operation>
 	 * @param id the endpoint id
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
-	 * @deprecated since 2.0.6 in favor of
-	 * {@link #AbstractExposableEndpoint(EndpointId, boolean, Collection)}
-	 */
-	@Deprecated
-	public AbstractExposableEndpoint(String id, boolean enabledByDefault,
-			Collection<? extends O> operations) {
-		this(EndpointId.of(id), enabledByDefault, operations);
-	}
-
-	/**
-	 * Create a new {@link AbstractExposableEndpoint} instance.
-	 * @param id the endpoint id
-	 * @param enabledByDefault if the endpoint is enabled by default
-	 * @param operations the endpoint operations
-	 * @since 2.0.6
 	 */
 	public AbstractExposableEndpoint(EndpointId id, boolean enabledByDefault,
 			Collection<? extends O> operations) {
@@ -70,8 +55,8 @@ public abstract class AbstractExposableEndpoint<O extends Operation>
 	}
 
 	@Override
-	public String getId() {
-		return this.id.toString();
+	public EndpointId getEndpointId() {
+		return this.id;
 	}
 
 	@Override

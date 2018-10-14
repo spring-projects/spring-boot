@@ -340,26 +340,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
 	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
-	 * @since 2.0.6
 	 */
-	protected E createEndpoint(Object endpointBean, EndpointId id,
-			boolean enabledByDefault, Collection<O> operations) {
-		return createEndpoint(endpointBean, (id != null) ? id.toString() : null,
-				enabledByDefault, operations);
-	}
-
-	/**
-	 * Factory method called to create the {@link ExposableEndpoint endpoint}.
-	 * @param endpointBean the source endpoint bean
-	 * @param id the ID of the endpoint
-	 * @param enabledByDefault if the endpoint is enabled by default
-	 * @param operations the endpoint operations
-	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
-	 * @deprecated Since 2.0.6 in favor of
-	 * {@link #createEndpoint(Object, EndpointId, boolean, Collection)}
-	 */
-	@Deprecated
-	protected abstract E createEndpoint(Object endpointBean, String id,
+	protected abstract E createEndpoint(Object endpointBean, EndpointId id,
 			boolean enabledByDefault, Collection<O> operations);
 
 	/**
@@ -368,25 +350,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param operationMethod the operation method
 	 * @param invoker the invoker to use
 	 * @return a created operation
-	 * @since 2.0.6
 	 */
-	protected O createOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		return createOperation((endpointId != null) ? endpointId.toString() : null,
-				operationMethod, invoker);
-	}
-
-	/**
-	 * Factory method to create an {@link Operation endpoint operation}.
-	 * @param endpointId the endpoint id
-	 * @param operationMethod the operation method
-	 * @param invoker the invoker to use
-	 * @return a created operation
-	 * @deprecated since 2.0.6 in favor of
-	 * {@link #createOperation(EndpointId, DiscoveredOperationMethod, OperationInvoker)}
-	 */
-	@Deprecated
-	protected abstract O createOperation(String endpointId,
+	protected abstract O createOperation(EndpointId endpointId,
 			DiscoveredOperationMethod operationMethod, OperationInvoker invoker);
 
 	/**

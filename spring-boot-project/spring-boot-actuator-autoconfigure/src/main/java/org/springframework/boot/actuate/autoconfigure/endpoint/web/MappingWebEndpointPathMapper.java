@@ -39,12 +39,6 @@ class MappingWebEndpointPathMapper implements PathMapper {
 	}
 
 	@Override
-	@Deprecated
-	public String getRootPath(String endpointId) {
-		return getRootPath(EndpointId.of(endpointId));
-	}
-
-	@Override
 	public String getRootPath(EndpointId endpointId) {
 		return this.pathMapping.getOrDefault(endpointId, endpointId.toLowerCaseString());
 	}

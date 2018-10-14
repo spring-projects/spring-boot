@@ -223,13 +223,6 @@ public class DiscoveredOperationsFactoryTests {
 			return invoker;
 		}
 
-		@Override
-		@Deprecated
-		public OperationInvoker apply(String endpointId, OperationType operationType,
-				OperationParameters parameters, OperationInvoker invoker) {
-			throw new IllegalStateException();
-		}
-
 		public EndpointId getEndpointId() {
 			return this.endpointId;
 		}

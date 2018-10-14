@@ -80,7 +80,7 @@ public class CloudFoundryWebEndpointDiscovererTests {
 
 	private void load(Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		this.load((id) -> null, (id) -> id, configuration, consumer);
+		this.load((id) -> null, (id) -> id.toString(), configuration, consumer);
 	}
 
 	private void load(Function<EndpointId, Long> timeToLive,
