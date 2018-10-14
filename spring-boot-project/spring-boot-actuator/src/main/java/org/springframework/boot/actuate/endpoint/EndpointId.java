@@ -87,4 +87,14 @@ public final class EndpointId {
 		return new EndpointId(value);
 	}
 
+	/**
+	 * Factory method to create a new {@link EndpointId} from a property value. Is more
+	 * lenient that {@link #of(String)} to allow for common "relaxed" property variants.
+	 * @param value the property value to convert
+	 * @return an {@link EndpointId} instance
+	 */
+	public static EndpointId fromPropertyValue(String value) {
+		return new EndpointId(value.replace("-", ""));
+	}
+
 }

@@ -147,6 +147,12 @@ public class ExposeExcludePropertyEndpointFilterTests {
 		assertThat(match(EndpointId.of("buz"))).isFalse();
 	}
 
+	@Test
+	public void matchWhenMixedCaseShouldMatch() {
+		setupFilter("foo-bar", "");
+		assertThat(match(EndpointId.of("fooBar"))).isTrue();
+	}
+
 	private void setupFilter(String include, String exclude) {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("foo.include", include);
