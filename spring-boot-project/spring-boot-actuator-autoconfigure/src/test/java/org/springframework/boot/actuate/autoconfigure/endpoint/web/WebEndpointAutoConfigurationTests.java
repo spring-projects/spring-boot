@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
@@ -65,7 +66,7 @@ public class WebEndpointAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(PathMapper.class);
 					String pathMapping = context.getBean(PathMapper.class)
-							.getRootPath("health");
+							.getRootPath(EndpointId.of("health"));
 					assertThat(pathMapping).isEqualTo("healthcheck");
 				});
 	}

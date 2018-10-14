@@ -136,7 +136,7 @@ public class JmxEndpointExporter
 	}
 
 	private String getEndpointDescription(ExposableJmxEndpoint endpoint) {
-		return "endpoint '" + endpoint.getId() + "'";
+		return "endpoint '" + endpoint.getEndpointId() + "'";
 	}
 
 }

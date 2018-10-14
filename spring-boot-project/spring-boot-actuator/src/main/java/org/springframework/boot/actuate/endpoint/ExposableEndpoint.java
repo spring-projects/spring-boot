@@ -31,8 +31,19 @@ public interface ExposableEndpoint<O extends Operation> {
 	/**
 	 * Returns the id of the endpoint.
 	 * @return the id
+	 * @deprecated since 2.0.6 in favor of {@link #getEndpointId()}
 	 */
+	@Deprecated
 	String getId();
+
+	/**
+	 * Return the endpoint ID.
+	 * @return the endpoint ID
+	 * @since 2.0.6
+	 */
+	default EndpointId getEndpointId() {
+		return EndpointId.of(getId());
+	}
 
 	/**
 	 * Returns if the endpoint is enabled by default.

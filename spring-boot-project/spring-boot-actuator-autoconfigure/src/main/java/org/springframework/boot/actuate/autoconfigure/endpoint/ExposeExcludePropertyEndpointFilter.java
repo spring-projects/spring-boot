@@ -110,7 +110,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 	}
 
 	private boolean contains(Set<String> items, ExposableEndpoint<?> endpoint) {
-		return items.contains(endpoint.getId().toLowerCase(Locale.ENGLISH));
+		return items.contains(endpoint.getEndpointId().toLowerCaseString());
 	}
 
 }

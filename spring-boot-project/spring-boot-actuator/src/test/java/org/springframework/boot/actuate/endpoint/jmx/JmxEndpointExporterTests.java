@@ -190,9 +190,8 @@ public class JmxEndpointExporterTests {
 		@Override
 		public ObjectName getObjectName(ExposableJmxEndpoint endpoint)
 				throws MalformedObjectNameException {
-			return (endpoint != null)
-					? new ObjectName("boot:type=Endpoint,name=" + endpoint.getId())
-					: null;
+			return (endpoint != null) ? new ObjectName(
+					"boot:type=Endpoint,name=" + endpoint.getEndpointId()) : null;
 		}
 
 	}

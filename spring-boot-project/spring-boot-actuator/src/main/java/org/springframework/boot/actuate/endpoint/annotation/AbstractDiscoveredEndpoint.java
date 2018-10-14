@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.annotation;
 import java.util.Collection;
 
 import org.springframework.boot.actuate.endpoint.AbstractExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.core.style.ToStringCreator;
@@ -46,9 +47,27 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation>
 	 * @param id the ID of the endpoint
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
+	 * @deprecated since 2.0.6 in favor of
+	 * {@link #AbstractDiscoveredEndpoint(EndpointDiscoverer, Object, EndpointId, boolean, Collection)}
 	 */
+	@Deprecated
 	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer,
 			Object endpointBean, String id, boolean enabledByDefault,
+			Collection<? extends O> operations) {
+		this(discoverer, endpointBean, EndpointId.of(id), enabledByDefault, operations);
+	}
+
+	/**
+	 * Create a new {@link AbstractDiscoveredEndpoint} instance.
+	 * @param discoverer the discoverer that discovered the endpoint
+	 * @param endpointBean the primary source bean
+	 * @param id the ID of the endpoint
+	 * @param enabledByDefault if the endpoint is enabled by default
+	 * @param operations the endpoint operations
+	 * @since 2.0.6
+	 */
+	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer,
+			Object endpointBean, EndpointId id, boolean enabledByDefault,
 			Collection<? extends O> operations) {
 		super(id, enabledByDefault, operations);
 		Assert.notNull(discoverer, "Discoverer must not be null");

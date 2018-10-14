@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 
 /**
@@ -35,8 +36,14 @@ class MappingWebEndpointPathMapper implements PathMapper {
 	}
 
 	@Override
+	@Deprecated
 	public String getRootPath(String endpointId) {
-		return this.pathMapping.getOrDefault(endpointId, endpointId);
+		return getRootPath(EndpointId.of(endpointId));
+	}
+
+	@Override
+	public String getRootPath(EndpointId endpointId) {
+		return this.pathMapping.getOrDefault(endpointId, endpointId.toLowerCaseString());
 	}
 
 }

@@ -52,7 +52,8 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 			throws MalformedObjectNameException {
 		StringBuilder builder = new StringBuilder(this.properties.getDomain());
 		builder.append(":type=Endpoint");
-		builder.append(",name=" + StringUtils.capitalize(endpoint.getId()));
+		builder.append(
+				",name=" + StringUtils.capitalize(endpoint.getEndpointId().toString()));
 		String baseName = builder.toString();
 		if (this.mBeanServer != null && hasMBean(baseName)) {
 			builder.append(",context=" + this.contextId);

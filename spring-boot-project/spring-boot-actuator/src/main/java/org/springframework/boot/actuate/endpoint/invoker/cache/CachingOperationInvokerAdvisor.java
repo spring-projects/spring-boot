@@ -40,6 +40,7 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 	}
 
 	@Override
+	@Deprecated
 	public OperationInvoker apply(String endpointId, OperationType operationType,
 			OperationParameters parameters, OperationInvoker invoker) {
 		if (operationType == OperationType.READ && !hasMandatoryParameter(parameters)) {
