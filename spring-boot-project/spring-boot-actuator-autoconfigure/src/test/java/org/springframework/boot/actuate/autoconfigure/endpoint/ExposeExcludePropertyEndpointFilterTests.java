@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.mock.env.MockEnvironment;
@@ -79,43 +80,43 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	@Test
 	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndInDefaultShouldMatch() {
 		setupFilter("", "");
-		assertThat(match("def")).isTrue();
+		assertThat(match(EndpointId.of("def"))).isTrue();
 	}
 
 	@Test
 	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndNotInDefaultShouldNotMatch() {
 		setupFilter("", "");
-		assertThat(match("bar")).isFalse();
+		assertThat(match(EndpointId.of("bar"))).isFalse();
 	}
 
 	@Test
 	public void matchWhenExposeMatchesAndExcludeIsEmptyShouldMatch() {
 		setupFilter("bar", "");
-		assertThat(match("bar")).isTrue();
+		assertThat(match(EndpointId.of("bar"))).isTrue();
 	}
 
 	@Test
 	public void matchWhenExposeDoesNotMatchAndExcludeIsEmptyShouldNotMatch() {
 		setupFilter("bar", "");
-		assertThat(match("baz")).isFalse();
+		assertThat(match(EndpointId.of("baz"))).isFalse();
 	}
 
 	@Test
 	public void matchWhenExposeMatchesAndExcludeMatchesShouldNotMatch() {
 		setupFilter("bar,baz", "baz");
-		assertThat(match("baz")).isFalse();
+		assertThat(match(EndpointId.of("baz"))).isFalse();
 	}
 
 	@Test
 	public void matchWhenExposeMatchesAndExcludeDoesNotMatchShouldMatch() {
 		setupFilter("bar,baz", "buz");
-		assertThat(match("baz")).isTrue();
+		assertThat(match(EndpointId.of("baz"))).isTrue();
 	}
 
 	@Test
 	public void matchWhenExposeMatchesWithDifferentCaseShouldMatch() {
 		setupFilter("bar", "");
-		assertThat(match("bAr")).isTrue();
+		assertThat(match(EndpointId.of("bAr"))).isTrue();
 	}
 
 	@Test
@@ -125,23 +126,29 @@ public class ExposeExcludePropertyEndpointFilterTests {
 		environment.setProperty("foo.exclude", "");
 		this.filter = new ExposeExcludePropertyEndpointFilter<>(
 				DifferentTestExposableWebEndpoint.class, environment, "foo");
-		assertThat(match("baz")).isTrue();
+		assertThat(match(EndpointId.of("baz"))).isTrue();
 	}
 
 	@Test
 	public void matchWhenIncludeIsAsteriskShouldMatchAll() {
 		setupFilter("*", "buz");
-		assertThat(match("bar")).isTrue();
-		assertThat(match("baz")).isTrue();
-		assertThat(match("buz")).isFalse();
+		assertThat(match(EndpointId.of("bar"))).isTrue();
+		assertThat(match(EndpointId.of("baz"))).isTrue();
+		assertThat(match(EndpointId.of("buz"))).isFalse();
 	}
 
 	@Test
 	public void matchWhenExcludeIsAsteriskShouldMatchNone() {
 		setupFilter("bar,baz,buz", "*");
-		assertThat(match("bar")).isFalse();
-		assertThat(match("baz")).isFalse();
-		assertThat(match("buz")).isFalse();
+		assertThat(match(EndpointId.of("bar"))).isFalse();
+		assertThat(match(EndpointId.of("baz"))).isFalse();
+		assertThat(match(EndpointId.of("buz"))).isFalse();
+	}
+
+	@Test
+	public void matchWhenMixedCaseShouldMatch() {
+		setupFilter("foo-bar", "");
+		assertThat(match(EndpointId.of("fooBar"))).isTrue();
 	}
 
 	private void setupFilter(String include, String exclude) {
@@ -153,9 +160,9 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private boolean match(String id) {
+	private boolean match(EndpointId id) {
 		ExposableEndpoint<?> endpoint = mock(TestExposableWebEndpoint.class);
-		given(endpoint.getId()).willReturn(id);
+		given(endpoint.getEndpointId()).willReturn(id);
 		return ((EndpointFilter) this.filter).match(endpoint);
 	}
 

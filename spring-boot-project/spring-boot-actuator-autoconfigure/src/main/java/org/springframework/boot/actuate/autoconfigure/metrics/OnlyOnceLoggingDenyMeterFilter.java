@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
@@ -29,8 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
- * {@link MeterFilter} to log only once a warning message and deny a {@link Meter}
- * {@link Id}.
+ * {@link MeterFilter} to log only once a warning message and deny a {@link Id Meter.Id}.
  *
  * @author Jon Schneider
  * @author Dmytro Nosan

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -66,7 +67,8 @@ public class ControllerEndpointDiscovererTests {
 							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getId()).isEqualTo("testcontroller");
+					assertThat(endpoint.getEndpointId())
+							.isEqualTo(EndpointId.of("testcontroller"));
 					assertThat(endpoint.getController())
 							.isInstanceOf(TestControllerEndpoint.class);
 					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
@@ -83,7 +85,8 @@ public class ControllerEndpointDiscovererTests {
 							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getId()).isEqualTo("testcontroller");
+					assertThat(endpoint.getEndpointId())
+							.isEqualTo(EndpointId.of("testcontroller"));
 					assertThat(endpoint.getController())
 							.isInstanceOf(TestProxyControllerEndpoint.class);
 					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
@@ -98,7 +101,8 @@ public class ControllerEndpointDiscovererTests {
 							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
+					assertThat(endpoint.getEndpointId())
+							.isEqualTo(EndpointId.of("testrestcontroller"));
 					assertThat(endpoint.getController())
 							.isInstanceOf(TestRestControllerEndpoint.class);
 				}));
@@ -114,7 +118,8 @@ public class ControllerEndpointDiscovererTests {
 							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
+					assertThat(endpoint.getEndpointId())
+							.isEqualTo(EndpointId.of("testrestcontroller"));
 					assertThat(endpoint.getController())
 							.isInstanceOf(TestProxyRestControllerEndpoint.class);
 					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
@@ -127,9 +132,11 @@ public class ControllerEndpointDiscovererTests {
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableControllerEndpoint> endpoints = discoverer
 							.getEndpoints();
-					List<String> ids = endpoints.stream().map(ExposableEndpoint::getId)
+					List<EndpointId> ids = endpoints.stream()
+							.map(ExposableEndpoint::getEndpointId)
 							.collect(Collectors.toList());
-					assertThat(ids).containsOnly("testcontroller", "testrestcontroller");
+					assertThat(ids).containsOnly(EndpointId.of("testcontroller"),
+							EndpointId.of("testrestcontroller"));
 				}));
 	}
 

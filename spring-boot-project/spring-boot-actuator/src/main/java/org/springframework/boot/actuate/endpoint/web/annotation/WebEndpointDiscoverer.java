@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.annotation;
 import java.util.Collection;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -68,7 +69,15 @@ public class WebEndpointDiscoverer
 	}
 
 	@Override
+	@Deprecated
 	protected ExposableWebEndpoint createEndpoint(Object endpointBean, String id,
+			boolean enabledByDefault, Collection<WebOperation> operations) {
+		return createEndpoint(endpointBean, EndpointId.of(id), enabledByDefault,
+				operations);
+	}
+
+	@Override
+	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id,
 			boolean enabledByDefault, Collection<WebOperation> operations) {
 		String rootPath = this.endpointPathMapper.getRootPath(id);
 		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath,
@@ -76,7 +85,14 @@ public class WebEndpointDiscoverer
 	}
 
 	@Override
+	@Deprecated
 	protected WebOperation createOperation(String endpointId,
+			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
+		return createOperation(EndpointId.of(endpointId), operationMethod, invoker);
+	}
+
+	@Override
+	protected WebOperation createOperation(EndpointId endpointId,
 			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		String rootPath = this.endpointPathMapper.getRootPath(endpointId);
 		WebOperationRequestPredicate requestPredicate = this.requestPredicateFactory

@@ -35,6 +35,7 @@ import java.util.function.Function;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -125,10 +126,11 @@ public class EndpointDiscovererTests {
 	public void getEndpointsWhenHasSubclassedEndpointShouldReturnEndpoint() {
 		load(TestEndpointSubclassConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context);
-			Map<String, TestExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test");
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get("test"));
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+			Map<Method, TestOperation> operations = mapOperations(
+					endpoints.get(EndpointId.of("test")));
 			assertThat(operations).hasSize(5);
 			assertThat(operations).containsKeys(testEndpointMethods());
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(
@@ -151,10 +153,11 @@ public class EndpointDiscovererTests {
 		load(TestEndpointConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context,
 					(endpointId) -> 0L);
-			Map<String, TestExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test");
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get("test"));
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+			Map<Method, TestOperation> operations = mapOperations(
+					endpoints.get(EndpointId.of("test")));
 			operations.values().forEach((operation) -> assertThat(operation.getInvoker())
 					.isNotInstanceOf(CachingOperationInvoker.class));
 		});
@@ -165,10 +168,11 @@ public class EndpointDiscovererTests {
 		load(TestEndpointConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context,
 					(endpointId) -> (endpointId.equals("foo") ? 500L : 0L));
-			Map<String, TestExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test");
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get("test"));
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+			Map<Method, TestOperation> operations = mapOperations(
+					endpoints.get(EndpointId.of("test")));
 			operations.values().forEach((operation) -> assertThat(operation.getInvoker())
 					.isNotInstanceOf(CachingOperationInvoker.class));
 		});
@@ -178,11 +182,13 @@ public class EndpointDiscovererTests {
 	public void getEndpointsWhenTtlSetByIdAndIdMatchesShouldCacheInvokeCalls() {
 		load(TestEndpointConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context,
-					(endpointId) -> (endpointId.equals("test") ? 500L : 0L));
-			Map<String, TestExposableEndpoint> endpoints = mapEndpoints(
+					(endpointId) -> (endpointId.equals(EndpointId.of("test")) ? 500L
+							: 0L));
+			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test");
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get("test"));
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+			Map<Method, TestOperation> operations = mapOperations(
+					endpoints.get(EndpointId.of("test")));
 			TestOperation getAll = operations.get(findTestEndpointMethod("getAll"));
 			TestOperation getOne = operations
 					.get(findTestEndpointMethod("getOne", String.class));
@@ -201,9 +207,9 @@ public class EndpointDiscovererTests {
 	public void getEndpointsWhenHasSpecializedFiltersInNonSpecializedDiscovererShouldFilterEndpoints() {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context);
-			Map<String, TestExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test");
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 		});
 	}
 
@@ -212,9 +218,10 @@ public class EndpointDiscovererTests {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(
 					context);
-			Map<String, SpecializedExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test", "specialized");
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"),
+					EndpointId.of("specialized"));
 		});
 	}
 
@@ -223,10 +230,10 @@ public class EndpointDiscovererTests {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(
 					context);
-			Map<String, SpecializedExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
 			Map<Method, SpecializedOperation> operations = mapOperations(
-					endpoints.get("specialized"));
+					endpoints.get(EndpointId.of("specialized")));
 			assertThat(operations).containsKeys(
 					ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
 
@@ -238,10 +245,10 @@ public class EndpointDiscovererTests {
 		load(SubSpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(
 					context);
-			Map<String, SpecializedExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
 			Map<Method, SpecializedOperation> operations = mapOperations(
-					endpoints.get("specialized"));
+					endpoints.get(EndpointId.of("specialized")));
 			assertThat(operations).containsKeys(
 					ReflectionUtils.findMethod(SpecializedTestEndpoint.class, "getAll"));
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(
@@ -261,18 +268,19 @@ public class EndpointDiscovererTests {
 			};
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(
 					context, Collections.singleton(filter));
-			Map<String, SpecializedExposableEndpoint> endpoints = mapEndpoints(
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(
 					discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys("test");
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 		});
 	}
 
 	private void hasTestEndpoint(AnnotationConfigApplicationContext context) {
 		TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context);
-		Map<String, TestExposableEndpoint> endpoints = mapEndpoints(
+		Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(
 				discoverer.getEndpoints());
-		assertThat(endpoints).containsOnlyKeys("test");
-		Map<Method, TestOperation> operations = mapOperations(endpoints.get("test"));
+		assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+		Map<Method, TestOperation> operations = mapOperations(
+				endpoints.get(EndpointId.of("test")));
 		assertThat(operations).hasSize(4);
 		assertThat(operations).containsKeys();
 	}
@@ -290,14 +298,15 @@ public class EndpointDiscovererTests {
 		return ReflectionUtils.findMethod(TestEndpoint.class, name, paramTypes);
 	}
 
-	private <E extends ExposableEndpoint<?>> Map<String, E> mapEndpoints(
+	private <E extends ExposableEndpoint<?>> Map<EndpointId, E> mapEndpoints(
 			Collection<E> endpoints) {
-		Map<String, E> byId = new LinkedHashMap<>();
+		Map<EndpointId, E> byId = new LinkedHashMap<>();
 		endpoints.forEach((endpoint) -> {
-			E existing = byId.put(endpoint.getId(), endpoint);
+			E existing = byId.put(endpoint.getEndpointId(), endpoint);
 			if (existing != null) {
-				throw new AssertionError(String.format(
-						"Found endpoints with duplicate id '%s'", endpoint.getId()));
+				throw new AssertionError(
+						String.format("Found endpoints with duplicate id '%s'",
+								endpoint.getEndpointId()));
 			}
 		});
 		return byId;
@@ -491,12 +500,12 @@ public class EndpointDiscovererTests {
 		}
 
 		TestEndpointDiscoverer(ApplicationContext applicationContext,
-				Function<String, Long> timeToLive) {
+				Function<EndpointId, Long> timeToLive) {
 			this(applicationContext, timeToLive, Collections.emptyList());
 		}
 
 		TestEndpointDiscoverer(ApplicationContext applicationContext,
-				Function<String, Long> timeToLive,
+				Function<EndpointId, Long> timeToLive,
 				Collection<EndpointFilter<TestExposableEndpoint>> filters) {
 			this(applicationContext, new ConversionServiceParameterValueMapper(),
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
@@ -512,6 +521,12 @@ public class EndpointDiscovererTests {
 
 		@Override
 		protected TestExposableEndpoint createEndpoint(Object endpointBean, String id,
+				boolean enabledByDefault, Collection<TestOperation> operations) {
+			throw new IllegalStateException();
+		}
+
+		@Override
+		protected TestExposableEndpoint createEndpoint(Object endpointBean, EndpointId id,
 				boolean enabledByDefault, Collection<TestOperation> operations) {
 			return new TestExposableEndpoint(this, endpointBean, id, enabledByDefault,
 					operations);
@@ -548,6 +563,13 @@ public class EndpointDiscovererTests {
 		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean,
 				String id, boolean enabledByDefault,
 				Collection<SpecializedOperation> operations) {
+			throw new IllegalStateException();
+		}
+
+		@Override
+		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean,
+				EndpointId id, boolean enabledByDefault,
+				Collection<SpecializedOperation> operations) {
 			return new SpecializedExposableEndpoint(this, endpointBean, id,
 					enabledByDefault, operations);
 		}
@@ -569,7 +591,7 @@ public class EndpointDiscovererTests {
 	static class TestExposableEndpoint extends AbstractDiscoveredEndpoint<TestOperation> {
 
 		TestExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
-				String id, boolean enabledByDefault,
+				EndpointId id, boolean enabledByDefault,
 				Collection<? extends TestOperation> operations) {
 			super(discoverer, endpointBean, id, enabledByDefault, operations);
 		}
@@ -580,7 +602,7 @@ public class EndpointDiscovererTests {
 			extends AbstractDiscoveredEndpoint<SpecializedOperation> {
 
 		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer,
-				Object endpointBean, String id, boolean enabledByDefault,
+				Object endpointBean, EndpointId id, boolean enabledByDefault,
 				Collection<? extends SpecializedOperation> operations) {
 			super(discoverer, endpointBean, id, enabledByDefault, operations);
 		}

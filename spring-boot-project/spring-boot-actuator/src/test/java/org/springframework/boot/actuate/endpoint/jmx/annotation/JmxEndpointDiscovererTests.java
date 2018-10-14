@@ -26,6 +26,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -66,10 +67,10 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsShouldDiscoverStandardEndpoints() {
 		load(TestEndpoint.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<String, JmxOperation> operationByName = mapOperations(
-					endpoints.get("test").getOperations());
+					endpoints.get(EndpointId.of("test")).getOperations());
 			assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 					"update", "deleteSomething");
 			JmxOperation getAll = operationByName.get("getAll");
@@ -102,8 +103,9 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenHasFilteredEndpointShouldOnlyDiscoverJmxEndpoints() {
 		load(MultipleEndpointsConfiguration.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test", "jmx");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"),
+					EndpointId.of("jmx"));
 		});
 	}
 
@@ -118,19 +120,19 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenHasJmxExtensionShouldOverrideStandardEndpoint() {
 		load(OverriddenOperationJmxEndpointConfiguration.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
-			assertJmxTestEndpoint(endpoints.get("test"));
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+			assertJmxTestEndpoint(endpoints.get(EndpointId.of("test")));
 		});
 	}
 
 	@Test
 	public void getEndpointsWhenHasJmxExtensionWithNewOperationAddsExtraOperation() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<String, JmxOperation> operationByName = mapOperations(
-					endpoints.get("test").getOperations());
+					endpoints.get(EndpointId.of("test")).getOperations());
 			assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 					"update", "deleteSomething", "getAnother");
 			JmxOperation getAnother = operationByName.get("getAnother");
@@ -143,10 +145,10 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenHasCacheWithTtlShouldCacheReadOperationWithTtlValue() {
 		load(TestEndpoint.class, (id) -> 500L, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<String, JmxOperation> operationByName = mapOperations(
-					endpoints.get("test").getOperations());
+					endpoints.get(EndpointId.of("test")).getOperations());
 			assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 					"update", "deleteSomething");
 			JmxOperation getAll = operationByName.get("getAll");
@@ -160,10 +162,11 @@ public class JmxEndpointDiscovererTests {
 	public void getEndpointsShouldCacheReadOperations() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (id) -> 500L,
 				(discoverer) -> {
-					Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-					assertThat(endpoints).containsOnlyKeys("test");
+					Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(
+							discoverer);
+					assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 					Map<String, JmxOperation> operationByName = mapOperations(
-							endpoints.get("test").getOperations());
+							endpoints.get(EndpointId.of("test")).getOperations());
 					assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 							"update", "deleteSomething", "getAnother");
 					JmxOperation getAll = operationByName.get("getAll");
@@ -269,10 +272,11 @@ public class JmxEndpointDiscovererTests {
 		assertThat(parameter.getType()).isEqualTo(type);
 	}
 
-	private Map<String, ExposableJmxEndpoint> discover(JmxEndpointDiscoverer discoverer) {
-		Map<String, ExposableJmxEndpoint> byId = new HashMap<>();
+	private Map<EndpointId, ExposableJmxEndpoint> discover(
+			JmxEndpointDiscoverer discoverer) {
+		Map<EndpointId, ExposableJmxEndpoint> byId = new HashMap<>();
 		discoverer.getEndpoints()
-				.forEach((endpoint) -> byId.put(endpoint.getId(), endpoint));
+				.forEach((endpoint) -> byId.put(endpoint.getEndpointId(), endpoint));
 		return byId;
 	}
 
@@ -286,7 +290,7 @@ public class JmxEndpointDiscovererTests {
 		load(configuration, (id) -> null, consumer);
 	}
 
-	private void load(Class<?> configuration, Function<String, Long> timeToLive,
+	private void load(Class<?> configuration, Function<EndpointId, Long> timeToLive,
 			Consumer<JmxEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration)) {
