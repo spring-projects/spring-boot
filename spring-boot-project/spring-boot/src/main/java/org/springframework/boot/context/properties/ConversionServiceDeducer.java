@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -70,16 +71,18 @@ class ConversionServiceDeducer {
 					ConfigurationPropertiesBinding.VALUE);
 		}
 
-		private static <T> List<T> beans(BeanFactory beanFactory, Class<T> type,
+		private <T> List<T> beans(BeanFactory beanFactory, Class<T> type,
 				String qualifier) {
-			List<T> list = new ArrayList<>();
-			if (!(beanFactory instanceof ListableBeanFactory)) {
-				return list;
+			if (beanFactory instanceof ListableBeanFactory) {
+				return beans(type, qualifier, (ListableBeanFactory) beanFactory);
 			}
-			ListableBeanFactory listable = (ListableBeanFactory) beanFactory;
-			list.addAll(BeanFactoryAnnotationUtils
-					.qualifiedBeansOfType(listable, type, qualifier).values());
-			return list;
+			return Collections.emptyList();
+		}
+
+		private <T> List<T> beans(Class<T> type, String qualifier,
+				ListableBeanFactory beanFactory) {
+			return new ArrayList<T>(BeanFactoryAnnotationUtils
+					.qualifiedBeansOfType(beanFactory, type, qualifier).values());
 		}
 
 		public ConversionService create() {
