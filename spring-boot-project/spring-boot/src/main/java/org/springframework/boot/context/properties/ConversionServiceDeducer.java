@@ -23,15 +23,12 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility to deduce the {@link ConversionService} to use for configuration properties
@@ -61,9 +58,6 @@ class ConversionServiceDeducer {
 
 	private static class Factory {
 
-		private static DependencyDescriptor DUMMY = new DependencyDescriptor(
-				ReflectionUtils.findField(Factory.class, "genericConverters"), false);
-
 		/**
 		 * A list of custom converters (in addition to the defaults) to use when
 		 * converting properties for binding.
@@ -91,13 +85,6 @@ class ConversionServiceDeducer {
 				return list;
 			}
 			ListableBeanFactory listable = (ListableBeanFactory) beanFactory;
-			if (listable instanceof ConfigurableListableBeanFactory) {
-				for (String name : listable.getBeanNamesForType(type)) {
-					// Force bean definition to resolve its factory method
-					((ConfigurableListableBeanFactory) listable).isAutowireCandidate(name,
-							DUMMY);
-				}
-			}
 			list.addAll(BeanFactoryAnnotationUtils
 					.qualifiedBeansOfType(listable, type, qualifier).values());
 			return list;
