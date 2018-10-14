@@ -58,18 +58,10 @@ class ConversionServiceDeducer {
 
 	private static class Factory {
 
-		/**
-		 * A list of custom converters (in addition to the defaults) to use when
-		 * converting properties for binding.
-		 */
 		@SuppressWarnings("rawtypes")
-		private List<Converter> converters;
+		private final List<Converter> converters;
 
-		/**
-		 * A list of custom converters (in addition to the defaults) to use when
-		 * converting properties for binding.
-		 */
-		private List<GenericConverter> genericConverters;
+		private final List<GenericConverter> genericConverters;
 
 		Factory(BeanFactory beanFactory) {
 			this.converters = beans(beanFactory, Converter.class,
