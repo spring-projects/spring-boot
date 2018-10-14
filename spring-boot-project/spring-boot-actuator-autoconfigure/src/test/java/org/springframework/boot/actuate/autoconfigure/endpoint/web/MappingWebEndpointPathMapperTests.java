@@ -45,4 +45,19 @@ public class MappingWebEndpointPathMapperTests {
 		assertThat(mapper.getRootPath(EndpointId.of("test"))).isEqualTo("custom");
 	}
 
+	@Test
+	public void mixedCaseDefaultConfiguration() {
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
+				Collections.emptyMap());
+		assertThat(mapper.getRootPath(EndpointId.of("testEndpoint")))
+				.isEqualTo("testendpoint");
+	}
+
+	@Test
+	public void mixedCaseUserConfiguration() {
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
+				Collections.singletonMap("test-endpoint", "custom"));
+		assertThat(mapper.getRootPath(EndpointId.of("testEndpoint"))).isEqualTo("custom");
+	}
+
 }
