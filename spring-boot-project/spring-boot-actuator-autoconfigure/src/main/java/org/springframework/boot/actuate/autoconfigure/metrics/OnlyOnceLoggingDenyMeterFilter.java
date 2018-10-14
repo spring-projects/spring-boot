@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
- * {@link MeterFilter} to log only once a warning message and deny {@link Meter.Id}.
+ * {@link MeterFilter} to log only once a warning message and deny {@code Meter.Id}.
  *
  * @author Jon Schneider
  * @author Dmytro Nosan

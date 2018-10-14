@@ -91,7 +91,7 @@ public class PathMappedEndpointsTests {
 	@Test
 	public void getPathWhenMissingIdShouldReturnNull() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getRootPath("xx")).isNull();
+		assertThat(mapped.getPath("xx")).isNull();
 	}
 
 	@Test

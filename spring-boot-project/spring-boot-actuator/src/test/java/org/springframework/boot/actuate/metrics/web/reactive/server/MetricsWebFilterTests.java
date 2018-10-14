@@ -48,7 +48,7 @@ public class MetricsWebFilterTests {
 		MockClock clock = new MockClock();
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
 		this.webFilter = new MetricsWebFilter(this.registry,
-				new DefaultWebFluxTagsProvider(), REQUEST_METRICS_NAME);
+				new DefaultWebFluxTagsProvider(), REQUEST_METRICS_NAME, true);
 	}
 
 	@Test
