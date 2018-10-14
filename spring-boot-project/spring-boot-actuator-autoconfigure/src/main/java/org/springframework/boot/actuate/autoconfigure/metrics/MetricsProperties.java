@@ -51,6 +51,8 @@ public class MetricsProperties {
 
 	private final Web web = new Web();
 
+	private final WebServices webServices = new WebServices();
+
 	private final Distribution distribution = new Distribution();
 
 	public boolean isUseGlobalRegistry() {
@@ -75,6 +77,10 @@ public class MetricsProperties {
 
 	public Distribution getDistribution() {
 		return this.distribution;
+	}
+
+	public WebServices getWebServices() {
+		return this.webServices;
 	}
 
 	public static class Web {
@@ -167,6 +173,33 @@ public class MetricsProperties {
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
+			}
+
+		}
+
+	}
+
+	public static class WebServices {
+
+		private final Client client = new Client();
+
+		public Client getClient() {
+			return this.client;
+		}
+
+		public static class Client {
+
+			/**
+			 * Name of the metric for sent requests.
+			 */
+			private String requestsMetricName = "webservices.client.requests";
+
+			public String getRequestsMetricName() {
+				return this.requestsMetricName;
+			}
+
+			public void setRequestsMetricName(String requestsMetricName) {
+				this.requestsMetricName = requestsMetricName;
 			}
 
 		}
