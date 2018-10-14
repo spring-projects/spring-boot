@@ -140,6 +140,14 @@ public class ConditionalOnEnabledEndpointTests {
 				});
 	}
 
+	@Test
+	public void outcomeWhenEndpointEnabledPropertyIsTrueAndMixedCaseShouldMatch() {
+		this.contextRunner.withPropertyValues("management.endpoint.foo-bar.enabled=true")
+				.withUserConfiguration(
+						FooBarEndpointEnabledByDefaultFalseConfiguration.class)
+				.run((context) -> assertThat(context).hasBean("fooBar"));
+	}
+
 	@Endpoint(id = "foo", enableByDefault = true)
 	static class FooEndpointEnabledByDefaultTrue {
 
@@ -147,6 +155,11 @@ public class ConditionalOnEnabledEndpointTests {
 
 	@Endpoint(id = "foo", enableByDefault = false)
 	static class FooEndpointEnabledByDefaultFalse {
+
+	}
+
+	@Endpoint(id = "fooBar", enableByDefault = false)
+	static class FooBarEndpointEnabledByDefaultFalse {
 
 	}
 
@@ -187,6 +200,17 @@ public class ConditionalOnEnabledEndpointTests {
 		@ConditionalOnEnabledEndpoint
 		public FooEndpointEnabledByDefaultFalse foo() {
 			return new FooEndpointEnabledByDefaultFalse();
+		}
+
+	}
+
+	@Configuration
+	static class FooBarEndpointEnabledByDefaultFalseConfiguration {
+
+		@Bean
+		@ConditionalOnEnabledEndpoint
+		public FooBarEndpointEnabledByDefaultFalse fooBar() {
+			return new FooBarEndpointEnabledByDefaultFalse();
 		}
 
 	}

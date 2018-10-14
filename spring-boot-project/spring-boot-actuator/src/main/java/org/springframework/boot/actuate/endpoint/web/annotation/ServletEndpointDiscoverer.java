@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
@@ -66,7 +67,15 @@ public class ServletEndpointDiscoverer
 	}
 
 	@Override
+	@Deprecated
 	protected ExposableServletEndpoint createEndpoint(Object endpointBean, String id,
+			boolean enabledByDefault, Collection<Operation> operations) {
+		return createEndpoint(endpointBean, EndpointId.of(id), enabledByDefault,
+				operations);
+	}
+
+	@Override
+	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id,
 			boolean enabledByDefault, Collection<Operation> operations) {
 		String rootPath = this.endpointPathMapper.getRootPath(id);
 		return new DiscoveredServletEndpoint(this, endpointBean, id, rootPath,
@@ -74,7 +83,14 @@ public class ServletEndpointDiscoverer
 	}
 
 	@Override
+	@Deprecated
 	protected Operation createOperation(String endpointId,
+			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
+		return createOperation(EndpointId.of(endpointId), operationMethod, invoker);
+	}
+
+	@Override
+	protected Operation createOperation(EndpointId endpointId,
 			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		throw new IllegalStateException("ServletEndpoints must not declare operations");
 	}

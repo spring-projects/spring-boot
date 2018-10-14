@@ -31,6 +31,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.reactive.ApplicationContextServerWebExchangeMatcher;
@@ -208,9 +209,12 @@ public final class EndpointRequest {
 					.map(pathMappedEndpoints::getPath);
 		}
 
-		private String getEndpointId(Object source) {
+		private EndpointId getEndpointId(Object source) {
+			if (source instanceof EndpointId) {
+				return (EndpointId) source;
+			}
 			if (source instanceof String) {
-				return (String) source;
+				return (EndpointId.of((String) source));
 			}
 			if (source instanceof Class) {
 				return getEndpointId((Class<?>) source);
@@ -218,12 +222,12 @@ public final class EndpointRequest {
 			throw new IllegalStateException("Unsupported source " + source);
 		}
 
-		private String getEndpointId(Class<?> source) {
+		private EndpointId getEndpointId(Class<?> source) {
 			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source,
 					Endpoint.class);
 			Assert.state(annotation != null,
 					() -> "Class " + source + " is not annotated with @Endpoint");
-			return annotation.id();
+			return EndpointId.of(annotation.id());
 		}
 
 		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {

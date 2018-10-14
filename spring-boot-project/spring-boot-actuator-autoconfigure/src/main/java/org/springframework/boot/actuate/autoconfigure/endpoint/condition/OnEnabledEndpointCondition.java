@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -54,8 +55,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
 		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
-		String id = attributes.getString("id");
-		String key = "management.endpoint." + id + ".enabled";
+		EndpointId id = EndpointId.of(attributes.getString("id"));
+		String key = "management.endpoint." + id.toLowerCaseString() + ".enabled";
 		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
 		if (userDefinedEnabled != null) {
 			return new ConditionOutcome(userDefinedEnabled,

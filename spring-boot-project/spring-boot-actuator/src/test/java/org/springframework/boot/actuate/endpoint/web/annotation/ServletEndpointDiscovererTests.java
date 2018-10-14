@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -79,7 +80,8 @@ public class ServletEndpointDiscovererTests {
 							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableServletEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getId()).isEqualTo("testservlet");
+					assertThat(endpoint.getEndpointId())
+							.isEqualTo(EndpointId.of("testservlet"));
 					assertThat(endpoint.getEndpointServlet()).isNotNull();
 					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 				}));
@@ -95,7 +97,8 @@ public class ServletEndpointDiscovererTests {
 							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableServletEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getId()).isEqualTo("testservlet");
+					assertThat(endpoint.getEndpointId())
+							.isEqualTo(EndpointId.of("testservlet"));
 					assertThat(endpoint.getEndpointServlet()).isNotNull();
 					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 				}));
@@ -107,9 +110,10 @@ public class ServletEndpointDiscovererTests {
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableServletEndpoint> endpoints = discoverer
 							.getEndpoints();
-					List<String> ids = endpoints.stream().map(ExposableEndpoint::getId)
+					List<EndpointId> ids = endpoints.stream()
+							.map(ExposableEndpoint::getEndpointId)
 							.collect(Collectors.toList());
-					assertThat(ids).containsOnly("testservlet");
+					assertThat(ids).containsOnly(EndpointId.of("testservlet"));
 				}));
 	}
 

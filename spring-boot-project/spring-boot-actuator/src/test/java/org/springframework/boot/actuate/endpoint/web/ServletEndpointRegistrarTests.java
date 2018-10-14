@@ -35,6 +35,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -124,7 +126,7 @@ public class ServletEndpointRegistrarTests {
 
 	private ExposableServletEndpoint mockEndpoint(EndpointServlet endpointServlet) {
 		ExposableServletEndpoint endpoint = mock(ExposableServletEndpoint.class);
-		given(endpoint.getId()).willReturn("test");
+		given(endpoint.getEndpointId()).willReturn(EndpointId.of("test"));
 		given(endpoint.getEndpointServlet()).willReturn(endpointServlet);
 		given(endpoint.getRootPath()).willReturn("test");
 		return endpoint;

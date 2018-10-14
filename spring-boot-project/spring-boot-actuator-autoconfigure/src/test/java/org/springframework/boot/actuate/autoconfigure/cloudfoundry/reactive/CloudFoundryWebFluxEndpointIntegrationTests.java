@@ -167,13 +167,6 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 				.jsonPath("_links.test-part").doesNotExist()));
 	}
 
-	private AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
-			Class<?>... config) {
-		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
-		context.register(config);
-		return context;
-	}
-
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
 			Consumer<WebTestClient> clientConsumer) {
 		return (context) -> {

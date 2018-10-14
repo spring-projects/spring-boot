@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -243,9 +244,10 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping
 							.getEndpoints();
-					List<String> endpointIds = endpoints.stream()
-							.map(ExposableEndpoint::getId).collect(Collectors.toList());
-					assertThat(endpointIds).contains("test");
+					List<EndpointId> endpointIds = endpoints.stream()
+							.map(ExposableEndpoint::getEndpointId)
+							.collect(Collectors.toList());
+					assertThat(endpointIds).contains(EndpointId.of("test"));
 				});
 	}
 
@@ -261,7 +263,8 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping
 							.getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.stream()
-							.filter((candidate) -> "test".equals(candidate.getId()))
+							.filter((candidate) -> EndpointId.of("test")
+									.equals(candidate.getEndpointId()))
 							.findFirst().get();
 					assertThat(endpoint.getOperations()).hasSize(1);
 					WebOperation operation = endpoint.getOperations().iterator().next();
