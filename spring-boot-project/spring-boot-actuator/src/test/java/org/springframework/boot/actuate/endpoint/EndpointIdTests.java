@@ -75,6 +75,14 @@ public class EndpointIdTests {
 	}
 
 	@Test
+	public void ofWhenContainsDotIsValid() {
+		// Ideally we wouldn't support this but there are existing endpoints using the
+		// pattern. See gh-14773
+		EndpointId endpointId = EndpointId.of("foo.bar");
+		assertThat(endpointId.toString()).isEqualTo("foo.bar");
+	}
+
+	@Test
 	public void equalsAndHashCode() {
 		EndpointId one = EndpointId.of("foobar");
 		EndpointId two = EndpointId.of("fooBar");
