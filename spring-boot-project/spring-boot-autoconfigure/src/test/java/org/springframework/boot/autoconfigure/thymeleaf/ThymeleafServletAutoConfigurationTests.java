@@ -108,6 +108,20 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideDisableProducePartialOutputWhileProcessing() {
+		load(BaseConfiguration.class, "spring.thymeleaf.servlet.produce-partial-output-while-processing:false");
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)
+				.getProducePartialOutputWhileProcessing()).isFalse();
+	}
+
+	@Test
+	public void disableProducePartialOutputWhileProcessingIsEnabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)
+				.getProducePartialOutputWhileProcessing()).isTrue();
+	}
+
+	@Test
 	public void overrideTemplateResolverOrder() {
 		load(BaseConfiguration.class, "spring.thymeleaf.templateResolverOrder:25");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);

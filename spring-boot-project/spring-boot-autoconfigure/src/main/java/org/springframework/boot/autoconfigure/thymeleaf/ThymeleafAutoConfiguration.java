@@ -198,6 +198,8 @@ public class ThymeleafAutoConfiguration {
 				resolver.setContentType(
 						appendCharset(this.properties.getServlet().getContentType(),
 								resolver.getCharacterEncoding()));
+				resolver.setProducePartialOutputWhileProcessing(
+						this.properties.getServlet().isProducePartialOutputWhileProcessing());
 				resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
 				resolver.setViewNames(this.properties.getViewNames());
 				// This resolver acts as a fallback resolver (e.g. like a
