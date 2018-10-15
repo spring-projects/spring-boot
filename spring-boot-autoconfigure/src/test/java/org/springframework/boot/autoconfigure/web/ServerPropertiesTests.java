@@ -57,6 +57,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer;
@@ -76,6 +77,8 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -763,6 +766,30 @@ public class ServerPropertiesTests {
 		StandardContext context = (StandardContext) tomcat.getHost().findChildren()[0];
 		assertThat(context.getUseHttpOnly()).isFalse();
 		container.stop();
+	}
+	
+	@Test
+	public void customTomcatCompressionProgramtically() throws Exception {
+		Compression mockCompression = mock(Compression.class);
+		
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		factory.setCompression(mockCompression);
+		this.properties.customize(factory);
+		assertEquals(mockCompression, factory.getCompression());
+	}
+	
+	@Test
+	public void customTomcatCompressionWithServerProperties() throws Exception {
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.compression.enable", "true");
+		bindProperties(map);
+		Compression mockCompression = mock(Compression.class);
+		
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		factory.setCompression(mockCompression);
+		this.properties.customize(factory);
+		assertNotEquals(mockCompression, factory.getCompression());
 	}
 
 	@Test

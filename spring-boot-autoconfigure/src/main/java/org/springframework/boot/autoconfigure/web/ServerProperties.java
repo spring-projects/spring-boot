@@ -92,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Quinten De Swaef
  * @author Venil Noronha
  * @author Aurélien Leboulanger
+ * @author Wenjie Zhang
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
