@@ -322,7 +322,8 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void basicAuthenticationShouldApply() {
-		RestTemplate template = this.builder.basicAuthentication("spring", "boot").build();
+		RestTemplate template = this.builder.basicAuthentication("spring", "boot")
+				.build();
 		ClientHttpRequestInterceptor interceptor = template.getInterceptors().get(0);
 		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
 		assertThat(interceptor).extracting("username").containsExactly("spring");

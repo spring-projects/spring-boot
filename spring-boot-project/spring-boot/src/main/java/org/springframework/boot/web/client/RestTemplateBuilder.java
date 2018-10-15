@@ -376,7 +376,8 @@ public class RestTemplateBuilder {
 	 * @param username the user name
 	 * @param password the password
 	 * @return a new builder instance
-	 * @deprecated since 2.1.0 in favor of {@link #basicAuthentication(String username, String password)}
+	 * @deprecated since 2.1.0 in favor of
+	 * {@link #basicAuthentication(String username, String password)}
 	 */
 	public RestTemplateBuilder basicAuthorization(String username, String password) {
 		return basicAuthentication(username, password);
