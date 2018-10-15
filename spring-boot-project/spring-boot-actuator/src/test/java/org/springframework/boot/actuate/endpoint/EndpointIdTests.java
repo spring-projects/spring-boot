@@ -41,15 +41,15 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void ofWhenContainsDashThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo-bar"))
-				.withMessageContaining("Value must be alpha-numeric");
+	public void ofWhenContainsInvalidCharThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
+				.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
 	public void ofWhenHasBadCharThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
-				.withMessageContaining("Value must be alpha-numeric");
+				.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
@@ -73,12 +73,24 @@ public class EndpointIdTests {
 	}
 
 	@Test
+	public void ofWhenContainsDashIsValid() {
+		// Ideally we wouldn't support this but there are existing endpoints using the
+		// pattern. See gh-14773
+		EndpointId endpointId = EndpointId.of("foo-bar");
+		assertThat(endpointId.toString()).isEqualTo("foo-bar");
+	}
+
+	@Test
 	public void equalsAndHashCode() {
-		EndpointId one = EndpointId.of("foobar");
-		EndpointId two = EndpointId.of("fooBar");
-		EndpointId three = EndpointId.of("barfoo");
+		EndpointId one = EndpointId.of("foobar1");
+		EndpointId two = EndpointId.of("fooBar1");
+		EndpointId three = EndpointId.of("foo-bar1");
+		EndpointId four = EndpointId.of("foo.bar1");
+		EndpointId five = EndpointId.of("barfoo1");
+		EndpointId six = EndpointId.of("foobar2");
 		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isNotEqualTo(three);
+		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(two).isEqualTo(three)
+				.isEqualTo(four).isNotEqualTo(five).isNotEqualTo(six);
 	}
 
 	@Test
