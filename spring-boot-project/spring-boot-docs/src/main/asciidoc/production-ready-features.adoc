@@ -1352,6 +1352,7 @@ monitoring systems, including:
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-influx,Influx>>
 - <<production-ready-metrics-export-jmx,JMX>>
+- <<production-ready-metrics-export-kairos,KairosDB>>
 - <<production-ready-metrics-export-newrelic,New Relic>>
 - <<production-ready-metrics-export-prometheus,Prometheus>>
 - <<production-ready-metrics-export-signalfx,SignalFx>>
@@ -1582,6 +1583,19 @@ provided unless you define your own:
 public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
 }
+----
+
+
+
+[[production-ready-metrics-export-kairos]]
+==== KairosDB
+By default, metrics are exported to {micrometer-registry-documentation}/kairos[KairosDB]
+running on your local machine. The location of the https://kairosdb.github.io/[KairosDB
+server] to use can be provided using:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.kairos.uri=http://kairosdb.example.com:8080/api/v1/datapoints
 ----
 
 
