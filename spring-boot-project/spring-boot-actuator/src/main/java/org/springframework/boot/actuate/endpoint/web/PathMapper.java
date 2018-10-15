@@ -41,8 +41,7 @@ public interface PathMapper {
 	 * @return an {@link PathMapper} that uses the lowercase endpoint ID as the path
 	 */
 	static PathMapper useEndpointId() {
-		return (id) -> id.toLowerCaseString();
-
+		return (id) -> id.toString();
 	}
 
 }

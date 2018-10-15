@@ -40,7 +40,7 @@ class MappingWebEndpointPathMapper implements PathMapper {
 
 	@Override
 	public String getRootPath(EndpointId endpointId) {
-		return this.pathMapping.getOrDefault(endpointId, endpointId.toLowerCaseString());
+		return this.pathMapping.getOrDefault(endpointId, endpointId.toString());
 	}
 
 }

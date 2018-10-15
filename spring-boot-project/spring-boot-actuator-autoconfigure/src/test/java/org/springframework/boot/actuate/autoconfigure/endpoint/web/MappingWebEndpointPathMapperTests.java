@@ -50,7 +50,7 @@ public class MappingWebEndpointPathMapperTests {
 		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
 				Collections.emptyMap());
 		assertThat(mapper.getRootPath(EndpointId.of("testEndpoint")))
-				.isEqualTo("testendpoint");
+				.isEqualTo("testEndpoint");
 	}
 
 	@Test
