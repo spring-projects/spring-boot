@@ -124,7 +124,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		return application.run();
+		return application.run(getArgs(config));
 	}
 
 	/**
@@ -143,6 +143,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
 		return new StandardEnvironment();
+	}
+
+	/**
+	 * Get the {@link SpringBootTest#args()} (if present) specified in the annotated test
+	 * class. If no args given, returns empty array.
+	 * @param config the source context configuration
+	 * @return the {@link SpringBootTest#args()} (if present) specified in the annotated
+	 * test class, or empty array
+	 */
+	protected String[] getArgs(MergedContextConfiguration config) {
+		SpringBootTest annotation = AnnotatedElementUtils
+				.findMergedAnnotation(config.getTestClass(), SpringBootTest.class);
+		return (annotation != null) ? annotation.args() : new String[0];
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment,
