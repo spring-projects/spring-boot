@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link PathMapper} implementation that uses a simple {@link Map} to determine the
@@ -40,7 +41,9 @@ class MappingWebEndpointPathMapper implements PathMapper {
 
 	@Override
 	public String getRootPath(EndpointId endpointId) {
-		return this.pathMapping.getOrDefault(endpointId, endpointId.toString());
+		String path = this.pathMapping.get(endpointId);
+		return StringUtils.hasText(path) ? path
+				: PathMapper.useEndpointId().getRootPath(endpointId);
 	}
 
 }
