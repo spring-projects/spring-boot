@@ -1531,7 +1531,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.wavefront.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.wavefront.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.wavefront.source= # Unique identifier for the app instance that is the source of metrics being published to Wavefront. Defaults to the local host name.
-	management.metrics.export.wavefront.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.wavefront.step=10s # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.wavefront.uri=https://longboard.wavefront.com # URI to ship metrics to.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
 	management.metrics.tags.*= # Common tags that are applied to every meter.
