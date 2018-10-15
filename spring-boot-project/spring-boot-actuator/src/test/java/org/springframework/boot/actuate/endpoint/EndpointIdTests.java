@@ -33,7 +33,7 @@ public class EndpointIdTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void ofWhenNullThorowsException() {
+	public void ofWhenNullThrowsException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Value must not be empty");
 		EndpointId.of(null);
