@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -26,7 +25,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import liquibase.change.DatabaseChange;
-import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -52,7 +50,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -203,28 +200,6 @@ public class LiquibaseAutoConfiguration {
 
 		public LiquibaseJdbcOperationsDependencyConfiguration() {
 			super("liquibase");
-		}
-
-	}
-
-	/**
-	 * A custom {@link SpringLiquibase} extension that closes the underlying
-	 * {@link DataSource} once the database has been migrated.
-	 */
-	private static final class DataSourceClosingSpringLiquibase extends SpringLiquibase {
-
-		@Override
-		public void afterPropertiesSet() throws LiquibaseException {
-			super.afterPropertiesSet();
-			closeDataSource();
-		}
-
-		private void closeDataSource() {
-			Class<?> dataSourceClass = getDataSource().getClass();
-			Method closeMethod = ReflectionUtils.findMethod(dataSourceClass, "close");
-			if (closeMethod != null) {
-				ReflectionUtils.invokeMethod(closeMethod, getDataSource());
-			}
 		}
 
 	}
