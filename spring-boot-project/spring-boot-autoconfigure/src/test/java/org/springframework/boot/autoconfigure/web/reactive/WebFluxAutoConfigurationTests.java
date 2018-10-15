@@ -31,10 +31,10 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
-import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -415,7 +415,17 @@ public class WebFluxAutoConfigurationTests {
 	@Test
 	public void cachePeriod() {
 		this.contextRunner.withPropertyValues("spring.resources.cache.period:5")
-				.run(this::assertCachePeriod);
+				.run((context) -> {
+					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
+					assertThat(handlerMap).hasSize(2);
+					for (Object handler : handlerMap.values()) {
+						if (handler instanceof ResourceWebHandler) {
+							assertThat(((ResourceWebHandler) handler).getCacheControl())
+									.isEqualToComparingFieldByField(
+											CacheControl.maxAge(5, TimeUnit.SECONDS));
+						}
+					}
+				});
 	}
 
 	@Test
@@ -423,40 +433,27 @@ public class WebFluxAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
-				.run(this::assertCacheControl);
+				.run((context) -> {
+					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
+					assertThat(handlerMap).hasSize(2);
+					for (Object handler : handlerMap.values()) {
+						if (handler instanceof ResourceWebHandler) {
+							assertThat(((ResourceWebHandler) handler).getCacheControl())
+									.isEqualToComparingFieldByField(
+											CacheControl.maxAge(5, TimeUnit.SECONDS)
+													.proxyRevalidate());
+						}
+					}
+				});
 	}
 
-	private void assertCachePeriod(AssertableReactiveWebApplicationContext context) {
-		Map<PathPattern, Object> handlerMap = getHandlerMap(
-				context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.values()) {
-			if (handler instanceof ResourceWebHandler) {
-				assertThat(((ResourceWebHandler) handler).getCacheControl())
-						.isEqualToComparingFieldByField(
-								CacheControl.maxAge(5, TimeUnit.SECONDS));
-			}
-		}
-	}
-
-	private Map<PathPattern, Object> getHandlerMap(HandlerMapping mapping) {
+	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
+		HandlerMapping mapping = context.getBean("resourceHandlerMapping",
+				HandlerMapping.class);
 		if (mapping instanceof SimpleUrlHandlerMapping) {
 			return ((SimpleUrlHandlerMapping) mapping).getHandlerMap();
 		}
 		return Collections.emptyMap();
-	}
-
-	private void assertCacheControl(AssertableReactiveWebApplicationContext context) {
-		Map<PathPattern, Object> handlerMap = getHandlerMap(
-				context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.values()) {
-			if (handler instanceof ResourceWebHandler) {
-				assertThat(((ResourceWebHandler) handler).getCacheControl())
-						.isEqualToComparingFieldByField(CacheControl
-								.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
-			}
-		}
 	}
 
 	@Configuration
