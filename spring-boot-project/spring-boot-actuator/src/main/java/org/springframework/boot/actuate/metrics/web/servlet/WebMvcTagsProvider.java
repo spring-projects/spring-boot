@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.TagsProvider;
 
 /**
  * Provides {@link Tag Tags} for Spring MVC-based request handling.
@@ -29,7 +30,7 @@ import io.micrometer.core.instrument.Tag;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public interface WebMvcTagsProvider {
+public interface WebMvcTagsProvider extends TagsProvider {
 
 	/**
 	 * Provides tags to be associated with metrics for the given {@code request} and

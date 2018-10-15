@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.TagsProvider;
 
 import org.springframework.web.server.ServerWebExchange;
 
@@ -28,7 +29,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface WebFluxTagsProvider {
+public interface WebFluxTagsProvider extends TagsProvider {
 
 	/**
 	 * Provides tags to be associated with metrics for the given {@code exchange}.
