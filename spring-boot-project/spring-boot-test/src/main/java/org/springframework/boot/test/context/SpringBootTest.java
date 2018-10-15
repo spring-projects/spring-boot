@@ -107,6 +107,12 @@ public @interface SpringBootTest {
 	Class<?>[] classes() default {};
 
 	/**
+	 * Arguments that should be passed to the application under test.
+	 * @return the arguments to pass to the application under test.
+	 */
+	String[] args() default {};
+
+	/**
 	 * The type of web environment to create when applicable. Defaults to
 	 * {@link WebEnvironment#MOCK}.
 	 * @return the type of web environment
