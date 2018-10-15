@@ -63,7 +63,7 @@ public interface PathMapper {
 
 			@Override
 			public String getRootPath(EndpointId endpointId) {
-				return endpointId.toLowerCaseString();
+				return endpointId.toString();
 			}
 
 		};
