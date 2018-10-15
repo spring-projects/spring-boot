@@ -359,11 +359,11 @@
         },
         {
           "value": "sql",
-          "description": "SQL logging groups including Hibernate SQL logger."
+          "description": "SQL logging group including Hibernate SQL logger."
         },
         {
           "value": "web",
-          "description": "Web logging groups including codecs."
+          "description": "Web logging group including codecs."
         }
       ],
       "providers": [

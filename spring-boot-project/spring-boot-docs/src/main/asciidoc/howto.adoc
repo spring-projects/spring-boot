@@ -2025,7 +2025,7 @@ By default, Spring Boot registers a `BeanContainer` implementation that uses the
 injection.
 
 You can disable or tune this behaviour by registering a `HibernatePropertiesCustomizer`
-that remove or change the `hibernate.resource.beans.container` property.
+that removes or changes the `hibernate.resource.beans.container` property.
 
 
 
