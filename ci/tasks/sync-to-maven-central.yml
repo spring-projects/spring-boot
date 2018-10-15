@@ -8,7 +8,7 @@ params:
   BINTRAY_SUBJECT:
   BINTRAY_USERNAME:
   BINTRAY_PASSWORD:
-  SONATYPE_USERNAME:
-  SONATYPE_PASSWORD:
+  SONATYPE_USER_TOKEN:
+  SONATYPE_PASSWORD_TOKEN:
 run:
   path: git-repo/ci/scripts/sync-to-maven-central.sh
