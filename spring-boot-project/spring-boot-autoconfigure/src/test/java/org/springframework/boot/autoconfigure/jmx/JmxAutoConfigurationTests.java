@@ -102,10 +102,9 @@ public class JmxAutoConfigurationTests {
 		assertThat(mBeanExporter).isNotNull();
 		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
 				.getField(mBeanExporter, "namingStrategy");
-		assertThat(ReflectionTestUtils.getField(naming, "defaultDomain"))
-				.isEqualTo("my-test-domain");
-		assertThat(ReflectionTestUtils.getField(naming, "ensureUniqueRuntimeObjectNames"))
-				.isEqualTo(true);
+		assertThat(naming).hasFieldOrPropertyWithValue("defaultDomain", "my-test-domain");
+		assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames",
+				true);
 	}
 
 	@Test

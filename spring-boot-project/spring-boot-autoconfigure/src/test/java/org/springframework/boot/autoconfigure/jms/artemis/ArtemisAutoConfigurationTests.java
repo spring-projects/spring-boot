@@ -53,7 +53,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,10 +81,10 @@ public class ArtemisAutoConfigurationTests {
 							.getBean(CachingConnectionFactory.class);
 					assertThat(connectionFactory.getTargetConnectionFactory())
 							.isInstanceOf(ActiveMQConnectionFactory.class);
-					assertThat(ReflectionTestUtils.getField(connectionFactory,
-							"cacheConsumers")).isEqualTo(false);
-					assertThat(ReflectionTestUtils.getField(connectionFactory,
-							"cacheProducers")).isEqualTo(true);
+					assertThat(connectionFactory)
+							.hasFieldOrPropertyWithValue("cacheConsumers", false);
+					assertThat(connectionFactory)
+							.hasFieldOrPropertyWithValue("cacheProducers", true);
 					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(1);
 				});
 	}
@@ -101,10 +100,10 @@ public class ArtemisAutoConfigurationTests {
 					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
-					assertThat(ReflectionTestUtils.getField(connectionFactory,
-							"cacheConsumers")).isEqualTo(true);
-					assertThat(ReflectionTestUtils.getField(connectionFactory,
-							"cacheProducers")).isEqualTo(false);
+					assertThat(connectionFactory)
+							.hasFieldOrPropertyWithValue("cacheConsumers", true);
+					assertThat(connectionFactory)
+							.hasFieldOrPropertyWithValue("cacheProducers", false);
 					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(10);
 				});
 	}

@@ -25,7 +25,6 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
@@ -56,10 +55,8 @@ public class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 				.setReadTimeout(Duration.ofSeconds(2)).build();
 		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(
 				messageSender);
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(5000);
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(2000);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 2000);
 	}
 
 	private SimpleClientHttpRequestFactory assertSimpleClientRequestFactory(

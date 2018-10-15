@@ -326,8 +326,8 @@ public class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.template.queue:default-queue")
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					assertThat(ReflectionTestUtils.getField(rabbitTemplate, "queue"))
-							.isEqualTo("default-queue");
+					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue("queue",
+							"default-queue");
 				});
 	}
 

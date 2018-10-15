@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,7 @@ public class RestartApplicationListenerTests {
 	@Test
 	public void initializeWithReady() {
 		testInitialize(false);
-		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
-				.isEqualTo(ARGS);
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("args", ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
 		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(),
 				"rootContexts")).isNotEmpty();
@@ -73,8 +72,7 @@ public class RestartApplicationListenerTests {
 	@Test
 	public void initializeWithFail() {
 		testInitialize(true);
-		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
-				.isEqualTo(ARGS);
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("args", ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
 		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(),
 				"rootContexts")).isEmpty();
@@ -84,8 +82,7 @@ public class RestartApplicationListenerTests {
 	public void disableWithSystemProperty() {
 		System.setProperty(ENABLED_PROPERTY, "false");
 		testInitialize(false);
-		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "enabled"))
-				.isEqualTo(false);
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", false);
 	}
 
 	private void testInitialize(boolean failed) {

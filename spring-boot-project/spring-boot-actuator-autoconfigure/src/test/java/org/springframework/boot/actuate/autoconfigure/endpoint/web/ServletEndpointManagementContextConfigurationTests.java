@@ -31,7 +31,6 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +53,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
-			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
-			assertThat(basePath).isEqualTo("/test/actuator");
+			assertThat(bean).hasFieldOrPropertyWithValue("basePath", "/test/actuator");
 		});
 	}
 
@@ -67,8 +65,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
-			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
-			assertThat(basePath).isEqualTo("/actuator");
+			assertThat(bean).hasFieldOrPropertyWithValue("basePath", "/actuator");
 		});
 	}
 

@@ -180,9 +180,8 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 					.getField(filter, "httpSessionIdResolver");
 			DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
 					.getField(sessionIdResolver, "cookieSerializer");
-			String cookieName = (String) ReflectionTestUtils.getField(cookieSerializer,
-					"cookieName");
-			assertThat(cookieName).isEqualTo("testname");
+			assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName",
+					"testname");
 		});
 	}
 

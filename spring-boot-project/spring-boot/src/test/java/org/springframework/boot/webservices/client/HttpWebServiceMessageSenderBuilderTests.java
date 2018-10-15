@@ -56,10 +56,8 @@ public class HttpWebServiceMessageSenderBuilderTests {
 						.setReadTimeout(Duration.ofSeconds(2)));
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) messageSender
 				.getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(5000);
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(2000);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 2000);
 	}
 
 	@Test
