@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class EndpointIdTests {
 
 	@Test
-	public void ofWhenNullThorowsException() {
+	public void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(null))
 				.withMessage("Value must not be empty");
 	}
