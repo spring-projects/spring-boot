@@ -1731,19 +1731,6 @@ username, and the pool size, these settings are bound automatically before the
 (so the relevant sub-set of `spring.datasource.*` can still be used with your custom
 configuration).
 
-You can apply the same principle if you configure a custom JNDI `DataSource`, as shown in
-the following example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean(destroyMethod="")
-	@ConfigurationProperties(prefix="app.datasource")
-	public DataSource dataSource() throws Exception {
-		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
-	}
-----
-
 Spring Boot also provides a utility builder class, called `DataSourceBuilder`, that can
 be used to create one of the standard data sources (if it is on the classpath). The
 builder can detect the one to use based on what's available on the classpath. It also
@@ -1811,17 +1798,21 @@ include::{code-examples}/jdbc/ConfigurableDataSourceExample.java[tag=configurati
 ----
 
 This setup puts you _in sync_ with what Spring Boot does for you by default, except that
-a dedicated connection pool is chosen (in code) and its settings are exposed in the same
-namespace. Because `DataSourceProperties` is taking care of the `url`/`jdbcUrl`
-translation for you, you can configure it as follows:
+a dedicated connection pool is chosen (in code) and its settings are exposed in the
+`app.datasource.configuration` sub namespace. Because `DataSourceProperties` is taking
+care of the `url`/`jdbcUrl` translation for you, you can configure it as follows:
 
 [source,properties,indent=0]
 ----
 	app.datasource.url=jdbc:mysql://localhost/test
 	app.datasource.username=dbuser
 	app.datasource.password=dbpass
-	app.datasource.maximum-pool-size=30
+	app.datasource.configuration.maximum-pool-size=30
 ----
+
+TIP: Spring Boot will expose Hikari-specific settings to `spring.datasource.hikari`. This
+example uses a more generic `configuration` sub namespace as the example does not support
+multiple datasource implementations.
 
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type`
 has no effect. In practice, the builder is initialized with whatever value you
@@ -1858,10 +1849,12 @@ configure them as follows:
 
 [source,properties,indent=0]
 ----
-	app.datasource.first.type=com.zaxxer.hikari.HikariDataSource
-	app.datasource.first.maximum-pool-size=30
+	app.datasource.first.url=jdbc:mysql://localhost/first
+	app.datasource.first.username=dbuser
+	app.datasource.first.password=dbpass
+	app.datasource.first.configuration.maximum-pool-size=30
 
-	app.datasource.second.url=jdbc:mysql://localhost/test
+	app.datasource.second.url=jdbc:mysql://localhost/second
 	app.datasource.second.username=dbuser
 	app.datasource.second.password=dbpass
 	app.datasource.second.max-total=30
@@ -1876,7 +1869,8 @@ include::{code-examples}/jdbc/CompleteTwoDataSourcesExample.java[tag=configurati
 ----
 
 The preceding example configures two data sources on custom namespaces with the same
-logic as Spring Boot would use in auto-configuration.
+logic as Spring Boot would use in auto-configuration. Note that each `configuration` sub
+namespace provides advanced settings based on the chosen implementation.
 
 
 
