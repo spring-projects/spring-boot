@@ -161,7 +161,8 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
 		assertThat(body).as("Body was null").isNotNull();
-		assertThat(body).contains("This application has no explicit mapping for /error");
+		assertThat(body).contains(
+				"This application has no configured error view, so you are seeing this as a fallback.");
 	}
 
 	@Test
