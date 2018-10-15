@@ -41,8 +41,8 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void ofWhenContainsInvalidCharThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
+	public void ofWhenContainsSlashThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo/bar"))
 				.withMessage("Value must only contain valid chars");
 	}
 
