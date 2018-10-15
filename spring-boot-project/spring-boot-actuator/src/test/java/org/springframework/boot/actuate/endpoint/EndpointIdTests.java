@@ -47,7 +47,7 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void ofWhenContainsInvalidCharThrowsException() {
+	public void ofWhenContainsSlashThrowsException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Value must only contain valid chars");
 		EndpointId.of("foo/bar");
