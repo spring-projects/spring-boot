@@ -23,30 +23,44 @@ import org.springframework.util.Assert;
 
 /**
  * An identifier for an actuator endpoint. Endpoint IDs may contain only letters, numbers
- * and {@code '.'}. They must begin with a lower-case letter. Case is ignored when
- * comparing endpoint IDs.
+ * {@code '.'} and {@code '-'}. They must begin with a lower-case letter. Case and syntax
+ * characters are ignored when comparing endpoint IDs.
  *
  * @author Phillip Webb
  * @since 2.0.6
  */
 public final class EndpointId {
 
-	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.]+");
+	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
 
 	private final String value;
 
 	private final String lowerCaseValue;
 
+	private final String lowerCaseAlphaNumeric;
+
 	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
 		Assert.isTrue(VALID_CHARS.matcher(value).matches(),
-				"Value must be alpha-numeric or '.'");
+				"Value must only contain valid chars");
 		Assert.isTrue(!Character.isDigit(value.charAt(0)),
 				"Value must not start with a number");
 		Assert.isTrue(!Character.isUpperCase(value.charAt(0)),
 				"Value must not start with an uppercase letter");
 		this.value = value;
 		this.lowerCaseValue = value.toLowerCase(Locale.ENGLISH);
+		this.lowerCaseAlphaNumeric = getAlphaNumerics(this.lowerCaseValue);
+	}
+
+	private String getAlphaNumerics(String value) {
+		StringBuilder result = new StringBuilder(value.length());
+		for (int i = 0; i < value.length(); i++) {
+			char ch = value.charAt(i);
+			if (ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9') {
+				result.append(ch);
+			}
+		}
+		return result.toString();
 	}
 
 	@Override
@@ -57,12 +71,13 @@ public final class EndpointId {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		return toLowerCaseString().equals(((EndpointId) obj).toLowerCaseString());
+		return this.lowerCaseAlphaNumeric
+				.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
 	}
 
 	@Override
 	public int hashCode() {
-		return toLowerCaseString().hashCode();
+		return this.lowerCaseAlphaNumeric.hashCode();
 	}
 
 	/**
