@@ -147,12 +147,7 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 		@Override
 		public void checkHealth(Builder builder) throws Exception {
 			DiagnosticsReport diagnostics = this.cluster.diagnostics();
-			if (isCouchbaseUp(diagnostics)) {
-				builder.up();
-			}
-			else {
-				builder.down();
-			}
+			builder = isCouchbaseUp(diagnostics) ? builder.up() : builder.down();
 			builder.withDetail("sdk", diagnostics.sdk());
 			builder.withDetail("endpoints", diagnostics.endpoints().stream()
 					.map(this::describe).collect(Collectors.toList()));
