@@ -15,9 +15,6 @@
  */
 package org.springframework.boot.actuate.couchbase;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
 import com.couchbase.client.java.bucket.BucketInfo;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import reactor.core.publisher.Mono;
@@ -42,17 +39,13 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 
 	private final RxJavaCouchbaseOperations couchbaseOperations;
 
-	private final Duration timeout;
-
 	/**
 	 * Create a new {@link CouchbaseReactiveHealthIndicator} instance.
 	 * @param couchbaseOperations the reactive couchbase operations
-	 * @param timeout the request timeout
 	 */
-	public CouchbaseReactiveHealthIndicator(RxJavaCouchbaseOperations couchbaseOperations,
-			Duration timeout) {
+	public CouchbaseReactiveHealthIndicator(
+			RxJavaCouchbaseOperations couchbaseOperations) {
 		this.couchbaseOperations = couchbaseOperations;
-		this.timeout = timeout;
 	}
 
 	@Override
@@ -61,8 +54,7 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 		String versions = StringUtils
 				.collectionToCommaDelimitedString(cluster.getAllVersions());
 		Observable<BucketInfo> bucket = this.couchbaseOperations.getCouchbaseBucket()
-				.bucketManager().async().info()
-				.timeout(this.timeout.toMillis(), TimeUnit.MILLISECONDS);
+				.bucketManager().async().info();
 		Single<Health> health = bucket.map(BucketInfo::nodeList)
 				.map(StringUtils::collectionToCommaDelimitedString)
 				.map((nodes) -> builder.up().withDetail("versions", versions)

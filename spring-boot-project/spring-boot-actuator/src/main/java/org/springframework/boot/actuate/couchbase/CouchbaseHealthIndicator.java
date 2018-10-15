@@ -16,19 +16,19 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.couchbase.client.java.bucket.BucketInfo;
-import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.core.message.internal.DiagnosticsReport;
+import com.couchbase.client.core.message.internal.EndpointHealth;
+import com.couchbase.client.core.state.LifecycleState;
+import com.couchbase.client.java.Cluster;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for Couchbase.
@@ -39,46 +39,52 @@ import org.springframework.util.StringUtils;
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private final CouchbaseOperations operations;
-
-	private final long timeout;
+	private final Cluster cluster;
 
 	/**
-	 * Create an indicator with the specified {@link CouchbaseOperations} and
-	 * {@code timeout}.
-	 * @param couchbaseOperations the couchbase operations
-	 * @param timeout the request timeout
+	 * Create an indicator with the specified {@link Cluster}.
+	 * @param cluster the Couchbase Cluster
+	 * @since 2.0.6
 	 */
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations,
-			Duration timeout) {
+	public CouchbaseHealthIndicator(Cluster cluster) {
 		super("Couchbase health check failed");
-		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
-		Assert.notNull(timeout, "Timeout must not be null");
-		this.operations = couchbaseOperations;
-		this.timeout = timeout.toMillis();
+		Assert.notNull(cluster, "Cluster must not be null");
+		this.cluster = cluster;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
-		BucketInfo bucket = getBucketInfo();
-		String versions = StringUtils
-				.collectionToCommaDelimitedString(cluster.getAllVersions());
-		String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
-		builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
+		DiagnosticsReport diagnostics = this.cluster.diagnostics();
+		if (isCouchbaseUp(diagnostics)) {
+			builder.up();
+		}
+		else {
+			builder.down();
+		}
+		builder.withDetail("sdk", diagnostics.sdk());
+		builder.withDetail("endpoints", diagnostics.endpoints().stream()
+				.map(this::describe).collect(Collectors.toList()));
 	}
 
-	private BucketInfo getBucketInfo() throws Exception {
-		try {
-			return this.operations.getCouchbaseBucket().bucketManager().info(this.timeout,
-					TimeUnit.MILLISECONDS);
-		}
-		catch (RuntimeException ex) {
-			if (ex.getCause() instanceof TimeoutException) {
-				throw (TimeoutException) ex.getCause();
+	private boolean isCouchbaseUp(DiagnosticsReport diagnostics) {
+		for (EndpointHealth health : diagnostics.endpoints()) {
+			LifecycleState state = health.state();
+			if (state != LifecycleState.CONNECTED && state != LifecycleState.IDLE) {
+				return false;
 			}
-			throw ex;
 		}
+		return true;
+	}
+
+	private Map<String, Object> describe(EndpointHealth endpointHealth) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", endpointHealth.id());
+		map.put("lastActivity", endpointHealth.lastActivity());
+		map.put("local", endpointHealth.local().toString());
+		map.put("remote", endpointHealth.remote().toString());
+		map.put("state", endpointHealth.state());
+		map.put("type", endpointHealth.type());
+		return map;
 	}
 
 }

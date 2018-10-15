@@ -15,8 +15,6 @@
  */
 package org.springframework.boot.actuate.autoconfigure.couchbase;
 
-import java.time.Duration;
-
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -51,18 +49,6 @@ public class CouchbaseReactiveHealthIndicatorAutoConfigurationTests {
 				.hasSingleBean(CouchbaseReactiveHealthIndicator.class)
 				.doesNotHaveBean(CouchbaseHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
-	}
-
-	@Test
-	public void runWithCustomTimeoutShouldCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.couchbase.timeout=2s")
-				.run((context) -> {
-					assertThat(context)
-							.hasSingleBean(CouchbaseReactiveHealthIndicator.class);
-					assertThat(context.getBean(CouchbaseReactiveHealthIndicator.class))
-							.hasFieldOrPropertyWithValue("timeout",
-									Duration.ofSeconds(2));
-				});
 	}
 
 	@Test

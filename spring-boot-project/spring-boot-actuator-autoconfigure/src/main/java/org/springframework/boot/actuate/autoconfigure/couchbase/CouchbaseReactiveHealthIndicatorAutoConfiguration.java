@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
@@ -51,19 +50,14 @@ import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 @ConditionalOnEnabledHealthIndicator("couchbase")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(CouchbaseReactiveDataAutoConfiguration.class)
-@EnableConfigurationProperties(CouchbaseHealthIndicatorProperties.class)
 public class CouchbaseReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<CouchbaseReactiveHealthIndicator, RxJavaCouchbaseOperations> {
 
 	private final Map<String, RxJavaCouchbaseOperations> couchbaseOperations;
 
-	private final CouchbaseHealthIndicatorProperties properties;
-
 	public CouchbaseReactiveHealthIndicatorAutoConfiguration(
-			Map<String, RxJavaCouchbaseOperations> couchbaseOperations,
-			CouchbaseHealthIndicatorProperties properties) {
+			Map<String, RxJavaCouchbaseOperations> couchbaseOperations) {
 		this.couchbaseOperations = couchbaseOperations;
-		this.properties = properties;
 	}
 
 	@Bean
@@ -75,8 +69,7 @@ public class CouchbaseReactiveHealthIndicatorAutoConfiguration extends
 	@Override
 	protected CouchbaseReactiveHealthIndicator createHealthIndicator(
 			RxJavaCouchbaseOperations couchbaseOperations) {
-		return new CouchbaseReactiveHealthIndicator(couchbaseOperations,
-				this.properties.getTimeout());
+		return new CouchbaseReactiveHealthIndicator(couchbaseOperations);
 	}
 
 }
