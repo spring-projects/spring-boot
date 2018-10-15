@@ -327,10 +327,30 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnClass({ SpringSecurityDialect.class })
 	protected static class ThymeleafSecurityDialectConfiguration {
 
+		private final Log logger = LogFactory
+				.getLog(ThymeleafSecurityDialectConfiguration.class);
+
 		@Bean
 		@ConditionalOnMissingBean
 		public SpringSecurityDialect securityDialect() {
+			if (this.logger.isWarnEnabled()) {
+				this.logger.warn("Auto-configuration for thymeleaf-extras-springsecurity4"
+						+ " is deprecated in favour of thymeleaf-extras-springsecurity5");
+			}
 			return new SpringSecurityDialect();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({
+			org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect.class })
+	protected static class ThymeleafSecurity5DialectConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect securityDialect() {
+			return new org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect();
 		}
 
 	}

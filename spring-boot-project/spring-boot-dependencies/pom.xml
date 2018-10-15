@@ -172,7 +172,9 @@
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>3.0.10.RELEASE</thymeleaf.version>
+		<!-- Deprecated in favour of thymeleaf-extras-springsecurity.version -->
 		<thymeleaf-extras-springsecurity4.version>3.0.3.RELEASE</thymeleaf-extras-springsecurity4.version>
+		<thymeleaf-extras-springsecurity.version>${thymeleaf-extras-springsecurity4.version}</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
@@ -2951,7 +2953,12 @@
 			<dependency>
 				<groupId>org.thymeleaf.extras</groupId>
 				<artifactId>thymeleaf-extras-springsecurity4</artifactId>
-				<version>${thymeleaf-extras-springsecurity4.version}</version>
+				<version>${thymeleaf-extras-springsecurity.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.thymeleaf.extras</groupId>
+				<artifactId>thymeleaf-extras-springsecurity5</artifactId>
+				<version>${thymeleaf-extras-springsecurity.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
