@@ -26,7 +26,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  * @since 2.0.5
+ * @deprecated since 2.0.6
  */
+@Deprecated
 @ConfigurationProperties(prefix = "management.health.couchbase")
 public class CouchbaseHealthIndicatorProperties {
 
