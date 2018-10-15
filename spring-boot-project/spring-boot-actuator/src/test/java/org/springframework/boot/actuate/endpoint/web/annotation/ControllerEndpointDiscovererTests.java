@@ -29,7 +29,6 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -153,7 +152,7 @@ public class ControllerEndpointDiscovererTests {
 			Consumer<ControllerEndpointDiscoverer> consumer) {
 		return (context) -> {
 			ControllerEndpointDiscoverer discoverer = new ControllerEndpointDiscoverer(
-					context, PathMapper.useEndpointId(), Collections.emptyList());
+					context, null, Collections.emptyList());
 			consumer.accept(discoverer);
 		};
 	}

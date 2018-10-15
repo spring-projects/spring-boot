@@ -26,7 +26,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpoi
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -102,8 +101,8 @@ public class JolokiaEndpointAutoConfigurationTests {
 		@Bean
 		public ServletEndpointDiscoverer servletEndpointDiscoverer(
 				ApplicationContext applicationContext) {
-			return new ServletEndpointDiscoverer(applicationContext,
-					PathMapper.useEndpointId(), Collections.emptyList());
+			return new ServletEndpointDiscoverer(applicationContext, null,
+					Collections.emptyList());
 		}
 
 	}

@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,6 +31,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 class MappingWebEndpointPathMapper implements PathMapper {
 
 	private final Map<EndpointId, String> pathMapping;
@@ -42,8 +45,7 @@ class MappingWebEndpointPathMapper implements PathMapper {
 	@Override
 	public String getRootPath(EndpointId endpointId) {
 		String path = this.pathMapping.get(endpointId);
-		return StringUtils.hasText(path) ? path
-				: PathMapper.useEndpointId().getRootPath(endpointId);
+		return StringUtils.hasText(path) ? path : null;
 	}
 
 }

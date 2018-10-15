@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -152,7 +151,7 @@ public class ServletEndpointDiscovererTests {
 			Consumer<ServletEndpointDiscoverer> consumer) {
 		return (context) -> {
 			ServletEndpointDiscoverer discoverer = new ServletEndpointDiscoverer(context,
-					PathMapper.useEndpointId(), Collections.emptyList());
+					null, Collections.emptyList());
 			consumer.accept(discoverer);
 		};
 	}

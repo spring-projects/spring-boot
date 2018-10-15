@@ -95,7 +95,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 					Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 			CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(
-					context, parameterMapper, mediaTypes, endpointPathMapper,
+					context, parameterMapper, mediaTypes,
+					Collections.singletonList(endpointPathMapper),
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
 					Collections.emptyList());
 			consumer.accept(discoverer);
