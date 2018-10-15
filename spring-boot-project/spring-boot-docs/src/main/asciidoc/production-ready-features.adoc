@@ -1344,6 +1344,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for
 https://micrometer.io[Micrometer], an application metrics facade that supports numerous
 monitoring systems, including:
 
+- <<production-ready-metrics-export-appoptics,AppOptics>>
 - <<production-ready-metrics-export-atlas,Atlas>>
 - <<production-ready-metrics-export-datadog,Datadog>>
 - <<production-ready-metrics-export-dynatrace,Dynatrace>>
@@ -1430,6 +1431,19 @@ annotation markers.
 
 [[production-ready-metrics-export]]
 === Supported monitoring systems
+
+
+
+[[production-ready-metrics-export-appoptics]]
+==== AppOptics
+By default, the AppOptics registry pushes metrics to https://www.appoptics.com/
+periodically. To export metrics to SaaS
+{micrometer-registry-documentation}/appoptics[AppOptics], your API token must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.appoptics.api-token=YOUR_TOKEN
+----
 
 
 
