@@ -51,8 +51,7 @@ import org.springframework.data.couchbase.core.CouchbaseOperations;
 @ConditionalOnEnabledHealthIndicator("couchbase")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ CouchbaseAutoConfiguration.class,
-		CouchbaseDataAutoConfiguration.class,
-		CouchbaseReactiveHealthIndicatorAutoConfiguration.class })
+		CouchbaseDataAutoConfiguration.class })
 @EnableConfigurationProperties(CouchbaseHealthIndicatorProperties.class)
 public class CouchbaseHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<CouchbaseHealthIndicator, CouchbaseOperations> {

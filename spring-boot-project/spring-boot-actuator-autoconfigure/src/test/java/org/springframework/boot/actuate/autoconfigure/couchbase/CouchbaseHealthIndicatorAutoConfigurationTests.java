@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
-import org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -48,7 +47,6 @@ public class CouchbaseHealthIndicatorAutoConfigurationTests {
 	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(CouchbaseHealthIndicator.class)
-				.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
