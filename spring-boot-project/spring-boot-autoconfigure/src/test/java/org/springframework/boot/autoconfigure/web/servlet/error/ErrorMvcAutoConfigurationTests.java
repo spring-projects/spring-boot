@@ -56,8 +56,10 @@ public class ErrorMvcAutoConfigurationTests {
 					new IllegalStateException("Exception message"), false);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
-			assertThat(((MockHttpServletResponse) webRequest.getResponse())
-					.getContentAsString()).contains("<div>Exception message</div>");
+			String responseString = ((MockHttpServletResponse) webRequest.getResponse())
+					.getContentAsString();
+			assertThat(responseString).contains("<div>Exception message</div>")
+					.contains("<div>java.lang.IllegalStateException");
 		});
 	}
 

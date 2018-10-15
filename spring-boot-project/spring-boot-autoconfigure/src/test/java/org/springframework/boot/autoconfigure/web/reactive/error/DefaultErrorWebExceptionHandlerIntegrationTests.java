@@ -184,7 +184,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	public void defaultErrorView() {
 		this.contextRunner
-				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/")
+				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/",
+						"server.error.include-stacktrace=always")
 				.run((context) -> {
 					WebTestClient client = WebTestClient.bindToApplicationContext(context)
 							.build();
@@ -194,7 +195,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
-							.contains("<div>Expected!</div>");
+							.contains("<div>Expected!</div>")
+							.contains("<div>java.lang.IllegalStateException");
 				});
 	}
 

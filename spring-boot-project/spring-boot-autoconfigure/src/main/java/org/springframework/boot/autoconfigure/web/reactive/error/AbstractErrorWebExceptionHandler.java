@@ -189,8 +189,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	protected Mono<ServerResponse> renderDefaultErrorView(
 			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
 		StringBuilder builder = new StringBuilder();
-		Object message = error.get("message");
 		Date timestamp = (Date) error.get("timestamp");
+		Object message = error.get("message");
+		Object trace = error.get("trace");
 		builder.append("<html><body><h1>Whitelabel Error Page</h1>").append(
 				"<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
 				.append("<div id='created'>").append(timestamp).append("</div>")
@@ -199,6 +200,9 @@ public abstract class AbstractErrorWebExceptionHandler
 				.append(htmlEscape(error.get("status"))).append(").</div>");
 		if (message != null) {
 			builder.append("<div>").append(htmlEscape(message)).append("</div>");
+		}
+		if (trace != null) {
+			builder.append("<div>").append(htmlEscape(trace)).append("</div>");
 		}
 		builder.append("</body></html>");
 		return responseBody.syncBody(builder.toString());
