@@ -102,6 +102,14 @@ public class ThymeleafProperties {
 	private boolean enableSpringElCompiler;
 
 	/**
+	 * Whether hidden form inputs acting as markers for checkboxes (which are omitted from
+	 * form submission when unchecked) should be rendered before or after the rendered
+	 * checkbox element itself for better integration with some CSS frameworks. Default is
+	 * "false" (hiddens will be rendered after checkboxes).
+	 */
+	private boolean renderHiddenMarkersBeforeCheckboxes;
+
+	/**
 	 * Whether to enable Thymeleaf view resolution for Web frameworks.
 	 */
 	private boolean enabled = true;
@@ -206,6 +214,15 @@ public class ThymeleafProperties {
 		this.enableSpringElCompiler = enableSpringElCompiler;
 	}
 
+	public boolean isRenderHiddenMarkersBeforeCheckboxes() {
+		return renderHiddenMarkersBeforeCheckboxes;
+	}
+
+	public void setRenderHiddenMarkersBeforeCheckboxes(
+			boolean renderHiddenMarkersBeforeCheckboxes) {
+		this.renderHiddenMarkersBeforeCheckboxes = renderHiddenMarkersBeforeCheckboxes;
+	}
+
 	public Reactive getReactive() {
 		return this.reactive;
 	}
@@ -221,12 +238,29 @@ public class ThymeleafProperties {
 		 */
 		private MimeType contentType = MimeType.valueOf("text/html");
 
+		/**
+		 * Whether Thymeleaf should start sending partial output to the server's output
+		 * buffers as soon as it becomes available (default), or instead wait until
+		 * template processing is finished, keeping all rendered results in memory until
+		 * that moment and sending them to the server's output buffers in a single call.
+		 */
+		private boolean producePartialOutputWhileProcessing = true;
+
 		public MimeType getContentType() {
 			return this.contentType;
 		}
 
 		public void setContentType(MimeType contentType) {
 			this.contentType = contentType;
+		}
+
+		public boolean isProducePartialOutputWhileProcessing() {
+			return producePartialOutputWhileProcessing;
+		}
+
+		public void setProducePartialOutputWhileProcessing(
+				boolean producePartialOutputWhileProcessing) {
+			this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
 		}
 
 	}

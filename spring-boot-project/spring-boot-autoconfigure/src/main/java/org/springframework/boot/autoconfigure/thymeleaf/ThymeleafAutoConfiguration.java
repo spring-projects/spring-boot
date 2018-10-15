@@ -154,6 +154,8 @@ public class ThymeleafAutoConfiguration {
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
+			engine.setRenderHiddenMarkersBeforeCheckboxes(
+					this.properties.isRenderHiddenMarkersBeforeCheckboxes());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
@@ -198,6 +200,8 @@ public class ThymeleafAutoConfiguration {
 				resolver.setContentType(
 						appendCharset(this.properties.getServlet().getContentType(),
 								resolver.getCharacterEncoding()));
+				resolver.setProducePartialOutputWhileProcessing(this.properties
+						.getServlet().isProducePartialOutputWhileProcessing());
 				resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
 				resolver.setViewNames(this.properties.getViewNames());
 				// This resolver acts as a fallback resolver (e.g. like a
@@ -245,6 +249,8 @@ public class ThymeleafAutoConfiguration {
 		public SpringWebFluxTemplateEngine templateEngine() {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
+			engine.setRenderHiddenMarkersBeforeCheckboxes(
+					this.properties.isRenderHiddenMarkersBeforeCheckboxes());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.orderedStream().forEach(engine::addDialect);
 			return engine;

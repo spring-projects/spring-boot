@@ -163,6 +163,21 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideRenderHiddenMarkersBeforeCheckboxes() {
+		load(BaseConfiguration.class,
+				"spring.thymeleaf.render-hidden-markers-before-checkboxes:true");
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getRenderHiddenMarkersBeforeCheckboxes()).isTrue();
+	}
+
+	@Test
+	public void enableRenderHiddenMarkersBeforeCheckboxesIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getRenderHiddenMarkersBeforeCheckboxes()).isFalse();
+	}
+
+	@Test
 	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
