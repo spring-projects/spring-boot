@@ -22,16 +22,16 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 
 /**
- * An identifier for an actuator endpoint. Endpoint IDs may contain only letters and
- * numbers and must begin with a lower-case letter. Case is ignored when comparing
- * endpoint IDs.
+ * An identifier for an actuator endpoint. Endpoint IDs may contain only letters, numbers
+ * and {@code '.'}. They must begin with a lower-case letter. Case is ignored when
+ * comparing endpoint IDs.
  *
  * @author Phillip Webb
  * @since 2.0.6
  */
 public final class EndpointId {
 
-	private static final Pattern ALPHA_NUMERIC = Pattern.compile("[a-zA-Z0-9]+");
+	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.]+");
 
 	private final String value;
 
@@ -39,8 +39,8 @@ public final class EndpointId {
 
 	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		Assert.isTrue(ALPHA_NUMERIC.matcher(value).matches(),
-				"Value must be alpha-numeric");
+		Assert.isTrue(VALID_CHARS.matcher(value).matches(),
+				"Value must be alpha-numeric or '.'");
 		Assert.isTrue(!Character.isDigit(value.charAt(0)),
 				"Value must not start with a number");
 		Assert.isTrue(!Character.isUpperCase(value.charAt(0)),

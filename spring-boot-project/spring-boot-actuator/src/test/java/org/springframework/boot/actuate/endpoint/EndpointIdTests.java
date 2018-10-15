@@ -43,13 +43,13 @@ public class EndpointIdTests {
 	@Test
 	public void ofWhenContainsDashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo-bar"))
-				.withMessage("Value must be alpha-numeric");
+				.withMessageContaining("Value must be alpha-numeric");
 	}
 
 	@Test
 	public void ofWhenHasBadCharThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
-				.withMessage("Value must be alpha-numeric");
+				.withMessageContaining("Value must be alpha-numeric");
 	}
 
 	@Test
@@ -62,6 +62,14 @@ public class EndpointIdTests {
 	public void ofWhenStartsWithUppercaseLetterThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("Foo"))
 				.withMessage("Value must not start with an uppercase letter");
+	}
+
+	@Test
+	public void ofWhenContainsDotIsValid() {
+		// Ideally we wouldn't support this but there are existing endpoints using the
+		// pattern. See gh-14773
+		EndpointId endpointId = EndpointId.of("foo.bar");
+		assertThat(endpointId.toString()).isEqualTo("foo.bar");
 	}
 
 	@Test
