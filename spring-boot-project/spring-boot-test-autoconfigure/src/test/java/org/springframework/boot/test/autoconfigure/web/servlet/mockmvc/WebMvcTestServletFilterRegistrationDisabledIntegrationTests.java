@@ -43,7 +43,7 @@ public class WebMvcTestServletFilterRegistrationDisabledIntegrationTests {
 	private MockMvc mvc;
 
 	@Test
-	public void shouldApplyFilter() throws Exception {
+	public void shouldNotApplyFilter() throws Exception {
 		this.mvc.perform(get("/one")).andExpect(header().string("x-test", (String) null));
 	}
 

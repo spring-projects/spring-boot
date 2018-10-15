@@ -47,7 +47,7 @@ public final class HttpTrace {
 	private volatile Long timeTaken;
 
 	/**
-	 * Creates a fully-configured {@code HttpTrace} instance. Primarly for use by
+	 * Creates a fully-configured {@code HttpTrace} instance. Primarily for use by
 	 * {@link HttpTraceRepository} implementations when recreating a trace from a
 	 * persistent store.
 	 * @param request the request
@@ -137,7 +137,7 @@ public final class HttpTrace {
 		}
 
 		/**
-		 * Creates a fully-configured {@code Request} instance. Primarly for use by
+		 * Creates a fully-configured {@code Request} instance. Primarily for use by
 		 * {@link HttpTraceRepository} implementations when recreating a request from a
 		 * persistent store.
 		 * @param method the HTTP method of the request
@@ -186,7 +186,7 @@ public final class HttpTrace {
 		}
 
 		/**
-		 * Creates a fully-configured {@code Response} instance. Primarly for use by
+		 * Creates a fully-configured {@code Response} instance. Primarily for use by
 		 * {@link HttpTraceRepository} implementations when recreating a response from a
 		 * persistent store.
 		 * @param status the status of the response

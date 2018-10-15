@@ -585,12 +585,12 @@ public class HibernateJpaAutoConfigurationTests
 	static class AsyncBootstrappingConfiguration {
 
 		@Bean
-		ThreadPoolTaskExecutor ThreadPoolTaskExecutor() {
+		public ThreadPoolTaskExecutor ThreadPoolTaskExecutor() {
 			return new ThreadPoolTaskExecutor();
 		}
 
 		@Bean
-		public EntityManagerFactoryBuilderCustomizer asyncBoostrappingCustomizer(
+		public EntityManagerFactoryBuilderCustomizer asyncBootstrappingCustomizer(
 				ThreadPoolTaskExecutor executor) {
 			return (builder) -> {
 				builder.setBootstrapExecutor(executor);
