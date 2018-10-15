@@ -49,7 +49,7 @@ public class ConfigurableDataSourceExample {
 		}
 
 		@Bean
-		@ConfigurationProperties("app.datasource")
+		@ConfigurationProperties("app.datasource.configuration")
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return properties.initializeDataSourceBuilder().type(HikariDataSource.class)
 					.build();
