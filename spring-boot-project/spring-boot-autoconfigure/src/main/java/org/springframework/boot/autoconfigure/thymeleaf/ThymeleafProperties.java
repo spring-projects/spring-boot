@@ -102,6 +102,14 @@ public class ThymeleafProperties {
 	private boolean enableSpringElCompiler;
 
 	/**
+	 * Whether hidden form inputs acting as markers for checkboxes (which are
+	 * omitted from form submission when unchecked) should be rendered before or after
+	 * the rendered checkbox element itself for better integration with some CSS
+	 * frameworks. Default is "false" (hiddens will be rendered after checkboxes).
+	 */
+	private boolean renderHiddenMarkersBeforeCheckboxes;
+
+	/**
 	 * Whether to enable Thymeleaf view resolution for Web frameworks.
 	 */
 	private boolean enabled = true;
@@ -204,6 +212,14 @@ public class ThymeleafProperties {
 
 	public void setEnableSpringElCompiler(boolean enableSpringElCompiler) {
 		this.enableSpringElCompiler = enableSpringElCompiler;
+	}
+
+	public boolean isRenderHiddenMarkersBeforeCheckboxes() {
+		return renderHiddenMarkersBeforeCheckboxes;
+	}
+
+	public void setRenderHiddenMarkersBeforeCheckboxes(boolean renderHiddenMarkersBeforeCheckboxes) {
+		this.renderHiddenMarkersBeforeCheckboxes = renderHiddenMarkersBeforeCheckboxes;
 	}
 
 	public Reactive getReactive() {

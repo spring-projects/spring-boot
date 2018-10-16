@@ -154,6 +154,8 @@ public class ThymeleafAutoConfiguration {
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
+			engine.setRenderHiddenMarkersBeforeCheckboxes(
+					this.properties.isRenderHiddenMarkersBeforeCheckboxes());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
@@ -247,6 +249,8 @@ public class ThymeleafAutoConfiguration {
 		public SpringWebFluxTemplateEngine templateEngine() {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
+			engine.setRenderHiddenMarkersBeforeCheckboxes(
+					this.properties.isRenderHiddenMarkersBeforeCheckboxes());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
 			this.dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
