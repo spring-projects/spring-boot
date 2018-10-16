@@ -17,7 +17,7 @@ package org.springframework.boot.actuate.autoconfigure.couchbase;
 
 import java.util.Map;
 
-import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthIndicatorConfiguration;
@@ -31,10 +31,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -45,31 +44,30 @@ import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
  * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass({ Bucket.class, RxJavaCouchbaseOperations.class, Flux.class })
-@ConditionalOnBean(RxJavaCouchbaseOperations.class)
+@ConditionalOnClass({ Cluster.class, Flux.class })
+@ConditionalOnBean(Cluster.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter(CouchbaseReactiveDataAutoConfiguration.class)
+@AutoConfigureAfter(CouchbaseAutoConfiguration.class)
 public class CouchbaseReactiveHealthIndicatorAutoConfiguration extends
-		CompositeReactiveHealthIndicatorConfiguration<CouchbaseReactiveHealthIndicator, RxJavaCouchbaseOperations> {
+		CompositeReactiveHealthIndicatorConfiguration<CouchbaseReactiveHealthIndicator, Cluster> {
 
-	private final Map<String, RxJavaCouchbaseOperations> couchbaseOperations;
+	private final Map<String, Cluster> clusters;
 
 	public CouchbaseReactiveHealthIndicatorAutoConfiguration(
-			Map<String, RxJavaCouchbaseOperations> couchbaseOperations) {
-		this.couchbaseOperations = couchbaseOperations;
+			Map<String, Cluster> clusters) {
+		this.clusters = clusters;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "couchbaseReactiveHealthIndicator")
 	public ReactiveHealthIndicator couchbaseReactiveHealthIndicator() {
-		return createHealthIndicator(this.couchbaseOperations);
+		return createHealthIndicator(this.clusters);
 	}
 
 	@Override
-	protected CouchbaseReactiveHealthIndicator createHealthIndicator(
-			RxJavaCouchbaseOperations couchbaseOperations) {
-		return new CouchbaseReactiveHealthIndicator(couchbaseOperations);
+	protected CouchbaseReactiveHealthIndicator createHealthIndicator(Cluster cluster) {
+		return new CouchbaseReactiveHealthIndicator(cluster);
 	}
 
 }

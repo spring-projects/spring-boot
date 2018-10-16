@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.actuate.autoconfigure.couchbase;
 
+import com.couchbase.client.java.Cluster;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -25,7 +26,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -63,8 +63,8 @@ public class CouchbaseReactiveHealthIndicatorAutoConfigurationTests {
 	protected static class CouchbaseMockConfiguration {
 
 		@Bean
-		public RxJavaCouchbaseOperations couchbaseOperations() {
-			return mock(RxJavaCouchbaseOperations.class);
+		public Cluster couchbaseCluster() {
+			return mock(Cluster.class);
 		}
 
 	}
