@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.client.web;
+package org.springframework.boot.autoconfigure.security.web.servlet;
 
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for OAuth client support.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Security in a servlet web
+ * application.
  *
  * @author Madhura Bhave
- * @author Phillip Webb
  * @since 2.1.0
  */
 @Configuration
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
-@ConditionalOnClass({ EnableWebSecurity.class, ClientRegistration.class })
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({ OAuth2ClientRegistrationRepositoryConfiguration.class,
-		OAuth2WebSecurityConfiguration.class })
-public class OAuth2ClientAutoConfiguration {
+@EnableConfigurationProperties(SecurityProperties.class)
+@ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
+@AutoConfigureAfter(SecurityAutoConfiguration.class)
+@Import({ SpringBootWebSecurityConfiguration.class,
+		EnableWebSecurityConfiguration.class })
+public class ServletWebSecurityAutoConfiguration {
 
 }

@@ -22,7 +22,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * Spring Security.
  *
  * @author Madhura Bhave
- * @since 2.0.5
+ * @since 2.1.0
  */
 @FunctionalInterface
 public interface RequestMatcherProvider {

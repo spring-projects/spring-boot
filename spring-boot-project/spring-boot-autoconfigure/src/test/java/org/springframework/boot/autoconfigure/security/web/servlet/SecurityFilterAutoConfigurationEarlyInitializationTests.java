@@ -82,6 +82,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			DispatcherServletAutoConfiguration.class, SecurityAutoConfiguration.class,
 			UserDetailsServiceAutoConfiguration.class,
 			SecurityFilterAutoConfiguration.class,
+			ServletWebSecurityAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

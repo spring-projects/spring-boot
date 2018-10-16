@@ -44,8 +44,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.reactive.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -76,7 +76,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
-					ReactiveSecurityAutoConfiguration.class,
+					ReactiveWebSecurityAutoConfiguration.class,
 					ReactiveUserDetailsServiceAutoConfiguration.class,
 					WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,

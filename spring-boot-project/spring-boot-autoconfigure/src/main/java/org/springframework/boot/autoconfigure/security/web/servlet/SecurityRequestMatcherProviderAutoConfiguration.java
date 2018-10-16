@@ -28,7 +28,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
  * Auto-configuration for {@link RequestMatcherProvider}.
  *
  * @author Madhura Bhave
- * @since 2.0.5
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass({ RequestMatcher.class, DispatcherServlet.class })

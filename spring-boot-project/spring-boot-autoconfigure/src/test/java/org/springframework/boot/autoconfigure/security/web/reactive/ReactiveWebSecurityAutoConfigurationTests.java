@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.security.web.reactive;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,11 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveSecurityAutoConfiguration}.
+ * Tests for {@link ReactiveWebSecurityAutoConfiguration}.
  *
  * @author Madhura Bhave
  */
-public class ReactiveSecurityAutoConfigurationTests {
+public class ReactiveWebSecurityAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 
@@ -40,7 +41,7 @@ public class ReactiveSecurityAutoConfigurationTests {
 	public void backsOffWhenWebFilterChainProxyBeanPresent() {
 		this.contextRunner
 				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+						AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class))
 				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(WebFilterChainProxy.class));
@@ -50,7 +51,7 @@ public class ReactiveSecurityAutoConfigurationTests {
 	public void enablesWebFluxSecurity() {
 		this.contextRunner
 				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+						AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class,
 								ReactiveUserDetailsServiceAutoConfiguration.class))
 				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class)
 						.isNotNull());

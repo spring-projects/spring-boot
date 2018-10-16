@@ -99,12 +99,13 @@ org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.ReactiveUserDetailsServiceAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
-org.springframework.boot.autoconfigure.security.web.servlet.SecurityRequestMatcherProviderAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.UserDetailsServiceAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.web.reactive.ReactiveWebSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.web.servlet.SecurityRequestMatcherProviderAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.web.servlet.ServletWebSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.web.servlet.SecurityFilterAutoConfiguration,\
-org.springframework.boot.autoconfigure.security.web.reactive.ReactiveSecurityAutoConfiguration,\
-org.springframework.boot.autoconfigure.security.web.reactive.ReactiveUserDetailsServiceAutoConfiguration,\
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.web.OAuth2ClientAutoConfiguration,\

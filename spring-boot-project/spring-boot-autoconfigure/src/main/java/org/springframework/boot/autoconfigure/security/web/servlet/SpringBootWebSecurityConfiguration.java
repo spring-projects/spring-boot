@@ -33,7 +33,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * part of the custom security configuration.
  *
  * @author Madhura Bhave
- * @since 2.0.0
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(WebSecurityConfigurerAdapter.class)

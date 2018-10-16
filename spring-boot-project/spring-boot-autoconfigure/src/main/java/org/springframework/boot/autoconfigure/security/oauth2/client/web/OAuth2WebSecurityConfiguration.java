@@ -33,7 +33,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
  *
  * @author Madhura Bhave
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnBean(ClientRegistrationRepository.class)

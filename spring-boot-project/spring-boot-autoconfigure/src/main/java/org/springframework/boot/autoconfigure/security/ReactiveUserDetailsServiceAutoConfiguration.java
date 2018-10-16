@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.web.reactive;
+package org.springframework.boot.autoconfigure.security;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -26,7 +26,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -38,12 +37,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
- * Default user {@link Configuration} for a reactive web application. Configures a
+ * Default user {@link Configuration} for a reactive application. Configures a
  * {@link ReactiveUserDetailsService} with a default user and generated password. This
  * backs-off completely if there is a bean of type {@link ReactiveUserDetailsService} or
  * {@link ReactiveAuthenticationManager}.
+ * <p>
+ * Note that the current reactive application detection mechanism is limited to web
+ * applications only. If you're writing a non-web application you will currently need to
+ * configure reactive security yourself.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })

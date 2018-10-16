@@ -33,13 +33,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * been configured by the user, this will back-off.
  *
  * @author Madhura Bhave
- * @since 2.0.0
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnMissingBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
-public class WebSecurityEnablerConfiguration {
+public class EnableWebSecurityConfiguration {
 
 }

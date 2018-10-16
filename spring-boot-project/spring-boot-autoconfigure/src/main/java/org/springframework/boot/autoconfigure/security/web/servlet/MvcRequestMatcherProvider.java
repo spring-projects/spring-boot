@@ -24,7 +24,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
  * used for Spring MVC applications.
  *
  * @author Madhura Bhave
- * @since 2.0.5
+ * @since 2.1.0
  */
 public class MvcRequestMatcherProvider implements RequestMatcherProvider {
 

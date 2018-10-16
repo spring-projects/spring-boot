@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Rob Winch
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(AuthenticationManager.class)

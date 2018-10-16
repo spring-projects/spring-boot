@@ -56,6 +56,7 @@ public class SecurityFilterAutoConfigurationTests {
 	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebSecurity.class,
+			ServletWebSecurityAutoConfiguration.class,
 			SecurityFilterAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {

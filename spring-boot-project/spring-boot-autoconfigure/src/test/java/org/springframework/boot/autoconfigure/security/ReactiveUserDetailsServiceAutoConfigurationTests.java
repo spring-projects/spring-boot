@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.web.reactive;
+package org.springframework.boot.autoconfigure.security;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -81,8 +80,6 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(AuthenticationManagerConfig.class,
 						TestSecurityConfiguration.class)
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.run((context) -> assertThat(context)
 						.getBean(ReactiveUserDetailsService.class).isNull());
 	}

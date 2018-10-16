@@ -19,15 +19,13 @@ package org.springframework.boot.autoconfigure.security;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.web.servlet.SpringBootWebSecurityConfiguration;
-import org.springframework.boot.autoconfigure.security.web.servlet.WebSecurityEnablerConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
@@ -35,12 +33,12 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Rob Winch
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
-@Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
-		SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean
@@ -48,6 +46,18 @@ public class SecurityAutoConfiguration {
 	public DefaultAuthenticationEventPublisher authenticationEventPublisher(
 			ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
+	}
+
+	@Configuration
+	@ConditionalOnClass(SecurityEvaluationContextExtension.class)
+	static class SecurityDataConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+			return new SecurityEvaluationContextExtension();
+		}
+
 	}
 
 }

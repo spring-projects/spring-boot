@@ -31,7 +31,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 2.1.0
  */
 public final class PathRequest {
 
