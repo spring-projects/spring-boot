@@ -5914,7 +5914,7 @@ The following code shows a typical example:
 
 TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to
 quickly configure a `RestTemplate`. For example, to add BASIC auth support, you can use
-`builder.basicAuthorization("user", "password").build()`.
+`builder.basicAuthentication("user", "password").build()`.
 
 
 
