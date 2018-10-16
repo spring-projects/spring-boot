@@ -13,13 +13,13 @@ You DO NOT need to raise an issue for a managed dependency version upgrade as th
 - With an Immediate Pull Request
 An issue will be closed as a duplicate of the immediate pull request, so you don't have to raise an issue if you plan to create a pull request immediately.
 
-🐞 Bug report
+🐞 Bug report (do not copy/paste)
 Please provide details of the problem, including the version of Spring Boot that you
 are using. If possible, please provide a test case or sample application that reproduces
 the problem. This makes it much easier for us to diagnose the problem and to verify that
 we have fixed it.
 
-🎁 Enhancement
+🎁 Enhancement (do not copy/paste)
 Please start by describing the problem that you are trying to solve. There may already
 be a solution, or there may be a way to solve it that you hadn't considered.
 -->
