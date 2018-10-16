@@ -38,7 +38,7 @@ public class HumioProperties extends StepRegistryProperties {
 	private String apiToken;
 
 	/**
-	 * Connection timeout for requests to Humio.
+	 * Connection timeout for requests to this backend.
 	 */
 	private Duration connectTimeout = Duration.ofSeconds(5);
 

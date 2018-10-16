@@ -126,10 +126,10 @@ public class MetricsProperties {
 		public static class Server {
 
 			/**
-			 * Whether requests handled by Spring MVC or WebFlux should be automatically
-			 * timed. If the number of time series emitted grows too large on account of
-			 * request mapping timings, disable this and use 'Timed' on a per request
-			 * mapping basis as needed.
+			 * Whether requests handled by Spring MVC, WebFlux or Jersey should be
+			 * automatically timed. If the number of time series emitted grows too large
+			 * on account of request mapping timings, disable this and use 'Timed' on a
+			 * per request mapping basis as needed.
 			 */
 			private boolean autoTimeRequests = true;
 
