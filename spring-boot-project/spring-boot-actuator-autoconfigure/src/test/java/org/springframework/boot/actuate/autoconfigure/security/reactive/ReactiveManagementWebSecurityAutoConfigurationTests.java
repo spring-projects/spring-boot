@@ -30,9 +30,10 @@ import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAut
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.web.reactive.ReactiveManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -69,7 +70,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 					InfoEndpointAutoConfiguration.class,
 					EnvironmentEndpointAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					ReactiveSecurityAutoConfiguration.class,
+					ReactiveWebSecurityAutoConfiguration.class,
 					ReactiveUserDetailsServiceAutoConfiguration.class,
 					ReactiveManagementWebSecurityAutoConfiguration.class));
 
