@@ -512,9 +512,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.thymeleaf.reactive.full-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be executed in FULL mode even if a max chunk size is set.
 	spring.thymeleaf.reactive.max-chunk-size=0B # Maximum size of data buffers used for writing to the response.
 	spring.thymeleaf.reactive.media-types= # Media types supported by the view technology.
-	spring.thymeleaf.render-hidden-markers-before-checkboxes= # Whether hidden form inputs acting as markers for checkboxes should be rendered before the checkbox element itself.
+	spring.thymeleaf.render-hidden-markers-before-checkboxes=false # Whether hidden form inputs acting as markers for checkboxes should be rendered before the checkbox element itself.
 	spring.thymeleaf.servlet.content-type=text/html # Content-Type value written to HTTP responses.
-	spring.thymeleaf.servlet.produce-partial-output-while-processing # Whether Thymeleaf should start writing partial output as soon as possible or buffer until template processing is finished.
+	spring.thymeleaf.servlet.produce-partial-output-while-processing=true # Whether Thymeleaf should start writing partial output as soon as possible or buffer until template processing is finished.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
 	spring.thymeleaf.view-names= # Comma-separated list of view names (patterns allowed) that can be resolved.
