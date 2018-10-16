@@ -776,6 +776,15 @@
       }
     },
     {
+      "name": "flyway.encoding",
+      "type": "java.nio.charset.Charset",
+      "description": "Encoding of SQL migrations.",
+      "deprecation": {
+        "replacement": "spring.flyway.encoding",
+        "level": "error"
+      }
+    },
+    {
       "name": "flyway.init-description",
       "type": "java.lang.String",
       "deprecation": {
@@ -1395,11 +1404,54 @@
       }
     },
     {
+      "name": "spring.activemq.pool.create-connection-on-startup",
+      "type": "java.lang.Boolean",
+      "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.activemq.pool.expiry-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection expiration timeout.",
+      "defaultValue": "0ms",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.activemq.pool.reconnect-on-exception",
+      "type": "java.lang.Boolean",
+      "description": "Reset the connection when a \"JMSException\" occurs.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.batch.initializer.enabled",
       "type": "java.lang.Boolean",
       "description": "Create the required batch tables on startup if necessary. Enabled automatically\n if no custom table prefix is set or if a custom schema is configured.",
       "deprecation": {
         "replacement": "spring.batch.initialize-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.query",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the query (N1QL) service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.view",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the view service.",
+      "deprecation": {
         "level": "error"
       }
     },
@@ -1451,6 +1503,38 @@
       "defaultValue": [
         ".sql"
       ]
+    },
+    {
+      "name": "spring.flyway.dry-run-output",
+      "type": "java.io.OutputStream",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway pro edition only."
+      }
+    },
+    {
+      "name": "spring.flyway.error-handlers",
+      "type": "org.flywaydb.core.api.errorhandler.ErrorHandler[]",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway pro edition only."
+      }
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-suffixes",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.undo-sql-migration-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway pro edition only."
+      }
     },
     {
       "name": "spring.git.properties",
@@ -1527,6 +1611,124 @@
       "deprecation": {
         "reason": "Auto-configuration for Hibernate 4 is no longer provided.",
         "level": "error"
+      }
+    },
+    {
+      "name" : "spring.jta.narayana.default-timeout",
+      "type" : "java.time.Duration",
+      "description" : "Transaction timeout. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue" : "60s",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.expiry-scanners",
+      "type" : "java.util.List<java.lang.String>",
+      "description" : "Comma-separated list of expiry scanners.",
+      "defaultValue" : [ "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner" ],
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.log-dir",
+      "type" : "java.lang.String",
+      "description" : "Transaction object store directory.",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.one-phase-commit",
+      "type" : "java.lang.Boolean",
+      "description" : "Whether to enable one phase commit optimization.",
+      "defaultValue" : true,
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.periodic-recovery-period",
+      "type" : "java.time.Duration",
+      "description" : "Interval in which periodic recovery scans are performed. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue" : "120s",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.recovery-backoff-period",
+      "type" : "java.time.Duration",
+      "description" : "Back off period between first and second phases of the recovery scan. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue" : "10s",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-db-pass",
+      "type": "java.lang.String",
+      "description": "Database password to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-db-user",
+      "type": "java.lang.String",
+      "description": "Database username to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-jms-pass",
+      "type": "java.lang.String",
+      "description": "JMS password to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-jms-user",
+      "type": "java.lang.String",
+      "description": "JMS username to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-modules",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of recovery modules.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.transaction-manager-id",
+      "type": "java.lang.String",
+      "description": "Unique transaction manager id.",
+      "defaultValue": "1",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.xa-resource-orphan-filters",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of orphan filters.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
       }
     },
     {

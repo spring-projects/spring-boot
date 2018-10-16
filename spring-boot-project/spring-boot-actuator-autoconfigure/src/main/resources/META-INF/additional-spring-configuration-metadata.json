@@ -1270,6 +1270,15 @@
       }
     },
     {
+      "name": "management.health.couchbase.timeout",
+      "type": "java.time.Duration",
+      "description": "Timeout for getting the Bucket information from the server.",
+      "defaultValue": "1000ms",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "management.port",
       "type": "java.lang.Integer",
       "description": "Management endpoint HTTP port. Use the same port as the application by default.",
