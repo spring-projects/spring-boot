@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  */
 @ConfigurationProperties(prefix = "spring.security")
-public class SecurityProperties implements SecurityPrerequisite {
+public class SecurityProperties {
 
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
