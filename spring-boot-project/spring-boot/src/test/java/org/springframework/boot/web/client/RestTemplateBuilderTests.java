@@ -331,6 +331,16 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@Deprecated
+	public void basicAuthorizationShouldApply() {
+		RestTemplate template = this.builder.basicAuthorization("spring", "boot").build();
+		ClientHttpRequestInterceptor interceptor = template.getInterceptors().get(0);
+		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
+		assertThat(interceptor).extracting("username").containsExactly("spring");
+		assertThat(interceptor).extracting("password").containsExactly("boot");
+	}
+
+	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
