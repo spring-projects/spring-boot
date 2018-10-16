@@ -39,7 +39,7 @@ public class HumioPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	public void whenPropertiesConnecTimoueIsSetAdapterConnectTimeoutReturnsIt() {
+	public void whenPropertiesConnectTimeoutIsSetAdapterConnectTimeoutReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setConnectTimeout(Duration.ofSeconds(10));
 		assertThat(new HumioPropertiesConfigAdapter(properties).connectTimeout())
