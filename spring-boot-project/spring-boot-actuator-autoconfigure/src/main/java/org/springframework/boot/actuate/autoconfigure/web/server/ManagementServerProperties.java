@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.net.InetAddress;
 
-import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -36,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management.server", ignoreUnknownFields = true)
-public class ManagementServerProperties implements SecurityPrerequisite {
+public class ManagementServerProperties {
 
 	/**
 	 * Management endpoint HTTP port (uses the same port as the application by default).

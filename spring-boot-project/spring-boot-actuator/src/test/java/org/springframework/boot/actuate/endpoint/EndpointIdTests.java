@@ -89,8 +89,8 @@ public class EndpointIdTests {
 		EndpointId five = EndpointId.of("barfoo1");
 		EndpointId six = EndpointId.of("foobar2");
 		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(two).isEqualTo(three)
-				.isEqualTo(four).isNotEqualTo(five).isNotEqualTo(six);
+		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four)
+				.isNotEqualTo(five).isNotEqualTo(six);
 	}
 
 	@Test
