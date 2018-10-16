@@ -406,6 +406,20 @@
       "defaultValue": "classpath:git.properties"
     },
     {
+      "name": "spring.flyway.locations",
+      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "defaultValue": [
+        "classpath:db/migration"
+      ]
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffixes",
+      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "defaultValue": [
+        ".sql"
+      ]
+    },
+    {
       "name": "spring.freemarker.prefix",
       "defaultValue": ""
     },
@@ -1489,20 +1503,6 @@
         "replacement": "spring.datasource.initialization-mode",
         "level": "error"
       }
-    },
-    {
-      "name": "spring.flyway.locations",
-      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
-      "defaultValue": [
-        "classpath:db/migration"
-      ]
-    },
-    {
-      "name": "spring.flyway.sql-migration-suffixes",
-      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
-      "defaultValue": [
-        ".sql"
-      ]
     },
     {
       "name": "spring.flyway.dry-run-output",
