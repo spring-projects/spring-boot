@@ -3,9 +3,9 @@ set -e
 
 source $(dirname $0)/common.sh
 
-milestone=$( cat version/version )
+version=$( cat version/version )
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
-	milestone=${milestone%.RELEASE}
+	milestone=${version%.RELEASE}
 fi
 milestone_number=$( curl -s "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones" -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} | jq -r --arg MILESTONE "${milestone}" '.[]  | select(.title == $MILESTONE) | .number')
 
@@ -15,13 +15,13 @@ java -jar -Dreleasenotes.github.organization=${GITHUB_ORGANIZATION} -Dreleasenot
 popd > /dev/null
 
 
-body=$( while read line; do echo -n "$line\\n"; done < release-notes-repo/release-notes.md )
+body=$( sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' release-notes-repo/release-notes.md )
 
 curl \
 	-s \
 	-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
 	-H "Content-type:application/json" \
-	-d "{\"tag_name\":\"v${milestone}\",\"name\":\"v${milestone}\",\"body\": \"${body}\"}"  \
+	-d "{\"tag_name\":\"v${version}\",\"name\":\"v${version}\",\"body\": \"${body}\"}"  \
 	-f \
 	-X \
 	POST "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/releases" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
