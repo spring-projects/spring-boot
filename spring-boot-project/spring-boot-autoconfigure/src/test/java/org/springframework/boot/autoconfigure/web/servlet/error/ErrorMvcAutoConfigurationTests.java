@@ -58,7 +58,9 @@ public class ErrorMvcAutoConfigurationTests {
 					webRequest.getRequest(), webRequest.getResponse());
 			String responseString = ((MockHttpServletResponse) webRequest.getResponse())
 					.getContentAsString();
-			assertThat(responseString).contains("<div>Exception message</div>")
+			assertThat(responseString).contains(
+					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
+					.contains("<div>Exception message</div>")
 					.contains("<div>java.lang.IllegalStateException");
 		});
 	}
