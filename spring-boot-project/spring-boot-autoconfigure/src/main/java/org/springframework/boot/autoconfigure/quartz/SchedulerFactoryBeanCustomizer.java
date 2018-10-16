@@ -26,7 +26,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
  * configuration.
  * <p>
  * For customization of the {@link DataSource} used by Quartz, use of
- * {@link QuartzDataSource @QuartDataSource} is preferred. It will ensure consistent
+ * {@link QuartzDataSource @QuartzDataSource} is preferred. It will ensure consistent
  * customization of both the {@link SchedulerFactoryBean} and the
  * {@link QuartzDataSourceInitializer}.
  *
