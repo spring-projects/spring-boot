@@ -58,6 +58,18 @@ public class MvcEndpointRequestIntegrationTests
 		extends AbstractEndpointRequestIntegrationTests {
 
 	@Test
+	public void toLinksWhenServletPathSetShouldMatch() {
+		getContextRunner().withPropertyValues("server.servlet.path=/admin")
+				.run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/").exchange().expectStatus()
+							.isOk();
+					webTestClient.get().uri("/admin/actuator").exchange().expectStatus()
+							.isOk();
+				});
+	}
+
+	@Test
 	public void toEndpointWhenServletPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("server.servlet.path=/admin")
 				.run((context) -> {

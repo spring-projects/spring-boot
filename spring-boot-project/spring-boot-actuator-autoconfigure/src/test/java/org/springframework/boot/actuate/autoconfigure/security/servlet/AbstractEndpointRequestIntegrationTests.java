@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -118,7 +119,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 
 		private TestPathMappedEndpoint mockEndpoint(String id) {
 			TestPathMappedEndpoint endpoint = mock(TestPathMappedEndpoint.class);
-			given(endpoint.getId()).willReturn(id);
+			given(endpoint.getEndpointId()).willReturn(EndpointId.of(id));
 			given(endpoint.getRootPath()).willReturn(id);
 			return endpoint;
 		}
