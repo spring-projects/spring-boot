@@ -4,6 +4,7 @@ set -e
 source $(dirname $0)/common.sh
 
 version=$( cat version/version )
+milestone=$( echo $version )
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	milestone=${version%.RELEASE}
 fi
