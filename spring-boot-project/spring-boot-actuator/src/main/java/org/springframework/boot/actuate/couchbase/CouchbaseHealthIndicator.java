@@ -16,13 +16,7 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.couchbase.client.core.message.internal.DiagnosticsReport;
-import com.couchbase.client.core.message.internal.EndpointHealth;
-import com.couchbase.client.core.state.LifecycleState;
 import com.couchbase.client.java.Cluster;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
@@ -55,31 +49,7 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		DiagnosticsReport diagnostics = this.cluster.diagnostics();
-		builder = isCouchbaseUp(diagnostics) ? builder.up() : builder.down();
-		builder.withDetail("sdk", diagnostics.sdk());
-		builder.withDetail("endpoints", diagnostics.endpoints().stream()
-				.map(this::describe).collect(Collectors.toList()));
-	}
-
-	private boolean isCouchbaseUp(DiagnosticsReport diagnostics) {
-		for (EndpointHealth health : diagnostics.endpoints()) {
-			LifecycleState state = health.state();
-			if (state != LifecycleState.CONNECTED && state != LifecycleState.IDLE) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private Map<String, Object> describe(EndpointHealth endpointHealth) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("id", endpointHealth.id());
-		map.put("lastActivity", endpointHealth.lastActivity());
-		map.put("local", endpointHealth.local().toString());
-		map.put("remote", endpointHealth.remote().toString());
-		map.put("state", endpointHealth.state());
-		map.put("type", endpointHealth.type());
-		return map;
+		new CouchbaseHealth(diagnostics).applyTo(builder);
 	}
 
 }

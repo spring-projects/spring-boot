@@ -15,18 +15,13 @@
  */
 package org.springframework.boot.actuate.couchbase;
 
-import com.couchbase.client.java.bucket.BucketInfo;
-import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.core.message.internal.DiagnosticsReport;
+import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Mono;
-import rx.Observable;
-import rx.RxReactiveStreams;
-import rx.Single;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
-import org.springframework.util.StringUtils;
 
 /**
  * A {@link ReactiveHealthIndicator} for Couchbase.
@@ -37,30 +32,21 @@ import org.springframework.util.StringUtils;
  */
 public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 
-	private final RxJavaCouchbaseOperations couchbaseOperations;
+	private final Cluster cluster;
 
 	/**
 	 * Create a new {@link CouchbaseReactiveHealthIndicator} instance.
-	 * @param couchbaseOperations the reactive couchbase operations
+	 * @param cluster the Couchbase cluster
 	 */
-	public CouchbaseReactiveHealthIndicator(
-			RxJavaCouchbaseOperations couchbaseOperations) {
-		this.couchbaseOperations = couchbaseOperations;
+	public CouchbaseReactiveHealthIndicator(Cluster cluster) {
+		this.cluster = cluster;
 	}
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		ClusterInfo cluster = this.couchbaseOperations.getCouchbaseClusterInfo();
-		String versions = StringUtils
-				.collectionToCommaDelimitedString(cluster.getAllVersions());
-		Observable<BucketInfo> bucket = this.couchbaseOperations.getCouchbaseBucket()
-				.bucketManager().async().info();
-		Single<Health> health = bucket.map(BucketInfo::nodeList)
-				.map(StringUtils::collectionToCommaDelimitedString)
-				.map((nodes) -> builder.up().withDetail("versions", versions)
-						.withDetail("nodes", nodes).build())
-				.toSingle();
-		return Mono.from(RxReactiveStreams.toPublisher(health));
+		DiagnosticsReport diagnostics = this.cluster.diagnostics();
+		new CouchbaseHealth(diagnostics).applyTo(builder);
+		return Mono.just(builder.build());
 	}
 
 }
