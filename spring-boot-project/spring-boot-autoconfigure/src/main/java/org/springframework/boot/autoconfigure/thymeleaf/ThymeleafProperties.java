@@ -102,12 +102,10 @@ public class ThymeleafProperties {
 	private boolean enableSpringElCompiler;
 
 	/**
-	 * Whether hidden form inputs acting as markers for checkboxes (which are omitted from
-	 * form submission when unchecked) should be rendered before or after the rendered
-	 * checkbox element itself for better integration with some CSS frameworks. Default is
-	 * "false" (hiddens will be rendered after checkboxes).
+	 * Whether hidden form inputs acting as markers for checkboxes should be rendered
+	 * before the checkbox element itself.
 	 */
-	private boolean renderHiddenMarkersBeforeCheckboxes;
+	private boolean renderHiddenMarkersBeforeCheckboxes = false;
 
 	/**
 	 * Whether to enable Thymeleaf view resolution for Web frameworks.
@@ -215,7 +213,7 @@ public class ThymeleafProperties {
 	}
 
 	public boolean isRenderHiddenMarkersBeforeCheckboxes() {
-		return renderHiddenMarkersBeforeCheckboxes;
+		return this.renderHiddenMarkersBeforeCheckboxes;
 	}
 
 	public void setRenderHiddenMarkersBeforeCheckboxes(
@@ -239,10 +237,8 @@ public class ThymeleafProperties {
 		private MimeType contentType = MimeType.valueOf("text/html");
 
 		/**
-		 * Whether Thymeleaf should start sending partial output to the server's output
-		 * buffers as soon as it becomes available (default), or instead wait until
-		 * template processing is finished, keeping all rendered results in memory until
-		 * that moment and sending them to the server's output buffers in a single call.
+		 * Whether Thymeleaf should start writing partial output as soon as possible or
+		 * buffer until template processing is finished.
 		 */
 		private boolean producePartialOutputWhileProcessing = true;
 
@@ -255,7 +251,7 @@ public class ThymeleafProperties {
 		}
 
 		public boolean isProducePartialOutputWhileProcessing() {
-			return producePartialOutputWhileProcessing;
+			return this.producePartialOutputWhileProcessing;
 		}
 
 		public void setProducePartialOutputWhileProcessing(
