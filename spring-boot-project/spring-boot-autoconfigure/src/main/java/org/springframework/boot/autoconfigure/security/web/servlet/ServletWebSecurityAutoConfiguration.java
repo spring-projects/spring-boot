@@ -17,10 +17,12 @@
 package org.springframework.boot.autoconfigure.security.web.servlet;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.security.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -37,6 +39,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 @EnableConfigurationProperties(SecurityProperties.class)
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
+@AutoConfigureBefore(UserDetailsServiceAutoConfiguration.class)
 @Import({ SpringBootWebSecurityConfiguration.class,
 		EnableWebSecurityConfiguration.class })
 public class ServletWebSecurityAutoConfiguration {

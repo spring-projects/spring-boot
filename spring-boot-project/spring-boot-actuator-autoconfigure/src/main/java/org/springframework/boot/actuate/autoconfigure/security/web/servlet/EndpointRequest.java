@@ -35,7 +35,6 @@ import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.security.web.servlet.RequestMatcherProvider;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -139,20 +138,10 @@ public final class EndpointRequest {
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
 			try {
-				String pathPrefix = getPathPrefix(context);
-				return createDelegate(context, new RequestMatcherFactory(pathPrefix));
+				return createDelegate(context, new RequestMatcherFactory());
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return EMPTY_MATCHER;
-			}
-		}
-
-		private String getPathPrefix(WebApplicationContext context) {
-			try {
-				return context.getBean(DispatcherServletPath.class).getPrefix();
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				return "";
 			}
 		}
 
@@ -313,15 +302,9 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		private final String prefix;
-
-		RequestMatcherFactory(String prefix) {
-			this.prefix = prefix;
-		}
-
 		public RequestMatcher antPath(RequestMatcherProvider matcherProvider,
 				String... parts) {
-			StringBuilder pattern = new StringBuilder(this.prefix);
+			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				pattern.append(part);
 			}
