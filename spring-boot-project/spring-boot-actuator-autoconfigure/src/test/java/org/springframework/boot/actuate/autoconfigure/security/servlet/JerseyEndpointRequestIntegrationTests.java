@@ -25,7 +25,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.security.web.servlet.EndpointRequest;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -37,10 +36,9 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.servlet.SecurityRequestMatcherProviderAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.servlet.ServletWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -65,7 +63,6 @@ public class JerseyEndpointRequestIntegrationTests
 								SecurityConfiguration.class, BaseConfiguration.class)
 						.withConfiguration(AutoConfigurations.of(
 								SecurityAutoConfiguration.class,
-								ServletWebSecurityAutoConfiguration.class,
 								UserDetailsServiceAutoConfiguration.class,
 								SecurityRequestMatcherProviderAutoConfiguration.class,
 								JacksonAutoConfiguration.class,

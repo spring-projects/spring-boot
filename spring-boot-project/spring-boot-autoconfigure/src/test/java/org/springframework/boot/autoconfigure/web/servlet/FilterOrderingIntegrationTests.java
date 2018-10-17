@@ -28,8 +28,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.servlet.ServletWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
@@ -90,7 +89,7 @@ public class FilterOrderingIntegrationTests {
 		this.context.register(MockWebServerConfiguration.class,
 				TestSessionConfiguration.class, TestRedisConfiguration.class,
 				WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
-				ServletWebSecurityAutoConfiguration.class, SessionAutoConfiguration.class,
+				SessionAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpEncodingAutoConfiguration.class);

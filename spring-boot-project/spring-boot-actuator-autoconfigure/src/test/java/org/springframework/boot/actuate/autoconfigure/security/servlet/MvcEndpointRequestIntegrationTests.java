@@ -22,7 +22,6 @@ import java.util.List;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.security.web.servlet.EndpointRequest;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -33,10 +32,9 @@ import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandl
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.servlet.SecurityRequestMatcherProviderAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.web.servlet.ServletWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -101,7 +99,6 @@ public class MvcEndpointRequestIntegrationTests
 								SecurityConfiguration.class, BaseConfiguration.class)
 						.withConfiguration(AutoConfigurations.of(
 								SecurityAutoConfiguration.class,
-								ServletWebSecurityAutoConfiguration.class,
 								UserDetailsServiceAutoConfiguration.class,
 								WebMvcAutoConfiguration.class,
 								SecurityRequestMatcherProviderAutoConfiguration.class,

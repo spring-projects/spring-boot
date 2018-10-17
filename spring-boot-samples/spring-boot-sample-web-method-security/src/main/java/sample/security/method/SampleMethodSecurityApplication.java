@@ -19,7 +19,7 @@ package sample.security.method;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.boot.actuate.autoconfigure.security.web.servlet.EndpointRequest;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;

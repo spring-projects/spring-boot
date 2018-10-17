@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.security.web.servlet.EndpointRequest;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
