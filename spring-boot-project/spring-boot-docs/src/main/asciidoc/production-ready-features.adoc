@@ -2118,8 +2118,7 @@ The following properties allow per-meter customization:
 | Whether to publish a histogram suitable for computing aggregable (across dimension)
 percentile approximations.
 
-| `management.metrics.distribution.minimum-expected-value`
-| `management.metrics.distribution.maximum-expected-value`
+| `management.metrics.distribution.minimum-expected-value`, `management.metrics.distribution.maximum-expected-value`
 | Publish less histogram buckets by clamping the range of expected values.
 
 | `management.metrics.distribution.percentiles`
