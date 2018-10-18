@@ -42,7 +42,8 @@ class FlywaySchemaManagementProvider implements SchemaManagementProvider {
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
 		return StreamSupport.stream(this.flywayInstances.spliterator(), false)
-				.map(Flyway::getDataSource).filter(dataSource::equals).findFirst()
+				.map((flyway) -> flyway.getConfiguration().getDataSource())
+				.filter(dataSource::equals).findFirst()
 				.map((managedDataSource) -> SchemaManagement.MANAGED)
 				.orElse(SchemaManagement.UNMANAGED);
 	}

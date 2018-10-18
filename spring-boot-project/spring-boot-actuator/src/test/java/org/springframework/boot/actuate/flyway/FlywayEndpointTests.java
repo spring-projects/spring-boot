@@ -82,6 +82,7 @@ public class FlywayEndpointTests {
 	@Configuration
 	public static class BaselinedFlywayConfig {
 
+		@SuppressWarnings("deprecation")
 		@Bean
 		public FlywayMigrationStrategy baseliningMigrationStrategy() {
 			return (flyway) -> {
