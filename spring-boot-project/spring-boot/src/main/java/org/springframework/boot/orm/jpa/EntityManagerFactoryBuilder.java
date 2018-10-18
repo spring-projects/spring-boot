@@ -201,7 +201,6 @@ public class EntityManagerFactoryBuilder {
 			return this;
 		}
 
-		@SuppressWarnings("deprecation")
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
