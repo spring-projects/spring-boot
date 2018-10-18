@@ -33,17 +33,17 @@ public class AppOpticsProperties extends StepRegistryProperties {
 	/**
 	 * URI to ship metrics to.
 	 */
-	public String uri = "https://api.appoptics.com/v1/measurements";
+	private String uri = "https://api.appoptics.com/v1/measurements";
 
 	/**
 	 * AppOptics API token.
 	 */
-	public String apiToken;
+	private String apiToken;
 
 	/**
 	 * Tag that will be mapped to "@host" when shipping metrics to AppOptics.
 	 */
-	public String hostTag = "instance";
+	private String hostTag = "instance";
 
 	/**
 	 * Number of measurements per request to use for this backend. If more measurements

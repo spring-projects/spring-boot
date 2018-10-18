@@ -330,7 +330,7 @@ public class ServerProperties {
 		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
-		 * Maximum size in bytes of the HTTP message header.
+		 * Maximum size of the HTTP message header.
 		 */
 		private DataSize maxHttpHeaderSize = DataSize.ofBytes(0);
 
