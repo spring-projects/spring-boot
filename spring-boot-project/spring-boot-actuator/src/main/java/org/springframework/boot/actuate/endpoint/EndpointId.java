@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
 
 /**
  * An identifier for an actuator endpoint. Endpoint IDs may contain only letters, numbers
- * {@code '.'} and {@code '-'}. They must begin with a lower-case letter. Case and syntax
+ * {@code '.'},{@code '-'} and {@code '/'}. They must begin with a lower-case letter. Case and syntax
  * characters are ignored when comparing endpoint IDs.
  *
  * @author Phillip Webb
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public final class EndpointId {
 
-	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
+	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.\\-/]+");
 
 	private final String value;
 
