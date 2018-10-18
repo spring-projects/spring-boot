@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -352,9 +352,9 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * Utility class used to support field initialization. Used by subclasses to support
 	 * {@code initFields}.
 	 *
-	 * @param <M> The marshaller type
+	 * @param <M> the marshaller type
 	 */
-	protected static abstract class FieldInitializer<M> {
+	protected abstract static class FieldInitializer<M> {
 
 		private final Class<?> testerClass;
 
@@ -371,8 +371,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 			initFields(testInstance, () -> marshaller);
 		}
 
-		public void initFields(Object testInstance,
-				final ObjectFactory<M> marshaller) {
+		public void initFields(Object testInstance, final ObjectFactory<M> marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
 			ReflectionUtils.doWithFields(testInstance.getClass(),

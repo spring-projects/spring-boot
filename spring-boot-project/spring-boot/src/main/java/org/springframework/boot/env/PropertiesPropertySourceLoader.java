@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.env.PropertySource;
@@ -40,15 +42,14 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(String name, Resource resource, String profile)
+	public List<PropertySource<?>> load(String name, Resource resource)
 			throws IOException {
-		if (profile == null) {
-			Map<String, ?> properties = loadProperties(resource);
-			if (!properties.isEmpty()) {
-				return new OriginTrackedMapPropertySource(name, properties);
-			}
+		Map<String, ?> properties = loadProperties(resource);
+		if (properties.isEmpty()) {
+			return Collections.emptyList();
 		}
-		return null;
+		return Collections
+				.singletonList(new OriginTrackedMapPropertySource(name, properties));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

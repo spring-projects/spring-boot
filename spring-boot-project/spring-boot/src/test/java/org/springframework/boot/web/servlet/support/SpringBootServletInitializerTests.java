@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,15 @@ import java.util.Collections;
 
 import javax.servlet.ServletContext;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -43,6 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -55,18 +57,24 @@ import static org.mockito.Mockito.mock;
 public class SpringBootServletInitializerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public OutputCapture output = new OutputCapture();
 
 	private ServletContext servletContext = new MockServletContext();
 
 	private SpringApplication application;
 
+	@After
+	public void verifyLoggingOutput() {
+		assertThat(this.output.toString())
+				.doesNotContain(StandardServletEnvironment.class.getSimpleName());
+	}
+
 	@Test
 	public void failsWithoutConfigure() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No SpringApplication sources have been defined");
-		new MockSpringBootServletInitializer()
-				.createRootApplicationContext(this.servletContext);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new MockSpringBootServletInitializer()
+						.createRootApplicationContext(this.servletContext))
+				.withMessageContaining("No SpringApplication sources have been defined");
 	}
 
 	@Test

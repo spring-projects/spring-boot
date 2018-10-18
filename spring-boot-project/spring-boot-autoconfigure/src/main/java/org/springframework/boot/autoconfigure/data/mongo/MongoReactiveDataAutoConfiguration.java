@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.mongodb.reactivestreams.client.MongoClient;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -27,10 +28,15 @@ import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfigurati
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive mongo
@@ -47,7 +53,9 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
  */
 @Configuration
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
+@ConditionalOnBean(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
+@Import(MongoDataConfiguration.class)
 @AutoConfigureAfter(MongoReactiveAutoConfiguration.class)
 public class MongoReactiveDataAutoConfiguration {
 
@@ -60,7 +68,7 @@ public class MongoReactiveDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
 	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(
-			MongoClient mongo) throws Exception {
+			MongoClient mongo) {
 		String database = this.properties.getMongoClientDatabase();
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
@@ -71,6 +79,16 @@ public class MongoReactiveDataAutoConfiguration {
 			ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(MongoConverter.class)
+	public MappingMongoConverter mappingMongoConverter(MongoMappingContext context,
+			MongoCustomConversions conversions) {
+		MappingMongoConverter mappingConverter = new MappingMongoConverter(
+				NoOpDbRefResolver.INSTANCE, context);
+		mappingConverter.setCustomConversions(conversions);
+		return mappingConverter;
 	}
 
 }

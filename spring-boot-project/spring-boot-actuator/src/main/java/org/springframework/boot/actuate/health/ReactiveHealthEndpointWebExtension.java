@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
@@ -33,30 +34,24 @@ public class ReactiveHealthEndpointWebExtension {
 
 	private final ReactiveHealthIndicator delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
-
-	private final boolean showDetails;
+	private final HealthWebEndpointResponseMapper responseMapper;
 
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthIndicator delegate,
-			HealthStatusHttpMapper statusHttpMapper, boolean showDetails) {
+			HealthWebEndpointResponseMapper responseMapper) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
-		this.showDetails = showDetails;
+		this.responseMapper = responseMapper;
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> health() {
-		return health(this.showDetails);
+	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext) {
+		return this.delegate.health()
+				.map((health) -> this.responseMapper.map(health, securityContext));
 	}
 
-	public Mono<WebEndpointResponse<Health>> health(boolean showDetails) {
-		return this.delegate.health().map((health) -> {
-			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			if (!showDetails) {
-				health = Health.status(health.getStatus()).build();
-			}
-			return new WebEndpointResponse<>(health, status);
-		});
+	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext,
+			ShowDetails showDetails) {
+		return this.delegate.health().map((health) -> this.responseMapper.map(health,
+				securityContext, showDetails));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import java.util.Set;
  */
 class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
-	private static Set<String> LOG_CONFIGURATION_MESSAGES;
+	private static final Set<String> LOG_CONFIGURATION_MESSAGES;
 
 	static {
 		Set<String> messages = new HashSet<>();
@@ -86,6 +86,9 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	 * @return {@code true} if the exception contains a log configuration message
 	 */
 	private boolean isLogConfigurationMessage(Throwable ex) {
+		if (ex instanceof InvocationTargetException) {
+			return isLogConfigurationMessage(ex.getCause());
+		}
 		String message = ex.getMessage();
 		if (message != null) {
 			for (String candidate : LOG_CONFIGURATION_MESSAGES) {

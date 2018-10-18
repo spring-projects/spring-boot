@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 /**
  * An {@link AbstractUrlHandlerMapping} for an application's welcome page. Supports both
- * static and templated files. If both a static and templated index page are available, the
- * static page is preferred.
+ * static and templated files. If both a static and templated index page are available,
+ * the static page is preferred.
  *
  * @author Andy Wilkinson
  * @author Bruce Brouwer
@@ -46,7 +46,8 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private static final Log logger = LogFactory.getLog(WelcomePageHandlerMapping.class);
 
-	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
+	private static final List<MediaType> MEDIA_TYPES_ALL = Collections
+			.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, Optional<Resource> welcomePage,
@@ -73,7 +74,7 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 		ParameterizableViewController controller = new ParameterizableViewController();
 		controller.setViewName(viewName);
 		setRootHandler(controller);
-		setOrder(0);
+		setOrder(2);
 	}
 
 	@Override

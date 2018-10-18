@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -36,9 +39,11 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link JettyWebServer}s.
@@ -46,7 +51,8 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
+public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory
+		implements ConfigurableJettyWebServerFactory {
 
 	private static final Log logger = LogFactory
 			.getLog(JettyReactiveWebServerFactory.class);
@@ -61,7 +67,11 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	private int selectors = -1;
 
+	private boolean useForwardHeaders;
+
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
+
+	private JettyResourceFactory resourceFactory;
 
 	private ThreadPool threadPool;
 
@@ -81,67 +91,26 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	@Override
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	@Override
+	public void setAcceptors(int acceptors) {
+		this.acceptors = acceptors;
+	}
+
+	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(httpHandler);
 		Server server = createJettyServer(servlet);
 		return new JettyWebServer(server, getPort() >= 0);
 	}
 
-	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
-		int port = (getPort() >= 0 ? getPort() : 0);
-		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
-		Server server = new Server(getThreadPool());
-		server.addConnector(createConnector(address, server));
-		ServletHolder servletHolder = new ServletHolder(servlet);
-		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
-				false, false);
-		contextHandler.addServlet(servletHolder, "/");
-		JettyReactiveWebServerFactory.logger
-				.info("Server initialized with port: " + port);
-		new SslServerCustomizer(port, getSsl(), getSslStoreProvider()).customize(server);
-		for (JettyServerCustomizer customizer : getServerCustomizers()) {
-			customizer.customize(server);
-		}
-		return server;
-	}
-
-	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
-		ServerConnector connector = new ServerConnector(server, this.acceptors,
-				this.selectors);
-		connector.setHost(address.getHostName());
-		connector.setPort(address.getPort());
-		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
-			if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-				((HttpConfiguration.ConnectionFactory) connectionFactory)
-						.getHttpConfiguration().setSendServerVersion(false);
-			}
-		}
-		return connector;
-	}
-
-	/**
-	 * Returns a Jetty {@link ThreadPool} that should be used by the {@link Server}.
-	 * @return a Jetty {@link ThreadPool} or {@code null}
-	 */
-	public ThreadPool getThreadPool() {
-		return this.threadPool;
-	}
-
-	/**
-	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
-	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
-	 * @param threadPool a Jetty ThreadPool to be used
-	 */
-	public void setThreadPool(ThreadPool threadPool) {
-		this.threadPool = threadPool;
-	}
-
-	/**
-	 * Set the number of acceptor threads to use.
-	 * @param acceptors the number of acceptor threads to use
-	 */
-	public void setAcceptors(int acceptors) {
-		this.acceptors = acceptors;
+	@Override
+	public void addServerCustomizers(JettyServerCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**
@@ -165,20 +134,107 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
-	 * before it is started.
-	 * @param customizers the customizers to add
+	 * Returns a Jetty {@link ThreadPool} that should be used by the {@link Server}.
+	 * @return a Jetty {@link ThreadPool} or {@code null}
 	 */
-	public void addServerCustomizers(JettyServerCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
+	public ThreadPool getThreadPool() {
+		return this.threadPool;
 	}
 
 	/**
-	 * Set the number of selector threads to use.
-	 * @param selectors the number of selector threads to use
+	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
+	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
+	 * @param threadPool a Jetty ThreadPool to be used
 	 */
+	public void setThreadPool(ThreadPool threadPool) {
+		this.threadPool = threadPool;
+	}
+
+	@Override
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
 	}
+
+	/**
+	 * Set the {@link JettyResourceFactory} to get the shared resources from.
+	 * @param resourceFactory the server resources
+	 * @since 2.1.0
+	 */
+	public void setResourceFactory(JettyResourceFactory resourceFactory) {
+		this.resourceFactory = resourceFactory;
+	}
+
+	protected JettyResourceFactory getResourceFactory() {
+		return this.resourceFactory;
+	}
+
+	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
+		int port = (getPort() >= 0) ? getPort() : 0;
+		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
+		Server server = new Server(getThreadPool());
+		server.addConnector(createConnector(address, server));
+		ServletHolder servletHolder = new ServletHolder(servlet);
+		servletHolder.setAsyncSupported(true);
+		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
+				false, false);
+		contextHandler.addServlet(servletHolder, "/");
+		server.setHandler(addHandlerWrappers(contextHandler));
+		JettyReactiveWebServerFactory.logger
+				.info("Server initialized with port: " + port);
+		if (getSsl() != null && getSsl().isEnabled()) {
+			customizeSsl(server, address);
+		}
+		for (JettyServerCustomizer customizer : getServerCustomizers()) {
+			customizer.customize(server);
+		}
+		if (this.useForwardHeaders) {
+			new ForwardHeadersCustomizer().customize(server);
+		}
+		return server;
+	}
+
+	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
+		ServerConnector connector;
+		JettyResourceFactory resourceFactory = getResourceFactory();
+		if (resourceFactory != null) {
+			connector = new ServerConnector(server, resourceFactory.getExecutor(),
+					resourceFactory.getScheduler(), resourceFactory.getByteBufferPool(),
+					this.acceptors, this.selectors, new HttpConnectionFactory());
+		}
+		else {
+			connector = new ServerConnector(server, this.acceptors, this.selectors);
+		}
+		connector.setHost(address.getHostString());
+		connector.setPort(address.getPort());
+		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
+			if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+				((HttpConfiguration.ConnectionFactory) connectionFactory)
+						.getHttpConfiguration().setSendServerVersion(false);
+			}
+		}
+		return connector;
+	}
+
+	private Handler addHandlerWrappers(Handler handler) {
+		if (getCompression() != null && getCompression().getEnabled()) {
+			handler = applyWrapper(handler,
+					JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
+		}
+		if (StringUtils.hasText(getServerHeader())) {
+			handler = applyWrapper(handler, JettyHandlerWrappers
+					.createServerHeaderHandlerWrapper(getServerHeader()));
+		}
+		return handler;
+	}
+
+	private Handler applyWrapper(Handler handler, HandlerWrapper wrapper) {
+		wrapper.setHandler(handler);
+		return wrapper;
+	}
+
+	private void customizeSsl(Server server, InetSocketAddress address) {
+		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2())
+				.customize(server);
+	}
+
 }

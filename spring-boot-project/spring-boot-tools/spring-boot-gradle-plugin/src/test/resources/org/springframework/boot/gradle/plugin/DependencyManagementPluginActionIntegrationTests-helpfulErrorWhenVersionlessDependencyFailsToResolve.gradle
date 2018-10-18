@@ -1,16 +1,12 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
 
 repositories {
 	mavenLocal()
 }
 
 dependencies {
-	compile 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 }

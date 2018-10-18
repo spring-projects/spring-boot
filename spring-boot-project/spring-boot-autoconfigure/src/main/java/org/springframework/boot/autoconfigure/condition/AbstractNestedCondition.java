@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,9 @@ import org.springframework.util.MultiValueMap;
  * Abstract base class for nested conditions.
  *
  * @author Phillip Webb
+ * @since 2.0.1
  */
-abstract class AbstractNestedCondition extends SpringBootCondition
+public abstract class AbstractNestedCondition extends SpringBootCondition
 		implements ConfigurationCondition {
 
 	private final ConfigurationPhase configurationPhase;
@@ -146,8 +147,8 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 		private List<String[]> getConditionClasses(AnnotatedTypeMetadata metadata) {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(Conditional.class.getName(), true);
-			Object values = (attributes != null ? attributes.get("value") : null);
-			return (List<String[]>) (values != null ? values : Collections.emptyList());
+			Object values = (attributes != null) ? attributes.get("value") : null;
+			return (List<String[]>) ((values != null) ? values : Collections.emptyList());
 		}
 
 		private Condition getCondition(String conditionClassName) {
@@ -158,13 +159,9 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		public List<ConditionOutcome> getMatchOutcomes() {
 			List<ConditionOutcome> outcomes = new ArrayList<>();
-			for (Map.Entry<AnnotationMetadata, List<Condition>> entry : this.memberConditions
-					.entrySet()) {
-				AnnotationMetadata metadata = entry.getKey();
-				List<Condition> conditions = entry.getValue();
-				outcomes.add(new MemberOutcomes(this.context, metadata, conditions)
-						.getUltimateOutcome());
-			}
+			this.memberConditions.forEach((metadata, conditions) -> outcomes
+					.add(new MemberOutcomes(this.context, metadata, conditions)
+							.getUltimateOutcome()));
 			return Collections.unmodifiableList(outcomes);
 		}
 

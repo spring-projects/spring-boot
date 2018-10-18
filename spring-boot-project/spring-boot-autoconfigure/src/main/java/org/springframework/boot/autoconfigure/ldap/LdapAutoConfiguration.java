@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.LdapOperations;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for LDAP.
  *
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  * @since 1.5.0
  */
 @Configuration
@@ -50,15 +53,22 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource() {
 		LdapContextSource source = new LdapContextSource();
 		source.setUserDn(this.properties.getUsername());
 		source.setPassword(this.properties.getPassword());
+		source.setAnonymousReadOnly(this.properties.getAnonymousReadOnly());
 		source.setBase(this.properties.getBase());
 		source.setUrls(this.properties.determineUrls(this.environment));
 		source.setBaseEnvironmentProperties(
 				Collections.unmodifiableMap(this.properties.getBaseEnvironment()));
 		return source;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(LdapOperations.class)
+	public LdapTemplate ldapTemplate(ContextSource contextSource) {
+		return new LdapTemplate(contextSource);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,15 @@ public interface BindHandler {
 
 	/**
 	 * Called when binding of an element starts but before any result has been determined.
+	 * @param <T> the bindable source type
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @return {@code true} if binding should proceed
+	 * @return the actual item that should be used for binding (may be {@code null})
 	 */
-	default boolean onStart(ConfigurationPropertyName name, Bindable<?> target,
+	default <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
 			BindContext context) {
-		return true;
+		return target;
 	}
 
 	/**

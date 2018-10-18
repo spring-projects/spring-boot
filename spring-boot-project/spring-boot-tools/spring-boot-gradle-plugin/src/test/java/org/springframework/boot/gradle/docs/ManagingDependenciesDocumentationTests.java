@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.gradle.docs;
 
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
+import org.springframework.boot.gradle.testkit.Dsl;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,24 +31,42 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for the managing dependencies documentation.
  *
  * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
+@RunWith(GradleMultiDslSuite.class)
 public class ManagingDependenciesDocumentationTests {
 
 	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
 
 	@Test
 	public void dependenciesExampleEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/dependencies.gradle")
+		this.gradleBuild.script("src/main/gradle/managing-dependencies/dependencies")
 				.build();
 	}
 
 	@Test
 	public void customManagedVersions() {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/custom-version.gradle")
+				.script("src/main/gradle/managing-dependencies/custom-version")
 				.build("slf4jVersion").getOutput()).contains("1.7.20");
+	}
+
+	@Test
+	public void dependencyManagementInIsolation() {
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/managing-dependencies/configure-bom")
+				.build("dependencyManagement").getOutput())
+						.contains("org.springframework.boot:spring-boot-starter ");
+	}
+
+	@Test
+	public void dependencyManagementInIsolationWithPluginsBlock() {
+		Assume.assumeTrue(this.gradleBuild.getDsl() == Dsl.KOTLIN);
+		assertThat(this.gradleBuild.script(
+				"src/main/gradle/managing-dependencies/configure-bom-with-plugins")
+				.build("dependencyManagement").getOutput())
+						.contains("org.springframework.boot:spring-boot-starter ");
 	}
 
 }

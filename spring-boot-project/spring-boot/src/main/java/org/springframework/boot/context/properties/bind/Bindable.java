@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.util.ObjectUtils;
 /**
  * Source that can be bound by a {@link Binder}.
  *
- * @param <T> The source type
+ * @param <T> the source type
  * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.0.0
@@ -66,6 +66,10 @@ public final class Bindable<T> {
 		return this.type;
 	}
 
+	/**
+	 * Return the boxed type of the item to bind.
+	 * @return the boxed type for the item being bound
+	 */
 	public ResolvableType getBoxedType() {
 		return this.boxedType;
 	}
@@ -86,22 +90,20 @@ public final class Bindable<T> {
 		return this.annotations;
 	}
 
-	@Override
-	public String toString() {
-		ToStringCreator creator = new ToStringCreator(this);
-		creator.append("type", this.type);
-		creator.append("value", (this.value == null ? "none" : "provided"));
-		creator.append("annotations", this.annotations);
-		return creator.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
-		return result;
+	/**
+	 * Return a single associated annotations that could affect binding.
+	 * @param <A> the annotation type
+	 * @param type annotation type
+	 * @return the associated annotation or {@code null}
+	 */
+	@SuppressWarnings("unchecked")
+	public <A extends Annotation> A getAnnotation(Class<A> type) {
+		for (Annotation annotation : this.annotations) {
+			if (type.isInstance(annotation)) {
+				return (A) annotation;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -119,6 +121,24 @@ public final class Bindable<T> {
 		return result;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("type", this.type);
+		creator.append("value", (this.value != null) ? "provided" : "none");
+		creator.append("annotations", this.annotations);
+		return creator.toString();
+	}
+
 	private boolean nullSafeEquals(Object o1, Object o2) {
 		return ObjectUtils.nullSafeEquals(o1, o2);
 	}
@@ -130,18 +150,28 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations == null ? NO_ANNOTATIONS : annotations));
+				(annotations != null) ? annotations : NO_ANNOTATIONS);
 	}
 
+	/**
+	 * Create an updated {@link Bindable} instance with an existing value.
+	 * @param existingValue the existing value
+	 * @return an updated {@link Bindable}
+	 */
 	public Bindable<T> withExistingValue(T existingValue) {
 		Assert.isTrue(
 				existingValue == null || this.type.isArray()
 						|| this.boxedType.resolve().isInstance(existingValue),
-				"ExistingValue must be an instance of " + this.type);
-		Supplier<T> value = (existingValue == null ? null : () -> existingValue);
+				() -> "ExistingValue must be an instance of " + this.type);
+		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
 		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
 	}
 
+	/**
+	 * Create an updated {@link Bindable} instance with a value supplier.
+	 * @param suppliedValue the supplier for the value
+	 * @return an updated {@link Bindable}
+	 */
 	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
 		return new Bindable<>(this.type, this.boxedType, suppliedValue, NO_ANNOTATIONS);
 	}
@@ -149,7 +179,7 @@ public final class Bindable<T> {
 	/**
 	 * Create a new {@link Bindable} of the type of the specified instance with an
 	 * existing value equal to the instance.
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @param instance the instance (must not be {@code null})
 	 * @return a {@link Bindable} instance
 	 * @see #of(ResolvableType)
@@ -164,7 +194,7 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} of the specified type.
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @param type the type (must not be {@code null})
 	 * @return a {@link Bindable} instance
 	 * @see #of(ResolvableType)
@@ -208,7 +238,7 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} of the specified type.
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @param type the type (must not be {@code null})
 	 * @return a {@link Bindable} instance
 	 * @see #of(Class)

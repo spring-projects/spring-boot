@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,24 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
+import java.util.List;
 
-import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,50 +46,78 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link WebTestClientAutoConfiguration}
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  */
 public class WebTestClientAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(WebTestClientAutoConfiguration.class));
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	public void shouldNotBeConfiguredWithoutWebHandler() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).doesNotHaveBean(WebTestClient.class);
+		});
 	}
 
 	@Test
 	public void shouldCustomizeClientCodecs() {
-		load(CodecConfiguration.class);
-		WebTestClient webTestClient = this.context.getBean(WebTestClient.class);
-		CodecCustomizer codecCustomizer = this.context.getBean(CodecCustomizer.class);
-		assertThat(webTestClient).isNotNull();
-		verify(codecCustomizer).customize(any(CodecConfigurer.class));
+		this.contextRunner.withUserConfiguration(CodecConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(WebTestClient.class);
+					assertThat(context).hasSingleBean(CodecCustomizer.class);
+					verify(context.getBean(CodecCustomizer.class))
+							.customize(any(CodecConfigurer.class));
+				});
 	}
 
 	@Test
 	public void shouldCustomizeTimeout() {
-		PropertySource<?> propertySource = new MapPropertySource("test", Collections
-				.singletonMap("spring.test.webtestclient.timeout", (Object) "PT15M"));
-		load(propertySource, BaseConfiguration.class);
-		WebTestClient webTestClient = this.context.getBean(WebTestClient.class);
-		Object duration = ReflectionTestUtils.getField(webTestClient, "timeout");
-		assertThat(duration).isEqualTo(Duration.of(15, ChronoUnit.MINUTES));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("spring.test.webtestclient.timeout=15m")
+				.run((context) -> {
+					WebTestClient webTestClient = context.getBean(WebTestClient.class);
+					Object duration = ReflectionTestUtils.getField(webTestClient,
+							"timeout");
+					assertThat(duration).isEqualTo(Duration.of(15, ChronoUnit.MINUTES));
+				});
 	}
 
-	private void load(Class<?>... config) {
-		load(null, config);
+	@Test
+	@SuppressWarnings("unchecked")
+	public void shouldApplySpringSecurityConfigurer() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					WebTestClient webTestClient = context.getBean(WebTestClient.class);
+					WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils
+							.getField(webTestClient, "builder");
+					WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils
+							.getField(builder, "httpHandlerBuilder");
+					List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils
+							.getField(httpHandlerBuilder, "filters");
+					assertThat(filters.get(0).getClass().getName()).isEqualTo(
+							"org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers$MutatorFilter");
+				});
 	}
 
-	private void load(PropertySource<?> propertySource, Class<?>... config) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		if (propertySource != null) {
-			context.getEnvironment().getPropertySources().addFirst(propertySource);
-		}
-		context.register(config);
-		context.register(WebTestClientAutoConfiguration.class);
-		context.refresh();
-		this.context = context;
+	@Test
+	@SuppressWarnings("unchecked")
+	public void shouldNotApplySpringSecurityConfigurerWhenSpringSecurityNotOnClassPath() {
+		FilteredClassLoader classLoader = new FilteredClassLoader(
+				SecurityMockServerConfigurers.class);
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withClassLoader(classLoader).run((context) -> {
+					WebTestClient webTestClient = context.getBean(WebTestClient.class);
+					WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils
+							.getField(webTestClient, "builder");
+					WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils
+							.getField(builder, "httpHandlerBuilder");
+					List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils
+							.getField(httpHandlerBuilder, "filters");
+					assertThat(filters).isEmpty();
+				});
 	}
 
 	@Configuration

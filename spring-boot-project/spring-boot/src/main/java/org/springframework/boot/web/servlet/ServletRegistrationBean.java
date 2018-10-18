@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,14 @@ import java.util.Set;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRegistration.Dynamic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Servlet}s in a Servlet 3.0+
@@ -52,7 +51,8 @@ import org.springframework.util.ObjectUtils;
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
  */
-public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean {
+public class ServletRegistrationBean<T extends Servlet>
+		extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
 
 	private static final Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 
@@ -101,20 +101,20 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	}
 
 	/**
-	 * Returns the servlet being registered.
-	 * @return the servlet
-	 */
-	protected T getServlet() {
-		return this.servlet;
-	}
-
-	/**
 	 * Sets the servlet to be registered.
 	 * @param servlet the servlet
 	 */
 	public void setServlet(T servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = servlet;
+	}
+
+	/**
+	 * Return the servlet being registered.
+	 * @return the servlet
+	 */
+	public T getServlet() {
+		return this.servlet;
 	}
 
 	/**
@@ -129,7 +129,8 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	}
 
 	/**
-	 * Return a mutable collection of the URL mappings for the servlet.
+	 * Return a mutable collection of the URL mappings, as defined in the Servlet
+	 * specification, for the servlet.
 	 * @return the urlMappings
 	 */
 	public Collection<String> getUrlMappings() {
@@ -137,7 +138,7 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	}
 
 	/**
-	 * Add URL mappings for the servlet.
+	 * Add URL mappings, as defined in the Servlet specification, for the servlet.
 	 * @param urlMappings the mappings to add
 	 * @see #setUrlMappings(Collection)
 	 */
@@ -172,30 +173,18 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 		return this.multipartConfig;
 	}
 
-	/**
-	 * Returns the servlet name that will be registered.
-	 * @return the servlet name
-	 */
-	public String getServletName() {
-		return getOrDeduceName(this.servlet);
+	@Override
+	protected String getDescription() {
+		Assert.notNull(this.servlet, "Servlet must not be null");
+		return "servlet " + getServletName();
 	}
 
 	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		Assert.notNull(this.servlet, "Servlet must not be null");
+	protected ServletRegistration.Dynamic addRegistration(String description,
+			ServletContext servletContext) {
 		String name = getServletName();
-		if (!isEnabled()) {
-			logger.info("Servlet " + name + " was not registered (disabled)");
-			return;
-		}
-		logger.info("Mapping servlet: '" + name + "' to " + this.urlMappings);
-		Dynamic added = servletContext.addServlet(name, this.servlet);
-		if (added == null) {
-			logger.info("Servlet " + name + " was not registered "
-					+ "(possibly already registered?)");
-			return;
-		}
-		configure(added);
+		logger.info("Servlet " + name + " mapped to " + this.urlMappings);
+		return servletContext.addServlet(name, this.servlet);
 	}
 
 	/**
@@ -203,10 +192,10 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 	 * additional configuration if required.
 	 * @param registration the registration
 	 */
+	@Override
 	protected void configure(ServletRegistration.Dynamic registration) {
 		super.configure(registration);
-		String[] urlMapping = this.urlMappings
-				.toArray(new String[this.urlMappings.size()]);
+		String[] urlMapping = StringUtils.toStringArray(this.urlMappings);
 		if (urlMapping.length == 0 && this.alwaysMapUrl) {
 			urlMapping = DEFAULT_MAPPINGS;
 		}
@@ -217,6 +206,14 @@ public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean
 		if (this.multipartConfig != null) {
 			registration.setMultipartConfig(this.multipartConfig);
 		}
+	}
+
+	/**
+	 * Returns the servlet name that will be registered.
+	 * @return the servlet name
+	 */
+	public String getServletName() {
+		return getOrDeduceName(this.servlet);
 	}
 
 }

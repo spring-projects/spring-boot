@@ -8,4 +8,11 @@ caches:
 - path: maven
 - path: gradle
 run:
-  path: git-repo/ci/scripts/build-project.sh
+  path: bash
+  args:
+    - -exc
+    - |
+      source /docker-lib.sh
+      start_docker
+      ${PWD}/git-repo/ci/scripts/build-project.sh
+

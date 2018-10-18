@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
  *
  * @author Jon Schneider
+ * @author Alexander Abramov
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
 public class MetricsProperties {
-
-	private Web web = new Web();
 
 	/**
 	 * Whether auto-configured MeterRegistry implementations should be bound to the global
@@ -35,6 +37,21 @@ public class MetricsProperties {
 	 * independence.
 	 */
 	private boolean useGlobalRegistry = true;
+
+	/**
+	 * Whether meter IDs starting-with the specified name should be enabled. The longest
+	 * match wins, the key `all` can also be used to configure all meters.
+	 */
+	private final Map<String, Boolean> enable = new LinkedHashMap<>();
+
+	/**
+	 * Common tags that are applied to every meter.
+	 */
+	private final Map<String, String> tags = new LinkedHashMap<>();
+
+	private final Web web = new Web();
+
+	private final Distribution distribution = new Distribution();
 
 	public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
@@ -44,52 +61,49 @@ public class MetricsProperties {
 		this.useGlobalRegistry = useGlobalRegistry;
 	}
 
+	public Map<String, Boolean> getEnable() {
+		return this.enable;
+	}
+
+	public Map<String, String> getTags() {
+		return this.tags;
+	}
+
 	public Web getWeb() {
 		return this.web;
 	}
 
+	public Distribution getDistribution() {
+		return this.distribution;
+	}
+
 	public static class Web {
 
-		private Client client = new Client();
+		private final Client client = new Client();
 
-		private Server server = new Server();
+		private final Server server = new Server();
 
 		public Client getClient() {
 			return this.client;
-		}
-
-		public void setClient(Client client) {
-			this.client = client;
 		}
 
 		public Server getServer() {
 			return this.server;
 		}
 
-		public void setServer(Server server) {
-			this.server = server;
-		}
-
 		public static class Client {
-
-			/**
-			 * Whether instrumented requests record percentiles histogram buckets by
-			 * default.
-			 */
-			private boolean recordRequestPercentiles;
 
 			/**
 			 * Name of the metric for sent requests.
 			 */
 			private String requestsMetricName = "http.client.requests";
 
-			public boolean isRecordRequestPercentiles() {
-				return this.recordRequestPercentiles;
-			}
-
-			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
-				this.recordRequestPercentiles = recordRequestPercentiles;
-			}
+			/**
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
+			 */
+			private int maxUriTags = 100;
 
 			public String getRequestsMetricName() {
 				return this.requestsMetricName;
@@ -99,29 +113,37 @@ public class MetricsProperties {
 				this.requestsMetricName = requestsMetricName;
 			}
 
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
+			}
+
 		}
 
 		public static class Server {
 
 			/**
-			 * Whether requests handled by Spring MVC or WebFlux should be automatically
-			 * timed. If the number of time series emitted grows too large on account of
-			 * request mapping timings, disable this and use 'Timed' on a per request
-			 * mapping basis as needed.
+			 * Whether requests handled by Spring MVC, WebFlux or Jersey should be
+			 * automatically timed. If the number of time series emitted grows too large
+			 * on account of request mapping timings, disable this and use 'Timed' on a
+			 * per request mapping basis as needed.
 			 */
 			private boolean autoTimeRequests = true;
-
-			/**
-			 * Whether or not instrumented requests record percentiles histogram buckets
-			 * by default. Can be overridden by adding '@Timed' to a request endpoint and
-			 * setting 'percentiles' to true.
-			 */
-			private boolean recordRequestPercentiles;
 
 			/**
 			 * Name of the metric for received requests.
 			 */
 			private String requestsMetricName = "http.server.requests";
+
+			/**
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
+			 */
+			private int maxUriTags = 100;
 
 			public boolean isAutoTimeRequests() {
 				return this.autoTimeRequests;
@@ -131,14 +153,6 @@ public class MetricsProperties {
 				this.autoTimeRequests = autoTimeRequests;
 			}
 
-			public boolean isRecordRequestPercentiles() {
-				return this.recordRequestPercentiles;
-			}
-
-			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
-				this.recordRequestPercentiles = recordRequestPercentiles;
-			}
-
 			public String getRequestsMetricName() {
 				return this.requestsMetricName;
 			}
@@ -147,6 +161,76 @@ public class MetricsProperties {
 				this.requestsMetricName = requestsMetricName;
 			}
 
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
+			}
+
+		}
+
+	}
+
+	public static class Distribution {
+
+		/**
+		 * Whether meter IDs starting with the specified name should publish percentile
+		 * histograms. For monitoring systems that support aggregable percentile
+		 * calculation based on a histogram, this can be set to true. For other systems,
+		 * this has no effect. The longest match wins, the key `all` can also be used to
+		 * configure all meters.
+		 */
+		private final Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
+
+		/**
+		 * Specific computed non-aggregable percentiles to ship to the backend for meter
+		 * IDs starting-with the specified name. The longest match wins, the key `all` can
+		 * also be used to configure all meters.
+		 */
+		private final Map<String, double[]> percentiles = new LinkedHashMap<>();
+
+		/**
+		 * Specific SLA boundaries for meter IDs starting-with the specified name. The
+		 * longest match wins. Counters will be published for each specified boundary.
+		 * Values can be specified as a long or as a Duration value (for timer meters,
+		 * defaulting to ms if no unit specified).
+		 */
+		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
+
+		/**
+		 * Minimum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
+
+		/**
+		 * Maximum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
+
+		public Map<String, Boolean> getPercentilesHistogram() {
+			return this.percentilesHistogram;
+		}
+
+		public Map<String, double[]> getPercentiles() {
+			return this.percentiles;
+		}
+
+		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
+			return this.sla;
+		}
+
+		public Map<String, String> getMinimumExpectedValue() {
+			return this.minimumExpectedValue;
+		}
+
+		public Map<String, String> getMaximumExpectedValue() {
+			return this.maximumExpectedValue;
 		}
 
 	}

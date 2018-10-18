@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.Servlet;
@@ -47,6 +46,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
@@ -55,22 +55,23 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
@@ -89,8 +90,8 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
-import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -101,6 +102,7 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -114,7 +116,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
-import org.springframework.web.servlet.resource.GzipResourceResolver;
+import org.springframework.web.servlet.resource.EncodedResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -133,6 +135,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Stephane Nicoll
  * @author Kristine Jetzke
  * @author Bruce Brouwer
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -140,7 +143,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter({ DispatcherServletAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+		TaskExecutionAutoConfiguration.class, ValidationAutoConfiguration.class })
 public class WebMvcAutoConfiguration {
 
 	public static final String DEFAULT_PREFIX = "";
@@ -151,15 +154,16 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled", matchIfMissing = true)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(HttpPutFormContentFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.putfilter", name = "enabled", matchIfMissing = true)
-	public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
-		return new OrderedHttpPutFormContentFilter();
+	@ConditionalOnMissingBean(FormContentFilter.class)
+	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.filter", name = "enabled", matchIfMissing = true)
+	public OrderedFormContentFilter formContentFilter() {
+		return new OrderedFormContentFilter();
 	}
 
 	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
@@ -167,6 +171,7 @@ public class WebMvcAutoConfiguration {
 	@Configuration
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
+	@Order(0)
 	public static class WebMvcAutoConfigurationAdapter
 			implements WebMvcConfigurer, ResourceLoaderAware {
 
@@ -178,7 +183,7 @@ public class WebMvcAutoConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
-		private final HttpMessageConverters messageConverters;
+		private final ObjectProvider<HttpMessageConverters> messageConvertersProvider;
 
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
@@ -186,12 +191,12 @@ public class WebMvcAutoConfiguration {
 
 		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
 				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
-				@Lazy HttpMessageConverters messageConverters,
+				ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
 			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
-			this.messageConverters = messageConverters;
+			this.messageConvertersProvider = messageConvertersProvider;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider
 					.getIfAvailable();
 		}
@@ -203,11 +208,20 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-			converters.addAll(this.messageConverters.getConverters());
+			this.messageConvertersProvider.ifAvailable((customConverters) -> converters
+					.addAll(customConverters.getConverters()));
 		}
 
 		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			if (this.beanFactory.containsBean(
+					TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
+				Object taskExecutor = this.beanFactory.getBean(
+						TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+				if (taskExecutor instanceof AsyncTaskExecutor) {
+					configurer.setTaskExecutor(((AsyncTaskExecutor) taskExecutor));
+				}
+			}
 			Duration timeout = this.mvcProperties.getAsync().getRequestTimeout();
 			if (timeout != null) {
 				configurer.setDefaultTimeout(timeout.toMillis());
@@ -215,11 +229,25 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		public void configurePathMatch(PathMatchConfigurer configurer) {
+			configurer.setUseSuffixPatternMatch(
+					this.mvcProperties.getPathmatch().isUseSuffixPattern());
+			configurer.setUseRegisteredSuffixPatternMatch(
+					this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
+		}
+
+		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
-			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
-				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
+			WebMvcProperties.Contentnegotiation contentnegotiation = this.mvcProperties
+					.getContentnegotiation();
+			configurer.favorPathExtension(contentnegotiation.isFavorPathExtension());
+			configurer.favorParameter(contentnegotiation.isFavorParameter());
+			if (contentnegotiation.getParameterName() != null) {
+				configurer.parameterName(contentnegotiation.getParameterName());
 			}
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation()
+					.getMediaTypes();
+			mediaTypes.forEach(configurer::mediaType);
 		}
 
 		@Bean
@@ -304,10 +332,9 @@ public class WebMvcAutoConfiguration {
 			CacheControl cacheControl = this.resourceProperties.getCache()
 					.getCachecontrol().toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				customizeResourceHandlerRegistration(
-						registry.addResourceHandler("/webjars/**")
-								.addResourceLocations(
-										"classpath:/META-INF/resources/webjars/")
+				customizeResourceHandlerRegistration(registry
+						.addResourceHandler("/webjars/**")
+						.addResourceLocations("classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(getSeconds(cachePeriod))
 						.setCacheControl(cacheControl));
 			}
@@ -317,13 +344,13 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(getSeconds(cachePeriod))
-						.setCacheControl(cacheControl));
+								.setCachePeriod(getSeconds(cachePeriod))
+								.setCacheControl(cacheControl));
 			}
 		}
 
 		private Integer getSeconds(Duration cachePeriod) {
-			return (cachePeriod == null ? null : (int) cachePeriod.getSeconds());
+			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
 		}
 
 		@Bean
@@ -450,8 +477,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
 			RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
-			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null ? true
-					: this.mvcProperties.isIgnoreDefaultModelOnRedirect());
+			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null
+					|| this.mvcProperties.isIgnoreDefaultModelOnRedirect());
 			return adapter;
 		}
 
@@ -571,7 +598,7 @@ public class WebMvcAutoConfiguration {
 
 	}
 
-	private static class ResourceChainResourceHandlerRegistrationCustomizer
+	static class ResourceChainResourceHandlerRegistrationCustomizer
 			implements ResourceHandlerRegistrationCustomizer {
 
 		@Autowired
@@ -587,11 +614,11 @@ public class WebMvcAutoConfiguration {
 		private void configureResourceChain(ResourceProperties.Chain properties,
 				ResourceChainRegistration chain) {
 			Strategy strategy = properties.getStrategy();
+			if (properties.isCompressed()) {
+				chain.addResolver(new EncodedResourceResolver());
+			}
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
-			}
-			if (properties.isGzipped()) {
-				chain.addResolver(new GzipResourceResolver());
 			}
 			if (properties.isHtmlApplicationCache()) {
 				chain.addTransformer(new AppCacheManifestTransformer());
@@ -638,7 +665,7 @@ public class WebMvcAutoConfiguration {
 			Object skip = webRequest.getAttribute(SKIP_ATTRIBUTE,
 					RequestAttributes.SCOPE_REQUEST);
 			if (skip != null && Boolean.parseBoolean(skip.toString())) {
-				return Collections.emptyList();
+				return MEDIA_TYPE_ALL_LIST;
 			}
 			return this.delegate.resolveMediaTypes(webRequest);
 		}

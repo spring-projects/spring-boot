@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 
@@ -25,6 +26,7 @@ import org.springframework.test.context.TestContextBootstrapper;
  * {@link TestContextBootstrapper} for {@link WebFluxTest @WebFluxTest} support.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
@@ -33,6 +35,13 @@ class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 			MergedContextConfiguration mergedConfig) {
 		return new ReactiveWebMergedContextConfiguration(
 				super.processMergedContextConfiguration(mergedConfig));
+	}
+
+	@Override
+	protected String[] getProperties(Class<?> testClass) {
+		WebFluxTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
+				WebFluxTest.class);
+		return (annotation != null) ? annotation.properties() : null;
 	}
 
 }

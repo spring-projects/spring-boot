@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,15 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -252,7 +257,6 @@ public class MapBinderTests {
 				.withExistingValue(existing);
 		Map<String, Integer> result = this.binder.bind("foo", target).get();
 		assertThat(result).isExactlyInstanceOf(HashMap.class);
-		assertThat(result).isSameAs(existing);
 		assertThat(result).hasSize(2);
 		assertThat(result).containsEntry("bar", 1);
 		assertThat(result).containsEntry("baz", 1001);
@@ -524,6 +528,115 @@ public class MapBinderTests {
 		assertThat(foo.get().getFoos().get("foo2").getValue()).isEqualTo("three");
 	}
 
+	@Test
+	public void bindToMapWithCustomConverter() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		Binder binder = new Binder(this.sources, null, conversionService, null);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "a,b");
+		this.sources.add(source);
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map.get("a")).isNotNull();
+		assertThat(map.get("b")).isNotNull();
+	}
+
+	@Test
+	public void bindToMapWithCustomConverterAndChildElements() {
+		// gh-11892
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		Binder binder = new Binder(this.sources, null, conversionService, null);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "boom");
+		source.put("foo.a", "a");
+		source.put("foo.b", "b");
+		this.sources.add(source);
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map.get("a")).isEqualTo("a");
+		assertThat(map.get("b")).isEqualTo("b");
+	}
+
+	@Test
+	public void bindToMapWithNoConverterForValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "a,b");
+		this.sources.add(source);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo", STRING_STRING_MAP));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void bindToMapWithPropertyEditorForKey() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.[java.lang.RuntimeException]", "bar");
+		this.sources.add(source);
+		Map<Class, String> map = this.binder
+				.bind("foo", Bindable.mapOf(Class.class, String.class)).get();
+		assertThat(map).containsExactly(entry(RuntimeException.class, "bar"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void bindToMapWithPropertyEditorForValue() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "java.lang.RuntimeException");
+		this.sources.add(source);
+		Map<String, Class> map = this.binder
+				.bind("foo", Bindable.mapOf(String.class, Class.class)).get();
+		assertThat(map).containsExactly(entry("bar", RuntimeException.class));
+	}
+
+	@Test
+	public void bindToMapWithNoDefaultConstructor() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items.a", "b");
+		this.sources.add(source);
+		ExampleCustomNoDefaultConstructorBean result = this.binder
+				.bind("foo", ExampleCustomNoDefaultConstructorBean.class).get();
+		assertThat(result.getItems()).containsOnly(entry("foo", "bar"), entry("a", "b"));
+	}
+
+	@Test
+	public void bindToMapWithDefaultConstructor() {
+		// gh-12322
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items.a", "b");
+		this.sources.add(source);
+		ExampleCustomWithDefaultConstructorBean result = this.binder
+				.bind("foo", ExampleCustomWithDefaultConstructorBean.class).get();
+		assertThat(result.getItems()).containsExactly(entry("a", "b"));
+	}
+
+	@Test
+	public void bindToImmutableMapShouldReturnPopulatedMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values.c", "d");
+		source.put("foo.values.e", "f");
+		this.sources.add(source);
+		Map<String, String> result = this.binder
+				.bind("foo.values",
+						STRING_STRING_MAP
+								.withExistingValue(Collections.singletonMap("a", "b")))
+				.get();
+		assertThat(result).hasSize(3);
+		assertThat(result.entrySet()).containsExactly(entry("a", "b"), entry("c", "d"),
+				entry("e", "f"));
+	}
+
+	@Test
+	public void bindToBeanWithExceptionInGetterForExistingValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values.a", "b");
+		this.sources.add(source);
+		BeanWithGetterException result = this.binder
+				.bind("foo", Bindable.of(BeanWithGetterException.class)).get();
+		assertThat(result.getValues()).containsExactly(entry("a", "b"));
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
 			ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
@@ -572,6 +685,73 @@ public class MapBinderTests {
 
 		public void setValue(String value) {
 			this.value = value;
+		}
+
+	}
+
+	static class MapConverter implements Converter<String, Map<String, String>> {
+
+		@Override
+		public Map<String, String> convert(String s) {
+			return StringUtils.commaDelimitedListToSet(s).stream()
+					.collect(Collectors.toMap((k) -> k, (k) -> ""));
+		}
+
+	}
+
+	public static class ExampleCustomNoDefaultConstructorBean {
+
+		private MyCustomNoDefaultConstructorMap items = new MyCustomNoDefaultConstructorMap(
+				Collections.singletonMap("foo", "bar"));
+
+		public MyCustomNoDefaultConstructorMap getItems() {
+			return this.items;
+		}
+
+		public void setItems(MyCustomNoDefaultConstructorMap items) {
+			this.items = items;
+		}
+
+	}
+
+	public static class MyCustomNoDefaultConstructorMap extends HashMap<String, String> {
+
+		public MyCustomNoDefaultConstructorMap(Map<String, String> items) {
+			putAll(items);
+		}
+
+	}
+
+	public static class ExampleCustomWithDefaultConstructorBean {
+
+		private MyCustomWithDefaultConstructorMap items = new MyCustomWithDefaultConstructorMap();
+
+		public MyCustomWithDefaultConstructorMap getItems() {
+			return this.items;
+		}
+
+		public void setItems(MyCustomWithDefaultConstructorMap items) {
+			this.items.clear();
+			this.items.putAll(items);
+		}
+
+	}
+
+	public static class MyCustomWithDefaultConstructorMap
+			extends HashMap<String, String> {
+
+	}
+
+	public static class BeanWithGetterException {
+
+		private Map<String, String> values;
+
+		public void setValues(Map<String, String> values) {
+			this.values = values;
+		}
+
+		public Map<String, String> getValues() {
+			return Collections.unmodifiableMap(this.values);
 		}
 
 	}

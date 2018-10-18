@@ -79,4 +79,5 @@ public class Public extends SchemaImpl {
 		return Arrays.<Table<?>>asList(Language.LANGUAGE, Author.AUTHOR, Book.BOOK,
 				BookStore.BOOK_STORE, BookToBookStore.BOOK_TO_BOOK_STORE);
 	}
+
 }

@@ -33,10 +33,18 @@ A war file can be packaged such that it can be executed using `java -jar` and de
 to an external container. To do so, the embedded servlet container dependencies should
 be added to the `providedRuntime` configuration, for example:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/war-container-dependency.gradle.kts[tags=dependencies]
+----
+
 
 This ensures that they are package in the war file's `WEB-INF/lib-provided` directory
 from where they will not conflict with the external container's own classes.
@@ -54,19 +62,35 @@ By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `
 tasks are disabled. A project can be configured to build both an executable archive
 and a normal archive at the same time by enabling the `jar` or `war` task:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-and-jar.gradle[tags=enable-jar]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=enable-jar]
+----
+
 
 To avoid the executable archive and the normal archive from being written to the same
 location, one or the other should be configured to use a different location. One way to
 do so is by configuring a classifier:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-and-jar.gradle[tags=classifier]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=classifier]
+----
+
 
 [[packaging-executable-configuring]]
 === Configuring executable archive packaging
@@ -88,34 +112,63 @@ the task's classpath.
 The main class can also be configured explicitly using the task's `mainClassName`
 property:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-main-class.gradle.kts[tags=main-class]
+----
+
+
 Alternatively, the main class name can be configured project-wide using the
 `mainClassName` property of the Spring Boot DSL:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
 ----
 
-If the {application-plugin}[`application` plugin] has been applied its `mainClassName`
-project property can be used for the same purpose:
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/spring-boot-dsl-main-class.gradle.kts[tags=main-class]
+----
 
-[source,groovy,indent=0,subs="verbatim"]
+
+If the {application-plugin}[`application` plugin] has been applied its `mainClassName`
+project property must be configured and can be used for the same purpose:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/application-plugin-main-class.gradle[tags=main-class]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/application-plugin-main-class.gradle.kts[tags=main-class]
+----
+
 Lastly, the `Start-Class` attribute can be configured on the task's manifest:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
+----
 
 
 [[packaging-executable-configuring-excluding-devtools]]
@@ -126,11 +179,17 @@ By default, Spring Boot's Devtools module,
 or war. If you want to include Devtools in your archive set the `excludeDevtools`
 property to `false`:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-war-include-devtools.gradle[tags=include-devtools]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-war-include-devtools.gradle.kts[tags=include-devtools]
+----
 
 
 [[packaging-executable-configuring-unpacking]]
@@ -145,10 +204,18 @@ specific nested jars to a temporary folder when the executable archive is run. L
 can be identified as requiring unpacking using Ant-style patterns that match against
 the absolute path of the source jar file:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-requires-unpack.gradle[tags=requires-unpack]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
+----
+
 
 For more control a closure can also be used. The closure is passed a `FileTreeElement`
 and should return a `boolean` indicating whether or not unpacking is required.
@@ -165,28 +232,50 @@ other executable or to be installed as a service.
 
 To use this feature, the inclusion of the launch script must be enabled:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-include-launch-script.gradle.kts[tags=include-launch-script]
+----
+
 
 This will add Spring Boot's default launch script to the archive. The default launch
 script includes several properties with sensible default values. The values can be
 customized using the `properties` property:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-launch-script-properties.gradle.kts[tags=launch-script-properties]
+----
+
+
 If the default launch script does not meet your needs, the `script` property can be used
 to provide a custom launch script:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-launch-script]
+----
 
 
 [[packaging-executable-configuring-properties-launcher]]
@@ -195,7 +284,15 @@ include::../gradle/packaging/boot-jar-custom-launch-script.gradle[tags=custom-la
 To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's
 manifest to set the `Main-Class` attribute:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/packaging/boot-war-properties-launcher.gradle[tags=properties-launcher]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=properties-launcher]
+----
+

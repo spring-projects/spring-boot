@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,20 @@
 package org.springframework.boot.actuate.endpoint;
 
 /**
- * Strategy class that can be used to filter discovered endpoints.
+ * Strategy class that can be used to filter {@link ExposableEndpoint endpoints}.
  *
  * @author Phillip Webb
- * @param <T> the type of the endpoint's operations
+ * @param <E> the endpoint type
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface EndpointFilter<T extends Operation> {
+public interface EndpointFilter<E extends ExposableEndpoint<?>> {
 
 	/**
 	 * Return {@code true} if the filter matches.
-	 * @param info the endpoint info
-	 * @param discoverer the endpoint discoverer
+	 * @param endpoint the endpoint to check
 	 * @return {@code true} if the filter matches
 	 */
-	boolean match(EndpointInfo<T> info, EndpointDiscoverer<T> discoverer);
+	boolean match(E endpoint);
 
 }

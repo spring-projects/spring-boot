@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import com.couchbase.client.java.bucket.BucketInfo;
-import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.core.message.internal.DiagnosticsReport;
+import com.couchbase.client.java.Cluster;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for Couchbase.
@@ -35,21 +33,23 @@ import org.springframework.util.StringUtils;
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private CouchbaseOperations operations;
+	private final Cluster cluster;
 
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
-		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
-		this.operations = couchbaseOperations;
+	/**
+	 * Create an indicator with the specified {@link Cluster}.
+	 * @param cluster the Couchbase Cluster
+	 * @since 2.0.6
+	 */
+	public CouchbaseHealthIndicator(Cluster cluster) {
+		super("Couchbase health check failed");
+		Assert.notNull(cluster, "Cluster must not be null");
+		this.cluster = cluster;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
-		BucketInfo bucket = this.operations.getCouchbaseBucket().bucketManager().info();
-		String versions = StringUtils
-				.collectionToCommaDelimitedString(cluster.getAllVersions());
-		String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
-		builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
+		DiagnosticsReport diagnostics = this.cluster.diagnostics();
+		new CouchbaseHealth(diagnostics).applyTo(builder);
 	}
 
 }

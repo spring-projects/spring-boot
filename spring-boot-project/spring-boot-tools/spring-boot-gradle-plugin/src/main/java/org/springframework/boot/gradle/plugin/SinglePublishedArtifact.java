@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.gradle.api.artifacts.PublishArtifactSet;
 import org.gradle.api.tasks.TaskDependency;
 
 /**
- * A wrapper for a {@PublishArtifactSet} that ensures that only a single artifact is
+ * A wrapper for a {@link PublishArtifactSet} that ensures that only a single artifact is
  * published, with a war file taking precedence over a jar file.
  *
  * @author Andy Wilkinson

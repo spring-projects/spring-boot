@@ -4,7 +4,7 @@ Spring Boot Actuator includes a number of additional features to help you monito
 manage your application when it's pushed to production. You can choose to manage and
 monitor your application using HTTP or JMX endpoints. Auditing, health and metrics
 gathering can be automatically applied to your application. The
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
 covers the features in more detail.
 
 == Enabling the Actuator

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 package org.springframework.boot.testsupport.web.servlet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
@@ -66,18 +65,18 @@ public abstract class MockServletWebServer {
 	private void initialize() {
 		try {
 			this.servletContext = mock(ServletContext.class);
-			given(this.servletContext.addServlet(anyString(), (Servlet) any()))
+			given(this.servletContext.addServlet(anyString(), any(Servlet.class)))
 					.willAnswer((invocation) -> {
 						RegisteredServlet registeredServlet = new RegisteredServlet(
-								(Servlet) invocation.getArguments()[1]);
+								invocation.getArgument(1));
 						MockServletWebServer.this.registeredServlets
 								.add(registeredServlet);
 						return registeredServlet.getRegistration();
 					});
-			given(this.servletContext.addFilter(anyString(), (Filter) any()))
+			given(this.servletContext.addFilter(anyString(), any(Filter.class)))
 					.willAnswer((invocation) -> {
 						RegisteredFilter registeredFilter = new RegisteredFilter(
-								(Filter) invocation.getArguments()[1]);
+								invocation.getArgument(1));
 						MockServletWebServer.this.registeredFilters.add(registeredFilter);
 						return registeredFilter.getRegistration();
 					});
@@ -93,7 +92,7 @@ public abstract class MockServletWebServer {
 			given(this.servletContext.getInitParameter(anyString())).willAnswer(
 					(invocation) -> initParameters.get(invocation.getArgument(0)));
 			given(this.servletContext.getAttributeNames())
-					.willReturn(MockServletWebServer.emptyEnumeration());
+					.willReturn(Collections.emptyEnumeration());
 			given(this.servletContext.getNamedDispatcher("default"))
 					.willReturn(mock(RequestDispatcher.class));
 			for (Initializer initializer : this.initializers) {
@@ -116,9 +115,7 @@ public abstract class MockServletWebServer {
 
 	public Servlet[] getServlets() {
 		Servlet[] servlets = new Servlet[this.registeredServlets.size()];
-		for (int i = 0; i < servlets.length; i++) {
-			servlets[i] = this.registeredServlets.get(i).getServlet();
-		}
+		Arrays.setAll(servlets, (i) -> this.registeredServlets.get(i).getServlet());
 		return servlets;
 	}
 
@@ -140,27 +137,6 @@ public abstract class MockServletWebServer {
 
 	public int getPort() {
 		return this.port;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Enumeration<T> emptyEnumeration() {
-		return (Enumeration<T>) EmptyEnumeration.EMPTY_ENUMERATION;
-	}
-
-	private static class EmptyEnumeration<E> implements Enumeration<E> {
-
-		static final MockServletWebServer.EmptyEnumeration<Object> EMPTY_ENUMERATION = new MockServletWebServer.EmptyEnumeration<>();
-
-		@Override
-		public boolean hasMoreElements() {
-			return false;
-		}
-
-		@Override
-		public E nextElement() {
-			throw new NoSuchElementException();
-		}
-
 	}
 
 	/**

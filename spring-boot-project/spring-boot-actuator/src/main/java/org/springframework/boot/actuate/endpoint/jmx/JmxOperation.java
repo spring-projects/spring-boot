@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,90 +16,43 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.Operation;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.core.style.ToStringCreator;
 
 /**
  * An operation on a JMX endpoint.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.0.0
  */
-public class JmxOperation extends Operation {
-
-	private final String operationName;
-
-	private final Class<?> outputType;
-
-	private final String description;
-
-	private final List<JmxEndpointOperationParameterInfo> parameters;
-
-	/**
-	 * Creates a new {@code JmxEndpointOperation} for an operation of the given
-	 * {@code type}. The operation can be performed using the given {@code invoker}.
-	 * @param type the type of the operation
-	 * @param invoker used to perform the operation
-	 * @param operationName the name of the operation
-	 * @param outputType the type of the output of the operation
-	 * @param description the description of the operation
-	 * @param parameters the parameters of the operation
-	 */
-	public JmxOperation(OperationType type, OperationInvoker invoker,
-			String operationName, Class<?> outputType, String description,
-			List<JmxEndpointOperationParameterInfo> parameters) {
-		super(type, invoker, true);
-		this.operationName = operationName;
-		this.outputType = outputType;
-		this.description = description;
-		this.parameters = parameters;
-	}
+public interface JmxOperation extends Operation {
 
 	/**
 	 * Returns the name of the operation.
 	 * @return the operation name
 	 */
-	public String getOperationName() {
-		return this.operationName;
-	}
+	String getName();
 
 	/**
 	 * Returns the type of the output of the operation.
 	 * @return the output type
 	 */
-	public Class<?> getOutputType() {
-		return this.outputType;
-	}
+	Class<?> getOutputType();
 
 	/**
 	 * Returns the description of the operation.
 	 * @return the operation description
 	 */
-	public String getDescription() {
-		return this.description;
-	}
+	String getDescription();
 
 	/**
-	 * Returns the parameters of the operation.
-	 * @return the operation parameters
+	 * Returns the parameters the operation expects in the order that they should be
+	 * provided.
+	 * @return the operation parameter names
 	 */
-	public List<JmxEndpointOperationParameterInfo> getParameters() {
-		return Collections.unmodifiableList(this.parameters);
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringCreator(this).append("type", getType())
-				.append("invoker", getInvoker()).append("blocking", isBlocking())
-				.append("operationName", this.operationName)
-				.append("outputType", this.outputType)
-				.append("description", this.description).toString();
-	}
+	List<JmxOperationParameter> getParameters();
 
 }

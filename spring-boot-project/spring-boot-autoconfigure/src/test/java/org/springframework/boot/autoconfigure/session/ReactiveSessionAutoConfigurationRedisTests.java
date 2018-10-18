@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
@@ -27,7 +26,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisFlushMode;
@@ -43,9 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveSessionAutoConfigurationRedisTests
 		extends AbstractSessionAutoConfigurationTests {
-
-	@Rule
-	public final RedisTestServer redis = new RedisTestServer();
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));

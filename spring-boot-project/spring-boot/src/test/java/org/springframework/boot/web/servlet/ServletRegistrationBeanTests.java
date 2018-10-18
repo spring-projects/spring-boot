@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,19 +29,17 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.web.servlet.mock.MockServlet;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -50,9 +48,6 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 public class ServletRegistrationBeanTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final MockServlet servlet = new MockServlet();
 
@@ -68,9 +63,9 @@ public class ServletRegistrationBeanTests {
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(anyString(), (Servlet) any()))
+		given(this.servletContext.addServlet(anyString(), any(Servlet.class)))
 				.willReturn(this.registration);
-		given(this.servletContext.addFilter(anyString(), (Filter) any()))
+		given(this.servletContext.addFilter(anyString(), any(Filter.class)))
 				.willReturn(this.filterRegistration);
 	}
 
@@ -88,7 +83,7 @@ public class ServletRegistrationBeanTests {
 	public void startupWithDoubleRegistration() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		given(this.servletContext.addServlet(anyString(), (Servlet) any()))
+		given(this.servletContext.addServlet(anyString(), any(Servlet.class)))
 				.willReturn(null);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
@@ -140,47 +135,46 @@ public class ServletRegistrationBeanTests {
 		bean.setServlet(this.servlet);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, times(0)).addServlet("mockServlet", this.servlet);
+		verify(this.servletContext, never()).addServlet("mockServlet", this.servlet);
 	}
 
 	@Test
 	public void setServletMustNotBeNull() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
-		bean.onStartup(this.servletContext);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> bean.onStartup(this.servletContext))
+				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	public void createServletMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
-		new ServletRegistrationBean<MockServlet>(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
+				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	public void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("UrlMappings must not be null");
-		bean.setUrlMappings(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlMappings(null))
+				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	public void createMappingMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("UrlMappings must not be null");
-		new ServletRegistrationBean<>(this.servlet, (String[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
+				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	public void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("UrlMappings must not be null");
-		bean.addUrlMappings((String[]) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> bean.addUrlMappings((String[]) null))
+				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
@@ -207,7 +201,7 @@ public class ServletRegistrationBeanTests {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet, false);
 		bean.onStartup(this.servletContext);
-		verify(this.registration, never()).addMapping((String[]) any());
+		verify(this.registration, never()).addMapping(any(String[].class));
 	}
 
 }

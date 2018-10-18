@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 
-import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
+import io.netty.channel.socket.SocketChannel;
+import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,6 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
 /**
@@ -40,22 +45,16 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(MongoClient.class)
+@ConditionalOnClass({ MongoClient.class, Flux.class })
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoReactiveAutoConfiguration {
 
 	private final MongoClientSettings settings;
 
-	private final ReactiveMongoClientFactory factory;
-
 	private MongoClient mongo;
 
-	public MongoReactiveAutoConfiguration(MongoProperties properties,
-			ObjectProvider<MongoClientSettings> settings, Environment environment,
-			ObjectProvider<List<MongoClientSettingsBuilderCustomizer>> builderCustomizers) {
+	public MongoReactiveAutoConfiguration(ObjectProvider<MongoClientSettings> settings) {
 		this.settings = settings.getIfAvailable();
-		this.factory = new ReactiveMongoClientFactory(properties, environment,
-				builderCustomizers.getIfAvailable());
 	}
 
 	@PreDestroy
@@ -67,9 +66,36 @@ public class MongoReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient reactiveStreamsMongoClient() {
-		this.mongo = this.factory.createMongoClient(this.settings);
+	public MongoClient reactiveStreamsMongoClient(MongoProperties properties,
+			Environment environment,
+			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
+		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(properties,
+				environment,
+				builderCustomizers.orderedStream().collect(Collectors.toList()));
+		this.mongo = factory.createMongoClient(this.settings);
 		return this.mongo;
+	}
+
+	@Configuration
+	@ConditionalOnClass(SocketChannel.class)
+	static class NettyDriverConfiguration {
+
+		@Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		public MongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
+				ObjectProvider<MongoClientSettings> settings) {
+			return (builder) -> {
+				if (!isStreamFactoryFactoryDefined(settings.getIfAvailable())) {
+					builder.streamFactoryFactory(
+							NettyStreamFactoryFactory.builder().build());
+				}
+			};
+		}
+
+		private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
+			return settings != null && settings.getStreamFactoryFactory() != null;
+		}
+
 	}
 
 }

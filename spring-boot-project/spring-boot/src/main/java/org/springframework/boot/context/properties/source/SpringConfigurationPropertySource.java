@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ConfigurationPropertySource} backed by a non-enumerable Spring
@@ -74,9 +75,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
-		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
-		this.containsDescendantOf = (containsDescendantOf != null ? containsDescendantOf
-				: (n) -> ConfigurationPropertyState.UNKNOWN);
+		this.mapper = (mapper instanceof DelegatingPropertyMapper) ? mapper
+				: new DelegatingPropertyMapper(mapper);
+		this.containsDescendantOf = (containsDescendantOf != null) ? containsDescendantOf
+				: (n) -> ConfigurationPropertyState.UNKNOWN;
 	}
 
 	@Override
@@ -156,9 +158,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	private static PropertyMapper getPropertyMapper(PropertySource<?> source) {
 		if (source instanceof SystemEnvironmentPropertySource
 				&& hasSystemEnvironmentName(source)) {
-			return SystemEnvironmentPropertyMapper.INSTANCE;
+			return new DelegatingPropertyMapper(SystemEnvironmentPropertyMapper.INSTANCE,
+					DefaultPropertyMapper.INSTANCE);
 		}
-		return DefaultPropertyMapper.INSTANCE;
+		return new DelegatingPropertyMapper(DefaultPropertyMapper.INSTANCE);
 	}
 
 	private static boolean hasSystemEnvironmentName(PropertySource<?> source) {
@@ -207,35 +210,72 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-	 * {@link PropertyMapper} that swallows exceptions when the mapping fails.
+	 * {@link PropertyMapper} that delegates to other {@link PropertyMapper}s and also
+	 * swallows exceptions when the mapping fails.
 	 */
-	private static class ExceptionSwallowingPropertyMapper implements PropertyMapper {
+	private static class DelegatingPropertyMapper implements PropertyMapper {
 
-		private final PropertyMapper mapper;
+		private static final PropertyMapping[] NONE = {};
 
-		ExceptionSwallowingPropertyMapper(PropertyMapper mapper) {
-			this.mapper = mapper;
+		private final PropertyMapper first;
+
+		private final PropertyMapper second;
+
+		DelegatingPropertyMapper(PropertyMapper first) {
+			this(first, null);
+		}
+
+		DelegatingPropertyMapper(PropertyMapper first, PropertyMapper second) {
+			this.first = first;
+			this.second = second;
 		}
 
 		@Override
 		public PropertyMapping[] map(
 				ConfigurationPropertyName configurationPropertyName) {
+			PropertyMapping[] first = map(this.first, configurationPropertyName);
+			PropertyMapping[] second = map(this.second, configurationPropertyName);
+			return merge(first, second);
+		}
+
+		private PropertyMapping[] map(PropertyMapper mapper,
+				ConfigurationPropertyName configurationPropertyName) {
 			try {
-				return this.mapper.map(configurationPropertyName);
+				return (mapper != null) ? mapper.map(configurationPropertyName) : NONE;
 			}
 			catch (Exception ex) {
-				return NO_MAPPINGS;
+				return NONE;
 			}
 		}
 
 		@Override
 		public PropertyMapping[] map(String propertySourceName) {
+			PropertyMapping[] first = map(this.first, propertySourceName);
+			PropertyMapping[] second = map(this.second, propertySourceName);
+			return merge(first, second);
+		}
+
+		private PropertyMapping[] map(PropertyMapper mapper, String propertySourceName) {
 			try {
-				return this.mapper.map(propertySourceName);
+				return (mapper != null) ? mapper.map(propertySourceName) : NONE;
 			}
 			catch (Exception ex) {
-				return NO_MAPPINGS;
+				return NONE;
 			}
+		}
+
+		private PropertyMapping[] merge(PropertyMapping[] first,
+				PropertyMapping[] second) {
+			if (ObjectUtils.isEmpty(second)) {
+				return first;
+			}
+			if (ObjectUtils.isEmpty(first)) {
+				return second;
+			}
+			PropertyMapping[] merged = new PropertyMapping[first.length + second.length];
+			System.arraycopy(first, 0, merged, 0, first.length);
+			System.arraycopy(second, 0, merged, first.length, second.length);
+			return merged;
 		}
 
 	}

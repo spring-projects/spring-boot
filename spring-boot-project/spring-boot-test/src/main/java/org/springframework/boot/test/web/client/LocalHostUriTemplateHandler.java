@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
+	private static final String PREFIX = "server.servlet.";
+
 	private final Environment environment;
 
 	private final String scheme;
-
-	private final String prefix = "server.servlet.";
 
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
@@ -58,7 +58,21 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @since 1.4.1
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
-		super(new DefaultUriBuilderFactory());
+		this(environment, scheme, new DefaultUriBuilderFactory());
+	}
+
+	/**
+	 * Create a new {@code LocalHostUriTemplateHandler} that will generate URIs with the
+	 * given {@code scheme}, use the given {@code environment} to determine the
+	 * context-path and port and delegate to the given template {@code handler}.
+	 * @param environment the environment used to determine the port
+	 * @param scheme the scheme of the root uri
+	 * @param handler the delegate handler
+	 * @since 2.0.3
+	 */
+	public LocalHostUriTemplateHandler(Environment environment, String scheme,
+			UriTemplateHandler handler) {
+		super(handler);
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
@@ -68,8 +82,7 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		String contextPath = this.environment.getProperty(this.prefix + "context-path",
-				"");
+		String contextPath = this.environment.getProperty(PREFIX + "context-path", "");
 		return this.scheme + "://localhost:" + port + contextPath;
 	}
 

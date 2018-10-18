@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -64,21 +65,24 @@ public final class WebApplicationContextRunner extends
 
 	private WebApplicationContextRunner(
 			Supplier<ConfigurableWebApplicationContext> contextFactory,
+			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
-		super(contextFactory, environmentProperties, systemProperties, classLoader,
-				parent, configurations);
+		super(contextFactory, initializers, environmentProperties, systemProperties,
+				classLoader, parent, configurations);
 	}
 
 	@Override
 	protected WebApplicationContextRunner newInstance(
 			Supplier<ConfigurableWebApplicationContext> contextFactory,
+			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
-		return new WebApplicationContextRunner(contextFactory, environmentProperties,
-				systemProperties, classLoader, parent, configurations);
+		return new WebApplicationContextRunner(contextFactory, initializers,
+				environmentProperties, systemProperties, classLoader, parent,
+				configurations);
 	}
 
 	/**
@@ -89,11 +93,11 @@ public final class WebApplicationContextRunner extends
 	 */
 	public static Supplier<ConfigurableWebApplicationContext> withMockServletContext(
 			Supplier<ConfigurableWebApplicationContext> contextFactory) {
-		return (contextFactory == null ? null : () -> {
+		return (contextFactory != null) ? () -> {
 			ConfigurableWebApplicationContext context = contextFactory.get();
 			context.setServletContext(new MockServletContext());
 			return context;
-		});
+		} : null;
 	}
 
 }

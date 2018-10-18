@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ class WebServletHandler extends ServletComponentHandler {
 		String name = determineName(attributes, beanDefinition);
 		builder.addPropertyValue("name", name);
 		builder.addPropertyValue("servlet", beanDefinition);
-		builder.addPropertyValue("urlMappings",
-				extractUrlPatterns("urlPatterns", attributes));
+		builder.addPropertyValue("urlMappings", extractUrlPatterns(attributes));
 		builder.addPropertyValue("multipartConfig",
 				determineMultipartConfig(beanDefinition));
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());

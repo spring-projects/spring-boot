@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import org.springframework.util.StringUtils;
 
 /**
  * JUnit {@link TestRule} that launched a JVM and redirects its output to a test
@@ -34,12 +37,14 @@ import org.junit.runners.model.Statement;
  */
 class JvmLauncher implements TestRule {
 
+	private static final Pattern NON_ALPHABET_PATTERN = Pattern.compile("[^A-Za-z]+");
+
 	private File outputDirectory;
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		this.outputDirectory = new File("target/output/"
-				+ description.getMethodName().replaceAll("[^A-Za-z]+", ""));
+		this.outputDirectory = new File("target/output/" + NON_ALPHABET_PATTERN
+				.matcher(description.getMethodName()).replaceAll(""));
 		this.outputDirectory.mkdirs();
 		return base;
 	}
@@ -50,7 +55,7 @@ class JvmLauncher implements TestRule {
 		command.addAll(Arrays.asList(args));
 		File standardOut = new File(this.outputDirectory, name + ".out");
 		File standardError = new File(this.outputDirectory, name + ".err");
-		Process process = new ProcessBuilder(command.toArray(new String[command.size()]))
+		Process process = new ProcessBuilder(StringUtils.toStringArray(command))
 				.redirectError(standardError).redirectOutput(standardOut).start();
 		return new LaunchedJvm(process, standardOut, standardError);
 	}

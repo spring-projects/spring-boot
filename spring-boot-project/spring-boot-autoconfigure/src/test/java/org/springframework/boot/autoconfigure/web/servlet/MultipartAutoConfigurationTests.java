@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -184,6 +185,17 @@ public class MultipartAutoConfigurationTests {
 				.getBean(MultipartResolver.class);
 		assertThat(multipartResolver)
 				.isNotInstanceOf(StandardServletMultipartResolver.class);
+		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(1);
+	}
+
+	@Test
+	public void containerWithCommonsMultipartResolver() throws Exception {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(
+				ContainerWithCommonsMultipartResolver.class, BaseConfiguration.class);
+		MultipartResolver multipartResolver = this.context
+				.getBean(MultipartResolver.class);
+		assertThat(multipartResolver).isInstanceOf(CommonsMultipartResolver.class);
+		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(0);
 	}
 
 	@Test
@@ -202,11 +214,9 @@ public class MultipartAutoConfigurationTests {
 
 	private void verify404() throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		ClientHttpRequest request = requestFactory
-				.createRequest(
-						new URI("http://localhost:"
-								+ this.context.getWebServer().getPort() + "/"),
-						HttpMethod.GET);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(
+				"http://localhost:" + this.context.getWebServer().getPort() + "/"),
+				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
@@ -349,6 +359,15 @@ public class MultipartAutoConfigurationTests {
 		@Bean
 		MultipartResolver multipartResolver() {
 			return mock(MultipartResolver.class);
+		}
+
+	}
+
+	public static class ContainerWithCommonsMultipartResolver {
+
+		@Bean
+		CommonsMultipartResolver multipartResolver() {
+			return mock(CommonsMultipartResolver.class);
 		}
 
 	}

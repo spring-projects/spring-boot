@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,11 @@
  */
 
 package org.springframework.boot.logging;
+
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -43,7 +48,9 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void cleanUp() {
-		removeJdkLoggingBridgeHandler();
+		if (isBridgeHandlerAvailable()) {
+			removeJdkLoggingBridgeHandler();
+		}
 	}
 
 	@Override
@@ -57,7 +64,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (isBridgeHandlerAvailable()) {
+			if (isBridgeJulIntoSlf4j()) {
 				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
 			}
@@ -67,20 +74,42 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
+	/**
+	 * Return whether bridging JUL into SLF4J or not.
+	 * @return whether bridging JUL into SLF4J or not
+	 * @since 2.0.4
+	 */
+	protected final boolean isBridgeJulIntoSlf4j() {
+		return isBridgeHandlerAvailable() && isJulUsingASingleConsoleHandlerAtMost();
+	}
+
 	protected final boolean isBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
+	private boolean isJulUsingASingleConsoleHandlerAtMost() {
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		return handlers.length == 0
+				|| (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
+	}
+
 	private void removeJdkLoggingBridgeHandler() {
 		try {
-			if (isBridgeHandlerAvailable()) {
-				try {
-					SLF4JBridgeHandler.removeHandlersForRootLogger();
-				}
-				catch (NoSuchMethodError ex) {
-					// Method missing in older versions of SLF4J like in JBoss AS 7.1
-					SLF4JBridgeHandler.uninstall();
-				}
+			removeDefaultRootHandler();
+			SLF4JBridgeHandler.uninstall();
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
+	}
+
+	private void removeDefaultRootHandler() {
+		try {
+			Logger rootLogger = LogManager.getLogManager().getLogger("");
+			Handler[] handlers = rootLogger.getHandlers();
+			if (handlers.length == 1 && handlers[0] instanceof ConsoleHandler) {
+				rootLogger.removeHandler(handlers[0]);
 			}
 		}
 		catch (Throwable ex) {

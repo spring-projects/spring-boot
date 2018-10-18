@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * {@link org.springframework.core.env.Environment} are reset at the end of every test.
  * This means that {@link TestPropertyValues} can be used in a test without affecting the
  * {@code Environment} of other tests in the same class. The runner always sets the flag
- * {@code management.endpoints.web.expose} to {@code *} so that web endpoints are enabled.
+ * {@code management.endpoints.web.exposure.include} to {@code *} so that web endpoints
+ * are enabled.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb

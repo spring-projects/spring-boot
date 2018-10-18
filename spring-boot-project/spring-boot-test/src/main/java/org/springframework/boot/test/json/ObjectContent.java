@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 
 	@Override
 	public String toString() {
-		return "ObjectContent " + this.object
-				+ (this.type == null ? "" : " created from " + this.type);
+		String createdFrom = (this.type != null) ? " created from " + this.type : "";
+		return "ObjectContent " + this.object + createdFrom;
 	}
 
 }

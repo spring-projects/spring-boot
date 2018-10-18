@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,23 +40,19 @@ import static org.mockito.Mockito.verify;
  */
 public class TunnelClientTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
 	public void listenPortMustNotBeNegative() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ListenPort must be greater than or equal to 0");
-		new TunnelClient(-5, this.tunnelConnection);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
+				.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
 	@Test
 	public void tunnelConnectionMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TunnelConnection must not be null");
-		new TunnelClient(1, null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(1, null))
+				.withMessageContaining("TunnelConnection must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package sample.test.web;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sample.test.domain.User;
@@ -29,6 +27,8 @@ import sample.test.service.VehicleDetails;
 import sample.test.service.VehicleDetailsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
@@ -41,9 +41,6 @@ public class UserVehicleServiceTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"00000000000000000");
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private VehicleDetailsService vehicleDetailsService;
@@ -62,16 +59,16 @@ public class UserVehicleServiceTests {
 
 	@Test
 	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be null");
-		this.service.getVehicleDetails(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.service.getVehicleDetails(null))
+				.withMessage("Username must not be null");
 	}
 
 	@Test
 	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
-		this.thrown.expect(UserNameNotFoundException.class);
-		this.service.getVehicleDetails("sboot");
+		assertThatExceptionOfType(UserNameNotFoundException.class)
+				.isThrownBy(() -> this.service.getVehicleDetails("sboot"));
 	}
 
 	@Test

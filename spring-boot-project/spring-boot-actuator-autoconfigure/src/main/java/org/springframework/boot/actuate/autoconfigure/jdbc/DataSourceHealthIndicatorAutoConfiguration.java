@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.jdbc;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -73,9 +74,10 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 
 	public DataSourceHealthIndicatorAutoConfiguration(
 			ObjectProvider<Map<String, DataSource>> dataSources,
-			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders) {
+			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 		this.dataSources = filterDataSources(dataSources.getIfAvailable());
-		this.metadataProviders = metadataProviders.getIfAvailable();
+		this.metadataProviders = metadataProviders.orderedStream()
+				.collect(Collectors.toList());
 	}
 
 	private Map<String, DataSource> filterDataSources(
@@ -84,11 +86,11 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 			return null;
 		}
 		Map<String, DataSource> dataSources = new LinkedHashMap<>();
-		for (Map.Entry<String, DataSource> entry : candidates.entrySet()) {
-			if (!(entry.getValue() instanceof AbstractRoutingDataSource)) {
-				dataSources.put(entry.getKey(), entry.getValue());
+		candidates.forEach((name, dataSource) -> {
+			if (!(dataSource instanceof AbstractRoutingDataSource)) {
+				dataSources.put(name, dataSource);
 			}
-		}
+		});
 		return dataSources;
 	}
 
@@ -112,7 +114,7 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 	private String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
 				.getDataSourcePoolMetadata(source);
-		return (poolMetadata == null ? null : poolMetadata.getValidationQuery());
+		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
 
 }

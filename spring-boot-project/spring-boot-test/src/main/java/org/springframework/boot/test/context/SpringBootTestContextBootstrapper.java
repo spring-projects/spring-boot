@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link TestContextBootstrapper} for Spring Boot. Provides support for
@@ -84,6 +85,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.servlet.DispatcherServlet";
+
+	private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
 
 	private static final String ACTIVATE_SERVLET_LISTENER = "org.springframework.test."
 			+ "context.web.ServletTestExecutionListener.activateListener";
@@ -137,7 +140,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
 		}
-		configAttributes.setClasses(combined.toArray(new Class<?>[combined.size()]));
+		configAttributes.setClasses(ClassUtils.toClassArray(combined));
 	}
 
 	@Override
@@ -153,8 +156,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		List<String> propertySourceProperties = getAndProcessPropertySourceProperties(
 				mergedConfig);
 		mergedConfig = createModifiedConfig(mergedConfig, classes,
-				propertySourceProperties
-						.toArray(new String[propertySourceProperties.size()]));
+				StringUtils.toStringArray(propertySourceProperties));
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
 		if (webEnvironment != null && isWebEnvironmentSupported(mergedConfig)) {
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
@@ -164,8 +166,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
 						.findMergedAnnotation(mergedConfig.getTestClass(),
 								WebAppConfiguration.class);
-				String resourceBasePath = (webAppConfiguration == null ? "src/main/webapp"
-						: webAppConfiguration.value());
+				String resourceBasePath = (webAppConfiguration != null)
+						? webAppConfiguration.value() : "src/main/webapp";
 				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
 						resourceBasePath);
 			}
@@ -192,7 +194,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private WebApplicationType deduceWebApplicationType() {
 		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
-				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
+				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)
+				&& !ClassUtils.isPresent(JERSEY_WEB_ENVIRONMENT_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
 		}
 		for (String className : WEB_ENVIRONMENT_CLASSES) {
@@ -235,7 +238,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (containsNonTestComponent(classes) || mergedConfig.hasLocations()) {
 			return classes;
 		}
-		Class<?> found = new SpringBootConfigurationFinder()
+		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class)
 				.findFromClass(mergedConfig.getTestClass());
 		Assert.state(found != null,
 				"Unable to find a @SpringBootConfiguration, you need to use "
@@ -313,17 +316,17 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 */
 	protected WebEnvironment getWebEnvironment(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
-		return (annotation == null ? null : annotation.webEnvironment());
+		return (annotation != null) ? annotation.webEnvironment() : null;
 	}
 
 	protected Class<?>[] getClasses(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
-		return (annotation == null ? null : annotation.classes());
+		return (annotation != null) ? annotation.classes() : null;
 	}
 
 	protected String[] getProperties(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
-		return (annotation == null ? null : annotation.properties());
+		return (annotation != null) ? annotation.properties() : null;
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {

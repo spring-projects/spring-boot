@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public class DataSourceHealthIndicatorTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(db.getUrl() + ";shutdown=true",
-				"sa", "", false);
+		this.dataSource = new SingleConnectionDataSource(
+				db.getUrl("testdb") + ";shutdown=true", "sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}
 

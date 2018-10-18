@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,6 +35,8 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "management.endpoints.web")
 public class WebEndpointProperties {
 
+	private final Exposure exposure = new Exposure();
+
 	/**
 	 * Base path for Web endpoints. Relative to server.servlet.context-path or
 	 * management.server.servlet.context-path if management.server.port is configured.
@@ -41,25 +44,21 @@ public class WebEndpointProperties {
 	private String basePath = "/actuator";
 
 	/**
-	 * Endpoint IDs that should be exposed or '*' for all.
-	 */
-	private Set<String> expose = new LinkedHashSet<>();
-
-	/**
-	 * Endpoint IDs that should be excluded.
-	 */
-	private Set<String> exclude = new LinkedHashSet<>();
-
-	/**
 	 * Mapping between endpoint IDs and the path that should expose them.
 	 */
 	private final Map<String, String> pathMapping = new LinkedHashMap<>();
+
+	public Exposure getExposure() {
+		return this.exposure;
+	}
 
 	public String getBasePath() {
 		return this.basePath;
 	}
 
 	public void setBasePath(String basePath) {
+		Assert.isTrue(basePath.isEmpty() || basePath.startsWith("/"),
+				"Base path must start with '/' or be empty");
 		this.basePath = cleanBasePath(basePath);
 	}
 
@@ -70,24 +69,38 @@ public class WebEndpointProperties {
 		return basePath;
 	}
 
-	public Set<String> getExpose() {
-		return this.expose;
-	}
-
-	public void setExpose(Set<String> expose) {
-		this.expose = expose;
-	}
-
-	public Set<String> getExclude() {
-		return this.exclude;
-	}
-
-	public void setExclude(Set<String> exclude) {
-		this.exclude = exclude;
-	}
-
 	public Map<String, String> getPathMapping() {
 		return this.pathMapping;
+	}
+
+	public static class Exposure {
+
+		/**
+		 * Endpoint IDs that should be included or '*' for all.
+		 */
+		private Set<String> include = new LinkedHashSet<>();
+
+		/**
+		 * Endpoint IDs that should be excluded or '*' for all.
+		 */
+		private Set<String> exclude = new LinkedHashSet<>();
+
+		public Set<String> getInclude() {
+			return this.include;
+		}
+
+		public void setInclude(Set<String> include) {
+			this.include = include;
+		}
+
+		public Set<String> getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(Set<String> exclude) {
+			this.exclude = exclude;
+		}
+
 	}
 
 }

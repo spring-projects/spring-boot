@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,30 +31,24 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
-import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jta.XAConnectionFactoryWrapper;
-import org.springframework.boot.jta.XADataSourceWrapper;
+import org.springframework.boot.jdbc.XADataSourceWrapper;
+import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;
 import org.springframework.boot.jta.atomikos.AtomikosDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.jta.atomikos.AtomikosProperties;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
 import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
 import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
-import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
-import org.springframework.boot.jta.narayana.NarayanaConfigurationBean;
-import org.springframework.boot.jta.narayana.NarayanaRecoveryManagerBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -64,6 +58,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -76,9 +71,6 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  */
 public class JtaAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -98,8 +90,8 @@ public class JtaAutoConfigurationTests {
 	public void customPlatformTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(
 				CustomTransactionManagerConfig.class, JtaAutoConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(JtaTransactionManager.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(JtaTransactionManager.class));
 	}
 
 	@Test
@@ -138,20 +130,6 @@ public class JtaAutoConfigurationTests {
 		this.context.getBean(XAConnectionFactoryWrapper.class);
 		this.context.getBean(BitronixDependentBeanFactoryPostProcessor.class);
 		this.context.getBean(JtaTransactionManager.class);
-	}
-
-	@Test
-	public void narayanaSanityCheck() {
-		this.context = new AnnotationConfigApplicationContext(JtaProperties.class,
-				NarayanaJtaConfiguration.class);
-		this.context.getBean(NarayanaConfigurationBean.class);
-		this.context.getBean(UserTransaction.class);
-		this.context.getBean(TransactionManager.class);
-		this.context.getBean(XADataSourceWrapper.class);
-		this.context.getBean(XAConnectionFactoryWrapper.class);
-		this.context.getBean(NarayanaBeanFactoryPostProcessor.class);
-		this.context.getBean(JtaTransactionManager.class);
-		this.context.getBean(RecoveryManagerService.class);
 	}
 
 	@Test
@@ -285,16 +263,6 @@ public class JtaAutoConfigurationTests {
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
-	@Test
-	public void narayanaRecoveryManagerBeanCanBeCustomized() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomNarayanaRecoveryManagerConfiguration.class,
-				JtaProperties.class, NarayanaJtaConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(NarayanaRecoveryManagerBean.class))
-				.isInstanceOf(CustomNarayanaRecoveryManagerBean.class);
-	}
-
 	@Configuration
 	@EnableConfigurationProperties(JtaProperties.class)
 	public static class JtaPropertiesConfiguration {
@@ -333,27 +301,6 @@ public class JtaAutoConfigurationTests {
 		public DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
-		}
-
-	}
-
-	@Configuration
-	public static class CustomNarayanaRecoveryManagerConfiguration {
-
-		@Bean
-		public NarayanaRecoveryManagerBean customRecoveryManagerBean(
-				RecoveryManagerService recoveryManagerService) {
-			return new CustomNarayanaRecoveryManagerBean(recoveryManagerService);
-		}
-
-	}
-
-	static final class CustomNarayanaRecoveryManagerBean
-			extends NarayanaRecoveryManagerBean {
-
-		private CustomNarayanaRecoveryManagerBean(
-				RecoveryManagerService recoveryManagerService) {
-			super(recoveryManagerService);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ public final class TestPropertyValues {
 	private void addToSources(MutablePropertySources sources, Type type, String name) {
 		if (sources.contains(name)) {
 			PropertySource<?> propertySource = sources.get(name);
-			if (propertySource.getClass().equals(type.getSourceClass())) {
+			if (propertySource.getClass() == type.getSourceClass()) {
 				((Map<String, Object>) propertySource.getSource())
 						.putAll(this.properties);
 				return;
@@ -235,7 +235,7 @@ public final class TestPropertyValues {
 		}
 
 		protected String applySuffix(String name) {
-			return (this.suffix == null ? name : name + "-" + this.suffix);
+			return (this.suffix != null) ? name + "-" + this.suffix : name;
 		}
 
 	}
@@ -261,14 +261,14 @@ public final class TestPropertyValues {
 
 		public static Pair parse(String pair) {
 			int index = getSeparatorIndex(pair);
-			String name = (index > 0 ? pair.substring(0, index) : pair);
-			String value = (index > 0 ? pair.substring(index + 1) : "");
+			String name = (index > 0) ? pair.substring(0, index) : pair;
+			String value = (index > 0) ? pair.substring(index + 1) : "";
 			return of(name.trim(), value.trim());
 		}
 
 		private static int getSeparatorIndex(String pair) {
-			int colonIndex = pair.indexOf(":");
-			int equalIndex = pair.indexOf("=");
+			int colonIndex = pair.indexOf(':');
+			int equalIndex = pair.indexOf('=');
 			if (colonIndex == -1) {
 				return equalIndex;
 			}

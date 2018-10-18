@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.health;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 /**
  * {@link HealthIndicator} that returns health indications from all registered delegates.
  *
@@ -31,43 +29,75 @@ import org.springframework.util.Assert;
  */
 public class CompositeHealthIndicator implements HealthIndicator {
 
-	private final Map<String, HealthIndicator> indicators;
+	private final HealthIndicatorRegistry registry;
 
-	private final HealthAggregator healthAggregator;
+	private final HealthAggregator aggregator;
 
 	/**
 	 * Create a new {@link CompositeHealthIndicator}.
 	 * @param healthAggregator the health aggregator
+	 * @deprecated since 2.1.0 in favour of
+	 * {@link #CompositeHealthIndicator(HealthAggregator, HealthIndicatorRegistry)}
 	 */
+	@Deprecated
 	public CompositeHealthIndicator(HealthAggregator healthAggregator) {
-		this(healthAggregator, new LinkedHashMap<>());
+		this(healthAggregator, new DefaultHealthIndicatorRegistry());
 	}
 
 	/**
 	 * Create a new {@link CompositeHealthIndicator} from the specified indicators.
 	 * @param healthAggregator the health aggregator
-	 * @param indicators a map of {@link HealthIndicator}s with the key being used as an
-	 * indicator name.
+	 * @param indicators a map of {@link HealthIndicator HealthIndicators} with the key
+	 * being used as an indicator name.
 	 */
 	public CompositeHealthIndicator(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> indicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(indicators, "Indicators must not be null");
-		this.indicators = new LinkedHashMap<>(indicators);
-		this.healthAggregator = healthAggregator;
+		this(healthAggregator, new DefaultHealthIndicatorRegistry(indicators));
 	}
 
+	/**
+	 * Create a new {@link CompositeHealthIndicator} from the indicators in the given
+	 * {@code registry}.
+	 * @param healthAggregator the health aggregator
+	 * @param registry the registry of {@link HealthIndicator HealthIndicators}.
+	 */
+	public CompositeHealthIndicator(HealthAggregator healthAggregator,
+			HealthIndicatorRegistry registry) {
+		this.aggregator = healthAggregator;
+		this.registry = registry;
+	}
+
+	/**
+	 * Adds the given {@code healthIndicator}, associating it with the given {@code name}.
+	 * @param name the name of the indicator
+	 * @param indicator the indicator
+	 * @throws IllegalStateException if an indicator with the given {@code name} is
+	 * already registered.
+	 * @deprecated since 2.1.0 in favour of
+	 * {@link HealthIndicatorRegistry#register(String, HealthIndicator)}
+	 */
+	@Deprecated
 	public void addHealthIndicator(String name, HealthIndicator indicator) {
-		this.indicators.put(name, indicator);
+		this.registry.register(name, indicator);
+	}
+
+	/**
+	 * Return the {@link HealthIndicatorRegistry} of this instance.
+	 * @return the registry of nested {@link HealthIndicator health indicators}
+	 * @since 2.1.0
+	 */
+	public HealthIndicatorRegistry getRegistry() {
+		return this.registry;
 	}
 
 	@Override
 	public Health health() {
 		Map<String, Health> healths = new LinkedHashMap<>();
-		for (Map.Entry<String, HealthIndicator> entry : this.indicators.entrySet()) {
+		for (Map.Entry<String, HealthIndicator> entry : this.registry.getAll()
+				.entrySet()) {
 			healths.put(entry.getKey(), entry.getValue().health());
 		}
-		return this.healthAggregator.aggregate(healths);
+		return this.aggregator.aggregate(healths);
 	}
 
 }

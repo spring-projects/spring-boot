@@ -3,7 +3,7 @@
 
 [partintro]
 --
-If you are getting started with Spring Boot, or "Spring" in general, start by reading
+If you are getting started with Spring Boot, or "`Spring`" in general, start by reading
 this section. It answers the basic "`what?`", "`how?`" and "`why?`" questions. It
 includes an introduction to Spring Boot, along with installation instructions. We then
 walk you through building your first Spring Boot application, discussing some core
@@ -14,7 +14,7 @@ principles as we go.
 
 [[getting-started-introducing-spring-boot]]
 == Introducing Spring Boot
-Spring Boot makes it easy to create stand-alone, production-grade Spring based
+Spring Boot makes it easy to create stand-alone, production-grade Spring-based
 Applications that you can run. We take an opinionated view of the Spring platform and
 third-party libraries, so that you can get started with minimum fuss. Most Spring Boot
 applications need very little Spring configuration.
@@ -25,7 +25,7 @@ runs "`spring scripts`".
 
 Our primary goals are:
 
-* Provide a radically faster and widely accessible getting started experience for all
+* Provide a radically faster and widely accessible getting-started experience for all
 Spring development.
 * Be opinionated out of the box but get out of the way quickly as requirements start to
 diverge from the defaults.
@@ -38,37 +38,48 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and Spring
-Framework {spring-version} or above. Explicit build support is provided for Maven 3.2+
-and Gradle 4.
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8 or 9] and
+{spring-reference}[Spring Framework {spring-framework-version}] or above.
+
+Explicit build support is provided for the following build tools:
+
+|===
+|Build Tool |Version
+
+|Maven
+|3.3+
+
+|Gradle
+|4.4+
+|===
 
 
 
 [[getting-started-system-requirements-servlet-containers]]
 === Servlet Containers
-The following embedded servlet containers are supported out of the box:
+Spring Boot supports the following embedded servlet containers:
 
 |===
 |Name |Servlet Version
 
-|Tomcat 8.5
-|3.1
+|Tomcat 9.0
+|4.0
 
 |Jetty 9.4
 |3.1
 
-|Undertow 1.3
-|3.1
+|Undertow 2.0
+|4.0
 |===
 
-You can also deploy Spring Boot applications to any Servlet 3.0+ compatible container.
+You can also deploy Spring Boot applications to any Servlet 3.1+ compatible container.
 
 
 
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command
-line tool. Either way, you need http://www.java.com[Java SDK v1.8] or higher. Before you
+line tool. Either way, you need https://www.java.com[Java SDK v1.8] or higher. Before you
 begin, you should check your current Java installation by using the following command:
 
 [indent=0]
@@ -78,7 +89,7 @@ begin, you should check your current Java installation by using the following co
 
 If you are new to Java development or if you want to experiment with Spring Boot, you
 might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> (Command
-Line Interface) first, otherwise, read on for "`classic`" installation instructions.
+Line Interface) first. Otherwise, read on for "`classic`" installation instructions.
 
 
 
@@ -97,13 +108,13 @@ tool that supports dependency management (such as Maven or Gradle).
 
 [[getting-started-maven-installation]]
 ==== Maven Installation
-Spring Boot is compatible with Apache Maven 3.2 or above. If you do not already have
-Maven installed, you can follow the instructions at http://maven.apache.org.
+Spring Boot is compatible with Apache Maven 3.3 or above. If you do not already have
+Maven installed, you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager. If you use
 OSX Homebrew, try `brew install maven`. Ubuntu users can run
-`sudo apt-get install maven`. Windows users with Chocolatey can run `choco install maven`
-from an elevated (administrator) prompt.
+`sudo apt-get install maven`. Windows users with https://chocolatey.org/[Chocolatey] can
+run `choco install maven` from an elevated (administrator) prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically, your
 Maven POM file inherits from the `spring-boot-starter-parent` project and declares
@@ -156,22 +167,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -188,8 +199,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4. If you do not already have Gradle installed, you
-can follow the instructions at http://www.gradle.org/.
+Spring Boot is compatible with Gradle 4.4 and later. If you do not already have Gradle
+installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
@@ -205,51 +216,9 @@ project. It is a small script and library that you commit alongside your code to
 bootstrap the build process. See {gradle-user-guide}/gradle_wrapper.html for details.
 ****
 
-The following example shows a typical `build.gradle` file:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-ifeval::["{spring-boot-repo}" == "release"]
-	plugins {
-		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'java'
-	}
-endif::[]
-ifeval::["{spring-boot-repo}" != "release"]
-	buildscript {
-		repositories {
-			jcenter()
-			maven { url 'http://repo.spring.io/snapshot' }
-			maven { url 'http://repo.spring.io/milestone' }
-		}
-		dependencies {
-			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
-		}
-	}
-
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-	apply plugin: 'io.spring.dependency-management'
-
-endif::[]
-	jar {
-		baseName = 'myproject'
-		version =  '0.0.1-SNAPSHOT'
-	}
-
-	repositories {
-		jcenter()
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
-	}
-----
+More details on getting started with Spring Boot and Gradle can be found in the
+{spring-boot-gradle-plugin-reference}/#getting-started[Getting Started section] of the
+Gradle plugin's reference guide.
 
 
 
@@ -268,11 +237,11 @@ quickest way to get a Spring application off the ground.
 ==== Manual Installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 
 Cutting edge
-http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot
+https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot
 distributions] are also available.
 
 Once downloaded, follow the
@@ -298,7 +267,7 @@ commands:
 	Spring Boot v{spring-boot-version}
 ----
 
-If you are developing features for the CLI and want easy access to the version you built,
+If you develop features for the CLI and want easy access to the version you built,
 use the following commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -367,13 +336,13 @@ Spring Boot CLI by using the following command:
 [[getting-started-cli-command-line-completion]]
 ==== Command-line Completion
 The Spring Boot CLI includes scripts that provide command completion for the
-http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
-http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
+https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
+https://en.wikipedia.org/wiki/Z_shell[zsh] shells. You can `source` the script (also named
 `spring`) in any shell or put it in your personal or system-wide bash completion
 initialization. On a Debian system, the system-wide scripts are in
 `/shell-completion/bash` and all scripts in that directory are executed when a new shell
-starts. For example, to run the script manually if you have installed using SDKMAN!, use
-the following commands:
+starts. For example, to run the script manually if you have installed by using SDKMAN!,
+use the following commands:
 
 [indent=0]
 ----
@@ -384,6 +353,24 @@ the following commands:
 
 NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the command-line
 completion scripts are automatically registered with your shell.
+
+
+
+[[getting-started-scoop-cli-installation]]
+==== Windows Scoop Installation
+If you are on a Windows and use http://scoop.sh/[Scoop], you can install the Spring Boot
+CLI by using the following commands:
+
+[indent=0]
+----
+	> scoop bucket add extras
+	> scoop install springboot
+----
+
+Scoop installs `spring` to `~/scoop/apps/springboot/current/bin`.
+
+NOTE: If you do not see the app manifest, your installation of scoop might be out-of-date.
+In that case, run `scoop update` and try again.
 
 
 
@@ -415,7 +402,7 @@ Then run it from a shell, as follows:
 NOTE: The first run of your application is slow, as dependencies are downloaded.
 Subsequent runs are much quicker.
 
-Open http://localhost:8080 in your favorite web browser. You should see the following
+Open `http://localhost:8080` in your favorite web browser. You should see the following
 output:
 
 [indent=0]
@@ -427,13 +414,35 @@ output:
 
 [[getting-started-upgrading-from-an-earlier-version]]
 === Upgrading from an Earlier Version of Spring Boot
-If you are upgrading from an earlier release of Spring Boot check the "`release notes`"
-hosted on the {github-wiki}[project wiki]. You'll find upgrade instructions along with a
-list of "`new and noteworthy`" features for each release.
+If you are upgrading from an earlier release of Spring Boot, check the
+{github-wiki}/Spring-Boot-2.0-Migration-Guide["`migration guide`" on the project wiki]
+that provides detailed upgrade instructions. Check also the
+{github-wiki}["`release notes`"] for a list of "`new and noteworthy`" features for each
+release.
 
-To upgrade an existing CLI installation use the appropriate package manager command (for
+When upgrading to a new feature release, some properties may have been renamed or removed.
+Spring Boot provides a way to analyze your application's environment and print diagnostics
+at startup, but also temporarily migrate properties at runtime for you. To enable that
+feature, add the following dependency to your project:
+
+[source,xml,indent=0]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-properties-migrator</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+----
+
+WARNING: Properties that are added late to the environment, such as when using
+`@PropertySource`, will not be taken into account.
+
+NOTE: Once you're done with the migration, please make sure to remove this module from
+your project's dependencies.
+
+To upgrade an existing CLI installation, use the appropriate package manager command (for
 example, `brew upgrade`) or, if you manually installed the CLI, follow the
-<<getting-started-manual-cli-installation, standard instructions>> remembering to update
+<<getting-started-manual-cli-installation, standard instructions>>, remembering to update
 your `PATH` environment variable to remove any older references.
 
 
@@ -446,14 +455,14 @@ most IDEs support it.
 
 [TIP]
 ====
-The http://spring.io[spring.io] web site contains many "`Getting Started`"
-http://spring.io/guides[guides] that use Spring Boot. If you need to solve a specific
+The https://spring.io[spring.io] web site contains many "`Getting Started`"
+https://spring.io/guides[guides] that use Spring Boot. If you need to solve a specific
 problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 "Web" starter from the dependencies searcher. Doing so generates a new project structure
 so that you can <<getting-started-first-application-code,start coding right away>>. Check
-the https://github.com/spring-io/initializr[Spring Initializr documentation] for more
+the {spring-initializr-reference}/#user-guide[Spring Initializr documentation] for more
 details.
 ====
 
@@ -471,13 +480,13 @@ valid versions of Java and Maven installed:
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
 	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
 	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
 
 NOTE: This sample needs to be created in its own folder. Subsequent instructions assume
-that you have created a suitable folder and that it is your "`current directory`".
+that you have created a suitable folder and that it is your current directory.
 
 
 
@@ -510,22 +519,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -642,11 +651,11 @@ that you have added. Since `spring-boot-starter-web` added Tomcat and Spring MVC
 auto-configuration assumes that you are developing a web application and sets up Spring
 accordingly.
 
-.Starters and Auto-Configuration
+.Starters and Auto-configuration
 ****
 Auto-configuration is designed to work well with "`Starters`", but the two concepts are
 not directly tied. You are free to pick and choose jar dependencies outside of the
-starters and Spring Boot still does its best to auto-configure your application.
+starters. Spring Boot still does its best to auto-configure your application.
 ****
 
 
@@ -687,7 +696,7 @@ application. You should see output similar to the following:
 	........ Started Example in 2.222 seconds (JVM running for 6.514)
 ----
 
-If you open a web browser to http://localhost:8080, you should see the following output:
+If you open a web browser to `http://localhost:8080`, you should see the following output:
 
 [indent=0]
 ----
@@ -718,7 +727,7 @@ can also be problematic if the same filename is used (but with different content
 multiple jars.
 
 Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
-approach>> and allows you to actually nest jars directly.
+approach>> and lets you actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our
@@ -802,12 +811,12 @@ As before, to exit the application, press `ctrl-c`.
 == What to Read Next
 Hopefully, this section provided some of the Spring Boot basics and got you on your way
 to writing your own applications. If you are a task-oriented type of developer, you might
-want to jump over to http://spring.io and check out some of the
-http://spring.io/guides/[getting started] guides that solve specific "`How do I do that
+want to jump over to https://spring.io and check out some of the
+https://spring.io/guides/[getting started] guides that solve specific "`How do I do that
 with Spring?`" problems. We also have Spring Boot-specific
 "`<<howto.adoc#howto, How-to>>`" reference documentation.
 
-The http://github.com/{github-repo}[Spring Boot repository] also has a
+The https://github.com/{github-repo}[Spring Boot repository] also has a
 {github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
 independent of the rest of the code (that is, you do not need to build the rest to run or
 use the samples).

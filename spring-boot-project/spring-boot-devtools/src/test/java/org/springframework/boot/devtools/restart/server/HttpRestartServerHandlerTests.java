@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package org.springframework.boot.devtools.restart.server;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -33,14 +32,11 @@ import static org.mockito.Mockito.verify;
  */
 public class HttpRestartServerHandlerTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void serverMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Server must not be null");
-		new HttpRestartServerHandler(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpRestartServerHandler(null))
+				.withMessageContaining("Server must not be null");
 	}
 
 	@Test

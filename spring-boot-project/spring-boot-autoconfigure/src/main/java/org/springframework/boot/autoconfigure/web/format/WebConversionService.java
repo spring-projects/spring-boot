@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,10 +46,10 @@ import org.springframework.util.StringUtils;
  */
 public class WebConversionService extends DefaultFormattingConversionService {
 
-	private static final boolean jsr354Present = ClassUtils.isPresent(
+	private static final boolean JSR_354_PRESENT = ClassUtils.isPresent(
 			"javax.money.MonetaryAmount", WebConversionService.class.getClassLoader());
 
-	private static final boolean jodaTimePresent = ClassUtils.isPresent(
+	private static final boolean JODA_TIME_PRESENT = ClassUtils.isPresent(
 			"org.joda.time.LocalDate", WebConversionService.class.getClassLoader());
 
 	private final String dateFormat;
@@ -61,7 +61,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	 */
 	public WebConversionService(String dateFormat) {
 		super(false);
-		this.dateFormat = (StringUtils.hasText(dateFormat) ? dateFormat : null);
+		this.dateFormat = StringUtils.hasText(dateFormat) ? dateFormat : null;
 		if (this.dateFormat != null) {
 			addFormatters();
 		}
@@ -72,14 +72,14 @@ public class WebConversionService extends DefaultFormattingConversionService {
 
 	private void addFormatters() {
 		addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
-		if (jsr354Present) {
+		if (JSR_354_PRESENT) {
 			addFormatter(new CurrencyUnitFormatter());
 			addFormatter(new MonetaryAmountFormatter());
 			addFormatterForFieldAnnotation(
 					new Jsr354NumberFormatAnnotationFormatterFactory());
 		}
 		registerJsr310();
-		if (jodaTimePresent) {
+		if (JODA_TIME_PRESENT) {
 			registerJodaTime();
 		}
 		registerJavaDate();
@@ -89,7 +89,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 		DateTimeFormatterRegistrar dateTime = new DateTimeFormatterRegistrar();
 		if (this.dateFormat != null) {
 			dateTime.setDateFormatter(DateTimeFormatter.ofPattern(this.dateFormat)
-					.withResolverStyle(ResolverStyle.STRICT));
+					.withResolverStyle(ResolverStyle.SMART));
 		}
 		dateTime.registerFormatters(this);
 	}

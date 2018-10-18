@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.springframework.boot.context.logging;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -48,6 +50,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -55,7 +58,8 @@ import org.springframework.util.StringUtils;
  * An {@link ApplicationListener} that configures the {@link LoggingSystem}. If the
  * environment contains a {@code logging.config} property it will be used to bootstrap the
  * logging system, otherwise a default configuration is used. Regardless, logging levels
- * will be customized if the environment contains {@code logging.level.*} entries.
+ * will be customized if the environment contains {@code logging.level.*} entries and
+ * logging groups can be defined with {@code logging.group}.
  * <p>
  * Debug and trace logging for Spring, Tomcat, Jetty and Hibernate will be enabled when
  * the environment contains {@code debug} or {@code trace} properties that aren't set to
@@ -87,6 +91,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
 			.mapOf(String.class, String.class);
 
+	private static final Bindable<Map<String, String[]>> STRING_STRINGS_MAP = Bindable
+			.mapOf(String.class, String[].class);
+
 	/**
 	 * The default order for the LoggingApplicationListener.
 	 */
@@ -110,27 +117,40 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public static final String LOGGING_SYSTEM_BEAN_NAME = "springBootLoggingSystem";
 
-	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
-
-	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
-
+	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
-		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<>();
-		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.springframework");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.tomcat");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.catalina");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.eclipse.jetty");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
-		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.hibernate.SQL");
+		MultiValueMap<String, String> loggers = new LinkedMultiValueMap<>();
+		loggers.add("web", "org.springframework.core.codec");
+		loggers.add("web", "org.springframework.http");
+		loggers.add("web", "org.springframework.web");
+		loggers.add("sql", "org.springframework.jdbc.core");
+		loggers.add("sql", "org.hibernate.SQL");
+		DEFAULT_GROUP_LOGGERS = Collections.unmodifiableMap(loggers);
 	}
 
-	private static Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
+	private static final Map<LogLevel, List<String>> LOG_LEVEL_LOGGERS;
+
+	static {
+		MultiValueMap<LogLevel, String> loggers = new LinkedMultiValueMap<>();
+		loggers.add(LogLevel.DEBUG, "sql");
+		loggers.add(LogLevel.DEBUG, "web");
+		loggers.add(LogLevel.DEBUG, "org.springframework.boot");
+		loggers.add(LogLevel.TRACE, "org.springframework");
+		loggers.add(LogLevel.TRACE, "org.apache.tomcat");
+		loggers.add(LogLevel.TRACE, "org.apache.catalina");
+		loggers.add(LogLevel.TRACE, "org.eclipse.jetty");
+		loggers.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
+		LOG_LEVEL_LOGGERS = Collections.unmodifiableMap(loggers);
+	}
+
+	private static final Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
 			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class,
 			ContextClosedEvent.class, ApplicationFailedEvent.class };
 
-	private static Class<?>[] SOURCE_TYPES = { SpringApplication.class,
+	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class,
 			ApplicationContext.class };
+
+	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -303,13 +323,37 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			return;
 		}
 		Binder binder = Binder.get(environment);
-		binder.bind("logging.level", STRING_STRING_MAP).orElseGet(Collections::emptyMap)
-				.forEach((name, level) -> setLogLevel(system, name, level));
+		Map<String, String[]> groups = getGroups();
+		binder.bind("logging.group", STRING_STRINGS_MAP.withExistingValue(groups));
+		Map<String, String> levels = binder.bind("logging.level", STRING_STRING_MAP)
+				.orElseGet(Collections::emptyMap);
+		levels.forEach((name, level) -> {
+			String[] groupedNames = groups.get(name);
+			if (ObjectUtils.isEmpty(groupedNames)) {
+				setLogLevel(system, name, level);
+			}
+			else {
+				setLogLevel(system, groupedNames, level);
+			}
+		});
+	}
+
+	private Map<String, String[]> getGroups() {
+		Map<String, String[]> groups = new LinkedHashMap<>();
+		DEFAULT_GROUP_LOGGERS.forEach(
+				(name, loggers) -> groups.put(name, StringUtils.toStringArray(loggers)));
+		return groups;
+	}
+
+	private void setLogLevel(LoggingSystem system, String[] names, String level) {
+		for (String name : names) {
+			setLogLevel(system, name, level);
+		}
 	}
 
 	private void setLogLevel(LoggingSystem system, String name, String level) {
 		try {
-			name = (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name);
+			name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
 			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {
@@ -321,7 +365,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if ("false".equalsIgnoreCase(level)) {
 			return LogLevel.OFF;
 		}
-		return LogLevel.valueOf(level.toUpperCase());
+		return LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH));
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment,
@@ -359,8 +403,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-	 * Sets if initialization arguments should be parsed for {@literal --debug} and
-	 * {@literal --trace} options. Defaults to {@code true}.
+	 * Sets if initialization arguments should be parsed for {@literal debug} and
+	 * {@literal trace} properties (usually defined from {@literal --debug} or
+	 * {@literal --trace} command line args). Defaults to {@code true}.
 	 * @param parseArgs if arguments should be parsed
 	 */
 	public void setParseArgs(boolean parseArgs) {

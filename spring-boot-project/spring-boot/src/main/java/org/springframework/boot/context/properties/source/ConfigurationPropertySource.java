@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.source;
 import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
-import org.springframework.core.env.PropertySource;
 
 /**
  * A source of {@link ConfigurationProperty ConfigurationProperties}.
@@ -50,7 +49,10 @@ public interface ConfigurationPropertySource {
 	 * @param name the name to check
 	 * @return if the source contains any descendants
 	 */
-	ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name);
+	default ConfigurationPropertyState containsDescendantOf(
+			ConfigurationPropertyName name) {
+		return ConfigurationPropertyState.UNKNOWN;
+	}
 
 	/**
 	 * Return a filtered variant of this source, containing only names that match the
@@ -74,9 +76,11 @@ public interface ConfigurationPropertySource {
 	}
 
 	/**
-	 * Return the underlying {@link PropertySource}.
-	 * @return the underlying property source.
+	 * Return the underlying source that is actually providing the properties.
+	 * @return the underlying property source or {@code null}.
 	 */
-	Object getUnderlyingSource();
+	default Object getUnderlyingSource() {
+		return null;
+	}
 
 }

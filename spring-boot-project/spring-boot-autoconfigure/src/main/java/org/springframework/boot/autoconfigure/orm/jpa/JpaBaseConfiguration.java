@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -67,6 +69,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Kazuki Shimizu
  * @author Eddú Meléndez
  */
+@Configuration
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
@@ -92,7 +95,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(PlatformTransactionManager.class)
+	@ConditionalOnMissingBean
 	public PlatformTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
 		if (this.transactionManagerCustomizers != null) {
@@ -116,11 +119,13 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
-			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
+			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
 				persistenceUnitManager.getIfAvailable());
-		builder.setCallback(getVendorCallback());
+		customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
@@ -149,22 +154,19 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 	}
 
-	protected EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback() {
-		return null;
-	}
-
 	protected String[] getPackagesToScan() {
 		List<String> packages = EntityScanPackages.get(this.beanFactory)
 				.getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
-		return packages.toArray(new String[packages.size()]);
+		return StringUtils.toStringArray(packages);
 	}
 
 	private String[] getMappingResources() {
 		List<String> mappingResources = this.properties.getMappingResources();
-		return mappingResources.toArray(new String[mappingResources.size()]);
+		return (!ObjectUtils.isEmpty(mappingResources)
+				? StringUtils.toStringArray(mappingResources) : null);
 	}
 
 	/**

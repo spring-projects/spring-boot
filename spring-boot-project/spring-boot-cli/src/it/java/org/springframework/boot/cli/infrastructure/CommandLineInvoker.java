@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,8 +160,7 @@ public final class CommandLineInvoker {
 		private List<String> getLines(StringBuffer buffer) {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
-			return reader.lines()
-					.filter((line) -> !line.startsWith("Picked up "))
+			return reader.lines().filter((line) -> !line.startsWith("Picked up "))
 					.collect(Collectors.toList());
 		}
 

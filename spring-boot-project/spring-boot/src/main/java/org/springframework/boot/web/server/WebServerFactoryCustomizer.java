@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * It might be safer to lookup dependencies lazily in the enclosing BeanFactory rather
  * than injecting them with {@code @Autowired}.
  *
- * @param <T> The configurable web server factory
+ * @param <T> the configurable web server factory
  * @author Phillip Webb
  * @author Dave Syer
  * @author Brian Clozel
@@ -41,8 +41,8 @@ public interface WebServerFactoryCustomizer<T extends WebServerFactory> {
 
 	/**
 	 * Customize the specified {@link WebServerFactory}.
-	 * @param server the server to customize
+	 * @param factory the web server factory to customize
 	 */
-	void customize(T server);
+	void customize(T factory);
 
 }

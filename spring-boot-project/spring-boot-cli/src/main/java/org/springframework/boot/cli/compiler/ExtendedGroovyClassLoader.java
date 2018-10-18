@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,6 +26,7 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -115,7 +117,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		InputStream resourceStream = super.getResourceAsStream(name);
 		if (resourceStream == null) {
 			byte[] bytes = this.classResources.get(name);
-			resourceStream = bytes == null ? null : new ByteArrayInputStream(bytes);
+			resourceStream = (bytes != null) ? new ByteArrayInputStream(bytes) : null;
 		}
 		return resourceStream;
 	}
@@ -176,17 +178,17 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
 			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent),
-					parent.getParent());
+					getClass().getClassLoader().getParent());
 		}
 
 		private URL[] getGroovyJars(ClassLoader parent) {
 			Set<URL> urls = new HashSet<>();
 			findGroovyJarsDirectly(parent, urls);
 			if (urls.isEmpty()) {
-				findGroovyJarsFromClassPath(parent, urls);
+				findGroovyJarsFromClassPath(urls);
 			}
 			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
-			return new ArrayList<>(urls).toArray(new URL[urls.size()]);
+			return new ArrayList<>(urls).toArray(new URL[0]);
 		}
 
 		private void findGroovyJarsDirectly(ClassLoader classLoader, Set<URL> urls) {
@@ -202,7 +204,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			}
 		}
 
-		private void findGroovyJarsFromClassPath(ClassLoader parent, Set<URL> urls) {
+		private void findGroovyJarsFromClassPath(Set<URL> urls) {
 			String classpath = System.getProperty("java.class.path");
 			String[] entries = classpath.split(System.getProperty("path.separator"));
 			for (String entry : entries) {
@@ -228,6 +230,11 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 				}
 			}
 			return false;
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			return this.groovyOnlyClassLoader.getResources(name);
 		}
 
 		@Override

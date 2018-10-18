@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,19 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Base for {@link JsonParser} tests.
  *
  * @author Dave Syer
  * @author Jean de Klerk
+ * @author Stephane Nicoll
  */
 public abstract class AbstractJsonParserTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final JsonParser parser = getParser();
 
@@ -54,6 +51,20 @@ public abstract class AbstractJsonParserTests {
 		assertThat(map).hasSize(2);
 		assertThat(map.get("foo")).isEqualTo("bar");
 		assertThat(map.get("spam")).isEqualTo(1.23d);
+	}
+
+	@Test
+	public void stringContainingNumber() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"123\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).isEqualTo("123");
+	}
+
+	@Test
+	public void stringContainingComma() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar1,bar2\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).isEqualTo("bar1,bar2");
 	}
 
 	@Test
@@ -95,38 +106,38 @@ public abstract class AbstractJsonParserTests {
 
 	@Test
 	public void mapWithNullThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap(null);
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseMap(null));
 	}
 
 	@Test
 	public void listWithNullThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList(null);
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseList(null));
 	}
 
 	@Test
 	public void mapWithEmptyStringThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap("");
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseMap(""));
 	}
 
 	@Test
 	public void listWithEmptyStringThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList("");
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseList(""));
 	}
 
 	@Test
 	public void mapWithListThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap("[]");
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseMap("[]"));
 	}
 
 	@Test
 	public void listWithMapThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList("{}");
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseList("{}"));
 	}
 
 	@Test
@@ -145,14 +156,21 @@ public abstract class AbstractJsonParserTests {
 
 	@Test
 	public void mapWithLeadingWhitespaceListThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap("\n\t[]");
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseMap("\n\t[]"));
 	}
 
 	@Test
 	public void listWithLeadingWhitespaceMapThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList("\n\t{}");
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> this.parser.parseList("\n\t{}"));
+	}
+
+	@Test
+	public void escapeDoubleQuote() {
+		String input = "{\"foo\": \"\\\"bar\\\"\"}";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map.get("foo")).isEqualTo("\"bar\"");
 	}
 
 }

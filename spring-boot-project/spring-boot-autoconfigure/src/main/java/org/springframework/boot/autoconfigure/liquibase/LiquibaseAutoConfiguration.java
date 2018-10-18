@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
+import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import liquibase.exception.LiquibaseException;
+import liquibase.change.DatabaseChange;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -36,6 +34,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -44,10 +44,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -57,10 +57,11 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Andy Wilkinson
+ * @author Dominic Gunn
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(SpringLiquibase.class)
+@ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
@@ -69,18 +70,20 @@ public class LiquibaseAutoConfiguration {
 
 	@Bean
 	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
-			ObjectProvider<List<SpringLiquibase>> liquibases) {
-		return new LiquibaseSchemaManagementProvider(
-				liquibases.getIfAvailable(Collections::emptyList));
+			ObjectProvider<SpringLiquibase> liquibases) {
+		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(SpringLiquibase.class)
-	@EnableConfigurationProperties(LiquibaseProperties.class)
+	@EnableConfigurationProperties({ DataSourceProperties.class,
+			LiquibaseProperties.class })
 	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 
 		private final LiquibaseProperties properties;
+
+		private final DataSourceProperties dataSourceProperties;
 
 		private final ResourceLoader resourceLoader;
 
@@ -89,9 +92,11 @@ public class LiquibaseAutoConfiguration {
 		private final DataSource liquibaseDataSource;
 
 		public LiquibaseConfiguration(LiquibaseProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
 			this.properties = properties;
+			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.liquibaseDataSource = liquibaseDataSource.getIfAvailable();
@@ -115,11 +120,18 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
+			liquibase.setLiquibaseSchema(this.properties.getLiquibaseSchema());
+			liquibase.setLiquibaseTablespace(this.properties.getLiquibaseTablespace());
+			liquibase.setDatabaseChangeLogTable(
+					this.properties.getDatabaseChangeLogTable());
+			liquibase.setDatabaseChangeLogLockTable(
+					this.properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
 			liquibase.setLabels(this.properties.getLabels());
 			liquibase.setChangeLogParameters(this.properties.getParameters());
 			liquibase.setRollbackFile(this.properties.getRollbackFile());
+			liquibase.setTestRollbackOnUpdate(this.properties.isTestRollbackOnUpdate());
 			return liquibase;
 		}
 
@@ -139,23 +151,34 @@ public class LiquibaseAutoConfiguration {
 			if (this.liquibaseDataSource != null) {
 				return this.liquibaseDataSource;
 			}
-			if (this.properties.getUrl() == null) {
+			if (this.properties.getUrl() == null && this.properties.getUser() == null) {
 				return this.dataSource;
 			}
 			return null;
 		}
 
 		private DataSource createNewDataSource() {
-			return DataSourceBuilder.create().url(this.properties.getUrl())
-					.username(this.properties.getUser())
-					.password(this.properties.getPassword()).build();
+			String url = getProperty(this.properties::getUrl,
+					this.dataSourceProperties::getUrl);
+			String user = getProperty(this.properties::getUser,
+					this.dataSourceProperties::getUsername);
+			String password = getProperty(this.properties::getPassword,
+					this.dataSourceProperties::getPassword);
+			return DataSourceBuilder.create().url(url).username(user).password(password)
+					.build();
+		}
+
+		private String getProperty(Supplier<String> property,
+				Supplier<String> defaultValue) {
+			String value = property.get();
+			return (value != null) ? value : defaultValue.get();
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-	 * depend-on the liquibase bean.
+	 * Additional configuration to ensure that {@link EntityManagerFactory} beans depend
+	 * on the liquibase bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
@@ -170,23 +193,17 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * A custom {@link SpringLiquibase} extension that closes the underlying
-	 * {@link DataSource} once the database has been migrated.
+	 * Additional configuration to ensure that {@link JdbcOperations} beans depend on the
+	 * liquibase bean.
 	 */
-	private static final class DataSourceClosingSpringLiquibase extends SpringLiquibase {
+	@Configuration
+	@ConditionalOnClass(JdbcOperations.class)
+	@ConditionalOnBean(JdbcOperations.class)
+	protected static class LiquibaseJdbcOperationsDependencyConfiguration
+			extends JdbcOperationsDependsOnPostProcessor {
 
-		@Override
-		public void afterPropertiesSet() throws LiquibaseException {
-			super.afterPropertiesSet();
-			closeDataSource();
-		}
-
-		private void closeDataSource() {
-			Class<?> dataSourceClass = getDataSource().getClass();
-			Method closeMethod = ReflectionUtils.findMethod(dataSourceClass, "close");
-			if (closeMethod != null) {
-				ReflectionUtils.invokeMethod(closeMethod, getDataSource());
-			}
+		public LiquibaseJdbcOperationsDependencyConfiguration() {
+			super("liquibase");
 		}
 
 	}

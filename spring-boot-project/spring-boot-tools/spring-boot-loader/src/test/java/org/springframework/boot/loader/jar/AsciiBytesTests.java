@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AsciiBytes}.
@@ -31,9 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AsciiBytesTests {
 
 	private static final char NO_SUFFIX = 0;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void createFromBytes() {
@@ -93,8 +89,8 @@ public class AsciiBytesTests {
 		assertThat(abcd.substring(2).toString()).isEqualTo("CD");
 		assertThat(abcd.substring(3).toString()).isEqualTo("D");
 		assertThat(abcd.substring(4).toString()).isEqualTo("");
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		abcd.substring(5);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> abcd.substring(5));
 	}
 
 	@Test
@@ -104,8 +100,8 @@ public class AsciiBytesTests {
 		assertThat(abcd.substring(1, 3).toString()).isEqualTo("BC");
 		assertThat(abcd.substring(3, 4).toString()).isEqualTo("D");
 		assertThat(abcd.substring(3, 3).toString()).isEqualTo("");
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		abcd.substring(3, 5);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> abcd.substring(3, 5));
 	}
 
 	@Test
@@ -184,7 +180,20 @@ public class AsciiBytesTests {
 		matchesSameAsString("\ud83d\udca9");
 	}
 
+	@Test
+	public void hashCodeFromInstanceMatchesHashCodeFromString() {
+		String name = "fonts/宋体/simsun.ttf";
+		assertThat(new AsciiBytes(name).hashCode()).isEqualTo(AsciiBytes.hashCode(name));
+	}
+
+	@Test
+	public void instanceCreatedFromCharSequenceMatchesSameCharSequence() {
+		String name = "fonts/宋体/simsun.ttf";
+		assertThat(new AsciiBytes(name).matches(name, NO_SUFFIX)).isTrue();
+	}
+
 	private void matchesSameAsString(String input) {
 		assertThat(new AsciiBytes(input).matches(input, NO_SUFFIX)).isTrue();
 	}
+
 }

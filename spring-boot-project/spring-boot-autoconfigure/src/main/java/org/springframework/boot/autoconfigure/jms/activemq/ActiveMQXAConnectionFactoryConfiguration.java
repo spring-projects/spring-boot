@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 import javax.transaction.TransactionManager;
@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.jta.XAConnectionFactoryWrapper;
+import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -50,10 +50,11 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers,
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties, factoryCustomizers.getIfAvailable())
+				properties,
+				factoryCustomizers.orderedStream().collect(Collectors.toList()))
 						.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
@@ -62,9 +63,9 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(
 			ActiveMQProperties properties,
-			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable())
+				factoryCustomizers.orderedStream().collect(Collectors.toList()))
 						.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 

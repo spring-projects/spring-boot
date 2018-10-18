@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ConfigurationPropertyState}.
@@ -33,21 +32,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConfigurationPropertyStateTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void searchWhenIterableIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		ConfigurationPropertyState.search(null, (e) -> true);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void searchWhenPredicateIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Predicate must not be null");
-		ConfigurationPropertyState.search(Collections.emptyList(), null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
+				.withMessageContaining("Predicate must not be null");
 	}
 
 	@Test

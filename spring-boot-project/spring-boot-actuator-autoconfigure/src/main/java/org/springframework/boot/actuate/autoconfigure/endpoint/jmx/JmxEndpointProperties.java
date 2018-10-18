@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -33,15 +34,7 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("management.endpoints.jmx")
 public class JmxEndpointProperties {
 
-	/**
-	 * Endpoint IDs that should be exposed or '*' for all.
-	 */
-	private Set<String> expose = new LinkedHashSet<>();
-
-	/**
-	 * Endpoint IDs that should be excluded.
-	 */
-	private Set<String> exclude = new LinkedHashSet<>();
+	private final Exposure exposure = new Exposure();
 
 	/**
 	 * Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
@@ -49,9 +42,9 @@ public class JmxEndpointProperties {
 	private String domain = "org.springframework.boot";
 
 	/**
-	 * Ensure that ObjectNames are modified in case of conflict.
+	 * Whether unique runtime object names should be ensured.
 	 */
-	private boolean uniqueNames = false;
+	private Boolean uniqueNames;
 
 	/**
 	 * Additional static properties to append to all ObjectNames of MBeans representing
@@ -66,20 +59,8 @@ public class JmxEndpointProperties {
 		}
 	}
 
-	public Set<String> getExpose() {
-		return this.expose;
-	}
-
-	public void setExpose(Set<String> expose) {
-		this.expose = expose;
-	}
-
-	public Set<String> getExclude() {
-		return this.exclude;
-	}
-
-	public void setExclude(Set<String> exclude) {
-		this.exclude = exclude;
+	public Exposure getExposure() {
+		return this.exposure;
 	}
 
 	public String getDomain() {
@@ -90,16 +71,49 @@ public class JmxEndpointProperties {
 		this.domain = domain;
 	}
 
-	public boolean isUniqueNames() {
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.jmx.unique-names")
+	public Boolean getUniqueNames() {
 		return this.uniqueNames;
 	}
 
-	public void setUniqueNames(boolean uniqueNames) {
+	@Deprecated
+	public void setUniqueNames(Boolean uniqueNames) {
 		this.uniqueNames = uniqueNames;
 	}
 
 	public Properties getStaticNames() {
 		return this.staticNames;
+	}
+
+	public static class Exposure {
+
+		/**
+		 * Endpoint IDs that should be included or '*' for all.
+		 */
+		private Set<String> include = new LinkedHashSet<>();
+
+		/**
+		 * Endpoint IDs that should be excluded or '*' for all.
+		 */
+		private Set<String> exclude = new LinkedHashSet<>();
+
+		public Set<String> getInclude() {
+			return this.include;
+		}
+
+		public void setInclude(Set<String> include) {
+			this.include = include;
+		}
+
+		public Set<String> getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(Set<String> exclude) {
+			this.exclude = exclude;
+		}
+
 	}
 
 }

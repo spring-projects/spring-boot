@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link BeanFactoryPostProcessor} to automatically setup the recommended
@@ -65,7 +66,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 		addDependencies(beanFactory, "javax.jms.ConnectionFactory", dependsOn);
 		addDependencies(beanFactory, "javax.sql.DataSource", dependsOn);
 		if (dependsOn.size() != initialSize) {
-			bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));
+			bean.setDependsOn(StringUtils.toStringArray(dependsOn));
 		}
 	}
 
@@ -77,7 +78,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 			BeanDefinition bean = beanFactory.getBeanDefinition(messageDrivenContainer);
 			Set<String> dependsOn = new LinkedHashSet<>(asList(bean.getDependsOn()));
 			dependsOn.addAll(asList(transactionManagers));
-			bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));
+			bean.setDependsOn(StringUtils.toStringArray(dependsOn));
 		}
 	}
 
@@ -98,7 +99,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 	}
 
 	private List<String> asList(String[] array) {
-		return (array == null ? Collections.emptyList() : Arrays.asList(array));
+		return (array != null) ? Arrays.asList(array) : Collections.emptyList();
 	}
 
 	@Override

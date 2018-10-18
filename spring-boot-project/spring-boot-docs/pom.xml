@@ -132,11 +132,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
 			<optional>true</optional>
@@ -208,12 +203,32 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-jersey2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-appoptics</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-atlas</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-datadog</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-dynatrace</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-elastic</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -228,6 +243,11 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-humio</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-influx</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -238,7 +258,22 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-kairos</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-new-relic</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-signalfx</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -247,8 +282,23 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-wavefront</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_pushgateway</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.reactivex</groupId>
+			<artifactId>rxjava-reactive-streams</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -306,6 +356,11 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -380,6 +435,11 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -468,6 +528,26 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-alpn-conscrypt-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-reactive-httpclient</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>http2-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 			<optional>true</optional>
@@ -503,26 +583,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jdbc</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jms</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jta</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jts</groupId>
-			<artifactId>narayana-jts-integration</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<optional>true</optional>
@@ -530,6 +590,11 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jcache</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -560,6 +625,11 @@
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.messaginghub</groupId>
+			<artifactId>pooled-jms</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -699,12 +769,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-jose</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-oauth2-client</artifactId>
+			<artifactId>spring-security-oauth2-resource-server</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -750,6 +825,11 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -803,6 +883,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-webtestclient</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-data</artifactId>
 			<optional>true</optional>
@@ -834,7 +919,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -851,6 +936,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-support</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -892,17 +982,18 @@
 									<dependencySourceIncludes>
 										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
+									<sourceFileExcludes>org/springframework/boot/docs/**/*.java</sourceFileExcludes>
 									<attach>false</attach>
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
 									<links>
-										<link>http://docs.oracle.com/javase/8/docs/api/</link>
-										<link>http://docs.oracle.com/javaee/7/api/</link>
-										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>http://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
-										<link>http://tomcat.apache.org/tomcat-8.5-doc/api/</link>
-										<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
-										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
+										<link>https://docs.oracle.com/javase/8/docs/api</link>
+										<link>https://docs.oracle.com/javaee/7/api</link>
+										<link>https://docs.spring.io/spring-framework/docs/${spring-framework.version}/javadoc-api</link>
+										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api</link>
+										<link>https://tomcat.apache.org/tomcat-8.5-doc/api</link>
+										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}</link>
+										<link>https://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}</link>
 									</links>
 								</configuration>
 							</execution>
@@ -1112,13 +1203,18 @@
 						<dependencies>
 							<dependency>
 								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy-all</artifactId>
+								<artifactId>groovy</artifactId>
+								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy-ant</artifactId>
 								<version>${groovy.version}</version>
 							</dependency>
 							<dependency>
 								<groupId>org.springframework</groupId>
 								<artifactId>spring-core</artifactId>
-								<version>${spring.version}</version>
+								<version>${spring-framework.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>
@@ -1138,11 +1234,12 @@
 									<doctype>book</doctype>
 									<attributes>
 										<docinfo>true</docinfo>
-										<spring-version>${spring.version}</spring-version>
+										<jooq-version>${jooq.version}</jooq-version>
+										<spring-framework-version>${spring-framework.version}</spring-framework-version>
 										<spring-boot-version>${revision}</spring-boot-version>
 										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-										<spring-docs-version>${spring.version}</spring-docs-version>
+										<spring-docs-version>${spring-framework.version}</spring-docs-version>
 										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 										<github-tag>${github-tag}</github-tag>
@@ -1261,8 +1358,15 @@
 								</goals>
 								<phase>prepare-package</phase>
 								<configuration>
-									<epubCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</epubCustomization>
+									<epub3Customization>${basedir}/src/main/docbook/xsl/epub.xsl</epub3Customization>
 									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
+									<preProcess>
+										<copy todir="${basedir}/target/docbook/epub/images">
+											<fileset dir="${basedir}/src/main/docbook/images">
+												<include name="*.png" />
+											</fileset>
+										</copy>
+									</preProcess>
 									<postProcess>
 										<copy todir="${basedir}/target/contents/reference/epub">
 											<fileset dir="${basedir}/target/docbook">

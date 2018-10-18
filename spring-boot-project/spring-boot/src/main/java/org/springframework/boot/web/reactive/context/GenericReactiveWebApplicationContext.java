@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import org.springframework.core.io.Resource;
 public class GenericReactiveWebApplicationContext extends GenericApplicationContext
 		implements ConfigurableReactiveWebApplicationContext {
 
-	private String namespace;
-
 	/**
 	 * Create a new {@link GenericReactiveWebApplicationContext}.
 	 * @see #registerBeanDefinition
@@ -55,16 +53,6 @@ public class GenericReactiveWebApplicationContext extends GenericApplicationCont
 	@Override
 	protected ConfigurableEnvironment createEnvironment() {
 		return new StandardReactiveWebEnvironment();
-	}
-
-	@Override
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	@Override
-	public String getNamespace() {
-		return this.namespace;
 	}
 
 	@Override

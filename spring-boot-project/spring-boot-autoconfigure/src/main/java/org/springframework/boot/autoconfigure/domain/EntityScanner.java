@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * An entity scanner that searches the classpath from a {@link EntityScan @EntityScan}
+ * An entity scanner that searches the classpath from an {@link EntityScan @EntityScan}
  * specified packages.
  *
  * @author Phillip Webb
@@ -64,7 +64,6 @@ public class EntityScanner {
 		if (packages.isEmpty()) {
 			return Collections.emptySet();
 		}
-		Set<Class<?>> entitySet = new HashSet<>();
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
 				false);
 		scanner.setEnvironment(this.context.getEnvironment());
@@ -72,6 +71,7 @@ public class EntityScanner {
 		for (Class<? extends Annotation> annotationType : annotationTypes) {
 			scanner.addIncludeFilter(new AnnotationTypeFilter(annotationType));
 		}
+		Set<Class<?>> entitySet = new HashSet<>();
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
 				for (BeanDefinition candidate : scanner

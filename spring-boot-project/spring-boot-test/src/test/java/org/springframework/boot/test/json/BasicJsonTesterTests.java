@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -30,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link BasicJsonTester}.
@@ -41,18 +41,14 @@ public class BasicJsonTesterTests {
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private BasicJsonTester json = new BasicJsonTester(getClass());
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ResourceLoadClass must not be null");
-		new BasicJsonTester(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new BasicJsonTester(null))
+				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test

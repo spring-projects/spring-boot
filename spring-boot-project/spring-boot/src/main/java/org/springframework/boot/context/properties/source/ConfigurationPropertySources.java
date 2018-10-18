@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
+import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
 
@@ -73,7 +73,12 @@ public final class ConfigurationPropertySources {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
 		MutablePropertySources sources = ((ConfigurableEnvironment) environment)
 				.getPropertySources();
-		if (!sources.contains(ATTACHED_PROPERTY_SOURCE_NAME)) {
+		PropertySource<?> attached = sources.get(ATTACHED_PROPERTY_SOURCE_NAME);
+		if (attached != null && attached.getSource() != sources) {
+			sources.remove(ATTACHED_PROPERTY_SOURCE_NAME);
+			attached = null;
+		}
+		if (attached == null) {
 			sources.addFirst(new ConfigurationPropertySourcesPropertySource(
 					ATTACHED_PROPERTY_SOURCE_NAME,
 					new SpringConfigurationPropertySources(sources)));
@@ -119,7 +124,8 @@ public final class ConfigurationPropertySources {
 	 * This method will flatten any nested property sources and will filter all
 	 * {@link StubPropertySource stub property sources}. Updates to the underlying source,
 	 * identified by changes in the sources returned by its iterator, will be
-	 * automatically tracked.
+	 * automatically tracked. The underlying source should be thread safe, for example a
+	 * {@link MutablePropertySources}
 	 * @param sources the Spring property sources to adapt
 	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
@@ -130,9 +136,8 @@ public final class ConfigurationPropertySources {
 	}
 
 	private static Stream<PropertySource<?>> streamPropertySources(
-			Iterable<PropertySource<?>> sources) {
-		return StreamSupport.stream(sources.spliterator(), false)
-				.flatMap(ConfigurationPropertySources::flatten)
+			PropertySources sources) {
+		return sources.stream().flatMap(ConfigurationPropertySources::flatten)
 				.filter(ConfigurationPropertySources::isIncluded);
 	}
 

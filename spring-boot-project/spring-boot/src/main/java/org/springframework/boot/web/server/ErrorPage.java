@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class ErrorPage {
 	 * @return the status value (or 0 for a page that matches any status)
 	 */
 	public int getStatusCode() {
-		return (this.status == null ? 0 : this.status.value());
+		return (this.status != null) ? this.status.value() : 0;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ErrorPage {
 	 * @return the exception type name (or {@code null} if there is none)
 	 */
 	public String getExceptionName() {
-		return (this.exception == null ? null : this.exception.getName());
+		return (this.exception != null) ? this.exception.getName() : null;
 	}
 
 	/**
@@ -102,16 +102,6 @@ public class ErrorPage {
 	 */
 	public boolean isGlobal() {
 		return (this.status == null && this.exception == null);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
-		result = prime * result + this.getStatusCode();
-		return result;
 	}
 
 	@Override
@@ -132,6 +122,16 @@ public class ErrorPage {
 			return rtn;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
+		result = prime * result + this.getStatusCode();
+		return result;
 	}
 
 }

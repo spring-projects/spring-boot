@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "server.session.timeout:1", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = "server.servlet.session.timeout:2", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort
@@ -60,7 +60,7 @@ public class SampleSessionWebFluxApplicationTests {
 				.block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.bodyToMono(String.class).block()).isEqualTo(sessionId);
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
 				.block();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -24,6 +25,16 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-spring</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -52,13 +63,44 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_pushgateway</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.reactivex</groupId>
+			<artifactId>rxjava-reactive-streams</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.searchbox</groupId>
 			<artifactId>jest</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.undertow</groupId>
+			<artifactId>undertow-servlet</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.spec.javax.servlet</groupId>
+					<artifactId>jboss-servlet-api_3.1_spec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>javax.cache</groupId>
+			<artifactId>cache-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>javax.jms-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -69,6 +111,11 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -109,6 +156,16 @@
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-async</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-reactivestreams</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -169,6 +226,11 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -257,25 +319,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
+			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-servlet</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.servlet</groupId>
-					<artifactId>jboss-servlet-api_3.1_spec</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>

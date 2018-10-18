@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.audit;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.boot.actuate.audit.AuditEventsEndpointWebExtension;
-import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -46,25 +44,11 @@ public class AuditEventsEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runShouldHaveJmxExtensionBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(AuditEventsJmxEndpointExtension.class));
-	}
-
-	@Test
-	public void runShouldHaveWebExtensionBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(AuditEventsEndpointWebExtension.class));
-	}
-
-	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointOrExtensionBean() {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpoint() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.auditevents.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(AuditEventsEndpoint.class)
-						.doesNotHaveBean(AuditEventsJmxEndpointExtension.class)
-						.doesNotHaveBean(AuditEventsEndpointWebExtension.class));
+						.doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 }

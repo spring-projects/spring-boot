@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,24 +30,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConditionalOnRepositoryTypeTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
 	public void imperativeRepositoryMatchesWithNoConfiguredType() {
-		this.runner.withUserConfiguration(ImperativeRepository.class)
+		this.contextRunner.withUserConfiguration(ImperativeRepository.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ImperativeRepository.class));
 	}
 
 	@Test
 	public void reactiveRepositoryMatchesWithNoConfiguredType() {
-		this.runner.withUserConfiguration(ReactiveRepository.class).run(
+		this.contextRunner.withUserConfiguration(ReactiveRepository.class).run(
 				(context) -> assertThat(context).hasSingleBean(ReactiveRepository.class));
 	}
 
 	@Test
 	public void imperativeRepositoryMatchesWithAutoConfiguredType() {
-		this.runner.withUserConfiguration(ImperativeRepository.class)
+		this.contextRunner.withUserConfiguration(ImperativeRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:auto")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ImperativeRepository.class));
@@ -55,7 +55,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void reactiveRepositoryMatchesWithAutoConfiguredType() {
-		this.runner.withUserConfiguration(ReactiveRepository.class)
+		this.contextRunner.withUserConfiguration(ReactiveRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:auto")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ReactiveRepository.class));
@@ -63,7 +63,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void imperativeRepositoryMatchesWithImperativeConfiguredType() {
-		this.runner.withUserConfiguration(ImperativeRepository.class)
+		this.contextRunner.withUserConfiguration(ImperativeRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:imperative")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ImperativeRepository.class));
@@ -71,7 +71,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void reactiveRepositoryMatchesWithReactiveConfiguredType() {
-		this.runner.withUserConfiguration(ReactiveRepository.class)
+		this.contextRunner.withUserConfiguration(ReactiveRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:reactive")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ReactiveRepository.class));
@@ -79,7 +79,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void imperativeRepositoryDoesNotMatchWithReactiveConfiguredType() {
-		this.runner.withUserConfiguration(ImperativeRepository.class)
+		this.contextRunner.withUserConfiguration(ImperativeRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:reactive")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ImperativeRepository.class));
@@ -87,7 +87,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void reactiveRepositoryDoesNotMatchWithImperativeConfiguredType() {
-		this.runner.withUserConfiguration(ReactiveRepository.class)
+		this.contextRunner.withUserConfiguration(ReactiveRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:imperative")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ReactiveRepository.class));
@@ -95,7 +95,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void imperativeRepositoryDoesNotMatchWithNoneConfiguredType() {
-		this.runner.withUserConfiguration(ImperativeRepository.class)
+		this.contextRunner.withUserConfiguration(ImperativeRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:none")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ImperativeRepository.class));
@@ -103,7 +103,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void reactiveRepositoryDoesNotMatchWithNoneConfiguredType() {
-		this.runner.withUserConfiguration(ReactiveRepository.class)
+		this.contextRunner.withUserConfiguration(ReactiveRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:none")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ReactiveRepository.class));
@@ -111,7 +111,7 @@ public class ConditionalOnRepositoryTypeTests {
 
 	@Test
 	public void failsFastWhenConfiguredTypeIsUnknown() {
-		this.runner.withUserConfiguration(ReactiveRepository.class)
+		this.contextRunner.withUserConfiguration(ReactiveRepository.class)
 				.withPropertyValues("spring.data.test.repositories.type:abcde")
 				.run((context) -> assertThat(context).hasFailed());
 	}

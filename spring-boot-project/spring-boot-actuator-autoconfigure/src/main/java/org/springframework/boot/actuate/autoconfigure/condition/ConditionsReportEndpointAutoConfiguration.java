@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.condition;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,19 +34,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConditionsReportEndpointAutoConfiguration {
 
-	private ConfigurableApplicationContext context;
-
-	public ConditionsReportEndpointAutoConfiguration(
-			ConfigurableApplicationContext context) {
-		this.context = context;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	@ConditionalOnEnabledEndpoint
-	public ConditionsReportEndpoint conditionsReportEndpoint() {
-		return new ConditionsReportEndpoint(
-				ConditionEvaluationReport.get(this.context.getBeanFactory()));
+	public ConditionsReportEndpoint conditionsReportEndpoint(
+			ConfigurableApplicationContext context) {
+		return new ConditionsReportEndpoint(context);
 	}
 
 }

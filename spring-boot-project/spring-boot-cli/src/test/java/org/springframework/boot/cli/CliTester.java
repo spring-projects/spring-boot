@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
@@ -84,7 +85,7 @@ public class CliTester implements TestRule {
 					"--classpath=.:" + new File("target/test-classes").getAbsolutePath());
 		}
 		Future<RunCommand> future = submitCommand(new RunCommand(),
-				updatedArgs.toArray(new String[updatedArgs.size()]));
+				StringUtils.toStringArray(updatedArgs));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,126 +16,113 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.UUID;
+import java.util.List;
 
-import javax.sql.DataSource;
-
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricsAutoConfiguration}.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class MetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(RegistryConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguredDataSourceIsInstrumented() {
+	public void autoConfiguresAClock() {
 		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.use-global-registry=false")
-				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
-				});
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class));
 	}
 
 	@Test
-	public void autoConfiguredDataSourceWithCustomMetricName() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.datasource-metric-name=custom.name",
-						"management.metrics.use-global-registry=false")
-				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
-				});
+	public void allowsACustomClockToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomClockConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+						.hasBean("customClock"));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void dataSourceInstrumentationCanBeDisabled() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.instrument-datasource=false",
-						"management.metrics.use-global-registry=false")
+	public void configuresMeterRegistries() {
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class)
 				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isNotPresent();
-				});
-	}
-
-	@Test
-	public void allDataSourcesCanBeInstrumented() {
-		this.contextRunner.withUserConfiguration(TwoDataSourcesConfiguration.class)
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("metrics.use-global-registry=false")
-				.run((context) -> {
-					context.getBean("firstDataSource", DataSource.class).getConnection()
-							.getMetaData();
-					context.getBean("secondOne", DataSource.class).getConnection()
-							.getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "first").meter()).isPresent();
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "secondOne").meter()).isPresent();
+					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+					List<MeterFilter> filters = (List<MeterFilter>) ReflectionTestUtils
+							.getField(meterRegistry, "filters");
+					assertThat(filters).hasSize(3);
+					assertThat(filters.get(0).accept((Meter.Id) null))
+							.isEqualTo(MeterFilterReply.DENY);
+					assertThat(filters.get(1)).isInstanceOf(PropertiesMeterFilter.class);
+					assertThat(filters.get(2).accept((Meter.Id) null))
+							.isEqualTo(MeterFilterReply.ACCEPT);
+					verify((MeterBinder) context.getBean("meterBinder"))
+							.bindTo(meterRegistry);
+					verify(context.getBean(MeterRegistryCustomizer.class))
+							.customize(meterRegistry);
 				});
 	}
 
 	@Configuration
-	static class RegistryConfiguration {
+	static class CustomClockConfiguration {
 
 		@Bean
-		public MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
+		Clock customClock() {
+			return Clock.SYSTEM;
 		}
 
 	}
 
 	@Configuration
-	static class TwoDataSourcesConfiguration {
+	static class MeterRegistryConfiguration {
 
 		@Bean
-		public DataSource firstDataSource() {
-			return createDataSource();
+		MeterRegistry meterRegistry() {
+			SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+			return spy(meterRegistry);
 		}
 
 		@Bean
-		public DataSource secondOne() {
-			return createDataSource();
+		@SuppressWarnings("rawtypes")
+		MeterRegistryCustomizer meterRegistryCustomizer() {
+			return mock(MeterRegistryCustomizer.class);
 		}
 
-		private DataSource createDataSource() {
-			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
-			return DataSourceBuilder.create().url(url).build();
+		@Bean
+		MeterBinder meterBinder() {
+			return mock(MeterBinder.class);
+		}
+
+		@Bean
+		@Order(1)
+		MeterFilter acceptMeterFilter() {
+			return MeterFilter.accept();
+		}
+
+		@Bean
+		@Order(-1)
+		MeterFilter denyMeterFilter() {
+			return MeterFilter.deny();
 		}
 
 	}

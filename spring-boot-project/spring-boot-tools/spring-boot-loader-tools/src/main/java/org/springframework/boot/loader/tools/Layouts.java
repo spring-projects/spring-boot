@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -42,7 +43,7 @@ public final class Layouts {
 		if (file == null) {
 			throw new IllegalArgumentException("File must not be null");
 		}
-		String lowerCaseFileName = file.getName().toLowerCase();
+		String lowerCaseFileName = file.getName().toLowerCase(Locale.ENGLISH);
 		if (lowerCaseFileName.endsWith(".jar")) {
 			return new Jar();
 		}

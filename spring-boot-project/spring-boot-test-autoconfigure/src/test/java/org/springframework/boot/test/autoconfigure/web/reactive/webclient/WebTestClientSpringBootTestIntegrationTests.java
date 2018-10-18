@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class WebTestClientSpringBootTestIntegrationTests {
 
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			http.authorizeExchange().anyExchange().permitAll();
-			return http.build();
+			return http.authorizeExchange().anyExchange().permitAll().and().build();
 		}
 
 	}

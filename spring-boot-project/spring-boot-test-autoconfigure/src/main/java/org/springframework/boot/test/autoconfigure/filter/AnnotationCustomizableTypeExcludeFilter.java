@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	@SuppressWarnings("unchecked")
 	protected final boolean isTypeOrAnnotated(MetadataReader metadataReader,
 			MetadataReaderFactory metadataReaderFactory, Class<?> type)
-					throws IOException {
+			throws IOException {
 		AnnotationTypeFilter annotationFilter = new AnnotationTypeFilter(
 				(Class<? extends Annotation>) type);
 		AssignableTypeFilter typeFilter = new AssignableTypeFilter(type);
@@ -118,21 +118,6 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 0;
-		result = prime * result + Boolean.hashCode(hasAnnotation());
-		for (FilterType filterType : FilterType.values()) {
-			result = prime * result
-					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
-		}
-		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
-		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
-		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -152,6 +137,21 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 				other.getDefaultIncludes());
 		result = result && ObjectUtils.nullSafeEquals(getComponentIncludes(),
 				other.getComponentIncludes());
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 0;
+		result = prime * result + Boolean.hashCode(hasAnnotation());
+		for (FilterType filterType : FilterType.values()) {
+			result = prime * result
+					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
+		}
+		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
+		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
+		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
 		return result;
 	}
 

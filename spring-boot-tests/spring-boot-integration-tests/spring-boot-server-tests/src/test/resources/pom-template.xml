@@ -61,32 +61,13 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	<profiles>
-		<profile>
-			<id>repository</id>
-			<activation>
-				<property>
-					<name>repository</name>
-				</property>
-			</activation>
-			<repositories>
-				<repository>
-					<id>repository</id>
-					<url>${repository}</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>repository</id>
-					<url>${repository}</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
-	</profiles>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<url>https://repo.spring.io/libs-snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

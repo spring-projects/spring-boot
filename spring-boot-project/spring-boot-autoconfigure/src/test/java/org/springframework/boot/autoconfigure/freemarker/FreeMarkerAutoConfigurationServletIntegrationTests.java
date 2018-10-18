@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.autoconfigure.freemarker;
 
 import java.io.StringWriter;
+import java.util.EnumSet;
 import java.util.Locale;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
@@ -26,10 +28,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
@@ -128,8 +130,8 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 		registerAndRefreshContext("spring.freemarker.allow-session-override:true");
 		AbstractTemplateViewResolver viewResolver = this.context
 				.getBean(FreeMarkerViewResolver.class);
-		assertThat(ReflectionTestUtils.getField(viewResolver, "allowSessionOverride"))
-				.isEqualTo(true);
+		assertThat(viewResolver).hasFieldOrPropertyWithValue("allowSessionOverride",
+				true);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -153,14 +155,18 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() {
 		registerAndRefreshContext();
-		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
-				.isEmpty();
+		assertThat(this.context.getBeansOfType(FilterRegistrationBean.class)).isEmpty();
 	}
 
 	@Test
 	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
 		registerAndRefreshContext("spring.resources.chain.enabled:true");
-		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
+		FilterRegistrationBean<?> registration = this.context
+				.getBean(FilterRegistrationBean.class);
+		assertThat(registration.getFilter())
+				.isInstanceOf(ResourceUrlEncodingFilter.class);
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
 	}
 
 	private void registerAndRefreshContext(String... env) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -130,16 +131,13 @@ public class ConditionEvaluationReportTests {
 				.getConditionAndOutcomesBySource();
 		assertThat(map.size()).isEqualTo(2);
 		Iterator<ConditionAndOutcome> iterator = map.get("a").iterator();
-
 		ConditionAndOutcome conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition1);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome1);
-
 		conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition2);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome2);
 		assertThat(iterator.hasNext()).isFalse();
-
 		iterator = map.get("b").iterator();
 		conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition3);
@@ -186,16 +184,13 @@ public class ConditionEvaluationReportTests {
 				new ConditionOutcome(true, "Message 2"));
 		ConditionAndOutcome outcome3 = new ConditionAndOutcome(this.condition3,
 				new ConditionOutcome(true, "Message 2"));
-
 		assertThat(outcome1).isEqualTo(outcome1);
 		assertThat(outcome1).isNotEqualTo(outcome2);
 		assertThat(outcome2).isEqualTo(outcome3);
-
 		ConditionAndOutcomes outcomes = new ConditionAndOutcomes();
 		outcomes.add(this.condition1, new ConditionOutcome(true, "Message 1"));
 		outcomes.add(this.condition2, new ConditionOutcome(true, "Message 2"));
 		outcomes.add(this.condition3, new ConditionOutcome(true, "Message 2"));
-
 		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
 	}
 
@@ -206,12 +201,10 @@ public class ConditionEvaluationReportTests {
 		ConditionEvaluationReport report = ConditionEvaluationReport
 				.get(context.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
-
 		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource()
 				.get(autoconfigKey);
 		assertThat(outcomes).isNotEqualTo(nullValue());
 		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
-
 		List<String> messages = new ArrayList<>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
@@ -239,6 +232,40 @@ public class ConditionEvaluationReportTests {
 		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch()).isFalse();
 		String positiveConfig = NegativeOuterConfig.PositiveInnerConfig.class.getName();
 		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch()).isFalse();
+	}
+
+	@Test
+	public void reportWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(WebMvcAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
+		context.refresh();
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
+		assertThat(report.getConditionAndOutcomesBySource()).containsKeys(
+				"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
+				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
+				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
+		context.close();
+	}
+
+	@Test
+	public void reportMessageWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(WebMvcAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
+		context.refresh();
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
+		String reportMessage = new ConditionEvaluationReportMessage(report).toString();
+		assertThat(reportMessage).contains("WebMvcAutoConfiguration",
+				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
+				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
+		assertThat(reportMessage).doesNotContain(
+				"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
+		context.close();
 	}
 
 	private int getNumberOfOutcomes(ConditionAndOutcomes outcomes) {

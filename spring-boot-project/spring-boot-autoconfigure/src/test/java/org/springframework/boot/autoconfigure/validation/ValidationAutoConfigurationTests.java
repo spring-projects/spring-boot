@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -44,6 +42,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -53,9 +52,6 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 public class ValidationAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -161,8 +157,8 @@ public class ValidationAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething("KO");
+		assertThatExceptionOfType(ConstraintViolationException.class)
+				.isThrownBy(() -> service.doSomething("KO"));
 	}
 
 	@Test
@@ -172,8 +168,8 @@ public class ValidationAutoConfigurationTests {
 		DefaultAnotherSampleService service = this.context
 				.getBean(DefaultAnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething(2);
+		assertThatExceptionOfType(ConstraintViolationException.class)
+				.isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test
@@ -185,8 +181,8 @@ public class ValidationAutoConfigurationTests {
 				.isEmpty();
 		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething(2);
+		assertThatExceptionOfType(ConstraintViolationException.class)
+				.isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test
@@ -304,6 +300,7 @@ public class ValidationAutoConfigurationTests {
 	interface AnotherSampleService {
 
 		void doSomething(@Min(42) Integer counter);
+
 	}
 
 	@Validated
@@ -313,6 +310,7 @@ public class ValidationAutoConfigurationTests {
 		public void doSomething(Integer counter) {
 
 		}
+
 	}
 
 	@Configuration
@@ -382,6 +380,7 @@ public class ValidationAutoConfigurationTests {
 			}
 
 		}
+
 	}
 
 }

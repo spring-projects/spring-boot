@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,13 +58,13 @@ public class TestDatabaseAutoConfigurationTests {
 					this.contextRunner
 							.withUserConfiguration(ExistingDataSourceConfiguration.class)
 							.run((secondContext) -> {
-						DataSource anotherDatasource = secondContext
-								.getBean(DataSource.class);
-						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(
-								anotherDatasource);
-						anotherJdbcTemplate
-								.execute("create table example (id int, name varchar);");
-					});
+								DataSource anotherDatasource = secondContext
+										.getBean(DataSource.class);
+								JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(
+										anotherDatasource);
+								anotherJdbcTemplate.execute(
+										"create table example (id int, name varchar);");
+							});
 				});
 	}
 
@@ -73,9 +73,8 @@ public class TestDatabaseAutoConfigurationTests {
 
 		@Bean
 		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-					.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL);
-			return builder.build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
+					.setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 	}

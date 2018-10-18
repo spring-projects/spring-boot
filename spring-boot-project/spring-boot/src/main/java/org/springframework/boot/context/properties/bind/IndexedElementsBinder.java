@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -31,6 +32,7 @@ import org.springframework.boot.context.properties.source.IterableConfigurationP
 import org.springframework.core.ResolvableType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class for {@link AggregateBinder AggregateBinders} that read a sequential run of
@@ -44,7 +46,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private static final String INDEX_ZERO = "[0]";
 
-	IndexedElementsBinder(BindContext context) {
+	IndexedElementsBinder(Context context) {
 		super(context);
 	}
 
@@ -53,33 +55,51 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return source == null || source instanceof IterableConfigurationPropertySource;
 	}
 
+	/**
+	 * Bind indexed elements to the supplied collection.
+	 * @param name the name of the property to bind
+	 * @param target the target bindable
+	 * @param elementBinder the binder to use for elements
+	 * @param aggregateType the aggregate type, may be a collection or an array
+	 * @param elementType the element type
+	 * @param result the destination for results
+	 */
 	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
-			ResolvableType aggregateType, ResolvableType elementType) {
+			AggregateElementBinder elementBinder, ResolvableType aggregateType,
+			ResolvableType elementType, IndexedCollectionSupplier result) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
-			bindIndexed(source, name, elementBinder, collection, aggregateType,
+			bindIndexed(source, name, target, elementBinder, result, aggregateType,
 					elementType);
-			if (collection.wasSupplied() && collection.get() != null) {
+			if (result.wasSupplied() && result.get() != null) {
 				return;
 			}
 		}
 	}
 
 	private void bindIndexed(ConfigurationPropertySource source,
-			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
-			IndexedCollectionSupplier collection, ResolvableType aggregateType,
-			ResolvableType elementType) {
+			ConfigurationPropertyName root, Bindable<?> target,
+			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
+			ResolvableType aggregateType, ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
-			Object aggregate = convert(property.getValue(), aggregateType);
-			ResolvableType collectionType = ResolvableType
-					.forClassWithGenerics(collection.get().getClass(), elementType);
-			Collection<Object> elements = convert(aggregate, collectionType);
-			collection.get().addAll(elements);
+			bindValue(target, collection.get(), aggregateType, elementType,
+					property.getValue());
 		}
 		else {
 			bindIndexed(source, root, elementBinder, collection, elementType);
 		}
+	}
+
+	private void bindValue(Bindable<?> target, Collection<Object> collection,
+			ResolvableType aggregateType, ResolvableType elementType, Object value) {
+		if (value instanceof String && !StringUtils.hasText((String) value)) {
+			return;
+		}
+		Object aggregate = convert(value, aggregateType, target.getAnnotations());
+		ResolvableType collectionType = ResolvableType
+				.forClassWithGenerics(collection.getClass(), elementType);
+		Collection<Object> elements = convert(aggregate, collectionType);
+		collection.addAll(elements);
 	}
 
 	private void bindIndexed(ConfigurationPropertySource source,
@@ -89,7 +109,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			ConfigurationPropertyName name = root
-					.append(i == 0 ? INDEX_ZERO : "[" + i + "]");
+					.append((i != 0) ? "[" + i + "]" : INDEX_ZERO);
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
 			if (value == null) {
 				break;
@@ -108,9 +128,10 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
 				.filter(root::isAncestorOf)) {
-			name = name.chop(root.getNumberOfElements() + 1);
-			if (name.isLastElementIndexed()) {
-				String key = name.getLastElement(Form.UNIFORM);
+			ConfigurationPropertyName choppedName = name
+					.chop(root.getNumberOfElements() + 1);
+			if (choppedName.isLastElementIndexed()) {
+				String key = choppedName.getLastElement(Form.UNIFORM);
 				ConfigurationProperty value = source.getConfigurationProperty(name);
 				children.add(key, value);
 			}
@@ -127,14 +148,13 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
-	private <C> C convert(Object value, ResolvableType type) {
+	private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
-		BinderConversionService conversionService = getContext().getConversionService();
-		return ResolvableTypeDescriptor.forType(type).convert(conversionService, value);
+		return getContext().getConverter().convert(value, type, annotations);
 	}
 
 	/**
-	 * {@link AggregateBinder.AggregateSupplier AggregateSupplier} for an index
+	 * {@link AggregateBinder.AggregateSupplier AggregateSupplier} for an indexed
 	 * collection.
 	 */
 	protected static class IndexedCollectionSupplier

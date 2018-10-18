@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = ExampleController2.class, secure = false)
+@WebMvcTest(controllers = ExampleController2.class)
+@WithMockUser
 public class WebMvcTestConverterIntegrationTests {
 
 	@Autowired

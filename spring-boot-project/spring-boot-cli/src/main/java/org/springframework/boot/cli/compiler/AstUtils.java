@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ public abstract class AstUtils {
 
 	private static List<ExpressionStatement> getExpressionStatements(
 			BlockStatement block) {
-		ArrayList<ExpressionStatement> statements = new ArrayList<>();
+		List<ExpressionStatement> statements = new ArrayList<>();
 		for (Statement statement : block.getStatements()) {
 			if (statement instanceof ExpressionStatement) {
 				statements.add((ExpressionStatement) statement);
@@ -179,11 +179,10 @@ public abstract class AstUtils {
 	private static ClosureExpression getClosure(String name,
 			MethodCallExpression expression) {
 		Expression method = expression.getMethod();
-		if (method instanceof ConstantExpression) {
-			if (name.equals(((ConstantExpression) method).getValue())) {
-				return (ClosureExpression) ((ArgumentListExpression) expression
-						.getArguments()).getExpression(0);
-			}
+		if (method instanceof ConstantExpression
+				&& name.equals(((ConstantExpression) method).getValue())) {
+			return (ClosureExpression) ((ArgumentListExpression) expression
+					.getArguments()).getExpression(0);
 		}
 		return null;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
-import java.util.List;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PoolingOptions;
@@ -33,6 +32,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Cassandra.
@@ -50,16 +50,17 @@ public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
 
-	private final List<ClusterBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<ClusterBuilderCustomizer> builderCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
+			ObjectProvider<ClusterBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers.getIfAvailable();
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("deprecation")
 	public Cluster cassandraCluster() {
 		PropertyMapper map = PropertyMapper.get();
 		CassandraProperties properties = this.properties;
@@ -80,18 +81,17 @@ public class CassandraAutoConfiguration {
 		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);
 		map.from(this::getPoolingOptions).to(builder::withPoolingOptions);
 		map.from(properties::getContactPoints)
-				.as((list) -> list.toArray(new String[list.size()]))
+				.as((list) -> StringUtils.toStringArray(list))
 				.to(builder::addContactPoints);
+		map.from(properties::isJmxEnabled).whenFalse()
+				.toCall(builder::withoutJMXReporting);
 		customize(builder);
 		return builder.build();
 	}
 
 	private void customize(Cluster.Builder builder) {
-		if (this.builderCustomizers != null) {
-			for (ClusterBuilderCustomizer customizer : this.builderCustomizers) {
-				customizer.customize(builder);
-			}
-		}
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 	private QueryOptions getQueryOptions() {

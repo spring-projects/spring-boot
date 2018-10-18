@@ -1,12 +1,8 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'war'
+	id 'application'
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'war'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'application'
 
 springBoot {
 	mainClassName = 'com.example.CustomMain'

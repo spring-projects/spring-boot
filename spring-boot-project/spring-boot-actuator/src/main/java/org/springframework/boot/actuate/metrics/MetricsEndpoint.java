@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,11 +34,11 @@ import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
@@ -79,41 +80,55 @@ public class MetricsEndpoint {
 	@ReadOperation
 	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
-		Assert.isTrue(tag == null || tag.stream().allMatch((t) -> t.contains(":")),
-				"Each tag parameter must be in the form key:value");
 		List<Tag> tags = parseTags(tag);
-		List<Meter> meters = new ArrayList<>();
-		collectMeters(meters, this.registry, requiredMetricName, tags);
+		Collection<Meter> meters = findFirstMatchingMeters(this.registry,
+				requiredMetricName, tags);
 		if (meters.isEmpty()) {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
-		Map<String, List<String>> availableTags = getAvailableTags(meters);
+		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
-		return new MetricResponse(requiredMetricName,
-				asList(samples, MetricResponse.Sample::new),
-				asList(availableTags, MetricResponse.AvailableTag::new));
+		Meter.Id meterId = meters.iterator().next().getId();
+		return new MetricResponse(requiredMetricName, meterId.getDescription(),
+				meterId.getBaseUnit(), asList(samples, Sample::new),
+				asList(availableTags, AvailableTag::new));
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
-		return tags == null ? Collections.emptyList() : tags.stream().map((t) -> {
-			String[] tagParts = t.split(":", 2);
-			return Tag.of(tagParts[0], tagParts[1]);
-		}).collect(Collectors.toList());
+		if (tags == null) {
+			return Collections.emptyList();
+		}
+		return tags.stream().map(this::parseTag).collect(Collectors.toList());
 	}
 
-	private void collectMeters(List<Meter> meters, MeterRegistry registry, String name,
+	private Tag parseTag(String tag) {
+		String[] parts = tag.split(":", 2);
+		if (parts.length != 2) {
+			throw new InvalidEndpointRequestException(
+					"Each tag parameter must be in the form 'key:value' but was: " + tag,
+					"Each tag parameter must be in the form 'key:value'");
+		}
+		return Tag.of(parts[0], parts[1]);
+	}
+
+	private Collection<Meter> findFirstMatchingMeters(MeterRegistry registry, String name,
 			Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
-			((CompositeMeterRegistry) registry).getRegistries()
-					.forEach((member) -> collectMeters(meters, member, name, tags));
+			return findFirstMatchingMeters((CompositeMeterRegistry) registry, name, tags);
 		}
-		else {
-			meters.addAll(registry.find(name).tags(tags).meters());
-		}
+		return registry.find(name).tags(tags).meters();
 	}
 
-	private Map<Statistic, Double> getSamples(List<Meter> meters) {
+	private Collection<Meter> findFirstMatchingMeters(CompositeMeterRegistry composite,
+			String name, Iterable<Tag> tags) {
+		return composite.getRegistries().stream()
+				.map((registry) -> findFirstMatchingMeters(registry, name, tags))
+				.filter((matching) -> !matching.isEmpty()).findFirst()
+				.orElse(Collections.emptyList());
+	}
+
+	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
 		Map<Statistic, Double> samples = new LinkedHashMap<>();
 		meters.forEach((meter) -> mergeMeasurements(samples, meter));
 		return samples;
@@ -121,40 +136,43 @@ public class MetricsEndpoint {
 
 	private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
 		meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(),
-				measurement.getValue(), Double::sum));
+				measurement.getValue(), mergeFunction(measurement.getStatistic())));
 	}
 
-	private Map<String, List<String>> getAvailableTags(List<Meter> meters) {
-		Map<String, List<String>> availableTags = new HashMap<>();
+	private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {
+		return Statistic.MAX.equals(statistic) ? Double::max : Double::sum;
+	}
+
+	private Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
+		Map<String, Set<String>> availableTags = new HashMap<>();
 		meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
 		return availableTags;
 	}
 
-	private void mergeAvailableTags(Map<String, List<String>> availableTags,
-			Meter meter) {
+	private void mergeAvailableTags(Map<String, Set<String>> availableTags, Meter meter) {
 		meter.getId().getTags().forEach((tag) -> {
-			List<String> value = Collections.singletonList(tag.getValue());
+			Set<String> value = Collections.singleton(tag.getValue());
 			availableTags.merge(tag.getKey(), value, this::merge);
 		});
 	}
 
-	private <T> List<T> merge(List<T> list1, List<T> list2) {
-		List<T> result = new ArrayList<>(list1.size() + list2.size());
-		result.addAll(list1);
-		result.addAll(list2);
+	private <T> Set<T> merge(Set<T> set1, Set<T> set2) {
+		Set<T> result = new HashSet<>(set1.size() + set2.size());
+		result.addAll(set1);
+		result.addAll(set2);
 		return result;
 	}
 
 	private <K, V, T> List<T> asList(Map<K, V> map, BiFunction<K, V, T> mapper) {
 		return map.entrySet().stream()
 				.map((entry) -> mapper.apply(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toCollection(ArrayList::new));
+				.collect(Collectors.toList());
 	}
 
 	/**
 	 * Response payload for a metric name listing.
 	 */
-	static class ListNamesResponse {
+	public static final class ListNamesResponse {
 
 		private final Set<String> names;
 
@@ -165,28 +183,43 @@ public class MetricsEndpoint {
 		public Set<String> getNames() {
 			return this.names;
 		}
+
 	}
 
 	/**
 	 * Response payload for a metric name selector.
 	 */
-	static class MetricResponse {
+	public static final class MetricResponse {
 
 		private final String name;
+
+		private final String description;
+
+		private final String baseUnit;
 
 		private final List<Sample> measurements;
 
 		private final List<AvailableTag> availableTags;
 
-		MetricResponse(String name, List<Sample> measurements,
-				List<AvailableTag> availableTags) {
+		MetricResponse(String name, String description, String baseUnit,
+				List<Sample> measurements, List<AvailableTag> availableTags) {
 			this.name = name;
+			this.description = description;
+			this.baseUnit = baseUnit;
 			this.measurements = measurements;
 			this.availableTags = availableTags;
 		}
 
 		public String getName() {
 			return this.name;
+		}
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public String getBaseUnit() {
+			return this.baseUnit;
 		}
 
 		public List<Sample> getMeasurements() {
@@ -197,58 +230,60 @@ public class MetricsEndpoint {
 			return this.availableTags;
 		}
 
-		/**
-		 * A set of tags for further dimensional drilldown and their potential values.
-		 */
-		static class AvailableTag {
+	}
 
-			private final String tag;
+	/**
+	 * A set of tags for further dimensional drilldown and their potential values.
+	 */
+	public static final class AvailableTag {
 
-			private final List<String> values;
+		private final String tag;
 
-			AvailableTag(String tag, List<String> values) {
-				this.tag = tag;
-				this.values = values;
-			}
+		private final Set<String> values;
 
-			public String getTag() {
-				return this.tag;
-			}
-
-			public List<String> getValues() {
-				return this.values;
-			}
+		AvailableTag(String tag, Set<String> values) {
+			this.tag = tag;
+			this.values = values;
 		}
 
-		/**
-		 * A measurement sample combining a {@link Statistic statistic} and a value.
-		 */
-		static class Sample {
+		public String getTag() {
+			return this.tag;
+		}
 
-			private final Statistic statistic;
-
-			private final Double value;
-
-			Sample(Statistic statistic, Double value) {
-				this.statistic = statistic;
-				this.value = value;
-			}
-
-			public Statistic getStatistic() {
-				return this.statistic;
-			}
-
-			public Double getValue() {
-				return this.value;
-			}
-
-			@Override
-			public String toString() {
-				return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
-						+ this.value + '}';
-			}
-
+		public Set<String> getValues() {
+			return this.values;
 		}
 
 	}
+
+	/**
+	 * A measurement sample combining a {@link Statistic statistic} and a value.
+	 */
+	public static final class Sample {
+
+		private final Statistic statistic;
+
+		private final Double value;
+
+		Sample(Statistic statistic, Double value) {
+			this.statistic = statistic;
+			this.value = value;
+		}
+
+		public Statistic getStatistic() {
+			return this.statistic;
+		}
+
+		public Double getValue() {
+			return this.value;
+		}
+
+		@Override
+		public String toString() {
+			return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
+					+ this.value + '}';
+		}
+
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -133,11 +134,9 @@ public class EnvironmentEndpoint {
 			String propertyName) {
 		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
 		PlaceholdersResolver resolver = getResolver();
-		getPropertySourcesAsMap()
-				.forEach((sourceName, source) -> propertySources.put(sourceName,
-						source.containsProperty(propertyName)
-								? describeValueOf(propertyName, source, resolver)
-								: null));
+		getPropertySourcesAsMap().forEach((sourceName, source) -> propertySources
+				.put(sourceName, source.containsProperty(propertyName)
+						? describeValueOf(propertyName, source, resolver) : null));
 		return propertySources;
 	}
 
@@ -154,9 +153,14 @@ public class EnvironmentEndpoint {
 	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source,
 			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
-		String origin = (source instanceof OriginLookup)
-				? ((OriginLookup<Object>) source).getOrigin(name).toString() : null;
+		String origin = ((source instanceof OriginLookup)
+				? getOrigin((OriginLookup<Object>) source, name) : null);
 		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
+	}
+
+	private String getOrigin(OriginLookup<Object> lookup, String name) {
+		Origin origin = lookup.getOrigin(name);
+		return (origin != null) ? origin.toString() : null;
 	}
 
 	private PlaceholdersResolver getResolver() {

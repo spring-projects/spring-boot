@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,14 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link Configurations}.
@@ -41,14 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConfigurationsTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Classes must not be null");
-		new TestConfigurations(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new TestConfigurations(null))
+				.withMessageContaining("Classes must not be null");
 	}
 
 	@Test

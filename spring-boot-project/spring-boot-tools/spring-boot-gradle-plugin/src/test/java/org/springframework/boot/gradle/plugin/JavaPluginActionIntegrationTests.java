@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,14 @@ public class JavaPluginActionIntegrationTests {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
+	}
+
+	@Test
+	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
+		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyJavaPlugin");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains(
+				"Main class name has not been configured and it could not be resolved");
 	}
 
 	@Test

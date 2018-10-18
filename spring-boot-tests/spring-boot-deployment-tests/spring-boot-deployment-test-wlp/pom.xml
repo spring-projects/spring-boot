@@ -12,7 +12,7 @@
 	<description>Spring Boot WebSphere Liberty Profile Deployment Test</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
-		<wlp.version>16.0.0.4</wlp.version>
+		<wlp.version>18.0.0.1</wlp.version>
 		<cargo.container.id>liberty</cargo.container.id>
 		<cargo.container.url>https://repo.maven.apache.org/maven2/com/ibm/websphere/appserver/runtime/wlp-webProfile7/${wlp.version}/wlp-webProfile7-${wlp.version}.zip</cargo.container.url>
 	</properties>
@@ -26,6 +26,10 @@
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

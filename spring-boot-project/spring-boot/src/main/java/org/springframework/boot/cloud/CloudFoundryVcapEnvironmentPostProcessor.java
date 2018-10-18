@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -102,8 +101,6 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 	// Before ConfigFileApplicationListener so values there can use these ones
 	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
 
-	private final JsonParser parser = JsonParserFactory.getJsonParser();
-
 	public void setOrder(int order) {
 		this.order = order;
 	}
@@ -118,9 +115,11 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			SpringApplication application) {
 		if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
 			Properties properties = new Properties();
-			addWithPrefix(properties, getPropertiesFromApplication(environment),
+			JsonParser jsonParser = JsonParserFactory.getJsonParser();
+			addWithPrefix(properties,
+					getPropertiesFromApplication(environment, jsonParser),
 					"vcap.application.");
-			addWithPrefix(properties, getPropertiesFromServices(environment),
+			addWithPrefix(properties, getPropertiesFromServices(environment, jsonParser),
 					"vcap.services.");
 			MutablePropertySources propertySources = environment.getPropertySources();
 			if (propertySources.contains(
@@ -143,11 +142,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		}
 	}
 
-	private Properties getPropertiesFromApplication(Environment environment) {
+	private Properties getPropertiesFromApplication(Environment environment,
+			JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_APPLICATION, "{}");
-			Map<String, Object> map = this.parser.parseMap(property);
+			Map<String, Object> map = parser.parseMap(property);
 			extractPropertiesFromApplication(properties, map);
 		}
 		catch (Exception ex) {
@@ -156,11 +156,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		return properties;
 	}
 
-	private Properties getPropertiesFromServices(Environment environment) {
+	private Properties getPropertiesFromServices(Environment environment,
+			JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_SERVICES, "{}");
-			Map<String, Object> map = this.parser.parseMap(property);
+			Map<String, Object> map = parser.parseMap(property);
 			extractPropertiesFromServices(properties, map);
 		}
 		catch (Exception ex) {
@@ -197,40 +198,39 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	@SuppressWarnings("unchecked")
 	private void flatten(Properties properties, Map<String, Object> input, String path) {
-		for (Entry<String, Object> entry : input.entrySet()) {
-			String key = getFullKey(path, entry.getKey());
-			Object value = entry.getValue();
+		input.forEach((key, value) -> {
+			String name = getPropertyName(path, key);
 			if (value instanceof Map) {
 				// Need a compound key
-				flatten(properties, (Map<String, Object>) value, key);
+				flatten(properties, (Map<String, Object>) value, name);
 			}
 			else if (value instanceof Collection) {
 				// Need a compound key
 				Collection<Object> collection = (Collection<Object>) value;
-				properties.put(key,
+				properties.put(name,
 						StringUtils.collectionToCommaDelimitedString(collection));
 				int count = 0;
 				for (Object item : collection) {
 					String itemKey = "[" + (count++) + "]";
-					flatten(properties, Collections.singletonMap(itemKey, item), key);
+					flatten(properties, Collections.singletonMap(itemKey, item), name);
 				}
 			}
 			else if (value instanceof String) {
-				properties.put(key, value);
+				properties.put(name, value);
 			}
 			else if (value instanceof Number) {
-				properties.put(key, value.toString());
+				properties.put(name, value.toString());
 			}
 			else if (value instanceof Boolean) {
-				properties.put(key, value.toString());
+				properties.put(name, value.toString());
 			}
 			else {
-				properties.put(key, value == null ? "" : value);
+				properties.put(name, (value != null) ? value : "");
 			}
-		}
+		});
 	}
 
-	private String getFullKey(String path, String key) {
+	private String getPropertyName(String path, String key) {
 		if (!StringUtils.hasText(path)) {
 			return key;
 		}

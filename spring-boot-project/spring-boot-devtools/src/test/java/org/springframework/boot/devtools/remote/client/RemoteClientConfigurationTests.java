@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -49,6 +48,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -66,9 +66,6 @@ public class RemoteClientConfigurationTests {
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
@@ -104,9 +101,9 @@ public class RemoteClientConfigurationTests {
 
 	@Test
 	public void failIfNoSecret() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("required to secure your connection");
-		configure("http://localhost", false);
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> configure("http://localhost", false))
+				.withMessageContaining("required to secure your connection");
 	}
 
 	@Test
@@ -126,15 +123,15 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(OptionalLiveReloadServer.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
 	public void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(ClassPathFileSystemWatcher.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	private void configure(String... pairs) {
@@ -178,8 +175,8 @@ public class RemoteClientConfigurationTests {
 
 		public Dispatcher dispatcher() throws IOException {
 			Dispatcher dispatcher = mock(Dispatcher.class);
-			ServerHttpRequest anyRequest = (ServerHttpRequest) any();
-			ServerHttpResponse anyResponse = (ServerHttpResponse) any();
+			ServerHttpRequest anyRequest = any(ServerHttpRequest.class);
+			ServerHttpResponse anyResponse = any(ServerHttpResponse.class);
 			given(dispatcher.handle(anyRequest, anyResponse)).willReturn(true);
 			return dispatcher;
 		}

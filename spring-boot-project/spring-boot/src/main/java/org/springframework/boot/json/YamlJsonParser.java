@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,30 +28,18 @@ import org.yaml.snakeyaml.Yaml;
  * @author Jean de Klerk
  * @see JsonParserFactory
  */
-public class YamlJsonParser implements JsonParser {
+public class YamlJsonParser extends AbstractJsonParser {
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("{")) {
-				return new Yaml().loadAs(json, Map.class);
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseMap(json, (trimmed) -> new Yaml().loadAs(trimmed, Map.class));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("[")) {
-				return new Yaml().loadAs(json, List.class);
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseList(json, (trimmed) -> new Yaml().loadAs(trimmed, List.class));
 	}
 
 }

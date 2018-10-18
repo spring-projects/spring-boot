@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import joptsimple.OptionSet;
 
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Extract source file options (anything following '--' in an {@link OptionSet}).
@@ -125,7 +126,11 @@ public class SourceOptions {
 	}
 
 	public String[] getArgsArray() {
-		return this.args.toArray(new String[this.args.size()]);
+		return this.args.stream().map(this::asString).toArray(String[]::new);
+	}
+
+	private String asString(Object arg) {
+		return (arg != null) ? String.valueOf(arg) : null;
 	}
 
 	public List<String> getSources() {
@@ -133,7 +138,7 @@ public class SourceOptions {
 	}
 
 	public String[] getSourcesArray() {
-		return this.sources.toArray(new String[this.sources.size()]);
+		return StringUtils.toStringArray(this.sources);
 	}
 
 }

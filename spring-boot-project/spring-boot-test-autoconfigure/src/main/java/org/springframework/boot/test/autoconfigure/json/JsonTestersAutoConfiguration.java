@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,15 +178,20 @@ public class JsonTestersAutoConfiguration {
 		}
 
 		private void processField(Object bean, Field field) {
-			if (AbstractJsonMarshalTester.class.isAssignableFrom(field.getType())
-					|| BasicJsonTester.class.isAssignableFrom(field.getType())) {
-				ResolvableType type = ResolvableType.forField(field).getGeneric();
-				ReflectionUtils.makeAccessible(field);
-				Object tester = ReflectionUtils.getField(field, bean);
-				if (tester != null) {
-					ReflectionTestUtils.invokeMethod(tester, "initialize",
-							bean.getClass(), type);
-				}
+			if (AbstractJsonMarshalTester.class.isAssignableFrom(field.getType())) {
+				initializeTester(bean, field, bean.getClass(),
+						ResolvableType.forField(field).getGeneric());
+			}
+			else if (BasicJsonTester.class.isAssignableFrom(field.getType())) {
+				initializeTester(bean, field, bean.getClass());
+			}
+		}
+
+		private void initializeTester(Object bean, Field field, Object... args) {
+			ReflectionUtils.makeAccessible(field);
+			Object tester = ReflectionUtils.getField(field, bean);
+			if (tester != null) {
+				ReflectionTestUtils.invokeMethod(tester, "initialize", args);
 			}
 		}
 

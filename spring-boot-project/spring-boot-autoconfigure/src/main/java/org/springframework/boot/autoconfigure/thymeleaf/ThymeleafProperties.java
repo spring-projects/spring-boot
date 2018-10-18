@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Properties for Thymeleaf.
@@ -99,6 +100,12 @@ public class ThymeleafProperties {
 	 * Enable the SpringEL compiler in SpringEL expressions.
 	 */
 	private boolean enableSpringElCompiler;
+
+	/**
+	 * Whether hidden form inputs acting as markers for checkboxes should be rendered
+	 * before the checkbox element itself.
+	 */
+	private boolean renderHiddenMarkersBeforeCheckboxes = false;
 
 	/**
 	 * Whether to enable Thymeleaf view resolution for Web frameworks.
@@ -205,6 +212,15 @@ public class ThymeleafProperties {
 		this.enableSpringElCompiler = enableSpringElCompiler;
 	}
 
+	public boolean isRenderHiddenMarkersBeforeCheckboxes() {
+		return this.renderHiddenMarkersBeforeCheckboxes;
+	}
+
+	public void setRenderHiddenMarkersBeforeCheckboxes(
+			boolean renderHiddenMarkersBeforeCheckboxes) {
+		this.renderHiddenMarkersBeforeCheckboxes = renderHiddenMarkersBeforeCheckboxes;
+	}
+
 	public Reactive getReactive() {
 		return this.reactive;
 	}
@@ -220,6 +236,12 @@ public class ThymeleafProperties {
 		 */
 		private MimeType contentType = MimeType.valueOf("text/html");
 
+		/**
+		 * Whether Thymeleaf should start writing partial output as soon as possible or
+		 * buffer until template processing is finished.
+		 */
+		private boolean producePartialOutputWhileProcessing = true;
+
 		public MimeType getContentType() {
 			return this.contentType;
 		}
@@ -228,15 +250,24 @@ public class ThymeleafProperties {
 			this.contentType = contentType;
 		}
 
+		public boolean isProducePartialOutputWhileProcessing() {
+			return this.producePartialOutputWhileProcessing;
+		}
+
+		public void setProducePartialOutputWhileProcessing(
+				boolean producePartialOutputWhileProcessing) {
+			this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
+		}
+
 	}
 
 	public static class Reactive {
 
 		/**
-		 * Maximum size of data buffers used for writing to the response, in bytes.
-		 * Templates will execute in CHUNKED mode by default if this is set.
+		 * Maximum size of data buffers used for writing to the response. Templates will
+		 * execute in CHUNKED mode by default if this is set.
 		 */
-		private int maxChunkSize;
+		private DataSize maxChunkSize = DataSize.ofBytes(0);
 
 		/**
 		 * Media types supported by the view technology.
@@ -263,11 +294,11 @@ public class ThymeleafProperties {
 			this.mediaTypes = mediaTypes;
 		}
 
-		public int getMaxChunkSize() {
+		public DataSize getMaxChunkSize() {
 			return this.maxChunkSize;
 		}
 
-		public void setMaxChunkSize(int maxChunkSize) {
+		public void setMaxChunkSize(DataSize maxChunkSize) {
 			this.maxChunkSize = maxChunkSize;
 		}
 

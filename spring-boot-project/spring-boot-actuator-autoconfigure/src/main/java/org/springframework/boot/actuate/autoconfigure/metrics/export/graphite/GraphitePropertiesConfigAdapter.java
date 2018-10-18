@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteProtocol;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link GraphiteProperties} to a {@link GraphiteConfig}.
@@ -44,7 +44,7 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 
 	@Override
 	public boolean enabled() {
-		return get(GraphiteProperties::getEnabled, GraphiteConfig.super::enabled);
+		return get(GraphiteProperties::isEnabled, GraphiteConfig.super::enabled);
 	}
 
 	@Override
@@ -76,6 +76,12 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 	@Override
 	public GraphiteProtocol protocol() {
 		return get(GraphiteProperties::getProtocol, GraphiteConfig.super::protocol);
+	}
+
+	@Override
+	public String[] tagsAsPrefix() {
+		return get(GraphiteProperties::getTagsAsPrefix,
+				GraphiteConfig.super::tagsAsPrefix);
 	}
 
 }

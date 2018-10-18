@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,15 @@ package org.springframework.boot.web.servlet;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -60,9 +55,6 @@ import org.springframework.util.ClassUtils;
  */
 public class ServletListenerRegistrationBean<T extends EventListener>
 		extends RegistrationBean {
-
-	private static final Log logger = LogFactory
-			.getLog(ServletListenerRegistrationBean.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 
@@ -106,80 +98,21 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 	}
 
 	/**
-	 * Set the name of this registration. If not specified the bean name will be used.
-	 * @param name the name of the registration
-	 * @deprecated as of 1.5 since not applicable to listeners
+	 * Return the listener to be registered.
+	 * @return the listener to be registered
 	 */
-	@Override
-	@Deprecated
-	public void setName(String name) {
-		super.setName(name);
-	}
-
-	/**
-	 * Sets if asynchronous operations are support for this registration. If not specified
-	 * defaults to {@code true}.
-	 * @param asyncSupported if async is supported
-	 * @deprecated as of 1.5 since not applicable to listeners
-	 */
-	@Override
-	@Deprecated
-	public void setAsyncSupported(boolean asyncSupported) {
-		super.setAsyncSupported(asyncSupported);
-	}
-
-	/**
-	 * Returns if asynchronous operations are support for this registration.
-	 * @return if async is supported
-	 * @deprecated as of 1.5 since not applicable to listeners
-	 */
-	@Override
-	@Deprecated
-	public boolean isAsyncSupported() {
-		return super.isAsyncSupported();
-	}
-
-	/**
-	 * Set init-parameters for this registration. Calling this method will replace any
-	 * existing init-parameters.
-	 * @param initParameters the init parameters
-	 * @deprecated as of 1.5 since not applicable to listeners
-	 */
-	@Override
-	@Deprecated
-	public void setInitParameters(Map<String, String> initParameters) {
-		super.setInitParameters(initParameters);
-	}
-
-	/**
-	 * Returns a mutable Map of the registration init-parameters.
-	 * @return the init parameters
-	 * @deprecated as of 1.5 since not applicable to listeners
-	 */
-	@Override
-	@Deprecated
-	public Map<String, String> getInitParameters() {
-		return super.getInitParameters();
-	}
-
-	/**
-	 * Add a single init-parameter, replacing any existing parameter with the same name.
-	 * @param name the init-parameter name
-	 * @param value the init-parameter value
-	 * @deprecated as of 1.5 since not applicable to listeners
-	 */
-	@Override
-	@Deprecated
-	public void addInitParameter(String name, String value) {
-		super.addInitParameter(name, value);
+	public T getListener() {
+		return this.listener;
 	}
 
 	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		if (!isEnabled()) {
-			logger.info("Listener " + this.listener + " was not registered (disabled)");
-			return;
-		}
+	protected String getDescription() {
+		Assert.notNull(this.listener, "Listener must not be null");
+		return "listener " + this.listener;
+	}
+
+	@Override
+	protected void register(String description, ServletContext servletContext) {
 		try {
 			servletContext.addListener(this.listener);
 		}
@@ -188,10 +121,6 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 					"Failed to add listener '" + this.listener + "' to servlet context",
 					ex);
 		}
-	}
-
-	public T getListener() {
-		return this.listener;
 	}
 
 	/**

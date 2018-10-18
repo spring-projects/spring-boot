@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
 /**
@@ -46,7 +45,7 @@ public class JsonMarshaller {
 	public void write(ConfigurationMetadata metadata, OutputStream outputStream)
 			throws IOException {
 		try {
-			JSONObject object = new JSONOrderedObject();
+			JSONObject object = new JSONObject();
 			JsonConverter converter = new JsonConverter();
 			object.put("groups", converter.toJsonArray(metadata, ItemType.GROUP));
 			object.put("properties", converter.toJsonArray(metadata, ItemType.PROPERTY));
@@ -112,7 +111,7 @@ public class JsonMarshaller {
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);
+		return object.optBoolean("deprecated") ? new ItemDeprecation() : null;
 	}
 
 	private ItemHint toItemHint(JSONObject object) throws Exception {
@@ -168,7 +167,8 @@ public class JsonMarshaller {
 
 	private String toString(InputStream inputStream) throws IOException {
 		StringBuilder out = new StringBuilder();
-		InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		InputStreamReader reader = new InputStreamReader(inputStream,
+				StandardCharsets.UTF_8);
 		char[] buffer = new char[BUFFER_SIZE];
 		int bytesRead;
 		while ((bytesRead = reader.read(buffer)) != -1) {

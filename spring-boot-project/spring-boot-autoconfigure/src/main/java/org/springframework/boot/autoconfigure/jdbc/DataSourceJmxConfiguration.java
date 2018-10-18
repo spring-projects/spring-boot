@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,23 +48,33 @@ class DataSourceJmxConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(HikariDataSource.class)
-	@ConditionalOnSingleCandidate(HikariDataSource.class)
+	@ConditionalOnSingleCandidate(DataSource.class)
 	static class Hikari {
 
-		private final HikariDataSource dataSource;
+		private final DataSource dataSource;
 
 		private final ObjectProvider<MBeanExporter> mBeanExporter;
 
-		Hikari(HikariDataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
+		Hikari(DataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
 			this.dataSource = dataSource;
 			this.mBeanExporter = mBeanExporter;
 		}
 
 		@PostConstruct
 		public void validateMBeans() {
-			MBeanExporter exporter = this.mBeanExporter.getIfUnique();
-			if (exporter != null && this.dataSource.isRegisterMbeans()) {
-				exporter.addExcludedBean("dataSource");
+			HikariDataSource hikariDataSource = unwrapHikariDataSource();
+			if (hikariDataSource != null && hikariDataSource.isRegisterMbeans()) {
+				this.mBeanExporter
+						.ifUnique((exporter) -> exporter.addExcludedBean("dataSource"));
+			}
+		}
+
+		private HikariDataSource unwrapHikariDataSource() {
+			try {
+				return this.dataSource.unwrap(HikariDataSource.class);
+			}
+			catch (SQLException ex) {
+				return null;
 			}
 		}
 

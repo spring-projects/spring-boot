@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.ShowDetails;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -28,17 +32,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HealthEndpointProperties {
 
 	/**
-	 * Whether to show full health details instead of just the status when exposed over a
-	 * potentially insecure connection.
+	 * When to show full health details.
 	 */
-	private boolean showDetails;
+	private ShowDetails showDetails = ShowDetails.NEVER;
 
-	public boolean isShowDetails() {
+	/**
+	 * Roles used to determine whether or not a user is authorized to be shown details.
+	 * When empty, all authenticated users are authorized.
+	 */
+	private Set<String> roles = new HashSet<>();
+
+	public ShowDetails getShowDetails() {
 		return this.showDetails;
 	}
 
-	public void setShowDetails(boolean showDetails) {
+	public void setShowDetails(ShowDetails showDetails) {
 		this.showDetails = showDetails;
+	}
+
+	public Set<String> getRoles() {
+		return this.roles;
+	}
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.ApplicationPluginConvention;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
@@ -49,6 +50,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		DistributionContainer distributions = project.getExtensions()
 				.getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
+		if (distribution instanceof IConventionAware) {
+			((IConventionAware) distribution).getConventionMapping().map("baseName",
+					() -> applicationConvention.getApplicationName() + "-boot");
+		}
 		CreateBootStartScripts bootStartScripts = project.getTasks()
 				.create("bootStartScripts", CreateBootStartScripts.class);
 		bootStartScripts.setDescription("Generates OS-specific start scripts to run the"
@@ -61,19 +66,22 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 						.fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
-				distribution.getContents()
-						.with(project.copySpec().into("lib")
-								.from((Callable<FileCollection>) () -> configuration
-										.getArtifacts().getFiles()));
+				CopySpec libCopySpec = project.copySpec().into("lib")
+						.from((Callable<FileCollection>) () -> configuration
+								.getArtifacts().getFiles());
+				libCopySpec.setFileMode(0644);
+				distribution.getContents().with(libCopySpec);
 				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		bootStartScripts.setOutputDir(
-				project.provider(() -> new File(project.getBuildDir(), "bootScripts")));
-		bootStartScripts.setApplicationName(
-				project.provider(() -> applicationConvention.getApplicationName()));
+		bootStartScripts.getConventionMapping().map("outputDir",
+				() -> new File(project.getBuildDir(), "bootScripts"));
+		bootStartScripts.getConventionMapping().map("applicationName",
+				applicationConvention::getApplicationName);
+		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
+				applicationConvention::getApplicationDefaultJvmArgs);
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
-		binCopySpec.setFileMode(0x755);
+		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
 	}
 

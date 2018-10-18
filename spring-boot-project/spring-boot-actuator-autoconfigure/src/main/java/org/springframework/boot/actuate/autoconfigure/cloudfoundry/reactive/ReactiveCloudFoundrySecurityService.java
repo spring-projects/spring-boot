@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
@@ -50,11 +55,25 @@ class ReactiveCloudFoundrySecurityService {
 	private Mono<String> uaaUrl;
 
 	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
-			String cloudControllerUrl) {
+			String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "Webclient must not be null");
 		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+		if (skipSslValidation) {
+			webClientBuilder.clientConnector(buildTrustAllSslConnector());
+		}
 		this.webClient = webClientBuilder.build();
 		this.cloudControllerUrl = cloudControllerUrl;
+	}
+
+	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
+		HttpClient client = HttpClient.create().secure(
+				(sslContextSpec) -> sslContextSpec.sslContext(createSslContext()));
+		return new ReactorClientHttpConnector(client);
+	}
+
+	private SslContextBuilder createSslContext() {
+		return SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
+				.trustManager(InsecureTrustManagerFactory.INSTANCE);
 	}
 
 	/**

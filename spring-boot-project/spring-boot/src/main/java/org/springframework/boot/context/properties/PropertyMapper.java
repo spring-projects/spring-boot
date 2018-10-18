@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@ public final class PropertyMapper {
 	 * @param <T> the source type
 	 * @param supplier the value supplier
 	 * @return a {@link Source} that can be used to complete the mapping
+	 * @see #from(Object)
 	 */
 	public <T> Source<T> from(Supplier<T> supplier) {
 		Assert.notNull(supplier, "Supplier must not be null");
@@ -107,12 +108,23 @@ public final class PropertyMapper {
 		return source;
 	}
 
+	/**
+	 * Return a new {@link Source} from the specified value that can be used to perform
+	 * the mapping.
+	 * @param <T> the source type
+	 * @param value the value
+	 * @return a {@link Source} that can be used to complete the mapping
+	 */
+	public <T> Source<T> from(T value) {
+		return from(() -> value);
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T> Source<T> getSource(Supplier<T> supplier) {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
 		}
-		return new Source<T>(new CachingSupplier<>(supplier), (Predicate<T>) ALWAYS);
+		return new Source<>(new CachingSupplier<>(supplier), (Predicate<T>) ALWAYS);
 	}
 
 	/**
@@ -167,9 +179,10 @@ public final class PropertyMapper {
 
 	/**
 	 * A source that is in the process of being mapped.
+	 *
 	 * @param <T> the source type
 	 */
-	public final static class Source<T> {
+	public static final class Source<T> {
 
 		private final Supplier<T> supplier;
 
@@ -207,7 +220,7 @@ public final class PropertyMapper {
 				}
 				return null;
 			};
-			return new Source<R>(supplier, predicate);
+			return new Source<>(supplier, predicate);
 		}
 
 		/**
@@ -221,7 +234,7 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Return a filtered version of the source that will only map values that
+		 * Return a filtered version of the source that will only map values that are
 		 * {@code true}.
 		 * @return a new filtered source instance
 		 */
@@ -230,7 +243,7 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Return a filtered version of the source that will only map values that
+		 * Return a filtered version of the source that will only map values that are
 		 * {@code false}.
 		 * @return a new filtered source instance
 		 */
@@ -255,6 +268,17 @@ public final class PropertyMapper {
 		 */
 		public Source<T> whenEqualTo(Object object) {
 			return when(object::equals);
+		}
+
+		/**
+		 * Return a filtered version of the source that will only map values that are an
+		 * instance of the given type.
+		 * @param <R> the target type
+		 * @param target the target type to match
+		 * @return a new filtered source instance
+		 */
+		public <R extends T> Source<R> whenInstanceOf(Class<R> target) {
+			return when(target::isInstance).as(target::cast);
 		}
 
 		/**

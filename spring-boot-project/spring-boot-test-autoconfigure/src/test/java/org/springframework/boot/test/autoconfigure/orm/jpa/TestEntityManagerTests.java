@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -31,6 +29,8 @@ import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -40,9 +40,6 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 public class TestEntityManagerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private EntityManagerFactory entityManagerFactory;
@@ -65,9 +62,8 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void createWhenEntityManagerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("EntityManagerFactory must not be null");
-		new TestEntityManager(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new TestEntityManager(null))
+				.withMessageContaining("EntityManagerFactory must not be null");
 	}
 
 	@Test
@@ -191,9 +187,10 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expectMessage("ID mismatch: Object of class [java.lang.Integer] "
-				+ "must be an instance of class java.lang.Long");
-		this.testEntityManager.getId(entity, Long.class);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.testEntityManager.getId(entity, Long.class))
+				.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
+						+ "must be an instance of class java.lang.Long");
 	}
 
 	@Test
@@ -213,9 +210,9 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void getEntityManagerWhenNotSetShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No transactional EntityManager found");
-		this.testEntityManager.getEntityManager();
+		assertThatIllegalStateException()
+				.isThrownBy(this.testEntityManager::getEntityManager)
+				.withMessageContaining("No transactional EntityManager found");
 	}
 
 	private void bindEntityManager() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.endpoint.health.show-details=never")
 public class SampleSecureWebFluxApplicationTests {
 
 	@Autowired
@@ -47,8 +47,20 @@ public class SampleSecureWebFluxApplicationTests {
 	}
 
 	@Test
-	public void actuatorsSecureByDefault() {
+	public void healthInsecureByDefault() {
 		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk();
+	}
+
+	@Test
+	public void infoInsecureByDefault() {
+		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk();
+	}
+
+	@Test
+	public void otherActuatorsSecureByDefault() {
+		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isUnauthorized();
 	}
 

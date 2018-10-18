@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.constraints.Min;
 
@@ -61,10 +62,27 @@ public class BindFailureAnalyzerTests {
 	@Test
 	public void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
-				"test.foo.value=${BAR}");
-		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "${BAR}",
+				"test.foo.value=alpha");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "alpha",
 				"\"test.foo.value\" from property source \"test\"",
-				"Could not resolve placeholder 'BAR' in value \"${BAR}\""));
+				"failed to convert java.lang.String to int"));
+	}
+
+	@Test
+	public void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
+		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class,
+				"test.foo.fruit=apple,strawberry");
+		for (Fruit fruit : Fruit.values()) {
+			assertThat(analysis.getAction()).contains(fruit.name());
+		}
+	}
+
+	@Test
+	public void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
+		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class,
+				"test.foo.value=hello");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
+				"\"test.foo.value\" from property source \"test\"", "This is a failure"));
 	}
 
 	private static String failure(String property, String value, String origin,
@@ -102,8 +120,8 @@ public class BindFailureAnalyzerTests {
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {
 			int index = pair.indexOf("=");
-			String key = (index > 0 ? pair.substring(0, index) : pair);
-			String value = (index > 0 ? pair.substring(index + 1) : "");
+			String key = (index > 0) ? pair.substring(0, index) : pair;
+			String value = (index > 0) ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
 		sources.addFirst(new MapPropertySource("test", map));
@@ -121,6 +139,16 @@ public class BindFailureAnalyzerTests {
 
 	@EnableConfigurationProperties(GenericFailureProperties.class)
 	static class GenericFailureConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(EnumFailureProperties.class)
+	static class EnumFailureConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(NestedFailureProperties.class)
+	static class NestedFailureConfiguration {
 
 	}
 
@@ -153,10 +181,41 @@ public class BindFailureAnalyzerTests {
 		public void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
+
 	}
 
 	@ConfigurationProperties("test.foo")
 	static class GenericFailureProperties {
+
+		private int value;
+
+		public int getValue() {
+			return this.value;
+		}
+
+		public void setValue(int value) {
+			this.value = value;
+		}
+
+	}
+
+	@ConfigurationProperties("test.foo")
+	static class EnumFailureProperties {
+
+		private Set<Fruit> fruit;
+
+		public Set<Fruit> getFruit() {
+			return this.fruit;
+		}
+
+		public void setFruit(Set<Fruit> fruit) {
+			this.fruit = fruit;
+		}
+
+	}
+
+	@ConfigurationProperties("test.foo")
+	static class NestedFailureProperties {
 
 		private String value;
 
@@ -165,8 +224,14 @@ public class BindFailureAnalyzerTests {
 		}
 
 		public void setValue(String value) {
-			this.value = value;
+			throw new RuntimeException("This is a failure");
 		}
+
+	}
+
+	enum Fruit {
+
+		APPLE, BANANA, ORANGE
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
@@ -34,7 +34,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @author Stephane Nicoll
  */
 @Order(0)
-class SpringBootRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 	@Autowired(required = false)
 	private Jackson2ObjectMapperBuilder objectMapperBuilder;

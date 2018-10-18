@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,12 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link AnnotationsPropertySource}.
@@ -35,14 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AnnotationsPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Property source must not be null");
-		new AnnotationsPropertySource(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new AnnotationsPropertySource(null))
+				.withMessageContaining("Property source must not be null");
 	}
 
 	@Test
@@ -354,7 +350,7 @@ public class AnnotationsPropertySourceTests {
 	@AliasedAttributeAnnotation
 	static @interface AttributeWithAliasAnnotation {
 
-		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
+		@AliasFor(annotation = AliasedAttributeAnnotation.class)
 		String value() default "foo";
 
 		String someOtherAttribute() default "shouldNotBeMapped";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,10 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 					return new SimpleLocalRepositoryManagerFactory().newInstance(session,
 							localRepository);
 				});
-		TestPropertyValues.of("user.home:src/test/resources/maven-settings/property-interpolation",
-				"foo:bar").applyToSystemProperties(() -> {
+		TestPropertyValues
+				.of("user.home:src/test/resources/maven-settings/property-interpolation",
+						"foo:bar")
+				.applyToSystemProperties(() -> {
 					new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(
 							session,
 							SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
@@ -89,11 +91,10 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 				.newSession();
 		TestPropertyValues.of("user.home:" + userHome).applyToSystemProperties(() -> {
-					new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(
-							session,
-							SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
-					return null;
-				});
+			new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
+					SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+			return null;
+		});
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
 				"http://maven.example.com").build();
 		assertMirrorSelectorConfiguration(session, repository);

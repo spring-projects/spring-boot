@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -43,7 +43,7 @@ public class DevToolsSettings {
 	 */
 	public static final String SETTINGS_RESOURCE_LOCATION = "META-INF/spring-devtools.properties";
 
-	private static final Log logger = LogFactory.getLog(DevToolsSettings.class);
+	private static final Log logger = DevToolsLogFactory.getLog(DevToolsSettings.class);
 
 	private static DevToolsSettings settings;
 
@@ -63,13 +63,13 @@ public class DevToolsSettings {
 
 	private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
 		Map<String, Pattern> patterns = new LinkedHashMap<>();
-		for (Map.Entry<?, ?> entry : properties.entrySet()) {
-			String name = String.valueOf(entry.getKey());
+		properties.forEach((key, value) -> {
+			String name = String.valueOf(key);
 			if (name.startsWith(prefix)) {
-				Pattern pattern = Pattern.compile((String) entry.getValue());
+				Pattern pattern = Pattern.compile((String) value);
 				patterns.put(name, pattern);
 			}
-		}
+		});
 		return patterns;
 	}
 

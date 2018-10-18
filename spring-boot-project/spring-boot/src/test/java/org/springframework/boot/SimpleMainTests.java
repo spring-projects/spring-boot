@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class SimpleMainTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private static final String SPRING_STARTUP = "root of context hierarchy";
+	private static final String SPRING_STARTUP = "Started SpringApplication in";
 
 	@Test(expected = IllegalArgumentException.class)
 	public void emptyApplicationContext() throws Exception {
@@ -76,14 +76,15 @@ public class SimpleMainTests {
 	}
 
 	private String[] getArgs(String... args) {
-		List<String> list = new ArrayList<>(Arrays.asList(
-				"--spring.main.webEnvironment=false", "--spring.main.showBanner=OFF",
-				"--spring.main.registerShutdownHook=false"));
+		List<String> list = new ArrayList<>(
+				Arrays.asList("--spring.main.web-application-type=none",
+						"--spring.main.show-banner=OFF",
+						"--spring.main.register-shutdownHook=false"));
 		if (args.length > 0) {
 			list.add("--spring.main.sources="
 					+ StringUtils.arrayToCommaDelimitedString(args));
 		}
-		return list.toArray(new String[list.size()]);
+		return StringUtils.toStringArray(list);
 	}
 
 	private String getOutput() {

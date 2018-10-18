@@ -328,7 +328,7 @@ consider a different logging implementation.
 If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the
 following alternatives:
 
-* http://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
+* https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
 * http://one-jar.sourceforge.net[OneJar]
 

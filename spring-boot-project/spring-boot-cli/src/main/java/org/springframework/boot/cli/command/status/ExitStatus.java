@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,12 @@ public final class ExitStatus {
 	/**
 	 * Generic "OK" exit status with zero exit code and {@literal hangup=false}.
 	 */
-	public static ExitStatus OK = new ExitStatus(0, "OK");
+	public static final ExitStatus OK = new ExitStatus(0, "OK");
 
 	/**
 	 * Generic "not OK" exit status with non-zero exit code and {@literal hangup=true}.
 	 */
-	public static ExitStatus ERROR = new ExitStatus(-1, "ERROR", true);
+	public static final ExitStatus ERROR = new ExitStatus(-1, "ERROR", true);
 
 	private final int code;
 

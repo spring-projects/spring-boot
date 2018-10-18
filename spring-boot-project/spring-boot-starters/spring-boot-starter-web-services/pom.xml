@@ -16,11 +16,21 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<groupId>com.sun.xml.messaging.saaj</groupId>
+			<artifactId>saaj-impl</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -31,26 +41,4 @@
 			<artifactId>spring-ws-core</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.basepom.maven</groupId>
-				<artifactId>duplicate-finder-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>duplicate-dependencies</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<ignoredClassPatterns>
-								<ignoredClassPattern>javax.annotation.*</ignoredClassPattern>
-							</ignoredClassPatterns>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

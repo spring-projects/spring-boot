@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class JettyWebServer implements WebServer {
 				this.server.start();
 				this.server.setStopAtShutdown(false);
 			}
-			catch (Exception ex) {
+			catch (Throwable ex) {
 				// Ensure process isn't left running
 				stopSilently();
 				throw new WebServerException("Unable to start embedded Jetty web server",
@@ -154,14 +154,15 @@ public class JettyWebServer implements WebServer {
 					}
 				}
 				this.started = true;
-				JettyWebServer.logger
-						.info("Jetty started on port(s) " + getActualPortsDescription()
-								+ " with context path '" + getContextPath() + "'");
+				logger.info("Jetty started on port(s) " + getActualPortsDescription()
+						+ " with context path '" + getContextPath() + "'");
 			}
 			catch (WebServerException ex) {
+				stopSilently();
 				throw ex;
 			}
 			catch (Exception ex) {
+				stopSilently();
 				throw new WebServerException("Unable to start embedded Jetty server", ex);
 			}
 		}
@@ -170,8 +171,10 @@ public class JettyWebServer implements WebServer {
 	private String getActualPortsDescription() {
 		StringBuilder ports = new StringBuilder();
 		for (Connector connector : this.server.getConnectors()) {
-			ports.append(ports.length() == 0 ? "" : ", ");
-			ports.append(getLocalPort(connector) + getProtocols(connector));
+			if (ports.length() != 0) {
+				ports.append(", ");
+			}
+			ports.append(getLocalPort(connector)).append(getProtocols(connector));
 		}
 		return ports.toString();
 	}
@@ -184,8 +187,7 @@ public class JettyWebServer implements WebServer {
 					connector);
 		}
 		catch (Exception ex) {
-			JettyWebServer.logger
-					.info("could not determine port ( " + ex.getMessage() + ")");
+			logger.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
 		}
 	}

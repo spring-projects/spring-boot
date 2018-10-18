@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 	private void customize(AbstractHttp11Protocol<?> protocol) {
 		Compression compression = this.compression;
 		protocol.setCompression("on");
-		protocol.setCompressionMinSize(compression.getMinResponseSize());
+		protocol.setCompressionMinSize((int) compression.getMinResponseSize().toBytes());
 		protocol.setCompressibleMimeType(
 				StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 		if (this.compression.getExcludedUserAgents() != null) {

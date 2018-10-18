@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,11 @@ public class ParentContextCloserApplicationListener
 	}
 
 	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
-		if (child == this.context) {
-			if (child.getParent() instanceof ConfigurableApplicationContext) {
-				ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
-						.getParent();
-				parent.addApplicationListener(createContextCloserListener(child));
-			}
+		if (child == this.context
+				&& child.getParent() instanceof ConfigurableApplicationContext) {
+			ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
+					.getParent();
+			parent.addApplicationListener(createContextCloserListener(child));
 		}
 	}
 
@@ -103,11 +102,6 @@ public class ParentContextCloserApplicationListener
 		}
 
 		@Override
-		public int hashCode() {
-			return ObjectUtils.nullSafeHashCode(this.childContext.get());
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -121,6 +115,11 @@ public class ParentContextCloserApplicationListener
 						other.childContext.get());
 			}
 			return super.equals(obj);
+		}
+
+		@Override
+		public int hashCode() {
+			return ObjectUtils.nullSafeHashCode(this.childContext.get());
 		}
 
 	}

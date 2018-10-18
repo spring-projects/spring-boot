@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,18 @@ import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.DelegatingMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,11 +60,23 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMessageSourceCreated() {
+	public void propertiesBundleWithSlashIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(
-						context.getMessage("foo", null, "Foo message", Locale.UK))
-								.isEqualTo("bar"));
+				.run((context) -> {
+					assertThat(context).hasSingleBean(MessageSource.class);
+					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
+	}
+
+	@Test
+	public void propertiesBundleWithDotIsDetected() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test.messages")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(MessageSource.class);
+					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
 	}
 
 	@Test
@@ -68,6 +85,26 @@ public class MessageSourceAutoConfigurationTests {
 				.run((context) -> assertThat(
 						context.getMessage("foo", null, "Foo message", Locale.UK))
 								.isEqualTo("Some text with some swedish öäå!"));
+	}
+
+	@Test
+	public void testCacheDurationNoUnit() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages",
+				"spring.messages.cache-duration=10").run(assertCache(10 * 1000));
+	}
+
+	@Test
+	public void testCacheDurationWithUnit() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages",
+				"spring.messages.cache-duration=1m").run(assertCache(60 * 1000));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertCache(long expected) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(MessageSource.class);
+			assertThat(new DirectFieldAccessor(context.getBean(MessageSource.class))
+					.getPropertyValue("cacheMillis")).isEqualTo(expected);
+		};
 	}
 
 	@Test
@@ -184,6 +221,38 @@ public class MessageSourceAutoConfigurationTests {
 				.run((context) -> assertThat(
 						context.getMessage("foo", null, "Foo message", Locale.UK))
 								.isEqualTo("bar")));
+	}
+
+	@Test
+	public void testDefaultReloadableValueMessageSource() {
+		testReloadableMessageSource(ResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages");
+	}
+
+	@Test
+	public void testNotReloadableMessageSource() {
+		testReloadableMessageSource(ResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages",
+				"spring.messages.reloadable:false");
+	}
+
+	@Test
+	public void testReloadableMessageSource() {
+		testReloadableMessageSource(ReloadableResourceBundleMessageSource.class,
+				"spring.messages.basename:test/messages",
+				"spring.messages.reloadable:true");
+	}
+
+	private void testReloadableMessageSource(Class<?> expectedInstance,
+			String... propertyValues) {
+		this.contextRunner.withPropertyValues(propertyValues).run((context) -> {
+			MessageSource messageSource = context.getBean(MessageSource.class);
+			if (messageSource instanceof DelegatingMessageSource) {
+				messageSource = ((DelegatingMessageSource) messageSource)
+						.getParentMessageSource();
+			}
+			assertThat(messageSource).isInstanceOf(expectedInstance);
+		});
 	}
 
 	@Configuration

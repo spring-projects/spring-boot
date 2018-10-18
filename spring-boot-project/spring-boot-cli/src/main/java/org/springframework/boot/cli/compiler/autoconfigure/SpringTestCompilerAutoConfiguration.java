@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 	@Override
 	public void apply(GroovyClassLoader loader, GroovyCompilerConfiguration configuration,
 			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
-					throws CompilationFailedException {
+			throws CompilationFailedException {
 		if (!AstUtils.hasAtLeastOneAnnotation(classNode, "RunWith")) {
 			AnnotationNode runWith = new AnnotationNode(ClassHelper.make("RunWith"));
 			runWith.addMember("value",

@@ -13,7 +13,6 @@
 	<description>Spring Boot JUnit Jupiter Sample</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -51,13 +50,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.platform</groupId>
-						<artifactId>junit-platform-surefire-provider</artifactId>
-						<version>${junit-platform.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

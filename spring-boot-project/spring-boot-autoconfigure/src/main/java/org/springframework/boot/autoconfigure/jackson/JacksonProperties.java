@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jackson;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -54,36 +56,46 @@ public class JacksonProperties {
 	private String jodaDateTimeFormat;
 
 	/**
-	 * One of the constants on Jackson's PropertyNamingStrategy
-	 * (CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES). Can also be a fully-qualified class
-	 * name of a PropertyNamingStrategy subclass.
+	 * One of the constants on Jackson's PropertyNamingStrategy. Can also be a
+	 * fully-qualified class name of a PropertyNamingStrategy subclass.
 	 */
 	private String propertyNamingStrategy;
 
 	/**
+	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
+	 * are auto-detected.
+	 */
+	private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
+			PropertyAccessor.class);
+
+	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private Map<SerializationFeature, Boolean> serialization = new HashMap<>();
+	private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
+			SerializationFeature.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private Map<DeserializationFeature, Boolean> deserialization = new HashMap<>();
+	private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
+			DeserializationFeature.class);
 
 	/**
 	 * Jackson general purpose on/off features.
 	 */
-	private Map<MapperFeature, Boolean> mapper = new HashMap<>();
+	private final Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
 
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private Map<JsonParser.Feature, Boolean> parser = new HashMap<>();
+	private final Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
+			JsonParser.Feature.class);
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<>();
+	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
+			JsonGenerator.Feature.class);
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
@@ -124,6 +136,10 @@ public class JacksonProperties {
 
 	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
 		this.propertyNamingStrategy = propertyNamingStrategy;
+	}
+
+	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
+		return this.visibility;
 	}
 
 	public Map<SerializationFeature, Boolean> getSerialization() {

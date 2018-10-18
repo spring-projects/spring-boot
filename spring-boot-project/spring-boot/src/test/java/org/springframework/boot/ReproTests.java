@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,8 +51,10 @@ public class ReproTests {
 		this.context = application.run(
 				"--spring.config.name=enableprofileviaapplicationproperties",
 				"--spring.profiles.active=dev");
-		assertThat(this.context.getEnvironment().acceptsProfiles("dev")).isTrue();
-		assertThat(this.context.getEnvironment().acceptsProfiles("a")).isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("dev")))
+				.isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("a")))
+				.isTrue();
 	}
 
 	@Test
@@ -170,7 +173,6 @@ public class ReproTests {
 				.isEqualTo(expectedActiveProfiles);
 		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
 				.isEqualTo(expectedVersion);
-		context.close();
 	}
 
 	@Configuration

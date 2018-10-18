@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,9 +161,9 @@ public class ImageBanner implements Banner {
 		IIOMetadataNode root = (IIOMetadataNode) metadata
 				.getAsTree(metadata.getNativeMetadataFormatName());
 		IIOMetadataNode extension = findNode(root, "GraphicControlExtension");
-		String attribute = (extension == null ? null
-				: extension.getAttribute("delayTime"));
-		return (attribute == null ? 0 : Integer.parseInt(attribute) * 10);
+		String attribute = (extension != null) ? extension.getAttribute("delayTime")
+				: null;
+		return (attribute != null) ? Integer.parseInt(attribute) * 10 : 0;
 	}
 
 	private static IIOMetadataNode findNode(IIOMetadataNode rootNode, String nodeName) {
@@ -200,7 +200,7 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(BufferedImage image, int margin, boolean invert,
 			PrintStream out) {
-		AnsiElement background = (invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT);
+		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));
 		out.println();
@@ -253,6 +253,7 @@ public class ImageBanner implements Banner {
 			Thread.sleep(delay);
 		}
 		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

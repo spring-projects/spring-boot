@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -74,9 +73,10 @@ class ApplicationBuilder {
 		File resourcesJar = createResourcesJar();
 		File appFolder = new File(containerFolder, "app");
 		appFolder.mkdirs();
+		File settingsXml = writeSettingsXml(appFolder);
 		writePom(appFolder, resourcesJar);
 		copyApplicationSource(appFolder);
-		packageApplication(appFolder);
+		packageApplication(appFolder, settingsXml);
 		return new File(appFolder, "target/app-0.0.1." + this.packaging);
 	}
 
@@ -85,30 +85,47 @@ class ApplicationBuilder {
 		if (resourcesJar.exists()) {
 			return resourcesJar;
 		}
-		JarOutputStream resourcesJarStream = new JarOutputStream(
-				new FileOutputStream(resourcesJar));
-		resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/"));
-		resourcesJarStream.closeEntry();
-		resourcesJarStream.putNextEntry(
-				new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
-		resourcesJarStream.write("nested".getBytes());
-		resourcesJarStream.closeEntry();
-		resourcesJarStream.close();
-		return resourcesJar;
+		try (JarOutputStream resourcesJarStream = new JarOutputStream(
+				new FileOutputStream(resourcesJar))) {
+			resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/"));
+			resourcesJarStream.closeEntry();
+			resourcesJarStream.putNextEntry(
+					new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
+			resourcesJarStream.write("nested".getBytes());
+			resourcesJarStream.closeEntry();
+			return resourcesJar;
+		}
 	}
 
-	private void writePom(File appFolder, File resourcesJar)
-			throws IOException {
+	private void writePom(File appFolder, File resourcesJar) throws IOException {
 		Map<String, Object> context = new HashMap<>();
 		context.put("packaging", this.packaging);
 		context.put("container", this.container);
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
-		FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
-		Mustache.compiler().escapeHTML(false)
-				.compile(new FileReader("src/test/resources/pom-template.xml"))
-				.execute(context, out);
-		out.close();
+		try (FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
+				FileReader templateReader = new FileReader(
+						"src/test/resources/pom-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
+					out);
+		}
+	}
+
+	private File writeSettingsXml(File appFolder) throws IOException {
+		String repository = System.getProperty("repository");
+		if (!StringUtils.hasText(repository)) {
+			return null;
+		}
+		Map<String, Object> context = new HashMap<>();
+		context.put("repository", repository);
+		File settingsXml = new File(appFolder, "settings.xml");
+		try (FileWriter out = new FileWriter(settingsXml);
+				FileReader templateReader = new FileReader(
+						"src/test/resources/settings-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
+					out);
+		}
+		return settingsXml;
 	}
 
 	private void copyApplicationSource(File appFolder) throws IOException {
@@ -125,15 +142,13 @@ class ApplicationBuilder {
 		}
 	}
 
-	private void packageApplication(File appFolder) throws MavenInvocationException {
+	private void packageApplication(File appFolder, File settingsXml)
+			throws MavenInvocationException {
 		InvocationRequest invocation = new DefaultInvocationRequest();
 		invocation.setBaseDirectory(appFolder);
 		invocation.setGoals(Collections.singletonList("package"));
-		String repository = System.getProperty("repository");
-		if (StringUtils.hasText(repository) && !repository.equals("${repository}")) {
-			Properties properties = new Properties();
-			properties.put("repository", repository);
-			invocation.setProperties(properties);
+		if (settingsXml != null) {
+			invocation.setUserSettingsFile(settingsXml);
 		}
 		InvocationResult execute = new DefaultInvoker().execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);

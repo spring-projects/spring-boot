@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,22 +38,22 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MongoHealthIndicator}.
  *
- * @author Christian Dupuis
- * @since 2.0.0
+ * @author Stephane Nicoll
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(MongoTemplate.class)
 @ConditionalOnBean(MongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({ MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
+@AutoConfigureAfter({ MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		MongoReactiveHealthIndicatorAutoConfiguration.class })
 public class MongoHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
 	private final Map<String, MongoTemplate> mongoTemplates;
 
-	public MongoHealthIndicatorAutoConfiguration(
-			Map<String, MongoTemplate> mongoTemplates) {
+	MongoHealthIndicatorAutoConfiguration(Map<String, MongoTemplate> mongoTemplates) {
 		this.mongoTemplates = mongoTemplates;
 	}
 

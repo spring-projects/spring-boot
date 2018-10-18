@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,14 @@ import java.util.Map;
 import javax.servlet.Filter;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -44,6 +42,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpEncodingAutoConfiguration}
@@ -51,9 +50,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class HttpEncodingAutoConfigurationTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -75,8 +71,8 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void disableConfiguration() {
 		load(EmptyConfiguration.class, "spring.http.encoding.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(CharacterEncodingFilter.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test
@@ -222,8 +218,8 @@ public class HttpEncodingAutoConfigurationTests {
 		}
 
 		@Bean
-		public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
-			return new OrderedHttpPutFormContentFilter();
+		public OrderedFormContentFilter formContentFilter() {
+			return new OrderedFormContentFilter();
 		}
 
 	}

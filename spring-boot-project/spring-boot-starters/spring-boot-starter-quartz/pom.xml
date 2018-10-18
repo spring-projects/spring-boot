@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-quartz</artifactId>
 	<name>Spring Boot Quartz Starter</name>
-	<description>Spring Boot Quartz Starter</description>
+	<description>Starter for using the Quartz scheduler</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,10 +35,14 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
+import org.springframework.context.event.GenericApplicationListener;
+import org.springframework.core.ResolvableType;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,11 +65,11 @@ public class LocalDevToolsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
-		@Autowired
-		private DevToolsProperties properties;
+		private final DevToolsProperties properties;
 
-		@Autowired(required = false)
-		private LiveReloadServer liveReloadServer;
+		LiveReloadConfiguration(DevToolsProperties properties) {
+			this.properties = properties;
+		}
 
 		@Bean
 		@RestartScope
@@ -76,21 +79,16 @@ public class LocalDevToolsAutoConfiguration {
 					Restarter.getInstance().getThreadFactory());
 		}
 
-		@EventListener
-		public void onContextRefreshed(ContextRefreshedEvent event) {
-			optionalLiveReloadServer().triggerReload();
-		}
-
-		@EventListener
-		public void onClassPathChanged(ClassPathChangedEvent event) {
-			if (!event.isRestartRequired()) {
-				optionalLiveReloadServer().triggerReload();
-			}
+		@Bean
+		public OptionalLiveReloadServer optionalLiveReloadServer(
+				LiveReloadServer liveReloadServer) {
+			return new OptionalLiveReloadServer(liveReloadServer);
 		}
 
 		@Bean
-		public OptionalLiveReloadServer optionalLiveReloadServer() {
-			return new OptionalLiveReloadServer(this.liveReloadServer);
+		public LiveReloadServerEventListener liveReloadServerEventListener(
+				OptionalLiveReloadServer liveReloadServer) {
+			return new LiveReloadServerEventListener(liveReloadServer);
 		}
 
 	}
@@ -100,13 +98,17 @@ public class LocalDevToolsAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
-	static class RestartConfiguration {
+	static class RestartConfiguration
+			implements ApplicationListener<ClassPathChangedEvent> {
 
-		@Autowired
-		private DevToolsProperties properties;
+		private final DevToolsProperties properties;
 
-		@EventListener
-		public void onClassPathChanged(ClassPathChangedEvent event) {
+		RestartConfiguration(DevToolsProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void onApplicationEvent(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				Restarter.getInstance().restart(
 						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
@@ -160,6 +162,45 @@ public class LocalDevToolsAutoConfiguration {
 				watcher.addSourceFolder(path.getAbsoluteFile());
 			}
 			return watcher;
+		}
+
+	}
+
+	static class LiveReloadServerEventListener implements GenericApplicationListener {
+
+		private final OptionalLiveReloadServer liveReloadServer;
+
+		LiveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
+			this.liveReloadServer = liveReloadServer;
+		}
+
+		@Override
+		public boolean supportsEventType(ResolvableType eventType) {
+			Class<?> type = eventType.getRawClass();
+			if (type == null) {
+				return false;
+			}
+			return ContextRefreshedEvent.class.isAssignableFrom(type)
+					|| ClassPathChangedEvent.class.isAssignableFrom(type);
+		}
+
+		@Override
+		public boolean supportsSourceType(@Nullable Class<?> sourceType) {
+			return true;
+		}
+
+		@Override
+		public void onApplicationEvent(ApplicationEvent event) {
+			if (event instanceof ContextRefreshedEvent
+					|| (event instanceof ClassPathChangedEvent
+							&& !((ClassPathChangedEvent) event).isRestartRequired())) {
+				this.liveReloadServer.triggerReload();
+			}
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}

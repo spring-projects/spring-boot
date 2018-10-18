@@ -8,7 +8,8 @@
         "key",
         "token",
         ".*credentials.*",
-        "vcap_services"
+        "vcap_services",
+        "sun.java.command"
       ]
     },
     {
@@ -19,8 +20,13 @@
         "key",
         "token",
         ".*credentials.*",
-        "vcap_services"
+        "vcap_services",
+        "sun.java.command"
       ]
+    },
+    {
+      "name": "management.endpoint.health.show-details",
+      "defaultValue": "never"
     },
     {
       "name": "management.endpoints.enabled-by-default",
@@ -28,23 +34,11 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
-      "name": "management.endpoints.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether JMX endpoints are enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.endpoints.jmx.expose",
+      "name": "management.endpoints.jmx.exposure.include",
       "defaultValue": "*"
     },
     {
-      "name": "management.endpoints.web.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether web endpoints are enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.endpoints.web.expose",
+      "name": "management.endpoints.web.exposure.include",
       "defaultValue": [
         "health",
         "info"
@@ -70,13 +64,13 @@
     {
       "name": "management.health.cassandra.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable cassandra health check.",
+      "description": "Whether to enable Cassandra health check.",
       "defaultValue": true
     },
     {
       "name": "management.health.couchbase.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable couchbase health check.",
+      "description": "Whether to enable Couchbase health check.",
       "defaultValue": true
     },
     {
@@ -100,7 +94,7 @@
     {
       "name": "management.health.elasticsearch.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable elasticsearch health check.",
+      "description": "Whether to enable Elasticsearch health check.",
       "defaultValue": true
     },
     {
@@ -146,6 +140,15 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
+    },
+    {
       "name": "management.health.mail.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Mail health check.",
@@ -186,34 +189,52 @@
       "defaultValue": "simple"
     },
     {
-      "name": "management.trace.filter.enabled",
+      "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable the trace servlet filter.",
-      "defaultValue": true
+      "description": "Whether to enable files metrics.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "management.metrics.enable.process.files",
+        "reason": "Instead, filter 'process.files' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.jvm.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JVM metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "management.metrics.enable.jvm",
+        "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.logback.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Logback metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "management.metrics.enable.logback",
+        "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.processor.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable processor metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Instead, filter 'system.cpu' and 'process.cpu' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.uptime.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable uptime metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics."
+      }
     },
     {
       "name": "management.metrics.export.jmx.enabled",
@@ -222,10 +243,136 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.jdbc.instrument-datasource",
+      "name": "management.metrics.export.ganglia.addressing-mode",
+      "defaultValue": "multicast"
+    },
+    {
+      "name": "management.metrics.export.ganglia.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.ganglia.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.protocol",
+      "defaultValue": "pickled"
+    },
+    {
+      "name": "management.metrics.export.graphite.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.influx.consistency",
+      "defaultValue": "one"
+    },
+    {
+      "name": "management.metrics.export.prometheus.enabled",
       "type": "java.lang.Boolean",
-      "description": "Instrument all available data sources.",
+      "description": "Whether exporting of metrics to Prometheus is enabled.",
       "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.simple.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.simple.mode",
+      "defaultValue": "cumulative"
+    },
+    {
+      "name": "management.metrics.export.statsd.flavor",
+      "defaultValue": "datadog"
+    },
+    {
+      "name": "management.metrics.export.statsd.queue-size",
+      "defaultValue": 2147483647,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.server.ssl.ciphers",
+      "description": "Supported SSL ciphers."
+    },
+    {
+      "name": "management.server.ssl.client-auth",
+      "description": "Whether client authentication is wanted (\"want\") or needed (\"need\"). Requires a trust store."
+    },
+    {
+      "name": "management.server.ssl.enabled",
+      "description": "Whether to enable SSL support.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.server.ssl.enabled-protocols",
+      "description": "Enabled SSL protocols."
+    },
+    {
+      "name": "management.server.ssl.key-alias",
+      "description": "Alias that identifies the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-password",
+      "description": "Password used to access the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store",
+      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
+    },
+    {
+      "name": "management.server.ssl.key-store-password",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-provider",
+      "description": "Provider for the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-type",
+      "description": "Type of the key store."
+    },
+    {
+      "name": "management.server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue":  "TLS"
+    },
+    {
+      "name": "management.server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "management.server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-type",
+      "description": "Type of the trust store."
+    },
+    {
+      "name": "management.trace.http.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP request-response tracing.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.trace.http.include",
+      "defaultValue": [
+        "request-headers",
+        "response-headers",
+        "cookies",
+        "errors"
+      ]
     },
     {
       "name": "endpoints.actuator.enabled",
@@ -746,7 +893,7 @@
       "description": "Whether to enable JMX export of all endpoints.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.endpoints.jmx.enabled",
+        "replacement": "management.endpoints.jmx.exposure.exclude",
         "level": "error"
       }
     },
@@ -774,7 +921,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the endpoint.",
       "deprecation": {
-        "replacement": "management.jolokia.enabled",
+        "replacement": "management.endpoint.jolokia.enabled",
         "level": "error"
       }
     },
@@ -783,7 +930,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "reason": "Endpoint path is no longer customizable.",
+        "replacement": "management.endpoints.web.path-mapping.jolokia",
         "level": "error"
       }
     },
@@ -1044,7 +1191,7 @@
       "description": "Enable the trace servlet filter.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.trace.filter.enabled",
+        "replacement": "management.trace.http.enabled",
         "level": "error"
       }
     },
@@ -1053,7 +1200,7 @@
       "type": "java.lang.Boolean",
       "description": "Enable the endpoint.",
       "deprecation": {
-        "replacement": "management.endpoint.trace.enabled",
+        "replacement": "management.endpoint.httptrace.enabled",
         "level": "error"
       }
     },
@@ -1071,7 +1218,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web.path-mapping.trace",
+        "replacement": "management.endpoints.web.path-mapping.httptrace",
         "level": "error"
       }
     },
@@ -1089,7 +1236,7 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Jolokia settings. These are traditionally set using servlet parameters. Refer to\n the documentation of Jolokia for more details.",
       "deprecation": {
-        "replacement": "management.jolokia.config",
+        "replacement": "management.endpoint.jolokia.config",
         "level": "error"
       }
     },
@@ -1119,6 +1266,15 @@
       "defaultValue": "",
       "deprecation": {
         "replacement": "management.server.servlet.context-path",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.health.couchbase.timeout",
+      "type": "java.time.Duration",
+      "description": "Timeout for getting the Bucket information from the server.",
+      "defaultValue": "1000ms",
+      "deprecation": {
         "level": "error"
       }
     },
@@ -1158,6 +1314,12 @@
         "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
         "level": "error"
       }
+    },
+    {
+      "name": "management.server.add-application-context-header",
+      "type": "java.lang.Boolean",
+      "description": "Add the \"X-Application-Context\" HTTP header in each response.",
+      "defaultValue": false
     },
     {
       "name": "management.shell.auth.jaas.domain",
@@ -1466,6 +1628,13 @@
       }
     },
     {
+      "name": "management.trace.include",
+      "deprecation": {
+        "replacement": "management.trace.http.include",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.metrics.export.aggregate.key-pattern",
       "type": "java.lang.String",
       "description": "Pattern that tells the aggregator what to do with the keys from the source\n repository. The keys in the source repository are assumed to be period\n separated, and the pattern is in the same format, e.g. \"d.d.k.d\". Here \"d\"\n means \"discard\" and \"k\" means \"keep\" the key segment in the corresponding\n position in the source.",
@@ -1617,6 +1786,9 @@
           "value": "heapdump"
         },
         {
+          "value": "httptrace"
+        },
+        {
           "value": "info"
         },
         {
@@ -1648,9 +1820,6 @@
         },
         {
           "value": "threaddump"
-        },
-        {
-          "value": "trace"
         }
       ],
       "providers": [
@@ -1722,4 +1891,3 @@
     }
   ]
 }
-

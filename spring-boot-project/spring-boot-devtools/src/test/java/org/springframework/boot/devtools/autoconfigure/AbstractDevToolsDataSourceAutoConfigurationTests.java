@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -39,8 +37,8 @@ import org.springframework.context.annotation.Configuration;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -53,23 +51,21 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	@Test
 	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {
 		ConfigurableApplicationContext context = createContext(
-				DataSourcePropertiesConfiguration.class,
 				SingleDataSourceConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
 	public void multipleDataSourcesAreIgnored() throws SQLException {
 		ConfigurableApplicationContext context = createContext(
-				DataSourcePropertiesConfiguration.class,
 				MultipleDataSourcesConfiguration.class);
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class)
 				.values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
-			verify(statement, times(0)).execute("SHUTDOWN");
+			verify(statement, never()).execute("SHUTDOWN");
 		}
 	}
 
@@ -80,7 +76,6 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(
 				dataSource.getClass());
 		context.registerBeanDefinition("dataSource", beanDefinition);
-		context.register(DataSourcePropertiesConfiguration.class);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		context.refresh();
 		context.close();
@@ -143,12 +138,6 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		public DataSource dataSourceTwo() {
 			return mock(DataSource.class);
 		}
-
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(DataSourceProperties.class)
-	static class DataSourcePropertiesConfiguration {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ public class MockCachingProvider implements CachingProvider {
 		final Map<String, Cache> caches = new HashMap<>();
 		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
 		given(cacheManager.getCache(anyString())).willAnswer((invocation) -> {
-			String cacheName = (String) invocation.getArguments()[0];
+			String cacheName = invocation.getArgument(0);
 			return caches.get(cacheName);
 		});
 		given(cacheManager.createCache(anyString(), any(Configuration.class)))
 				.will((invocation) -> {
-					String cacheName = (String) invocation.getArguments()[0];
+					String cacheName = invocation.getArgument(0);
 					Cache cache = mock(Cache.class);
 					given(cache.getName()).willReturn(cacheName);
 					caches.put(cacheName, cache);

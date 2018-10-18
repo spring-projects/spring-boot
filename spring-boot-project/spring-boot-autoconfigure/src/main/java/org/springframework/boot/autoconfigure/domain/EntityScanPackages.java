@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class EntityScanPackages {
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 			beanDefinition.setBeanClass(EntityScanPackages.class);
 			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-					packageNames.toArray(new String[packageNames.size()]));
+					StringUtils.toStringArray(packageNames));
 			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN, beanDefinition);
 		}
@@ -134,7 +134,7 @@ public class EntityScanPackages {
 		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(packageNames);
-		return merged.toArray(new String[merged.size()]);
+		return StringUtils.toStringArray(merged);
 	}
 
 	/**

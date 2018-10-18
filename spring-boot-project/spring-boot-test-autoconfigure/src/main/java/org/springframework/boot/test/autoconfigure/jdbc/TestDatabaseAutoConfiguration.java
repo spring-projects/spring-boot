@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,6 +105,7 @@ public class TestDatabaseAutoConfiguration {
 				boolean primary = holder.getBeanDefinition().isPrimary();
 				logger.info("Replacing '" + beanName + "' DataSource bean with "
 						+ (primary ? "primary " : "") + "embedded version");
+				registry.removeBeanDefinition(beanName);
 				registry.registerBeanDefinition(beanName,
 						createEmbeddedBeanDefinition(primary));
 			}
@@ -196,7 +197,7 @@ public class TestDatabaseAutoConfiguration {
 					"Failed to replace DataSource with an embedded database for tests. If "
 							+ "you want an embedded database please put a supported one "
 							+ "on the classpath or tune the replace attribute of "
-							+ "@AutoconfigureTestDatabase.");
+							+ "@AutoConfigureTestDatabase.");
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
 					.setType(connection.getType()).build();
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +46,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfigureAfter({ JndiConnectionFactoryAutoConfiguration.class })
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
-@EnableConfigurationProperties(ActiveMQProperties.class)
+@EnableConfigurationProperties({ ActiveMQProperties.class, JmsProperties.class })
 @Import({ ActiveMQXAConnectionFactoryConfiguration.class,
 		ActiveMQConnectionFactoryConfiguration.class })
 public class ActiveMQAutoConfiguration {

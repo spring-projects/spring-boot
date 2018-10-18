@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,15 @@ import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -95,6 +98,51 @@ public class JmsHealthIndicatorTests {
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("provider")).isNull();
+	}
+
+	@Test
+	public void whenConnectionStartIsUnresponsiveStatusIsDown() throws JMSException {
+		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
+		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
+		Connection connection = mock(Connection.class);
+		UnresponsiveStartAnswer unresponsiveStartAnswer = new UnresponsiveStartAnswer();
+		willAnswer(unresponsiveStartAnswer).given(connection).start();
+		willAnswer((invocation) -> {
+			unresponsiveStartAnswer.connectionClosed();
+			return null;
+		}).given(connection).close();
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+		given(connectionFactory.createConnection()).willReturn(connection);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
+		Health health = indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat((String) health.getDetails().get("error"))
+				.contains("Connection closed");
+	}
+
+	private static final class UnresponsiveStartAnswer implements Answer<Void> {
+
+		private boolean connectionClosed = false;
+
+		private final Object monitor = new Object();
+
+		@Override
+		public Void answer(InvocationOnMock invocation) throws Throwable {
+			synchronized (this.monitor) {
+				while (!this.connectionClosed) {
+					this.monitor.wait();
+				}
+			}
+			throw new JMSException("Connection closed");
+		}
+
+		private void connectionClosed() {
+			synchronized (this.monitor) {
+				this.connectionClosed = true;
+				this.monitor.notifyAll();
+			}
+		}
+
 	}
 
 }

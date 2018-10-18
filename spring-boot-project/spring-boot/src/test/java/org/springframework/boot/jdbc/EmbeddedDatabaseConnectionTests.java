@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.jdbc;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link EmbeddedDatabaseConnection}.
@@ -28,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class EmbeddedDatabaseConnectionTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void h2CustomDatabaseName() {
@@ -51,9 +47,17 @@ public class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
-	public void getUrlWithNoDatabaseName() {
-		this.thrown.expect(IllegalArgumentException.class);
-		EmbeddedDatabaseConnection.H2.getUrl("  ");
+	public void getUrlWithNullDatabaseName() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
+				.withMessageContaining("DatabaseName must not be empty");
+	}
+
+	@Test
+	public void getUrlWithEmptyDatabaseName() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 }

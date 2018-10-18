@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link OriginTrackedPropertiesLoader}.
@@ -83,6 +84,16 @@ public class OriginTrackedPropertiesLoaderTests {
 		OriginTrackedValue value = this.properties.get("test-unicode");
 		assertThat(getValue(value)).isEqualTo("properties&test");
 		assertThat(getLocation(value)).isEqualTo("12:14");
+	}
+
+	@Test
+	public void getMalformedUnicodeProperty() throws Exception {
+		// gh-12716
+		ClassPathResource resource = new ClassPathResource(
+				"test-properties-malformed-unicode.properties", getClass());
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new OriginTrackedPropertiesLoader(resource).load())
+				.withMessageContaining("Malformed \\uxxxx encoding");
 	}
 
 	@Test
@@ -234,8 +245,14 @@ public class OriginTrackedPropertiesLoaderTests {
 		assertThat(getValue(value)).isEqualTo("æ×ÈÅÞßáñÀÿ");
 	}
 
+	@Test
+	public void getPropertyWithTrailingSpace() {
+		OriginTrackedValue value = this.properties.get("test-with-trailing-space");
+		assertThat(getValue(value)).isEqualTo("trailing ");
+	}
+
 	private Object getValue(OriginTrackedValue value) {
-		return (value == null ? null : value.getValue());
+		return (value != null) ? value.getValue() : null;
 	}
 
 	private String getLocation(OriginTrackedValue value) {

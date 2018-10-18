@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,29 @@ package org.springframework.boot.gradle.docs;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 /**
  * Tests for the getting started documentation.
  *
  * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
+@RunWith(GradleMultiDslSuite.class)
 public class GettingStartedDocumentationTests {
 
 	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
 
-	@Test
-	public void applyPluginSnapshotExampleEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/getting-started/apply-plugin-snapshot.gradle")
-				.build();
-	}
+	// NOTE: We can't run any `apply-plugin` tests because during a release the
+	// jar won't be there
 
 	@Test
 	public void typicalPluginsAppliesExceptedPlugins() {
-		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins.gradle")
+		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins")
 				.build("verify");
 	}
 

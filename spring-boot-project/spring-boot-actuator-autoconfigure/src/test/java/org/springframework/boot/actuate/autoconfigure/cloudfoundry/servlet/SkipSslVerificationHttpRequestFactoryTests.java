@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import javax.net.ssl.SSLHandshakeException;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -35,15 +32,12 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Test for {@link SkipSslVerificationHttpRequestFactory}.
  */
 public class SkipSslVerificationHttpRequestFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private WebServer webServer;
 
@@ -59,17 +53,13 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 		String httpsUrl = getHttpsUrl();
 		SkipSslVerificationHttpRequestFactory requestFactory = new SkipSslVerificationHttpRequestFactory();
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		RestTemplate otherRestTemplate = new RestTemplate();
 		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl,
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		this.thrown.expect(ResourceAccessException.class);
-		this.thrown.expectCause(isSSLHandshakeException());
-		RestTemplate otherRestTemplate = new RestTemplate();
-		otherRestTemplate.getForEntity(httpsUrl, String.class);
-	}
-
-	private Matcher<Throwable> isSSLHandshakeException() {
-		return instanceOf(SSLHandshakeException.class);
+		assertThatExceptionOfType(ResourceAccessException.class)
+				.isThrownBy(() -> otherRestTemplate.getForEntity(httpsUrl, String.class))
+				.withCauseInstanceOf(SSLHandshakeException.class);
 	}
 
 	private String getHttpsUrl() {

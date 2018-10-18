@@ -36,7 +36,7 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
+			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -83,6 +83,11 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-reflect</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -185,11 +190,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

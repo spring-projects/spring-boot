@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.http.HttpEncodingProperties;
-import org.springframework.boot.autoconfigure.http.HttpEncodingProperties.Type;
+import org.springframework.boot.autoconfigure.http.HttpProperties;
+import org.springframework.boot.autoconfigure.http.HttpProperties.Encoding.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
@@ -41,20 +41,20 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @since 1.2.0
  */
 @Configuration
-@EnableConfigurationProperties(HttpEncodingProperties.class)
+@EnableConfigurationProperties(HttpProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(CharacterEncodingFilter.class)
 @ConditionalOnProperty(prefix = "spring.http.encoding", value = "enabled", matchIfMissing = true)
 public class HttpEncodingAutoConfiguration {
 
-	private final HttpEncodingProperties properties;
+	private final HttpProperties.Encoding properties;
 
-	public HttpEncodingAutoConfiguration(HttpEncodingProperties properties) {
-		this.properties = properties;
+	public HttpEncodingAutoConfiguration(HttpProperties properties) {
+		this.properties = properties.getEncoding();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CharacterEncodingFilter.class)
+	@ConditionalOnMissingBean
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(this.properties.getCharset().name());
@@ -71,16 +71,16 @@ public class HttpEncodingAutoConfiguration {
 	private static class LocaleCharsetMappingsCustomizer implements
 			WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
-		private final HttpEncodingProperties properties;
+		private final HttpProperties.Encoding properties;
 
-		LocaleCharsetMappingsCustomizer(HttpEncodingProperties properties) {
+		LocaleCharsetMappingsCustomizer(HttpProperties.Encoding properties) {
 			this.properties = properties;
 		}
 
 		@Override
-		public void customize(ConfigurableServletWebServerFactory webServerFactory) {
+		public void customize(ConfigurableServletWebServerFactory factory) {
 			if (this.properties.getMapping() != null) {
-				webServerFactory.setLocaleCharsetMappings(this.properties.getMapping());
+				factory.setLocaleCharsetMappings(this.properties.getMapping());
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	protected JobRepository createJobRepository() throws Exception {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(() -> this.dataSource).to(factory::setDataSource);
+		map.from(this.dataSource).to(factory::setDataSource);
 		map.from(this::determineIsolationLevel).whenNonNull()
 				.to(factory::setIsolationLevelForCreate);
 		map.from(this.properties::getTablePrefix).whenHasText()

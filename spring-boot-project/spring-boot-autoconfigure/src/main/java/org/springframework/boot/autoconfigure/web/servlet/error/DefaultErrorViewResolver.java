@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +60,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	private static final Map<Series, String> SERIES_VIEWS;
 
 	static {
-		Map<Series, String> views = new HashMap<>();
+		Map<Series, String> views = new EnumMap<>(Series.class);
 		views.put(Series.CLIENT_ERROR, "4xx");
 		views.put(Series.SERVER_ERROR, "5xx");
 		SERIES_VIEWS = Collections.unmodifiableMap(views);
@@ -102,7 +102,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	@Override
 	public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status,
 			Map<String, Object> model) {
-		ModelAndView modelAndView = resolve(String.valueOf(status), model);
+		ModelAndView modelAndView = resolve(String.valueOf(status.value()), model);
 		if (modelAndView == null && SERIES_VIEWS.containsKey(status.series())) {
 			modelAndView = resolve(SERIES_VIEWS.get(status.series()), model);
 		}

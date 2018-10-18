@@ -1,10 +1,6 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'org.springframework.boot'
 
 if (project.hasProperty('applyWarPlugin')) {
 	apply plugin: 'war'

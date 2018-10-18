@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -37,21 +36,18 @@ public class ConfigurationPropertyTests {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
 			.of("foo");
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be null");
-		new ConfigurationProperty(null, "bar", null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenValueIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Value must not be null");
-		new ConfigurationProperty(NAME, null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
+				.withMessageContaining("Value must not be null");
 	}
 
 	@Test

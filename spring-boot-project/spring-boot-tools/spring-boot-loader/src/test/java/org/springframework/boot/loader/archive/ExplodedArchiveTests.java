@@ -69,9 +69,9 @@ public class ExplodedArchiveTests {
 		File file = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(file);
 
-		this.rootFolder = StringUtils.hasText(folderName)
+		this.rootFolder = (StringUtils.hasText(folderName)
 				? this.temporaryFolder.newFolder(folderName)
-				: this.temporaryFolder.newFolder();
+				: this.temporaryFolder.newFolder());
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
@@ -108,7 +108,7 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size()).isEqualTo(10);
+		assertThat(entries.size()).isEqualTo(11);
 	}
 
 	@Test

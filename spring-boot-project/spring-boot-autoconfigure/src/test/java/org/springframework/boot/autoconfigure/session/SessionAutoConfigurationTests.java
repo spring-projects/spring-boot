@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -23,15 +24,20 @@ import javax.servlet.DispatcherType;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.web.http.CookieHttpSessionIdResolver;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -94,15 +100,26 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	public void springSessionTimeoutIsNotAValidProperty() {
-		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("spring.session.timeout=3000").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure()
-							.isInstanceOf(BeanCreationException.class);
-					assertThat(context).getFailure()
-							.hasMessageContaining("Could not bind");
-				});
+	public void autoConfigWhenSpringSessionTimeoutIsSetShouldUseThat() {
+		this.contextRunner
+				.withUserConfiguration(ServerPropertiesConfiguration.class,
+						SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.timeout=1",
+						"spring.session.timeout=3")
+				.run((context) -> assertThat(
+						context.getBean(SessionProperties.class).getTimeout())
+								.isEqualTo(Duration.ofSeconds(3)));
+	}
+
+	@Test
+	public void autoConfigWhenSpringSessionTimeoutIsNotSetShouldUseServerSessionTimeout() {
+		this.contextRunner
+				.withUserConfiguration(ServerPropertiesConfiguration.class,
+						SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.timeout=3")
+				.run((context) -> assertThat(
+						context.getBean(SessionProperties.class).getTimeout())
+								.isEqualTo(Duration.ofSeconds(3)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -147,6 +164,27 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				});
 	}
 
+	@Test
+	public void sessionCookieConfigurationIsPickedUp() {
+		WebApplicationContextRunner webRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(SessionRepositoryConfiguration.class)
+						.withPropertyValues("server.port=0",
+								"server.servlet.session.cookie.name=testname");
+		webRunner.run((context) -> {
+			SessionRepositoryFilter<?> filter = context
+					.getBean(SessionRepositoryFilter.class);
+			CookieHttpSessionIdResolver sessionIdResolver = (CookieHttpSessionIdResolver) ReflectionTestUtils
+					.getField(filter, "httpSessionIdResolver");
+			DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
+					.getField(sessionIdResolver, "cookieSerializer");
+			assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName",
+					"testname");
+		});
+	}
+
 	@Configuration
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
@@ -155,6 +193,11 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		public MapSessionRepository mySessionRepository() {
 			return new MapSessionRepository(Collections.emptyMap());
 		}
+
+	}
+
+	@EnableConfigurationProperties(ServerProperties.class)
+	static class ServerPropertiesConfiguration {
 
 	}
 

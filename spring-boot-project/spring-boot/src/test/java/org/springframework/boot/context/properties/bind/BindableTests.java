@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -38,21 +38,18 @@ import static org.mockito.Mockito.mock;
  */
 public class BindableTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void ofClassWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		Bindable.of((Class<?>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Bindable.of((Class<?>) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void ofTypeWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		Bindable.of((ResolvableType) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Bindable.of((ResolvableType) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -89,10 +86,11 @@ public class BindableTests {
 
 	@Test
 	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
-				"ExistingValue must be an instance of " + String.class.getName());
-		Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class))
+						.withExistingValue(123))
+				.withMessageContaining(
+						"ExistingValue must be an instance of " + String.class.getName());
 	}
 
 	@Test
@@ -138,6 +136,20 @@ public class BindableTests {
 		Annotation annotation = mock(Annotation.class);
 		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotations())
 				.containsExactly(annotation);
+	}
+
+	@Test
+	public void getAnnotationWhenMatchShouldReturnAnnotation() {
+		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation)
+				.getAnnotation(Test.class)).isSameAs(annotation);
+	}
+
+	@Test
+	public void getAnnotationWhenNoMatchShouldReturnNull() {
+		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation)
+				.getAnnotation(Bean.class)).isNull();
 	}
 
 	@Test

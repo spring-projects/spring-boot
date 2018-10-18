@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,12 @@ public class ExampleController2 {
 	@ResponseBody
 	public String two(@PathVariable ExampleId id) {
 		return id.getId() + "two";
+	}
+
+	@GetMapping("/paged")
+	@ResponseBody
+	public String paged(Pageable pageable) {
+		return String.format("%s:%s", pageable.getPageNumber(), pageable.getPageSize());
 	}
 
 }

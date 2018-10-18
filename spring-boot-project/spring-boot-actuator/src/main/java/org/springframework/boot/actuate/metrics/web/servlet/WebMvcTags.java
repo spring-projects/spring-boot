@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,9 +33,41 @@ import org.springframework.web.servlet.HandlerMapping;
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
+ * @author Brian Clozel
+ * @author Michael McFadyen
  * @since 2.0.0
  */
 public final class WebMvcTags {
+
+	private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
+
+	private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
+
+	private static final Tag URI_ROOT = Tag.of("uri", "root");
+
+	private static final Tag URI_UNKNOWN = Tag.of("uri", "UNKNOWN");
+
+	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
+
+	private static final Tag STATUS_UNKNOWN = Tag.of("status", "UNKNOWN");
+
+	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+
+	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
+
+	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
+
+	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
+
+	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
+
+	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
+
+	private static final Pattern TRAILING_SLASH_PATTERN = Pattern.compile("/$");
+
+	private static final Pattern MULTIPLE_SLASH_PATTERN = Pattern.compile("//+");
 
 	private WebMvcTags() {
 	}
@@ -45,46 +79,53 @@ public final class WebMvcTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(HttpServletRequest request) {
-		return Tag.of("method", request.getMethod());
+		return (request != null) ? Tag.of("method", request.getMethod()) : METHOD_UNKNOWN;
 	}
 
 	/**
-	 * Creates a {@code method} tag based on the status of the given {@code response}.
+	 * Creates a {@code status} tag based on the status of the given {@code response}.
 	 * @param response the HTTP response
 	 * @return the status tag derived from the status of the response
 	 */
 	public static Tag status(HttpServletResponse response) {
-		return Tag.of("status", ((Integer) response.getStatus()).toString());
+		return (response != null)
+				? Tag.of("status", Integer.toString(response.getStatus()))
+				: STATUS_UNKNOWN;
 	}
 
 	/**
 	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
 	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
-	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
-	 * path info} if necessary.
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
 	 * @param request the request
 	 * @param response the response
 	 * @return the uri tag derived from the request
 	 */
 	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
-		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null && status.is3xxRedirection()) {
-				return Tag.of("uri", "REDIRECTION");
+		if (request != null) {
+			String pattern = getMatchingPattern(request);
+			if (pattern != null) {
+				return Tag.of("uri", pattern);
 			}
-			if (HttpStatus.NOT_FOUND.equals(status)) {
-				return Tag.of("uri", "NOT_FOUND");
+			if (response != null) {
+				HttpStatus status = extractStatus(response);
+				if (status != null) {
+					if (status.is3xxRedirection()) {
+						return URI_REDIRECTION;
+					}
+					if (status == HttpStatus.NOT_FOUND) {
+						return URI_NOT_FOUND;
+					}
+				}
+			}
+			String pathInfo = getPathInfo(request);
+			if (pathInfo.isEmpty()) {
+				return URI_ROOT;
 			}
 		}
-		String uri = (String) request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-		if (uri == null) {
-			uri = request.getPathInfo();
-		}
-		if (!StringUtils.hasText(uri)) {
-			uri = "/";
-		}
-		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
+		return URI_UNKNOWN;
 	}
 
 	private static HttpStatus extractStatus(HttpServletResponse response) {
@@ -96,6 +137,18 @@ public final class WebMvcTags {
 		}
 	}
 
+	private static String getMatchingPattern(HttpServletRequest request) {
+		return (String) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+	}
+
+	private static String getPathInfo(HttpServletRequest request) {
+		String pathInfo = request.getPathInfo();
+		String uri = StringUtils.hasText(pathInfo) ? pathInfo : "/";
+		uri = MULTIPLE_SLASH_PATTERN.matcher(uri).replaceAll("/");
+		return TRAILING_SLASH_PATTERN.matcher(uri).replaceAll("");
+	}
+
 	/**
 	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
@@ -104,9 +157,37 @@ public final class WebMvcTags {
 	 */
 	public static Tag exception(Throwable exception) {
 		if (exception != null) {
-			return Tag.of("exception", exception.getClass().getSimpleName());
+			String simpleName = exception.getClass().getSimpleName();
+			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName
+					: exception.getClass().getName());
 		}
-		return Tag.of("exception", "None");
+		return EXCEPTION_NONE;
+	}
+
+	/**
+	 * Creates an {@code outcome} tag based on the status of the given {@code response}.
+	 * @param response the HTTP response
+	 * @return the outcome tag derived from the status of the response
+	 * @since 2.1.0
+	 */
+	public static Tag outcome(HttpServletResponse response) {
+		if (response != null) {
+			int status = response.getStatus();
+			if (status < 200) {
+				return OUTCOME_INFORMATIONAL;
+			}
+			if (status < 300) {
+				return OUTCOME_SUCCESS;
+			}
+			if (status < 400) {
+				return OUTCOME_REDIRECTION;
+			}
+			if (status < 500) {
+				return OUTCOME_CLIENT_ERROR;
+			}
+			return OUTCOME_SERVER_ERROR;
+		}
+		return OUTCOME_UNKNOWN;
 	}
 
 }

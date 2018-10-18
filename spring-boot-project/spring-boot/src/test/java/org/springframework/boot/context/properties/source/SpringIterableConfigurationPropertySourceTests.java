@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -30,6 +28,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -37,25 +36,24 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Fahim Farook
  */
 public class SpringIterableConfigurationPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySource must not be null");
-		new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new SpringIterableConfigurationPropertySource(null,
+						mock(PropertyMapper.class)))
+				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Mapper must not be null");
-		new SpringIterableConfigurationPropertySource(
-				mock(EnumerablePropertySource.class), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new SpringIterableConfigurationPropertySource(
+						mock(EnumerablePropertySource.class), null))
+				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test
@@ -157,8 +155,22 @@ public class SpringIterableConfigurationPropertySourceTests {
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
+	@Test
+	public void propertySourceKeyDataChangeInvalidatesCache() {
+		// gh-13344
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("key1", "value1");
+		map.put("key2", "value2");
+		EnumerablePropertySource<?> source = new MapPropertySource("test", map);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				source, DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.stream().count()).isEqualTo(2);
+		map.put("key3", "value3");
+		assertThat(adapter.stream().count()).isEqualTo(3);
+	}
+
 	/**
-	 * Test {@link PropertySource} that's also a {@link OriginLookup}.
+	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 */
 	private static class OriginCapablePropertySource<T>
 			extends EnumerablePropertySource<T> implements OriginLookup<String> {

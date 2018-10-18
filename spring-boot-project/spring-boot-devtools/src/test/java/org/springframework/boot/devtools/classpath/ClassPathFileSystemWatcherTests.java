@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
@@ -40,6 +39,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -50,18 +50,15 @@ import static org.mockito.Mockito.mock;
 public class ClassPathFileSystemWatcherTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void urlsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Urls must not be null");
-		URL[] urls = null;
-		new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
-				mock(ClassPathRestartStrategy.class), urls);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathFileSystemWatcher(
+						mock(FileSystemWatcherFactory.class),
+						mock(ClassPathRestartStrategy.class), (URL[]) null))
+				.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
@@ -70,7 +67,7 @@ public class ClassPathFileSystemWatcherTests {
 		Map<String, Object> properties = new HashMap<>();
 		File folder = this.temp.newFolder();
 		List<URL> urls = new ArrayList<>();
-		urls.add(new URL("http://spring.io"));
+		urls.add(new URL("https://spring.io"));
 		urls.add(folder.toURI().toURL());
 		properties.put("urls", urls);
 		MapPropertySource propertySource = new MapPropertySource("test", properties);

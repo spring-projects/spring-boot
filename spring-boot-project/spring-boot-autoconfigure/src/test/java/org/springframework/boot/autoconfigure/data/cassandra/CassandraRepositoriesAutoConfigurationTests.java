@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
  */
 public class CassandraRepositoriesAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class,
 					CassandraRepositoriesAutoConfiguration.class,
 					CassandraDataAutoConfiguration.class,
@@ -60,16 +60,17 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.runner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CityRepository.class);
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(getInitialEntitySet(context)).hasSize(1);
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CityRepository.class);
+					assertThat(context).hasSingleBean(Cluster.class);
+					assertThat(getInitialEntitySet(context)).hasSize(1);
+				});
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
-		this.runner.withUserConfiguration(TestExcludeConfiguration.class,
+		this.contextRunner.withUserConfiguration(TestExcludeConfiguration.class,
 				EmptyConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(Cluster.class);
 					assertThat(getInitialEntitySet(context)).hasSize(1)
@@ -79,7 +80,7 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		this.runner.withUserConfiguration(TestExcludeConfiguration.class,
+		this.contextRunner.withUserConfiguration(TestExcludeConfiguration.class,
 				CustomizedConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(CityCassandraRepository.class);
 					assertThat(getInitialEntitySet(context)).hasSize(1)
@@ -89,7 +90,7 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void enablingReactiveRepositoriesDisablesImperativeRepositories() {
-		this.runner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.cassandra.repositories.type=reactive")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(CityCassandraRepository.class));
@@ -97,7 +98,7 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void enablingNoRepositoriesDisablesImperativeRepositories() {
-		this.runner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.cassandra.repositories.type=none")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(CityCassandraRepository.class));

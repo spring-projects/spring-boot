@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -53,8 +55,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
 		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
-		String id = attributes.getString("id");
-		String key = "management.endpoint." + id + ".enabled";
+		EndpointId id = EndpointId.of(attributes.getString("id"));
+		String key = "management.endpoint." + id.toLowerCaseString() + ".enabled";
 		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
 		if (userDefinedEnabled != null) {
 			return new ConditionOutcome(userDefinedEnabled,
@@ -92,16 +94,23 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 				metadata instanceof MethodMetadata
 						&& metadata.isAnnotated(Bean.class.getName()),
 				"OnEnabledEndpointCondition may only be used on @Bean methods");
-		return getEndpointAttributes(context, (MethodMetadata) metadata);
+		Class<?> endpointType = getEndpointType(context, (MethodMetadata) metadata);
+		return getEndpointAttributes(endpointType);
 	}
 
-	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
-			MethodMetadata metadata) {
+	private Class<?> getEndpointType(ConditionContext context, MethodMetadata metadata) {
+		Map<String, Object> attributes = metadata
+				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName());
+		if (attributes != null && attributes.containsKey("endpoint")) {
+			Class<?> target = (Class<?>) attributes.get("endpoint");
+			if (target != Void.class) {
+				return target;
+			}
+		}
 		// We should be safe to load at this point since we are in the REGISTER_BEAN phase
 		try {
-			Class<?> returnType = ClassUtils.forName(metadata.getReturnTypeName(),
+			return ClassUtils.forName(metadata.getReturnTypeName(),
 					context.getClassLoader());
-			return getEndpointAttributes(returnType);
 		}
 		catch (Throwable ex) {
 			throw new IllegalStateException("Failed to extract endpoint id for "
@@ -119,8 +128,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
 				EndpointExtension.class, false, true);
 		Assert.state(attributes != null,
-				"OnEnabledEndpointCondition may only be used on @Bean methods that "
-						+ "return an @Endpoint or @EndpointExtension");
+				"No endpoint is specified and the return type of the @Bean method is "
+						+ "neither an @Endpoint, nor an @EndpointExtension");
 		return getEndpointAttributes(attributes.getClass("endpoint"));
 	}
 
