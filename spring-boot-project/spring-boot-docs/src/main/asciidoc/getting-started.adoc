@@ -216,51 +216,9 @@ project. It is a small script and library that you commit alongside your code to
 bootstrap the build process. See {gradle-user-guide}/gradle_wrapper.html for details.
 ****
 
-The following example shows a typical `build.gradle` file:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-ifeval::["{spring-boot-repo}" == "release"]
-	plugins {
-		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'java'
-	}
-endif::[]
-ifeval::["{spring-boot-repo}" != "release"]
-	buildscript {
-		repositories {
-			jcenter()
-			maven { url 'https://repo.spring.io/snapshot' }
-			maven { url 'https://repo.spring.io/milestone' }
-		}
-		dependencies {
-			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
-		}
-	}
-
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-	apply plugin: 'io.spring.dependency-management'
-
-endif::[]
-	jar {
-		baseName = 'myproject'
-		version =  '0.0.1-SNAPSHOT'
-	}
-
-	repositories {
-		jcenter()
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "https://repo.spring.io/snapshot" }
-		maven { url "https://repo.spring.io/milestone" }
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
-	}
-----
+More details on getting started with Spring Boot and Gradle can be found in the
+{spring-boot-gradle-plugin-reference}/#getting-started[Getting Started section] of the
+Gradle plugin's reference guide.
 
 
 
