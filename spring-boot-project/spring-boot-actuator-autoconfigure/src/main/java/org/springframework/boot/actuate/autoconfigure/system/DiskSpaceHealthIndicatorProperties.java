@@ -58,7 +58,8 @@ public class DiskSpaceHealthIndicatorProperties {
 	}
 
 	public void setThreshold(DataSize threshold) {
-		Assert.isTrue(!threshold.isNegative(), "threshold must be greater than 0");
+		Assert.isTrue(!threshold.isNegative(),
+				"threshold must be greater than or equal to 0");
 		this.threshold = threshold;
 	}
 
