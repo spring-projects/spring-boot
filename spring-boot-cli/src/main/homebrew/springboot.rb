@@ -1,7 +1,7 @@
 require 'formula'
 
 class Springboot < Formula
-  homepage 'http://projects.spring.io/spring-boot/'
+  homepage 'https://spring.io/projects/spring-boot'
   url 'https://repo.spring.io/${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.tar.gz'
   version '${project.version}'
   sha256 '${checksum}'
