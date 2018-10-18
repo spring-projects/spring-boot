@@ -426,12 +426,7 @@ class OnBeanCondition extends FilteringSpringBootCondition
 		}
 
 		private boolean hasAtLeastOne(List<?>... lists) {
-			for (List<?> list : lists) {
-				if (!list.isEmpty()) {
-					return true;
-				}
-			}
-			return false;
+			return Arrays.stream(lists).anyMatch((list) -> !list.isEmpty());
 		}
 
 		protected String annotationName() {

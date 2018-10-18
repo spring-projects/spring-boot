@@ -116,9 +116,9 @@ public class MvcWebEndpointIntegrationTests extends
 		assertThat(getMatchResult("/spring.do")).isNull();
 	}
 
-	private RequestMatchResult getMatchResult(String s) {
+	private RequestMatchResult getMatchResult(String servletPath) {
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setServletPath(s);
+		request.setServletPath(servletPath);
 		AnnotationConfigServletWebServerApplicationContext context = createApplicationContext();
 		context.register(TestEndpointConfiguration.class);
 		context.refresh();

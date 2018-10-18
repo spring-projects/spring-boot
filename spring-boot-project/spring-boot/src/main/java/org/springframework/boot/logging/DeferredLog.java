@@ -151,6 +151,7 @@ public class DeferredLog implements Log {
 	/**
 	 * Switch from deferred logging to immediate logging to the specified destination.
 	 * @param destination the new log destination
+	 * @since 2.1.0
 	 */
 	public void switchTo(Class<?> destination) {
 		switchTo(LogFactory.getLog(destination));
@@ -159,6 +160,7 @@ public class DeferredLog implements Log {
 	/**
 	 * Switch from deferred logging to immediate logging to the specified destination.
 	 * @param destination the new log destination
+	 * @since 2.1.0
 	 */
 	public void switchTo(Log destination) {
 		synchronized (this.lines) {
