@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Wavefront.
  *
  * @author Jon Schneider
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration
@@ -59,8 +61,12 @@ public class WavefrontMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig,
-			Clock clock) {
-		return new WavefrontMeterRegistry(wavefrontConfig, clock);
+			Clock clock, WavefrontProperties wavefrontProperties) {
+		return WavefrontMeterRegistry.builder(wavefrontConfig).clock(clock)
+				.httpClient(new HttpUrlConnectionSender(
+						wavefrontProperties.getConnectTimeout(),
+						wavefrontProperties.getReadTimeout()))
+				.build();
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.humio;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.humio.HumioConfig;
 import io.micrometer.humio.HumioMeterRegistry;
 
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Humio.
  *
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 @Configuration
@@ -58,8 +60,14 @@ public class HumioMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HumioMeterRegistry humioMeterRegistry(HumioConfig humioConfig, Clock clock) {
-		return new HumioMeterRegistry(humioConfig, clock);
+	public HumioMeterRegistry humioMeterRegistry(HumioConfig humioConfig, Clock clock,
+			HumioProperties humioProperties) {
+		return HumioMeterRegistry.builder(humioConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(humioProperties.getConnectTimeout(),
+								humioProperties.getReadTimeout()))
+				.build();
+
 	}
 
 }

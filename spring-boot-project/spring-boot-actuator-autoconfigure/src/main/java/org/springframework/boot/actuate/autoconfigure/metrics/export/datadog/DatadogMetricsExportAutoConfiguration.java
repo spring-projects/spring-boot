@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Datadog.
  *
  * @author Jon Schneider
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration
@@ -59,8 +61,12 @@ public class DatadogMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
-			Clock clock) {
-		return new DatadogMeterRegistry(datadogConfig, clock);
+			Clock clock, DatadogProperties datadogProperties) {
+		return DatadogMeterRegistry.builder(datadogConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(datadogProperties.getConnectTimeout(),
+								datadogProperties.getReadTimeout()))
+				.build();
 	}
 
 }

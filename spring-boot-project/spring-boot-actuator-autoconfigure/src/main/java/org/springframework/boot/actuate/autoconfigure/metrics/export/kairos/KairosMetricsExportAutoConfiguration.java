@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.kairos;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.kairos.KairosConfig;
 import io.micrometer.kairos.KairosMeterRegistry;
 
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to KairosDB.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 @Configuration
@@ -58,9 +60,14 @@ public class KairosMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig,
-			Clock clock) {
-		return new KairosMeterRegistry(kairosConfig, clock);
+	public KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig, Clock clock,
+			KairosProperties kairosProperties) {
+		return KairosMeterRegistry.builder(kairosConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(kairosProperties.getConnectTimeout(),
+								kairosProperties.getReadTimeout()))
+				.build();
+
 	}
 
 }
