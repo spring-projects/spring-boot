@@ -109,7 +109,8 @@ final class DispatcherServletHandlerMappings {
 			Container child = context.findChild(name);
 			if (child instanceof StandardWrapper) {
 				try {
-					((StandardWrapper) child).allocate();
+					StandardWrapper wrapper = (StandardWrapper) child;
+					wrapper.deallocate(wrapper.allocate());
 				}
 				catch (ServletException ex) {
 					// Continue
