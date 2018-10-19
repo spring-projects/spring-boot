@@ -26,6 +26,7 @@ import io.micrometer.core.instrument.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 /**
  * Factory methods for {@link Tag Tags} associated with a request-response exchange that
@@ -38,6 +39,8 @@ import org.springframework.web.servlet.HandlerMapping;
  * @since 2.0.0
  */
 public final class WebMvcTags {
+
+	private static final String DATA_REST_PATH_PATTERN_ATTRIBUTE = "org.springframework.data.rest.webmvc.RepositoryRestHandlerMapping.EFFECTIVE_REPOSITORY_RESOURCE_LOOKUP_PATH";
 
 	private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
 
@@ -138,6 +141,11 @@ public final class WebMvcTags {
 	}
 
 	private static String getMatchingPattern(HttpServletRequest request) {
+		PathPattern dataRestPathPattern = (PathPattern) request
+				.getAttribute(DATA_REST_PATH_PATTERN_ATTRIBUTE);
+		if (dataRestPathPattern != null) {
+			return dataRestPathPattern.getPatternString();
+		}
 		return (String) request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 	}
