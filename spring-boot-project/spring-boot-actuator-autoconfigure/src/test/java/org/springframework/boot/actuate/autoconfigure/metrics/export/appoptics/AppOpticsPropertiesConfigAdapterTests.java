@@ -53,7 +53,7 @@ public class AppOpticsPropertiesConfigAdapterTests extends
 	public void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
 		AppOpticsProperties properties = createProperties();
 		properties.setApiToken("ABC123");
-		assertThat(createConfigAdapter(properties).token()).isEqualTo("ABC123");
+		assertThat(createConfigAdapter(properties).apiToken()).isEqualTo("ABC123");
 	}
 
 	@Test
