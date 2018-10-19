@@ -4,6 +4,8 @@ inputs:
 - name: git-repo
 - name: release-notes-repo
 - name: version
+outputs:
+- name: generated-release-notes
 params:
   GITHUB_ORGANIZATION:
   GITHUB_REPO:
@@ -11,4 +13,4 @@ params:
   GITHUB_PASSWORD:
   RELEASE_TYPE:
 run:
-  path: git-repo/ci/scripts/publish-release-notes.sh
+  path: git-repo/ci/scripts/generate-release-notes.sh
