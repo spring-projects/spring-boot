@@ -15,14 +15,5 @@ run_maven clean install
 java -jar -Dreleasenotes.github.organization=${GITHUB_ORGANIZATION} -Dreleasenotes.github.name=${GITHUB_REPO} target/github-release-notes-generator-0.0.1-SNAPSHOT.jar "${milestone_number}" release-notes.md
 popd > /dev/null
 
-
-body=$( sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' release-notes-repo/release-notes.md )
-
-curl \
-	-s \
-	-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
-	-H "Content-type:application/json" \
-	-d "{\"tag_name\":\"v${version}\",\"name\":\"v${version}\",\"body\": \"${body}\"}"  \
-	-f \
-	-X \
-	POST "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/releases" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
+cat release-notes-repo/release-notes.md > generated-release-notes/body
+echo v${version} > generated-release-notes/version
