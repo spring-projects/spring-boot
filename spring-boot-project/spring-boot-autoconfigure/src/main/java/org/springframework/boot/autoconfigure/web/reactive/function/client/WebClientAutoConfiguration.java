@@ -31,6 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -42,6 +44,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * will receive a newly cloned instance of the builder.
  *
  * @author Brian Clozel
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration
@@ -76,6 +79,22 @@ public class WebClientAutoConfiguration {
 		public WebClientCodecCustomizer exchangeStrategiesCustomizer(
 				List<CodecCustomizer> codecCustomizers) {
 			return new WebClientCodecCustomizer(codecCustomizers);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean({ ClientRegistrationRepository.class,
+			OAuth2AuthorizedClientRepository.class })
+	protected static class WebClientOAuth2Configuration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public WebClientOAuth2Customizer webClientOAuth2Configuration(
+				ClientRegistrationRepository clientRegistrationRepository,
+				OAuth2AuthorizedClientRepository authorizedClientRepository) {
+			return new WebClientOAuth2Customizer(clientRegistrationRepository,
+					authorizedClientRepository);
 		}
 
 	}

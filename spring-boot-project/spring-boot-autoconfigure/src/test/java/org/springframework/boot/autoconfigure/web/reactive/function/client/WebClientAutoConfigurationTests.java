@@ -31,6 +31,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +47,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link WebClientAutoConfiguration}
  *
  * @author Brian Clozel
+ * @author Artsiom Yudovin
  */
 public class WebClientAutoConfigurationTests {
 
@@ -90,6 +93,18 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
+	public void webClientShouldApplyOAuth2Customizers() {
+		this.contextRunner.withUserConfiguration(OAuth2Configuration.class)
+				.run((context) -> {
+					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+					WebClientCustomizer customizer = context
+							.getBean(WebClientOAuth2Customizer.class);
+					builder.build();
+					assertThat(customizer).isNotNull();
+				});
+	}
+
+	@Test
 	public void shouldGetPrototypeScopedBean() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class)
 				.run((context) -> {
@@ -128,6 +143,21 @@ public class WebClientAutoConfigurationTests {
 					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 					assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
 				});
+	}
+
+	@Configuration
+	static class OAuth2Configuration {
+
+		@Bean
+		public ClientRegistrationRepository clientRegistrationRepository() {
+			return mock(ClientRegistrationRepository.class);
+		}
+
+		@Bean
+		public OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository() {
+			return mock(OAuth2AuthorizedClientRepository.class);
+		}
+
 	}
 
 	@Configuration
