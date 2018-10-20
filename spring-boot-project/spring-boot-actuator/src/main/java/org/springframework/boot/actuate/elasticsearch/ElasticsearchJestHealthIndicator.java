@@ -20,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
+
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  * {@link HealthIndicator} for Elasticsearch using a {@link JestClient}.
  *
  * @author Stephane Nicoll
+ * @author Julian Devia Serna
  * @since 2.0.0
  */
 public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
@@ -43,13 +45,15 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		JestResult healthResult = this.jestClient.execute(new io.searchbox.cluster.Health.Builder().build());
+		JestResult healthResult = this.jestClient
+				.execute(new io.searchbox.cluster.Health.Builder().build());
 		JsonElement root = this.jsonParser.parse(healthResult.getJsonString());
 		JsonElement status = root.getAsJsonObject().get("status");
-		if (!healthResult.isSucceeded() || healthResult.getResponseCode() != 200
-				|| status.getAsString().equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
+		if (!healthResult.isSucceeded() || healthResult.getResponseCode() != 200 || status
+				.getAsString().equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
 			builder.outOfService();
-		} else {
+		}
+		else {
 			builder.up();
 		}
 	}

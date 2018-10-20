@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
+import java.io.IOException;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import io.searchbox.action.Action;
@@ -24,10 +26,9 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.config.exception.CouldNotConnectException;
 import io.searchbox.core.SearchResult;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ElasticsearchJestHealthIndicator}.
  *
  * @author Stephane Nicoll
+ * @author Julian Devia Serna
  */
 public class ElasticsearchJestHealthIndicatorTests {
 
@@ -91,14 +93,16 @@ public class ElasticsearchJestHealthIndicatorTests {
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 
-	private static JestResult createJestResult(String status, int responseCode, boolean succeeded) {
-		String json = String.format("{\"cluster_name\":\"docker-cluster\"," +
-				"\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1," +
-				"\"number_of_data_nodes\":1,\"active_primary_shards\":0," +
-				"\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0," +
-				"\"unassigned_shards\":0,\"delayed_unassigned_shards\":0," +
-				"\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0," +
-				"\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}", status);
+	private static JestResult createJestResult(String status, int responseCode,
+			boolean succeeded) {
+		String json = String.format("{\"cluster_name\":\"docker-cluster\","
+				+ "\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1,"
+				+ "\"number_of_data_nodes\":1,\"active_primary_shards\":0,"
+				+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
+				+ "\"unassigned_shards\":0,\"delayed_unassigned_shards\":0,"
+				+ "\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0,"
+				+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
+				status);
 		SearchResult searchResult = new SearchResult(new Gson());
 		searchResult.setJsonString(json);
 		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());
