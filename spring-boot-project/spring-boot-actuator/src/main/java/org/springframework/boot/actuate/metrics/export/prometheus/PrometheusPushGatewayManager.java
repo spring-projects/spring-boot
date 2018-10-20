@@ -25,8 +25,8 @@ import java.util.concurrent.ScheduledFuture;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -44,8 +44,8 @@ import org.springframework.util.StringUtils;
  */
 public class PrometheusPushGatewayManager {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PrometheusPushGatewayManager.class);
+	private static final Log logger = LogFactory
+			.getLog(PrometheusPushGatewayManager.class);
 
 	private final PushGateway pushGateway;
 
