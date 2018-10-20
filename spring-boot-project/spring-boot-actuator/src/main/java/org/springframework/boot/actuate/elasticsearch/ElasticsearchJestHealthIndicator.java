@@ -17,12 +17,9 @@
 package org.springframework.boot.actuate.elasticsearch;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
-import io.searchbox.indices.Stats;
-
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -46,14 +43,13 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		JestResult aliases = this.jestClient.execute(new Stats.Builder().build());
-		JsonElement root = this.jsonParser.parse(aliases.getJsonString());
-		JsonObject shards = root.getAsJsonObject().get("_shards").getAsJsonObject();
-		int failedShards = shards.get("failed").getAsInt();
-		if (failedShards != 0) {
+		JestResult healthResult = this.jestClient.execute(new io.searchbox.cluster.Health.Builder().build());
+		JsonElement root = this.jsonParser.parse(healthResult.getJsonString());
+		JsonElement status = root.getAsJsonObject().get("status");
+		if (!healthResult.isSucceeded() || healthResult.getResponseCode() != 200
+				|| status.getAsString().equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
 			builder.outOfService();
-		}
-		else {
+		} else {
 			builder.up();
 		}
 	}

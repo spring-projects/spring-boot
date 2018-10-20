@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
-import java.io.IOException;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import io.searchbox.action.Action;
@@ -26,9 +24,10 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.config.exception.CouldNotConnectException;
 import io.searchbox.core.SearchResult;
 import org.junit.Test;
-
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +50,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 	@Test
 	public void elasticsearchIsUp() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
-				.willReturn(createJestResult(4, 0));
+				.willReturn(createJestResult("green", 200, true));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
@@ -67,19 +66,44 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticsearchIsOutOfService() throws IOException {
+	public void elasticsearchIsOutOfServiceByStatus() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
-				.willReturn(createJestResult(4, 1));
+				.willReturn(createJestResult("red", 200, true));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 
-	private static JestResult createJestResult(int shards, int failedShards) {
-		String json = String.format("{_shards: {\n" + "total: %s,\n" + "successful: %s,\n"
-				+ "failed: %s\n" + "}}", shards, shards - failedShards, failedShards);
+	@SuppressWarnings("unchecked")
+	@Test
+	public void elasticsearchIsOutOfServiceByResponseCode() throws IOException {
+		given(this.jestClient.execute(any(Action.class)))
+				.willReturn(createJestResult("", 500, true));
+		Health health = this.healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void elasticsearchIsOutOfServiceBySucceeded() throws IOException {
+		given(this.jestClient.execute(any(Action.class)))
+				.willReturn(createJestResult("red", 500, false));
+		Health health = this.healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+	}
+
+	private static JestResult createJestResult(String status, int responseCode, boolean succeeded) {
+		String json = String.format("{\"cluster_name\":\"docker-cluster\"," +
+				"\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1," +
+				"\"number_of_data_nodes\":1,\"active_primary_shards\":0," +
+				"\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0," +
+				"\"unassigned_shards\":0,\"delayed_unassigned_shards\":0," +
+				"\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0," +
+				"\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}", status);
 		SearchResult searchResult = new SearchResult(new Gson());
 		searchResult.setJsonString(json);
 		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());
+		searchResult.setResponseCode(responseCode);
+		searchResult.setSucceeded(succeeded);
 		return searchResult;
 	}
 
