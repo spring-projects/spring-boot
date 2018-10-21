@@ -95,8 +95,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String LOMBOK_ACCESS_LEVEL_PUBLIC = "PUBLIC";
 
-	private static final Set<String> SUPPORTED_OPTIONS = Collections.unmodifiableSet(
-			Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
+	private static final Set<String> SUPPORTED_OPTIONS = Collections
+			.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
 
 	private MetadataStore metadataStore;
 
