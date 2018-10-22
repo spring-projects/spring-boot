@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.DispatcherType;
 
@@ -42,6 +43,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -276,6 +278,22 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithOtherRegistrationBean() {
+		// gh-14897
+		load(FilterRegistrationConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(2);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+	}
+
+	@Test
 	public void layoutDialectCanBeCustomized() {
 		load(LayoutDialectConfiguration.class);
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
@@ -295,9 +313,6 @@ public class ThymeleafServletAutoConfigurationTests {
 	private void load(Class<?> config, String... envVariables) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		TestPropertyValues.of(envVariables).applyTo(this.context);
-		if (config != null) {
-			this.context.register(config);
-		}
 		this.context.register(config);
 		this.context.refresh();
 	}
@@ -316,6 +331,18 @@ public class ThymeleafServletAutoConfigurationTests {
 		@Bean
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect(new GroupingStrategy());
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegisration() {
+			return new FilterRegistrationBean<OrderedCharacterEncodingFilter>(
+					new OrderedCharacterEncodingFilter());
 		}
 
 	}

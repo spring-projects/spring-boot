@@ -169,7 +169,7 @@ public class ThymeleafAutoConfiguration {
 	static class ThymeleafWebMvcConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(ResourceUrlEncodingFilter.class)
 		@ConditionalOnEnabledResourceChain
 		public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
 			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
