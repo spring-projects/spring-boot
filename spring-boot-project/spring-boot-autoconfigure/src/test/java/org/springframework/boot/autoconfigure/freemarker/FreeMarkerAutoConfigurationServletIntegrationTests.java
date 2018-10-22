@@ -19,16 +19,22 @@ package org.springframework.boot.autoconfigure.freemarker;
 import java.io.StringWriter;
 import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -52,12 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-
-	@Before
-	public void setupContext() {
-		this.context.setServletContext(new MockServletContext());
-	}
+	private AnnotationConfigWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -170,9 +171,31 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
 	}
 
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithOtherRegistrationBean() {
+		// gh-14897
+		registerAndRefreshContext(FilterRegistrationConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(2);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+	}
+
 	private void registerAndRefreshContext(String... env) {
+		registerAndRefreshContext(BaseConfiguration.class, env);
+	}
+
+	private void registerAndRefreshContext(Class<?> config, String... env) {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
 		TestPropertyValues.of(env).applyTo(this.context);
-		this.context.register(FreeMarkerAutoConfiguration.class);
+		this.context.register(config);
 		this.context.refresh();
 	}
 
@@ -191,6 +214,25 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		view.render(null, request, response);
 		return response;
+	}
+
+	@Configuration
+	@ImportAutoConfiguration({ FreeMarkerAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	static class BaseConfiguration {
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegisration() {
+			return new FilterRegistrationBean<OrderedCharacterEncodingFilter>(
+					new OrderedCharacterEncodingFilter());
+		}
+
 	}
 
 }
