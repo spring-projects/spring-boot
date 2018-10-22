@@ -112,8 +112,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		load(
-				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
+		load("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result).contains("custom");
