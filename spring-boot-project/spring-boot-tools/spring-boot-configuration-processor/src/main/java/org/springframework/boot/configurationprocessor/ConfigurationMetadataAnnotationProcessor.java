@@ -20,9 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,8 +95,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String LOMBOK_ACCESS_LEVEL_PUBLIC = "PUBLIC";
 
-	private static final Set<String> SUPPORTED_OPTIONS = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList(ADDITIONAL_METADATA_LOCATIONS_OPTION)));
+	private static final Set<String> SUPPORTED_OPTIONS = Collections
+			.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
 
 	private MetadataStore metadataStore;
 
