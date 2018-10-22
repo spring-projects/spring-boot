@@ -262,9 +262,6 @@ public class ThymeleafServletAutoConfigurationTests {
 	private void load(Class<?> config, String... envVariables) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		TestPropertyValues.of(envVariables).applyTo(this.context);
-		if (config != null) {
-			this.context.register(config);
-		}
 		this.context.register(config);
 		this.context.refresh();
 	}

@@ -96,7 +96,6 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 			BeanDefinition bd = new RootBeanDefinition(BeanTypeRegistry.class);
 			bd.getConstructorArgumentValues().addIndexedArgumentValue(0, beanFactory);
 			listableBeanFactory.registerBeanDefinition(BEAN_NAME, bd);
-
 		}
 		return listableBeanFactory.getBean(BEAN_NAME, BeanTypeRegistry.class);
 	}
