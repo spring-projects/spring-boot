@@ -2037,12 +2037,12 @@ entity manager in the presence of a bean of that type.
 
 
 
-[[howto-use-two-entity-managers]]
-=== Use Two EntityManagers
-Even if the default `EntityManagerFactory` works fine, you need to define a new one.
-Otherwise, the presence of the second bean of that type switches off the
-default. To make it easy to do, you can use the convenient `EntityManagerBuilder`
-provided by Spring Boot. Alternatively, you can just the
+[[howto-use-multiple-entity-managers]]
+=== Using Multiple EntityManagerFactories
+Sometimes you may wish to work with multiple Entity Manager Factories, because you have
+multiple data sources. In those cases, you need to create your own `EntityManagerFactory`
+for each datasource. To make it easy to do, you can use the convenient `EntityManagerBuilder`
+provided by Spring Boot. Alternatively, you can just use the
 `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the
 following example:
 
