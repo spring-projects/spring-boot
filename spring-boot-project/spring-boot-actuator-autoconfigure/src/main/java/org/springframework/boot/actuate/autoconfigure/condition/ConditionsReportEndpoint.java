@@ -123,8 +123,7 @@ public class ConditionsReportEndpoint {
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
 			this.unconditionalClasses = report.getUnconditionalClasses();
-			report.getConditionAndOutcomesBySource().forEach(
-					(source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
+			report.getConditionAndOutcomesBySource().forEach(this::add);
 			this.parentId = (context.getParent() != null) ? context.getParent().getId()
 					: null;
 		}
