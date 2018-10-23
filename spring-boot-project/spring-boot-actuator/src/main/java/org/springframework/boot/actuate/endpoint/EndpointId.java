@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public final class EndpointId {
 
-	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
+	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9]+");
 
 	private final String value;
 
