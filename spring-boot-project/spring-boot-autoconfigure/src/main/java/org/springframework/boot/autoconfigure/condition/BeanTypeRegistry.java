@@ -84,27 +84,6 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	}
 
 	/**
-	 * Factory method to get the {@link BeanTypeRegistry} for a given {@link BeanFactory}.
-	 * @param beanFactory the source bean factory
-	 * @return the {@link BeanTypeRegistry} for the given bean factory
-	 */
-	static BeanTypeRegistry get(ListableBeanFactory beanFactory) {
-		Assert.isInstanceOf(DefaultListableBeanFactory.class, beanFactory);
-		DefaultListableBeanFactory listableBeanFactory = (DefaultListableBeanFactory) beanFactory;
-		Assert.isTrue(listableBeanFactory.isAllowEagerClassLoading(),
-				"Bean factory must allow eager class loading");
-		if (!listableBeanFactory.containsLocalBean(BEAN_NAME)) {
-			BeanDefinition bd = BeanDefinitionBuilder
-					.genericBeanDefinition(BeanTypeRegistry.class,
-							() -> new BeanTypeRegistry(
-									(DefaultListableBeanFactory) beanFactory))
-					.getBeanDefinition();
-			listableBeanFactory.registerBeanDefinition(BEAN_NAME, bd);
-		}
-		return listableBeanFactory.getBean(BEAN_NAME, BeanTypeRegistry.class);
-	}
-
-	/**
 	 * Return the names of beans matching the given type (including subclasses), judging
 	 * from either bean definitions or the value of {@link FactoryBean#getObjectType()} in
 	 * the case of {@link FactoryBean FactoryBeans}. Will include singletons but will not
@@ -113,7 +92,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * @return the names of beans (or objects created by FactoryBeans) matching the given
 	 * object type (including subclasses), or an empty set if none
 	 */
-	Set<String> getNamesForType(Class<?> type) {
+	public Set<String> getNamesForType(Class<?> type) {
 		updateTypesIfNecessary();
 		return this.beanTypes.entrySet().stream()
 				.filter((entry) -> entry.getValue() != null
@@ -131,7 +110,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * @return the names of beans (or objects created by FactoryBeans) annotated with the
 	 * given annotation, or an empty set if none
 	 */
-	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
+	public Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
 		return this.beanTypes.entrySet().stream()
 				.filter((entry) -> entry.getValue() != null && AnnotationUtils
@@ -350,6 +329,27 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 			return ClassUtils.forName((String) attribute, null);
 		}
 		return null;
+	}
+
+	/**
+	 * Factory method to get the {@link BeanTypeRegistry} for a given {@link BeanFactory}.
+	 * @param beanFactory the source bean factory
+	 * @return the {@link BeanTypeRegistry} for the given bean factory
+	 */
+	static BeanTypeRegistry get(ListableBeanFactory beanFactory) {
+		Assert.isInstanceOf(DefaultListableBeanFactory.class, beanFactory);
+		DefaultListableBeanFactory listableBeanFactory = (DefaultListableBeanFactory) beanFactory;
+		Assert.isTrue(listableBeanFactory.isAllowEagerClassLoading(),
+				"Bean factory must allow eager class loading");
+		if (!listableBeanFactory.containsLocalBean(BEAN_NAME)) {
+			BeanDefinition bd = BeanDefinitionBuilder
+					.genericBeanDefinition(BeanTypeRegistry.class,
+							() -> new BeanTypeRegistry(
+									(DefaultListableBeanFactory) beanFactory))
+					.getBeanDefinition();
+			listableBeanFactory.registerBeanDefinition(BEAN_NAME, bd);
+		}
+		return listableBeanFactory.getBean(BEAN_NAME, BeanTypeRegistry.class);
 	}
 
 }
