@@ -1798,9 +1798,10 @@ Spring Boot auto-configuration switches off its entity manager in the presence o
 
 
 
-[[howto-use-two-entity-managers]]
-=== Use Two EntityManagers
-Even if the default `EntityManagerFactory` works fine, you need to define a new one, otherwise the presence of the second bean of that type switches off the default.
+[[howto-use-multiple-entity-managers]]
+=== Using Multiple EntityManagerFactories
+Sometimes you may wish to work with multiple Entity Manager Factories, because you have multiple data sources.
+In those cases, you need to create your own `EntityManagerFactory` for each datasource.
 You can use the `EntityManagerBuilder` provided by Spring Boot to help you to create one.
 Alternatively, you can use the `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the following example:
 
