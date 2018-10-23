@@ -73,7 +73,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return {@code true} if the stack element means that the initializer should be
 	 * skipped
 	 */
-	protected boolean isSkippedStackElement(StackTraceElement element) {
+	private boolean isSkippedStackElement(StackTraceElement element) {
 		for (String skipped : SKIPPED_STACK_ELEMENTS) {
 			if (element.getClassName().startsWith(skipped)) {
 				return true;
