@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link AuthenticationAuditListener}.
+ * Tests for {@link AuthorizationAuditListener}.
  */
 public class AuthorizationAuditListenerTests {
 
