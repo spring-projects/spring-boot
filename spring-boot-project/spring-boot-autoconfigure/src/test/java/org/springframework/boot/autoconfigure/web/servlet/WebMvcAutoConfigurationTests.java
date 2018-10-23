@@ -90,6 +90,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
@@ -646,7 +647,8 @@ public class WebMvcAutoConfigurationTests {
 			List<HandlerExceptionResolver> delegates = ((HandlerExceptionResolverComposite) resolver)
 					.getExceptionResolvers();
 			for (HandlerExceptionResolver delegate : delegates) {
-				if (delegate instanceof AbstractHandlerExceptionResolver) {
+				if (delegate instanceof AbstractHandlerExceptionResolver
+						&& !(delegate instanceof DefaultHandlerExceptionResolver)) {
 					consumer.accept(ReflectionTestUtils.getField(delegate, "warnLogger"));
 				}
 			}
