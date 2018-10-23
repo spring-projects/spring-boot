@@ -141,7 +141,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		}
 		if (error instanceof BindingResult) {
 			BindingResult result = (BindingResult) error;
-			if (result.getErrorCount() > 0) {
+			if (result.hasErrors()) {
 				errorAttributes.put("errors", result.getAllErrors());
 			}
 		}
