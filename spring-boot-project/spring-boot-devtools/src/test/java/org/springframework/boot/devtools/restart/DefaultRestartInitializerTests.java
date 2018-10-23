@@ -37,6 +37,11 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
+	public void jUnit5StackShouldReturnNull() {
+		testSkippedStacks("org.junit.platform.Something");
+	}
+
+	@Test
 	public void springTestStackShouldReturnNull() {
 		testSkippedStacks("org.springframework.boot.test.Something");
 	}
