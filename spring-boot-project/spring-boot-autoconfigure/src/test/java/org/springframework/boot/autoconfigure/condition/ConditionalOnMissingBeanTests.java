@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Date;
 
-import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.FactoryBean;
@@ -33,8 +32,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -60,226 +58,250 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@After
-	public void cleanup() {
-		this.context.close();
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
 	public void testNameOnMissingBeanCondition() {
-		load(FooConfiguration.class, OnBeanNameConfiguration.class);
-		assertThat(this.context.containsBean("bar")).isFalse();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+		this.contextRunner.withUserConfiguration(FooConfiguration.class,
+				OnBeanNameConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean("bar");
+					assertThat(context.getBean("foo")).isEqualTo("foo");
+				});
 	}
 
 	@Test
 	public void testNameOnMissingBeanConditionReverseOrder() {
-		load(OnBeanNameConfiguration.class, FooConfiguration.class);
-		// Ideally this would be false, but the ordering is a problem
-		assertThat(this.context.containsBean("bar")).isTrue();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class,
+				FooConfiguration.class).run((context) -> {
+					// Ideally this would be doesNotHaveBean, but the ordering is a
+					// problem
+					assertThat(context).hasBean("bar");
+					assertThat(context.getBean("foo")).isEqualTo("foo");
+				});
 	}
 
 	@Test
 	public void testNameAndTypeOnMissingBeanCondition() {
-		load(FooConfiguration.class, OnBeanNameAndTypeConfiguration.class);
-		// Arguably this should be true, but as things are implemented the conditions
+		// Arguably this should be hasBean, but as things are implemented the conditions
 		// specified in the different attributes of @ConditionalOnBean are combined with
 		// logical OR (not AND) so if any of them match the condition is true.
-		assertThat(this.context.containsBean("bar")).isFalse();
+		this.contextRunner
+				.withUserConfiguration(FooConfiguration.class,
+						OnBeanNameAndTypeConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	public void hierarchyConsidered() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
-		childContext.setParent(this.context);
-		childContext.register(HierarchyConsidered.class);
-		childContext.refresh();
-		assertThat(childContext.containsLocalBean("bar")).isFalse();
+		this.contextRunner.withUserConfiguration(FooConfiguration.class)
+				.run((parent) -> new ApplicationContextRunner().withParent(parent)
+						.withUserConfiguration(HierarchyConsidered.class)
+						.run((context) -> assertThat(context.containsLocalBean("bar"))
+								.isFalse()));
 	}
 
 	@Test
 	public void hierarchyNotConsidered() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
-		childContext.setParent(this.context);
-		childContext.register(HierarchyNotConsidered.class);
-		childContext.refresh();
-		assertThat(childContext.containsLocalBean("bar")).isTrue();
+		this.contextRunner.withUserConfiguration(FooConfiguration.class)
+				.run((parent) -> new ApplicationContextRunner().withParent(parent)
+						.withUserConfiguration(HierarchyNotConsidered.class)
+						.run((context) -> assertThat(context.containsLocalBean("bar"))
+								.isTrue()));
 	}
 
 	@Test
 	public void impliedOnBeanMethod() {
-		load(ExampleBeanConfiguration.class, ImpliedOnBeanMethod.class);
-		assertThat(this.context.getBeansOfType(ExampleBean.class).size()).isEqualTo(1);
+		this.contextRunner
+				.withUserConfiguration(ExampleBeanConfiguration.class,
+						ImpliedOnBeanMethod.class)
+				.run((context) -> assertThat(context).hasSingleBean(ExampleBean.class));
 	}
 
 	@Test
 	public void testAnnotationOnMissingBeanCondition() {
-		load(FooConfiguration.class, OnAnnotationConfiguration.class);
-		assertThat(this.context.containsBean("bar")).isFalse();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+		this.contextRunner.withUserConfiguration(FooConfiguration.class,
+				OnAnnotationConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean("bar");
+					assertThat(context.getBean("foo")).isEqualTo("foo");
+				});
 	}
 
-	// Rigorous test for SPR-11069
 	@Test
 	public void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
-		load(FooConfiguration.class, OnAnnotationConfiguration.class,
-				FactoryBeanXmlConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.containsBean("bar")).isFalse();
-		assertThat(this.context.containsBean("example")).isTrue();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+		// Rigorous test for SPR-11069
+		this.contextRunner.withUserConfiguration(FooConfiguration.class,
+				OnAnnotationConfiguration.class, FactoryBeanXmlConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean("bar");
+					assertThat(context).hasBean("example");
+					assertThat(context.getBean("foo")).isEqualTo("foo");
+				});
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBean() {
-		load(FactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(FactoryBeanConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
-		load(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
-				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(
+						ComponentScannedFactoryBeanBeanMethodConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
-		load(ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
+		this.contextRunner.withUserConfiguration(
+				ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
 				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+				PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
-		load(new Class<?>[] { FactoryBeanWithBeanMethodArgumentsConfiguration.class,
-				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class }, "theValue:foo");
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(
+						FactoryBeanWithBeanMethodArgumentsConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.withPropertyValues("theValue=foo")
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithConcreteFactoryBean() {
-		load(ConcreteFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
-		load(UnhelpfulFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
 		// We could not tell that the FactoryBean would ultimately create an ExampleBean
-		assertThat(this.context.getBeansOfType(ExampleBean.class).values()).hasSize(2);
+		this.contextRunner
+				.withUserConfiguration(UnhelpfulFactoryBeanConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(context).getBeans(ExampleBean.class)
+						.hasSize(2));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithRegisteredFactoryBean() {
-		load(RegisteredFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(RegisteredFactoryBeanConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
-		load(NonspecificFactoryBeanClassAttributeConfiguration.class,
-				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(
+						NonspecificFactoryBeanClassAttributeConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
-		load(NonspecificFactoryBeanStringAttributeConfiguration.class,
-				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(
+						NonspecificFactoryBeanStringAttributeConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBeanInXml() {
-		load(FactoryBeanXmlConfiguration.class, ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		this.contextRunner
+				.withUserConfiguration(FactoryBeanXmlConfiguration.class,
+						ConditionalOnFactoryBean.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBean(ExampleBean.class).toString())
+								.isEqualTo("fromFactory"));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithIgnoredSubclass() {
-		load(CustomExampleBeanConfiguration.class, ConditionalOnIgnoredSubclass.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(2);
-		assertThat(this.context.getBeansOfType(CustomExampleBean.class)).hasSize(1);
+		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
+				ConditionalOnIgnoredSubclass.class,
+				PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
+					assertThat(context).getBeans(CustomExampleBean.class).hasSize(1);
+				});
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithIgnoredSubclassByName() {
-		load(CustomExampleBeanConfiguration.class,
+		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
 				ConditionalOnIgnoredSubclassByName.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(2);
-		assertThat(this.context.getBeansOfType(CustomExampleBean.class)).hasSize(1);
+				PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
+					assertThat(context).getBeans(CustomExampleBean.class).hasSize(1);
+				});
 	}
 
 	@Test
 	public void grandparentIsConsideredWhenUsingAncestorsStrategy() {
-		load(ExampleBeanConfiguration.class);
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.setParent(this.context);
-		parent.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.setParent(parent);
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInAncestorsConfiguration.class);
-		child.refresh();
-		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
-		child.close();
-		parent.close();
+		this.contextRunner.withUserConfiguration(ExampleBeanConfiguration.class)
+				.run((grandparent) -> new ApplicationContextRunner()
+						.withParent(grandparent)
+						.run((parent) -> new ApplicationContextRunner().withParent(parent)
+								.withUserConfiguration(ExampleBeanConfiguration.class,
+										OnBeanInAncestorsConfiguration.class)
+								.run((context) -> assertThat(context)
+										.getBeans(ExampleBean.class).hasSize(1))));
 	}
 
 	@Test
 	public void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
-		this.context.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInAncestorsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
+		this.contextRunner
+				.run((parent) -> new ApplicationContextRunner().withParent(parent)
+						.withUserConfiguration(ExampleBeanConfiguration.class,
+								OnBeanInAncestorsConfiguration.class)
+						.run((context) -> assertThat(context).getBeans(ExampleBean.class)
+								.hasSize(2)));
 	}
 
 	@Test
 	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
-		load(ConcreteFactoryBeanConfiguration.class,
-				OnAnnotationWithFactoryBeanConfiguration.class);
-		assertThat(this.context.containsBean("bar")).isFalse();
-		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
-	}
-
-	private void load(Class<?>... configs) {
-		load(configs, new String[] {});
-	}
-
-	private void load(Class<?>[] configs, String... environmentValues) {
-		this.context.register(configs);
-		TestPropertyValues.of(environmentValues).applyTo(this.context);
-		this.context.refresh();
+		this.contextRunner.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
+				OnAnnotationWithFactoryBeanConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean("bar");
+					assertThat(context).hasSingleBean(ExampleBean.class);
+				});
 	}
 
 	@Configuration
