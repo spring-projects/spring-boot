@@ -53,12 +53,16 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-	 * Return a shared default {@code ApplicationConversionService} instance, lazily
+	 * Return a shared default application {@code ConversionService} instance, lazily
 	 * building it once needed.
+	 * <p>
+	 * Note: This method actually returns an {@link ApplicationConversionService}
+	 * instance. However, the {@code ConversionService} signature has been preserved for
+	 * binary compatibility.
 	 * @return the shared {@code ApplicationConversionService} instance (never
 	 * {@code null})
 	 */
-	public static ApplicationConversionService getSharedInstance() {
+	public static ConversionService getSharedInstance() {
 		ApplicationConversionService sharedInstance = ApplicationConversionService.sharedInstance;
 		if (sharedInstance == null) {
 			synchronized (ApplicationConversionService.class) {
