@@ -173,7 +173,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void registerResourceHandlingFilterWithOtherRegistrationBean() {
 		// gh-14897
-		load(FilterRegistrationConfiguration.class,
+		load(FilterRegistrationOtherConfiguration.class,
 				"spring.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context
 				.getBeansOfType(FilterRegistrationBean.class);
@@ -183,6 +183,22 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 				.findFirst().get();
 		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
 				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithResourceRegistrationBean() {
+		// gh-14926
+		load(FilterRegistrationResourceConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(1);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.INCLUDE));
 	}
 
 	private void load(String... env) {
@@ -223,7 +239,21 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 	@Configuration
 	@Import(BaseConfiguration.class)
-	static class FilterRegistrationConfiguration {
+	static class FilterRegistrationResourceConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegisration() {
+			FilterRegistrationBean<ResourceUrlEncodingFilter> bean = new FilterRegistrationBean<ResourceUrlEncodingFilter>(
+					new ResourceUrlEncodingFilter());
+			bean.setDispatcherTypes(EnumSet.of(DispatcherType.INCLUDE));
+			return bean;
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationOtherConfiguration {
 
 		@Bean
 		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegisration() {

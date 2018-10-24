@@ -50,6 +50,7 @@ import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties.Reactive;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -169,8 +170,8 @@ public class ThymeleafAutoConfiguration {
 	static class ThymeleafWebMvcConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(ResourceUrlEncodingFilter.class)
 		@ConditionalOnEnabledResourceChain
+		@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
 		public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
 			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
 					new ResourceUrlEncodingFilter());

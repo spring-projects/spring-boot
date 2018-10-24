@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -74,8 +75,8 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ResourceUrlEncodingFilter.class)
 	@ConditionalOnEnabledResourceChain
+	@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
 	public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
 		FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
 				new ResourceUrlEncodingFilter());
