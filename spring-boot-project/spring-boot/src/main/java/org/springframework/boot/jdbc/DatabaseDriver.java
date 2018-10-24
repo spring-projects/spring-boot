@@ -100,11 +100,16 @@ public enum DatabaseDriver {
 			"SELECT 1"),
 
 	/**
-	 * SAP - SAP Hana Database - HDB.
+	 * HANA - SAP HANA Database - HDB.
 	 * @since 2.1.0
 	 */
-	SAP("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
-			"SELECT 1 FROM DUMMY"),
+	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
+			"SELECT 1 FROM DUMMY") {
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("sap");
+		}
+	},
 
 	/**
 	 * jTDS. As it can be used for several databases, there isn't a single product name we
