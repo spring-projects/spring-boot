@@ -32,8 +32,10 @@ import org.assertj.core.error.BasicErrorMessageFactory;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -273,15 +275,47 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"to contain bean of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
-		if (names.length > 1) {
+		String name = (names.length > 0) ? getPrimary(names, scope) : null;
+		if (names.length > 1 && name == null) {
 			throwAssertionError(new BasicErrorMessageFactory(
 					"%nExpecting:%n <%s>%nsingle bean of type:%n <%s>%nbut found:%n <%s>",
 					getApplicationContext(), type, names));
 		}
-		T bean = (names.length != 0) ? getApplicationContext().getBean(names[0], type)
-				: null;
+		T bean = (name != null) ? getApplicationContext().getBean(name, type) : null;
 		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type,
 				getApplicationContext());
+	}
+
+	private String getPrimary(String[] names, Scope scope) {
+		if (names.length == 1) {
+			return names[0];
+		}
+		String primary = null;
+		for (String name : names) {
+			if (isPrimary(name, scope)) {
+				if (primary != null) {
+					return null;
+				}
+				primary = name;
+			}
+		}
+		return primary;
+	}
+
+	private boolean isPrimary(String name, Scope scope) {
+		ApplicationContext context = getApplicationContext();
+		while (context != null) {
+			if (context instanceof ConfigurableApplicationContext) {
+				ConfigurableListableBeanFactory factory = ((ConfigurableApplicationContext) context)
+						.getBeanFactory();
+				if (factory.containsBean(name)
+						&& factory.getMergedBeanDefinition(name).isPrimary()) {
+					return true;
+				}
+			}
+			context = (scope != Scope.NO_ANCESTORS) ? context.getParent() : null;
+		}
+		return false;
 	}
 
 	/**

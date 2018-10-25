@@ -22,6 +22,10 @@ import org.junit.Test;
 
 import org.springframework.boot.test.context.assertj.ApplicationContextAssert.Scope;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -245,6 +249,14 @@ public class ApplicationContextAssertTests {
 	}
 
 	@Test
+	public void getBeanOfTypeWhenHasPrimaryBeanShouldReturnPrimary() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				PrimaryFooConfig.class);
+		assertThat(getAssert(context)).getBean(Foo.class).isInstanceOf(Bar.class);
+		context.close();
+	}
+
+	@Test
 	public void getBeanOfTypeWhenFailedToStartShouldFail() {
 		assertThatExceptionOfType(AssertionError.class)
 				.isThrownBy(() -> assertThat(getAssert(this.failure)).getBean(Foo.class))
@@ -420,6 +432,26 @@ public class ApplicationContextAssertTests {
 	}
 
 	private static class Foo {
+
+	}
+
+	private static class Bar extends Foo {
+
+	}
+
+	@Configuration
+	static class PrimaryFooConfig {
+
+		@Bean
+		public Foo foo() {
+			return new Foo();
+		}
+
+		@Bean
+		@Primary
+		public Bar bar() {
+			return new Bar();
+		}
 
 	}
 
