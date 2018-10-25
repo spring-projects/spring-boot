@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
