@@ -16,7 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.junit.Rule;
 import org.junit.Test;
+
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -27,6 +30,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  */
 public class EndpointIdTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void ofWhenNullThrowsException() {
@@ -78,6 +84,14 @@ public class EndpointIdTests {
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo-bar");
 		assertThat(endpointId.toString()).isEqualTo("foo-bar");
+	}
+
+	@Test
+	public void ofWhenContainsDeprecatedCharsLogsWarning() {
+		EndpointId.resetLoggedWarnings();
+		EndpointId.of("foo-bar");
+		assertThat(this.output.toString()).contains(
+				"Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
 	}
 
 	@Test
