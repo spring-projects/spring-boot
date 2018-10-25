@@ -38,8 +38,8 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -63,8 +63,7 @@ import org.springframework.web.util.NestedServletException;
  */
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(WebMvcMetricsFilter.class);
+	private static final Log logger = LogFactory.getLog(WebMvcMetricsFilter.class);
 
 	private final ApplicationContext context;
 
