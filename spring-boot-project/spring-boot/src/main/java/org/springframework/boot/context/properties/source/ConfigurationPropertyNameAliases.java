@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -72,6 +73,10 @@ public final class ConfigurationPropertyNameAliases {
 		return this.aliases.entrySet().stream()
 				.filter((e) -> e.getValue().contains(alias)).map(Map.Entry::getKey)
 				.findFirst().orElse(null);
+	}
+
+	public Set<ConfigurationPropertyName> getAllNames() {
+		return this.aliases.keySet();
 	}
 
 }

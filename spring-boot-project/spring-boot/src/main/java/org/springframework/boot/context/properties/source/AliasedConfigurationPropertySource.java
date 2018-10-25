@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Set;
+
 import org.springframework.util.Assert;
 
 /**
@@ -58,11 +60,17 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 		if (result != ConfigurationPropertyState.ABSENT) {
 			return result;
 		}
-		for (ConfigurationPropertyName alias : getAliases().getAliases(name)) {
-			ConfigurationPropertyState aliasResult = this.source
-					.containsDescendantOf(alias);
-			if (aliasResult != ConfigurationPropertyState.ABSENT) {
-				return aliasResult;
+		Set<ConfigurationPropertyName> aliasNames = this.aliases.getAllNames();
+		for (ConfigurationPropertyName configurationPropertyName : aliasNames) {
+			boolean descendantPresentInAlias = this.aliases
+					.getAliases(configurationPropertyName).stream()
+					.filter(name::isAncestorOf).findFirst().isPresent();
+			if (descendantPresentInAlias) {
+				ConfigurationProperty configurationProperty = this.getSource()
+						.getConfigurationProperty(configurationPropertyName);
+				if (configurationProperty != null) {
+					return ConfigurationPropertyState.PRESENT;
+				}
 			}
 		}
 		return ConfigurationPropertyState.ABSENT;
