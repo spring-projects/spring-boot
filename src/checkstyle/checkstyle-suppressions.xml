@@ -24,9 +24,13 @@
 	<suppress files="Ansi.*\.java" checks="JavadocStyle" />
 	<suppress files="LogLevel\.java" checks="JavadocVariable" />
 	<suppress files="HelpMojo\.java" checks=".*"/>
-	<suppress files="[\\/]org.springframework.boot.configurationprocessor.json[\\/].*\.java$" checks=".*"/>
+	<suppress files="[\\/]org.springframework.boot.configurationprocessor.json[\\/].*\.java$" checks=".*" />
 	<suppress files="TripType\.java" checks="JavadocVariable" />
 	<suppress files="Rating\.java" checks="JavadocVariable" />
 	<suppress files="Direction\.java" checks="JavadocVariable" />
-	<suppress files="JooqExamples\.java" checks="AvoidStaticImport"/>
+	<suppress files="JooqExamples\.java" checks="AvoidStaticImport" />
+	<suppress files="LoggingApplicationListenerIntegrationTests\.java" checks="IllegalImport" />
+	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
+	<suppress files="EmbeddedMongoAutoConfiguration\.java" checks="IllegalImport" />
+	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 </suppressions>
