@@ -155,8 +155,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenValueIsOfMissingBeanDoesNotMatch() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithoutCustomConfig.class,
-						ParmeterizedConditionWithValueConfig.class)
+				.withUserConfiguration(ParameterizedWithoutCustomConfig.class,
+						ParameterizedConditionWithValueConfig.class)
 				.run((context) -> assertThat(context)
 						.satisfies(exampleBeanRequirement("otherExampleBean")));
 	}
@@ -164,8 +164,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenValueIsOfExistingBeanMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithCustomConfig.class,
-						ParmeterizedConditionWithValueConfig.class)
+				.withUserConfiguration(ParameterizedWithCustomConfig.class,
+						ParameterizedConditionWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
 						"customExampleBean", "conditionalCustomExampleBean")));
 	}
@@ -173,8 +173,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenValueIsOfMissingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithoutCustomContainerConfig.class,
-						ParmeterizedConditionWithValueConfig.class)
+				.withUserConfiguration(ParameterizedWithoutCustomContainerConfig.class,
+						ParameterizedConditionWithValueConfig.class)
 				.run((context) -> assertThat(context)
 						.satisfies(exampleBeanRequirement("otherExampleBean")));
 	}
@@ -182,8 +182,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenValueIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithCustomContainerConfig.class,
-						ParmeterizedConditionWithValueConfig.class)
+				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
+						ParameterizedConditionWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
 						"customExampleBean", "conditionalCustomExampleBean")));
 	}
@@ -191,8 +191,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenReturnTypeIsOfExistingBeanMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithCustomConfig.class,
-						ParmeterizedConditionWithReturnTypeConfig.class)
+				.withUserConfiguration(ParameterizedWithCustomConfig.class,
+						ParameterizedConditionWithReturnTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
 						"customExampleBean", "conditionalCustomExampleBean")));
 	}
@@ -200,8 +200,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithCustomContainerConfig.class,
-						ParmeterizedConditionWithReturnTypeConfig.class)
+				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
+						ParameterizedConditionWithReturnTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
 						"customExampleBean", "conditionalCustomExampleBean")));
 	}
@@ -209,8 +209,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithCustomConfig.class,
-						ParmeterizedConditionWithReturnRegistrationTypeConfig.class)
+				.withUserConfiguration(ParameterizedWithCustomConfig.class,
+						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
 						"customExampleBean", "conditionalCustomExampleBean")));
 	}
@@ -218,8 +218,8 @@ public class ConditionalOnBeanTests {
 	@Test
 	public void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParmeterizedWithCustomContainerConfig.class,
-						ParmeterizedConditionWithReturnRegistrationTypeConfig.class)
+				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
+						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
 						"customExampleBean", "conditionalCustomExampleBean")));
 	}
@@ -415,7 +415,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedWithCustomConfig {
+	static class ParameterizedWithCustomConfig {
 
 		@Bean
 		public CustomExampleBean customExampleBean() {
@@ -425,7 +425,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedWithoutCustomConfig {
+	static class ParameterizedWithoutCustomConfig {
 
 		@Bean
 		public OtherExampleBean otherExampleBean() {
@@ -435,7 +435,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedWithoutCustomContainerConfig {
+	static class ParameterizedWithoutCustomContainerConfig {
 
 		@Bean
 		public TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
@@ -445,7 +445,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedWithCustomContainerConfig {
+	static class ParameterizedWithCustomContainerConfig {
 
 		@Bean
 		public TestParameterizedContainer<CustomExampleBean> customExampleBean() {
@@ -455,7 +455,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedConditionWithValueConfig {
+	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
 		@ConditionalOnBean(value = CustomExampleBean.class, parameterizedContainer = TestParameterizedContainer.class)
@@ -466,7 +466,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedConditionWithReturnTypeConfig {
+	static class ParameterizedConditionWithReturnTypeConfig {
 
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
@@ -477,7 +477,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
-	static class ParmeterizedConditionWithReturnRegistrationTypeConfig {
+	static class ParameterizedConditionWithReturnRegistrationTypeConfig {
 
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
