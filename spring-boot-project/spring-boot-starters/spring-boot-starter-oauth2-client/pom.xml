@@ -7,7 +7,7 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>${revision}</version>
 	</parent>
-	<artifactId>spring-boot-starter-oauth2-oidc-client</artifactId>
+	<artifactId>spring-boot-starter-oauth2-client</artifactId>
 	<name>Spring Boot OAuth2/OpenID Connect Client Starter</name>
 	<description>Starter for using Spring Security's OAuth2/OpenID Connect client features</description>
 	<properties>
