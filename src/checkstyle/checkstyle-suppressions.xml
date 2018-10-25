@@ -33,4 +33,5 @@
 	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
 	<suppress files="EmbeddedMongoAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
+	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 </suppressions>
