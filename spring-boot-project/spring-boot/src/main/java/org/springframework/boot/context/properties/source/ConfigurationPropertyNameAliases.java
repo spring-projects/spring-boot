@@ -18,9 +18,9 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -34,7 +34,8 @@ import org.springframework.util.MultiValueMap;
  * @since 2.0.0
  * @see ConfigurationPropertySource#withAliases(ConfigurationPropertyNameAliases)
  */
-public final class ConfigurationPropertyNameAliases {
+public final class ConfigurationPropertyNameAliases
+		implements Iterable<ConfigurationPropertyName> {
 
 	private final MultiValueMap<ConfigurationPropertyName, ConfigurationPropertyName> aliases = new LinkedMultiValueMap<>();
 
@@ -75,8 +76,9 @@ public final class ConfigurationPropertyNameAliases {
 				.findFirst().orElse(null);
 	}
 
-	public Set<ConfigurationPropertyName> getAllNames() {
-		return this.aliases.keySet();
+	@Override
+	public Iterator<ConfigurationPropertyName> iterator() {
+		return this.aliases.keySet().iterator();
 	}
 
 }
