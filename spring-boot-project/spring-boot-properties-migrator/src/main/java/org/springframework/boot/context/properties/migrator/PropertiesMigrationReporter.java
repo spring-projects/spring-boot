@@ -174,7 +174,6 @@ class PropertiesMigrationReporter {
 
 	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
 		Map<String, ConfigurationPropertySource> map = new LinkedHashMap<>();
-		ConfigurationPropertySources.get(this.environment);
 		for (ConfigurationPropertySource source : ConfigurationPropertySources
 				.get(this.environment)) {
 			map.put(determinePropertySourceName(source), source);
