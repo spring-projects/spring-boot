@@ -34,6 +34,7 @@ import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -87,6 +88,12 @@ import org.springframework.util.StringUtils;
  * @see LoggingSystem#get(ClassLoader)
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
+
+	private static final ConfigurationPropertyName LOGGING_LEVEL = ConfigurationPropertyName
+			.of("logging.level");
+
+	private static final ConfigurationPropertyName LOGGING_GROUP = ConfigurationPropertyName
+			.of("logging.group");
 
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
 			.mapOf(String.class, String.class);
@@ -324,8 +331,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		Binder binder = Binder.get(environment);
 		Map<String, String[]> groups = getGroups();
-		binder.bind("logging.group", STRING_STRINGS_MAP.withExistingValue(groups));
-		Map<String, String> levels = binder.bind("logging.level", STRING_STRING_MAP)
+		binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP.withExistingValue(groups));
+		Map<String, String> levels = binder.bind(LOGGING_LEVEL, STRING_STRING_MAP)
 				.orElseGet(Collections::emptyMap);
 		levels.forEach((name, level) -> {
 			String[] groupedNames = groups.get(name);

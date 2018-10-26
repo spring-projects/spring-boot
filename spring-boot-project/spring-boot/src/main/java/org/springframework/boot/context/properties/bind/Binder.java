@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -254,7 +253,7 @@ public class Binder {
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
 		ConfigurationProperty property = findProperty(name, context);
-		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
+		if (property == null && containsNoDescendantOf(context.getSources(), name)) {
 			return null;
 		}
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
@@ -310,9 +309,13 @@ public class Binder {
 		if (name.isEmpty()) {
 			return null;
 		}
-		return context.streamSources()
-				.map((source) -> source.getConfigurationProperty(name))
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		for (ConfigurationPropertySource source : context.getSources()) {
+			ConfigurationProperty property = source.getConfigurationProperty(name);
+			if (property != null) {
+				return property;
+			}
+		}
+		return null;
 	}
 
 	private <T> Object bindProperty(Bindable<T> target, Context context,
@@ -326,7 +329,7 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
-		if (containsNoDescendantOf(context.streamSources(), name)
+		if (containsNoDescendantOf(context.getSources(), name)
 				|| isUnbindableBean(name, target, context)) {
 			return null;
 		}
@@ -345,10 +348,11 @@ public class Binder {
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target,
 			Context context) {
-		if (context.streamSources().anyMatch((s) -> s
-				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT)) {
-			// We know there are properties to bind so we can't bypass anything
-			return false;
+		for (ConfigurationPropertySource source : context.getSources()) {
+			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
+				// We know there are properties to bind so we can't bypass anything
+				return false;
+			}
 		}
 		Class<?> resolved = target.getType().resolve(Object.class);
 		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
@@ -357,10 +361,14 @@ public class Binder {
 		return resolved.getName().startsWith("java.");
 	}
 
-	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
+	private boolean containsNoDescendantOf(Iterable<ConfigurationPropertySource> sources,
 			ConfigurationPropertyName name) {
-		return sources.allMatch(
-				(s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
+		for (ConfigurationPropertySource source : sources) {
+			if (source.containsDescendantOf(name) != ConfigurationPropertyState.ABSENT) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -451,13 +459,6 @@ public class Binder {
 
 		private void clearConfigurationProperty() {
 			this.configurationProperty = null;
-		}
-
-		public Stream<ConfigurationPropertySource> streamSources() {
-			if (this.sourcePushCount > 0) {
-				return this.source.stream();
-			}
-			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
 		}
 
 		public PlaceholdersResolver getPlaceholdersResolver() {
