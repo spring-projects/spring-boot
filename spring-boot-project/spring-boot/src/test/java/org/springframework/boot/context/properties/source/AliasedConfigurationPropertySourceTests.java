@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.mockito.Answers;
 
@@ -108,6 +110,16 @@ public class AliasedConfigurationPropertySourceTests {
 		ConfigurationPropertySource aliased = source
 				.withAliases(new ConfigurationPropertyNameAliases("foo", "bar"));
 		assertThat(aliased.containsDescendantOf(name))
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
+	}
+
+	@Test
+	public void containsDescendantOfWhenPresentInAliasShouldReturnPresent() {
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(
+				Collections.singletonMap("foo.bar", "foobar"));
+		ConfigurationPropertySource aliased = source
+				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "baz.foo"));
+		assertThat(aliased.containsDescendantOf(ConfigurationPropertyName.of("baz")))
 				.isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
