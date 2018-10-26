@@ -60,7 +60,7 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 		if (result != ConfigurationPropertyState.ABSENT) {
 			return result;
 		}
-		Set<ConfigurationPropertyName> aliasNames = getAliases().getAllNames();
+		Set<ConfigurationPropertyName> aliasNames = this.aliases.getAllNames();
 		for (ConfigurationPropertyName configurationPropertyName : aliasNames) {
 			boolean descendantPresentInAlias = this.aliases
 					.getAliases(configurationPropertyName).stream()
