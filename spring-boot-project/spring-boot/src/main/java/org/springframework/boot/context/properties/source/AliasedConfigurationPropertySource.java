@@ -65,6 +65,15 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 				return aliasResult;
 			}
 		}
+		for (ConfigurationPropertyName from : getAliases()) {
+			for (ConfigurationPropertyName alias : getAliases().getAliases(from)) {
+				if (name.isAncestorOf(alias)) {
+					if (this.source.getConfigurationProperty(from) != null) {
+						return ConfigurationPropertyState.PRESENT;
+					}
+				}
+			}
+		}
 		return ConfigurationPropertyState.ABSENT;
 	}
 
