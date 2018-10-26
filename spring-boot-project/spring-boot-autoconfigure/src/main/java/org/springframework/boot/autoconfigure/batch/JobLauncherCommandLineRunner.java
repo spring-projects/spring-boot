@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -33,7 +34,6 @@ import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersIncrementer;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
@@ -51,6 +51,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
@@ -76,13 +77,13 @@ public class JobLauncherCommandLineRunner
 
 	private JobParametersConverter converter = new DefaultJobParametersConverter();
 
-	private JobLauncher jobLauncher;
+	private final JobLauncher jobLauncher;
+
+	private final JobExplorer jobExplorer;
+
+	private final JobRepository jobRepository;
 
 	private JobRegistry jobRegistry;
-
-	private JobExplorer jobExplorer;
-
-	private JobRepository jobRepository;
 
 	private String jobNames;
 
@@ -96,17 +97,17 @@ public class JobLauncherCommandLineRunner
 	 * Create a new {@link JobLauncherCommandLineRunner}.
 	 * @param jobLauncher to launch jobs
 	 * @param jobExplorer to check the job repository for previous executions
-	 * @deprecated This constructor is deprecated in favor of
-	 * {@link JobLauncherCommandLineRunner#JobLauncherCommandLineRunner(JobLauncher, JobExplorer, JobRepository)}.
-	 * A job repository is required to check if a job instance exists with the given
-	 * parameters when running a job (which is not possible with the job explorer). This
-	 * constructor will be removed in a future version.
+	 * @deprecated since 2.0.7 in favor of
+	 * {@link #JobLauncherCommandLineRunner(JobLauncher, JobExplorer, JobRepository)}. A
+	 * job repository is required to check if a job instance exists with the given
+	 * parameters when running a job (which is not possible with the job explorer).
 	 */
 	@Deprecated
 	public JobLauncherCommandLineRunner(JobLauncher jobLauncher,
 			JobExplorer jobExplorer) {
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
+		this.jobRepository = null;
 	}
 
 	/**
@@ -118,6 +119,9 @@ public class JobLauncherCommandLineRunner
 	 */
 	public JobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
 			JobRepository jobRepository) {
+		Assert.notNull(jobLauncher, "JobLauncher must not be null");
+		Assert.notNull(jobExplorer, "JobExplorer must not be null");
+		Assert.notNull(jobRepository, "JobRepository must not be null");
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
 		this.jobRepository = jobRepository;
@@ -169,6 +173,20 @@ public class JobLauncherCommandLineRunner
 		executeRegisteredJobs(jobParameters);
 	}
 
+	private void executeLocalJobs(JobParameters jobParameters)
+			throws JobExecutionException {
+		for (Job job : this.jobs) {
+			if (StringUtils.hasText(this.jobNames)) {
+				String[] jobsToRun = this.jobNames.split(",");
+				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
+					logger.debug("Skipped job: " + job.getName());
+					continue;
+				}
+			}
+			execute(job, jobParameters);
+		}
+	}
+
 	private void executeRegisteredJobs(JobParameters jobParameters)
 			throws JobExecutionException {
 		if (this.jobRegistry != null && StringUtils.hasText(this.jobNames)) {
@@ -192,76 +210,56 @@ public class JobLauncherCommandLineRunner
 			throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException,
 			JobParametersNotFoundException {
-		String jobName = job.getName();
-		JobParameters parameters = jobParameters;
-		boolean jobInstanceExists = this.jobRepository.isJobInstanceExists(jobName,
-				parameters);
-		if (jobInstanceExists) {
-			JobExecution lastJobExecution = this.jobRepository
-					.getLastJobExecution(jobName, jobParameters);
-			if (lastJobExecution != null && isStoppedOrFailed(lastJobExecution)
-					&& job.isRestartable()) {
-				// Retry a failed or stopped execution with previous parameters
-				JobParameters previousParameters = lastJobExecution.getJobParameters();
-				/*
-				 * remove Non-identifying parameters from the previous execution's
-				 * parameters since there is no way to remove them programmatically. If
-				 * they are required (or need to be modified) on a restart, they need to
-				 * be (re)specified.
-				 */
-				JobParameters previousIdentifyingParameters = removeNonIdentifying(
-						previousParameters);
-				// merge additional parameters with previous ones (overriding those with
-				// the same key)
-				parameters = merge(previousIdentifyingParameters, jobParameters);
-			}
-		}
-		else {
-			JobParametersIncrementer incrementer = job.getJobParametersIncrementer();
-			if (incrementer != null) {
-				JobParameters nextParameters = new JobParametersBuilder(jobParameters,
-						this.jobExplorer).getNextJobParameters(job).toJobParameters();
-				parameters = merge(nextParameters, jobParameters);
-			}
-		}
+		JobParameters parameters = getNextJobParameters(job, jobParameters);
 		JobExecution execution = this.jobLauncher.run(job, parameters);
 		if (this.publisher != null) {
 			this.publisher.publishEvent(new JobExecutionEvent(execution));
 		}
 	}
 
-	private void executeLocalJobs(JobParameters jobParameters)
-			throws JobExecutionException {
-		for (Job job : this.jobs) {
-			if (StringUtils.hasText(this.jobNames)) {
-				String[] jobsToRun = this.jobNames.split(",");
-				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
-					logger.debug("Skipped job: " + job.getName());
-					continue;
-				}
-			}
-			execute(job, jobParameters);
+	private JobParameters getNextJobParameters(Job job, JobParameters jobParameters) {
+		if (this.jobRepository != null
+				&& this.jobRepository.isJobInstanceExists(job.getName(), jobParameters)) {
+			return getNextJobParametersForExisting(job, jobParameters);
 		}
+		if (job.getJobParametersIncrementer() == null) {
+			return jobParameters;
+		}
+		JobParameters nextParameters = new JobParametersBuilder(jobParameters,
+				this.jobExplorer).getNextJobParameters(job).toJobParameters();
+		return merge(nextParameters, jobParameters);
 	}
 
-	private JobParameters removeNonIdentifying(JobParameters parameters) {
-		Map<String, JobParameter> parameterMap = parameters.getParameters();
-		HashMap<String, JobParameter> copy = new HashMap<>(parameterMap);
-		for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
-			if (!parameter.getValue().isIdentifying()) {
-				parameterMap.remove(parameter.getKey());
-			}
+	private JobParameters getNextJobParametersForExisting(Job job,
+			JobParameters jobParameters) {
+		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(),
+				jobParameters);
+		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
+			JobParameters previousIdentifyingParameters = getGetIdentifying(
+					lastExecution.getJobParameters());
+			return merge(previousIdentifyingParameters, jobParameters);
 		}
-		return new JobParameters(parameterMap);
+		return jobParameters;
 	}
 
 	private boolean isStoppedOrFailed(JobExecution execution) {
-		BatchStatus status = execution.getStatus();
+		BatchStatus status = (execution != null) ? execution.getStatus() : null;
 		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
 	}
 
+	private JobParameters getGetIdentifying(JobParameters parameters) {
+		HashMap<String, JobParameter> nonIdentifying = new LinkedHashMap<>(
+				parameters.getParameters().size());
+		parameters.getParameters().forEach((key, value) -> {
+			if (value.isIdentifying()) {
+				nonIdentifying.put(key, value);
+			}
+		});
+		return new JobParameters(nonIdentifying);
+	}
+
 	private JobParameters merge(JobParameters parameters, JobParameters additionals) {
-		Map<String, JobParameter> merged = new HashMap<>();
+		Map<String, JobParameter> merged = new LinkedHashMap<>();
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals.getParameters());
 		return new JobParameters(merged);

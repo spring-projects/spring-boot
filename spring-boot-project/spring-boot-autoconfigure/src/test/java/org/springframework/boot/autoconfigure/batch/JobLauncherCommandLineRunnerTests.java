@@ -46,6 +46,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
@@ -150,17 +151,12 @@ public class JobLauncherCommandLineRunnerTests {
 		// A failed job that is not restartable does not re-use the job params of
 		// the last execution, but creates a new job instance when running it again.
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(2);
-		try {
+		assertThatExceptionOfType(JobRestartException.class).isThrownBy(() -> {
 			// try to re-run a failed execution
 			this.runner.execute(this.job,
 					new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
 			fail("expected JobRestartException");
-		}
-		catch (JobRestartException ex) {
-			assertThat(ex.getMessage())
-					.isEqualTo("JobInstance already exists and is not restartable");
-			// expected
-		}
+		}).withMessageContaining("JobInstance already exists and is not restartable");
 	}
 
 	@Test
