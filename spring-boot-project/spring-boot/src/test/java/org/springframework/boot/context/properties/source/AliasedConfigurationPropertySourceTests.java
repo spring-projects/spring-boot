@@ -22,7 +22,6 @@ import org.mockito.Answers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link AliasedConfigurationPropertySource}.
@@ -57,7 +56,7 @@ public class AliasedConfigurationPropertySourceTests {
 	public void containsDescendantOfWhenSourceReturnsUnknownShouldReturnUnknown() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.UNKNOWN);
 		ConfigurationPropertySource aliased = source
@@ -70,7 +69,7 @@ public class AliasedConfigurationPropertySourceTests {
 	public void containsDescendantOfWhenSourceReturnsPresentShouldReturnPresent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.PRESENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
@@ -85,7 +84,7 @@ public class AliasedConfigurationPropertySourceTests {
 	public void containsDescendantOfWhenAllAreAbsentShouldReturnAbsent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.ABSENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
@@ -100,7 +99,7 @@ public class AliasedConfigurationPropertySourceTests {
 	public void containsDescendantOfWhenAnyIsPresentShouldReturnPresent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.ABSENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
