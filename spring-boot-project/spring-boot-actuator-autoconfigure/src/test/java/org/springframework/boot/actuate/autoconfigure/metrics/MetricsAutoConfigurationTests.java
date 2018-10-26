@@ -95,8 +95,7 @@ public class MetricsAutoConfigurationTests {
 
 		@Bean
 		MeterRegistry meterRegistry() {
-			SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
-			return meterRegistry;
+			return new SimpleMeterRegistry();
 		}
 
 		@Bean
