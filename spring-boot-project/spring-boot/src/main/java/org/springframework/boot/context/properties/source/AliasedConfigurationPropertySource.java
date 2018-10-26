@@ -62,7 +62,7 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 		}
 		Set<ConfigurationPropertyName> aliasNames = getAliases().getAllNames();
 		for (ConfigurationPropertyName configurationPropertyName : aliasNames) {
-			boolean descendantPresentInAlias = aliases
+			boolean descendantPresentInAlias = this.aliases
 					.getAliases(configurationPropertyName).stream()
 					.filter(name::isAncestorOf).findFirst().isPresent();
 			if (descendantPresentInAlias) {

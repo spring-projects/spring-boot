@@ -16,14 +16,15 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.junit.Test;
+import org.mockito.Answers;
+
+import org.springframework.boot.origin.Origin;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
-
-import org.junit.Test;
-import org.mockito.Answers;
-import org.springframework.boot.origin.Origin;
 
 /**
  * Tests for {@link AliasedConfigurationPropertySource}.

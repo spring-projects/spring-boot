@@ -76,7 +76,7 @@ public final class ConfigurationPropertyNameAliases {
 	}
 
 	public Set<ConfigurationPropertyName> getAllNames() {
-		return aliases.keySet();
+		return this.aliases.keySet();
 	}
 
 }
