@@ -2258,6 +2258,9 @@ suffix pattern matching, the following configuration is required:
 ----
 	spring.mvc.contentnegotiation.favor-path-extension=true
 
+	#Whether to use suffix pattern match (".*") when matching patterns to requests
+	spring.mvc.pathmatch.use-suffix-pattern=true
+
 	# You can also restrict that feature to known extensions only
 	# spring.mvc.pathmatch.use-registered-suffix-pattern=true
 
