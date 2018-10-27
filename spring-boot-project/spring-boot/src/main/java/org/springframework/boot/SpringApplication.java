@@ -821,6 +821,9 @@ public class SpringApplication {
 			Throwable exception,
 			Collection<SpringBootExceptionReporter> exceptionReporters,
 			SpringApplicationRunListeners listeners) {
+		if (logger.isErrorEnabled()) {
+			logger.error("Application run failed", exception);
+		}
 		try {
 			try {
 				handleExitCode(context, exception);
@@ -855,7 +858,6 @@ public class SpringApplication {
 			// Continue with normal handling of the original failure
 		}
 		if (logger.isErrorEnabled()) {
-			logger.error("Application run failed", failure);
 			registerLoggedException(failure);
 		}
 	}
