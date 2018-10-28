@@ -303,7 +303,7 @@
     },
     {
       "name": "management.server.ssl.client-auth",
-      "description": "Whether client authentication is wanted (\"want\") or needed (\"need\"). Requires a trust store."
+      "description": "Whether client authentication is not wanted (\"none\"), wanted (\"want\") or needed (\"need\"). Requires a trust store."
     },
     {
       "name": "management.server.ssl.enabled",
