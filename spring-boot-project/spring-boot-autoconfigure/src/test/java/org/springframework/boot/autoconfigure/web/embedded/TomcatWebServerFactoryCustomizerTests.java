@@ -130,6 +130,22 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
 	@Deprecated
 	public void customMaxHttpHeaderSizeWithDeprecatedProperty() {
 		bind("server.max-http-header-size=4KB",
