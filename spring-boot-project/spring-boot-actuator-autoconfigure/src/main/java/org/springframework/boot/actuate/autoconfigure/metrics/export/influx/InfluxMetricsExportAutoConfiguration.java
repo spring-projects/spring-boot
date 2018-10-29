@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.ipc.http.HttpUrlConnectionClient;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 
@@ -64,7 +64,7 @@ public class InfluxMetricsExportAutoConfiguration {
 			InfluxProperties influxProperties) {
 		return InfluxMeterRegistry.builder(influxConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionClient(influxProperties.getConnectTimeout(),
+						new HttpUrlConnectionSender(influxProperties.getConnectTimeout(),
 								influxProperties.getReadTimeout()))
 				.build();
 

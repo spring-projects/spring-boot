@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.elastic;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.ipc.http.HttpUrlConnectionClient;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.elastic.ElasticConfig;
 import io.micrometer.elastic.ElasticMeterRegistry;
 
@@ -64,7 +64,7 @@ public class ElasticMetricsExportAutoConfiguration {
 			Clock clock, ElasticProperties elasticProperties) {
 		return ElasticMeterRegistry.builder(elasticConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionClient(elasticProperties.getConnectTimeout(),
+						new HttpUrlConnectionSender(elasticProperties.getConnectTimeout(),
 								elasticProperties.getReadTimeout()))
 				.build();
 	}

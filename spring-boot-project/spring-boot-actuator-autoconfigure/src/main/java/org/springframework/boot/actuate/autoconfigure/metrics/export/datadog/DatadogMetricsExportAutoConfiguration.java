@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.ipc.http.HttpUrlConnectionClient;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
@@ -64,7 +64,7 @@ public class DatadogMetricsExportAutoConfiguration {
 			Clock clock, DatadogProperties datadogProperties) {
 		return DatadogMeterRegistry.builder(datadogConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionClient(datadogProperties.getConnectTimeout(),
+						new HttpUrlConnectionSender(datadogProperties.getConnectTimeout(),
 								datadogProperties.getReadTimeout()))
 				.build();
 	}
