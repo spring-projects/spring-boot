@@ -34,7 +34,7 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<!-- Dependency versions -->
-		<activemq.version>5.15.6</activemq.version>
+		<activemq.version>5.15.7</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.67</appengine-sdk.version>
 		<artemis.version>2.6.3</artemis.version>
@@ -182,7 +182,7 @@
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<saaj-impl.version>1.5.0</saaj-impl.version>
-		<thymeleaf.version>3.0.10.RELEASE</thymeleaf.version>
+		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity.version>3.0.3.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
