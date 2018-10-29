@@ -49,6 +49,7 @@
 						<configuration>
 							<ignoredClassPatterns>
 								<ignoredClassPattern>org.joda.time.base.BaseDateTime</ignoredClassPattern>
+								<ignoredClassPattern>.*module-info</ignoredClassPattern>
 							</ignoredClassPatterns>
 							<ignoredResourcePatterns>
 								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
