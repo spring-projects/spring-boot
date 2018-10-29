@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics;
 import io.micrometer.appoptics.AppOpticsConfig;
 import io.micrometer.appoptics.AppOpticsMeterRegistry;
 import io.micrometer.core.instrument.Clock;
-
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
