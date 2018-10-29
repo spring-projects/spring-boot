@@ -75,7 +75,7 @@ public class JettyWebServerFactoryCustomizer implements
 		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
 				.to(factory::setSelectors);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
-				.asInt(DataSize::toBytes)
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize).asInt(DataSize::toBytes)
