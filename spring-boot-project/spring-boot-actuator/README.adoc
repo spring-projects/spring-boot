@@ -6,6 +6,7 @@ monitor your application using HTTP or JMX endpoints. Auditing, health and metri
 gathering can be automatically applied to your application. The
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
 covers the features in more detail.
+Note that there are several key differences between actuator in spring-boot 2.0 and 1.5. You can find more about this in this https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide#spring-boot-actuator[guide]
 
 == Enabling the Actuator
 The simplest way to enable the features is to add a dependency to the
