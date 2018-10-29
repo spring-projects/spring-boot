@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure;
 
 import java.util.List;
@@ -33,8 +34,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author Dave Syer
+ * Tests for {@link SharedMetadataReaderFactoryContextInitializer}.
  *
+ * @author Dave Syer
  */
 public class SharedMetadataReaderFactoryContextInitializerTests {
 

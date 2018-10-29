@@ -60,7 +60,6 @@ class SharedMetadataReaderFactoryContextInitializer implements
 
 	@Override
 	public int getOrder() {
-		// Should happen before other BeanDefinitionRegistryPostProcessors are added
 		return 0;
 	}
 
