@@ -52,20 +52,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontMetricsExportAutoConfiguration {
 
+	private final WavefrontProperties properties;
+
+	public WavefrontMetricsExportAutoConfiguration(WavefrontProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public WavefrontConfig wavefrontConfig(WavefrontProperties props) {
-		return new WavefrontPropertiesConfigAdapter(props);
+	public WavefrontConfig wavefrontConfig() {
+		return new WavefrontPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig,
-			Clock clock, WavefrontProperties wavefrontProperties) {
+			Clock clock) {
 		return WavefrontMeterRegistry.builder(wavefrontConfig).clock(clock)
-				.httpClient(new HttpUrlConnectionSender(
-						wavefrontProperties.getConnectTimeout(),
-						wavefrontProperties.getReadTimeout()))
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 	}
 

@@ -52,20 +52,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogMetricsExportAutoConfiguration {
 
+	private final DatadogProperties properties;
+
+	public DatadogMetricsExportAutoConfiguration(DatadogProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public DatadogConfig datadogConfig(DatadogProperties datadogProperties) {
-		return new DatadogPropertiesConfigAdapter(datadogProperties);
+	public DatadogConfig datadogConfig() {
+		return new DatadogPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
-			Clock clock, DatadogProperties datadogProperties) {
+			Clock clock) {
 		return DatadogMeterRegistry.builder(datadogConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionSender(datadogProperties.getConnectTimeout(),
-								datadogProperties.getReadTimeout()))
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 	}
 

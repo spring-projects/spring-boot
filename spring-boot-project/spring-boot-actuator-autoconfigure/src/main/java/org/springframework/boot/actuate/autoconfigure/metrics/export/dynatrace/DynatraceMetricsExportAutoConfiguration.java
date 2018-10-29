@@ -52,20 +52,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(DynatraceProperties.class)
 public class DynatraceMetricsExportAutoConfiguration {
 
+	private final DynatraceProperties properties;
+
+	public DynatraceMetricsExportAutoConfiguration(DynatraceProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public DynatraceConfig dynatraceConfig(DynatraceProperties dynatraceProperties) {
-		return new DynatracePropertiesConfigAdapter(dynatraceProperties);
+	public DynatraceConfig dynatraceConfig() {
+		return new DynatracePropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public DynatraceMeterRegistry dynatraceMeterRegistry(DynatraceConfig dynatraceConfig,
-			Clock clock, DynatraceProperties dynatraceProperties) {
+			Clock clock) {
 		return DynatraceMeterRegistry.builder(dynatraceConfig).clock(clock)
-				.httpClient(new HttpUrlConnectionSender(
-						dynatraceProperties.getConnectTimeout(),
-						dynatraceProperties.getReadTimeout()))
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 	}
 

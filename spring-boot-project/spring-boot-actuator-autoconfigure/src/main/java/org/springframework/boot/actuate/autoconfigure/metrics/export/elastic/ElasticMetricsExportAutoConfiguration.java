@@ -52,20 +52,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ElasticProperties.class)
 public class ElasticMetricsExportAutoConfiguration {
 
+	private final ElasticProperties properties;
+
+	public ElasticMetricsExportAutoConfiguration(ElasticProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public ElasticConfig elasticConfig(ElasticProperties elasticProperties) {
-		return new ElasticPropertiesConfigAdapter(elasticProperties);
+	public ElasticConfig elasticConfig() {
+		return new ElasticPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig,
-			Clock clock, ElasticProperties elasticProperties) {
+			Clock clock) {
 		return ElasticMeterRegistry.builder(elasticConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionSender(elasticProperties.getConnectTimeout(),
-								elasticProperties.getReadTimeout()))
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 	}
 

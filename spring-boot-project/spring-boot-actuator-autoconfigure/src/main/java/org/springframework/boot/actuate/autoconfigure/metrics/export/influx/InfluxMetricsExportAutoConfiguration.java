@@ -52,10 +52,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(InfluxProperties.class)
 public class InfluxMetricsExportAutoConfiguration {
 
+	private final InfluxProperties properties;
+
+	public InfluxMetricsExportAutoConfiguration(InfluxProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxConfig influxConfig(InfluxProperties influxProperties) {
-		return new InfluxPropertiesConfigAdapter(influxProperties);
+	public InfluxConfig influxConfig() {
+		return new InfluxPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
@@ -64,8 +70,8 @@ public class InfluxMetricsExportAutoConfiguration {
 			InfluxProperties influxProperties) {
 		return InfluxMeterRegistry.builder(influxConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionSender(influxProperties.getConnectTimeout(),
-								influxProperties.getReadTimeout()))
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 
 	}

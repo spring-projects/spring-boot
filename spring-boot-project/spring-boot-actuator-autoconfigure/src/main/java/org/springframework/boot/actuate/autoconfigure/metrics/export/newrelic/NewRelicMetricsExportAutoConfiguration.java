@@ -53,20 +53,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(NewRelicProperties.class)
 public class NewRelicMetricsExportAutoConfiguration {
 
+	private final NewRelicProperties properties;
+
+	public NewRelicMetricsExportAutoConfiguration(NewRelicProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicConfig newRelicConfig(NewRelicProperties props) {
-		return new NewRelicPropertiesConfigAdapter(props);
+	public NewRelicConfig newRelicConfig() {
+		return new NewRelicPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig,
-			Clock clock, NewRelicProperties newRelicProperties) {
+			Clock clock) {
 		return NewRelicMeterRegistry.builder(newRelicConfig).clock(clock)
-				.httpClient(new HttpUrlConnectionSender(
-						newRelicProperties.getConnectTimeout(),
-						newRelicProperties.getReadTimeout()))
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 
 	}

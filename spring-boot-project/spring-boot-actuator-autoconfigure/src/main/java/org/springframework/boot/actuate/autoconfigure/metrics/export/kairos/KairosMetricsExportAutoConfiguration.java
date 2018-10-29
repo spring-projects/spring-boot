@@ -52,20 +52,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(KairosProperties.class)
 public class KairosMetricsExportAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public KairosConfig kairosConfig(KairosProperties kairosProperties) {
-		return new KairosPropertiesConfigAdapter(kairosProperties);
+	private final KairosProperties properties;
+
+	public KairosMetricsExportAutoConfiguration(KairosProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig, Clock clock,
-			KairosProperties kairosProperties) {
+	public KairosConfig kairosConfig() {
+		return new KairosPropertiesConfigAdapter(this.properties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig,
+			Clock clock) {
 		return KairosMeterRegistry.builder(kairosConfig).clock(clock)
 				.httpClient(
-						new HttpUrlConnectionSender(kairosProperties.getConnectTimeout(),
-								kairosProperties.getReadTimeout()))
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 
 	}

@@ -52,20 +52,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(AppOpticsProperties.class)
 public class AppOpticsMetricsExportAutoConfiguration {
 
+	private final AppOpticsProperties properties;
+
+	public AppOpticsMetricsExportAutoConfiguration(AppOpticsProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public AppOpticsConfig appOpticsConfig(AppOpticsProperties appOpticsProperties) {
-		return new AppOpticsPropertiesConfigAdapter(appOpticsProperties);
+	public AppOpticsConfig appOpticsConfig() {
+		return new AppOpticsPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public AppOpticsMeterRegistry appOpticsMeterRegistry(AppOpticsConfig config,
-			Clock clock, AppOpticsProperties appOpticsProperties) {
+			Clock clock) {
 		return AppOpticsMeterRegistry.builder(config).clock(clock)
-				.httpClient(new HttpUrlConnectionSender(
-						appOpticsProperties.getConnectTimeout(),
-						appOpticsProperties.getReadTimeout()))
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
 				.build();
 	}
 
