@@ -48,7 +48,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	/**
 	 * Create a new {@link CompositeReactiveHealthIndicator}.
 	 * @param healthAggregator the health aggregator
-	 * @deprecated since 2.1.0 in favour of
+	 * @deprecated since 2.1.0 in favor of
 	 * {@link #CompositeReactiveHealthIndicator(HealthAggregator, ReactiveHealthIndicatorRegistry)}
 	 */
 	@Deprecated
@@ -62,7 +62,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	 * @param healthAggregator the health aggregator
 	 * @param indicators a map of {@link ReactiveHealthIndicator HealthIndicators} with
 	 * the key being used as an indicator name.
-	 * @deprecated since 2.1.0 in favour of
+	 * @deprecated since 2.1.0 in favor of
 	 * {@link #CompositeReactiveHealthIndicator(HealthAggregator, ReactiveHealthIndicatorRegistry)}
 	 */
 	@Deprecated
@@ -93,7 +93,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	 * @return this instance
 	 * @throws IllegalStateException if an indicator with the given {@code name} is
 	 * already registered.
-	 * @deprecated since 2.1.0 in favour of
+	 * @deprecated since 2.1.0 in favor of
 	 * {@link ReactiveHealthIndicatorRegistry#register(String, ReactiveHealthIndicator)}
 	 */
 	@Deprecated

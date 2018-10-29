@@ -59,7 +59,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	 * Create a new {@code DiskSpaceHealthIndicator} instance.
 	 * @param path the Path used to compute the available disk space
 	 * @param threshold the minimum disk space that should be available (in bytes)
-	 * @deprecated since 2.1.0 in favour of
+	 * @deprecated since 2.1.0 in favor of
 	 * {@link #DiskSpaceHealthIndicator(File, DataSize)}
 	 */
 	@Deprecated

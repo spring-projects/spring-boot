@@ -36,7 +36,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	/**
 	 * Create a new {@link CompositeHealthIndicator}.
 	 * @param healthAggregator the health aggregator
-	 * @deprecated since 2.1.0 in favour of
+	 * @deprecated since 2.1.0 in favor of
 	 * {@link #CompositeHealthIndicator(HealthAggregator, HealthIndicatorRegistry)}
 	 */
 	@Deprecated
