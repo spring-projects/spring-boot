@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.elastic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.elastic.ElasticConfig;
 import io.micrometer.elastic.ElasticMeterRegistry;
 
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Elastic.
  *
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 @Configuration
@@ -50,17 +52,27 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ElasticProperties.class)
 public class ElasticMetricsExportAutoConfiguration {
 
+	private final ElasticProperties properties;
+
+	public ElasticMetricsExportAutoConfiguration(ElasticProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public ElasticConfig elasticConfig(ElasticProperties elasticProperties) {
-		return new ElasticPropertiesConfigAdapter(elasticProperties);
+	public ElasticConfig elasticConfig() {
+		return new ElasticPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig,
 			Clock clock) {
-		return new ElasticMeterRegistry(elasticConfig, clock);
+		return ElasticMeterRegistry.builder(elasticConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
+				.build();
 	}
 
 }
