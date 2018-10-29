@@ -114,17 +114,6 @@ public class DevToolPropertiesIntegrationTests {
 				.isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
 	}
 
-	@Test
-	public void postProcessEnablesMessageSourceReloadProperty() {
-		SpringApplication application = new SpringApplication(TestConfiguration.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run();
-		ConfigurableEnvironment environment = this.context.getEnvironment();
-		Boolean property = environment.getProperty("spring.messages.reloadable",
-				Boolean.class);
-		assertThat(property).isTrue();
-	}
-
 	@Configuration
 	static class TestConfiguration {
 

@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,17 @@ public class WebMvcTagsTests {
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
 	private final MockHttpServletResponse response = new MockHttpServletResponse();
+
+	@Test
+	public void uriTagIsDataRestsEffectiveRepositoryLookupPathWhenAvailable() {
+		this.request.setAttribute(
+				"org.springframework.data.rest.webmvc.RepositoryRestHandlerMapping.EFFECTIVE_REPOSITORY_RESOURCE_LOOKUP_PATH",
+				new PathPatternParser().parse("/api/cities"));
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				"/api/{repository}");
+		Tag tag = WebMvcTags.uri(this.request, this.response);
+		assertThat(tag.getValue()).isEqualTo("/api/cities");
+	}
 
 	@Test
 	public void uriTagValueIsBestMatchingPatternWhenAvailable() {

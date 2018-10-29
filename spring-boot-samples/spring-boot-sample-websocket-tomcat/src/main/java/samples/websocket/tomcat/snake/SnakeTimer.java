@@ -24,8 +24,8 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Sets up the timer for the multi-player snake game WebSocket example.
@@ -36,7 +36,7 @@ public final class SnakeTimer {
 
 	private static final Object MONITOR = new Object();
 
-	private static final Logger log = LoggerFactory.getLogger(SnakeTimer.class);
+	private static final Log logger = LogFactory.getLog(SnakeTimer.class);
 
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
 
@@ -103,7 +103,7 @@ public final class SnakeTimer {
 					tick();
 				}
 				catch (Throwable ex) {
-					log.error("Caught to prevent timer from shutting down", ex);
+					logger.error("Caught to prevent timer from shutting down", ex);
 				}
 			}
 		}, TICK_DELAY, TICK_DELAY);

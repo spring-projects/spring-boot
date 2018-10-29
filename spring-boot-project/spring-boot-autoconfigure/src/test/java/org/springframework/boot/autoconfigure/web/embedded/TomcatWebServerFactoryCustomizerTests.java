@@ -73,12 +73,10 @@ public class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	public void defaultsAreConsistent() {
-		customizeAndRunServer((server) -> {
-			assertThat(((AbstractHttp11Protocol<?>) server.getTomcat().getConnector()
-					.getProtocolHandler()).getMaxSwallowSize())
-							.isEqualTo(this.serverProperties.getTomcat()
-									.getMaxSwallowSize().toBytes());
-		});
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
+						.isEqualTo(this.serverProperties.getTomcat().getMaxSwallowSize()
+								.toBytes()));
 	}
 
 	@Test
@@ -127,6 +125,22 @@ public class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
 				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
 						.isEqualTo(DataSize.ofKilobytes(1).toBytes()));
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
 	}
 
 	@Test

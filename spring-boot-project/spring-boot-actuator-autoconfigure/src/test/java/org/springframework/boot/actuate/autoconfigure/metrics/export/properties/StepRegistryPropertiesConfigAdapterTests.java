@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Base test for {@link StepRegistryPropertiesConfigAdapter} implementations.
  *
+ * @param <P> properties used by the tests
+ * @param <A> adapter used by the tests
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  */

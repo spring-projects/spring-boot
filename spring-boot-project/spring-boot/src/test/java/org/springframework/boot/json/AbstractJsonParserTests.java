@@ -167,7 +167,7 @@ public abstract class AbstractJsonParserTests {
 	}
 
 	@Test
-	public void escapeQuote() {
+	public void escapeDoubleQuote() {
 		String input = "{\"foo\": \"\\\"bar\\\"\"}";
 		Map<String, Object> map = this.parser.parseMap(input);
 		assertThat(map.get("foo")).isEqualTo("\"bar\"");

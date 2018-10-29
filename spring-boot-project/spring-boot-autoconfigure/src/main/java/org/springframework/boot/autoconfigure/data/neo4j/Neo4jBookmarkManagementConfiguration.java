@@ -36,11 +36,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Provides a {@link BookmarkManager} for Neo4j's bookmark support based on Caffeine if
- * available. Depending on the applications kind (web or not) the bookmark manager will be
- * bound to the application or the request, as recommend by Spring Data Neo4j.
+ * available. Depending on the application's type (web or not) the bookmark manager will
+ * be bound to the application or the request, as recommend by Spring Data Neo4j.
  *
  * @author Michael Simons
- * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })

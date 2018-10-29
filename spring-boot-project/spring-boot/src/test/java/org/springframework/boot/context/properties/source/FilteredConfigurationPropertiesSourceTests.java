@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * Test for {@link FilteredIterableConfigurationPropertiesSource}.
@@ -67,7 +66,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.UNKNOWN);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
@@ -79,7 +78,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	public void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.ABSENT);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
@@ -91,7 +90,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	public void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+				Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name))
 				.willReturn(ConfigurationPropertyState.PRESENT);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);

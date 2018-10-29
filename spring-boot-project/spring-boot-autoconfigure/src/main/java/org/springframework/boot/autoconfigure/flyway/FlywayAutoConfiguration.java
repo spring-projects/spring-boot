@@ -78,6 +78,7 @@ import org.springframework.util.StringUtils;
  * @author Dominic Gunn
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
@@ -98,7 +99,6 @@ public class FlywayAutoConfiguration {
 		return new FlywaySchemaManagementProvider(flyways);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })

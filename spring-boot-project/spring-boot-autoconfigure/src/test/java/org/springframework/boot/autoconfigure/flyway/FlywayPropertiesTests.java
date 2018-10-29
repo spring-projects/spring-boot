@@ -132,9 +132,9 @@ public class FlywayPropertiesTests {
 				"dryRunOutputAsFileName", "errorHandlers", "errorHandlersAsClassNames",
 				"errorOverrides", "licenseKey", "oracleSqlplus", "stream",
 				"undoSqlMigrationPrefix");
-		List<String> configurationKeys = new ArrayList(configuration.keySet());
+		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
-		List<String> propertiesKeys = new ArrayList(properties.keySet());
+		List<String> propertiesKeys = new ArrayList<>(properties.keySet());
 		Collections.sort(propertiesKeys);
 		assertThat(configurationKeys).isEqualTo(propertiesKeys);
 	}

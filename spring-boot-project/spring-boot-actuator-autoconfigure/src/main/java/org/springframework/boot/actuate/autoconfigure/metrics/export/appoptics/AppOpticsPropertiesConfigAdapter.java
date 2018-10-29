@@ -33,14 +33,17 @@ class AppOpticsPropertiesConfigAdapter
 		super(properties);
 	}
 
+	@Override
 	public String uri() {
 		return get(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
 	}
 
-	public String token() {
-		return get(AppOpticsProperties::getApiToken, AppOpticsConfig.super::token);
+	@Override
+	public String apiToken() {
+		return get(AppOpticsProperties::getApiToken, AppOpticsConfig.super::apiToken);
 	}
 
+	@Override
 	public String hostTag() {
 		return get(AppOpticsProperties::getHostTag, AppOpticsConfig.super::hostTag);
 	}

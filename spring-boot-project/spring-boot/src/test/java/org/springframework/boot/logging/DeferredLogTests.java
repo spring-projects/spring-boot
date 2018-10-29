@@ -171,6 +171,7 @@ public class DeferredLogTests {
 		verifyZeroInteractions(log2);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void switchTo() {
 		DirectFieldAccessor deferredLogFieldAccessor = new DirectFieldAccessor(

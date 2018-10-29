@@ -50,7 +50,6 @@ public class InfluxDbAutoConfiguration {
 
 	private final OkHttpClient.Builder builder;
 
-	@SuppressWarnings("deprecation")
 	public InfluxDbAutoConfiguration(InfluxDbProperties properties,
 			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<OkHttpClient.Builder> deprecatedBuilder) {

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -38,6 +40,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -147,15 +150,40 @@ public class JettyWebServerFactoryCustomizerTests {
 	public void customizeMaxHttpHeaderSize() {
 		bind("server.max-http-header-size=2048");
 		JettyWebServer server = customizeAndGetServer();
-		for (Connector connector : server.getServer().getConnectors()) {
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(2048);
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
+		List<Integer> requestHeaderSizes = new ArrayList<>();
+		Connector[] connectors = (Connector[]) ReflectionTestUtils.getField(server,
+				"connectors");
+		for (Connector connector : connectors) {
 			connector.getConnectionFactories().stream()
 					.filter((factory) -> factory instanceof ConnectionFactory)
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();
-						assertThat(configuration.getRequestHeaderSize()).isEqualTo(2048);
+						requestHeaderSizes.add(configuration.getRequestHeaderSize());
 					});
 		}
+		return requestHeaderSizes;
 	}
 
 	private void bind(String... inlinedProperties) {

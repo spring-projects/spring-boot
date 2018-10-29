@@ -25,7 +25,6 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -54,15 +53,6 @@ public class WebFluxTagsTests {
 	public void uriTagValueIsBestMatchingPatternWhenAvailable() {
 		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
 				this.parser.parse("/spring"));
-		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-		Tag tag = WebFluxTags.uri(this.exchange);
-		assertThat(tag.getValue()).isEqualTo("/spring");
-	}
-
-	@Test
-	public void uriTagValueIsFnMatchingPatternWhenAvailable() {
-		this.exchange.getAttributes().put(RouterFunctions.MATCHING_PATTERN_ATTRIBUTE,
-				"/spring");
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("/spring");

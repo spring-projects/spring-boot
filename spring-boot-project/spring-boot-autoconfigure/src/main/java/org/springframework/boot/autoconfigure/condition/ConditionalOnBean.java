@@ -97,4 +97,14 @@ public @interface ConditionalOnBean {
 	 */
 	SearchStrategy search() default SearchStrategy.ALL;
 
+	/**
+	 * Additional classes that may contain the specified bean types within their generic
+	 * parameters. For example, an annotation declaring {@code value=Name.class} and
+	 * {@code parameterizedContainer=NameRegistration.class} would detect both
+	 * {@code Name} and {@code NameRegistration<Name>}.
+	 * @return the container types
+	 * @since 2.1.0
+	 */
+	Class<?>[] parameterizedContainer() default {};
+
 }
