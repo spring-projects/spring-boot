@@ -23,7 +23,6 @@ import javax.servlet.Filter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -108,11 +107,15 @@ public class RemoteDevToolsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 
-		@Autowired
-		private DevToolsProperties properties;
+		private final DevToolsProperties properties;
 
-		@Autowired
-		private ServerProperties serverProperties;
+		private final ServerProperties serverProperties;
+
+		RemoteRestartConfiguration(DevToolsProperties devToolsProperties,
+				ServerProperties serverProperties) {
+			this.properties = devToolsProperties;
+			this.serverProperties = serverProperties;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean

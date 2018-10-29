@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.influx;
-
-import java.util.function.Supplier;
-
-import okhttp3.OkHttpClient;
-import org.influxdb.InfluxDB;
-
 /**
- * Provide the {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} to use to
- * customize the auto-configured {@link InfluxDB} instance.
- *
- * @author Stephane Nicoll
- * @since 2.1.0
+ * Web test utilities and support classes.
  */
-@FunctionalInterface
-public interface InfluxDbOkHttpClientBuilderProvider
-		extends Supplier<OkHttpClient.Builder> {
-
-}
+package org.springframework.boot.test.web;

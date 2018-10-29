@@ -512,13 +512,11 @@ public class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
 				.withConfiguration(
 						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(ReflectionTestUtils.getField(
-							context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor"))
-									.isSameAs(context.getBean(
-											CustomAsyncTaskExecutorConfigurer.class).taskExecutor);
-				});
+				.run((context) -> assertThat(ReflectionTestUtils.getField(
+						context.getBean(RequestMappingHandlerAdapter.class),
+						"taskExecutor"))
+								.isSameAs(context.getBean(
+										CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
 	}
 
 	@Test
