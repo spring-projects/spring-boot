@@ -42,9 +42,8 @@ public class JsonbAutoConfigurationWithNoProviderTests {
 
 	@Test
 	public void jsonbBacksOffWhenThereIsNoProvider() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(Jsonb.class);
-		});
+		this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(Jsonb.class));
 	}
 
 }

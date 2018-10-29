@@ -73,12 +73,10 @@ public class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	public void defaultsAreConsistent() {
-		customizeAndRunServer((server) -> {
-			assertThat(((AbstractHttp11Protocol<?>) server.getTomcat().getConnector()
-					.getProtocolHandler()).getMaxSwallowSize())
-							.isEqualTo(this.serverProperties.getTomcat()
-									.getMaxSwallowSize().toBytes());
-		});
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
+						.isEqualTo(this.serverProperties.getTomcat().getMaxSwallowSize()
+								.toBytes()));
 	}
 
 	@Test

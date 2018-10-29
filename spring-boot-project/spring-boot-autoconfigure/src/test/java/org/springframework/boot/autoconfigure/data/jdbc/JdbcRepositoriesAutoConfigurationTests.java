@@ -51,10 +51,8 @@ public class JdbcRepositoriesAutoConfigurationTests {
 	@Test
 	public void backsOffWithNoDataSource() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> {
-					assertThat(context)
-							.doesNotHaveBean(JdbcRepositoryConfigExtension.class);
-				});
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(JdbcRepositoryConfigExtension.class));
 	}
 
 	@Test

@@ -592,9 +592,7 @@ public class HibernateJpaAutoConfigurationTests
 		@Bean
 		public EntityManagerFactoryBuilderCustomizer asyncBootstrappingCustomizer(
 				ThreadPoolTaskExecutor executor) {
-			return (builder) -> {
-				builder.setBootstrapExecutor(executor);
-			};
+			return (builder) -> builder.setBootstrapExecutor(executor);
 		}
 
 	}
