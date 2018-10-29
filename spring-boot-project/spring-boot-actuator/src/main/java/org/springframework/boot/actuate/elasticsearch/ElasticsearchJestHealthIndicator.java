@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  *
  * @author Stephane Nicoll
  * @author Julian Devia Serna
+ * @author Brian Clozel
  * @since 2.0.0
  */
 public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
@@ -47,14 +48,19 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		JestResult healthResult = this.jestClient
 				.execute(new io.searchbox.cluster.Health.Builder().build());
-		JsonElement root = this.jsonParser.parse(healthResult.getJsonString());
-		JsonElement status = root.getAsJsonObject().get("status");
-		if (!healthResult.isSucceeded() || healthResult.getResponseCode() != 200 || status
-				.getAsString().equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
-			builder.outOfService();
+		if (healthResult.getResponseCode() != 200 || !healthResult.isSucceeded()) {
+			builder.down();
 		}
 		else {
-			builder.up();
+			JsonElement root = this.jsonParser.parse(healthResult.getJsonString());
+			JsonElement status = root.getAsJsonObject().get("status");
+			if (status.getAsString()
+					.equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
+				builder.outOfService();
+			}
+			else {
+				builder.up();
+			}
 		}
 	}
 
