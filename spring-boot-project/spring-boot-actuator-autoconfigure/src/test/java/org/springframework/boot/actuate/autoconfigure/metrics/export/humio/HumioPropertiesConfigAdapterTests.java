@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.humio;
 
-import java.time.Duration;
 import java.util.Collections;
 
 import org.junit.Test;
