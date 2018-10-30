@@ -73,7 +73,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param indicator the indicator
 	 * @throws IllegalStateException if an indicator with the given {@code name} is
 	 * already registered.
-	 * @deprecated since 2.1.0 in favour of
+	 * @deprecated since 2.1.0 in favor of
 	 * {@link HealthIndicatorRegistry#register(String, HealthIndicator)}
 	 */
 	@Deprecated
