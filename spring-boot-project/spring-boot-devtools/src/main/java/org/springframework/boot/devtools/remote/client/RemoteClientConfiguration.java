@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -75,12 +75,11 @@ public class RemoteClientConfiguration implements InitializingBean {
 
 	private final DevToolsProperties properties;
 
-	private final String remoteUrl;
+	@Value("${remoteUrl}")
+	private String remoteUrl;
 
-	public RemoteClientConfiguration(DevToolsProperties properties,
-			@Value("${remoteUrl}") String remoteUrl) {
+	public RemoteClientConfiguration(DevToolsProperties properties) {
 		this.properties = properties;
-		this.remoteUrl = remoteUrl;
 	}
 
 	@Bean
@@ -135,24 +134,19 @@ public class RemoteClientConfiguration implements InitializingBean {
 	static class LiveReloadConfiguration
 			implements ApplicationListener<ClassPathChangedEvent> {
 
-		private final DevToolsProperties properties;
+		@Autowired
+		private DevToolsProperties properties;
 
-		private final LiveReloadServer liveReloadServer;
+		@Autowired(required = false)
+		private LiveReloadServer liveReloadServer;
 
-		private final ClientHttpRequestFactory clientHttpRequestFactory;
+		@Autowired
+		private ClientHttpRequestFactory clientHttpRequestFactory;
 
 		@Value("${remoteUrl}")
 		private String remoteUrl;
 
 		private ExecutorService executor = Executors.newSingleThreadExecutor();
-
-		LiveReloadConfiguration(DevToolsProperties properties,
-				ObjectProvider<LiveReloadServer> liveReloadServer,
-				ClientHttpRequestFactory clientHttpRequestFactory) {
-			this.properties = properties;
-			this.liveReloadServer = liveReloadServer.getIfAvailable();
-			this.clientHttpRequestFactory = clientHttpRequestFactory;
-		}
 
 		@Bean
 		@RestartScope
@@ -187,15 +181,11 @@ public class RemoteClientConfiguration implements InitializingBean {
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
-		private final DevToolsProperties properties;
+		@Autowired
+		private DevToolsProperties properties;
 
-		private final String remoteUrl;
-
-		RemoteRestartClientConfiguration(DevToolsProperties properties,
-				@Value("${remoteUrl}") String remoteUrl) {
-			this.properties = properties;
-			this.remoteUrl = remoteUrl;
-		}
+		@Value("${remoteUrl}")
+		private String remoteUrl;
 
 		@Bean
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
