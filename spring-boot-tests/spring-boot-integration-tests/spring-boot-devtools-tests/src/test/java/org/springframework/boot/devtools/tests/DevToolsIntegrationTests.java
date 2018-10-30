@@ -80,7 +80,9 @@ public class DevToolsIntegrationTests {
 
 	@After
 	public void stopApplication() throws InterruptedException {
-		this.launchedApplication.stop();
+		if (this.launchedApplication != null) {
+			this.launchedApplication.stop();
+		}
 	}
 
 	@Test
