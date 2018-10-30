@@ -40,12 +40,12 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 			throws Exception {
 		LaunchedJvm applicationJvm = javaLauncher.launch("app",
 				createApplicationClassPath(), "com.example.DevToolsTestApplication",
-				"--server.port=0", "--spring.devtools.remote.secret=secret");
-		int port = awaitServerPort(applicationJvm.getStandardOut());
+				"--server.port=12345", "--spring.devtools.remote.secret=secret");
+		awaitServerPort(applicationJvm.getStandardOut());
 		LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
 				"remote-spring-application", createRemoteSpringApplicationClassPath(),
 				RemoteSpringApplication.class.getName(),
-				"--spring.devtools.remote.secret=secret", "http://localhost:" + port);
+				"--spring.devtools.remote.secret=secret", "http://localhost:12345");
 		awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
 		return new LaunchedApplication(new File("target/remote"),
 				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
