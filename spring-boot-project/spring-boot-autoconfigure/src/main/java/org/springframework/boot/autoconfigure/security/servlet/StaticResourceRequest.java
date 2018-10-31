@@ -60,7 +60,7 @@ public final class StaticResourceRequest {
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public StaticResourceRequestMatcher atCommonLocations() {
+	public static StaticResourceRequestMatcher atCommonLocations() {
 		return at(EnumSet.allOf(StaticResourceLocation.class));
 	}
 
@@ -73,7 +73,7 @@ public final class StaticResourceRequest {
 	 * @param rest additional locations to include
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public StaticResourceRequestMatcher at(StaticResourceLocation first,
+	public static StaticResourceRequestMatcher at(StaticResourceLocation first,
 			StaticResourceLocation... rest) {
 		return at(EnumSet.of(first, rest));
 	}
@@ -86,7 +86,7 @@ public final class StaticResourceRequest {
 	 * @param locations the locations to include
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public StaticResourceRequestMatcher at(Set<StaticResourceLocation> locations) {
+	public static StaticResourceRequestMatcher at(Set<StaticResourceLocation> locations) {
 		Assert.notNull(locations, "Locations must not be null");
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
 	}

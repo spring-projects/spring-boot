@@ -57,7 +57,7 @@ public final class StaticResourceRequest {
 	 * </pre>
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public StaticResourceServerWebExchange atCommonLocations() {
+	public static StaticResourceServerWebExchange atCommonLocations() {
 		return at(EnumSet.allOf(StaticResourceLocation.class));
 	}
 
@@ -70,7 +70,7 @@ public final class StaticResourceRequest {
 	 * @param rest additional locations to include
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public StaticResourceServerWebExchange at(StaticResourceLocation first,
+	public static StaticResourceServerWebExchange at(StaticResourceLocation first,
 			StaticResourceLocation... rest) {
 		return at(EnumSet.of(first, rest));
 	}
@@ -83,7 +83,8 @@ public final class StaticResourceRequest {
 	 * @param locations the locations to include
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public StaticResourceServerWebExchange at(Set<StaticResourceLocation> locations) {
+	public static StaticResourceServerWebExchange at(
+			Set<StaticResourceLocation> locations) {
 		Assert.notNull(locations, "Locations must not be null");
 		return new StaticResourceServerWebExchange(new LinkedHashSet<>(locations));
 	}

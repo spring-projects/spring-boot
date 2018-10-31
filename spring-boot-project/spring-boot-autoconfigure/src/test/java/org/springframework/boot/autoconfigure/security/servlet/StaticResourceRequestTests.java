@@ -40,11 +40,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class StaticResourceRequestTests {
 
-	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
-
 	@Test
 	public void atCommonLocationsShouldMatchCommonLocations() {
-		RequestMatcher matcher = this.resourceRequest.atCommonLocations();
+		RequestMatcher matcher = StaticResourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 		assertMatcher(matcher).matches("/images/file.css");
@@ -55,7 +53,7 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
-		RequestMatcher matcher = this.resourceRequest.atCommonLocations()
+		RequestMatcher matcher = StaticResourceRequest.atCommonLocations()
 				.excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
@@ -63,14 +61,14 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationShouldMatchLocation() {
-		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
+		RequestMatcher matcher = StaticResourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
 	public void atLocationWhenHasServletPathShouldMatchLocation() {
-		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
+		RequestMatcher matcher = StaticResourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher, "/foo").matches("/foo", "/css/file.css");
 		assertMatcher(matcher, "/foo").doesNotMatch("/foo", "/js/file.js");
 	}
@@ -78,7 +76,7 @@ public class StaticResourceRequestTests {
 	@Test
 	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.resourceRequest.at(null))
+				.isThrownBy(() -> StaticResourceRequest.at(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
@@ -86,7 +84,7 @@ public class StaticResourceRequestTests {
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
-						() -> this.resourceRequest.atCommonLocations().excluding(null))
+						() -> StaticResourceRequest.atCommonLocations().excluding(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
