@@ -1322,8 +1322,7 @@ public class SpringApplication {
 	}
 
 	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
-		List<E> list = new ArrayList<>();
-		list.addAll(elements);
+		List<E> list = new ArrayList<>(elements);
 		list.sort(AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<>(list);
 	}
