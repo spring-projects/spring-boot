@@ -371,7 +371,8 @@ public class ServerProperties {
 		private int acceptCount = 100;
 
 		/**
-		 * Maximum number of idle processors that will be retained in the cache and reused with a subsequent request.
+		 * Maximum number of idle processors that will be retained in the cache and reused
+		 * with a subsequent request.
 		 */
 		private int processorCache = 200;
 
