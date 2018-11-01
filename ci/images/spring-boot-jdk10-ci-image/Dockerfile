@@ -1,4 +1,5 @@
-FROM openjdk:10.0.2-13-jdk
+# 10.0.2+13-Debian-2
+FROM openjdk@sha256:6f481d9b45665cbfd39309ef72dc2afe628ff4721c29d3c5b8852287e6cb8668
 
 RUN apt-get update && \
     apt-get install -y git && \
