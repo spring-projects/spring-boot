@@ -105,10 +105,12 @@ jobs:
     trigger: true
   - put: spring-boot-ci-image
     params:
-      build: ci-images-git-repo/ci/images/spring-boot-ci-image
+      build: ci-images-git-repo/ci/images
+      dockerfile: spring-boot-ci-image/Dockerfile
   - put: spring-boot-jdk11-ci-image
     params:
-      build: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image
+      build: ci-images-git-repo/ci/images
+      dockerfile: spring-boot-jdk11-ci-image/Dockerfile
 - name: build
   serial: true
   public: true
