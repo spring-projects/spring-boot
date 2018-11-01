@@ -371,11 +371,7 @@ public class ServerProperties {
 		private int acceptCount = 100;
 
 		/**
-		 * The maximum number of idle processors that will be retained in the cache and
-		 * re-used with a subsequent request. The default is 200. A value of -1 means
-		 * unlimited. In the unlimited case, the theoretical maximum number of cached
-		 * Processor objects is {@link #getMaxConnections()} although it will usually be
-		 * closer to {@link #getMaxThreads()}.
+		 * Maximum number of idle processors that will be retained in the cache and reused with a subsequent request.
 		 */
 		private int processorCache = 200;
 
