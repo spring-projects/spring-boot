@@ -1,4 +1,5 @@
-FROM openjdk:8u181-jdk
+# 1.8.0_181-8u181-b13-1~deb9u1-b13
+FROM openjdk@sha256:1b842a215cf3437c9197f0f47e5c1a12f0a27aed27b84536ee3d8ef6b9b7e19e
 
 RUN apt-get update && \
     apt-get install -y git && \
