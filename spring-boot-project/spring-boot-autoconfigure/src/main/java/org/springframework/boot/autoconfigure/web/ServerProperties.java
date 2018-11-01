@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @author Olivier Lamy
  * @author Chentao Qu
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -380,6 +381,19 @@ public class ServerProperties {
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
+
+		/**
+		 * Configuring processor cache.
+		 */
+		private int processorCache = 200;
+
+		public int getProcessorCache() {
+			return this.processorCache;
+		}
+
+		public void setProcessorCache(int processorCache) {
+			this.processorCache = processorCache;
+		}
 
 		public int getMaxThreads() {
 			return this.maxThreads;

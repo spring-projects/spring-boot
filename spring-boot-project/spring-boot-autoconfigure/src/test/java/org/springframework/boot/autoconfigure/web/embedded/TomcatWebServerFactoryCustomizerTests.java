@@ -281,6 +281,12 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void testCustomizeProcessorCache() {
+		bind("server.tomcat.processor-cache=100");
+		assertThat(this.serverProperties.getTomcat().getProcessorCache()).isEqualTo(100);
+	}
+
+	@Test
 	public void accessLogBufferingCanBeDisabled() {
 		bind("server.tomcat.accesslog.enabled=true",
 				"server.tomcat.accesslog.buffered=false");
