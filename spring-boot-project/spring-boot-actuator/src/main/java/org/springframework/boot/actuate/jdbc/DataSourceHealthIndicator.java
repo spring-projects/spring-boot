@@ -115,6 +115,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 					new SingleColumnRowMapper());
 			Object result = DataAccessUtils.requiredSingleResult(results);
 			builder.withDetail("result", result);
+			builder.withDetail("validationQuery", validationQuery);
 		}
 	}
 
