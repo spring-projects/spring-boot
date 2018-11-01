@@ -57,6 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
+ * @author Dimitrios Liapis
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -103,7 +104,10 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ExitCodeGenerator.class)
 	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
-		return new JobExecutionExitCodeGenerator();
+		JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator = new JobExecutionExitCodeGenerator();
+		jobExecutionExitCodeGenerator.setExitCodeEnabled(this.properties.getExitCode().isEnabled());
+		jobExecutionExitCodeGenerator.setExitCode(this.properties.getExitCode().getValue());
+		return jobExecutionExitCodeGenerator;
 	}
 
 	@Bean

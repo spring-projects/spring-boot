@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.context.ApplicationListener;
@@ -27,11 +28,15 @@ import org.springframework.context.ApplicationListener;
  * {@link ExitCodeGenerator} for {@link JobExecutionEvent}s.
  *
  * @author Dave Syer
+ * @author Dimitrios Liapis
  */
 public class JobExecutionExitCodeGenerator
 		implements ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
 
 	private final List<JobExecution> executions = new ArrayList<>();
+
+	private boolean exitCodeEnabled;
+	private int exitCode;
 
 	@Override
 	public void onApplicationEvent(JobExecutionEvent event) {
@@ -41,11 +46,20 @@ public class JobExecutionExitCodeGenerator
 	@Override
 	public int getExitCode() {
 		for (JobExecution execution : this.executions) {
-			if (execution.getStatus().ordinal() > 0) {
+			if (exitCodeEnabled && ExitStatus.FAILED.getExitCode().equals(execution.getExitStatus().getExitCode())) {
+				return exitCode;
+			} else if (execution.getStatus().ordinal() > 0) {
 				return execution.getStatus().ordinal();
 			}
 		}
 		return 0;
 	}
 
+	public void setExitCodeEnabled(boolean exitCodeEnabled) {
+		this.exitCodeEnabled = exitCodeEnabled;
+	}
+
+	public void setExitCode(int exitCode) {
+		this.exitCode = exitCode;
+	}
 }

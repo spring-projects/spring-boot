@@ -1005,6 +1005,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.batch.initialize-schema=embedded # Database schema initialization mode.
 	spring.batch.job.enabled=true # Execute all Spring Batch jobs in the context on startup.
 	spring.batch.job.names= # Comma-separated list of job names to execute on startup (for instance, `job1,job2`). By default, all Jobs found in the context are executed.
+	spring.batch.exit-code.enabled=false # Whether to consider a provided Exit Code. By default it's disabled and the ordinal of the Batch Status is returned.
+	spring.batch.exit-code.value=-1 # In case the spring.batch.exit-code.enabled is true then only this property gets considered. It defines the Exit Code returned in case a Job Execution has ExitStatus FAILED.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
 

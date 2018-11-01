@@ -25,6 +25,7 @@ import org.springframework.boot.jdbc.DataSourceInitializationMode;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Vedran Pavic
+ * @author Dimitrios Liapis
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.batch")
@@ -49,6 +50,8 @@ public class BatchProperties {
 	private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
 
 	private final Job job = new Job();
+
+	private final ExitCode exitCode = new ExitCode();
 
 	public String getSchema() {
 		return this.schema;
@@ -78,6 +81,10 @@ public class BatchProperties {
 		return this.job;
 	}
 
+	public ExitCode getExitCode() {
+		return exitCode;
+	}
+
 	public static class Job {
 
 		/**
@@ -95,5 +102,29 @@ public class BatchProperties {
 		}
 
 	}
+
+	public static class ExitCode {
+
+		private boolean enabled = false;
+
+		private int value = -1;
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		public void setValue(int value) {
+			this.value = value;
+		}
+	}
+
 
 }

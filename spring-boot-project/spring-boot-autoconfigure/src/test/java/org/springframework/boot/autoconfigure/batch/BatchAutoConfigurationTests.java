@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -43,6 +44,7 @@ import org.springframework.batch.core.repository.support.MapJobRepositoryFactory
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -69,6 +71,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Kazuki Shimizu
+ * @author Dimitrios Liapis
  */
 public class BatchAutoConfigurationTests {
 
@@ -257,6 +260,74 @@ public class BatchAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void testExitCodeDisabledImplicit() {
+		this.contextRunner
+				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class).run((context) -> {
+			assertThat(SpringApplication.exit(context)).isEqualTo(0);
+		});
+	}
+
+	@Test
+	public void testExitCodeDisabledExplicit() {
+		this.contextRunner
+				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:false").run((context) -> {
+			assertThat(SpringApplication.exit(context)).isEqualTo(0);
+		});
+	}
+
+	@Test
+	public void testExitCodeEnabledWithoutValueBatchExitCodeCompleted() {
+		this.contextRunner
+				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:true").run((context) -> {
+			context.getBean(JobLauncherCommandLineRunner.class).run();
+			assertThat(SpringApplication.exit(context)).isEqualTo(0);
+		});
+	}
+
+	@Test
+	public void testExitCodeEnabledWithoutValueBatchExitCodeFailed() {
+		this.contextRunner
+				.withUserConfiguration(FailedJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:true").run((context) -> {
+			context.getBean(JobLauncherCommandLineRunner.class).run();
+			JobExecution jobExecution = context.getBean(JobRepository.class)
+					.getLastJobExecution("job", new JobParameters());
+
+			assertThat(SpringApplication.exit(context)).isEqualTo(-1);
+		});
+	}
+
+	@Test
+	public void testExitCodeEnabledWithValueBatchExitCodeCompleted() {
+		this.contextRunner
+				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:true",
+									"spring.batch.exit-code.value:-11").run((context) -> {
+			context.getBean(JobLauncherCommandLineRunner.class).run();
+			JobExecution jobExecution = context.getBean(JobRepository.class)
+					.getLastJobExecution("job", new JobParameters());
+
+			assertThat(SpringApplication.exit(context)).isEqualTo(0);
+		});
+	}
+
+	@Test
+	public void testExitCodeEnabledWithValueBatchExitCodeFailed() {
+		this.contextRunner
+				.withUserConfiguration(FailedJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:true",
+									"spring.batch.exit-code.value:-11").run((context) -> {
+			context.getBean(JobLauncherCommandLineRunner.class).run();
+			JobExecution jobExecution = context.getBean(JobRepository.class)
+					.getLastJobExecution("job", new JobParameters());
+
+			assertThat(SpringApplication.exit(context)).isEqualTo(-11);
+		});
+	}
+
 	@Configuration
 	protected static class EmptyConfiguration {
 
@@ -402,6 +473,38 @@ public class BatchAutoConfigurationTests {
 				@Override
 				protected void doExecute(JobExecution execution) {
 					execution.setStatus(BatchStatus.COMPLETED);
+				}
+			};
+			job.setJobRepository(this.jobRepository);
+			return job;
+		}
+
+	}
+
+
+	@EnableBatchProcessing
+	protected static class FailedJobConfiguration {
+
+		@Autowired
+		private JobRepository jobRepository;
+
+		@Bean
+		public Job job() {
+			AbstractJob job = new AbstractJob() {
+
+				@Override
+				public Collection<String> getStepNames() {
+					return Collections.emptySet();
+				}
+
+				@Override
+				public Step getStep(String stepName) {
+					return null;
+				}
+
+				@Override
+				protected void doExecute(JobExecution execution) {
+					execution.setExitStatus(ExitStatus.FAILED);
 				}
 			};
 			job.setJobRepository(this.jobRepository);
