@@ -34,11 +34,12 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for HTTP tracing.
  *
  * @author Dave Syer
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration
 @ConditionalOnWebApplication
-@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled")
 @EnableConfigurationProperties(HttpTraceProperties.class)
 public class HttpTraceAutoConfiguration {
 

@@ -42,12 +42,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HttpTraceAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  */
 public class HttpTraceAutoConfigurationTests {
 
 	@Test
+	public void configuresHttpTraceByDefault() {
+		new WebApplicationContextRunner()
+				.withConfiguration(
+						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(InMemoryHttpTraceRepository.class)
+						.doesNotHaveBean(HttpExchangeTracer.class));
+	}
+
+	@Test
 	public void configuresRepository() {
 		new WebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.run((context) -> assertThat(context)
@@ -70,6 +82,7 @@ public class HttpTraceAutoConfigurationTests {
 	@Test
 	public void configuresTracer() {
 		new WebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.run((context) -> assertThat(context)
@@ -79,6 +92,7 @@ public class HttpTraceAutoConfigurationTests {
 	@Test
 	public void usesUserProvidedTracer() {
 		new WebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.withUserConfiguration(CustomTracerConfiguration.class).run((context) -> {
@@ -91,6 +105,7 @@ public class HttpTraceAutoConfigurationTests {
 	@Test
 	public void configuresWebFilter() {
 		new ReactiveWebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.run((context) -> assertThat(context)
@@ -100,6 +115,7 @@ public class HttpTraceAutoConfigurationTests {
 	@Test
 	public void usesUserProvidedWebFilter() {
 		new ReactiveWebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.withUserConfiguration(CustomWebFilterConfiguration.class)
@@ -113,6 +129,7 @@ public class HttpTraceAutoConfigurationTests {
 	@Test
 	public void configuresServletFilter() {
 		new WebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.run((context) -> assertThat(context)
@@ -122,6 +139,7 @@ public class HttpTraceAutoConfigurationTests {
 	@Test
 	public void usesUserProvidedServletFilter() {
 		new WebApplicationContextRunner()
+				.withPropertyValues("management.trace.http.enabled=true")
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
