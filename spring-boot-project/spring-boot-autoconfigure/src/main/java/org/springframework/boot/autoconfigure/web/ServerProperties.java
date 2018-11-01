@@ -371,6 +371,15 @@ public class ServerProperties {
 		private int acceptCount = 100;
 
 		/**
+		 * The maximum number of idle processors that will be retained in the cache and
+		 * re-used with a subsequent request. The default is 200. A value of -1 means
+		 * unlimited. In the unlimited case, the theoretical maximum number of cached
+		 * Processor objects is {@link #getMaxConnections()} although it will usually be
+		 * closer to {@link #getMaxThreads()}.
+		 */
+		private int processorCache = 200;
+
+		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
@@ -381,19 +390,6 @@ public class ServerProperties {
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
-
-		/**
-		 * Configuring processor cache.
-		 */
-		private int processorCache = 200;
-
-		public int getProcessorCache() {
-			return this.processorCache;
-		}
-
-		public void setProcessorCache(int processorCache) {
-			this.processorCache = processorCache;
-		}
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -536,6 +532,14 @@ public class ServerProperties {
 
 		public void setAcceptCount(int acceptCount) {
 			this.acceptCount = acceptCount;
+		}
+
+		public int getProcessorCache() {
+			return this.processorCache;
+		}
+
+		public void setProcessorCache(int processorCache) {
+			this.processorCache = processorCache;
 		}
 
 		public List<String> getAdditionalTldSkipPatterns() {
