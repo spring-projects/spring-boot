@@ -276,6 +276,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.tomcat.max-threads=200 # Maximum amount of worker threads.
 	server.tomcat.min-spare-threads=10 # Minimum amount of worker threads.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
+	server.tomcat.processor-cache= # Maximum number of idle processors that will be retained in the cache and reused with a subsequent request.
 	server.tomcat.protocol-header= # Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header indicating whether the incoming request uses SSL.
 	server.tomcat.redirect-context-root=true # Whether requests to the context root should be redirected by appending a / to the path.
