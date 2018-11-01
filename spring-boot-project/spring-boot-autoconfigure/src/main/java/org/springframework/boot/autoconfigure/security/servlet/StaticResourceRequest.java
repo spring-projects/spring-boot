@@ -56,7 +56,7 @@ public final class StaticResourceRequest {
 	 * {@link StaticResourceRequestMatcher#excluding(StaticResourceLocation, StaticResourceLocation...)
 	 * excluding} method can be used to remove specific locations if required. For
 	 * example: <pre class="code">
-	 * StaticResourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS)
+	 * PathRequest.toStaticResources().atCommonLocations().excluding(StaticResourceLocation.CSS)
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
 	 */
@@ -67,7 +67,7 @@ public final class StaticResourceRequest {
 	/**
 	 * Returns a matcher that includes the specified {@link StaticResourceLocation
 	 * Locations}. For example: <pre class="code">
-	 * StaticResourceRequest.at(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
+	 * PathRequest.toStaticResources().at(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
 	 * </pre>
 	 * @param first the first location to include
 	 * @param rest additional locations to include
@@ -81,7 +81,7 @@ public final class StaticResourceRequest {
 	/**
 	 * Returns a matcher that includes the specified {@link StaticResourceLocation
 	 * Locations}. For example: <pre class="code">
-	 * StaticResourceRequest.at(locations)
+	 * PathRequest.toStaticResources().at(locations)
 	 * </pre>
 	 * @param locations the locations to include
 	 * @return the configured {@link RequestMatcher}
