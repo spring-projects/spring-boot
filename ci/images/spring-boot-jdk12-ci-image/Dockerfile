@@ -1,4 +1,4 @@
-FROM openjdk:9.0.4-12-jdk
+FROM openjdk:12-ea-17-jdk
 
 RUN apt-get update && \
     apt-get install -y git && \
