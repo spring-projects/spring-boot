@@ -66,24 +66,17 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((branch))
-- name: spring-boot-jdk9-ci-image
-  type: docker-image
-  source:
-    repository: ((docker-hub-organization))/spring-boot-jdk9-ci-image
-    username: ((docker-hub-username))
-    password: ((docker-hub-password))
-    tag: ((branch))
-- name: spring-boot-jdk10-ci-image
-  type: docker-image
-  source:
-    repository: ((docker-hub-organization))/spring-boot-jdk10-ci-image
-    username: ((docker-hub-username))
-    password: ((docker-hub-password))
-    tag: ((branch))
 - name: spring-boot-jdk11-ci-image
   type: docker-image
   source:
     repository: ((docker-hub-organization))/spring-boot-jdk11-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
+- name: spring-boot-jdk12-ci-image
+  type: docker-image
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk12-ci-image
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((branch))
@@ -101,20 +94,6 @@ resources:
     access_token: ((github-access-token))
     branch: ((branch))
     context: build
-- name: repo-status-jdk9-build
-  type: github-status-resource
-  source:
-    repository: ((github-repo-name))
-    access_token: ((github-access-token))
-    branch: ((branch))
-    context: jdk9-build
-- name: repo-status-jdk10-build
-  type: github-status-resource
-  source:
-    repository: ((github-repo-name))
-    access_token: ((github-access-token))
-    branch: ((branch))
-    context: jdk10-build
 - name: repo-status-jdk11-build
   type: github-status-resource
   source:
@@ -122,6 +101,13 @@ resources:
     access_token: ((github-access-token))
     branch: ((branch))
     context: jdk11-build
+- name: repo-status-jdk12-build
+  type: github-status-resource
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-access-token))
+    branch: ((branch))
+    context: jdk12-build
 - name: slack-alert
   type: slack-notification
   source:
