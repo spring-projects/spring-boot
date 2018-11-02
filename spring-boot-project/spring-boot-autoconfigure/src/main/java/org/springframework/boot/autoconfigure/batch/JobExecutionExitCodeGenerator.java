@@ -46,9 +46,10 @@ public class JobExecutionExitCodeGenerator
 	@Override
 	public int getExitCode() {
 		for (JobExecution execution : this.executions) {
-			if (exitCodeEnabled && ExitStatus.FAILED.getExitCode().equals(execution.getExitStatus().getExitCode())) {
-				return exitCode;
-			} else if (execution.getStatus().ordinal() > 0) {
+			if (this.exitCodeEnabled && ExitStatus.FAILED.getExitCode().equals(execution.getExitStatus().getExitCode())) {
+				return this.exitCode;
+			}
+			else if (execution.getStatus().ordinal() > 0) {
 				return execution.getStatus().ordinal();
 			}
 		}

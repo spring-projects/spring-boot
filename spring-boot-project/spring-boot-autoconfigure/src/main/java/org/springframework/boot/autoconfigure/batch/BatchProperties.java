@@ -82,7 +82,7 @@ public class BatchProperties {
 	}
 
 	public ExitCode getExitCode() {
-		return exitCode;
+		return this.exitCode;
 	}
 
 	public static class Job {
@@ -110,7 +110,7 @@ public class BatchProperties {
 		private int value = -1;
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -118,7 +118,7 @@ public class BatchProperties {
 		}
 
 		public int getValue() {
-			return value;
+			return this.value;
 		}
 
 		public void setValue(int value) {
