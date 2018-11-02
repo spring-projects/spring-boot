@@ -124,7 +124,7 @@ public class BatchProperties {
 		public void setValue(int value) {
 			this.value = value;
 		}
-	}
 
+	}
 
 }

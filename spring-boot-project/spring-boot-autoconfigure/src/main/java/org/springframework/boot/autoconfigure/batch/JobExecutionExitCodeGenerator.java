@@ -36,6 +36,7 @@ public class JobExecutionExitCodeGenerator
 	private final List<JobExecution> executions = new ArrayList<>();
 
 	private boolean exitCodeEnabled;
+
 	private int exitCode;
 
 	@Override
@@ -46,7 +47,8 @@ public class JobExecutionExitCodeGenerator
 	@Override
 	public int getExitCode() {
 		for (JobExecution execution : this.executions) {
-			if (this.exitCodeEnabled && ExitStatus.FAILED.getExitCode().equals(execution.getExitStatus().getExitCode())) {
+			if (this.exitCodeEnabled && ExitStatus.FAILED.getExitCode()
+					.equals(execution.getExitStatus().getExitCode())) {
 				return this.exitCode;
 			}
 			else if (execution.getStatus().ordinal() > 0) {
@@ -63,4 +65,5 @@ public class JobExecutionExitCodeGenerator
 	public void setExitCode(int exitCode) {
 		this.exitCode = exitCode;
 	}
+
 }

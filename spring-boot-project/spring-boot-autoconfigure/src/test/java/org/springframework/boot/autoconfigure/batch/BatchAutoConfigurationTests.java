@@ -262,70 +262,80 @@ public class BatchAutoConfigurationTests {
 
 	@Test
 	public void testExitCodeDisabledImplicit() {
-		this.contextRunner
-				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class).run((context) -> {
-			assertThat(SpringApplication.exit(context)).isEqualTo(0);
-		});
+		this.contextRunner.withUserConfiguration(JobConfiguration.class,
+				EmbeddedDataSourceConfiguration.class).run((context) -> {
+					assertThat(SpringApplication.exit(context)).isEqualTo(0);
+				});
 	}
 
 	@Test
 	public void testExitCodeDisabledExplicit() {
 		this.contextRunner
-				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.batch.exit-code.enabled:false").run((context) -> {
-			assertThat(SpringApplication.exit(context)).isEqualTo(0);
-		});
+				.withUserConfiguration(JobConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:false")
+				.run((context) -> {
+					assertThat(SpringApplication.exit(context)).isEqualTo(0);
+				});
 	}
 
 	@Test
 	public void testExitCodeEnabledWithoutValueBatchExitCodeCompleted() {
 		this.contextRunner
-				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.batch.exit-code.enabled:true").run((context) -> {
-			context.getBean(JobLauncherCommandLineRunner.class).run();
-			assertThat(SpringApplication.exit(context)).isEqualTo(0);
-		});
+				.withUserConfiguration(JobConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:true")
+				.run((context) -> {
+					context.getBean(JobLauncherCommandLineRunner.class).run();
+					assertThat(SpringApplication.exit(context)).isEqualTo(0);
+				});
 	}
 
 	@Test
 	public void testExitCodeEnabledWithoutValueBatchExitCodeFailed() {
 		this.contextRunner
-				.withUserConfiguration(FailedJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.batch.exit-code.enabled:true").run((context) -> {
-			context.getBean(JobLauncherCommandLineRunner.class).run();
-			JobExecution jobExecution = context.getBean(JobRepository.class)
-					.getLastJobExecution("job", new JobParameters());
+				.withUserConfiguration(FailedJobConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.exit-code.enabled:true")
+				.run((context) -> {
+					context.getBean(JobLauncherCommandLineRunner.class).run();
+					JobExecution jobExecution = context.getBean(JobRepository.class)
+							.getLastJobExecution("job", new JobParameters());
 
-			assertThat(SpringApplication.exit(context)).isEqualTo(-1);
-		});
+					assertThat(SpringApplication.exit(context)).isEqualTo(-1);
+				});
 	}
 
 	@Test
 	public void testExitCodeEnabledWithValueBatchExitCodeCompleted() {
 		this.contextRunner
-				.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withUserConfiguration(JobConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.exit-code.enabled:true",
-									"spring.batch.exit-code.value:-11").run((context) -> {
-			context.getBean(JobLauncherCommandLineRunner.class).run();
-			JobExecution jobExecution = context.getBean(JobRepository.class)
-					.getLastJobExecution("job", new JobParameters());
+						"spring.batch.exit-code.value:-11")
+				.run((context) -> {
+					context.getBean(JobLauncherCommandLineRunner.class).run();
+					JobExecution jobExecution = context.getBean(JobRepository.class)
+							.getLastJobExecution("job", new JobParameters());
 
-			assertThat(SpringApplication.exit(context)).isEqualTo(0);
-		});
+					assertThat(SpringApplication.exit(context)).isEqualTo(0);
+				});
 	}
 
 	@Test
 	public void testExitCodeEnabledWithValueBatchExitCodeFailed() {
 		this.contextRunner
-				.withUserConfiguration(FailedJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withUserConfiguration(FailedJobConfiguration.class,
+						EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.exit-code.enabled:true",
-									"spring.batch.exit-code.value:-11").run((context) -> {
-			context.getBean(JobLauncherCommandLineRunner.class).run();
-			JobExecution jobExecution = context.getBean(JobRepository.class)
-					.getLastJobExecution("job", new JobParameters());
+						"spring.batch.exit-code.value:-11")
+				.run((context) -> {
+					context.getBean(JobLauncherCommandLineRunner.class).run();
+					JobExecution jobExecution = context.getBean(JobRepository.class)
+							.getLastJobExecution("job", new JobParameters());
 
-			assertThat(SpringApplication.exit(context)).isEqualTo(-11);
-		});
+					assertThat(SpringApplication.exit(context)).isEqualTo(-11);
+				});
 	}
 
 	@Configuration
@@ -480,7 +490,6 @@ public class BatchAutoConfigurationTests {
 		}
 
 	}
-
 
 	@EnableBatchProcessing
 	protected static class FailedJobConfiguration {

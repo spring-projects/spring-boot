@@ -105,8 +105,10 @@ public class BatchAutoConfiguration {
 	@ConditionalOnMissingBean(ExitCodeGenerator.class)
 	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator = new JobExecutionExitCodeGenerator();
-		jobExecutionExitCodeGenerator.setExitCodeEnabled(this.properties.getExitCode().isEnabled());
-		jobExecutionExitCodeGenerator.setExitCode(this.properties.getExitCode().getValue());
+		jobExecutionExitCodeGenerator
+				.setExitCodeEnabled(this.properties.getExitCode().isEnabled());
+		jobExecutionExitCodeGenerator
+				.setExitCode(this.properties.getExitCode().getValue());
 		return jobExecutionExitCodeGenerator;
 	}
 
