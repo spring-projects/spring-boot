@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow;
 import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
@@ -58,6 +59,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Phillip Webb
+ * @author Nishant Raut
  */
 @ManagementContextConfiguration(ManagementContextType.CHILD)
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -70,6 +72,7 @@ class ServletManagementChildContextConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnClass(Undertow.class)
 	public UndertowAccessLogCustomizer undertowAccessLogCustomizer() {
 		return new UndertowAccessLogCustomizer();
 	}
