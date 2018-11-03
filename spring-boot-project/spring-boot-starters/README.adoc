@@ -88,6 +88,9 @@ do as they were designed before this was clarified.
 | http://hdiv.org/[HDIV]
 | https://github.com/hdiv/spring-boot-starter-hdiv
 
+| Hiatus for Spring Boot
+| https://github.com/jihor/hiatus-spring-boot
+
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
