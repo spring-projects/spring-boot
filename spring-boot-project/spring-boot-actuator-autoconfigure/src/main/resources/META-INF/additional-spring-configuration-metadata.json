@@ -363,7 +363,7 @@
       "name": "management.trace.http.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name": "management.trace.http.include",
