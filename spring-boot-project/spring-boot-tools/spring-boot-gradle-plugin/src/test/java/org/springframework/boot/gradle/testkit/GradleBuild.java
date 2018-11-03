@@ -39,7 +39,6 @@ import org.jetbrains.kotlin.cli.common.PropertiesKt;
 import org.jetbrains.kotlin.compilerRunner.KotlinCompilerRunner;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
-import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -144,7 +143,6 @@ public class GradleBuild implements TestRule {
 				new File(pathOfJarContaining(LaunchScript.class)),
 				new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
-				new File(pathOfJarContaining(KotlinPluginWrapper.class)),
 				new File(pathOfJarContaining(PropertiesKt.class)),
 				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
 				new File(pathOfJarContaining(KotlinPlugin.class)),

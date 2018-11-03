@@ -517,7 +517,7 @@ public class RestTemplateBuilder {
 	 * {@link ClientHttpRequestFactory}.
 	 * @param readTimeout the read timeout in milliseconds
 	 * @return a new builder instance.
-	 * @deprecated since 2.1.0 in favour of {@link #setReadTimeout(Duration)}
+	 * @deprecated since 2.1.0 in favor of {@link #setReadTimeout(Duration)}
 	 */
 	@Deprecated
 	public RestTemplateBuilder setReadTimeout(int readTimeout) {

@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
@@ -29,6 +30,7 @@ import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -54,6 +56,9 @@ public class TaskExecutionAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
+
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {
@@ -101,11 +106,15 @@ public class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	public void taskExecutorAutoConfigured() {
+		this.output.reset();
 		this.contextRunner.run((context) -> {
+			assertThat(this.output.toString())
+					.doesNotContain("Initializing ExecutorService");
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context).hasBean("applicationTaskExecutor");
 			assertThat(context).getBean("applicationTaskExecutor")
 					.isInstanceOf(ThreadPoolTaskExecutor.class);
+			assertThat(this.output.toString()).contains("Initializing ExecutorService");
 		});
 	}
 

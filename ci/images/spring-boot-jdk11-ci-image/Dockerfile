@@ -1,4 +1,5 @@
-FROM openjdk:11-ea-28-jdk
+# 11.0.1+13-Debian-2
+FROM openjdk@sha256:4b6ed15fe162c6209c7fa5cfa4d5fdfdc639d99d76998114e4fc790cda098f66
 
 RUN apt-get update && \
     apt-get install -y git && \
@@ -23,7 +24,7 @@ RUN curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_V
     mv entrykit /bin/entrykit && \
     entrykit --symlink
 
-ADD https://raw.githubusercontent.com/spring-projects/spring-boot/master/ci/images/docker-lib.sh /docker-lib.sh
+ADD docker-lib.sh /docker-lib.sh
 
 ENTRYPOINT [ \
 	"switch", \

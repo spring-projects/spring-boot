@@ -145,6 +145,9 @@
 						</goals>
 						<configuration>
 							<failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
+							<ignoredClassPatterns>
+ 								<ignoredClassPattern>.*module-info</ignoredClassPattern>
+ 							</ignoredClassPatterns>
 							<ignoredResourcePatterns>
 								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
 							</ignoredResourcePatterns>

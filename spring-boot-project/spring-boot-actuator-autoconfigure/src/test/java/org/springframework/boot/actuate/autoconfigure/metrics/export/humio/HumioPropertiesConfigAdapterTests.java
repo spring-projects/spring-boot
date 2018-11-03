@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.humio;
 
-import java.time.Duration;
 import java.util.Collections;
 
 import org.junit.Test;
@@ -36,14 +35,6 @@ public class HumioPropertiesConfigAdapterTests {
 		properties.setApiToken("ABC123");
 		assertThat(new HumioPropertiesConfigAdapter(properties).apiToken())
 				.isEqualTo("ABC123");
-	}
-
-	@Test
-	public void whenPropertiesConnectTimeoutIsSetAdapterConnectTimeoutReturnsIt() {
-		HumioProperties properties = new HumioProperties();
-		properties.setConnectTimeout(Duration.ofSeconds(10));
-		assertThat(new HumioPropertiesConfigAdapter(properties).connectTimeout())
-				.isEqualTo(Duration.ofSeconds(10));
 	}
 
 	@Test

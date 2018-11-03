@@ -136,7 +136,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		SslContextBuilder builder = SslContextBuilder.forClient()
 				.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE);
-		HttpClient client = HttpClient.create().wiretap()
+		HttpClient client = HttpClient.create().wiretap(true)
 				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
 		return new ReactorClientHttpConnector(client);
 	}
@@ -174,7 +174,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE)
 				.keyManager(clientKeyManagerFactory);
-		HttpClient client = HttpClient.create().wiretap()
+		HttpClient client = HttpClient.create().wiretap(true)
 				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
 		return new ReactorClientHttpConnector(client);
 	}
@@ -232,7 +232,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected WebClient.Builder getWebClient() {
-		return getWebClient(HttpClient.create().wiretap());
+		return getWebClient(HttpClient.create().wiretap(true));
 	}
 
 	protected WebClient.Builder getWebClient(HttpClient client) {
@@ -304,10 +304,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.getWebServer(new CharsHandler(3000, MediaType.TEXT_PLAIN));
 		this.webServer.start();
 
-		HttpClient client = HttpClient.create().wiretap().compress(true).tcpConfiguration(
-				(tcpClient) -> tcpClient.doOnConnected((connection) -> connection
-						.channel().pipeline().addBefore(NettyPipeline.HttpDecompressor,
-								"CompressionTest", new CompressionDetectionHandler())));
+		HttpClient client = HttpClient.create().wiretap(true).compress(true)
+				.tcpConfiguration((tcpClient) -> tcpClient.doOnConnected(
+						(connection) -> connection.channel().pipeline().addBefore(
+								NettyPipeline.HttpDecompressor, "CompressionTest",
+								new CompressionDetectionHandler())));
 		return getWebClient(client).build();
 	}
 
