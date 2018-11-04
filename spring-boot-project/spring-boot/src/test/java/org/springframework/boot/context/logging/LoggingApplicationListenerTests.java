@@ -479,9 +479,10 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void systemPropertiesAreSetForLoggingConfiguration() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.exception-conversion-word=conversion", "logging.file.name=target/log",
-				"logging.path=path", "logging.pattern.console=console",
-				"logging.pattern.file=file", "logging.pattern.level=level");
+				"logging.exception-conversion-word=conversion",
+				"logging.file.name=target/log", "logging.path=path",
+				"logging.pattern.console=console", "logging.pattern.file=file",
+				"logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
