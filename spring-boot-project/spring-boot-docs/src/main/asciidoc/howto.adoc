@@ -2456,6 +2456,16 @@ By default, it executes *all* `Jobs` in the application context on startup (see
 for details). You can narrow down to a specific job or jobs by specifying
 `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
 
+[TIP]
+.Specifying job parameters on the command line
+====
+Unlike command line option arguments that
+<<spring-boot-features.adoc#boot-features-external-config-command-line-args,set properties
+in the `Environment`>> (i.e. by starting with `--`, such as
+`--my-property=value`), job parameters have to be specified on the command line without
+dashes (e.g. `jobParam=value`).
+====
+
 If the application context includes a `JobRegistry`, the jobs in
 `spring.batch.job.names` are looked up in the registry instead of being autowired from the
 context. This is a common pattern with more complex systems, where multiple jobs are
