@@ -65,7 +65,7 @@ public class LogFileWebEndpointWebIntegrationTests {
 
 	@Test
 	public void getRequestProducesResponseWithLogFile() {
-		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
+		TestPropertyValues.of("logging.file.name:" + this.logFile.getAbsolutePath())
 				.applyTo(context);
 		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
 				.expectBody(String.class).isEqualTo("--TEST--");

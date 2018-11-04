@@ -70,7 +70,7 @@ public class LogFileWebEndpoint {
 		}
 		LogFile logFile = LogFile.get(this.environment);
 		if (logFile == null) {
-			logger.debug("Missing 'logging.file' or 'logging.path' properties");
+			logger.debug("Missing 'logging.file.name' or 'logging.path' properties");
 			return null;
 		}
 		return new FileSystemResource(logFile.toString());

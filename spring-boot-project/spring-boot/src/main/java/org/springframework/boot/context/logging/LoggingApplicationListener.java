@@ -69,7 +69,7 @@ import org.springframework.util.StringUtils;
  * properties you can set {@link #setParseArgs(boolean) parseArgs} to {@code false}.
  * <p>
  * By default, log output is only written to the console. If a log file is required the
- * {@code logging.path} and {@code logging.file} properties can be used.
+ * {@code logging.path} and {@code logging.file.name} properties can be used.
  * <p>
  * Some system properties may be set as side effects, and these can be useful if the
  * logging configuration supports placeholders (i.e. log4j or logback):

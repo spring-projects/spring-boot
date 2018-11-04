@@ -60,11 +60,11 @@ public class LogFileWebEndpointAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
-			String config = environment.resolvePlaceholders("${logging.file:}");
+			String config = environment.resolvePlaceholders("${logging.file.name:}");
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome
-						.match(message.found("logging.file").items(config));
+						.match(message.found("logging.file.name").items(config));
 			}
 			config = environment.resolvePlaceholders("${logging.path:}");
 			if (StringUtils.hasText(config)) {

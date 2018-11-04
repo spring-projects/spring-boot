@@ -49,7 +49,7 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
-		this.contextRunner.withPropertyValues("logging.file:test.log").run(
+		this.contextRunner.withPropertyValues("logging.file.name:test.log").run(
 				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
@@ -71,7 +71,7 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	@Test
 	public void logFileWebEndpointCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues("logging.file:test.log",
+				.withPropertyValues("logging.file.name:test.log",
 						"management.endpoint.logfile.enabled:false")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LogFileWebEndpoint.class));
