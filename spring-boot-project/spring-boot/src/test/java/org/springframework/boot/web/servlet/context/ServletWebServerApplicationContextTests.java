@@ -475,6 +475,13 @@ public class ServletWebServerApplicationContextTests {
 		return beanDefinition;
 	}
 
+	public static <T> T getBean(T object) {
+		if (object instanceof RuntimeException) {
+			throw (RuntimeException) object;
+		}
+		return object;
+	}
+
 	public static class MockListener
 			implements ApplicationListener<ServletWebServerInitializedEvent> {
 
