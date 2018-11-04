@@ -68,9 +68,15 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
-      "name": "logging.file",
+      "name": "logging.file.name",
       "type": "java.lang.String",
       "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
@@ -97,12 +103,6 @@
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
-    },
-    {
-      "name": "logging.path",
-      "type": "java.lang.String",
-      "description": "Location of the log file. For instance, `/var/log`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
@@ -332,8 +332,28 @@
       "type": "java.lang.Integer",
       "description": "Application index.",
       "deprecation": {
-        "level": "error",
-        "reason": "Application context ids are now unique by default."
+        "reason": "Application context ids are now unique by default.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "logging.file",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "logging.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.path",
+        "level": "error"
       }
     }
   ],
@@ -346,7 +366,6 @@
           "parameters": {
             "group": false
           }
-
         }
       ]
     },

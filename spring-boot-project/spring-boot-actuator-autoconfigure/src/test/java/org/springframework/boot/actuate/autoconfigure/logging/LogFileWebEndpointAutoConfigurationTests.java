@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Christian Carriere-Tisseur
  */
 public class LogFileWebEndpointAutoConfigurationTests {
 
@@ -49,12 +50,26 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
+		this.contextRunner.withPropertyValues("logging.file.name:test.log").run(
+				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	@Deprecated
+	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSetWithDeprecatedProperty() {
 		this.contextRunner.withPropertyValues("logging.file:test.log").run(
 				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSet() {
+		this.contextRunner.withPropertyValues("logging.file.path:test/logs").run(
+				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	@Deprecated
+	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSetWithDeprecatedProperty() {
 		this.contextRunner.withPropertyValues("logging.path:test/logs").run(
 				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
@@ -71,7 +86,7 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	@Test
 	public void logFileWebEndpointCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues("logging.file:test.log",
+				.withPropertyValues("logging.file.name:test.log",
 						"management.endpoint.logfile.enabled:false")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LogFileWebEndpoint.class));

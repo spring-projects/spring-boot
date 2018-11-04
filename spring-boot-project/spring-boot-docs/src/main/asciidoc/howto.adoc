@@ -1518,7 +1518,7 @@ in the following example:
 ----
 
 You can also set the location of a file to which to write the log (in addition to the
-console) by using "logging.file".
+console) by using "logging.file.name".
 
 To configure the more fine-grained settings of a logging system, you need to use the native
 configuration format supported by the `LoggingSystem` in question. By default, Spring Boot
@@ -1548,8 +1548,8 @@ If you look at `base.xml` in the spring-boot jar, you can see that it uses
 some useful System properties that the `LoggingSystem` takes care of creating for you:
 
 * `${PID}`: The current process ID.
-* `${LOG_FILE}`: Whether `logging.file` was set in Boot's external configuration.
-* `${LOG_PATH}`: Whether `logging.path` (representing a directory for
+* `${LOG_FILE}`: Whether `logging.file.name` was set in Boot's external configuration.
+* `${LOG_PATH}`: Whether `logging.file.path` (representing a directory for
    log files to live in) was set in Boot's external configuration.
 * `${LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set
    in Boot's external configuration.
@@ -1582,12 +1582,12 @@ shown in the following example:
 	</configuration>
 ----
 
-You also need to add `logging.file` to your `application.properties`, as shown in the
+You also need to add `logging.file.name` to your `application.properties`, as shown in the
 following example:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	logging.file=myapplication.log
+	logging.file.name=myapplication.log
 ----
 
 

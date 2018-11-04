@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -35,6 +36,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link LogFileWebEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Christian Carriere-Tisseur
  * @since 2.0.0
  */
 @Configuration
@@ -60,16 +62,26 @@ public class LogFileWebEndpointAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
-			String config = environment.resolvePlaceholders("${logging.file:}");
+			String config = environment
+					.resolvePlaceholders("${" + LogFile.FILE_NAME_PROPERTY + ":}");
+			if (!StringUtils.hasText(config)) {
+				config = environment
+						.resolvePlaceholders("${" + LogFile.FILE_PROPERTY + ":}");
+			}
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome
-						.match(message.found("logging.file").items(config));
+						.match(message.found(LogFile.FILE_NAME_PROPERTY).items(config));
 			}
-			config = environment.resolvePlaceholders("${logging.path:}");
+			config = environment
+					.resolvePlaceholders("${" + LogFile.FILE_PATH_PROPERTY + ":}");
+			if (!StringUtils.hasText(config)) {
+				config = environment
+						.resolvePlaceholders("${" + LogFile.PATH_PROPERTY + ":}");
+			}
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome
-						.match(message.found("logging.path").items(config));
+						.match(message.found(LogFile.FILE_PATH_PROPERTY).items(config));
 			}
 			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {

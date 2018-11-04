@@ -1686,7 +1686,7 @@ The following colors and styles are supported:
 === File Output
 By default, Spring Boot logs only to the console and does not write log files. If you
 want to write log files in addition to the console output, you need to set a
-`logging.file` or `logging.path` property (for example, in your
+`logging.file.name` or `logging.file.path` property (for example, in your
 `application.properties`).
 
 The following table shows how the `logging.*` properties can be used together:
@@ -1694,7 +1694,7 @@ The following table shows how the `logging.*` properties can be used together:
 .Logging properties
 [cols="1,1,1,4"]
 |===
-|`logging.file` |`logging.path` |Example |Description
+|`logging.file.name` |`logging.file.path` |Example |Description
 
 |_(none)_
 |_(none)_
@@ -1835,7 +1835,7 @@ To help with the customization, some other properties are transferred from the S
 |`LOG_EXCEPTION_CONVERSION_WORD`
 |The conversion word used when logging exceptions.
 
-|`logging.file`
+|`logging.file.name`
 |`LOG_FILE`
 |If defined, it is used in the default log configuration.
 
@@ -1849,7 +1849,7 @@ setup.)
 |Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
 the default Logback setup.)
 
-|`logging.path`
+|`logging.file.path`
 |`LOG_PATH`
 |If defined, it is used in the default log configuration.
 

@@ -100,13 +100,13 @@ public class SpringApplicationBuilderTests {
 	public void propertiesWithRepeatSeparator() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
-				.properties("one=c:\\logging.file", "two=a:b", "three:c:\\logging.file",
-						"four:a:b");
+				.properties("one=c:\\logging.file.name", "two=a:b",
+						"three:c:\\logging.file.name", "four:a:b");
 		this.context = application.run();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertThat(environment.getProperty("one")).isEqualTo("c:\\logging.file");
+		assertThat(environment.getProperty("one")).isEqualTo("c:\\logging.file.name");
 		assertThat(environment.getProperty("two")).isEqualTo("a:b");
-		assertThat(environment.getProperty("three")).isEqualTo("c:\\logging.file");
+		assertThat(environment.getProperty("three")).isEqualTo("c:\\logging.file.name");
 		assertThat(environment.getProperty("four")).isEqualTo("a:b");
 	}
 
