@@ -258,6 +258,43 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
+	public void exactStatusTemplateErrorPage() {
+		this.contextRunner
+				.withPropertyValues("server.error.whitelabel.enabled=false",
+						"spring.mustache.prefix=" + getErrorTemplatesLocation())
+				.run((context) -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context)
+							.build();
+					String body = client.get().uri("/notfound")
+							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
+							.isNotFound().expectBody(String.class).returnResult()
+							.getResponseBody();
+					assertThat(body).contains("404 page");
+				});
+	}
+
+	@Test
+	public void seriesStatusTemplateErrorPage() {
+		this.contextRunner
+				.withPropertyValues("server.error.whitelabel.enabled=false",
+						"spring.mustache.prefix=" + getErrorTemplatesLocation())
+				.run((context) -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context)
+							.build();
+					String body = client.get().uri("/badRequest")
+							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
+							.isBadRequest().expectBody(String.class).returnResult()
+							.getResponseBody();
+					assertThat(body).contains("4xx page");
+				});
+	}
+
+	private String getErrorTemplatesLocation() {
+		String packageName = getClass().getPackage().getName();
+		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
+	}
+
+	@Test
 	public void invalidAcceptMediaType() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = WebTestClient.bindToApplicationContext(context)
