@@ -61,7 +61,8 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		String className = getClass().getName();
-		MemberConditions memberConditions = new MemberConditions(context, className);
+		MemberConditions memberConditions = new MemberConditions(context,
+				this.configurationPhase, className);
 		MemberMatchOutcomes memberOutcomes = new MemberMatchOutcomes(memberConditions);
 		return getFinalMatchOutcome(memberOutcomes);
 	}
@@ -108,12 +109,19 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 
 		private final MetadataReaderFactory readerFactory;
 
+		private final ConfigurationPhase nestedPhase;
+
+		private final String nestedClassName;
+
 		private final Map<AnnotationMetadata, List<Condition>> memberConditions;
 
-		MemberConditions(ConditionContext context, String className) {
+		MemberConditions(ConditionContext context, ConfigurationPhase nestedPhase,
+				String className) {
 			this.context = context;
 			this.readerFactory = new SimpleMetadataReaderFactory(
 					context.getResourceLoader());
+			this.nestedPhase = nestedPhase;
+			this.nestedClassName = className;
 			String[] members = getMetadata(className).getMemberClassNames();
 			this.memberConditions = getMemberConditions(members);
 		}
@@ -126,11 +134,25 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 				for (String[] conditionClasses : getConditionClasses(metadata)) {
 					for (String conditionClass : conditionClasses) {
 						Condition condition = getCondition(conditionClass);
+						validateMemberCondition(condition);
 						memberConditions.add(metadata, condition);
 					}
 				}
 			}
 			return Collections.unmodifiableMap(memberConditions);
+		}
+
+		private void validateMemberCondition(Condition condition) {
+			if (this.nestedPhase == ConfigurationPhase.PARSE_CONFIGURATION
+					&& condition instanceof ConfigurationCondition) {
+				ConfigurationPhase memberPhase = ((ConfigurationCondition) condition)
+						.getConfigurationPhase();
+				if (memberPhase == ConfigurationPhase.REGISTER_BEAN) {
+					throw new IllegalStateException("Nested condition "
+							+ this.nestedClassName + " uses a configuration "
+							+ "phase that is inappropriate for " + condition.getClass());
+				}
+			}
 		}
 
 		private AnnotationMetadata getMetadata(String className) {
