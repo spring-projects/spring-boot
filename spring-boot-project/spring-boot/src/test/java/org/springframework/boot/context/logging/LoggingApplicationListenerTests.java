@@ -240,7 +240,7 @@ public class LoggingApplicationListenerTests {
 	public void addLogPathProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
-				"logging.path=target/foo/");
+				"logging.file.path=target/foo/");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -480,7 +480,7 @@ public class LoggingApplicationListenerTests {
 	public void systemPropertiesAreSetForLoggingConfiguration() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.exception-conversion-word=conversion",
-				"logging.file.name=target/log", "logging.path=path",
+				"logging.file.name=target/log", "logging.file.path=path",
 				"logging.pattern.console=console", "logging.pattern.file=file",
 				"logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),

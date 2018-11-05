@@ -1562,7 +1562,7 @@ some useful System properties that the `LoggingSystem` takes care of creating fo
 
 * `${PID}`: The current process ID.
 * `${LOG_FILE}`: Whether `logging.file.name` was set in Boot's external configuration.
-* `${LOG_PATH}`: Whether `logging.path` (representing a directory for
+* `${LOG_PATH}`: Whether `logging.file.path` (representing a directory for
    log files to live in) was set in Boot's external configuration.
 * `${LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set
    in Boot's external configuration.

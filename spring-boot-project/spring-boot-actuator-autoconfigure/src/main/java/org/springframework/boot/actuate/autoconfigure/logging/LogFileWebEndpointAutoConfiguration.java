@@ -66,10 +66,10 @@ public class LogFileWebEndpointAutoConfiguration {
 				return ConditionOutcome
 						.match(message.found("logging.file.name").items(config));
 			}
-			config = environment.resolvePlaceholders("${logging.path:}");
+			config = environment.resolvePlaceholders("${logging.file.path:}");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome
-						.match(message.found("logging.path").items(config));
+						.match(message.found("logging.file.path").items(config));
 			}
 			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {

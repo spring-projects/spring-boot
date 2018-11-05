@@ -55,7 +55,7 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSet() {
-		this.contextRunner.withPropertyValues("logging.path:test/logs").run(
+		this.contextRunner.withPropertyValues("logging.file.path:test/logs").run(
 				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 

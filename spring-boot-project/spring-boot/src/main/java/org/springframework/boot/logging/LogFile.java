@@ -25,9 +25,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * A reference to a log output file. Log output files are specified using
- * {@code logging.file.name} or {@code logging.path} {@link Environment} properties. If
- * the {@code logging.file.name} property is not specified {@code "spring.log"} will be
- * written in the {@code logging.path} directory.
+ * {@code logging.file.name} or {@code logging.file.path} {@link Environment} properties.
+ * If the {@code logging.file.name} property is not specified {@code "spring.log"} will be
+ * written in the {@code logging.file.path} directory.
  *
  * @author Phillip Webb
  * @since 1.2.1
@@ -45,7 +45,7 @@ public class LogFile {
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
 	 */
-	public static final String PATH_PROPERTY = "logging.path";
+	public static final String PATH_PROPERTY = "logging.file.path";
 
 	private final String file;
 

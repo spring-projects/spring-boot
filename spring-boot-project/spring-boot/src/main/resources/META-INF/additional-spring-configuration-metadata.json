@@ -84,6 +84,21 @@
       }
     },
     {
+      "name": "logging.file.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.path"
+      }
+    },
+    {
       "name": "logging.file.max-size",
       "type": "java.lang.String",
       "description": "Maximum log file size. Only supported with the default logback setup.",
@@ -107,12 +122,6 @@
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
-    },
-    {
-      "name": "logging.path",
-      "type": "java.lang.String",
-      "description": "Location of the log file. For instance, `/var/log`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
