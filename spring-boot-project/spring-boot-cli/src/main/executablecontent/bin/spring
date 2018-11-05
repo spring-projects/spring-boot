@@ -108,8 +108,8 @@ for f in "${SPRING_HOME}"/lib/*; do
 done
 
 if $cygwin; then
-	SPRING_HOME=$(cygpath --path --mixed "$SPRING_HOME")
-	CLASSPATH=$(cygpath --path --mixed "$CLASSPATH")
+	SPRING_HOME=$(cygpath --path --unix "$SPRING_HOME")
+	CLASSPATH=$(cygpath --path --unix "$CLASSPATH")
 fi
 
 IFS=" " read -r -a javaOpts <<< "$JAVA_OPTS"
