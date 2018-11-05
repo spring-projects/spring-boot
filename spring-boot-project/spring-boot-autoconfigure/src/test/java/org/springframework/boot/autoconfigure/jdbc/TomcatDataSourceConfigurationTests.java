@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.jdbc;
-
-import java.lang.reflect.Field;
 
 import javax.sql.DataSource;
 
@@ -34,7 +32,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -113,13 +110,6 @@ public class TomcatDataSourceConfigurationTests {
 		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(60000);
 		assertThat(ds.getMaxWait()).isEqualTo(30000);
 		assertThat(ds.getValidationInterval()).isEqualTo(3000L);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T getField(Class<?> target, String name) {
-		Field field = ReflectionUtils.findField(target, name, null);
-		ReflectionUtils.makeAccessible(field);
-		return (T) ReflectionUtils.getField(field, target);
 	}
 
 	@Configuration
