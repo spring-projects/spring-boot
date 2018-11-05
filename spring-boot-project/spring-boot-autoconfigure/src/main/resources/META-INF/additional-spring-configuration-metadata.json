@@ -706,6 +706,12 @@
       "defaultValue": "simple"
     },
     {
+      "name": "spring.rabbitmq.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to create the org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration bean.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.security.filter.dispatcher-types",
       "defaultValue": [
         "async",

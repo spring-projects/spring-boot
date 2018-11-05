@@ -83,6 +83,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
+@ConditionalOnProperty(value = "spring.rabbitmq.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public class RabbitAutoConfiguration {
