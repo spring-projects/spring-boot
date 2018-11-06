@@ -25,9 +25,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -43,7 +41,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ValidationBindHandler}.
@@ -52,9 +50,6 @@ import static org.hamcrest.Matchers.instanceOf;
  * @author Madhura Bhave
  */
 public class ValidationBindHandlerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -81,18 +76,19 @@ public class ValidationBindHandlerTests {
 	@Test
 	public void bindShouldFailWithHandler() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind("foo", Bindable.of(ExampleValidatedBean.class), this.handler);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo",
+						Bindable.of(ExampleValidatedBean.class), this.handler))
+				.withCauseInstanceOf(BindValidationException.class);
 	}
 
 	@Test
 	public void bindShouldValidateNestedProperties() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", 4));
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind("foo", Bindable.of(ExampleValidatedWithNestedBean.class),
-				this.handler);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo",
+						Bindable.of(ExampleValidatedWithNestedBean.class), this.handler))
+				.withCauseInstanceOf(BindValidationException.class);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,6 +81,53 @@ public class JsonMarshallerTests {
 				Metadata.withHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
 		assertThat(read).has(Metadata.withHint("d").withProvider("first", "target", "foo")
 				.withProvider("second"));
+	}
+
+	@Test
+	public void marshallOrderItems() throws IOException {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		metadata.add(ItemHint.newHint("fff"));
+		metadata.add(ItemHint.newHint("eee"));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null,
+				null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null,
+				null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null,
+				null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null,
+				null, null, null, null));
+		metadata.add(ItemMetadata.newGroup("com.acme.bravo",
+				"com.example.AnotherTestProperties", null, null));
+		metadata.add(ItemMetadata.newGroup("com.acme.alpha", "com.example.TestProperties",
+				null, null));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		JsonMarshaller marshaller = new JsonMarshaller();
+		marshaller.write(metadata, outputStream);
+		String json = new String(outputStream.toByteArray());
+		assertThat(json).containsSubsequence("\"groups\"", "\"com.acme.alpha\"",
+				"\"com.acme.bravo\"", "\"properties\"", "\"com.example.alpha.ccc\"",
+				"\"com.example.alpha.ddd\"", "\"com.example.bravo.aaa\"",
+				"\"com.example.bravo.bbb\"", "\"hints\"", "\"eee\"", "\"fff\"");
+	}
+
+	@Test
+	public void marshallPutDeprecatedItemsAtTheEnd() throws IOException {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null,
+				null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null,
+				null, null, null, new ItemDeprecation(null, null, "warning")));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null,
+				null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null,
+				null, null, null, new ItemDeprecation(null, null, "warning")));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		JsonMarshaller marshaller = new JsonMarshaller();
+		marshaller.write(metadata, outputStream);
+		String json = new String(outputStream.toByteArray());
+		assertThat(json).containsSubsequence("\"properties\"",
+				"\"com.example.alpha.ddd\"", "\"com.example.bravo.bbb\"",
+				"\"com.example.alpha.ccc\"", "\"com.example.bravo.aaa\"");
 	}
 
 }

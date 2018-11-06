@@ -251,6 +251,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				Map<String, String> body);
+
 	}
 
 	/**
@@ -309,7 +310,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 				arguments.putAll(body);
 			}
 			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
-					.put(name, values.size() == 1 ? values.get(0) : values));
+					.put(name, (values.size() != 1) ? values : values.get(0)));
 			return arguments;
 		}
 
@@ -323,8 +324,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 					.onErrorMap(InvalidEndpointRequestException.class,
 							(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 									ex.getReason()))
-					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET
-							? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
+					.defaultIfEmpty(new ResponseEntity<>((httpMethod != HttpMethod.GET)
+							? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND));
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {

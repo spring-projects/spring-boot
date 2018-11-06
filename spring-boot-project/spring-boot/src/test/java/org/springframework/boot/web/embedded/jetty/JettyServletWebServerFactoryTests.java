@@ -20,8 +20,12 @@ import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
@@ -41,11 +45,12 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -70,9 +75,7 @@ public class JettyServletWebServerFactoryTests
 	public void jettyConfigurations() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		Configuration[] configurations = new Configuration[4];
-		for (int i = 0; i < configurations.length; i++) {
-			configurations[i] = mock(Configuration.class);
-		}
+		Arrays.setAll(configurations, (i) -> mock(Configuration.class));
 		factory.setConfigurations(Arrays.asList(configurations[0], configurations[1]));
 		factory.addConfigurations(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
@@ -86,9 +89,7 @@ public class JettyServletWebServerFactoryTests
 	public void jettyCustomizations() {
 		JettyServletWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
-		for (int i = 0; i < configurations.length; i++) {
-			configurations[i] = mock(JettyServerCustomizer.class);
-		}
+		Arrays.setAll(configurations, (i) -> mock(JettyServerCustomizer.class));
 		factory.setServerCustomizers(Arrays.asList(configurations[0], configurations[1]));
 		factory.addServerCustomizers(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
@@ -261,8 +262,9 @@ public class JettyServletWebServerFactoryTests
 			threadPool.setMaxThreads(2);
 			threadPool.setMinThreads(2);
 		});
-		this.thrown.expectCause(isA(IllegalStateException.class));
-		factory.getWebServer().start();
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(factory.getWebServer()::start)
+				.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
@@ -294,6 +296,42 @@ public class JettyServletWebServerFactoryTests
 				.getConnectors()[0];
 		assertThat(((ServerConnector) connector).getHost())
 				.isEqualTo(localhost.getHostAddress());
+	}
+
+	@Test
+	public void faultyListenerCausesStartFailure() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.addServerCustomizers(new JettyServerCustomizer() {
+
+			@Override
+			public void customize(Server server) {
+				Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);
+				contexts.iterator().next().addEventListener(new ServletContextListener() {
+
+					@Override
+					public void contextInitialized(ServletContextEvent sce) {
+						throw new RuntimeException();
+					}
+
+					@Override
+					public void contextDestroyed(ServletContextEvent sce) {
+					}
+
+				});
+			}
+
+		});
+		assertThatExceptionOfType(WebServerException.class).isThrownBy(() -> {
+			JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
+			try {
+				jettyWebServer.start();
+			}
+			finally {
+				QueuedThreadPool threadPool = (QueuedThreadPool) jettyWebServer
+						.getServer().getThreadPool();
+				assertThat(threadPool.isRunning()).isFalse();
+			}
+		});
 	}
 
 	@Override

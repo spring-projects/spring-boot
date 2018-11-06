@@ -28,10 +28,12 @@ import javax.servlet.Filter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.RegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -106,30 +108,16 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
-		ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(
-				this.context);
-		for (ServletContextInitializer initializer : initializers) {
-			if (initializer instanceof FilterRegistrationBean) {
-				addFilter(builder, (FilterRegistrationBean<?>) initializer);
-			}
-			if (initializer instanceof DelegatingFilterProxyRegistrationBean) {
-				addFilter(builder, (DelegatingFilterProxyRegistrationBean) initializer);
-			}
-		}
+		FilterRegistrationBeans registrations = new FilterRegistrationBeans(this.context);
+		registrations.stream().map(AbstractFilterRegistrationBean.class::cast)
+				.filter(AbstractFilterRegistrationBean::isEnabled)
+				.forEach((registration) -> addFilter(builder, registration));
 	}
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			FilterRegistrationBean<?> registration) {
-		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
-	}
-
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			DelegatingFilterProxyRegistrationBean registration) {
-		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
-	}
-
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter,
-			Collection<String> urls) {
+			AbstractFilterRegistrationBean<?> registration) {
+		Filter filter = registration.getFilter();
+		Collection<String> urls = registration.getUrlPatterns();
 		if (urls.isEmpty()) {
 			builder.addFilters(filter);
 		}
@@ -315,6 +303,35 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				return System.err;
 			}
 			return System.out;
+		}
+
+	}
+
+	private static class FilterRegistrationBeans extends ServletContextInitializerBeans {
+
+		FilterRegistrationBeans(ListableBeanFactory beanFactory) {
+			super(beanFactory, FilterRegistrationBean.class,
+					DelegatingFilterProxyRegistrationBean.class);
+		}
+
+		@Override
+		protected void addAdaptableBeans(ListableBeanFactory beanFactory) {
+			addAsRegistrationBean(beanFactory, Filter.class,
+					new FilterRegistrationBeanAdapter());
+		}
+
+		private static class FilterRegistrationBeanAdapter
+				implements RegistrationBeanAdapter<Filter> {
+
+			@Override
+			public RegistrationBean createRegistrationBean(String name, Filter source,
+					int totalNumberOfSourceBeans) {
+				FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(
+						source);
+				bean.setName(name);
+				return bean;
+			}
+
 		}
 
 	}

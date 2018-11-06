@@ -22,9 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -35,12 +33,14 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link DefaultErrorAttributes}.
@@ -53,9 +53,6 @@ public class DefaultErrorAttributesTests {
 	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(
 			HttpStatus.NOT_FOUND);
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
 	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create()
@@ -63,12 +60,13 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void missingExceptionAttribute() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Missing exception attribute in ServerWebExchange");
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
-		this.errorAttributes.getErrorAttributes(request, false);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
+				.withMessageContaining(
+						"Missing exception attribute in ServerWebExchange");
 	}
 
 	@Test
@@ -88,6 +86,29 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("error"))
 				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
 		assertThat(attributes.get("status")).isEqualTo(500);
+	}
+
+	@Test
+	public void annotatedResponseStatusCode() {
+		Exception error = new CustomException();
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(buildServerRequest(request, error), false);
+		assertThat(attributes.get("error"))
+				.isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
+	}
+
+	@Test
+	public void annotatedResponseStatusCodeWithCustomReasonPhrase() {
+		Exception error = new Custom2Exception();
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(buildServerRequest(request, error), false);
+		assertThat(attributes.get("error"))
+				.isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
+		assertThat(attributes.get("message")).isEqualTo("Nope!");
 	}
 
 	@Test
@@ -212,6 +233,16 @@ public class DefaultErrorAttributesTests {
 
 	public int method(String firstParam) {
 		return 42;
+	}
+
+	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+	private static class CustomException extends RuntimeException {
+
+	}
+
+	@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT, reason = "Nope!")
+	private static class Custom2Exception extends RuntimeException {
+
 	}
 
 }

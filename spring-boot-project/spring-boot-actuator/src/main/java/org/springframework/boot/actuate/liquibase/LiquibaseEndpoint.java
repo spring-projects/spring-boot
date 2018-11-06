@@ -69,7 +69,7 @@ public class LiquibaseEndpoint {
 							createReport(liquibase, service, factory)));
 			ApplicationContext parent = target.getParent();
 			contextBeans.put(target.getId(), new ContextLiquibaseBeans(liquibaseBeans,
-					parent == null ? null : parent.getId()));
+					(parent != null) ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationLiquibaseBeans(contextBeans);
@@ -80,8 +80,9 @@ public class LiquibaseEndpoint {
 		try {
 			DataSource dataSource = liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
+			Database database = null;
 			try {
-				Database database = factory.findCorrectDatabaseImplementation(connection);
+				database = factory.findCorrectDatabaseImplementation(connection);
 				String defaultSchema = liquibase.getDefaultSchema();
 				if (StringUtils.hasText(defaultSchema)) {
 					database.setDefaultSchemaName(defaultSchema);
@@ -91,7 +92,12 @@ public class LiquibaseEndpoint {
 						.map(ChangeSet::new).collect(Collectors.toList()));
 			}
 			finally {
-				connection.close();
+				if (database != null) {
+					database.close();
+				}
+				else {
+					connection.close();
+				}
 			}
 		}
 		catch (Exception ex) {
@@ -204,8 +210,8 @@ public class LiquibaseEndpoint {
 			this.execType = ranChangeSet.getExecType();
 			this.id = ranChangeSet.getId();
 			this.labels = ranChangeSet.getLabels().getLabels();
-			this.checksum = ranChangeSet.getLastCheckSum() == null ? null
-					: ranChangeSet.getLastCheckSum().toString();
+			this.checksum = ((ranChangeSet.getLastCheckSum() != null)
+					? ranChangeSet.getLastCheckSum().toString() : null);
 			this.orderExecuted = ranChangeSet.getOrderExecuted();
 			this.tag = ranChangeSet.getTag();
 		}

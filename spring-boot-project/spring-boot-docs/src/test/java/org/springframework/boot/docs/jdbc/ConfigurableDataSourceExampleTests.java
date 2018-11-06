@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {
 		"app.datasource.url=jdbc:h2:mem:configurable;DB_CLOSE_DELAY=-1",
-		"app.datasource.maximum-pool-size=42" })
+		"app.datasource.configuration.maximum-pool-size=42" })
 @Import(ConfigurableDataSourceExample.ConfigurableDataSourceConfiguration.class)
 public class ConfigurableDataSourceExampleTests {
 

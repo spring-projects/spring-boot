@@ -22,7 +22,7 @@ import javax.transaction.TransactionManager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -38,6 +38,7 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -51,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.2.0
  */
+@Configuration
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class,
@@ -59,16 +61,20 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(DataSource.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
-	@Autowired
-	private XADataSourceWrapper wrapper;
+	private final XADataSourceWrapper wrapper;
 
-	@Autowired
-	private DataSourceProperties properties;
+	private final DataSourceProperties properties;
 
-	@Autowired(required = false)
-	private XADataSource xaDataSource;
+	private final XADataSource xaDataSource;
 
 	private ClassLoader classLoader;
+
+	public XADataSourceAutoConfiguration(XADataSourceWrapper wrapper,
+			DataSourceProperties properties, ObjectProvider<XADataSource> xaDataSource) {
+		this.wrapper = wrapper;
+		this.properties = properties;
+		this.xaDataSource = xaDataSource.getIfAvailable();
+	}
 
 	@Bean
 	public DataSource dataSource() throws Exception {

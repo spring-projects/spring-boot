@@ -107,14 +107,14 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private String getClassesPath(File archive) {
-		return archive.getName().endsWith(".jar") ? "BOOT-INF/classes"
-				: "WEB-INF/classes";
+		return (archive.getName().endsWith(".jar") ? "BOOT-INF/classes"
+				: "WEB-INF/classes");
 	}
 
 	private List<String> getLibPaths(File archive) {
-		return archive.getName().endsWith(".jar")
+		return (archive.getName().endsWith(".jar")
 				? Collections.singletonList("BOOT-INF/lib")
-				: Arrays.asList("WEB-INF/lib", "WEB-INF/lib-provided");
+				: Arrays.asList("WEB-INF/lib", "WEB-INF/lib-provided"));
 	}
 
 	private void explodeArchive(File archive) throws IOException {

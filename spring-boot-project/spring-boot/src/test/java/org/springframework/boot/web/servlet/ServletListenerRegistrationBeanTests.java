@@ -22,12 +22,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -38,9 +37,6 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  */
 public class ServletListenerRegistrationBeanTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private ServletContextListener listener;
@@ -73,10 +69,10 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void cannotRegisterUnsupportedType() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Listener is not of a supported type");
-		new ServletListenerRegistrationBean<EventListener>(new EventListener() {
-		});
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new ServletListenerRegistrationBean<>(new EventListener() {
+
+				})).withMessageContaining("Listener is not of a supported type");
 	}
 
 }

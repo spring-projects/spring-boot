@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -60,32 +62,39 @@ public class JacksonProperties {
 	private String propertyNamingStrategy;
 
 	/**
+	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
+	 * are auto-detected.
+	 */
+	private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
+			PropertyAccessor.class);
+
+	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
+	private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
 			SerializationFeature.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
+	private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
 			DeserializationFeature.class);
 
 	/**
 	 * Jackson general purpose on/off features.
 	 */
-	private Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
+	private final Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
 
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
+	private final Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
 			JsonParser.Feature.class);
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
+	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
 			JsonGenerator.Feature.class);
 
 	/**
@@ -127,6 +136,10 @@ public class JacksonProperties {
 
 	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
 		this.propertyNamingStrategy = propertyNamingStrategy;
+	}
+
+	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
+		return this.visibility;
 	}
 
 	public Map<SerializationFeature, Boolean> getSerialization() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ public interface TunnelConnection {
 
 	/**
 	 * Open the tunnel connection.
-	 * @param incomingChannel A {@link WritableByteChannel} that should be used to write
-	 * any incoming data received from the remote server.
+	 * @param incomingChannel a {@link WritableByteChannel} that should be used to write
+	 * any incoming data received from the remote server
 	 * @param closeable a closeable to call when the channel is closed
-	 * @return A {@link WritableByteChannel} that should be used to send any outgoing data
+	 * @return a {@link WritableByteChannel} that should be used to send any outgoing data
 	 * destined for the remote server
 	 * @throws Exception in case of errors
 	 */

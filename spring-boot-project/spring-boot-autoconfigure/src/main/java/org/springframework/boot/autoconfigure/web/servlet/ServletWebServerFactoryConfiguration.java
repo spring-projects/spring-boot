@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
+@Configuration
 class ServletWebServerFactoryConfiguration {
 
 	@Configuration

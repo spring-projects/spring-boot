@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.filtersample.ExampleConfiguration;
@@ -33,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AutoConfigurationExcludeFilter}.
@@ -42,9 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AutoConfigurationExcludeFilterTests {
 
 	private static final Class<?> FILTERED = ExampleFilteredAutoConfiguration.class;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -60,8 +56,8 @@ public class AutoConfigurationExcludeFilterTests {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertThat(this.context.getBeansOfType(String.class)).hasSize(1);
 		assertThat(this.context.getBean(String.class)).isEqualTo("test");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(FILTERED);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(FILTERED));
 	}
 
 	@Configuration

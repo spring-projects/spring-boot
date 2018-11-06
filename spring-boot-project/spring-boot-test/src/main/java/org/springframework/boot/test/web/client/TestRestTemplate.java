@@ -51,7 +51,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -130,7 +130,7 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username,
 			String password, HttpClientOption... httpClientOptions) {
-		this(restTemplateBuilder == null ? null : restTemplateBuilder.build(), username,
+		this((restTemplateBuilder != null) ? restTemplateBuilder.build() : null, username,
 				password, httpClientOptions);
 	}
 
@@ -138,8 +138,8 @@ public class TestRestTemplate {
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;
-		if (getRequestFactoryClass(restTemplate).isAssignableFrom(
-				HttpComponentsClientHttpRequestFactory.class)) {
+		if (getRequestFactoryClass(restTemplate)
+				.isAssignableFrom(HttpComponentsClientHttpRequestFactory.class)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
@@ -172,8 +172,8 @@ public class TestRestTemplate {
 			interceptors = Collections.emptyList();
 		}
 		interceptors = new ArrayList<>(interceptors);
-		interceptors.removeIf(BasicAuthorizationInterceptor.class::isInstance);
-		interceptors.add(new BasicAuthorizationInterceptor(username, password));
+		interceptors.removeIf(BasicAuthenticationInterceptor.class::isInstance);
+		interceptors.add(new BasicAuthenticationInterceptor(username, password));
 		restTemplate.setInterceptors(interceptors);
 	}
 

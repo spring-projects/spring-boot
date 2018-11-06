@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JarURLConnection}.
@@ -147,6 +149,16 @@ public class JarURLConnectionTests {
 				"jar:file:" + getRelativePath() + "!/space%20nested.jar!/3.dat");
 		assertThat(JarURLConnection.get(url, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void connectionToEntryUsingWrongAbsoluteUrlForEntryFromNestedJarFile()
+			throws Exception {
+		URL url = new URL("jar:file:" + getAbsolutePath() + "!/w.jar!/3.dat");
+		JarFile nested = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+		assertThatExceptionOfType(FileNotFoundException.class)
+				.isThrownBy(JarURLConnection.get(url, nested)::getInputStream);
 	}
 
 	@Test

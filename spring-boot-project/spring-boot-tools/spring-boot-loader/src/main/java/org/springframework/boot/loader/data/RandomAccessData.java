@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -56,6 +57,10 @@ public interface RandomAccessData {
 	 * @param length the number of bytes to be read
 	 * @return the data
 	 * @throws IOException if the data cannot be read
+	 * @throws IndexOutOfBoundsException if offset is beyond the end of the file or
+	 * subsection
+	 * @throws EOFException if offset plus length is greater than the length of the file
+	 * or subsection
 	 */
 	byte[] read(long offset, long length) throws IOException;
 

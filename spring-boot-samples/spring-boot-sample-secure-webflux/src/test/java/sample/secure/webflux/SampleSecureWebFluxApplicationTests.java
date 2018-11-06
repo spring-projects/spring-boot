@@ -47,8 +47,20 @@ public class SampleSecureWebFluxApplicationTests {
 	}
 
 	@Test
-	public void actuatorsSecureByDefault() {
+	public void healthInsecureByDefault() {
 		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk();
+	}
+
+	@Test
+	public void infoInsecureByDefault() {
+		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk();
+	}
+
+	@Test
+	public void otherActuatorsSecureByDefault() {
+		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isUnauthorized();
 	}
 

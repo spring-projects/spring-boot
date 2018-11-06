@@ -68,8 +68,7 @@ public class WelcomePageHandlerMappingTests {
 				.run((context) -> {
 					WelcomePageHandlerMapping handler = context
 							.getBean(WelcomePageHandlerMapping.class);
-					assertThat(handler.getOrder())
-							.isEqualTo(2);
+					assertThat(handler.getOrder()).isEqualTo(2);
 				});
 	}
 

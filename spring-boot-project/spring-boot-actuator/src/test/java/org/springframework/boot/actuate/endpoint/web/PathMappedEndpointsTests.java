@@ -20,15 +20,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -39,59 +39,61 @@ import static org.mockito.Mockito.mock;
  */
 public class PathMappedEndpointsTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Supplier must not be null");
-		new PathMappedEndpoints(null, (WebEndpointsSupplier) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
+				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void createWhenSuppliersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Suppliers must not be null");
-		new PathMappedEndpoints(null, (Collection<EndpointsSupplier<?>>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PathMappedEndpoints(null,
+						(Collection<EndpointsSupplier<?>>) null))
+				.withMessageContaining("Suppliers must not be null");
 	}
 
 	@Test
 	public void iteratorShouldReturnPathMappedEndpoints() {
 		PathMappedEndpoints mapped = createTestMapped(null);
 		assertThat(mapped).hasSize(2);
-		assertThat(mapped).extracting("id").containsExactly("e2", "e3");
+		assertThat(mapped).extracting("endpointId").containsExactly(EndpointId.of("e2"),
+				EndpointId.of("e3"));
 	}
 
 	@Test
 	public void streamShouldReturnPathMappedEndpoints() {
 		PathMappedEndpoints mapped = createTestMapped(null);
 		assertThat(mapped.stream()).hasSize(2);
-		assertThat(mapped.stream()).extracting("id").containsExactly("e2", "e3");
+		assertThat(mapped.stream()).extracting("endpointId")
+				.containsExactly(EndpointId.of("e2"), EndpointId.of("e3"));
 	}
 
 	@Test
 	public void getRootPathWhenContainsIdShouldReturnRootPath() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getRootPath("e2")).isEqualTo("p2");
+		assertThat(mapped.getRootPath(EndpointId.of("e2"))).isEqualTo("p2");
 	}
 
 	@Test
 	public void getRootPathWhenMissingIdShouldReturnNull() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getRootPath("xx")).isNull();
+		assertThat(mapped.getRootPath(EndpointId.of("xx"))).isNull();
 	}
 
 	@Test
 	public void getPathWhenContainsIdShouldReturnRootPath() {
-		assertThat(createTestMapped(null).getPath("e2")).isEqualTo("/p2");
-		assertThat(createTestMapped("/x").getPath("e2")).isEqualTo("/x/p2");
+		assertThat(createTestMapped(null).getPath(EndpointId.of("e2"))).isEqualTo("/p2");
+		assertThat(createTestMapped("/x").getPath(EndpointId.of("e2")))
+				.isEqualTo("/x/p2");
 	}
 
 	@Test
 	public void getPathWhenMissingIdShouldReturnNull() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getRootPath("xx")).isNull();
+		assertThat(mapped.getPath(EndpointId.of("xx"))).isNull();
 	}
 
 	@Test
@@ -110,34 +112,34 @@ public class PathMappedEndpointsTests {
 	@Test
 	public void getEndpointWhenContainsIdShouldReturnPathMappedEndpoint() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getEndpoint("e2").getRootPath()).isEqualTo("p2");
+		assertThat(mapped.getEndpoint(EndpointId.of("e2")).getRootPath()).isEqualTo("p2");
 	}
 
 	@Test
 	public void getEndpointWhenMissingIdShouldReturnNull() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getEndpoint("xx")).isNull();
+		assertThat(mapped.getEndpoint(EndpointId.of("xx"))).isNull();
 	}
 
 	private PathMappedEndpoints createTestMapped(String basePath) {
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
-		endpoints.add(mockEndpoint("e1"));
-		endpoints.add(mockEndpoint("e2", "p2"));
-		endpoints.add(mockEndpoint("e3", "p3"));
-		endpoints.add(mockEndpoint("e4"));
+		endpoints.add(mockEndpoint(EndpointId.of("e1")));
+		endpoints.add(mockEndpoint(EndpointId.of("e2"), "p2"));
+		endpoints.add(mockEndpoint(EndpointId.of("e3"), "p3"));
+		endpoints.add(mockEndpoint(EndpointId.of("e4")));
 		return new PathMappedEndpoints(basePath, () -> endpoints);
 	}
 
-	private TestPathMappedEndpoint mockEndpoint(String id, String rootPath) {
+	private TestPathMappedEndpoint mockEndpoint(EndpointId id, String rootPath) {
 		TestPathMappedEndpoint endpoint = mock(TestPathMappedEndpoint.class);
-		given(endpoint.getId()).willReturn(id);
+		given(endpoint.getEndpointId()).willReturn(id);
 		given(endpoint.getRootPath()).willReturn(rootPath);
 		return endpoint;
 	}
 
-	private TestEndpoint mockEndpoint(String id) {
+	private TestEndpoint mockEndpoint(EndpointId id) {
 		TestEndpoint endpoint = mock(TestEndpoint.class);
-		given(endpoint.getId()).willReturn(id);
+		given(endpoint.getEndpointId()).willReturn(id);
 		return endpoint;
 	}
 

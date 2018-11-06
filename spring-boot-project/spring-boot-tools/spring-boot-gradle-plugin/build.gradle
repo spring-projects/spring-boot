@@ -1,7 +1,19 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath("io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.6")
+	}
+}
+
 plugins {
 	id 'java'
 	id 'eclipse'
 }
+
+apply plugin: 'io.spring.javaformat'
 
 repositories {
 	mavenLocal()
@@ -9,12 +21,12 @@ repositories {
 }
 
 dependencies {
-	compile localGroovy()
-	compile gradleApi()
-	compile fileTree(dir: 'target/dependencies/compile', include: '*.jar')
-	testCompile gradleTestKit()
-	testCompile 'org.apache.commons:commons-compress:1.13'
-	testCompile fileTree(dir: 'target/dependencies/test', include: '*.jar')
+	implementation localGroovy()
+	implementation gradleApi()
+	implementation fileTree(dir: 'target/dependencies/compile', include: '*.jar')
+	testImplementation gradleTestKit()
+	testImplementation 'org.apache.commons:commons-compress:1.13'
+	testImplementation fileTree(dir: 'target/dependencies/test', include: '*.jar')
 }
 
 jar {
@@ -26,15 +38,6 @@ jar {
 test {
 	testLogging {
 		events "passed", "skipped", "failed"
-	}
-}
-
-eclipseJdt {
-	inputFile = rootProject.file('../../../eclipse/org.eclipse.jdt.core.prefs')
-	doLast {
-		project.file('.settings/org.eclipse.jdt.ui.prefs').withWriter { writer ->
-			writer << file('../../../eclipse/org.eclipse.jdt.ui.prefs').text
-		}
 	}
 }
 

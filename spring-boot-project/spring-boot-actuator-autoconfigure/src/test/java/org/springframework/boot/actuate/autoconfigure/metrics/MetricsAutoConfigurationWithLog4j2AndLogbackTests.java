@@ -20,10 +20,7 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
@@ -46,13 +43,8 @@ public class MetricsAutoConfigurationWithLog4j2AndLogbackTests {
 
 	@Test
 	public void doesNotConfigureLogbackMetrics() {
-		this.contextRunner.run((context) -> {
-			System.out.println(
-					new ConditionEvaluationReportMessage(ConditionEvaluationReport
-							.get((ConfigurableListableBeanFactory) context
-									.getAutowireCapableBeanFactory())));
-			assertThat(context).doesNotHaveBean(LogbackMetrics.class);
-		});
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(LogbackMetrics.class));
 	}
 
 }

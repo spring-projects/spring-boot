@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link WebServicesProperties}.
@@ -27,33 +27,29 @@ import org.junit.rules.ExpectedException;
  */
 public class WebServicesPropertiesTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private WebServicesProperties properties;
 
 	@Test
 	public void pathMustNotBeEmpty() {
 		this.properties = new WebServicesProperties();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Path must have length greater than 1");
-		this.properties.setPath("");
+		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath(""))
+				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new WebServicesProperties();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Path must have length greater than 1");
-		this.properties.setPath("/");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.properties.setPath("/"))
+				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.properties = new WebServicesProperties();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Path must start with '/'");
-		this.properties.setPath("custom");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.properties.setPath("custom"))
+				.withMessageContaining("Path must start with '/'");
 	}
 
 }

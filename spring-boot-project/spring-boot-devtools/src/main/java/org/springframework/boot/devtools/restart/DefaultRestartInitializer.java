@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	static {
 		Set<String> skipped = new LinkedHashSet<>();
 		skipped.add("org.junit.runners.");
+		skipped.add("org.junit.platform.");
 		skipped.add("org.springframework.boot.test.");
 		skipped.add("cucumber.runtime.");
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
@@ -73,7 +74,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return {@code true} if the stack element means that the initializer should be
 	 * skipped
 	 */
-	protected boolean isSkippedStackElement(StackTraceElement element) {
+	private boolean isSkippedStackElement(StackTraceElement element) {
 		for (String skipped : SKIPPED_STACK_ELEMENTS) {
 			if (element.getClassName().startsWith(skipped)) {
 				return true;

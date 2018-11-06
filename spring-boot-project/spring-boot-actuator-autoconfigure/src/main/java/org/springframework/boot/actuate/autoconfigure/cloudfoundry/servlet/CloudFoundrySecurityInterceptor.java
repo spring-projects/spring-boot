@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryA
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
@@ -59,7 +60,7 @@ class CloudFoundrySecurityInterceptor {
 		this.applicationId = applicationId;
 	}
 
-	SecurityResponse preHandle(HttpServletRequest request, String endpointId) {
+	SecurityResponse preHandle(HttpServletRequest request, EndpointId endpointId) {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return SecurityResponse.success();
 		}
@@ -90,12 +91,14 @@ class CloudFoundrySecurityInterceptor {
 		return SecurityResponse.success();
 	}
 
-	private void check(HttpServletRequest request, String endpointId) throws Exception {
+	private void check(HttpServletRequest request, EndpointId endpointId)
+			throws Exception {
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
 		AccessLevel accessLevel = this.cloudFoundrySecurityService
 				.getAccessLevel(token.toString(), this.applicationId);
-		if (!accessLevel.isAccessAllowed(endpointId)) {
+		if (!accessLevel.isAccessAllowed(
+				(endpointId != null) ? endpointId.toLowerCaseString() : "")) {
 			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
 					"Access denied");
 		}

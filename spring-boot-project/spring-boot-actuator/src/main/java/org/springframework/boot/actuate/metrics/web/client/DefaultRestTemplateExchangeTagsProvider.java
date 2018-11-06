@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ public class DefaultRestTemplateExchangeTagsProvider
 	@Override
 	public Iterable<Tag> getTags(String urlTemplate, HttpRequest request,
 			ClientHttpResponse response) {
-		Tag uriTag = StringUtils.hasText(urlTemplate)
+		Tag uriTag = (StringUtils.hasText(urlTemplate)
 				? RestTemplateExchangeTags.uri(urlTemplate)
-				: RestTemplateExchangeTags.uri(request);
+				: RestTemplateExchangeTags.uri(request));
 		return Arrays.asList(RestTemplateExchangeTags.method(request), uriTag,
 				RestTemplateExchangeTags.status(response),
 				RestTemplateExchangeTags.clientName(request));

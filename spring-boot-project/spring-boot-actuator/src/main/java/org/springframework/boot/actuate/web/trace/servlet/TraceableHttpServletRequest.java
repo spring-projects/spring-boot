@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.web.trace.servlet;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.trace.http.TraceableRequest;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriUtils;
 
 /**
  * An adapter that exposes an {@link HttpServletRequest} as a {@link TraceableRequest}.
@@ -48,12 +51,23 @@ final class TraceableHttpServletRequest implements TraceableRequest {
 
 	@Override
 	public URI getUri() {
-		StringBuffer urlBuffer = this.request.getRequestURL();
-		if (StringUtils.hasText(this.request.getQueryString())) {
-			urlBuffer.append("?");
-			urlBuffer.append(this.request.getQueryString());
+		String queryString = this.request.getQueryString();
+		if (!StringUtils.hasText(queryString)) {
+			return URI.create(this.request.getRequestURL().toString());
 		}
-		return URI.create(urlBuffer.toString());
+		try {
+			StringBuffer urlBuffer = appendQueryString(queryString);
+			return new URI(urlBuffer.toString());
+		}
+		catch (URISyntaxException ex) {
+			String encoded = UriUtils.encodeQuery(queryString, StandardCharsets.UTF_8);
+			StringBuffer urlBuffer = appendQueryString(encoded);
+			return URI.create(urlBuffer.toString());
+		}
+	}
+
+	private StringBuffer appendQueryString(String queryString) {
+		return this.request.getRequestURL().append("?").append(queryString);
 	}
 
 	@Override
@@ -71,17 +85,9 @@ final class TraceableHttpServletRequest implements TraceableRequest {
 		Enumeration<String> names = this.request.getHeaderNames();
 		while (names.hasMoreElements()) {
 			String name = names.nextElement();
-			headers.put(name, toList(this.request.getHeaders(name)));
+			headers.put(name, Collections.list(this.request.getHeaders(name)));
 		}
 		return headers;
-	}
-
-	private List<String> toList(Enumeration<String> enumeration) {
-		List<String> list = new ArrayList<>();
-		while (enumeration.hasMoreElements()) {
-			list.add(enumeration.nextElement());
-		}
-		return list;
 	}
 
 }

@@ -23,6 +23,7 @@ import io.prometheus.client.CollectorRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -126,6 +127,18 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 				.withUserConfiguration(CustomEndpointConfiguration.class)
 				.run((context) -> assertThat(context).hasBean("customEndpoint")
 						.hasSingleBean(PrometheusScrapeEndpoint.class));
+	}
+
+	@Test
+	public void withPushGatewayEnabled() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+				.withPropertyValues(
+						"management.metrics.export.prometheus.pushgateway.enabled=true")
+				.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(PrometheusPushGatewayManager.class));
 	}
 
 	@Configuration

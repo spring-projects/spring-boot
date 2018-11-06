@@ -31,11 +31,13 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
@@ -94,8 +96,8 @@ public class SpringApplicationBuilder {
 	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
 	 * given sources. Subclasses may override in order to provide a custom subclass of
 	 * {@link org.springframework.boot.SpringApplication}
-	 * @param sources The sources
-	 * @return The {@link org.springframework.boot.SpringApplication} instance
+	 * @param sources the sources
+	 * @return the {@link org.springframework.boot.SpringApplication} instance
 	 * @since 1.1.0
 	 */
 	protected SpringApplication createSpringApplication(Class<?>... sources) {
@@ -189,7 +191,7 @@ public class SpringApplicationBuilder {
 		// It's not possible if embedded web server are enabled to support web contexts as
 		// parents because the servlets cannot be initialized at the right point in
 		// lifecycle.
-		web(false);
+		web(WebApplicationType.NONE);
 
 		// Probably not interested in multiple banners
 		bannerMode(Banner.Mode.OFF);
@@ -208,8 +210,9 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder parent(Class<?>... sources) {
 		if (this.parent == null) {
-			this.parent = new SpringApplicationBuilder(sources).web(false)
-					.properties(this.defaultProperties).environment(this.environment);
+			this.parent = new SpringApplicationBuilder(sources)
+					.web(WebApplicationType.NONE).properties(this.defaultProperties)
+					.environment(this.environment);
 		}
 		else {
 			this.parent.sources(sources);
@@ -288,19 +291,6 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Flag to explicitly request a web or non-web environment (auto detected based on
-	 * classpath if not set).
-	 * @param webEnvironment the flag to set
-	 * @return the current builder
-	 * @deprecated since 2.0.0 in favour of {@link #web(WebApplicationType)}
-	 */
-	@Deprecated
-	public SpringApplicationBuilder web(boolean webEnvironment) {
-		this.application.setWebEnvironment(webEnvironment);
-		return this;
-	}
-
-	/**
 	 * Flag to explicitly request a specific type of web application. Auto-detected based
 	 * on the classpath if not set.
 	 * @param webApplicationType the type of web application
@@ -325,7 +315,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
-	 * @param banner The banner to use
+	 * @param banner the banner to use
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder banner(Banner banner) {
@@ -383,6 +373,19 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
+	 * Flag to indicate if the {@link ApplicationConversionService} should be added to the
+	 * application context's {@link Environment}.
+	 * @param addConversionService if the conversion service should be added.
+	 * @return the current builder
+	 * @since 2.1.0
+	 */
+	public SpringApplicationBuilder setAddConversionService(
+			boolean addConversionService) {
+		this.application.setAddConversionService(addConversionService);
+		return this;
+	}
+
+	/**
 	 * Default properties for the environment in the form {@code key=value} or
 	 * {@code key:value}.
 	 * @param defaultProperties the properties to set.
@@ -396,8 +399,8 @@ public class SpringApplicationBuilder {
 		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
-			String key = (index > 0 ? property.substring(0, index) : property);
-			String value = (index > 0 ? property.substring(index + 1) : "");
+			String key = (index > 0) ? property.substring(0, index) : property;
+			String value = (index > 0) ? property.substring(index + 1) : "";
 			map.put(key, value);
 		}
 		return map;
@@ -408,7 +411,7 @@ public class SpringApplicationBuilder {
 		for (String candidate : candidates) {
 			int candidateIndex = property.indexOf(candidate);
 			if (candidateIndex > 0) {
-				index = (index == -1 ? candidateIndex : Math.min(index, candidateIndex));
+				index = (index != -1) ? Math.min(index, candidateIndex) : candidateIndex;
 			}
 		}
 		return index;

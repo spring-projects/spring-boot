@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Base {@link HealthAggregator} implementation to allow subclasses to focus on
@@ -33,8 +33,8 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
-		List<Status> statusCandidates = new ArrayList<>();
-		healths.values().forEach((health) -> statusCandidates.add(health.getStatus()));
+		List<Status> statusCandidates = healths.values().stream().map(Health::getStatus)
+				.collect(Collectors.toList());
 		Status status = aggregateStatus(statusCandidates);
 		Map<String, Object> details = aggregateDetails(healths);
 		return new Health.Builder(status, details).build();

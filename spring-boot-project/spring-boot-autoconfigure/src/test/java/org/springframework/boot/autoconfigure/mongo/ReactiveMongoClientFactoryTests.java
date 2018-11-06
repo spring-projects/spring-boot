@@ -19,19 +19,19 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -43,9 +43,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  */
 public class ReactiveMongoClientFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockEnvironment environment = new MockEnvironment();
 
@@ -113,15 +110,22 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
+	public void retryWritesIsPropagatedFromUri() {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://localhost/test?retryWrites=true");
+		MongoClient client = createMongoClient(properties);
+		assertThat(getSettings(client).getRetryWrites()).isTrue();
+	}
+
+	@Test
 	public void uriCannotBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
+		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties))
+				.withMessageContaining("Invalid mongo configuration, "
+						+ "either uri or host/port/credentials must be specified");
 	}
 
 	@Test
@@ -130,10 +134,9 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
 		properties.setPort(4567);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		createMongoClient(properties);
+		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties))
+				.withMessageContaining("Invalid mongo configuration, "
+						+ "either uri or host/port/credentials must be specified");
 	}
 
 	@Test
@@ -188,14 +191,19 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
-		MongoClientSettings settings = client.getSettings();
+		MongoClientSettings settings = getSettings(client);
 		ClusterSettings clusterSettings = settings.getClusterSettings();
 		return clusterSettings.getHosts();
 	}
 
 	private MongoCredential extractMongoCredentials(MongoClient client) {
-		MongoClientSettings settings = client.getSettings();
-		return settings.getCredential();
+		return getSettings(client).getCredential();
+	}
+
+	@SuppressWarnings("deprecation")
+	private MongoClientSettings getSettings(MongoClient client) {
+		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(),
+				"wrapped");
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

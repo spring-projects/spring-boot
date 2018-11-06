@@ -44,7 +44,7 @@ public abstract class AbstractJsonParser implements JsonParser {
 
 	protected final <T> T trimParse(String json, String prefix,
 			Function<String, T> parser) {
-		String trimmed = (json == null ? "" : json.trim());
+		String trimmed = (json != null) ? json.trim() : "";
 		if (trimmed.startsWith(prefix)) {
 			return parser.apply(trimmed);
 		}

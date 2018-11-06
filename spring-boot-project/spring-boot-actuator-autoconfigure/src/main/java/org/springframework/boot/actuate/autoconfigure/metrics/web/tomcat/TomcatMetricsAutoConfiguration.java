@@ -16,21 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 
-import java.util.Collections;
-
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
-import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
 
+import org.springframework.boot.actuate.metrics.web.tomcat.TomcatMetricsBinder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TomcatMetrics}.
@@ -38,33 +35,16 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
 public class TomcatMetricsAutoConfiguration {
 
-	private volatile Context context;
-
 	@Bean
-	@ConditionalOnMissingBean
-	public TomcatMetrics tomcatMetrics() {
-		return new TomcatMetrics(this.context == null ? null : this.context.getManager(),
-				Collections.emptyList());
-	}
-
-	@Bean
-	@ConditionalOnWebApplication(type = Type.SERVLET)
-	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> contextCapturingServletTomcatCustomizer() {
-		return (tomcatFactory) -> tomcatFactory.addContextCustomizers(this::setContext);
-	}
-
-	@Bean
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> contextCapturingReactiveTomcatCustomizer() {
-		return (tomcatFactory) -> tomcatFactory.addContextCustomizers(this::setContext);
-	}
-
-	private void setContext(Context context) {
-		this.context = context;
+	@ConditionalOnBean(MeterRegistry.class)
+	@ConditionalOnMissingBean({ TomcatMetrics.class, TomcatMetricsBinder.class })
+	public TomcatMetricsBinder tomcatMetricsBinder(MeterRegistry meterRegistry) {
+		return new TomcatMetricsBinder(meterRegistry);
 	}
 
 }

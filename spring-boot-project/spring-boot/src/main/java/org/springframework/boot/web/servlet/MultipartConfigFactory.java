@@ -16,21 +16,14 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.Locale;
-
 import javax.servlet.MultipartConfigElement;
 
-import org.springframework.util.Assert;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Factory that can be used to create a {@link MultipartConfigElement}. Size values can be
  * set using traditional {@literal long} values which are set in bytes or using more
- * readable {@literal String} variants that accept KB or MB suffixes, for example:
- *
- * <pre class="code">
- * factory.setMaxFileSize(&quot;10MB&quot;);
- * factory.setMaxRequestSize(&quot;100KB&quot;);
- * </pre>
+ * convenient {@link DataSize} variants.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -39,11 +32,11 @@ public class MultipartConfigFactory {
 
 	private String location;
 
-	private long maxFileSize = -1;
+	private DataSize maxFileSize;
 
-	private long maxRequestSize = -1;
+	private DataSize maxRequestSize;
 
-	private int fileSizeThreshold = 0;
+	private DataSize fileSizeThreshold;
 
 	/**
 	 * Sets the directory location where files will be stored.
@@ -54,72 +47,90 @@ public class MultipartConfigFactory {
 	}
 
 	/**
+	 * Sets the maximum {@link DataSize size} allowed for uploaded files.
+	 * @param maxFileSize the maximum file size
+	 */
+	public void setMaxFileSize(DataSize maxFileSize) {
+		this.maxFileSize = maxFileSize;
+	}
+
+	/**
 	 * Sets the maximum size in bytes allowed for uploaded files.
 	 * @param maxFileSize the maximum file size
-	 * @see #setMaxFileSize(String)
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxFileSize(DataSize)}
 	 */
+	@Deprecated
 	public void setMaxFileSize(long maxFileSize) {
-		this.maxFileSize = maxFileSize;
+		setMaxFileSize(DataSize.ofBytes(maxFileSize));
 	}
 
 	/**
 	 * Sets the maximum size allowed for uploaded files. Values can use the suffixed "MB"
 	 * or "KB" to indicate a Megabyte or Kilobyte size.
 	 * @param maxFileSize the maximum file size
-	 * @see #setMaxFileSize(long)
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxFileSize(DataSize)}
 	 */
+	@Deprecated
 	public void setMaxFileSize(String maxFileSize) {
-		this.maxFileSize = parseSize(maxFileSize);
+		setMaxFileSize(DataSize.parse(maxFileSize));
+	}
+
+	/**
+	 * Sets the maximum {@link DataSize} allowed for multipart/form-data requests.
+	 * @param maxRequestSize the maximum request size
+	 */
+	public void setMaxRequestSize(DataSize maxRequestSize) {
+		this.maxRequestSize = maxRequestSize;
 	}
 
 	/**
 	 * Sets the maximum size allowed in bytes for multipart/form-data requests.
 	 * @param maxRequestSize the maximum request size
-	 * @see #setMaxRequestSize(String)
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxRequestSize(DataSize)}
 	 */
+	@Deprecated
 	public void setMaxRequestSize(long maxRequestSize) {
-		this.maxRequestSize = maxRequestSize;
+		setMaxRequestSize(DataSize.ofBytes(maxRequestSize));
 	}
 
 	/**
 	 * Sets the maximum size allowed for multipart/form-data requests. Values can use the
 	 * suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	 * @param maxRequestSize the maximum request size
-	 * @see #setMaxRequestSize(long)
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxRequestSize(DataSize)}
 	 */
+	@Deprecated
 	public void setMaxRequestSize(String maxRequestSize) {
-		this.maxRequestSize = parseSize(maxRequestSize);
+		setMaxRequestSize(DataSize.parse(maxRequestSize));
+	}
+
+	/**
+	 * Sets the {@link DataSize size} threshold after which files will be written to disk.
+	 * @param fileSizeThreshold the file size threshold
+	 */
+	public void setFileSizeThreshold(DataSize fileSizeThreshold) {
+		this.fileSizeThreshold = fileSizeThreshold;
 	}
 
 	/**
 	 * Sets the size threshold in bytes after which files will be written to disk.
 	 * @param fileSizeThreshold the file size threshold
-	 * @see #setFileSizeThreshold(String)
+	 * @deprecated since 2.1.0 in favor of {@link #setFileSizeThreshold(DataSize)}
 	 */
+	@Deprecated
 	public void setFileSizeThreshold(int fileSizeThreshold) {
-		this.fileSizeThreshold = fileSizeThreshold;
+		setFileSizeThreshold(DataSize.ofBytes(fileSizeThreshold));
 	}
 
 	/**
 	 * Sets the size threshold after which files will be written to disk. Values can use
 	 * the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	 * @param fileSizeThreshold the file size threshold
-	 * @see #setFileSizeThreshold(int)
+	 * @deprecated since 2.1.0 in favor of {@link #setFileSizeThreshold(DataSize)}
 	 */
+	@Deprecated
 	public void setFileSizeThreshold(String fileSizeThreshold) {
-		this.fileSizeThreshold = (int) parseSize(fileSizeThreshold);
-	}
-
-	private long parseSize(String size) {
-		Assert.hasLength(size, "Size must not be empty");
-		size = size.toUpperCase(Locale.ENGLISH);
-		if (size.endsWith("KB")) {
-			return Long.valueOf(size.substring(0, size.length() - 2)) * 1024;
-		}
-		if (size.endsWith("MB")) {
-			return Long.valueOf(size.substring(0, size.length() - 2)) * 1024 * 1024;
-		}
-		return Long.valueOf(size);
+		setFileSizeThreshold(DataSize.parse(fileSizeThreshold));
 	}
 
 	/**
@@ -127,8 +138,25 @@ public class MultipartConfigFactory {
 	 * @return the multipart config element
 	 */
 	public MultipartConfigElement createMultipartConfig() {
-		return new MultipartConfigElement(this.location, this.maxFileSize,
-				this.maxRequestSize, this.fileSizeThreshold);
+		long maxFileSizeBytes = convertToBytes(this.maxFileSize, -1);
+		long maxRequestSizeBytes = convertToBytes(this.maxRequestSize, -1);
+		long fileSizeThresholdBytes = convertToBytes(this.fileSizeThreshold, 0);
+		return new MultipartConfigElement(this.location, maxFileSizeBytes,
+				maxRequestSizeBytes, (int) fileSizeThresholdBytes);
+	}
+
+	/**
+	 * Return the amount of bytes from the specified {@link DataSize size}. If the size is
+	 * {@code null} or negative, returns {@code defaultValue}.
+	 * @param size the data size to handle
+	 * @param defaultValue the default value if the size is {@code null} or negative
+	 * @return the amount of bytes to use
+	 */
+	private long convertToBytes(DataSize size, int defaultValue) {
+		if (size != null && !size.isNegative()) {
+			return size.toBytes();
+		}
+		return defaultValue;
 	}
 
 }

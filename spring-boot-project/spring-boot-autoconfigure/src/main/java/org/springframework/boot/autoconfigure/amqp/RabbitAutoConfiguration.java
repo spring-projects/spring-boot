@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
+import java.util.stream.Collectors;
 
 import com.rabbitmq.client.Channel;
 
@@ -40,9 +41,6 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -81,6 +79,7 @@ import org.springframework.retry.support.RetryTemplate;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -141,6 +140,10 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
+				map.from(ssl::isValidateServerCertificate).to((validate) -> factory
+						.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::getVerifyHostname)
+						.to(factory::setEnableHostnameVerification);
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull()
 					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);
@@ -154,15 +157,18 @@ public class RabbitAutoConfiguration {
 	@Import(RabbitConnectionFactoryCreator.class)
 	protected static class RabbitTemplateConfiguration {
 
-		private final ObjectProvider<MessageConverter> messageConverter;
-
 		private final RabbitProperties properties;
 
-		public RabbitTemplateConfiguration(
+		private final ObjectProvider<MessageConverter> messageConverter;
+
+		private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+
+		public RabbitTemplateConfiguration(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				RabbitProperties properties) {
-			this.messageConverter = messageConverter;
+				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 			this.properties = properties;
+			this.messageConverter = messageConverter;
+			this.retryTemplateCustomizers = retryTemplateCustomizers;
 		}
 
 		@Bean
@@ -178,7 +184,11 @@ public class RabbitAutoConfiguration {
 			template.setMandatory(determineMandatoryFlag());
 			RabbitProperties.Template properties = this.properties.getTemplate();
 			if (properties.getRetry().isEnabled()) {
-				template.setRetryTemplate(createRetryTemplate(properties.getRetry()));
+				template.setRetryTemplate(new RetryTemplateFactory(
+						this.retryTemplateCustomizers.orderedStream()
+								.collect(Collectors.toList())).createRetryTemplate(
+										properties.getRetry(),
+										RabbitRetryTemplateCustomizer.Target.SENDER));
 			}
 			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
@@ -186,28 +196,13 @@ public class RabbitAutoConfiguration {
 					.to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
+			map.from(properties::getQueue).whenNonNull().to(template::setQueue);
 			return template;
 		}
 
 		private boolean determineMandatoryFlag() {
 			Boolean mandatory = this.properties.getTemplate().getMandatory();
-			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
-		}
-
-		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
-			PropertyMapper map = PropertyMapper.get();
-			RetryTemplate template = new RetryTemplate();
-			SimpleRetryPolicy policy = new SimpleRetryPolicy();
-			map.from(properties::getMaxAttempts).to(policy::setMaxAttempts);
-			template.setRetryPolicy(policy);
-			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-			map.from(properties::getInitialInterval).whenNonNull().as(Duration::toMillis)
-					.to(backOffPolicy::setInitialInterval);
-			map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-			map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis)
-					.to(backOffPolicy::setMaxInterval);
-			template.setBackOffPolicy(backOffPolicy);
-			return template;
+			return (mandatory != null) ? mandatory : this.properties.isPublisherReturns();
 		}
 
 		@Bean

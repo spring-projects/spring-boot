@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,7 @@
 package org.springframework.boot.autoconfigure.data.rest;
 
 import java.net.URI;
-import java.util.Date;
-import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 
@@ -40,7 +36,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.data.rest.webmvc.BaseUri;
-import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -146,31 +142,6 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertThat(bean.getBaseUri()).isEqualTo(URI.create(""));
 	}
 
-	@Test
-	public void objectMappersAreConfiguredUsingObjectMapperBuilder()
-			throws JsonProcessingException {
-		load(TestConfigurationWithObjectMapperBuilder.class);
-
-		assertThatDateIsFormattedCorrectly("halObjectMapper");
-		assertThatDateIsFormattedCorrectly("objectMapper");
-	}
-
-	@Test
-	public void primaryObjectMapperIsAvailable() {
-		load(TestConfiguration.class);
-		Map<String, ObjectMapper> objectMappers = this.context
-				.getBeansOfType(ObjectMapper.class);
-		assertThat(objectMappers.size()).isGreaterThan(1);
-		this.context.getBean(ObjectMapper.class);
-	}
-
-	public void assertThatDateIsFormattedCorrectly(String beanName)
-			throws JsonProcessingException {
-		ObjectMapper objectMapper = this.context.getBean(beanName, ObjectMapper.class);
-		assertThat(objectMapper.writeValueAsString(new Date(1413387983267L)))
-				.isEqualTo("\"2014-10\"");
-	}
-
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.setServletContext(new MockServletContext());
@@ -221,7 +192,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
-	static class TestRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+	static class TestRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 		@Override
 		public void configureRepositoryRestConfiguration(

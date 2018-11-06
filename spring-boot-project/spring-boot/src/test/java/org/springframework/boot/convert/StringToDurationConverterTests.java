@@ -19,9 +19,7 @@ package org.springframework.boot.convert;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -31,6 +29,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link StringToDurationConverter}.
@@ -39,9 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(Parameterized.class)
 public class StringToDurationConverterTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final ConversionService conversionService;
 
@@ -68,6 +64,14 @@ public class StringToDurationConverterTests {
 		assertThat(convert("10NS")).isEqualTo(Duration.ofNanos(10));
 		assertThat(convert("+10ns")).isEqualTo(Duration.ofNanos(10));
 		assertThat(convert("-10ns")).isEqualTo(Duration.ofNanos(-10));
+	}
+
+	@Test
+	public void convertWhenSimpleMicrosShouldReturnDuration() {
+		assertThat(convert("10us")).isEqualTo(Duration.ofNanos(10000));
+		assertThat(convert("10US")).isEqualTo(Duration.ofNanos(10000));
+		assertThat(convert("+10us")).isEqualTo(Duration.ofNanos(10000));
+		assertThat(convert("-10us")).isEqualTo(Duration.ofNanos(-10000));
 	}
 
 	@Test
@@ -129,15 +133,15 @@ public class StringToDurationConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class);
-		this.thrown.expectMessage("'10foo' is not a valid duration");
-		convert("10foo");
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> convert("10foo"))
+				.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@Test
 	public void convertWhenStyleMismatchShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class);
-		convert("10s", null, DurationStyle.ISO8601);
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> convert("10s", null, DurationStyle.ISO8601));
 	}
 
 	@Test

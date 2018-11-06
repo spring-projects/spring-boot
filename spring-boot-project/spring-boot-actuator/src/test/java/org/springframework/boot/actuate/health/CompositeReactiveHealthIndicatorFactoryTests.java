@@ -35,6 +35,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 public class CompositeReactiveHealthIndicatorFactoryTests {
 
 	private static final Health UP = new Health.Builder().status(Status.UP).build();

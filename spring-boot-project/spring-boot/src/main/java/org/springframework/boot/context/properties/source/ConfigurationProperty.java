@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,13 +64,6 @@ public final class ConfigurationProperty
 	}
 
 	@Override
-	public int hashCode() {
-		int result = ObjectUtils.nullSafeHashCode(this.name);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.value);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -82,6 +75,13 @@ public final class ConfigurationProperty
 		boolean result = true;
 		result = result && ObjectUtils.nullSafeEquals(this.name, other.name);
 		result = result && ObjectUtils.nullSafeEquals(this.value, other.value);
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = ObjectUtils.nullSafeHashCode(this.name);
+		result = 31 * result + ObjectUtils.nullSafeHashCode(this.value);
 		return result;
 	}
 

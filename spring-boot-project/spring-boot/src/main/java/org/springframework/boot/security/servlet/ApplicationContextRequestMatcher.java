@@ -33,7 +33,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * {@link AutowireCapableBeanFactory#createBean(Class, int, boolean) create a new bean}
  * that is autowired in the usual way.
  *
- * @param <C> The type of the context that the match method actually needs to use. Can be
+ * @param <C> the type of the context that the match method actually needs to use. Can be
  * an {@link ApplicationContext} or a class of an {@link ApplicationContext#getBean(Class)
  * existing bean}.
  * @author Phillip Webb

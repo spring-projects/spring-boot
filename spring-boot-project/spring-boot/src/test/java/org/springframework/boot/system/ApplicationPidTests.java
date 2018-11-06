@@ -21,12 +21,12 @@ import java.io.FileReader;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ApplicationPid}.
@@ -34,9 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class ApplicationPidTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -54,9 +51,9 @@ public class ApplicationPidTests {
 	@Test
 	public void throwIllegalStateWritingMissingPid() throws Exception {
 		ApplicationPid pid = new ApplicationPid(null);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No PID available");
-		pid.write(this.temporaryFolder.newFile());
+		assertThatIllegalStateException()
+				.isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
+				.withMessageContaining("No PID available");
 	}
 
 	@Test

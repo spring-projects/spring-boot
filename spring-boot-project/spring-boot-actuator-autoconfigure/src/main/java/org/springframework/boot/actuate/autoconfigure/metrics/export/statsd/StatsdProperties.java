@@ -65,11 +65,6 @@ public class StatsdProperties {
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
 	/**
-	 * Maximum size of the queue of items waiting to be sent to the StatsD server.
-	 */
-	private Integer queueSize = Integer.MAX_VALUE;
-
-	/**
 	 * Whether to send unchanged meters to the StatsD server.
 	 */
 	private boolean publishUnchangedMeters = true;
@@ -120,14 +115,6 @@ public class StatsdProperties {
 
 	public void setPollingFrequency(Duration pollingFrequency) {
 		this.pollingFrequency = pollingFrequency;
-	}
-
-	public Integer getQueueSize() {
-		return this.queueSize;
-	}
-
-	public void setQueueSize(Integer queueSize) {
-		this.queueSize = queueSize;
 	}
 
 	public boolean isPublishUnchangedMeters() {

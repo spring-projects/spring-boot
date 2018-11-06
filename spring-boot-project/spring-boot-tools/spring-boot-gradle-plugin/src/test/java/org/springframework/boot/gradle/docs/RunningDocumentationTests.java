@@ -21,7 +21,9 @@ import java.io.IOException;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,23 +32,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for the documentation about running a Spring Boot application.
  *
  * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
+@RunWith(GradleMultiDslSuite.class)
 public class RunningDocumentationTests {
 
 	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
 
 	@Test
 	public void bootRunMain() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-main.gradle")
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-main")
 				.build("configuredMainClass").getOutput())
 						.contains("com.example.ExampleApplication");
 	}
 
 	@Test
-	public void applicationPluginMainClassName() throws IOException {
-		assertThat(this.gradleBuild.script(
-				"src/main/gradle/running/application-plugin-main-class-name.gradle")
+	public void applicationPluginMainClassName() {
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/running/application-plugin-main-class-name")
 				.build("configuredMainClass").getOutput())
 						.contains("com.example.ExampleApplication");
 	}
@@ -54,7 +58,7 @@ public class RunningDocumentationTests {
 	@Test
 	public void springBootDslMainClassName() throws IOException {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/running/spring-boot-dsl-main-class-name.gradle")
+				.script("src/main/gradle/running/spring-boot-dsl-main-class-name")
 				.build("configuredMainClass").getOutput())
 						.contains("com.example.ExampleApplication");
 	}
@@ -62,7 +66,7 @@ public class RunningDocumentationTests {
 	@Test
 	public void bootRunSourceResources() throws IOException {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/running/boot-run-source-resources.gradle")
+				.script("src/main/gradle/running/boot-run-source-resources")
 				.build("configuredClasspath").getOutput())
 						.contains(new File("src/main/resources").getPath());
 	}

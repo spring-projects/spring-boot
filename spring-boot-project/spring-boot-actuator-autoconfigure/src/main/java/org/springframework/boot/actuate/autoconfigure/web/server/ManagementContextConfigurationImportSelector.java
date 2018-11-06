@@ -125,16 +125,17 @@ class ManagementContextConfigurationImportSelector
 			Map<String, Object> annotationAttributes = annotationMetadata
 					.getAnnotationAttributes(
 							ManagementContextConfiguration.class.getName());
-			return (annotationAttributes == null ? ManagementContextType.ANY
-					: (ManagementContextType) annotationAttributes.get("value"));
+			return (annotationAttributes != null)
+					? (ManagementContextType) annotationAttributes.get("value")
+					: ManagementContextType.ANY;
 		}
 
 		private int readOrder(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> attributes = annotationMetadata
 					.getAnnotationAttributes(Order.class.getName());
-			Integer order = (attributes == null ? null
-					: (Integer) attributes.get("value"));
-			return (order == null ? Ordered.LOWEST_PRECEDENCE : order);
+			Integer order = (attributes != null) ? (Integer) attributes.get("value")
+					: null;
+			return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 		}
 
 		public String getClassName() {

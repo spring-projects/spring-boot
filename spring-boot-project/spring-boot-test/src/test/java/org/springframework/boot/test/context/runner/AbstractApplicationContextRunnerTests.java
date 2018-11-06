@@ -21,20 +21,23 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.Gson;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.junit.Assert.fail;
 
 /**
@@ -47,9 +50,6 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  */
 public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void runWithInitializerShouldInitialize() {
@@ -150,7 +150,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithClassLoaderShouldSetClassLoader() {
+	public void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
 					try {
@@ -158,19 +158,25 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 								context.getClassLoader());
 						fail("Should have thrown a ClassNotFoundException");
 					}
-					catch (ClassNotFoundException e) {
+					catch (ClassNotFoundException ex) {
 						// expected
 					}
 				});
 	}
 
 	@Test
+	public void runWithClassLoaderShouldSetClassLoaderOnConditionContext() {
+		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
+				.withUserConfiguration(ConditionalConfig.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ConditionalConfig.class));
+	}
+
+	@Test
 	public void thrownRuleWorksWithCheckedException() {
-		get().run((context) -> {
-			this.thrown.expect(IOException.class);
-			this.thrown.expectMessage("Expected message");
-			throwCheckedException("Expected message");
-		});
+		get().run((context) -> assertThatIOException()
+				.isThrownBy(() -> throwCheckedException("Expected message"))
+				.withMessageContaining("Expected message"));
 	}
 
 	protected abstract T get();
@@ -205,6 +211,21 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		@Bean
 		public String bar() {
 			return "bar";
+		}
+
+	}
+
+	@Configuration
+	@Conditional(FilteredClassLoaderCondition.class)
+	static class ConditionalConfig {
+
+	}
+
+	static class FilteredClassLoaderCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return context.getClassLoader() instanceof FilteredClassLoader;
 		}
 
 	}

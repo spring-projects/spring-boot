@@ -51,8 +51,8 @@ public class BootWar extends War implements BootArchive {
 	public BootWar() {
 		getWebInf().into("lib-provided",
 				(copySpec) -> copySpec.from(
-						(Callable<Iterable<File>>) () -> this.providedClasspath == null
-								? Collections.emptyList() : this.providedClasspath));
+						(Callable<Iterable<File>>) () -> (this.providedClasspath != null)
+								? this.providedClasspath : Collections.emptyList()));
 	}
 
 	@Override
@@ -68,6 +68,13 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public String getMainClassName() {
+		if (this.mainClassName == null) {
+			String manifestStartClass = (String) getManifest().getAttributes()
+					.get("Start-Class");
+			if (manifestStartClass != null) {
+				setMainClassName(manifestStartClass);
+			}
+		}
 		return this.mainClassName;
 	}
 
@@ -120,7 +127,7 @@ public class BootWar extends War implements BootArchive {
 	public void providedClasspath(Object... classpath) {
 		FileCollection existingClasspath = this.providedClasspath;
 		this.providedClasspath = getProject().files(
-				existingClasspath == null ? Collections.emptyList() : existingClasspath,
+				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
 	}
 
@@ -155,7 +162,7 @@ public class BootWar extends War implements BootArchive {
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
 		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
 		if (launchScript == null) {
-			launchScript = new LaunchScriptConfiguration();
+			launchScript = new LaunchScriptConfiguration(this);
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;

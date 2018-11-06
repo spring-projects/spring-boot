@@ -27,12 +27,14 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ServletContextInitializer} to register {@link ExposableServletEndpoint servlet
  * endpoints}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class ServletEndpointRegistrar implements ServletContextInitializer {
@@ -46,8 +48,15 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 	public ServletEndpointRegistrar(String basePath,
 			Collection<ExposableServletEndpoint> servletEndpoints) {
 		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
-		this.basePath = (basePath == null ? "" : basePath);
+		this.basePath = cleanBasePath(basePath);
 		this.servletEndpoints = servletEndpoints;
+	}
+
+	private static String cleanBasePath(String basePath) {
+		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
+			return basePath.substring(0, basePath.length() - 1);
+		}
+		return (basePath != null) ? basePath : "";
 	}
 
 	@Override
@@ -58,9 +67,9 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 
 	private void register(ServletContext servletContext,
 			ExposableServletEndpoint endpoint) {
-		String name = endpoint.getId() + "-actuator-endpoint";
+		String name = endpoint.getEndpointId().toLowerCaseString() + "-actuator-endpoint";
 		String path = this.basePath + "/" + endpoint.getRootPath();
-		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
+		String urlMapping = path.endsWith("/") ? path + "*" : path + "/*";
 		EndpointServlet endpointServlet = endpoint.getEndpointServlet();
 		Dynamic registration = servletContext.addServlet(name,
 				endpointServlet.getServlet());

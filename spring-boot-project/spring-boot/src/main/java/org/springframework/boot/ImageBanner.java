@@ -161,9 +161,9 @@ public class ImageBanner implements Banner {
 		IIOMetadataNode root = (IIOMetadataNode) metadata
 				.getAsTree(metadata.getNativeMetadataFormatName());
 		IIOMetadataNode extension = findNode(root, "GraphicControlExtension");
-		String attribute = (extension == null ? null
-				: extension.getAttribute("delayTime"));
-		return (attribute == null ? 0 : Integer.parseInt(attribute) * 10);
+		String attribute = (extension != null) ? extension.getAttribute("delayTime")
+				: null;
+		return (attribute != null) ? Integer.parseInt(attribute) * 10 : 0;
 	}
 
 	private static IIOMetadataNode findNode(IIOMetadataNode rootNode, String nodeName) {
@@ -200,7 +200,7 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(BufferedImage image, int margin, boolean invert,
 			PrintStream out) {
-		AnsiElement background = (invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT);
+		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));
 		out.println();

@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link WebEndpointProperties}.
@@ -28,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 public class WebEndpointPropertiesTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void defaultBasePathShouldBeApplication() {
@@ -50,9 +46,9 @@ public class WebEndpointPropertiesTests {
 	@Test
 	public void basePathMustStartWithSlash() {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Base path must start with '/' or be empty");
-		properties.setBasePath("admin");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> properties.setBasePath("admin"))
+				.withMessageContaining("Base path must start with '/' or be empty");
 	}
 
 	@Test

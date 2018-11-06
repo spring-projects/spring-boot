@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -57,8 +58,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 			Collection<ExposableWebEndpoint> endpoints = discoverer.getEndpoints();
 			assertThat(endpoints.size()).isEqualTo(2);
 			for (ExposableWebEndpoint endpoint : endpoints) {
-				if (endpoint.getId().equals("health")) {
-					WebOperation operation = endpoint.getOperations().iterator().next();
+				if (endpoint.getEndpointId().equals(EndpointId.of("health"))) {
+					WebOperation operation = findMainReadOperation(endpoint);
 					assertThat(operation.invoke(new InvocationContext(
 							mock(SecurityContext.class), Collections.emptyMap())))
 									.isEqualTo("cf");
@@ -67,13 +68,23 @@ public class CloudFoundryWebEndpointDiscovererTests {
 		});
 	}
 
-	private void load(Class<?> configuration,
-			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		this.load((id) -> null, (id) -> id, configuration, consumer);
+	private WebOperation findMainReadOperation(ExposableWebEndpoint endpoint) {
+		for (WebOperation operation : endpoint.getOperations()) {
+			if (operation.getRequestPredicate().getPath().equals("health")) {
+				return operation;
+			}
+		}
+		throw new IllegalStateException(
+				"No main read operation found from " + endpoint.getOperations());
 	}
 
-	private void load(Function<String, Long> timeToLive, PathMapper endpointPathMapper,
-			Class<?> configuration,
+	private void load(Class<?> configuration,
+			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
+		this.load((id) -> null, (id) -> id.toString(), configuration, consumer);
+	}
+
+	private void load(Function<EndpointId, Long> timeToLive,
+			PathMapper endpointPathMapper, Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
@@ -84,7 +95,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 					Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 			CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(
-					context, parameterMapper, mediaTypes, endpointPathMapper,
+					context, parameterMapper, mediaTypes,
+					Collections.singletonList(endpointPathMapper),
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
 					Collections.emptyList());
 			consumer.accept(discoverer);

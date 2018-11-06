@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import java.io.File;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ChangedFile}.
@@ -35,30 +35,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ChangedFileTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void sourceFolderMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SourceFolder must not be null");
-		new ChangedFile(null, this.temp.newFile(), Type.ADD);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
+				.withMessageContaining("SourceFolder must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new ChangedFile(this.temp.newFolder(), null, Type.ADD);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void typeMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test

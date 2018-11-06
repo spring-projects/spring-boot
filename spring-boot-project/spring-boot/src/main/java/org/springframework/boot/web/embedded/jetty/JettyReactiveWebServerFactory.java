@@ -28,6 +28,7 @@ import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
@@ -38,6 +39,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
 import org.springframework.util.Assert;
@@ -68,6 +70,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	private boolean useForwardHeaders;
 
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
+
+	private JettyResourceFactory resourceFactory;
 
 	private ThreadPool threadPool;
 
@@ -129,13 +133,43 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return this.jettyServerCustomizers;
 	}
 
+	/**
+	 * Returns a Jetty {@link ThreadPool} that should be used by the {@link Server}.
+	 * @return a Jetty {@link ThreadPool} or {@code null}
+	 */
+	public ThreadPool getThreadPool() {
+		return this.threadPool;
+	}
+
+	/**
+	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
+	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
+	 * @param threadPool a Jetty ThreadPool to be used
+	 */
+	public void setThreadPool(ThreadPool threadPool) {
+		this.threadPool = threadPool;
+	}
+
 	@Override
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
 	}
 
+	/**
+	 * Set the {@link JettyResourceFactory} to get the shared resources from.
+	 * @param resourceFactory the server resources
+	 * @since 2.1.0
+	 */
+	public void setResourceFactory(JettyResourceFactory resourceFactory) {
+		this.resourceFactory = resourceFactory;
+	}
+
+	protected JettyResourceFactory getResourceFactory() {
+		return this.resourceFactory;
+	}
+
 	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));
@@ -160,8 +194,16 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
-		ServerConnector connector = new ServerConnector(server, this.acceptors,
-				this.selectors);
+		ServerConnector connector;
+		JettyResourceFactory resourceFactory = getResourceFactory();
+		if (resourceFactory != null) {
+			connector = new ServerConnector(server, resourceFactory.getExecutor(),
+					resourceFactory.getScheduler(), resourceFactory.getByteBufferPool(),
+					this.acceptors, this.selectors, new HttpConnectionFactory());
+		}
+		else {
+			connector = new ServerConnector(server, this.acceptors, this.selectors);
+		}
 		connector.setHost(address.getHostString());
 		connector.setPort(address.getPort());
 		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
@@ -193,23 +235,6 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	private void customizeSsl(Server server, InetSocketAddress address) {
 		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2())
 				.customize(server);
-	}
-
-	/**
-	 * Returns a Jetty {@link ThreadPool} that should be used by the {@link Server}.
-	 * @return a Jetty {@link ThreadPool} or {@code null}
-	 */
-	public ThreadPool getThreadPool() {
-		return this.threadPool;
-	}
-
-	/**
-	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
-	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
-	 * @param threadPool a Jetty ThreadPool to be used
-	 */
-	public void setThreadPool(ThreadPool threadPool) {
-		this.threadPool = threadPool;
 	}
 
 }

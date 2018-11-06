@@ -29,6 +29,8 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.trace.http.HttpTrace.Request;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -87,6 +89,19 @@ public class HttpExchangeTracerTests {
 				.receivedRequest(createRequest());
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).containsOnlyKeys(HttpHeaders.ACCEPT);
+	}
+
+	@Test
+	public void requestHeadersCanBeCustomized() {
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("to-remove", "test");
+		headers.add("test", "value");
+		HttpTrace trace = new RequestHeadersFilterHttpExchangeTracer()
+				.receivedRequest(createRequest(headers));
+		Request request = trace.getRequest();
+		assertThat(request.getHeaders()).containsOnlyKeys("test", "to-add");
+		assertThat(request.getHeaders().get("test")).containsExactly("value");
+		assertThat(request.getHeaders().get("to-add")).containsExactly("42");
 	}
 
 	@Test
@@ -326,9 +341,25 @@ public class HttpExchangeTracerTests {
 	private String mixedCase(String input) {
 		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < input.length(); i++) {
-			output.append(i % 2 == 0 ? Character.toLowerCase(input.charAt(i))
-					: Character.toUpperCase(input.charAt(i)));
+			output.append((i % 2 != 0) ? Character.toUpperCase(input.charAt(i))
+					: Character.toLowerCase(input.charAt(i)));
 		}
 		return output.toString();
 	}
+
+	private static class RequestHeadersFilterHttpExchangeTracer
+			extends HttpExchangeTracer {
+
+		RequestHeadersFilterHttpExchangeTracer() {
+			super(EnumSet.of(Include.REQUEST_HEADERS));
+		}
+
+		@Override
+		protected void postProcessRequestHeaders(Map<String, List<String>> headers) {
+			headers.remove("to-remove");
+			headers.putIfAbsent("to-add", Collections.singletonList("42"));
+		}
+
+	}
+
 }

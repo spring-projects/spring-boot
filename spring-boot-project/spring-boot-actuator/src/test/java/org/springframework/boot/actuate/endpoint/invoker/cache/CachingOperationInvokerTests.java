@@ -16,19 +16,19 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -42,14 +42,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 public class CachingOperationInvokerTests {
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createInstanceWithTtlSetToZero() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TimeToLive");
-		new CachingOperationInvoker(mock(OperationInvoker.class), 0);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
+				.withMessageContaining("TimeToLive");
 	}
 
 	@Test
@@ -88,6 +85,21 @@ public class CachingOperationInvokerTests {
 		parameters.put("something", null);
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
 				parameters);
+		given(target.invoke(context)).willReturn(new Object());
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
+		invoker.invoke(context);
+		invoker.invoke(context);
+		invoker.invoke(context);
+		verify(target, times(3)).invoke(context);
+	}
+
+	@Test
+	public void targetAlwaysInvokedWithPrincipal() {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Map<String, Object> parameters = new HashMap<>();
+		SecurityContext securityContext = mock(SecurityContext.class);
+		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
+		InvocationContext context = new InvocationContext(securityContext, parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		invoker.invoke(context);

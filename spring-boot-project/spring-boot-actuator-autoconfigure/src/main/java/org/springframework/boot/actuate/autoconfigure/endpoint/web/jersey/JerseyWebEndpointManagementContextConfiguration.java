@@ -42,20 +42,26 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link ManagementContextConfiguration} for Jersey {@link Endpoint} concerns.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Michael Simons
  */
-@Configuration
+@ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(ResourceConfig.class)
-@ConditionalOnBean({ ResourceConfig.class, WebEndpointsSupplier.class })
+@ConditionalOnBean(WebEndpointsSupplier.class)
 @ConditionalOnMissingBean(type = "org.springframework.web.servlet.DispatcherServlet")
 class JerseyWebEndpointManagementContextConfiguration {
+
+	@ConditionalOnMissingBean(ResourceConfig.class)
+	@Bean
+	public ResourceConfig resourceConfig() {
+		return new ResourceConfig();
+	}
 
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(

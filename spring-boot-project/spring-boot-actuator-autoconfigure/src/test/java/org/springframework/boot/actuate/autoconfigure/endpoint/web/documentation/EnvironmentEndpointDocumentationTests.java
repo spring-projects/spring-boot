@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -156,8 +155,7 @@ public class EnvironmentEndpointDocumentationTests
 				@Override
 				protected void customizePropertySources(
 						MutablePropertySources propertySources) {
-					StreamSupport
-							.stream(environment.getPropertySources().spliterator(), false)
+					environment.getPropertySources().stream()
 							.filter(this::includedPropertySource)
 							.forEach(propertySources::addLast);
 				}

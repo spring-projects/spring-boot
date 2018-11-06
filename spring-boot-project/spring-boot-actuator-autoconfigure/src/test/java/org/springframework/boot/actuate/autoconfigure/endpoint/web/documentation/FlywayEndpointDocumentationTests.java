@@ -26,8 +26,8 @@ import org.flywaydb.core.api.MigrationType;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -98,8 +98,8 @@ public class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	}
 
 	@Configuration
-	@Import({ BaseDocumentationConfiguration.class, EmbeddedDataSourceConfiguration.class,
-			FlywayAutoConfiguration.class })
+	@Import(BaseDocumentationConfiguration.class)
+	@ImportAutoConfiguration(FlywayAutoConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean

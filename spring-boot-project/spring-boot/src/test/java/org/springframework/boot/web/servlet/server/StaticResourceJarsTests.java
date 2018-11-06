@@ -59,11 +59,27 @@ public class StaticResourceJarsTests {
 	}
 
 	@Test
+	public void includeJarWithStaticResourcesWithPlusInItsPath() throws Exception {
+		File jarFile = createResourcesJar("test + resources.jar");
+		List<URL> staticResourceJarUrls = new StaticResourceJars()
+				.getUrlsFrom(jarFile.toURI().toURL());
+		assertThat(staticResourceJarUrls).hasSize(1);
+	}
+
+	@Test
 	public void excludeJarWithoutStaticResources() throws Exception {
 		File jarFile = createJar("dependency.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars()
 				.getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(0);
+	}
+
+	@Test
+	public void uncPathsAreTolerated() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(
+				jarFile.toURI().toURL(), new URL("file://unc.example.com/test.jar"));
+		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	private File createResourcesJar(String name) throws IOException {

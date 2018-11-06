@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		if (element == null) {
 			// Assume highlighting
 			element = LEVELS.get(event.getLevel().toInteger());
-			element = (element == null ? AnsiColor.GREEN : element);
+			element = (element != null) ? element : AnsiColor.GREEN;
 		}
 		return toAnsiString(in, element);
 	}

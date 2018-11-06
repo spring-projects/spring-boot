@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -55,13 +56,13 @@ public class EntityManagerFactoryBuilder {
 
 	private final URL persistenceUnitRootLocation;
 
-	private EntityManagerFactoryBeanCallback callback;
+	private AsyncTaskExecutor bootstrapExecutor;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
 	 * @param jpaVendorAdapter a vendor adapter
-	 * @param jpaProperties JPA properties to be passed to the persistence provider.
+	 * @param jpaProperties the JPA properties to be passed to the persistence provider
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 */
@@ -74,7 +75,7 @@ public class EntityManagerFactoryBuilder {
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
 	 * @param jpaVendorAdapter a vendor adapter
-	 * @param jpaProperties JPA properties to be passed to the persistence provider.
+	 * @param jpaProperties the JPA properties to be passed to the persistence provider
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
@@ -95,11 +96,13 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
-	 * An optional callback for new entity manager factory beans.
-	 * @param callback the entity manager factory bean callback
+	 * Configure the bootstrap executor to be used by the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param bootstrapExecutor the executor
+	 * @since 2.1.0
 	 */
-	public void setCallback(EntityManagerFactoryBeanCallback callback) {
-		this.callback = callback;
+	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
+		this.bootstrapExecutor = bootstrapExecutor;
 	}
 
 	/**
@@ -230,22 +233,12 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean
 						.setPersistenceUnitRootLocation(rootLocation.toString());
 			}
-			if (EntityManagerFactoryBuilder.this.callback != null) {
-				EntityManagerFactoryBuilder.this.callback
-						.execute(entityManagerFactoryBean);
+			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
+				entityManagerFactoryBean.setBootstrapExecutor(
+						EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
 			return entityManagerFactoryBean;
 		}
-
-	}
-
-	/**
-	 * A callback for new entity manager factory beans created by a Builder.
-	 */
-	@FunctionalInterface
-	public interface EntityManagerFactoryBeanCallback {
-
-		void execute(LocalContainerEntityManagerFactoryBean factory);
 
 	}
 

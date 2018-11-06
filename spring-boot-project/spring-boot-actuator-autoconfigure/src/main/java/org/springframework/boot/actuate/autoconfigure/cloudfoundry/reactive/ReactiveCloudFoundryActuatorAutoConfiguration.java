@@ -33,7 +33,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
@@ -95,9 +94,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 			WebClient.Builder webClientBuilder,
 			ControllerEndpointsSupplier controllerEndpointsSupplier) {
 		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(
-				this.applicationContext, parameterMapper, endpointMediaTypes,
-				PathMapper.useEndpointId(), Collections.emptyList(),
-				Collections.emptyList());
+				this.applicationContext, parameterMapper, endpointMediaTypes, null,
+				Collections.emptyList(), Collections.emptyList());
 		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				webClientBuilder, this.applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = endpointDiscoverer.getEndpoints();
@@ -126,9 +124,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty(
 				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
-		return (cloudControllerUrl == null ? null
-				: new ReactiveCloudFoundrySecurityService(webClientBuilder,
-						cloudControllerUrl, skipSslValidation));
+		return (cloudControllerUrl != null) ? new ReactiveCloudFoundrySecurityService(
+				webClientBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

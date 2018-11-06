@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class BindConverter {
+final class BindConverter {
 
 	private static final Set<Class<?>> EXCLUDED_EDITORS;
 	static {
@@ -56,9 +56,11 @@ class BindConverter {
 		EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
 	}
 
+	private static BindConverter sharedInstance;
+
 	private final ConversionService conversionService;
 
-	BindConverter(ConversionService conversionService,
+	private BindConverter(ConversionService conversionService,
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
 		List<ConversionService> conversionServices = getConversionServices(
@@ -97,6 +99,19 @@ class BindConverter {
 				new ResolvableTypeDescriptor(type, annotations));
 	}
 
+	static BindConverter get(ConversionService conversionService,
+			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+		if (conversionService == ApplicationConversionService.getSharedInstance()
+				&& propertyEditorInitializer == null) {
+			if (sharedInstance == null) {
+				sharedInstance = new BindConverter(conversionService,
+						propertyEditorInitializer);
+			}
+			return sharedInstance;
+		}
+		return new BindConverter(conversionService, propertyEditorInitializer);
+	}
+
 	/**
 	 * A {@link TypeDescriptor} backed by a {@link ResolvableType}.
 	 */
@@ -124,7 +139,7 @@ class BindConverter {
 		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 			Assert.notNull(targetType, "Target type to convert to cannot be null");
 			return canConvert(
-					(sourceType != null ? TypeDescriptor.valueOf(sourceType) : null),
+					(sourceType != null) ? TypeDescriptor.valueOf(sourceType) : null,
 					TypeDescriptor.valueOf(targetType));
 		}
 

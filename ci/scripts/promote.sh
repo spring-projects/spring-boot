@@ -46,24 +46,32 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 
 	echo "Waiting for artifacts to be published"
 	ARTIFACTS_PUBLISHED=false
-	WAIT_TIME=5
+	WAIT_TIME=10
 	COUNTER=0
-	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 24 ]; do
-		 result=$(curl https://api.bintray.com/packages/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/$groupId )
-		 versions=$( echo $result | jq -r '.versions' )
-		 exists=$(echo $versions | grep $version)
-		 if [ $? -eq 0 ]; then
+	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 120 ]; do
+		result=$( curl -s https://api.bintray.com/packages/"${BINTRAY_SUBJECT}"/"${BINTRAY_REPO}"/"${groupId}" )
+		versions=$( echo "$result" | jq -r '.versions' )
+		exists=$( echo "$versions" | grep "$version" -o || true )
+		if [ "$exists" = "$version" ]; then
 			ARTIFACTS_PUBLISHED=true
-		 fi
-		 COUNTER=$(( $COUNTER + 1))
-		 echo $COUNTER
-		 sleep WAIT_TIME
+		fi
+		COUNTER=$(( COUNTER + 1 ))
+		sleep $WAIT_TIME
 	done
-	if [ $ARTIFACTS_PUBLISHED == "false" ]; then
+	if [[ $ARTIFACTS_PUBLISHED = "false" ]]; then
 		echo "Failed to publish"
 		exit 1
+	else
+		curl \
+			-s \
+			-u ${BINTRAY_USERNAME}:${BINTRAY_PASSWORD} \
+			-H "Content-Type: application/json" \
+			-d '[ { "name": "gradle-plugin", "values": ["org.springframework.boot:org.springframework.boot:spring-boot-gradle-plugin"] } ]' \
+			-X POST \
+			https://api.bintray.com/packages/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/${groupId}/versions/${version}/attributes  > /dev/null || { echo "Failed to add attributes" >&2; exit 1; }
 	fi
 fi
 
 
 echo "Promotion complete"
+echo $version > version/version

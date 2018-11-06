@@ -97,8 +97,8 @@ class StartupInfoLogger {
 	}
 
 	private String getApplicationName() {
-		return (this.sourceClass != null ? ClassUtils.getShortName(this.sourceClass)
-				: "application");
+		return (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass)
+				: "application";
 	}
 
 	private String getVersion(Class<?> source) {
@@ -117,8 +117,8 @@ class StartupInfoLogger {
 		String startedBy = getValue("started by ", () -> System.getProperty("user.name"));
 		String in = getValue("in ", () -> System.getProperty("user.dir"));
 		ApplicationHome home = new ApplicationHome(this.sourceClass);
-		String path = (home.getSource() == null ? ""
-				: home.getSource().getAbsolutePath());
+		String path = (home.getSource() != null) ? home.getSource().getAbsolutePath()
+				: "";
 		if (startedBy == null && path == null) {
 			return "";
 		}

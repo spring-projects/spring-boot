@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Pattern;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -29,6 +30,8 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 public final class WebOperationRequestPredicate {
+
+	private static final Pattern PATH_VAR_PATTERN = Pattern.compile("\\{.*?}");
 
 	private final String path;
 
@@ -50,7 +53,7 @@ public final class WebOperationRequestPredicate {
 	public WebOperationRequestPredicate(String path, WebEndpointHttpMethod httpMethod,
 			Collection<String> consumes, Collection<String> produces) {
 		this.path = path;
-		this.canonicalPath = path.replaceAll("\\{.*?}", "{*}");
+		this.canonicalPath = PATH_VAR_PATTERN.matcher(path).replaceAll("{*}");
 		this.httpMethod = httpMethod;
 		this.consumes = consumes;
 		this.produces = produces;
@@ -89,32 +92,6 @@ public final class WebOperationRequestPredicate {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder(
-				this.httpMethod + " to path '" + this.path + "'");
-		if (!CollectionUtils.isEmpty(this.consumes)) {
-			result.append(" consumes: "
-					+ StringUtils.collectionToCommaDelimitedString(this.consumes));
-		}
-		if (!CollectionUtils.isEmpty(this.produces)) {
-			result.append(" produces: "
-					+ StringUtils.collectionToCommaDelimitedString(this.produces));
-		}
-		return result.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.consumes.hashCode();
-		result = prime * result + this.httpMethod.hashCode();
-		result = prime * result + this.canonicalPath.hashCode();
-		result = prime * result + this.produces.hashCode();
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -129,6 +106,32 @@ public final class WebOperationRequestPredicate {
 		result = result && this.canonicalPath.equals(other.canonicalPath);
 		result = result && this.produces.equals(other.produces);
 		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.consumes.hashCode();
+		result = prime * result + this.httpMethod.hashCode();
+		result = prime * result + this.canonicalPath.hashCode();
+		result = prime * result + this.produces.hashCode();
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder(
+				this.httpMethod + " to path '" + this.path + "'");
+		if (!CollectionUtils.isEmpty(this.consumes)) {
+			result.append(" consumes: "
+					+ StringUtils.collectionToCommaDelimitedString(this.consumes));
+		}
+		if (!CollectionUtils.isEmpty(this.produces)) {
+			result.append(" produces: "
+					+ StringUtils.collectionToCommaDelimitedString(this.produces));
+		}
+		return result.toString();
 	}
 
 }

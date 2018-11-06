@@ -179,7 +179,7 @@ public class JerseyEndpointResourceFactory {
 			Map<String, Object> result = new HashMap<>();
 			multivaluedMap.forEach((name, values) -> {
 				if (!CollectionUtils.isEmpty(values)) {
-					result.put(name, values.size() == 1 ? values.get(0) : values);
+					result.put(name, (values.size() != 1) ? values : values.get(0));
 				}
 			});
 			return result;
@@ -188,7 +188,7 @@ public class JerseyEndpointResourceFactory {
 		private Response convertToJaxRsResponse(Object response, String httpMethod) {
 			if (response == null) {
 				boolean isGet = HttpMethod.GET.equals(httpMethod);
-				Status status = (isGet ? Status.NOT_FOUND : Status.NO_CONTENT);
+				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
 			try {

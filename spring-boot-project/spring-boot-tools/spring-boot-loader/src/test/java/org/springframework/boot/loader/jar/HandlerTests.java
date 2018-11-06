@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,12 +158,28 @@ public class HandlerTests {
 				"./folderB/./b.xsd");
 	}
 
+	@Test
+	public void urlWithRef() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes",
+				"!/foo.txt#alpha");
+	}
+
+	@Test
+	public void urlWithQuery() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes",
+				"!/foo.txt?alpha");
+	}
+
 	private void assertStandardAndCustomHandlerUrlsAreEqual(String context, String spec)
 			throws MalformedURLException {
 		URL standardUrl = new URL(new URL("jar:" + context), spec);
 		URL customHandlerUrl = new URL(new URL("jar", null, -1, context, this.handler),
 				spec);
 		assertThat(customHandlerUrl.toString()).isEqualTo(standardUrl.toString());
+		assertThat(customHandlerUrl.getFile()).isEqualTo(standardUrl.getFile());
+		assertThat(customHandlerUrl.getPath()).isEqualTo(standardUrl.getPath());
+		assertThat(customHandlerUrl.getQuery()).isEqualTo(standardUrl.getQuery());
+		assertThat(customHandlerUrl.getRef()).isEqualTo(standardUrl.getRef());
 	}
 
 	private URL createUrl(String file) throws MalformedURLException {

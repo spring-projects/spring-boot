@@ -69,6 +69,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private URL url;
 
+	private String urlString;
+
 	private JarFileEntries entries;
 
 	private Supplier<Manifest> manifestSupplier;
@@ -120,7 +122,7 @@ public class JarFile extends java.util.jar.JarFile {
 		parser.addVisitor(centralDirectoryVisitor());
 		this.data = parser.parse(data, filter == null);
 		this.type = type;
-		this.manifestSupplier = manifestSupplier != null ? manifestSupplier : () -> {
+		this.manifestSupplier = (manifestSupplier != null) ? manifestSupplier : () -> {
 			try (InputStream inputStream = getInputStream(MANIFEST_NAME)) {
 				if (inputStream == null) {
 					return null;
@@ -168,7 +170,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
+		Manifest manifest = (this.manifest != null) ? this.manifest.get() : null;
 		if (manifest == null) {
 			try {
 				manifest = this.manifestSupplier.get();
@@ -218,11 +220,11 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	@Override
-	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-		if (ze instanceof JarEntry) {
-			return this.entries.getInputStream((JarEntry) ze);
+	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
+		if (entry instanceof JarEntry) {
+			return this.entries.getInputStream((JarEntry) entry);
 		}
-		return getInputStream(ze == null ? null : ze.getName());
+		return getInputStream((entry != null) ? entry.getName() : null);
 	}
 
 	InputStream getInputStream(String name) throws IOException {
@@ -299,6 +301,13 @@ public class JarFile extends java.util.jar.JarFile {
 		if (this.type == JarFileType.DIRECT) {
 			this.rootFile.close();
 		}
+	}
+
+	String getUrlString() throws MalformedURLException {
+		if (this.urlString == null) {
+			this.urlString = getUrl().toString();
+		}
+		return this.urlString;
 	}
 
 	/**

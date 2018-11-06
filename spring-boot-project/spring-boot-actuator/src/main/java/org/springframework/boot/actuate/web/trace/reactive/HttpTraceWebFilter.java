@@ -73,11 +73,11 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		Mono<?> principal = this.includes.contains(Include.PRINCIPAL)
+		Mono<?> principal = (this.includes.contains(Include.PRINCIPAL)
 				? exchange.getPrincipal().cast(Object.class).defaultIfEmpty(NONE)
-				: Mono.just(NONE);
-		Mono<?> session = this.includes.contains(Include.SESSION_ID)
-				? exchange.getSession() : Mono.just(NONE);
+				: Mono.just(NONE));
+		Mono<?> session = (this.includes.contains(Include.SESSION_ID)
+				? exchange.getSession() : Mono.just(NONE));
 		return Mono.zip(principal, session)
 				.flatMap((tuple) -> filter(exchange, chain,
 						asType(tuple.getT1(), Principal.class),
@@ -97,11 +97,11 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 				exchange);
 		HttpTrace trace = this.tracer.receivedRequest(request);
 		return chain.filter(exchange).doAfterSuccessOrError((aVoid, ex) -> {
-			this.tracer.sendingResponse(trace,
-					new TraceableServerHttpResponse(ex == null ? exchange.getResponse()
-							: new CustomStatusResponseDecorator(ex,
-									exchange.getResponse())),
-					() -> principal, () -> getStartedSessionId(session));
+			TraceableServerHttpResponse response = new TraceableServerHttpResponse(
+					(ex != null) ? new CustomStatusResponseDecorator(ex,
+							exchange.getResponse()) : exchange.getResponse());
+			this.tracer.sendingResponse(trace, response, () -> principal,
+					() -> getStartedSessionId(session));
 			this.repository.add(trace);
 		});
 	}
@@ -117,7 +117,7 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 
 		private CustomStatusResponseDecorator(Throwable ex, ServerHttpResponse delegate) {
 			super(delegate);
-			this.status = ex instanceof ResponseStatusException
+			this.status = (ex instanceof ResponseStatusException)
 					? ((ResponseStatusException) ex).getStatus()
 					: HttpStatus.INTERNAL_SERVER_ERROR;
 		}

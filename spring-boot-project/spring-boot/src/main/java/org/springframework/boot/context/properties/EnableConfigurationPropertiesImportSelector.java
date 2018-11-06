@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties} bean or not, depending on whether the enclosing
  * {@link EnableConfigurationProperties} explicitly declares one. If none is declared then
  * a bean post processor will still kick in for any beans annotated as external
- * configuration. If one is declared then it a bean definition is registered with id equal
+ * configuration. If one is declared, then a bean definition is registered with id equal
  * to the class name (thus an application context usually only contains one
  * {@link ConfigurationProperties} bean of each unique type).
  *
@@ -75,8 +75,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(
 							EnableConfigurationProperties.class.getName(), false);
-			return collectClasses(attributes == null ? Collections.emptyList()
-					: attributes.get("value"));
+			return collectClasses((attributes != null) ? attributes.get("value")
+					: Collections.emptyList());
 		}
 
 		private List<Class<?>> collectClasses(List<?> values) {
@@ -96,7 +96,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		private String getName(Class<?> type) {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
-			String prefix = (annotation != null ? annotation.prefix() : "");
+			String prefix = (annotation != null) ? annotation.prefix() : "";
 			return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
 					: type.getName());
 		}

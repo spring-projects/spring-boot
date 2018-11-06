@@ -101,20 +101,20 @@ public class ServletRegistrationBean<T extends Servlet>
 	}
 
 	/**
-	 * Returns the servlet being registered.
-	 * @return the servlet
-	 */
-	protected T getServlet() {
-		return this.servlet;
-	}
-
-	/**
 	 * Sets the servlet to be registered.
 	 * @param servlet the servlet
 	 */
 	public void setServlet(T servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = servlet;
+	}
+
+	/**
+	 * Return the servlet being registered.
+	 * @return the servlet
+	 */
+	public T getServlet() {
+		return this.servlet;
 	}
 
 	/**
@@ -129,7 +129,8 @@ public class ServletRegistrationBean<T extends Servlet>
 	}
 
 	/**
-	 * Return a mutable collection of the URL mappings for the servlet.
+	 * Return a mutable collection of the URL mappings, as defined in the Servlet
+	 * specification, for the servlet.
 	 * @return the urlMappings
 	 */
 	public Collection<String> getUrlMappings() {
@@ -137,7 +138,7 @@ public class ServletRegistrationBean<T extends Servlet>
 	}
 
 	/**
-	 * Add URL mappings for the servlet.
+	 * Add URL mappings, as defined in the Servlet specification, for the servlet.
 	 * @param urlMappings the mappings to add
 	 * @see #setUrlMappings(Collection)
 	 */
@@ -214,4 +215,5 @@ public class ServletRegistrationBean<T extends Servlet>
 	public String getServletName() {
 		return getOrDeduceName(this.servlet);
 	}
+
 }

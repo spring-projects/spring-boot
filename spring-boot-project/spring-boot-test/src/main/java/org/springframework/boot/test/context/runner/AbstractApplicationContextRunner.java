@@ -84,9 +84,9 @@ import org.springframework.util.Assert;
  * }</pre>
  * <p>
  *
- * @param <SELF> The "self" type for this runner
- * @param <C> The context type
- * @param <A> The application context assertion provider
+ * @param <SELF> the "self" type for this runner
+ * @param <C> the context type
+ * @param <A> the application context assertion provider
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -100,7 +100,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 	private final Supplier<C> contextFactory;
 
-	private final List<ApplicationContextInitializer<C>> initializers;
+	private final List<ApplicationContextInitializer<? super C>> initializers;
 
 	private final TestPropertyValues environmentProperties;
 
@@ -132,7 +132,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param configurations the configuration
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
-			List<ApplicationContextInitializer<C>> initializers,
+			List<ApplicationContextInitializer<? super C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
@@ -156,7 +156,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param initializer the initializer to add
 	 * @return a new instance with the updated initializers
 	 */
-	public SELF withInitializer(ApplicationContextInitializer<C> initializer) {
+	public SELF withInitializer(
+			ApplicationContextInitializer<? super ConfigurableApplicationContext> initializer) {
 		Assert.notNull(initializer, "Initializer must not be null");
 		return newInstance(this.contextFactory, add(this.initializers, initializer),
 				this.environmentProperties, this.systemProperties, this.classLoader,
@@ -196,9 +197,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	/**
-	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use.
-	 * Customizing the {@link ClassLoader} is an effective manner to hide resources from
-	 * the classpath.
+	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use
+	 * for resource loading and bean class loading.
 	 * @param classLoader the classloader to use (can be null to use the default)
 	 * @return a new instance with the updated class loader
 	 * @see FilteredClassLoader
@@ -260,7 +260,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	protected abstract SELF newInstance(Supplier<C> contextFactory,
-			List<ApplicationContextInitializer<C>> initializers,
+			List<ApplicationContextInitializer<? super C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations);
@@ -274,13 +274,32 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF run(ContextConsumer<? super A> consumer) {
-		this.systemProperties.applyToSystemProperties(() -> {
-			try (A context = createAssertableContext()) {
-				accept(consumer, context);
-			}
-			return null;
+		withContextClassLoader(this.classLoader, () -> {
+			this.systemProperties.applyToSystemProperties(() -> {
+				try (A context = createAssertableContext()) {
+					accept(consumer, context);
+				}
+				return null;
+			});
 		});
 		return (SELF) this;
+	}
+
+	private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
+		if (classLoader == null) {
+			action.run();
+		}
+		else {
+			Thread currentThread = Thread.currentThread();
+			ClassLoader previous = currentThread.getContextClassLoader();
+			currentThread.setContextClassLoader(classLoader);
+			try {
+				action.run();
+			}
+			finally {
+				currentThread.setContextClassLoader(previous);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")

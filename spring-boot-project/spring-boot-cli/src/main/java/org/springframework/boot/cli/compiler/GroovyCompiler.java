@@ -322,7 +322,7 @@ public class GroovyCompiler {
 					return node;
 				}
 			}
-			return (classes.isEmpty() ? null : classes.get(0));
+			return classes.isEmpty() ? null : classes.get(0);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import java.util.concurrent.Executors;
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -29,8 +31,10 @@ import org.springframework.boot.test.web.htmlunit.webdriver.LocalHostWebConnecti
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder;
+import org.springframework.util.ClassUtils;
 
 /**
  * Auto-configuration for Selenium {@link WebDriver} MockMVC integration.
@@ -45,6 +49,8 @@ import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDr
 public class MockMvcWebDriverAutoConfiguration {
 
 	private final Environment environment;
+
+	private static final String SECURITY_CONTEXT_EXECUTOR = "org.springframework.security.concurrent.DelegatingSecurityContextExecutor";
 
 	MockMvcWebDriverAutoConfiguration(Environment environment) {
 		this.environment = environment;
@@ -63,7 +69,13 @@ public class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnMissingBean(WebDriver.class)
 	@ConditionalOnBean(MockMvcHtmlUnitDriverBuilder.class)
 	public HtmlUnitDriver htmlUnitDriver(MockMvcHtmlUnitDriverBuilder builder) {
-		return builder.build();
+		HtmlUnitDriver driver = builder.build();
+		if (ClassUtils.isPresent(SECURITY_CONTEXT_EXECUTOR,
+				getClass().getClassLoader())) {
+			driver.setExecutor(new DelegatingSecurityContextExecutor(
+					Executors.newSingleThreadExecutor()));
+		}
+		return driver;
 	}
 
 }

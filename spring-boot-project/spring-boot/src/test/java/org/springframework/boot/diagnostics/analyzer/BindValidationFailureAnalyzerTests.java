@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,8 +135,8 @@ public class BindValidationFailureAnalyzerTests {
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {
 			int index = pair.indexOf("=");
-			String key = (index > 0 ? pair.substring(0, index) : pair);
-			String value = (index > 0 ? pair.substring(index + 1) : "");
+			String key = (index > 0) ? pair.substring(0, index) : pair;
+			String value = (index > 0) ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
 		sources.addFirst(new MapPropertySource("test", map));
@@ -221,4 +221,5 @@ public class BindValidationFailureAnalyzerTests {
 		}
 
 	}
+
 }

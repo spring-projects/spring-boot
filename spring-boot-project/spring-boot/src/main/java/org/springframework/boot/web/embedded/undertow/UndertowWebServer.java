@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.net.BindException;
 import java.net.InetSocketAddress;
@@ -56,6 +57,8 @@ public class UndertowWebServer implements WebServer {
 
 	private final boolean autoStart;
 
+	private final Closeable closeable;
+
 	private Undertow undertow;
 
 	private volatile boolean started = false;
@@ -66,8 +69,21 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart) {
+		this(builder, autoStart, null);
+	}
+
+	/**
+	 * Create a new {@link UndertowWebServer} instance.
+	 * @param builder the builder
+	 * @param autoStart if the server should be started
+	 * @param closeable called when the server is stopped
+	 * @since 2.0.4
+	 */
+	public UndertowWebServer(Undertow.Builder builder, boolean autoStart,
+			Closeable closeable) {
 		this.builder = builder;
 		this.autoStart = autoStart;
+		this.closeable = closeable;
 	}
 
 	@Override
@@ -85,8 +101,7 @@ public class UndertowWebServer implements WebServer {
 				}
 				this.undertow.start();
 				this.started = true;
-				UndertowWebServer.logger
-						.info("Undertow started on port(s) " + getPortsDescription());
+				logger.info("Undertow started on port(s) " + getPortsDescription());
 			}
 			catch (Exception ex) {
 				try {
@@ -112,6 +127,7 @@ public class UndertowWebServer implements WebServer {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
+				this.closeable.close();
 			}
 		}
 		catch (Exception ex) {
@@ -167,8 +183,8 @@ public class UndertowWebServer implements WebServer {
 	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress) {
-			String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
-					? "https" : "http";
+			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
+			String protocol = (sslField != null) ? "https" : "http";
 			return new UndertowWebServer.Port(
 					((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
@@ -214,6 +230,9 @@ public class UndertowWebServer implements WebServer {
 			this.started = false;
 			try {
 				this.undertow.stop();
+				if (this.closeable != null) {
+					this.closeable.close();
+				}
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop undertow", ex);
@@ -249,16 +268,6 @@ public class UndertowWebServer implements WebServer {
 		}
 
 		@Override
-		public String toString() {
-			return this.number + " (" + this.protocol + ")";
-		}
-
-		@Override
-		public int hashCode() {
-			return this.number;
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -274,6 +283,16 @@ public class UndertowWebServer implements WebServer {
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.number;
+		}
+
+		@Override
+		public String toString() {
+			return this.number + " (" + this.protocol + ")";
 		}
 
 	}

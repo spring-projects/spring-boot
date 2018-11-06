@@ -80,7 +80,7 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 			PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing default security password: %s%n",
+			logger.info(String.format("%n%nUsing generated security password: %s%n",
 					user.getPassword()));
 		}
 		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {

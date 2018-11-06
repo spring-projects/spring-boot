@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,18 +26,21 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.1.0 in favor of
+ * {@link CompositeHealthIndicator#CompositeHealthIndicator(HealthAggregator, HealthIndicatorRegistry)}
  */
+@Deprecated
 public class CompositeHealthIndicatorFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
 
+	public CompositeHealthIndicatorFactory() {
+		this(new HealthIndicatorNameFactory());
+	}
+
 	public CompositeHealthIndicatorFactory(
 			Function<String, String> healthIndicatorNameFactory) {
 		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
-	}
-
-	public CompositeHealthIndicatorFactory() {
-		this(new HealthIndicatorNameFactory());
 	}
 
 	/**
@@ -52,13 +55,10 @@ public class CompositeHealthIndicatorFactory {
 			Map<String, HealthIndicator> healthIndicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
-		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-				healthAggregator);
-		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
-			String name = this.healthIndicatorNameFactory.apply(entry.getKey());
-			healthIndicator.addHealthIndicator(name, entry.getValue());
-		}
-		return healthIndicator;
+		HealthIndicatorRegistryFactory factory = new HealthIndicatorRegistryFactory(
+				this.healthIndicatorNameFactory);
+		return new CompositeHealthIndicator(healthAggregator,
+				factory.createHealthIndicatorRegistry(healthIndicators));
 	}
 
 }

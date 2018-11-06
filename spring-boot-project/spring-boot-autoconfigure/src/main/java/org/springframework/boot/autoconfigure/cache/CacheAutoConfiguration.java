@@ -16,18 +16,11 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -46,7 +39,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
-import org.springframework.context.annotation.Role;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -67,30 +59,23 @@ import org.springframework.util.Assert;
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
 @EnableConfigurationProperties(CacheProperties.class)
-@AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter({ CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		RedisAutoConfiguration.class })
+		HibernateJpaAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import(CacheConfigurationImportSelector.class)
 public class CacheAutoConfiguration {
-
-	static final String VALIDATOR_BEAN_NAME = "cacheAutoConfigurationValidator";
 
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManagerCustomizers cacheManagerCustomizers(
-			ObjectProvider<List<CacheManagerCustomizer<?>>> customizers) {
-		return new CacheManagerCustomizers(customizers.getIfAvailable());
+			ObjectProvider<CacheManagerCustomizer<?>> customizers) {
+		return new CacheManagerCustomizers(
+				customizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static CacheManagerValidatorPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
-		return new CacheManagerValidatorPostProcessor();
-	}
-
-	@Bean(name = VALIDATOR_BEAN_NAME)
-	public CacheManagerValidator cacheAutoConfigurationValidator() {
-		return new CacheManagerValidator();
+	public CacheManagerValidator cacheAutoConfigurationValidator(
+			CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
+		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 
 	@Configuration
@@ -106,49 +91,24 @@ public class CacheAutoConfiguration {
 	}
 
 	/**
-	 * {@link BeanFactoryPostProcessor} to ensure that the {@link CacheManagerValidator}
-	 * is triggered before {@link CacheAspectSupport} but without causing early
-	 * instantiation.
-	 */
-	static class CacheManagerValidatorPostProcessor implements BeanFactoryPostProcessor {
-
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
-			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class,
-					false, false)) {
-				BeanDefinition definition = beanFactory.getBeanDefinition(name);
-				definition.setDependsOn(
-						append(definition.getDependsOn(), VALIDATOR_BEAN_NAME));
-			}
-		}
-
-		private String[] append(String[] array, String value) {
-			String[] result = new String[array == null ? 1 : array.length + 1];
-			if (array != null) {
-				System.arraycopy(array, 0, result, 0, array.length);
-			}
-			result[result.length - 1] = value;
-			return result;
-		}
-
-	}
-
-	/**
 	 * Bean used to validate that a CacheManager exists and provide a more meaningful
 	 * exception.
 	 */
-	static class CacheManagerValidator {
+	static class CacheManagerValidator implements InitializingBean {
 
-		@Autowired
-		private CacheProperties cacheProperties;
+		private final CacheProperties cacheProperties;
 
-		@Autowired(required = false)
-		private CacheManager cacheManager;
+		private final ObjectProvider<CacheManager> cacheManager;
 
-		@PostConstruct
-		public void checkHasCacheManager() {
-			Assert.notNull(this.cacheManager,
+		CacheManagerValidator(CacheProperties cacheProperties,
+				ObjectProvider<CacheManager> cacheManager) {
+			this.cacheProperties = cacheProperties;
+			this.cacheManager = cacheManager;
+		}
+
+		@Override
+		public void afterPropertiesSet() {
+			Assert.notNull(this.cacheManager.getIfAvailable(),
 					() -> "No cache manager could "
 							+ "be auto-configured, check your configuration (caching "
 							+ "type is '" + this.cacheProperties.getType() + "')");

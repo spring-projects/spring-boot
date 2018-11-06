@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -30,6 +28,7 @@ import org.springframework.core.env.PropertySources;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PropertySourcesPlaceholdersResolver}.
@@ -41,14 +40,12 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	private PropertySourcesPlaceholdersResolver resolver;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
-		new PropertySourcesPlaceholdersResolver((Environment) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> new PropertySourcesPlaceholdersResolver((Environment) null))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
@@ -67,12 +64,10 @@ public class PropertySourcesPlaceholdersResolverTests {
 	}
 
 	@Test
-	public void resolveIfPlaceholderAbsentAndNoDefaultShouldThrowException() {
+	public void resolveIfPlaceholderAbsentAndNoDefaultUsesPlaceholder() {
 		this.resolver = new PropertySourcesPlaceholdersResolver((PropertySources) null);
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown
-				.expectMessage("Could not resolve placeholder 'FOO' in value \"${FOO}\"");
-		this.resolver.resolvePlaceholders("${FOO}");
+		Object resolved = this.resolver.resolvePlaceholders("${FOO}");
+		assertThat(resolved).isEqualTo("${FOO}");
 	}
 
 	@Test

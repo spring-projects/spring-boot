@@ -16,6 +16,11 @@
 
 package org.springframework.boot.actuate.liquibase;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -60,6 +65,22 @@ public class LiquibaseEndpointTests {
 						context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
 								.getContexts().get(context.getId()).getLiquibaseBeans())
 										.hasSize(1));
+	}
+
+	@Test
+	public void connectionAutoCommitPropertyIsReset() {
+		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
+			DataSource dataSource = context.getBean(DataSource.class);
+			assertThat(getAutoCommit(dataSource)).isTrue();
+			context.getBean(LiquibaseEndpoint.class).liquibaseBeans();
+			assertThat(getAutoCommit(dataSource)).isTrue();
+		});
+	}
+
+	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
+		try (Connection connection = dataSource.getConnection()) {
+			return connection.getAutoCommit();
+		}
 	}
 
 	@Configuration

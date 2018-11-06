@@ -23,9 +23,10 @@ import io.micrometer.core.instrument.step.StepRegistryConfig;
 /**
  * Base class for {@link StepRegistryProperties} to {@link StepRegistryConfig} adapters.
  *
- * @param <T> The properties type
+ * @param <T> the properties type
  * @author Jon Schneider
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistryProperties>
@@ -53,16 +54,6 @@ public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistry
 	@Override
 	public boolean enabled() {
 		return get(T::isEnabled, StepRegistryConfig.super::enabled);
-	}
-
-	@Override
-	public Duration connectTimeout() {
-		return get(T::getConnectTimeout, StepRegistryConfig.super::connectTimeout);
-	}
-
-	@Override
-	public Duration readTimeout() {
-		return get(T::getReadTimeout, StepRegistryConfig.super::readTimeout);
 	}
 
 	@Override

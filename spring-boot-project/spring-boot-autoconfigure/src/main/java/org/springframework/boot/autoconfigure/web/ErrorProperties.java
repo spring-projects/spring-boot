@@ -44,7 +44,7 @@ public class ErrorProperties {
 	 */
 	private IncludeStacktrace includeStacktrace = IncludeStacktrace.NEVER;
 
-	private Whitelabel whitelabel = new Whitelabel();
+	private final Whitelabel whitelabel = new Whitelabel();
 
 	public String getPath() {
 		return this.path;
@@ -72,10 +72,6 @@ public class ErrorProperties {
 
 	public Whitelabel getWhitelabel() {
 		return this.whitelabel;
-	}
-
-	public void setWhitelabel(Whitelabel whitelabel) {
-		this.whitelabel = whitelabel;
 	}
 
 	/**

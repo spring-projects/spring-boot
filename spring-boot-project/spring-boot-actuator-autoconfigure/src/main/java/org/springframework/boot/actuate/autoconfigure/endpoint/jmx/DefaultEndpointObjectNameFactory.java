@@ -22,6 +22,7 @@ import javax.management.ObjectName;
 
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
+import org.springframework.core.env.Environment;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -40,11 +41,30 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private final String contextId;
 
+	private final boolean uniqueNames;
+
 	DefaultEndpointObjectNameFactory(JmxEndpointProperties properties,
-			MBeanServer mBeanServer, String contextId) {
+			Environment environment, MBeanServer mBeanServer, String contextId) {
 		this.properties = properties;
 		this.mBeanServer = mBeanServer;
 		this.contextId = contextId;
+		this.uniqueNames = determineUniqueNames(environment, properties);
+	}
+
+	@SuppressWarnings("deprecation")
+	private static boolean determineUniqueNames(Environment environment,
+			JmxEndpointProperties properties) {
+		Boolean uniqueNames = environment.getProperty("spring.jmx.unique-names",
+				Boolean.class);
+		Boolean endpointUniqueNames = properties.getUniqueNames();
+		if (uniqueNames == null) {
+			return (endpointUniqueNames != null) ? endpointUniqueNames : false;
+		}
+		if (endpointUniqueNames != null & !uniqueNames.equals(endpointUniqueNames)) {
+			throw new IllegalArgumentException(
+					"Configuration mismatch, 'management.endpoints.jmx.unique-names' is deprecated, use only 'spring.jmx.unique-names'");
+		}
+		return uniqueNames;
 	}
 
 	@Override
@@ -52,14 +72,15 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 			throws MalformedObjectNameException {
 		StringBuilder builder = new StringBuilder(this.properties.getDomain());
 		builder.append(":type=Endpoint");
-		builder.append(",name=" + StringUtils.capitalize(endpoint.getId()));
+		builder.append(",name=")
+				.append(StringUtils.capitalize(endpoint.getEndpointId().toString()));
 		String baseName = builder.toString();
 		if (this.mBeanServer != null && hasMBean(baseName)) {
-			builder.append(",context=" + this.contextId);
+			builder.append(",context=").append(this.contextId);
 		}
-		if (this.properties.isUniqueNames()) {
+		if (this.uniqueNames) {
 			String identity = ObjectUtils.getIdentityHexString(endpoint);
-			builder.append(",identity=" + identity);
+			builder.append(",identity=").append(identity);
 		}
 		builder.append(getStaticNames());
 		return ObjectNameManager.getInstance(builder.toString());
@@ -75,8 +96,8 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 			return "";
 		}
 		StringBuilder builder = new StringBuilder();
-		this.properties.getStaticNames()
-				.forEach((name, value) -> builder.append("," + name + "=" + value));
+		this.properties.getStaticNames().forEach((name, value) -> builder.append(",")
+				.append(name).append("=").append(value));
 		return builder.toString();
 	}
 

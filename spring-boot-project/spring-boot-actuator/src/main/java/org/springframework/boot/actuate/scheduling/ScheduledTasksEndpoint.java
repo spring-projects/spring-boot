@@ -277,7 +277,7 @@ public class ScheduledTasksEndpoint {
 
 	private enum TaskType {
 
-		CRON, FIXED_DELAY, FIXED_RATE;
+		CRON, FIXED_DELAY, FIXED_RATE
 
 	}
 

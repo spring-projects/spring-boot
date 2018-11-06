@@ -98,8 +98,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
 		ResolvableType type = getBeanType(bean, beanName);
 		Validated validated = getAnnotation(bean, beanName, Validated.class);
-		Annotation[] annotations = (validated == null ? new Annotation[] { annotation }
-				: new Annotation[] { annotation, validated });
+		Annotation[] annotations = (validated != null)
+				? new Annotation[] { annotation, validated }
+				: new Annotation[] { annotation };
 		Bindable<?> target = Bindable.of(type).withExistingValue(bean)
 				.withAnnotations(annotations);
 		try {

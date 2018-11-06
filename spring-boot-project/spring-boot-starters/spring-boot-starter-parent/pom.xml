@@ -14,6 +14,7 @@
 	<description>Parent pom providing dependency and plugin management for applications
 		built with Maven</description>
 	<properties>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<java.version>1.8</java.version>
 		<resource.delimiter>@</resource.delimiter> <!-- delimiter that doesn't clash with Spring ${} placeholders -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -156,6 +157,7 @@
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<executions>
 						<execution>
+							<id>repackage</id>
 							<goals>
 								<goal>repackage</goal>
 							</goals>
@@ -243,6 +245,25 @@
 										</versionRange>
 										<goals>
 											<goal>flatten</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-checkstyle-plugin
+										</artifactId>
+										<versionRange>
+											[3.0.0,)
+										</versionRange>
+										<goals>
+											<goal>check</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

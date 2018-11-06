@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -46,8 +46,8 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  * @author Phillip Webb
  * @since 1.4.0
  */
-class SharedMetadataReaderFactoryContextInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+class SharedMetadataReaderFactoryContextInitializer implements
+		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	public static final String BEAN_NAME = "org.springframework.boot.autoconfigure."
 			+ "internalCachingMetadataReaderFactory";
@@ -56,6 +56,11 @@ class SharedMetadataReaderFactoryContextInitializer
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addBeanFactoryPostProcessor(
 				new CachingMetadataReaderFactoryPostProcessor());
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 	/**
@@ -85,8 +90,10 @@ class SharedMetadataReaderFactoryContextInitializer
 		}
 
 		private void register(BeanDefinitionRegistry registry) {
-			RootBeanDefinition definition = new RootBeanDefinition(
-					SharedMetadataReaderFactoryBean.class);
+			BeanDefinition definition = BeanDefinitionBuilder
+					.genericBeanDefinition(SharedMetadataReaderFactoryBean.class,
+							SharedMetadataReaderFactoryBean::new)
+					.getBeanDefinition();
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 

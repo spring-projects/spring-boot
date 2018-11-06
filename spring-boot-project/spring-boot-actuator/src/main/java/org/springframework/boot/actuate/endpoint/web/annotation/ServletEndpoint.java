@@ -33,7 +33,7 @@ import org.springframework.core.annotation.AliasFor;
  * Implementations must also implement {@link Supplier Supplier&lt;EndpointServlet&gt;}
  * and return a valid {@link EndpointServlet}.
  * <p>
- * This annotation can be used when existing servlets need be be exposed as actuator
+ * This annotation can be used when existing servlets need to be exposed as actuator
  * endpoints, but it is at the expense of portability. Most users should prefer the
  * {@link Endpoint @Endpoint} or {@link WebEndpoint @WebEndpoint} annotations whenever
  * possible.

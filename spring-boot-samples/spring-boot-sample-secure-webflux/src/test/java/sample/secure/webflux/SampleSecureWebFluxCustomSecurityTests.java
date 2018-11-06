@@ -101,6 +101,14 @@ public class SampleSecureWebFluxCustomSecurityTests {
 				.expectStatus().isOk();
 	}
 
+	private String getBasicAuth() {
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+	}
+
+	private String getBasicAuthForAdmin() {
+		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
+	}
+
 	@Configuration
 	static class SecurityConfiguration {
 
@@ -116,25 +124,16 @@ public class SampleSecureWebFluxCustomSecurityTests {
 
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
+			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
 					.permitAll()
 					.matchers(EndpointRequest.toAnyEndpoint()
 							.excluding(MappingsEndpoint.class))
 					.hasRole("ACTUATOR")
 					.matchers(PathRequest.toStaticResources().atCommonLocations())
 					.permitAll().pathMatchers("/login").permitAll().anyExchange()
-					.authenticated().and().httpBasic();
-			return http.build();
+					.authenticated().and().httpBasic().and().build();
 		}
 
-	}
-
-	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
-	}
-
-	private String getBasicAuthForAdmin() {
-		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
 	}
 
 }

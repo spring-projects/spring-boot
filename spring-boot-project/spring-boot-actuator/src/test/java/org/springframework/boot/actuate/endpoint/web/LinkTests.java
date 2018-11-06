@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link Link}.
@@ -29,14 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LinkTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenHrefIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HREF must not be null");
-		new Link(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new Link(null))
+				.withMessageContaining("HREF must not be null");
 	}
 
 	@Test

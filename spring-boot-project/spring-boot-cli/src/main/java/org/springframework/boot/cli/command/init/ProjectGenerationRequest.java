@@ -358,8 +358,9 @@ class ProjectGenerationRequest {
 
 			return builder.build();
 		}
-		catch (URISyntaxException e) {
-			throw new ReportableException("Invalid service URL (" + e.getMessage() + ")");
+		catch (URISyntaxException ex) {
+			throw new ReportableException(
+					"Invalid service URL (" + ex.getMessage() + ")");
 		}
 	}
 
@@ -415,7 +416,7 @@ class ProjectGenerationRequest {
 		}
 		if (this.output != null) {
 			int i = this.output.lastIndexOf('.');
-			return (i == -1 ? this.output : this.output.substring(0, i));
+			return (i != -1) ? this.output.substring(0, i) : this.output;
 		}
 		return null;
 	}

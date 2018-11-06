@@ -60,9 +60,9 @@ class DocumentRoot {
 	 */
 	public final File getValidDirectory() {
 		File file = this.directory;
-		file = (file != null ? file : getWarFileDocumentRoot());
-		file = (file != null ? file : getExplodedWarFileDocumentRoot());
-		file = (file != null ? file : getCommonDocumentRoot());
+		file = (file != null) ? file : getWarFileDocumentRoot();
+		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
+		file = (file != null) ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isDebugEnabled()) {
 			logNoDocumentRoots();
 		}
@@ -98,7 +98,7 @@ class DocumentRoot {
 
 	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			URL location = (codeSource == null ? null : codeSource.getLocation());
+			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			if (location == null) {
 				return null;
 			}

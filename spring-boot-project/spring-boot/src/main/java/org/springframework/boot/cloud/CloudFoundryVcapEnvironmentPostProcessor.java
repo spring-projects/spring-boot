@@ -101,8 +101,6 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 	// Before ConfigFileApplicationListener so values there can use these ones
 	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
 
-	private final JsonParser parser = JsonParserFactory.getJsonParser();
-
 	public void setOrder(int order) {
 		this.order = order;
 	}
@@ -117,9 +115,11 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			SpringApplication application) {
 		if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
 			Properties properties = new Properties();
-			addWithPrefix(properties, getPropertiesFromApplication(environment),
+			JsonParser jsonParser = JsonParserFactory.getJsonParser();
+			addWithPrefix(properties,
+					getPropertiesFromApplication(environment, jsonParser),
 					"vcap.application.");
-			addWithPrefix(properties, getPropertiesFromServices(environment),
+			addWithPrefix(properties, getPropertiesFromServices(environment, jsonParser),
 					"vcap.services.");
 			MutablePropertySources propertySources = environment.getPropertySources();
 			if (propertySources.contains(
@@ -142,11 +142,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		}
 	}
 
-	private Properties getPropertiesFromApplication(Environment environment) {
+	private Properties getPropertiesFromApplication(Environment environment,
+			JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_APPLICATION, "{}");
-			Map<String, Object> map = this.parser.parseMap(property);
+			Map<String, Object> map = parser.parseMap(property);
 			extractPropertiesFromApplication(properties, map);
 		}
 		catch (Exception ex) {
@@ -155,11 +156,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		return properties;
 	}
 
-	private Properties getPropertiesFromServices(Environment environment) {
+	private Properties getPropertiesFromServices(Environment environment,
+			JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_SERVICES, "{}");
-			Map<String, Object> map = this.parser.parseMap(property);
+			Map<String, Object> map = parser.parseMap(property);
 			extractPropertiesFromServices(properties, map);
 		}
 		catch (Exception ex) {
@@ -223,7 +225,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 				properties.put(name, value.toString());
 			}
 			else {
-				properties.put(name, value == null ? "" : value);
+				properties.put(name, (value != null) ? value : "");
 			}
 		});
 	}

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
 /**
@@ -83,7 +84,7 @@ public class WebMvcProperties {
 
 	/**
 	 * Whether to enable warn logging of exceptions resolved by a
-	 * "HandlerExceptionResolver".
+	 * "HandlerExceptionResolver", except for "DefaultHandlerExceptionResolver".
 	 */
 	private boolean logResolvedException = false;
 
@@ -226,9 +227,24 @@ public class WebMvcProperties {
 	public static class Servlet {
 
 		/**
+		 * Path of the dispatcher servlet.
+		 */
+		private String path = "/";
+
+		/**
 		 * Load on startup priority of the dispatcher servlet.
 		 */
 		private int loadOnStartup = -1;
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			Assert.notNull(path, "Path must not be null");
+			Assert.isTrue(!path.contains("*"), "Path must not contain wildcards");
+			this.path = path;
+		}
 
 		public int getLoadOnStartup() {
 			return this.loadOnStartup;
@@ -236,6 +252,36 @@ public class WebMvcProperties {
 
 		public void setLoadOnStartup(int loadOnStartup) {
 			this.loadOnStartup = loadOnStartup;
+		}
+
+		public String getServletMapping() {
+			if (this.path.equals("") || this.path.equals("/")) {
+				return "/";
+			}
+			if (this.path.endsWith("/")) {
+				return this.path + "*";
+			}
+			return this.path + "/*";
+		}
+
+		public String getPath(String path) {
+			String prefix = getServletPrefix();
+			if (!path.startsWith("/")) {
+				path = "/" + path;
+			}
+			return prefix + path;
+		}
+
+		public String getServletPrefix() {
+			String result = this.path;
+			int index = result.indexOf('*');
+			if (index != -1) {
+				result = result.substring(0, index);
+			}
+			if (result.endsWith("/")) {
+				result = result.substring(0, result.length() - 1);
+			}
+			return result;
 		}
 
 	}

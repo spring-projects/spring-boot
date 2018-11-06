@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -44,6 +42,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -58,9 +57,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Andy Wilkinson
  */
 public class DefaultErrorViewResolverTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private DefaultErrorViewResolver resolver;
 
@@ -87,16 +83,16 @@ public class DefaultErrorViewResolverTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ApplicationContext must not be null");
-		new DefaultErrorViewResolver(null, new ResourceProperties());
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new DefaultErrorViewResolver(null, new ResourceProperties()))
+				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	public void createWhenResourcePropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ResourceProperties must not be null");
-		new DefaultErrorViewResolver(mock(ApplicationContext.class), null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), null))
+				.withMessageContaining("ResourceProperties must not be null");
 	}
 
 	@Test

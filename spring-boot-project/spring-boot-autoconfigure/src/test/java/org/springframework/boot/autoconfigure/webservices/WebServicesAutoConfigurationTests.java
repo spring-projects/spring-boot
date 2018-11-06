@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eneias Silva
  */
 public class WebServicesAutoConfigurationTests {
 
@@ -98,9 +99,22 @@ public class WebServicesAutoConfigurationTests {
 				.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl")
 				.run((context) -> {
 					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
-							.hasSize(1).containsKey("service");
-					assertThat(context.getBeansOfType(SimpleXsdSchema.class)).hasSize(1)
-							.containsKey("types");
+							.containsOnlyKeys("service");
+					assertThat(context.getBeansOfType(SimpleXsdSchema.class))
+							.containsOnlyKeys("types");
+				});
+	}
+
+	@Test
+	public void withWsdlBeansAsList() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.webservices.wsdl-locations[0]=classpath:/wsdl")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
+							.containsOnlyKeys("service");
+					assertThat(context.getBeansOfType(SimpleXsdSchema.class))
+							.containsOnlyKeys("types");
 				});
 	}
 

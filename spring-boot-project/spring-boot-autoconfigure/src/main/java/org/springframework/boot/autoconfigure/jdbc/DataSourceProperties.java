@@ -234,7 +234,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		}
 		if (!StringUtils.hasText(driverClassName)) {
 			throw new DataSourceBeanCreationException(
-					"Failed to determine a suitable driver class",
+					"Failed to determine a suitable driver class", this,
 					this.embeddedDatabaseConnection);
 		}
 		return driverClassName;
@@ -277,11 +277,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 			return this.url;
 		}
 		String databaseName = determineDatabaseName();
-		String url = (databaseName == null ? null
-				: this.embeddedDatabaseConnection.getUrl(databaseName));
+		String url = (databaseName != null)
+				? this.embeddedDatabaseConnection.getUrl(databaseName) : null;
 		if (!StringUtils.hasText(url)) {
 			throw new DataSourceBeanCreationException(
-					"Failed to determine suitable jdbc url",
+					"Failed to determine suitable jdbc url", this,
 					this.embeddedDatabaseConnection);
 		}
 		return url;
@@ -513,12 +513,19 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	static class DataSourceBeanCreationException extends BeanCreationException {
 
+		private final DataSourceProperties properties;
+
 		private final EmbeddedDatabaseConnection connection;
 
-		DataSourceBeanCreationException(String message,
+		DataSourceBeanCreationException(String message, DataSourceProperties properties,
 				EmbeddedDatabaseConnection connection) {
 			super(message);
+			this.properties = properties;
 			this.connection = connection;
+		}
+
+		public DataSourceProperties getProperties() {
+			return this.properties;
 		}
 
 		public EmbeddedDatabaseConnection getConnection() {

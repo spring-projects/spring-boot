@@ -11,3 +11,7 @@ org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener,\
 org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener
+
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.test.web.SpringBootTestRandomPortEnvironmentPostProcessor

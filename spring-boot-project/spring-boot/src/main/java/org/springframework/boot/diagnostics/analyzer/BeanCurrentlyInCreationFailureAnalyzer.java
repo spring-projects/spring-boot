@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class BeanCurrentlyInCreationFailureAnalyzer
 				if (index == -1) {
 					beansInCycle.add(beanInCycle);
 				}
-				cycleStart = (cycleStart == -1 ? index : cycleStart);
+				cycleStart = (cycleStart != -1) ? cycleStart : index;
 			}
 			candidate = candidate.getCause();
 		}
@@ -79,10 +79,10 @@ class BeanCurrentlyInCreationFailureAnalyzer
 				message.append(String.format("┌─────┐%n"));
 			}
 			else if (i > 0) {
-				String leftSide = (i < cycleStart ? " " : "↑");
+				String leftSide = (i < cycleStart) ? " " : "↑";
 				message.append(String.format("%s     ↓%n", leftSide));
 			}
-			String leftSide = i < cycleStart ? " " : "|";
+			String leftSide = (i < cycleStart) ? " " : "|";
 			message.append(String.format("%s  %s%n", leftSide, beanInCycle));
 		}
 		message.append(String.format("└─────┘%n"));
@@ -140,11 +140,6 @@ class BeanCurrentlyInCreationFailureAnalyzer
 		}
 
 		@Override
-		public int hashCode() {
-			return this.name.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -153,6 +148,11 @@ class BeanCurrentlyInCreationFailureAnalyzer
 				return false;
 			}
 			return this.name.equals(((BeanInCycle) obj).name);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
 		}
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,22 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collections;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.bucket.BucketInfo;
-import com.couchbase.client.java.bucket.BucketManager;
-import com.couchbase.client.java.cluster.ClusterInfo;
-import com.couchbase.client.java.util.features.Version;
+import com.couchbase.client.core.message.internal.DiagnosticsReport;
+import com.couchbase.client.core.message.internal.EndpointHealth;
+import com.couchbase.client.core.service.ServiceType;
+import com.couchbase.client.core.state.LifecycleState;
+import com.couchbase.client.java.Cluster;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -46,41 +45,47 @@ import static org.mockito.Mockito.verify;
 public class CouchbaseHealthIndicatorTests {
 
 	@Test
-	public void couchbaseIsUp() throws UnknownHostException {
-		BucketInfo bucketInfo = mock(BucketInfo.class);
-		given(bucketInfo.nodeList()).willReturn(
-				Collections.singletonList(InetAddress.getByName("127.0.0.1")));
-		BucketManager bucketManager = mock(BucketManager.class);
-		given(bucketManager.info()).willReturn(bucketInfo);
-		Bucket bucket = mock(Bucket.class);
-		given(bucket.bucketManager()).willReturn(bucketManager);
-		ClusterInfo clusterInfo = mock(ClusterInfo.class);
-		given(clusterInfo.getAllVersions())
-				.willReturn(Collections.singletonList(new Version(1, 2, 3)));
-		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
-		given(couchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
-		given(couchbaseOperations.getCouchbaseClusterInfo()).willReturn(clusterInfo);
-		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations);
+	@SuppressWarnings("unchecked")
+	public void couchbaseClusterIsUp() {
+		Cluster cluster = mock(Cluster.class);
+		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(cluster);
+		List<EndpointHealth> endpoints = Arrays.asList(new EndpointHealth(
+				ServiceType.BINARY, LifecycleState.CONNECTED, new InetSocketAddress(0),
+				new InetSocketAddress(0), 1234, "endpoint-1"));
+		DiagnosticsReport diagnostics = new DiagnosticsReport(endpoints, "test-sdk",
+				"test-id", null);
+		given(cluster.diagnostics()).willReturn(diagnostics);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(entry("versions", "1.2.3"),
-				entry("nodes", "/127.0.0.1"));
-		verify(clusterInfo).getAllVersions();
-		verify(bucketInfo).nodeList();
+		assertThat(health.getDetails()).containsEntry("sdk", "test-sdk");
+		assertThat(health.getDetails()).containsKey("endpoints");
+		assertThat((List<Map<String, Object>>) health.getDetails().get("endpoints"))
+				.hasSize(1);
+		verify(cluster).diagnostics();
 	}
 
 	@Test
-	public void couchbaseIsDown() {
-		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
-		given(couchbaseOperations.getCouchbaseClusterInfo())
-				.willThrow(new IllegalStateException("test, expected"));
-		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations);
+	@SuppressWarnings("unchecked")
+	public void couchbaseClusterIsDown() {
+		Cluster cluster = mock(Cluster.class);
+		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(cluster);
+		List<EndpointHealth> endpoints = Arrays.asList(
+				new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTED,
+						new InetSocketAddress(0), new InetSocketAddress(0), 1234,
+						"endpoint-1"),
+				new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTING,
+						new InetSocketAddress(0), new InetSocketAddress(0), 1234,
+						"endpoint-2"));
+		DiagnosticsReport diagnostics = new DiagnosticsReport(endpoints, "test-sdk",
+				"test-id", null);
+		given(cluster.diagnostics()).willReturn(diagnostics);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error")).contains("test, expected");
-		verify(couchbaseOperations).getCouchbaseClusterInfo();
+		assertThat(health.getDetails()).containsEntry("sdk", "test-sdk");
+		assertThat(health.getDetails()).containsKey("endpoints");
+		assertThat((List<Map<String, Object>>) health.getDetails().get("endpoints"))
+				.hasSize(2);
+		verify(cluster).diagnostics();
 	}
 
 }

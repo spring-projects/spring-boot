@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -43,7 +43,7 @@ public class DevToolsSettings {
 	 */
 	public static final String SETTINGS_RESOURCE_LOCATION = "META-INF/spring-devtools.properties";
 
-	private static final Log logger = LogFactory.getLog(DevToolsSettings.class);
+	private static final Log logger = DevToolsLogFactory.getLog(DevToolsSettings.class);
 
 	private static DevToolsSettings settings;
 

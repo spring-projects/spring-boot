@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.flyway;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.springframework.context.ApplicationContext;
  * @author Eddú Meléndez
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Endpoint(id = "flyway")
@@ -59,7 +61,7 @@ public class FlywayEndpoint {
 					.put(name, new FlywayDescriptor(flyway.info().all())));
 			ApplicationContext parent = target.getParent();
 			contextFlywayBeans.put(target.getId(), new ContextFlywayBeans(flywayBeans,
-					parent == null ? null : parent.getId()));
+					(parent != null) ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationFlywayBeans(contextFlywayBeans);
@@ -164,13 +166,17 @@ public class FlywayEndpoint {
 			this.script = info.getScript();
 			this.state = info.getState();
 			this.installedBy = info.getInstalledBy();
-			this.installedOn = Instant.ofEpochMilli(info.getInstalledOn().getTime());
 			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
+			this.installedOn = nullSafeToInstant(info.getInstalledOn());
 		}
 
 		private String nullSafeToString(Object obj) {
-			return (obj == null ? null : obj.toString());
+			return (obj != null) ? obj.toString() : null;
+		}
+
+		private Instant nullSafeToInstant(Date date) {
+			return (date != null) ? Instant.ofEpochMilli(date.getTime()) : null;
 		}
 
 		public MigrationType getType() {

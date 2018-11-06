@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.flyway;
 
+import java.util.Map;
+
 import org.junit.Test;
 
+import org.springframework.boot.actuate.flyway.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -40,9 +44,28 @@ public class FlywayEndpointTests {
 	@Test
 	public void flywayReportIsProduced() {
 		new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.run((context) -> assertThat(
-						context.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
-								.get(context.getId()).getFlywayBeans()).hasSize(1));
+				.run((context) -> {
+					Map<String, FlywayDescriptor> flywayBeans = context
+							.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
+							.get(context.getId()).getFlywayBeans();
+					assertThat(flywayBeans).hasSize(1);
+					assertThat(flywayBeans.values().iterator().next().getMigrations())
+							.hasSize(3);
+				});
+	}
+
+	@Test
+	public void whenFlywayHasBeenBaselinedFlywayReportIsProduced() {
+		new ApplicationContextRunner()
+				.withUserConfiguration(BaselinedFlywayConfig.class, Config.class)
+				.run((context) -> {
+					Map<String, FlywayDescriptor> flywayBeans = context
+							.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
+							.get(context.getId()).getFlywayBeans();
+					assertThat(flywayBeans).hasSize(1);
+					assertThat(flywayBeans.values().iterator().next().getMigrations())
+							.hasSize(3);
+				});
 	}
 
 	@Configuration
@@ -52,6 +75,21 @@ public class FlywayEndpointTests {
 		@Bean
 		public FlywayEndpoint endpoint(ApplicationContext context) {
 			return new FlywayEndpoint(context);
+		}
+
+	}
+
+	@Configuration
+	public static class BaselinedFlywayConfig {
+
+		@SuppressWarnings("deprecation")
+		@Bean
+		public FlywayMigrationStrategy baseliningMigrationStrategy() {
+			return (flyway) -> {
+				flyway.setBaselineVersionAsString("2");
+				flyway.baseline();
+				flyway.migrate();
+			};
 		}
 
 	}

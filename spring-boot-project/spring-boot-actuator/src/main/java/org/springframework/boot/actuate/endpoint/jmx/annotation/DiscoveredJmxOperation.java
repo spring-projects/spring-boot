@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -59,8 +60,8 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 	private final List<JmxOperationParameter> parameters;
 
-	DiscoveredJmxOperation(String endpointId, DiscoveredOperationMethod operationMethod,
-			OperationInvoker invoker) {
+	DiscoveredJmxOperation(EndpointId endpointId,
+			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		super(operationMethod, invoker);
 		Method method = operationMethod.getMethod();
 		this.name = method.getName();
@@ -210,4 +211,5 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		}
 
 	}
+
 }

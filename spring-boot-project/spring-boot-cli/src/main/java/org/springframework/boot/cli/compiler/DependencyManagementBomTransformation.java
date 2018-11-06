@@ -28,7 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import groovy.grape.Grape;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.DefaultModelBuilder;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
@@ -61,6 +63,7 @@ import org.springframework.core.annotation.Order;
  * @since 1.3.0
  */
 @Order(DependencyManagementBomTransformation.ORDER)
+@SuppressWarnings("deprecation")
 public class DependencyManagementBomTransformation
 		extends AnnotatedNodeASTTransformation {
 
@@ -211,6 +214,19 @@ public class DependencyManagementBomTransformation
 	private static class GrapeModelResolver implements ModelResolver {
 
 		@Override
+		public ModelSource resolveModel(Parent parent) throws UnresolvableModelException {
+			return resolveModel(parent.getGroupId(), parent.getArtifactId(),
+					parent.getVersion());
+		}
+
+		@Override
+		public ModelSource resolveModel(Dependency dependency)
+				throws UnresolvableModelException {
+			return resolveModel(dependency.getGroupId(), dependency.getArtifactId(),
+					dependency.getVersion());
+		}
+
+		@Override
 		public ModelSource resolveModel(String groupId, String artifactId, String version)
 				throws UnresolvableModelException {
 			Map<String, String> dependency = new HashMap<>();
@@ -222,14 +238,19 @@ public class DependencyManagementBomTransformation
 				return new UrlModelSource(
 						Grape.getInstance().resolve(null, dependency)[0].toURL());
 			}
-			catch (MalformedURLException e) {
-				throw new UnresolvableModelException(e.getMessage(), groupId, artifactId,
+			catch (MalformedURLException ex) {
+				throw new UnresolvableModelException(ex.getMessage(), groupId, artifactId,
 						version);
 			}
 		}
 
 		@Override
 		public void addRepository(Repository repository)
+				throws InvalidRepositoryException {
+		}
+
+		@Override
+		public void addRepository(Repository repository, boolean replace)
 				throws InvalidRepositoryException {
 		}
 

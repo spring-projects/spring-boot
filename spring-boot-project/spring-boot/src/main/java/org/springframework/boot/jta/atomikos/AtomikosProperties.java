@@ -100,7 +100,7 @@ public class AtomikosProperties {
 
 	/**
 	 * Interval between checkpoints, expressed as the number of log writes between two
-	 * checkpoint. A checkpoint reduces the log file size at the expense of adding some
+	 * checkpoints. A checkpoint reduces the log file size at the expense of adding some
 	 * overhead in the runtime.
 	 */
 	private long checkpointInterval = 500;

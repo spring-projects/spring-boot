@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RabbitMetricsAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
+			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(
+					RabbitAutoConfiguration.class, RabbitMetricsAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguredConnectionFactoryIsInstrumented() {

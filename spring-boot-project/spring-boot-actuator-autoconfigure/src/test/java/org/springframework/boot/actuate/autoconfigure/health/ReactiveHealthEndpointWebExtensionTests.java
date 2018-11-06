@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthWebEndpointResponseMapper;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -214,6 +215,23 @@ public class ReactiveHealthEndpointWebExtensionTests {
 					given(securityContext.isUserInRole("ADMIN")).willReturn(true);
 					assertThat(extension.health(securityContext).block().getBody()
 							.getDetails()).isNotEmpty();
+				});
+	}
+
+	@Test
+	public void registryCanBeAltered() {
+		this.contextRunner.withUserConfiguration(HealthIndicatorsConfiguration.class)
+				.withPropertyValues("management.endpoint.health.show-details=always")
+				.run((context) -> {
+					ReactiveHealthIndicatorRegistry registry = context
+							.getBean(ReactiveHealthIndicatorRegistry.class);
+					ReactiveHealthEndpointWebExtension extension = context
+							.getBean(ReactiveHealthEndpointWebExtension.class);
+					assertThat(extension.health(null).block().getBody().getDetails())
+							.containsOnlyKeys("application", "first", "second");
+					assertThat(registry.unregister("second")).isNotNull();
+					assertThat(extension.health(null).block().getBody().getDetails())
+							.containsKeys("application", "first");
 				});
 	}
 

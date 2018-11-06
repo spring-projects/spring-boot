@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package sample.test.domain;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Data JPA tests for {@link User}.
@@ -40,31 +39,25 @@ public class UserEntityTests {
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"00000000000000000");
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private TestEntityManager entityManager;
 
 	@Test
 	public void createWhenUsernameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be empty");
-		new User(null, VIN);
+		assertThatIllegalArgumentException().isThrownBy(() -> new User(null, VIN))
+				.withMessage("Username must not be empty");
 	}
 
 	@Test
 	public void createWhenUsernameIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be empty");
-		new User("", VIN);
+		assertThatIllegalArgumentException().isThrownBy(() -> new User("", VIN))
+				.withMessage("Username must not be empty");
 	}
 
 	@Test
 	public void createWhenVinIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must not be null");
-		new User("sboot", null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new User("sboot", null))
+				.withMessage("VIN must not be null");
 	}
 
 	@Test

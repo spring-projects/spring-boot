@@ -76,4 +76,5 @@ public class JooqExamples implements CommandLineRunner {
 				});
 		System.out.println("jOOQ SQL " + list);
 	}
+
 }

@@ -99,7 +99,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 	}
 
 	private List<String> asList(String[] array) {
-		return (array == null ? Collections.emptyList() : Arrays.asList(array));
+		return (array != null) ? Arrays.asList(array) : Collections.emptyList();
 	}
 
 	@Override

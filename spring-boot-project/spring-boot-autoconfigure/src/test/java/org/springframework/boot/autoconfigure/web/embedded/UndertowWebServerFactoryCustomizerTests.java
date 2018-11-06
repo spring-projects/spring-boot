@@ -17,18 +17,28 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.io.File;
+import java.util.Arrays;
 
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowOptions;
 import org.junit.Before;
 import org.junit.Test;
+import org.xnio.OptionMap;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -75,7 +85,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeadersUndertow() {
+	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableUndertowWebServerFactory factory = mock(
 				ConfigurableUndertowWebServerFactory.class);
@@ -84,7 +94,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeadersUndertow() {
+	public void defaultUseForwardHeaders() {
 		ConfigurableUndertowWebServerFactory factory = mock(
 				ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -92,12 +102,60 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void setUseForwardHeadersUndertow() {
+	public void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
 		ConfigurableUndertowWebServerFactory factory = mock(
 				ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void customizeMaxHttpHeaderSize() {
+		bind("server.max-http-header-size=2048");
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
+				"serverOptions")).getMap();
+		assertThat(map.get(UndertowOptions.MAX_HEADER_SIZE).intValue()).isEqualTo(2048);
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
+				"serverOptions")).getMap();
+		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
+				"serverOptions")).getMap();
+		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
+	}
+
+	private ConfigurableUndertowWebServerFactory mockFactory(Builder builder) {
+		ConfigurableUndertowWebServerFactory factory = mock(
+				ConfigurableUndertowWebServerFactory.class);
+		willAnswer((invocation) -> {
+			Object argument = invocation.getArgument(0);
+			Arrays.stream((argument instanceof UndertowBuilderCustomizer)
+					? new UndertowBuilderCustomizer[] {
+							(UndertowBuilderCustomizer) argument }
+					: (UndertowBuilderCustomizer[]) argument)
+					.forEach((customizer) -> customizer.customize(builder));
+			return null;
+		}).given(factory).addBuilderCustomizers(any());
+		return factory;
 	}
 
 	private void bind(String... inlinedProperties) {

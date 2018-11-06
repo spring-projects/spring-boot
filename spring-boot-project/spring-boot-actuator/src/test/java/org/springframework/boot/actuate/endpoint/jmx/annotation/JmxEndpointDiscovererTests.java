@@ -24,10 +24,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -49,6 +48,7 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JmxEndpointDiscoverer}.
@@ -57,9 +57,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class JmxEndpointDiscovererTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
@@ -70,10 +67,10 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsShouldDiscoverStandardEndpoints() {
 		load(TestEndpoint.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<String, JmxOperation> operationByName = mapOperations(
-					endpoints.get("test").getOperations());
+					endpoints.get(EndpointId.of("test")).getOperations());
 			assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 					"update", "deleteSomething");
 			JmxOperation getAll = operationByName.get("getAll");
@@ -106,39 +103,36 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenHasFilteredEndpointShouldOnlyDiscoverJmxEndpoints() {
 		load(MultipleEndpointsConfiguration.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test", "jmx");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"),
+					EndpointId.of("jmx"));
 		});
 	}
 
 	@Test
 	public void getEndpointsWhenJmxExtensionIsMissingEndpointShouldThrowException() {
-		load(TestJmxEndpointExtension.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage(
-					"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': "
-							+ "no endpoint found with type '"
-							+ TestEndpoint.class.getName() + "'");
-			discoverer.getEndpoints();
-		});
+		load(TestJmxEndpointExtension.class,
+				(discoverer) -> assertThatIllegalStateException()
+						.isThrownBy(discoverer::getEndpoints).withMessageContaining(
+								"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'"));
 	}
 
 	@Test
 	public void getEndpointsWhenHasJmxExtensionShouldOverrideStandardEndpoint() {
 		load(OverriddenOperationJmxEndpointConfiguration.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
-			assertJmxTestEndpoint(endpoints.get("test"));
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+			assertJmxTestEndpoint(endpoints.get(EndpointId.of("test")));
 		});
 	}
 
 	@Test
 	public void getEndpointsWhenHasJmxExtensionWithNewOperationAddsExtraOperation() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<String, JmxOperation> operationByName = mapOperations(
-					endpoints.get("test").getOperations());
+					endpoints.get(EndpointId.of("test")).getOperations());
 			assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 					"update", "deleteSomething", "getAnother");
 			JmxOperation getAnother = operationByName.get("getAnother");
@@ -151,10 +145,10 @@ public class JmxEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenHasCacheWithTtlShouldCacheReadOperationWithTtlValue() {
 		load(TestEndpoint.class, (id) -> 500L, (discoverer) -> {
-			Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-			assertThat(endpoints).containsOnlyKeys("test");
+			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<String, JmxOperation> operationByName = mapOperations(
-					endpoints.get("test").getOperations());
+					endpoints.get(EndpointId.of("test")).getOperations());
 			assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 					"update", "deleteSomething");
 			JmxOperation getAll = operationByName.get("getAll");
@@ -168,10 +162,11 @@ public class JmxEndpointDiscovererTests {
 	public void getEndpointsShouldCacheReadOperations() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (id) -> 500L,
 				(discoverer) -> {
-					Map<String, ExposableJmxEndpoint> endpoints = discover(discoverer);
-					assertThat(endpoints).containsOnlyKeys("test");
+					Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(
+							discoverer);
+					assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 					Map<String, JmxOperation> operationByName = mapOperations(
-							endpoints.get("test").getOperations());
+							endpoints.get(EndpointId.of("test")).getOperations());
 					assertThat(operationByName).containsOnlyKeys("getAll", "getSomething",
 							"update", "deleteSomething", "getAnother");
 					JmxOperation getAll = operationByName.get("getAll");
@@ -189,51 +184,42 @@ public class JmxEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
-		load(ClashingJmxEndpointConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Found multiple extensions for the endpoint bean "
-					+ "testEndpoint (testExtensionOne, testExtensionTwo)");
-			discoverer.getEndpoints();
-		});
+		load(ClashingJmxEndpointConfiguration.class,
+				(discoverer) -> assertThatIllegalStateException()
+						.isThrownBy(discoverer::getEndpoints).withMessageContaining(
+								"Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
 	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
-		load(ClashingStandardEndpointConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Found two endpoints with the id 'test': ");
-			discoverer.getEndpoints();
-		});
+		load(ClashingStandardEndpointConfiguration.class,
+				(discoverer) -> assertThatIllegalStateException()
+						.isThrownBy(discoverer::getEndpoints).withMessageContaining(
+								"Found two endpoints with the id 'test': "));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
-		load(ClashingOperationsEndpoint.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Unable to map duplicate endpoint operations: "
-					+ "[MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint");
-			discoverer.getEndpoints();
-		});
+		load(ClashingOperationsEndpoint.class,
+				(discoverer) -> assertThatIllegalStateException()
+						.isThrownBy(discoverer::getEndpoints).withMessageContaining(
+								"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint"));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenExtensionHasTwoOperationsWithTheSameNameShouldThrowException() {
-		load(AdditionalClashingOperationsConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Unable to map duplicate endpoint operations: "
-					+ "[MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)");
-			discoverer.getEndpoints();
-		});
+		load(AdditionalClashingOperationsConfiguration.class,
+				(discoverer) -> assertThatIllegalStateException()
+						.isThrownBy(discoverer::getEndpoints).withMessageContaining(
+								"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)"));
 	}
 
 	@Test
 	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
-		load(InvalidJmxExtensionConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Endpoint bean 'nonJmxEndpoint' cannot support the "
-					+ "extension bean 'nonJmxJmxEndpointExtension'");
-			discoverer.getEndpoints();
-		});
+		load(InvalidJmxExtensionConfiguration.class,
+				(discoverer) -> assertThatIllegalStateException()
+						.isThrownBy(discoverer::getEndpoints).withMessageContaining(
+								"Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'"));
 	}
 
 	private Object getInvoker(JmxOperation operation) {
@@ -286,10 +272,11 @@ public class JmxEndpointDiscovererTests {
 		assertThat(parameter.getType()).isEqualTo(type);
 	}
 
-	private Map<String, ExposableJmxEndpoint> discover(JmxEndpointDiscoverer discoverer) {
-		Map<String, ExposableJmxEndpoint> byId = new HashMap<>();
+	private Map<EndpointId, ExposableJmxEndpoint> discover(
+			JmxEndpointDiscoverer discoverer) {
+		Map<EndpointId, ExposableJmxEndpoint> byId = new HashMap<>();
 		discoverer.getEndpoints()
-				.forEach((endpoint) -> byId.put(endpoint.getId(), endpoint));
+				.forEach((endpoint) -> byId.put(endpoint.getEndpointId(), endpoint));
 		return byId;
 	}
 
@@ -303,7 +290,7 @@ public class JmxEndpointDiscovererTests {
 		load(configuration, (id) -> null, consumer);
 	}
 
-	private void load(Class<?> configuration, Function<String, Long> timeToLive,
+	private void load(Class<?> configuration, Function<EndpointId, Long> timeToLive,
 			Consumer<JmxEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration)) {

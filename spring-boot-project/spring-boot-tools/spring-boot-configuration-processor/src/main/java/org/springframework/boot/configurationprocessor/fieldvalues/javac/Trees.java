@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ final class Trees extends ReflectionWrapper {
 
 	public Tree getTree(Element element) throws Exception {
 		Object tree = findMethod("getTree", Element.class).invoke(getInstance(), element);
-		return (tree == null ? null : new Tree(tree));
+		return (tree != null) ? new Tree(tree) : null;
 	}
 
 	public static Trees instance(ProcessingEnvironment env) throws Exception {

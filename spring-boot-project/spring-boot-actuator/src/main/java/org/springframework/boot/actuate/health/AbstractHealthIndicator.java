@@ -50,7 +50,7 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	 * Create a new {@link AbstractHealthIndicator} instance with a default
 	 * {@code healthCheckFailedMessage}.
 	 */
-	public AbstractHealthIndicator() {
+	protected AbstractHealthIndicator() {
 		this(NO_MESSAGE);
 	}
 

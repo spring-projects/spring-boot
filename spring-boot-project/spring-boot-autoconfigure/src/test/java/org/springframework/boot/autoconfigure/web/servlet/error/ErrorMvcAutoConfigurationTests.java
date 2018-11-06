@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -39,7 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ErrorMvcAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ErrorMvcAutoConfiguration.class));
+			.withConfiguration(
+					AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
+							ErrorMvcAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
@@ -53,8 +56,12 @@ public class ErrorMvcAutoConfigurationTests {
 					new IllegalStateException("Exception message"), false);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
-			assertThat(((MockHttpServletResponse) webRequest.getResponse())
-					.getContentAsString()).contains("<div>Exception message</div>");
+			String responseString = ((MockHttpServletResponse) webRequest.getResponse())
+					.getContentAsString();
+			assertThat(responseString).contains(
+					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
+					.contains("<div>Exception message</div>")
+					.contains("<div>java.lang.IllegalStateException");
 		});
 	}
 

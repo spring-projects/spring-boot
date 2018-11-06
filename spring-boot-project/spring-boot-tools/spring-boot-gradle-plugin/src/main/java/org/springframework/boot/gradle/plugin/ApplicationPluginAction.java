@@ -66,10 +66,11 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 						.fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
-				distribution.getContents()
-						.with(project.copySpec().into("lib")
-								.from((Callable<FileCollection>) () -> configuration
-										.getArtifacts().getFiles()));
+				CopySpec libCopySpec = project.copySpec().into("lib")
+						.from((Callable<FileCollection>) () -> configuration
+								.getArtifacts().getFiles());
+				libCopySpec.setFileMode(0644);
+				distribution.getContents().with(libCopySpec);
 				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
@@ -77,8 +78,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				() -> new File(project.getBuildDir(), "bootScripts"));
 		bootStartScripts.getConventionMapping().map("applicationName",
 				applicationConvention::getApplicationName);
+		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
+				applicationConvention::getApplicationDefaultJvmArgs);
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
-		binCopySpec.setFileMode(0x755);
+		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
 	}
 

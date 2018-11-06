@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.admin;
-
-import java.util.List;
 
 import javax.management.MalformedObjectNameException;
 
@@ -57,13 +55,13 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	 */
 	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
-	private final List<MBeanExporter> mbeanExporters;
+	private final Iterable<MBeanExporter> mbeanExporters;
 
 	private final Environment environment;
 
 	public SpringApplicationAdminJmxAutoConfiguration(
-			ObjectProvider<List<MBeanExporter>> mbeanExporters, Environment environment) {
-		this.mbeanExporters = mbeanExporters.getIfAvailable();
+			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) {
+		this.mbeanExporters = mbeanExporters;
 		this.environment = environment;
 	}
 

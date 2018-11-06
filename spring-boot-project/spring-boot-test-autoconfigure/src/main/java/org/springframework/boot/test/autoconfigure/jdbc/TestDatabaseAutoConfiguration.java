@@ -105,6 +105,7 @@ public class TestDatabaseAutoConfiguration {
 				boolean primary = holder.getBeanDefinition().isPrimary();
 				logger.info("Replacing '" + beanName + "' DataSource bean with "
 						+ (primary ? "primary " : "") + "embedded version");
+				registry.removeBeanDefinition(beanName);
 				registry.registerBeanDefinition(beanName,
 						createEmbeddedBeanDefinition(primary));
 			}

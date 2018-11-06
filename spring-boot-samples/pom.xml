@@ -15,6 +15,7 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<java.version>1.8</java.version>
+		<disable.checks>false</disable.checks>
 	</properties>
 	<modules>
 		<module>spring-boot-sample-ant</module>
@@ -34,6 +35,7 @@
 		<module>spring-boot-sample-data-cassandra</module>
 		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
+		<module>spring-boot-sample-data-jdbc</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-ldap</module>
 		<module>spring-boot-sample-data-mongodb</module>
@@ -46,7 +48,6 @@
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
-		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-jetty-jsp</module>
 		<module>spring-boot-sample-jetty-ssl</module>
@@ -54,17 +55,18 @@
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
-		<module>spring-boot-sample-jta-narayana</module>
 		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-junit-jupiter</module>
 		<module>spring-boot-sample-kafka</module>
 		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-logback</module>
 		<module>spring-boot-sample-oauth2-client</module>
-		<module>spring-boot-sample-parent-context</module>
+		<module>spring-boot-sample-oauth2-resource-server</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>
 		<module>spring-boot-sample-quartz</module>
+		<module>spring-boot-sample-reactive-oauth2-client</module>
+		<module>spring-boot-sample-reactive-oauth2-resource-server</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-webflux</module>
 		<module>spring-boot-sample-servlet</module>
@@ -176,23 +178,6 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<useProjectReferences>false</useProjectReferences>
-					<additionalConfig>
-						<file>
-							<name>.settings/org.eclipse.jdt.ui.prefs</name>
-							<location>${main.basedir}/eclipse/org.eclipse.jdt.ui.prefs</location>
-						</file>
-						<file>
-							<name>.settings/org.eclipse.jdt.core.prefs</name>
-							<location>${main.basedir}/eclipse/org.eclipse.jdt.core.prefs</location>
-						</file>
-					</additionalConfig>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
@@ -247,4 +232,17 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>fast</id>
+			<activation>
+				<property>
+					<name>fast</name>
+				</property>
+			</activation>
+			<properties>
+				<disable.checks>true</disable.checks>
+			</properties>
+		</profile>
+	</profiles>
 </project>

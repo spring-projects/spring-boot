@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,19 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
 import javax.validation.ConstraintViolationException;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,11 +42,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(secure = false)
+@WebMvcTest
+@WithMockUser
 public class WebMvcTestAllControllersIntegrationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
 	private MockMvc mvc;
@@ -80,8 +78,9 @@ public class WebMvcTestAllControllersIntegrationTests {
 
 	@Test
 	public void shouldRunValidationFailure() throws Exception {
-		this.thrown.expectCause(isA(ConstraintViolationException.class));
-		this.mvc.perform(get("/three/invalid"));
+		assertThatExceptionOfType(NestedServletException.class)
+				.isThrownBy(() -> this.mvc.perform(get("/three/invalid")))
+				.withCauseInstanceOf(ConstraintViolationException.class);
 	}
 
 	@Test

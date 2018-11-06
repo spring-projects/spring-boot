@@ -18,20 +18,18 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -41,34 +39,31 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.reactive.config.ResourceChainRegistration;
 import org.springframework.web.reactive.config.ResourceHandlerRegistration;
 import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.ViewResolverRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.resource.AppCacheManifestTransformer;
-import org.springframework.web.reactive.resource.GzipResourceResolver;
-import org.springframework.web.reactive.resource.ResourceResolver;
-import org.springframework.web.reactive.resource.VersionResourceResolver;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
+import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 /**
@@ -80,6 +75,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration
@@ -90,6 +86,13 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 		CodecsAutoConfiguration.class, ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled", matchIfMissing = true)
+	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+		return new OrderedHiddenHttpMethodFilter();
+	}
 
 	@Configuration
 	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })
@@ -104,43 +107,39 @@ public class WebFluxAutoConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
-		private final List<HandlerMethodArgumentResolver> argumentResolvers;
+		private final ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers;
 
-		private final List<CodecCustomizer> codecCustomizers;
+		private final ObjectProvider<CodecCustomizer> codecCustomizers;
 
 		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private final List<ViewResolver> viewResolvers;
+		private final ObjectProvider<ViewResolver> viewResolvers;
 
 		public WebFluxConfig(ResourceProperties resourceProperties,
 				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
-				ObjectProvider<List<CodecCustomizer>> codecCustomizers,
+				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
-				ObjectProvider<List<ViewResolver>> viewResolvers) {
+				ObjectProvider<ViewResolver> viewResolvers) {
 			this.resourceProperties = resourceProperties;
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
-			this.argumentResolvers = resolvers.getIfAvailable();
-			this.codecCustomizers = codecCustomizers.getIfAvailable();
+			this.argumentResolvers = resolvers;
+			this.codecCustomizers = codecCustomizers;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
 					.getIfAvailable();
-			this.viewResolvers = viewResolvers.getIfAvailable();
+			this.viewResolvers = viewResolvers;
 		}
 
 		@Override
 		public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
-			if (this.argumentResolvers != null) {
-				this.argumentResolvers.forEach(configurer::addCustomResolver);
-			}
+			this.argumentResolvers.orderedStream().forEach(configurer::addCustomResolver);
 		}
 
 		@Override
 		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
-			if (this.codecCustomizers != null) {
-				this.codecCustomizers
-						.forEach((customizer) -> customizer.customize(configurer));
-			}
+			this.codecCustomizers.orderedStream()
+					.forEach((customizer) -> customizer.customize(configurer));
 		}
 
 		@Override
@@ -149,15 +148,11 @@ public class WebFluxAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				ResourceHandlerRegistration registration = registry
 						.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
-				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl
-							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
-				}
+				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
@@ -165,20 +160,24 @@ public class WebFluxAutoConfiguration {
 				ResourceHandlerRegistration registration = registry
 						.addResourceHandler(staticPathPattern).addResourceLocations(
 								this.resourceProperties.getStaticLocations());
-				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl
-							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
-				}
+				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);
 			}
 		}
 
+		private void configureResourceCaching(ResourceHandlerRegistration registration) {
+			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
+			ResourceProperties.Cache.Cachecontrol cacheControl = this.resourceProperties
+					.getCache().getCachecontrol();
+			if (cachePeriod != null && cacheControl.getMaxAge() == null) {
+				cacheControl.setMaxAge(cachePeriod);
+			}
+			registration.setCacheControl(cacheControl.toHttpCacheControl());
+		}
+
 		@Override
 		public void configureViewResolvers(ViewResolverRegistry registry) {
-			if (this.viewResolvers != null) {
-				AnnotationAwareOrderComparator.sort(this.viewResolvers);
-				this.viewResolvers.forEach(registry::viewResolver);
-			}
+			this.viewResolvers.orderedStream().forEach(registry::viewResolver);
 		}
 
 		@Override
@@ -205,6 +204,7 @@ public class WebFluxAutoConfiguration {
 			}
 
 		}
+
 	}
 
 	/**
@@ -216,8 +216,12 @@ public class WebFluxAutoConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
-		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties) {
+		private final WebFluxRegistrations webFluxRegistrations;
+
+		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties,
+				ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
 			this.webFluxProperties = webFluxProperties;
+			this.webFluxRegistrations = webFluxRegistrations.getIfUnique();
 		}
 
 		@Bean
@@ -239,6 +243,24 @@ public class WebFluxAutoConfiguration {
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());
 		}
 
+		@Override
+		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
+			if (this.webFluxRegistrations != null && this.webFluxRegistrations
+					.getRequestMappingHandlerAdapter() != null) {
+				return this.webFluxRegistrations.getRequestMappingHandlerAdapter();
+			}
+			return super.createRequestMappingHandlerAdapter();
+		}
+
+		@Override
+		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+			if (this.webFluxRegistrations != null && this.webFluxRegistrations
+					.getRequestMappingHandlerMapping() != null) {
+				return this.webFluxRegistrations.getRequestMappingHandlerMapping();
+			}
+			return super.createRequestMappingHandlerMapping();
+		}
+
 	}
 
 	@Configuration
@@ -248,56 +270,6 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		public ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
 			return new ResourceChainResourceHandlerRegistrationCustomizer();
-		}
-
-	}
-
-	interface ResourceHandlerRegistrationCustomizer {
-
-		void customize(ResourceHandlerRegistration registration);
-
-	}
-
-	private static class ResourceChainResourceHandlerRegistrationCustomizer
-			implements ResourceHandlerRegistrationCustomizer {
-
-		@Autowired
-		private ResourceProperties resourceProperties = new ResourceProperties();
-
-		@Override
-		public void customize(ResourceHandlerRegistration registration) {
-			ResourceProperties.Chain properties = this.resourceProperties.getChain();
-			configureResourceChain(properties,
-					registration.resourceChain(properties.isCache()));
-		}
-
-		private void configureResourceChain(ResourceProperties.Chain properties,
-				ResourceChainRegistration chain) {
-			ResourceProperties.Strategy strategy = properties.getStrategy();
-			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
-				chain.addResolver(getVersionResourceResolver(strategy));
-			}
-			if (properties.isGzipped()) {
-				chain.addResolver(new GzipResourceResolver());
-			}
-			if (properties.isHtmlApplicationCache()) {
-				chain.addTransformer(new AppCacheManifestTransformer());
-			}
-		}
-
-		private ResourceResolver getVersionResourceResolver(
-				ResourceProperties.Strategy properties) {
-			VersionResourceResolver resolver = new VersionResourceResolver();
-			if (properties.getFixed().isEnabled()) {
-				String version = properties.getFixed().getVersion();
-				String[] paths = properties.getFixed().getPaths();
-				resolver.addFixedVersionStrategy(version, paths);
-			}
-			if (properties.getContent().isEnabled()) {
-				String[] paths = properties.getContent().getPaths();
-				resolver.addContentVersionStrategy(paths);
-			}
-			return resolver;
 		}
 
 	}

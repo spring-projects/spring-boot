@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -32,6 +30,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ContextCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -42,9 +41,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Phillip Webb
  */
 public class PropertyMappingContextCustomizerFactoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
 
@@ -106,11 +102,11 @@ public class PropertyMappingContextCustomizerFactoryTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("The @PropertyMapping annotation "
-				+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
-				+ "cannot be used in combination with the @Component annotation @Configuration");
-		context.refresh();
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(context::refresh)
+				.withMessageContaining("The @PropertyMapping annotation "
+						+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
+						+ "cannot be used in combination with the @Component annotation @Configuration");
 	}
 
 	@NoMappingAnnotation

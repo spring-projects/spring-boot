@@ -27,12 +27,18 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.springframework.boot.logging.LoggingSystem;
 
 /**
- * Spring Boot {@link ConfigurationFactory} that prevents logger warnings from being
- * printed when the application first starts. This factory is ordered last and is
- * triggered by a {@code log4j2.springboot} classpath resource (which is bundled in this
- * jar). If the {@link Log4J2LoggingSystem} is active, a {@link DefaultConfiguration} is
- * returned with the expectation that the system will later re-initialize Log4J2 with the
- * correct configuration file.
+ * Spring Boot {@link ConfigurationFactory} that customizes Log4J2's default configuration
+ * to:
+ *
+ * <ol>
+ * <li>Prevent logger warnings from being printed when the application first starts.
+ * <li>Disable its shutdown hook
+ * </ol>
+ *
+ * This factory is ordered last and is triggered by a {@code log4j2.springboot} classpath
+ * resource (which is bundled in this jar). If the {@link Log4J2LoggingSystem} is active,
+ * a custom {@link DefaultConfiguration} is returned with the expectation that the system
+ * will later re-initialize Log4J2 with the correct configuration file.
  *
  * @author Phillip Webb
  * @since 1.5.0
@@ -53,9 +59,17 @@ public class SpringBootConfigurationFactory extends ConfigurationFactory {
 			ConfigurationSource source) {
 		if (source != null && source != ConfigurationSource.NULL_SOURCE
 				&& LoggingSystem.get(loggerContext.getClass().getClassLoader()) != null) {
-			return new DefaultConfiguration();
+			return new SpringBootConfiguration();
 		}
 		return null;
+	}
+
+	private static final class SpringBootConfiguration extends DefaultConfiguration {
+
+		private SpringBootConfiguration() {
+			this.isShutdownHookEnabled = false;
+		}
+
 	}
 
 }

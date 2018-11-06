@@ -124,7 +124,6 @@ class SslServerCustomizer implements JettyServerCustomizer {
 			HttpConfiguration config, SslContextFactory sslContextFactory) {
 		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(config);
 		ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
-		alpn.setDefaultProtocol("h2");
 		sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
 		sslContextFactory.setProvider("Conscrypt");
 		SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory,

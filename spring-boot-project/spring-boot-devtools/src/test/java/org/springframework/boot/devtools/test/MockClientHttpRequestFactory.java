@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
 			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
-					this.payload == null ? NO_DATA : this.payload, this.status);
+					(this.payload != null) ? this.payload : NO_DATA, this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);

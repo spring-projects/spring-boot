@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
+import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
@@ -60,19 +62,25 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void defaultVersion() {
-		assertVersionConfiguration(null, "3.2.2");
+		assertVersionConfiguration(null, "3.5.5");
 	}
 
 	@Test
 	public void customVersion() {
-		assertVersionConfiguration("2.7.1", "2.7.1");
+		assertVersionConfiguration("3.4.15", "3.4.15");
 	}
 
 	@Test
 	public void customFeatures() {
-		load("spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
+		EnumSet<Feature> features = EnumSet.of(Feature.TEXT_SEARCH, Feature.SYNC_DELAY,
+				Feature.ONLY_WITH_SSL, Feature.NO_HTTP_INTERFACE_ARG);
+		if (isWindows()) {
+			features.add(Feature.ONLY_WINDOWS_2008_SERVER);
+		}
+		load("spring.mongodb.embedded.features=" + String.join(", ",
+				features.stream().map(Feature::name).collect(Collectors.toList())));
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
-				.contains(Feature.TEXT_SEARCH, Feature.SYNC_DELAY);
+				.containsExactlyElementsOf(features);
 	}
 
 	@Test
@@ -139,6 +147,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void customOpLogSizeIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.storage.oplogSize=1024KB");
+		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize())
+				.isEqualTo(1);
+	}
+
+	@Test
+	public void customOpLogSizeUsesMegabytesPerDefault() {
 		load("spring.mongodb.embedded.storage.oplogSize=10");
 		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize())
 				.isEqualTo(10);
@@ -183,6 +198,10 @@ public class EmbeddedMongoAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
+	}
+
+	private boolean isWindows() {
+		return File.separatorChar == '\\';
 	}
 
 	@Configuration

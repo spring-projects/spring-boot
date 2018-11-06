@@ -33,7 +33,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -65,6 +64,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
@@ -76,6 +76,7 @@ import static org.hamcrest.Matchers.not;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Ben Hale
+ * @author Fahim Farook
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("log4j*.jar")
@@ -84,14 +85,13 @@ public class LoggingApplicationListenerTests {
 	private static final String[] NO_ARGS = {};
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
 	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
-	private final Log logger = new SLF4JLogFactory().getInstance(getClass());
+	private final SLF4JLogFactory logFactory = new SLF4JLogFactory();
+
+	private final Log logger = this.logFactory.getInstance(getClass());
 
 	private final SpringApplication springApplication = new SpringApplication();
 
@@ -164,11 +164,12 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigDoesNotExist() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=doesnotexist.xml");
-		this.thrown.expect(IllegalStateException.class);
-		this.outputCapture.expect(containsString(
-				"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
+		assertThatIllegalStateException().isThrownBy(() -> {
+			this.outputCapture.expect(containsString(
+					"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
+			this.initializer.initialize(this.context.getEnvironment(),
+					this.context.getClassLoader());
+		});
 	}
 
 	@Test
@@ -199,12 +200,13 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigBroken() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-broken.xml");
-		this.thrown.expect(IllegalStateException.class);
-		this.outputCapture.expect(containsString(
-				"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
-		this.outputCapture.expect(containsString("ConsolAppender"));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
+		assertThatIllegalStateException().isThrownBy(() -> {
+			this.outputCapture.expect(containsString(
+					"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
+			this.outputCapture.expect(containsString("ConsolAppender"));
+			this.initializer.initialize(this.context.getEnvironment(),
+					this.context.getClassLoader());
+		});
 	}
 
 	@Test
@@ -501,11 +503,22 @@ public class LoggingApplicationListenerTests {
 	public void environmentPropertiesIgnoreUnresolvablePlaceholders() {
 		// gh-7719
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.pattern.console=console ${doesnotexist}");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console ${doesnotexist}");
+	}
+
+	@Test
+	public void environmentPropertiesResolvePlaceholders() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.pattern.console=console ${pid}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
-				.isEqualTo("console ${pid}");
+				.isEqualTo(this.context.getEnvironment()
+						.getProperty("logging.pattern.console"));
 	}
 
 	@Test
@@ -544,6 +557,34 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		assertThat(this.outputCapture.toString()).contains("testatdebug");
+	}
+
+	@Test
+	public void loggingGroupsDefaultsAreApplied() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.level.web=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertTraceEnabled("org.springframework.core", false);
+		assertTraceEnabled("org.springframework.core.codec", true);
+		assertTraceEnabled("org.springframework.http", true);
+		assertTraceEnabled("org.springframework.web", true);
+	}
+
+	@Test
+	public void loggingGroupsCanBeDefined() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.group.foo=com.foo.bar,com.foo.baz", "logging.level.foo=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertTraceEnabled("com.foo", false);
+		assertTraceEnabled("com.foo.bar", true);
+		assertTraceEnabled("com.foo.baz", true);
+	}
+
+	private void assertTraceEnabled(String name, boolean expected) {
+		assertThat(this.logFactory.getInstance(name).isTraceEnabled())
+				.isEqualTo(expected);
 	}
 
 	private void multicastEvent(ApplicationEvent event) {

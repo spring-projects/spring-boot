@@ -67,11 +67,13 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
 						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
 				.run((context) -> {
-					JpaProperties bean = context.getBean(JpaProperties.class);
-					Map<String, Object> hibernateProperties = bean
-							.getHibernateProperties(new HibernateSettings());
-					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
-							.isNull();
+					JpaProperties jpaProperties = context.getBean(JpaProperties.class);
+					HibernateProperties hibernateProperties = context
+							.getBean(HibernateProperties.class);
+					Map<String, Object> properties = hibernateProperties
+							.determineHibernateProperties(jpaProperties.getProperties(),
+									new HibernateSettings());
+					assertThat(properties.get("hibernate.ejb.naming_strategy")).isNull();
 				});
 	}
 
@@ -136,7 +138,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				given(dataSource.getConnection().getMetaData())
 						.willReturn(mock(DatabaseMetaData.class));
 			}
-			catch (SQLException e) {
+			catch (SQLException ex) {
 				// Do nothing
 			}
 			return dataSource;

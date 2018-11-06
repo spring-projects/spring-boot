@@ -16,11 +16,9 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -74,9 +72,10 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
-		Iterable<PropertySource<?>> sources = (this.environment == null
-				? Collections.emptyList() : this.environment.getPropertySources());
-		return StreamSupport.stream(sources.spliterator(), false)
+		if (this.environment == null) {
+			return Stream.empty();
+		}
+		return this.environment.getPropertySources().stream()
 				.filter((source) -> !ConfigurationPropertySources
 						.isAttachedConfigurationPropertySource(source));
 	}
@@ -110,7 +109,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			message.append(String.format(
 					"%n%nAdditionally, this property is also set in the following "
 							+ "property %s:%n%n",
-					others.size() > 1 ? "sources" : "source"));
+					(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
 				message.append("\t- In '" + other.getPropertySource() + "'");
 				message.append(" with the value '" + other.getValue() + "'");

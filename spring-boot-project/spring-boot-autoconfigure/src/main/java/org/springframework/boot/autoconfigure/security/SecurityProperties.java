@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.DispatcherType;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  */
 @ConfigurationProperties(prefix = "spring.security")
-public class SecurityProperties implements SecurityPrerequisite {
+public class SecurityProperties {
 
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
@@ -56,9 +56,9 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Default order of Spring Security's Filter in the servlet container (i.e. amongst
 	 * other filters registered with the container). There is no connection between this
-	 * and the <code>@Order</code> on a WebSecurityConfigurer.
+	 * and the {@code @Order} on a WebSecurityConfigurer.
 	 */
-	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+	public static final int DEFAULT_FILTER_ORDER = OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER
 			- 100;
 
 	private final Filter filter = new Filter();

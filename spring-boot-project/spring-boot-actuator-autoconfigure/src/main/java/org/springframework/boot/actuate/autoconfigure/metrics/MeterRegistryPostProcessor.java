@@ -16,15 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
 
 /**
  * {@link BeanPostProcessor} that delegates to a lazily created
@@ -36,12 +37,24 @@ import org.springframework.context.ApplicationContext;
  */
 class MeterRegistryPostProcessor implements BeanPostProcessor {
 
-	private final ApplicationContext context;
+	private final ObjectProvider<MeterBinder> meterBinders;
+
+	private final ObjectProvider<MeterFilter> meterFilters;
+
+	private final ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers;
+
+	private final ObjectProvider<MetricsProperties> metricsProperties;
 
 	private volatile MeterRegistryConfigurer configurer;
 
-	MeterRegistryPostProcessor(ApplicationContext context) {
-		this.context = context;
+	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders,
+			ObjectProvider<MeterFilter> meterFilters,
+			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
+			ObjectProvider<MetricsProperties> metricsProperties) {
+		this.meterBinders = meterBinders;
+		this.meterFilters = meterFilters;
+		this.meterRegistryCustomizers = meterRegistryCustomizers;
+		this.metricsProperties = metricsProperties;
 	}
 
 	@Override
@@ -53,20 +66,18 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 		return bean;
 	}
 
-	@SuppressWarnings("unchecked")
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
-			this.configurer = new MeterRegistryConfigurer(beansOfType(MeterBinder.class),
-					beansOfType(MeterFilter.class),
-					(Collection<MeterRegistryCustomizer<?>>) (Object) beansOfType(
-							MeterRegistryCustomizer.class),
-					this.context.getBean(MetricsProperties.class).isUseGlobalRegistry());
+			this.configurer = new MeterRegistryConfigurer(
+					asOrderedList(this.meterBinders), asOrderedList(this.meterFilters),
+					asOrderedList(this.meterRegistryCustomizers),
+					this.metricsProperties.getObject().isUseGlobalRegistry());
 		}
 		return this.configurer;
 	}
 
-	private <T> Collection<T> beansOfType(Class<T> type) {
-		return this.context.getBeansOfType(type).values();
+	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
+		return provider.orderedStream().collect(Collectors.toList());
 	}
 
 }

@@ -119,20 +119,18 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() {
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
-				.getForEntity("/actuator/health", String.class);
+	public void healthInsecureByDefault() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).doesNotContain("\"hello\":\"1\"");
 	}
 
 	@Test
-	public void testInfo() {
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
-				.getForEntity("/actuator/info", String.class);
+	public void infoInsecureByDefault() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/info",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody())
 				.contains("\"artifact\":\"spring-boot-sample-actuator\"");

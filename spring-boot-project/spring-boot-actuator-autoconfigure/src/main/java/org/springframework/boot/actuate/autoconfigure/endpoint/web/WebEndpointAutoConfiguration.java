@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -79,7 +80,6 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	public PathMapper webEndpointPathMapper() {
 		return new MappingWebEndpointPathMapper(this.properties.getPathMapping());
 	}
@@ -94,22 +94,25 @@ public class WebEndpointAutoConfiguration {
 	@ConditionalOnMissingBean(WebEndpointsSupplier.class)
 	public WebEndpointDiscoverer webEndpointDiscoverer(
 			ParameterValueMapper parameterValueMapper,
-			EndpointMediaTypes endpointMediaTypes, PathMapper webEndpointPathMapper,
-			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
-			ObjectProvider<Collection<EndpointFilter<ExposableWebEndpoint>>> filters) {
+			EndpointMediaTypes endpointMediaTypes,
+			ObjectProvider<PathMapper> endpointPathMappers,
+			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
+			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> filters) {
 		return new WebEndpointDiscoverer(this.applicationContext, parameterValueMapper,
-				endpointMediaTypes, webEndpointPathMapper,
-				invokerAdvisors.getIfAvailable(Collections::emptyList),
-				filters.getIfAvailable(Collections::emptyList));
+				endpointMediaTypes,
+				endpointPathMappers.orderedStream().collect(Collectors.toList()),
+				invokerAdvisors.orderedStream().collect(Collectors.toList()),
+				filters.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
 	public ControllerEndpointDiscoverer controllerEndpointDiscoverer(
-			PathMapper webEndpointPathMapper,
+			ObjectProvider<PathMapper> endpointPathMappers,
 			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
 		return new ControllerEndpointDiscoverer(this.applicationContext,
-				webEndpointPathMapper, filters.getIfAvailable(Collections::emptyList));
+				endpointPathMappers.orderedStream().collect(Collectors.toList()),
+				filters.getIfAvailable(Collections::emptyList));
 	}
 
 	@Bean
@@ -138,16 +141,17 @@ public class WebEndpointAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	static class WebEndpointServletAutoConfiguration {
+	static class WebEndpointServletConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
 		public ServletEndpointDiscoverer servletEndpointDiscoverer(
-				ApplicationContext applicationContext, PathMapper webEndpointPathMapper,
-				ObjectProvider<Collection<EndpointFilter<ExposableServletEndpoint>>> filters) {
+				ApplicationContext applicationContext,
+				ObjectProvider<PathMapper> endpointPathMappers,
+				ObjectProvider<EndpointFilter<ExposableServletEndpoint>> filters) {
 			return new ServletEndpointDiscoverer(applicationContext,
-					webEndpointPathMapper,
-					filters.getIfAvailable(Collections::emptyList));
+					endpointPathMappers.orderedStream().collect(Collectors.toList()),
+					filters.orderedStream().collect(Collectors.toList()));
 		}
 
 	}

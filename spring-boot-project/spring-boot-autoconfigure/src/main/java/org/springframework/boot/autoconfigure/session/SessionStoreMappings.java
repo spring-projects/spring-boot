@@ -93,7 +93,7 @@ final class SessionStoreMappings {
 		}
 
 		private String getName(Class<?> configuration) {
-			return (configuration == null ? null : configuration.getName());
+			return (configuration != null) ? configuration.getName() : null;
 		}
 
 	}

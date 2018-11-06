@@ -26,10 +26,10 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpoi
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +50,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
+					DispatcherServletAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class,
 					ServletEndpointManagementContextConfiguration.class,
@@ -100,8 +101,8 @@ public class JolokiaEndpointAutoConfigurationTests {
 		@Bean
 		public ServletEndpointDiscoverer servletEndpointDiscoverer(
 				ApplicationContext applicationContext) {
-			return new ServletEndpointDiscoverer(applicationContext,
-					PathMapper.useEndpointId(), Collections.emptyList());
+			return new ServletEndpointDiscoverer(applicationContext, null,
+					Collections.emptyList());
 		}
 
 	}

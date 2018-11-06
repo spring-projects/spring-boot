@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
@@ -117,14 +118,14 @@ public class CouchbaseProperties {
 		private int keyValue = 1;
 
 		/**
-		 * Number of sockets per node against the query (N1QL) service.
+		 * Query (N1QL) service configuration.
 		 */
-		private int query = 1;
+		private final CouchbaseService queryservice = new CouchbaseService();
 
 		/**
-		 * Number of sockets per node against the view service.
+		 * View service configuration.
 		 */
-		private int view = 1;
+		private final CouchbaseService viewservice = new CouchbaseService();
 
 		public int getKeyValue() {
 			return this.keyValue;
@@ -134,20 +135,42 @@ public class CouchbaseProperties {
 			this.keyValue = keyValue;
 		}
 
-		public int getQuery() {
-			return this.query;
+		public CouchbaseService getQueryservice() {
+			return this.queryservice;
 		}
 
-		public void setQuery(int query) {
-			this.query = query;
+		public CouchbaseService getViewservice() {
+			return this.viewservice;
 		}
 
-		public int getView() {
-			return this.view;
-		}
+		public static class CouchbaseService {
 
-		public void setView(int view) {
-			this.view = view;
+			/**
+			 * Minimum number of sockets per node.
+			 */
+			private int minEndpoints = 1;
+
+			/**
+			 * Maximum number of sockets per node.
+			 */
+			private int maxEndpoints = 1;
+
+			public int getMinEndpoints() {
+				return this.minEndpoints;
+			}
+
+			public void setMinEndpoints(int minEndpoints) {
+				this.minEndpoints = minEndpoints;
+			}
+
+			public int getMaxEndpoints() {
+				return this.maxEndpoints;
+			}
+
+			public void setMaxEndpoints(int maxEndpoints) {
+				this.maxEndpoints = maxEndpoints;
+			}
+
 		}
 
 	}
@@ -171,8 +194,8 @@ public class CouchbaseProperties {
 		private String keyStorePassword;
 
 		public Boolean getEnabled() {
-			return (this.enabled != null ? this.enabled
-					: StringUtils.hasText(this.keyStore));
+			return (this.enabled != null) ? this.enabled
+					: StringUtils.hasText(this.keyStore);
 		}
 
 		public void setEnabled(Boolean enabled) {

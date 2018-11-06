@@ -55,7 +55,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
 			List<String> indices) {
 		this(client, responseTimeout,
-				(indices == null ? null : StringUtils.toStringArray(indices)));
+				(indices != null) ? StringUtils.toStringArray(indices) : null);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,9 @@ package org.springframework.boot.cli.command.run;
 
 import java.util.logging.Level;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -33,19 +31,16 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringApplicationRunnerTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void exceptionMessageWhenSourcesContainsNoClasses() throws Exception {
 		SpringApplicationRunnerConfiguration configuration = mock(
 				SpringApplicationRunnerConfiguration.class);
 		given(configuration.getClasspath()).willReturn(new String[] { "foo", "bar" });
 		given(configuration.getLogLevel()).willReturn(Level.INFO);
-		this.thrown.expect(RuntimeException.class);
-		this.thrown.expectMessage(equalTo("No classes found in '[foo, bar]'"));
-		new SpringApplicationRunner(configuration, new String[] { "foo", "bar" })
-				.compileAndRun();
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> new SpringApplicationRunner(configuration,
+						new String[] { "foo", "bar" }).compileAndRun())
+				.withMessage("No classes found in '[foo, bar]'");
 	}
 
 }

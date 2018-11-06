@@ -20,15 +20,14 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -39,21 +38,18 @@ import static org.mockito.Mockito.mock;
  */
 public class BindableTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void ofClassWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		Bindable.of((Class<?>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Bindable.of((Class<?>) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void ofTypeWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		Bindable.of((ResolvableType) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Bindable.of((ResolvableType) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -90,10 +86,11 @@ public class BindableTests {
 
 	@Test
 	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
-				"ExistingValue must be an instance of " + String.class.getName());
-		Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class))
+						.withExistingValue(123))
+				.withMessageContaining(
+						"ExistingValue must be an instance of " + String.class.getName());
 	}
 
 	@Test

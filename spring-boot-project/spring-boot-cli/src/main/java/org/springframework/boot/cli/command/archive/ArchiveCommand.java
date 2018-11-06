@@ -230,7 +230,9 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		private String commaDelimitedClassNames(Class<?>[] classes) {
 			StringBuilder builder = new StringBuilder();
 			for (int i = 0; i < classes.length; i++) {
-				builder.append(i == 0 ? "" : ",");
+				if (i != 0) {
+					builder.append(',');
+				}
 				builder.append(classes[i].getName());
 			}
 			return builder.toString();

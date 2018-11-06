@@ -25,11 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
@@ -48,6 +51,7 @@ import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
@@ -292,25 +296,33 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		deploymentInfo.addInitialHandlerChainWrapper(this::createAccessLogHandler);
-	}
-
-	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
-			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
-					: "access_log.");
-			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix,
+			XnioWorker worker = createWorker();
+			String prefix = (this.accessLogPrefix != null) ? this.accessLogPrefix
+					: "access_log.";
+			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+					worker, this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
-			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-					: "common";
-			return new AccessLogHandler(handler, accessLogReceiver, formatString,
-					Undertow.class.getClassLoader());
+			EventListener listener = new AccessLogShutdownListener(worker,
+					accessLogReceiver);
+			deploymentInfo.addListener(new ListenerInfo(AccessLogShutdownListener.class,
+					new ImmediateInstanceFactory<>(listener)));
+			deploymentInfo.addInitialHandlerChainWrapper(
+					(handler) -> createAccessLogHandler(handler, accessLogReceiver));
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
 		}
+	}
+
+	private AccessLogHandler createAccessLogHandler(HttpHandler handler,
+			AccessLogReceiver accessLogReceiver) {
+		createAccessLogDirectoryIfNecessary();
+		String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
+				: "common";
+		return new AccessLogHandler(handler, accessLogReceiver, formatString,
+				Undertow.class.getClassLoader());
 	}
 
 	private void createAccessLogDirectoryIfNecessary() {
@@ -336,7 +348,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			DeploymentInfo deployment, ServletContextInitializer... initializers) {
 		ServletContextInitializer[] mergedInitializers = mergeInitializers(initializers);
 		Initializer initializer = new Initializer(mergedInitializers);
-		deployment.addServletContainerInitalizer(new ServletContainerInitializerInfo(
+		deployment.addServletContainerInitializer(new ServletContainerInitializerInfo(
 				Initializer.class,
 				new ImmediateInstanceFactory<ServletContainerInitializer>(initializer),
 				NO_CLASSES));
@@ -354,43 +366,44 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		File docBase = getCanonicalDocumentRoot(root);
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
 		List<URL> resourceJarUrls = new ArrayList<>();
-		List<ResourceManager> resourceManagers = new ArrayList<>();
-		ResourceManager rootResourceManager = docBase.isDirectory()
-				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase);
-		resourceManagers.add(root == null ? rootResourceManager
-				: new LoaderHidingResourceManager(rootResourceManager));
+		List<ResourceManager> managers = new ArrayList<>();
+		ResourceManager rootManager = (docBase.isDirectory()
+				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase));
+		if (root != null) {
+			rootManager = new LoaderHidingResourceManager(rootManager);
+		}
+		managers.add(rootManager);
 		for (URL url : metaInfResourceUrls) {
 			if ("file".equals(url.getProtocol())) {
-				File file = new File(getDecodedFile(url));
-				if (file.isFile()) {
-					try {
+				try {
+					File file = new File(url.toURI());
+					if (file.isFile()) {
 						resourceJarUrls.add(new URL("jar:" + url + "!/"));
 					}
-					catch (MalformedURLException ex) {
-						throw new RuntimeException(ex);
+					else {
+						managers.add(new FileResourceManager(
+								new File(file, "META-INF/resources"), 0));
 					}
 				}
-				else {
-					resourceManagers.add(new FileResourceManager(
-							new File(file, "META-INF/resources"), 0));
+				catch (Exception ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 			else {
 				resourceJarUrls.add(url);
 			}
 		}
-		resourceManagers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
-		return new CompositeResourceManager(
-				resourceManagers.toArray(new ResourceManager[0]));
+		managers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
+		return new CompositeResourceManager(managers.toArray(new ResourceManager[0]));
 	}
 
 	private File getCanonicalDocumentRoot(File docBase) {
 		try {
-			File root = docBase != null ? docBase : createTempDir("undertow-docbase");
+			File root = (docBase != null) ? docBase : createTempDir("undertow-docbase");
 			return root.getCanonicalFile();
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Cannot get canonical document root", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Cannot get canonical document root", ex);
 		}
 	}
 
@@ -581,6 +594,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				return null;
 			}
 		}
+
 	}
 
 	/**
@@ -602,6 +616,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				initializer.onStartup(servletContext);
 			}
 		}
+
 	}
 
 	private static final class LoaderHidingResourceManager implements ResourceManager {
@@ -638,6 +653,35 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		@Override
 		public void close() throws IOException {
 			this.delegate.close();
+		}
+
+	}
+
+	private static class AccessLogShutdownListener implements ServletContextListener {
+
+		private final XnioWorker worker;
+
+		private final DefaultAccessLogReceiver accessLogReceiver;
+
+		AccessLogShutdownListener(XnioWorker worker,
+				DefaultAccessLogReceiver accessLogReceiver) {
+			this.worker = worker;
+			this.accessLogReceiver = accessLogReceiver;
+		}
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+		}
+
+		@Override
+		public void contextDestroyed(ServletContextEvent sce) {
+			try {
+				this.accessLogReceiver.close();
+				this.worker.shutdown();
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}

@@ -109,9 +109,6 @@ Usage
 
     * <<<ZIP>>> (alias to <<<DIR>>>): similar to the <<<JAR>>> layout using <<<PropertiesLauncher>>>.
 
-    * <<<MODULE>>>: Bundle dependencies (excluding those with <<<provided>>> scope) and project resources.
-      Does not bundle a bootstrap loader.
-
     * <<<NONE>>>: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
 
     []
@@ -135,12 +132,17 @@ mvn spring-boot:run
 
   By default the application is executed directly from the Maven JVM. If you need to run
   in a forked process you can use the 'fork' option. Forking will also occur if the
-  'jvmArguments' or 'agent' options are specified, or if devtools is present.
+  'jvmArguments', 'systemPropertyVariables', 'environmentVariables'  or 'agent' options
+  are specified, or if devtools is present.
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
   the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details. As a convenience, the profiles to enable are handled by a specific
-  property (<<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
+  for more details. There is also explicit support for
+  {{{./examples/run-system-properties.html}system properties}} and
+  {{{./examples/run-env-variables.html}environment variables}}.
+
+  As a convenience, the profiles to enable are handled by a specific property (
+  <<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
 
   Spring Boot 1.3 has introduced <<<devtools>>>, a module to improve the development-time
   experience when working on Spring Boot applications. To enable it, just add the following

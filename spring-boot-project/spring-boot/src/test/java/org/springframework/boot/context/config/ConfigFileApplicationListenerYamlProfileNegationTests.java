@@ -94,7 +94,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
 		this.context = application.run(configName);
-		assertVersionProperty(this.context, "E", "D", "C", "E", "A", "B");
+		assertVersionProperty(this.context, "D", "A", "C", "E", "B", "D");
 		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
@@ -108,11 +108,25 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
 		this.context = application.run(configName, "--spring.profiles.active=A");
-		assertVersionProperty(this.context, "E", "C", "E", "A");
+		assertVersionProperty(this.context, "E", "A", "C", "E");
 		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-b")).isEqualTo("true");
 		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-d")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
+	@Test
+	public void yamlProfileCascadingMultipleActiveProfilesViaPropertiesShouldPreserveOrder() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName, "--spring.profiles.active=A,B");
+		assertVersionProperty(this.context, "D", "A", "C", "E", "B", "D");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
 	}
 
@@ -122,7 +136,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
 		this.context = application.run(configName, "--spring.profiles.active=B");
-		assertVersionProperty(this.context, "E", "D", "E", "B");
+		assertVersionProperty(this.context, "E", "B", "D", "E");
 		assertThat(this.context.getEnvironment().getProperty("not-a")).isEqualTo("true");
 		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-c")).isEqualTo("true");

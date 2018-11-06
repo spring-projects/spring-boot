@@ -204,7 +204,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				return this.jarFile.size();
 			}
 			JarEntry entry = getJarEntry();
-			return (entry == null ? -1 : (int) entry.getSize());
+			return (entry != null) ? (int) entry.getSize() : -1;
 		}
 		catch (IOException ex) {
 			return -1;
@@ -214,12 +214,12 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public Object getContent() throws IOException {
 		connect();
-		return (this.jarEntryName.isEmpty() ? this.jarFile : super.getContent());
+		return this.jarEntryName.isEmpty() ? this.jarFile : super.getContent();
 	}
 
 	@Override
 	public String getContentType() {
-		return (this.jarEntryName == null ? null : this.jarEntryName.getContentType());
+		return (this.jarEntryName != null) ? this.jarEntryName.getContentType() : null;
 	}
 
 	@Override
@@ -241,7 +241,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 		try {
 			JarEntry entry = getJarEntry();
-			return (entry == null ? 0 : entry.getTime());
+			return (entry != null) ? entry.getTime() : 0;
 		}
 		catch (IOException ex) {
 			return 0;
@@ -255,6 +255,10 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
 		StringSequence spec = new StringSequence(url.getFile());
 		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
+		if (index == -1) {
+			return (Boolean.TRUE.equals(useFastExceptions.get()) ? NOT_FOUND_CONNECTION
+					: new JarURLConnection(url, null, EMPTY_JAR_ENTRY_NAME));
+		}
 		int separator;
 		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
 			JarEntryName entryName = JarEntryName.get(spec.subSequence(index, separator));
@@ -275,7 +279,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
 		int separatorIndex = file.indexOf(SEPARATOR);
-		if (separatorIndex < 0) {
+		if (separatorIndex < 0 || !file.startsWith(pathFromRoot, separatorIndex)) {
 			return -1;
 		}
 		return separatorIndex + SEPARATOR.length() + pathFromRoot.length();
@@ -382,9 +386,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 		private String deduceContentType() {
 			// Guess the content type, don't bother with streams as mark is not supported
-			String type = (isEmpty() ? "x-java/jar" : null);
-			type = (type != null ? type : guessContentTypeFromName(toString()));
-			type = (type != null ? type : "content/unknown");
+			String type = isEmpty() ? "x-java/jar" : null;
+			type = (type != null) ? type : guessContentTypeFromName(toString());
+			type = (type != null) ? type : "content/unknown";
 			return type;
 		}
 

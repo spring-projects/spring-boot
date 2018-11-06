@@ -116,8 +116,8 @@ public abstract class Launcher {
 	protected final Archive createArchive() throws Exception {
 		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
 		CodeSource codeSource = protectionDomain.getCodeSource();
-		URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
-		String path = (location == null ? null : location.getSchemeSpecificPart());
+		URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
+		String path = (location != null) ? location.getSchemeSpecificPart() : null;
 		if (path == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}

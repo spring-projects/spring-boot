@@ -304,7 +304,7 @@ public class PropertiesLauncher extends Launcher {
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
-			path = ("".equals(path) ? "/" : path);
+			path = "".equals(path) ? "/" : path;
 			paths.add(path);
 		}
 		if (paths.isEmpty()) {
@@ -434,8 +434,9 @@ public class PropertiesLauncher extends Launcher {
 				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 			}
 		}
-		return defaultValue == null ? defaultValue
-				: SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue);
+		return (defaultValue != null)
+				? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
+				: defaultValue;
 	}
 
 	@Override
@@ -520,7 +521,7 @@ public class PropertiesLauncher extends Launcher {
 				file = new File(root.substring("jar:file:".length(), index));
 			}
 			parent = new JarFileArchive(file);
-			root = root.substring(index + 1, root.length());
+			root = root.substring(index + 1);
 			while (root.startsWith("/")) {
 				root = root.substring(1);
 			}

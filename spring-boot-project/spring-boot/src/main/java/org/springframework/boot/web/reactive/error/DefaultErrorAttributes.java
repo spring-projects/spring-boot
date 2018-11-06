@@ -22,9 +22,11 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,6 +48,7 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Michele Mancioppi
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -91,6 +94,11 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
 		}
+		ResponseStatus responseStatus = AnnotatedElementUtils
+				.findMergedAnnotation(error.getClass(), ResponseStatus.class);
+		if (responseStatus != null) {
+			return responseStatus.code();
+		}
 		return HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
@@ -101,12 +109,17 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
+		ResponseStatus responseStatus = AnnotatedElementUtils
+				.findMergedAnnotation(error.getClass(), ResponseStatus.class);
+		if (responseStatus != null) {
+			return responseStatus.reason();
+		}
 		return error.getMessage();
 	}
 
 	private Throwable determineException(Throwable error) {
 		if (error instanceof ResponseStatusException) {
-			return error.getCause() != null ? error.getCause() : error;
+			return (error.getCause() != null) ? error.getCause() : error;
 		}
 		return error;
 	}
@@ -128,7 +141,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		}
 		if (error instanceof BindingResult) {
 			BindingResult result = (BindingResult) error;
-			if (result.getErrorCount() > 0) {
+			if (result.hasErrors()) {
 				errorAttributes.put("errors", result.getAllErrors());
 			}
 		}

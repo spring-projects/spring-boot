@@ -26,6 +26,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -78,6 +79,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private ApplicationContext context;
 
+	private ObjectMapper objectMapper;
+
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
@@ -93,13 +96,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	private ApplicationConfigurationProperties extract(ApplicationContext context) {
-		ObjectMapper mapper = new ObjectMapper();
-		configureObjectMapper(mapper);
 		Map<String, ContextConfigurationProperties> contextProperties = new HashMap<>();
 		ApplicationContext target = context;
 		while (target != null) {
 			contextProperties.put(target.getId(),
-					describeConfigurationProperties(target, mapper));
+					describeConfigurationProperties(target, getObjectMapper()));
 			target = target.getParent();
 		}
 		return new ApplicationConfigurationProperties(contextProperties);
@@ -118,7 +119,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		});
 		return new ContextConfigurationProperties(beanDescriptors,
-				context.getParent() == null ? null : context.getParent().getId());
+				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
 
 	private ConfigurationBeanFactoryMetadata getBeanFactoryMetadata(
@@ -151,13 +152,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @param prefix the prefix
 	 * @return the serialized instance
 	 */
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean,
 			String prefix) {
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<>(
-					mapper.convertValue(bean, Map.class));
-			return result;
+			return new HashMap<>(mapper.convertValue(bean, Map.class));
 		}
 		catch (Exception ex) {
 			return new HashMap<>(Collections.singletonMap("error",
@@ -172,9 +171,18 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		mapper.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		applyConfigurationPropertiesFilter(mapper);
 		applySerializationModifier(mapper);
+	}
+
+	private ObjectMapper getObjectMapper() {
+		if (this.objectMapper == null) {
+			this.objectMapper = new ObjectMapper();
+			configureObjectMapper(this.objectMapper);
+		}
+		return this.objectMapper;
 	}
 
 	/**
@@ -335,6 +343,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			}
 			super.serializeAsField(pojo, jgen, provider, writer);
 		}
+
 	}
 
 	/**
@@ -374,7 +383,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
 				BeanPropertyWriter writer) {
-			String name = "set" + StringUtils.capitalize(writer.getName());
+			String name = "set" + determineAccessorSuffix(writer.getName());
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
 			// The enabled property of endpoints returns a boolean primitive but is set
@@ -383,6 +392,21 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				setter = beanDesc.findMethod(name, new Class<?>[] { Boolean.class });
 			}
 			return setter;
+		}
+
+		/**
+		 * Determine the accessor suffix of the specified {@code propertyName}, see
+		 * section 8.8 "Capitalization of inferred names" of the JavaBean specs for more
+		 * details.
+		 * @param propertyName the property name to turn into an accessor suffix
+		 * @return the accessor suffix for {@code propertyName}
+		 */
+		private String determineAccessorSuffix(String propertyName) {
+			if (propertyName.length() > 1
+					&& Character.isUpperCase(propertyName.charAt(1))) {
+				return propertyName;
+			}
+			return StringUtils.capitalize(propertyName);
 		}
 
 	}

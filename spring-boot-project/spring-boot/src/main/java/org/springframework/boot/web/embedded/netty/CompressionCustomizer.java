@@ -21,9 +21,9 @@ import java.util.function.BiPredicate;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
-import reactor.ipc.netty.http.server.HttpServerOptions;
-import reactor.ipc.netty.http.server.HttpServerRequest;
-import reactor.ipc.netty.http.server.HttpServerResponse;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.util.MimeType;
@@ -32,10 +32,11 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Configure the HTTP compression on an Reactor Netty request/response handler.
+ * Configure the HTTP compression on a Reactor Netty request/response handler.
  *
  * @author Stephane Maldini
  * @author Phillip Webb
+ * @author Brian Clozel
  */
 final class CompressionCustomizer implements NettyServerCustomizer {
 
@@ -49,15 +50,17 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 	}
 
 	@Override
-	public void customize(HttpServerOptions.Builder builder) {
-		if (this.compression.getMinResponseSize() >= 0) {
-			builder.compression(this.compression.getMinResponseSize());
+	public HttpServer apply(HttpServer server) {
+		if (!this.compression.getMinResponseSize().isNegative()) {
+			server = server
+					.compress((int) this.compression.getMinResponseSize().toBytes());
 		}
 		CompressionPredicate mimeTypes = getMimeTypesPredicate(
 				this.compression.getMimeTypes());
 		CompressionPredicate excludedUserAgents = getExcludedUserAgentsPredicate(
 				this.compression.getExcludedUserAgents());
-		builder.compression(mimeTypes.and(excludedUserAgents));
+		server = server.compress(mimeTypes.and(excludedUserAgents));
+		return server;
 	}
 
 	private CompressionPredicate getMimeTypesPredicate(String[] mimeTypes) {

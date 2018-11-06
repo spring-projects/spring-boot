@@ -163,7 +163,7 @@ public class ApplicationPidFileWriter
 
 	private boolean failOnWriteError(SpringApplicationEvent event) {
 		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
-		return (value == null ? false : Boolean.parseBoolean(value));
+		return (value != null) ? Boolean.parseBoolean(value) : false;
 	}
 
 	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {

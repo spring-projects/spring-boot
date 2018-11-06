@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -30,6 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link EntityScanPackages}.
@@ -39,9 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EntityScanPackagesTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void cleanup() {
@@ -71,33 +68,36 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Registry must not be null");
-		EntityScanPackages.register(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> EntityScanPackages.register(null))
+				.withMessageContaining("Registry must not be null");
 
 	}
 
 	@Test
 	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PackageNames must not be null");
-		EntityScanPackages.register(this.context, (String[]) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> EntityScanPackages.register(this.context, (String[]) null))
+				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test
 	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Registry must not be null");
-		EntityScanPackages.register(null, Collections.emptyList());
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> EntityScanPackages.register(null, Collections.emptyList()))
+				.withMessageContaining("Registry must not be null");
 	}
 
 	@Test
 	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PackageNames must not be null");
-		EntityScanPackages.register(this.context, (Collection<String>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> EntityScanPackages.register(this.context,
+						(Collection<String>) null))
+				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test
@@ -128,9 +128,9 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
-		this.thrown.expect(AnnotationConfigurationException.class);
-		this.context = new AnnotationConfigApplicationContext(
-				EntityScanValueAndBasePackagesConfig.class);
+		assertThatExceptionOfType(AnnotationConfigurationException.class)
+				.isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(
+						EntityScanValueAndBasePackagesConfig.class));
 	}
 
 	@Test

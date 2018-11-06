@@ -23,9 +23,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.xnio.SslClientAuthMode;
+import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +42,14 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @Configuration
+@ConditionalOnWebApplication
 @EnableConfigurationProperties(ServerProperties.class)
 public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 
+	/**
+	 * Nested configuration if Tomcat is being used.
+	 */
+	@Configuration
 	@ConditionalOnClass({ Tomcat.class, UpgradeProtocol.class })
 	public static class TomcatWebServerFactoryCustomizerConfiguration {
 
@@ -80,6 +87,21 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(
 				Environment environment, ServerProperties serverProperties) {
 			return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
+		}
+
+	}
+
+	/**
+	 * Nested configuration if Netty is being used.
+	 */
+	@Configuration
+	@ConditionalOnClass(HttpServer.class)
+	public static class NettyWebServerFactoryCustomizerConfiguration {
+
+		@Bean
+		public NettyWebServerFactoryCustomizer nettyWebServerFactoryCustomizer(
+				Environment environment, ServerProperties serverProperties) {
+			return new NettyWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
 	}

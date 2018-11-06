@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.origin;
 import org.springframework.util.ObjectUtils;
 
 /**
- * An wrapper for a {@link Object} value and {@link Origin}.
+ * A wrapper for an {@link Object} value and {@link Origin}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
@@ -52,8 +52,11 @@ public class OriginTrackedValue implements OriginProvider {
 	}
 
 	@Override
-	public String toString() {
-		return (this.value == null ? null : this.value.toString());
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != getClass()) {
+			return false;
+		}
+		return ObjectUtils.nullSafeEquals(this.value, ((OriginTrackedValue) obj).value);
 	}
 
 	@Override
@@ -62,11 +65,8 @@ public class OriginTrackedValue implements OriginProvider {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
-			return false;
-		}
-		return ObjectUtils.nullSafeEquals(this.value, ((OriginTrackedValue) obj).value);
+	public String toString() {
+		return (this.value != null) ? this.value.toString() : null;
 	}
 
 	public static OriginTrackedValue of(Object value) {
@@ -79,7 +79,7 @@ public class OriginTrackedValue implements OriginProvider {
 	 * the resulting {@link OriginTrackedValue}.
 	 * @param value the source value
 	 * @param origin the origin
-	 * @return a {@link OriginTrackedValue} or {@code null} if the source value was
+	 * @return an {@link OriginTrackedValue} or {@code null} if the source value was
 	 * {@code null}.
 	 */
 	public static OriginTrackedValue of(Object value, Origin origin) {

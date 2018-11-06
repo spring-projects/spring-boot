@@ -24,12 +24,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.lang.Nullable;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,7 @@ public class CachingOperationInvokerAdvisorTests {
 	private OperationInvoker invoker;
 
 	@Mock
-	private Function<String, Long> timeToLive;
+	private Function<EndpointId, Long> timeToLive;
 
 	private CachingOperationInvokerAdvisor advisor;
 
@@ -62,8 +63,8 @@ public class CachingOperationInvokerAdvisorTests {
 	@Test
 	public void applyWhenOperationIsNotReadShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
-		OperationInvoker advised = this.advisor.apply("foo", OperationType.WRITE,
-				parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
+				OperationType.WRITE, parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 	}
 
@@ -71,8 +72,8 @@ public class CachingOperationInvokerAdvisorTests {
 	public void applyWhenHasAtLeaseOneMandatoryParameterShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("getWithParameters", String.class,
 				String.class);
-		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
-				parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
+				OperationType.READ, parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 	}
 
@@ -80,20 +81,20 @@ public class CachingOperationInvokerAdvisorTests {
 	public void applyWhenTimeToLiveReturnsNullShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(null);
-		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
-				parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
+				OperationType.READ, parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
-		verify(this.timeToLive).apply("foo");
+		verify(this.timeToLive).apply(EndpointId.of("foo"));
 	}
 
 	@Test
 	public void applyWhenTimeToLiveIsZeroShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(0L);
-		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
-				parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
+				OperationType.READ, parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
-		verify(this.timeToLive).apply("foo");
+		verify(this.timeToLive).apply(EndpointId.of("foo"));
 	}
 
 	@Test
@@ -111,13 +112,20 @@ public class CachingOperationInvokerAdvisorTests {
 		assertAdviseIsApplied(parameters);
 	}
 
+	@Test
+	public void applyWithSecurityContextShouldAddAdvise() {
+		OperationParameters parameters = getParameters("getWithSecurityContext",
+				SecurityContext.class, String.class);
+		given(this.timeToLive.apply(any())).willReturn(100L);
+		assertAdviseIsApplied(parameters);
+	}
+
 	private void assertAdviseIsApplied(OperationParameters parameters) {
-		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
-				parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
+				OperationType.READ, parameters, this.invoker);
 		assertThat(advised).isInstanceOf(CachingOperationInvoker.class);
-		assertThat(ReflectionTestUtils.getField(advised, "invoker"))
-				.isEqualTo(this.invoker);
-		assertThat(ReflectionTestUtils.getField(advised, "timeToLive")).isEqualTo(100L);
+		assertThat(advised).hasFieldOrPropertyWithValue("invoker", this.invoker);
+		assertThat(advised).hasFieldOrPropertyWithValue("timeToLive", 100L);
 	}
 
 	private OperationParameters getParameters(String methodName,
@@ -143,6 +151,11 @@ public class CachingOperationInvokerAdvisorTests {
 		}
 
 		public String getWithAllOptionalParameters(@Nullable String foo,
+				@Nullable String bar) {
+			return "";
+		}
+
+		public String getWithSecurityContext(SecurityContext securityContext,
 				@Nullable String bar) {
 			return "";
 		}

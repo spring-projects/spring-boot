@@ -16,11 +16,13 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -60,6 +62,8 @@ class TypeUtils {
 
 	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
 
+	private static final Pattern NEW_LINE_PATTERN = Pattern.compile("[\r\n]+");
+
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
 		PRIMITIVE_WRAPPERS.forEach(
@@ -86,9 +90,7 @@ class TypeUtils {
 	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
 			int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
-		for (int i = 0; i < typeArgs.length; i++) {
-			typeArgs[i] = types.getWildcardType(null, null);
-		}
+		Arrays.setAll(typeArgs, (i) -> types.getWildcardType(null, null));
 		TypeElement typeElement = this.env.getElementUtils()
 				.getTypeElement(typeClass.getName());
 		try {
@@ -128,23 +130,13 @@ class TypeUtils {
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
 	}
 
-	public boolean isEnclosedIn(Element candidate, TypeElement element) {
-		if (candidate == null || element == null) {
-			return false;
-		}
-		if (candidate.equals(element)) {
-			return true;
-		}
-		return isEnclosedIn(candidate.getEnclosingElement(), element);
-	}
-
 	public String getJavaDoc(Element element) {
-		String javadoc = (element == null ? null
-				: this.env.getElementUtils().getDocComment(element));
+		String javadoc = (element != null)
+				? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
-			javadoc = javadoc.trim();
+			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
-		return ("".equals(javadoc) ? null : javadoc);
+		return "".equals(javadoc) ? null : javadoc;
 	}
 
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {

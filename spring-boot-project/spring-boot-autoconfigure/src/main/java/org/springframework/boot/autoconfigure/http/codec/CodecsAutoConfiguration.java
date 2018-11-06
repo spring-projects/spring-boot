@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,13 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
@@ -60,6 +63,19 @@ public class CodecsAutoConfiguration {
 				defaults.jackson2JsonEncoder(
 						new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
 			};
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(HttpProperties.class)
+	static class LoggingCodecConfiguration {
+
+		@Bean
+		@Order(0)
+		public CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
+			return (configurer) -> configurer.defaultCodecs()
+					.enableLoggingRequestDetails(properties.isLogRequestDetails());
 		}
 
 	}

@@ -69,6 +69,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Kazuki Shimizu
  * @author Eddú Meléndez
  */
+@Configuration
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
@@ -118,11 +119,13 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
-			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
+			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
 				persistenceUnitManager.getIfAvailable());
-		builder.setCallback(getVendorCallback());
+		customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
@@ -149,10 +152,6 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	 * @param vendorProperties the vendor properties to customize
 	 */
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
-	}
-
-	protected EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback() {
-		return null;
 	}
 
 	protected String[] getPackagesToScan() {

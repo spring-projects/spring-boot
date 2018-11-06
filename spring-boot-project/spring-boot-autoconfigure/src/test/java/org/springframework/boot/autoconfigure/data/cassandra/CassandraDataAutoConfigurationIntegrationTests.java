@@ -50,7 +50,10 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	@Before
 	public void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.port=" + cassandra.getMappedPort())
+		TestPropertyValues
+				.of("spring.data.cassandra.port=" + cassandra.getMappedPort(),
+						"spring.data.cassandra.read-timeout=24000",
+						"spring.data.cassandra.connect-timeout=10000")
 				.applyTo(this.context.getEnvironment());
 	}
 
@@ -92,8 +95,8 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		Cluster cluster = Cluster.builder().withPort(cassandra.getMappedPort())
-				.addContactPoint("localhost").build();
+		Cluster cluster = Cluster.builder().withoutJMXReporting()
+				.withPort(cassandra.getMappedPort()).addContactPoint("localhost").build();
 		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
