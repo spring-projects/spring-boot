@@ -80,7 +80,9 @@ public class DataSourceHealthIndicatorTests {
 		System.err.println(health);
 		assertThat(health.getDetails().get("database")).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("hello")).isNotNull();
+        assertThat(health.getDetails().get("hello")).isNotNull();
+        assertThat(health.getDetails().get("result")).isNotNull();
+        assertThat(health.getDetails().get("validationQuery")).isEqualTo("SELECT COUNT(*) from FOO");
 	}
 
 	@Test
