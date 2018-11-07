@@ -91,6 +91,10 @@ public class DatabaseLookupTests {
 	public void getDatabaseWhenInformixShouldReturnInformix() throws Exception {
 		testGetDatabase("jdbc:informix-sqli:", Database.INFORMIX);
 	}
+	@Test
+	public void getDatabaseWhenSapShouldReturnHana() throws Exception {
+		testGetDatabase("jdbc:sap:", Database.HANA);
+	}
 
 	private void testGetDatabase(String url, Database expected) throws Exception {
 		DataSource dataSource = mock(DataSource.class);
