@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
@@ -43,6 +46,27 @@ import org.springframework.boot.loader.data.RandomAccessData;
  * @author Andy Wilkinson
  */
 class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
+
+	private static final String META_INF_PREFIX = "META-INF/";
+
+	private static final Name MULTI_RELEASE = new Name("Multi-Release");
+
+	private static final int BASE_VERSION = 8;
+
+	private static final int RUNTIME_VERSION;
+
+	static {
+		int version;
+		try {
+			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
+			version = (int) runtimeVersion.getClass().getMethod("major")
+					.invoke(runtimeVersion);
+		}
+		catch (Throwable ex) {
+			version = 8;
+		}
+		RUNTIME_VERSION = version;
+	}
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
@@ -66,6 +90,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private int[] positions;
 
+	private Boolean multiReleaseJar;
+
 	private final Map<Integer, FileHeader> entriesCache = Collections
 			.synchronizedMap(new LinkedHashMap<Integer, FileHeader>(16, 0.75f, true) {
 
@@ -83,6 +109,9 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	JarFileEntries(JarFile jarFile, JarEntryFilter filter) {
 		this.jarFile = jarFile;
 		this.filter = filter;
+		if (RUNTIME_VERSION == BASE_VERSION) {
+			this.multiReleaseJar = false;
+		}
 	}
 
 	@Override
@@ -216,21 +245,68 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private <T extends FileHeader> T getEntry(CharSequence name, Class<T> type,
 			boolean cacheEntry) {
+		T entry = doGetEntry(name, type, cacheEntry, null);
+		if (isMultiReleaseJar() && !isMetaInfEntry(name)) {
+			int version = RUNTIME_VERSION;
+			AsciiBytes nameAlias = (entry instanceof JarEntry)
+					? ((JarEntry) entry).getAsciiBytesName()
+					: new AsciiBytes(name.toString());
+			while (version > BASE_VERSION) {
+				T versionedEntry = doGetEntry("META-INF/versions/" + version + "/" + name,
+						type, cacheEntry, nameAlias);
+				if (versionedEntry != null) {
+					return versionedEntry;
+				}
+				version--;
+			}
+		}
+		return entry;
+	}
+
+	private boolean isMetaInfEntry(CharSequence name) {
+		return name.toString().startsWith(META_INF_PREFIX);
+	}
+
+	private boolean isMultiReleaseJar() {
+		Boolean multiRelease = this.multiReleaseJar;
+		if (multiRelease != null) {
+			return multiRelease;
+		}
+		try {
+			Manifest manifest = this.jarFile.getManifest();
+			if (manifest == null) {
+				multiRelease = false;
+			}
+			else {
+				Attributes attributes = manifest.getMainAttributes();
+				multiRelease = attributes.containsKey(MULTI_RELEASE);
+			}
+		}
+		catch (IOException ex) {
+			multiRelease = false;
+		}
+		this.multiReleaseJar = multiRelease;
+		return multiRelease;
+	}
+
+	private <T extends FileHeader> T doGetEntry(CharSequence name, Class<T> type,
+			boolean cacheEntry, AsciiBytes nameAlias) {
 		int hashCode = AsciiBytes.hashCode(name);
-		T entry = getEntry(hashCode, name, NO_SUFFIX, type, cacheEntry);
+		T entry = getEntry(hashCode, name, NO_SUFFIX, type, cacheEntry, nameAlias);
 		if (entry == null) {
 			hashCode = AsciiBytes.hashCode(hashCode, SLASH);
-			entry = getEntry(hashCode, name, SLASH, type, cacheEntry);
+			entry = getEntry(hashCode, name, SLASH, type, cacheEntry, nameAlias);
 		}
 		return entry;
 	}
 
 	private <T extends FileHeader> T getEntry(int hashCode, CharSequence name,
-			char suffix, Class<T> type, boolean cacheEntry) {
+			char suffix, Class<T> type, boolean cacheEntry, AsciiBytes nameAlias) {
 		int index = getFirstIndex(hashCode);
 		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
-			T entry = getEntry(index, type, cacheEntry);
-			if (entry.hasName(name, suffix)) {
+			T entry = getEntry(index, type, cacheEntry, nameAlias);
+			if (entry.hasName((nameAlias != null) ? nameAlias.toString() : name,
+					suffix)) {
 				return entry;
 			}
 			index++;
@@ -240,7 +316,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	@SuppressWarnings("unchecked")
 	private <T extends FileHeader> T getEntry(int index, Class<T> type,
-			boolean cacheEntry) {
+			boolean cacheEntry, AsciiBytes nameAlias) {
 		try {
 			FileHeader cached = this.entriesCache.get(index);
 			FileHeader entry = (cached != null) ? cached
@@ -249,7 +325,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 							this.centralDirectoryOffsets[index], this.filter);
 			if (CentralDirectoryFileHeader.class.equals(entry.getClass())
 					&& type.equals(JarEntry.class)) {
-				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry);
+				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry,
+						nameAlias);
 			}
 			if (cacheEntry && cached != entry) {
 				this.entriesCache.put(index, entry);
@@ -299,7 +376,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			}
 			int entryIndex = JarFileEntries.this.positions[this.index];
 			this.index++;
-			return getEntry(entryIndex, JarEntry.class, false);
+			return getEntry(entryIndex, JarEntry.class, false, null);
 		}
 
 	}
