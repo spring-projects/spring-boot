@@ -67,7 +67,7 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getDetails().get("database")).isNotNull();
-		assertThat(health.getDetails().get("hello")).isNotNull();
+		assertThat(health.getDetails().get("result")).isNotNull();
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class DataSourceHealthIndicatorTests {
 		System.err.println(health);
 		assertThat(health.getDetails().get("database")).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("hello")).isNotNull();
+		assertThat(health.getDetails().get("result")).isNotNull();
 	}
 
 	@Test
