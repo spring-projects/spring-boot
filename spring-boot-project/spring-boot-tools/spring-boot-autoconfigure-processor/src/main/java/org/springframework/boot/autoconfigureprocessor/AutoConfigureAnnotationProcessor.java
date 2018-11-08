@@ -243,7 +243,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 		NamedValuesExtractor(String... names) {
 			this.names = new HashSet<>(Arrays.asList(names));
-		};
+		}
 
 		@Override
 		public List<Object> getValues(AnnotationMirror annotation) {

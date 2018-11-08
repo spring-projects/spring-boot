@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Class that can be used to managed the pushing of metrics to a {@link PushGateway
+ * Class that can be used to manage the pushing of metrics to a {@link PushGateway
  * Prometheus PushGateway}. Handles the scheduling of push operations, error handling and
  * shutdown operations.
  *
@@ -115,9 +115,9 @@ public class PrometheusPushGatewayManager {
 		}
 		catch (UnknownHostException ex) {
 			String host = ex.getMessage();
-			String message = "Unable to locate prometheus push gateway host";
-			message += StringUtils.hasLength(host) ? " '" + host + "'" : "";
-			message += ". No longer attempting metrics publication to this host";
+			String message = "Unable to locate prometheus push gateway host"
+					+ (StringUtils.hasLength(host) ? " '" + host + "'" : "")
+					+ ". No longer attempting metrics publication to this host";
 			logger.error(message, ex);
 			shutdown(ShutdownOperation.NONE);
 		}

@@ -1012,16 +1012,16 @@
 				<version>${netty-tcnative.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.prometheus</groupId>
-				<artifactId>simpleclient_pushgateway</artifactId>
-				<version>${prometheus-pushgateway.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
 				<version>${reactor-bom.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>io.prometheus</groupId>
+				<artifactId>simpleclient_pushgateway</artifactId>
+				<version>${prometheus-pushgateway.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.reactivex</groupId>
