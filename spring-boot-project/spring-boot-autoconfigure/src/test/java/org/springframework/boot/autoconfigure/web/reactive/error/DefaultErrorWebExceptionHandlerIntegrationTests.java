@@ -195,8 +195,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
-							.contains("<div>Expected!</div>")
-							.contains("<div>java.lang.IllegalStateException");
+							.contains("<div>Expected!</div>").contains(
+									"<div style='white-space:pre-wrap;'>java.lang.IllegalStateException");
 				});
 	}
 

@@ -60,8 +60,8 @@ public class ErrorMvcAutoConfigurationTests {
 					.getContentAsString();
 			assertThat(responseString).contains(
 					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
-					.contains("<div>Exception message</div>")
-					.contains("<div>java.lang.IllegalStateException");
+					.contains("<div>Exception message</div>").contains(
+							"<div style='white-space:pre-wrap;'>java.lang.IllegalStateException");
 		});
 	}
 
