@@ -114,7 +114,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 			List<Object> results = this.jdbcTemplate.query(validationQuery,
 					new SingleColumnRowMapper());
 			Object result = DataAccessUtils.requiredSingleResult(results);
-			builder.withDetail("hello", result);
+			builder.withDetail("result", result);
 		}
 	}
 
