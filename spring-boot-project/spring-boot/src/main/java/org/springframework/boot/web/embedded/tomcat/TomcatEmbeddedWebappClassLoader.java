@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * executable archives).
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
@@ -48,6 +49,8 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	public TomcatEmbeddedWebappClassLoader(ClassLoader parent) {
 		super(parent);
+		super.setClearReferencesObjectStreamClassCaches(false);
+		super.setClearReferencesRmiTargets(false);
 	}
 
 	@Override
