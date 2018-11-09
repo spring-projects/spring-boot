@@ -181,16 +181,16 @@ public final class WebMvcTags {
 	public static Tag outcome(HttpServletResponse response) {
 		if (response != null) {
 			int status = response.getStatus();
-			if (status < HttpStatus.OK.value()) {
+			if (status < 200) {
 				return OUTCOME_INFORMATIONAL;
 			}
-			if (status < HttpStatus.MULTIPLE_CHOICES.value()) {
+			if (status < 300) {
 				return OUTCOME_SUCCESS;
 			}
-			if (status < HttpStatus.BAD_REQUEST.value()) {
+			if (status < 400) {
 				return OUTCOME_REDIRECTION;
 			}
-			if (status < HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+			if (status < 500) {
 				return OUTCOME_CLIENT_ERROR;
 			}
 			return OUTCOME_SERVER_ERROR;
