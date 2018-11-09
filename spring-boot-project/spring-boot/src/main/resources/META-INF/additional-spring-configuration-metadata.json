@@ -332,8 +332,8 @@
       "type": "java.lang.Integer",
       "description": "Application index.",
       "deprecation": {
-        "level": "error",
-        "reason": "Application context ids are now unique by default."
+        "reason": "Application context ids are now unique by default.",
+        "level": "error"
       }
     },
     {
