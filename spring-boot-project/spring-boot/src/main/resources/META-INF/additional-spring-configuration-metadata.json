@@ -353,7 +353,7 @@
       "deprecation": {
         "replacement": "logging.file.path"
       }
-    },
+    }
   ],
   "hints": [
     {
@@ -364,7 +364,6 @@
           "parameters": {
             "group": false
           }
-
         }
       ]
     },
