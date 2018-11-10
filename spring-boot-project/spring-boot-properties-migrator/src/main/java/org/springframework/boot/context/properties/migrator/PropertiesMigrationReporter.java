@@ -88,6 +88,7 @@ class PropertiesMigrationReporter {
 		properties.forEach((property) -> (isRenamed(property) ? renamed : unsupported)
 				.add(property));
 		report.add(name, renamed, unsupported);
+		System.out.println("name="+name+"; renamed="+renamed);
 		if (renamed.isEmpty()) {
 			return null;
 		}

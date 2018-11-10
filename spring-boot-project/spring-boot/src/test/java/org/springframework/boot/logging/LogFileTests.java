@@ -43,6 +43,18 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		assertThat(logFile).isNull();
 	}
+	
+	@Test
+	public void deprecatedLoggingFile() {
+		PropertyResolver resolver = getPropertyResolver("log.file", null);
+		LogFile logFile = LogFile.get(resolver);
+		Properties properties = new Properties();
+		logFile.applyTo(properties);
+		assertThat(logFile.toString()).isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isNull();
+	}
 
 	@Test
 	public void loggingFile() {
