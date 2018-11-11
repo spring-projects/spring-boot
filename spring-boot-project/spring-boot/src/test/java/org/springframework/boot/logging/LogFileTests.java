@@ -43,9 +43,9 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		assertThat(logFile).isNull();
 	}
-	
+
 	@Test
-	public void deprecatedLoggingFile() {
+	public void loggingFile() {
 		PropertyResolver resolver = getPropertyResolver("log.file", null);
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
@@ -57,8 +57,10 @@ public class LogFileTests {
 	}
 
 	@Test
-	public void loggingFile() {
-		PropertyResolver resolver = getPropertyResolver("log.file", null);
+	@Deprecated
+	public void loggingFileWithDeprecatedProperties() {
+		PropertyResolver resolver = getPropertyResolverWithDeprecatedProperties(
+				"log.file", null);
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
@@ -82,8 +84,38 @@ public class LogFileTests {
 	}
 
 	@Test
+	@Deprecated
+	public void loggingPathWithDeprecatedProperties() {
+		PropertyResolver resolver = getPropertyResolverWithDeprecatedProperties(null,
+				"logpath");
+		LogFile logFile = LogFile.get(resolver);
+		Properties properties = new Properties();
+		logFile.applyTo(properties);
+		assertThat(logFile.toString()).isEqualTo("logpath/spring.log");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("logpath/spring.log");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("logpath");
+	}
+
+	@Test
 	public void loggingFileAndPath() {
 		PropertyResolver resolver = getPropertyResolver("log.file", "logpath");
+		LogFile logFile = LogFile.get(resolver);
+		Properties properties = new Properties();
+		logFile.applyTo(properties);
+		assertThat(logFile.toString()).isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("logpath");
+	}
+
+	@Test
+	@Deprecated
+	public void loggingFileAndPathWithDeprecatedProperties() {
+		PropertyResolver resolver = getPropertyResolverWithDeprecatedProperties(
+				"log.file", "logpath");
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
@@ -98,6 +130,19 @@ public class LogFileTests {
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("logging.file.name", file);
 		properties.put("logging.file.path", path);
+		PropertySource<?> propertySource = new MapPropertySource("properties",
+				properties);
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addFirst(propertySource);
+		return new PropertySourcesPropertyResolver(propertySources);
+	}
+
+	@Deprecated
+	private PropertyResolver getPropertyResolverWithDeprecatedProperties(String file,
+			String path) {
+		Map<String, Object> properties = new LinkedHashMap<>();
+		properties.put("logging.file", file);
+		properties.put("logging.path", path);
 		PropertySource<?> propertySource = new MapPropertySource("properties",
 				properties);
 		MutablePropertySources propertySources = new MutablePropertySources();

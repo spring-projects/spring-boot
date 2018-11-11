@@ -47,6 +47,20 @@ public class LogFile {
 	 */
 	public static final String PATH_PROPERTY = "logging.file.path";
 
+	/**
+	 * The name of the Spring property that contains the name of the log file. Names can
+	 * be an exact location or relative to the current directory.
+	 */
+	@Deprecated
+	public static final String DEPRECATED_FILE_PROPERTY = "logging.file";
+
+	/**
+	 * The name of the Spring property that contains the directory where log files are
+	 * written.
+	 */
+	@Deprecated
+	public static final String DEPRECATED_PATH_PROPERTY = "logging.path";
+
 	private final String file;
 
 	private final String path;
@@ -83,6 +97,7 @@ public class LogFile {
 	 * @param properties the properties to apply to
 	 */
 	public void applyTo(Properties properties) {
+		System.out.println("[LogFile][applyTo]");
 		put(properties, LoggingSystemProperties.LOG_PATH, this.path);
 		put(properties, LoggingSystemProperties.LOG_FILE, toString());
 	}
@@ -115,6 +130,12 @@ public class LogFile {
 	public static LogFile get(PropertyResolver propertyResolver) {
 		String file = propertyResolver.getProperty(FILE_PROPERTY);
 		String path = propertyResolver.getProperty(PATH_PROPERTY);
+		if (file == null) {
+			file = propertyResolver.getProperty(DEPRECATED_FILE_PROPERTY);
+		}
+		if (path == null) {
+			path = propertyResolver.getProperty(DEPRECATED_PATH_PROPERTY);
+		}
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}

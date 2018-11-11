@@ -501,6 +501,30 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@Deprecated
+	public void systemPropertiesAreSetForLoggingConfigurationWithDeprecatedProperties() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.exception-conversion-word=conversion", "logging.file=target/log",
+				"logging.path=path", "logging.pattern.console=console",
+				"logging.pattern.file=file", "logging.pattern.level=level");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console");
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN))
+				.isEqualTo("file");
+		assertThat(System.getProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD))
+				.isEqualTo("conversion");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("target/log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN))
+				.isEqualTo("level");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("path");
+		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
+	}
+
+	@Test
 	public void environmentPropertiesIgnoreUnresolvablePlaceholders() {
 		// gh-7719
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,

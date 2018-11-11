@@ -77,6 +77,16 @@ public class LogFileWebEndpointTests {
 	}
 
 	@Test
+	@Deprecated
+	public void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
+		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
+		Resource resource = this.endpoint.logFile();
+		assertThat(resource).isNotNull();
+		assertThat(StreamUtils.copyToString(resource.getInputStream(),
+				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+	}
+
+	@Test
 	public void resourceResponseWithExternalLogFile() throws Exception {
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment,
 				this.logFile);
