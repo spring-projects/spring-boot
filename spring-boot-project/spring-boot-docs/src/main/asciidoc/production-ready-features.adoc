@@ -1436,8 +1436,8 @@ annotation markers.
 
 [[production-ready-metrics-export-appoptics]]
 ==== AppOptics
-By default, the AppOptics registry pushes metrics to https://api.appoptics.com/v1/measurements
-periodically. To export metrics to SaaS
+By default, the AppOptics registry pushes metrics to
+https://api.appoptics.com/v1/measurements periodically. To export metrics to SaaS
 {micrometer-registry-documentation}/appoptics[AppOptics], your API token must be provided:
 
 [source,properties,indent=0]

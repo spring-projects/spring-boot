@@ -2013,8 +2013,9 @@ include::{code-examples}/jpa/HibernateSecondLevelCacheExample.java[tag=configura
 ----
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that
-the application uses. It is also possible to use separate `CacheManager` instances. For details, refer
-to {hibernate-documentation}#caching-provider-jcache[the Hibernate user guide].
+the application uses. It is also possible to use separate `CacheManager` instances. For
+details, refer to {hibernate-documentation}#caching-provider-jcache[the Hibernate user
+guide].
 
 
 
