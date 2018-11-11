@@ -97,7 +97,6 @@ public class LogFile {
 	 * @param properties the properties to apply to
 	 */
 	public void applyTo(Properties properties) {
-		System.out.println("[LogFile][applyTo]");
 		put(properties, LoggingSystemProperties.LOG_PATH, this.path);
 		put(properties, LoggingSystemProperties.LOG_FILE, toString());
 	}
