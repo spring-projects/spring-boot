@@ -148,6 +148,17 @@ public abstract class AnsiOutput {
 			if (Boolean.FALSE.equals(consoleAvailable)) {
 				return false;
 			}
+			if ((consoleAvailable == null) && (OPERATING_SYSTEM_NAME.contains("win"))) {
+				// CygW
+				if ("/bin/bash".equals(System.getenv("SHELL"))) {
+					return true;
+				}
+				// MingW
+				if ((System.getenv("MSYSTEM") != null
+						&& System.getenv("MSYSTEM").startsWith("MINGW"))) {
+					return true;
+				}
+			}
 			if ((consoleAvailable == null) && (System.console() == null)) {
 				return false;
 			}
