@@ -38,6 +38,7 @@ import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -185,6 +186,65 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		});
 	}
 
+	@Test
+	public void autoConfiguredCookieSerializerConfiguration() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.cookie.name=sid",
+						"server.servlet.session.cookie.domain=spring",
+						"server.servlet.session.cookie.path=/test",
+						"server.servlet.session.cookie.httpOnly=false",
+						"server.servlet.session.cookie.secure=false",
+						"server.servlet.session.cookie.maxAge=10s")
+				.run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName",
+							"sid");
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("domainName",
+							"spring");
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookiePath",
+							"/test");
+					assertThat(cookieSerializer)
+							.hasFieldOrPropertyWithValue("useHttpOnlyCookie", false);
+					assertThat(cookieSerializer)
+							.hasFieldOrPropertyWithValue("useSecureCookie", false);
+					assertThat(cookieSerializer)
+							.hasFieldOrPropertyWithValue("cookieMaxAge", 10);
+				});
+	}
+
+	@Test
+	public void userProvidedCookieSerializerConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(UserProvidedCookieSerializerConfiguration.class)
+				.withPropertyValues("server.servlet.session.cookie.name=sid")
+				.run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName",
+							"SESSION");
+				});
+	}
+
+	@Test
+	public void userProvidedCookieHttpSessionStrategyConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(
+						UserProvidedCookieHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class))
+								.isNotEmpty());
+	}
+
+	@Test
+	public void userProvidedHeaderHttpSessionStrategyConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(
+						UserProvidedHeaderHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
+	}
+
 	@Configuration
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
@@ -198,6 +258,42 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@EnableConfigurationProperties(ServerProperties.class)
 	static class ServerPropertiesConfiguration {
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCookieSerializerConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public DefaultCookieSerializer myCookieSerializer() {
+			return new DefaultCookieSerializer();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCookieHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public CookieHttpSessionIdResolver httpSessionStrategy() {
+			return new CookieHttpSessionIdResolver();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedHeaderHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public HeaderHttpSessionIdResolver httpSessionStrategy() {
+			return HeaderHttpSessionIdResolver.xAuthToken();
+		}
 
 	}
 
