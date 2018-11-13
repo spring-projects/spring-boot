@@ -27,11 +27,6 @@ resources:
     password: ((github-password))
     branch: ((branch))
     ignore_paths: ["ci/images/*"]
-- name: release-notes-repo
-  type: git
-  source:
-    uri: https://github.com/mbhave/release-notes-generator
-    branch: master
 - name: git-pull-request
   type: pull-request
   source:
@@ -319,7 +314,6 @@ jobs:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
-  - get: release-notes-repo
   - get: artifactory-repo
     trigger: false
     passed: [stage-milestone]
@@ -334,26 +328,22 @@ jobs:
       ARTIFACTORY_USERNAME: ((artifactory-username))
       ARTIFACTORY_PASSWORD: ((artifactory-password))
   - task: generate-release-notes
-    image: spring-boot-ci-image
     file: git-repo/ci/tasks/generate-release-notes.yml
     params:
       RELEASE_TYPE: M
-      GITHUB_ORGANIZATION: spring-projects
-      GITHUB_REPO: spring-boot
       GITHUB_USERNAME: ((github-username))
       GITHUB_PASSWORD: ((github-release-notes-access-token))
   - put: github-pre-release
     params:
-      name: generated-release-notes/version
-      tag: generated-release-notes/version
-      body:  generated-release-notes/body
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
 - name: promote-rc
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
-  - get: release-notes-repo
   - get: artifactory-repo
     trigger: false
     passed: [stage-rc]
@@ -368,26 +358,22 @@ jobs:
       ARTIFACTORY_USERNAME: ((artifactory-username))
       ARTIFACTORY_PASSWORD: ((artifactory-password))
   - task: generate-release-notes
-    image: spring-boot-ci-image
     file: git-repo/ci/tasks/generate-release-notes.yml
     params:
       RELEASE_TYPE: RC
-      GITHUB_ORGANIZATION: spring-projects
-      GITHUB_REPO: spring-boot
       GITHUB_USERNAME: ((github-username))
       GITHUB_PASSWORD: ((github-release-notes-access-token))
   - put: github-pre-release
     params:
-      name: generated-release-notes/version
-      tag: generated-release-notes/version
-      body:  generated-release-notes/body
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
 - name: promote-release
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
-  - get: release-notes-repo
   - get: artifactory-repo
     trigger: false
     passed: [stage-release]
@@ -404,19 +390,16 @@ jobs:
       BINTRAY_SUBJECT: ((bintray-subject))
       BINTRAY_REPO: ((bintray-repo))
   - task: generate-release-notes
-    image: spring-boot-ci-image
     file: git-repo/ci/tasks/generate-release-notes.yml
     params:
       RELEASE_TYPE: RELEASE
-      GITHUB_ORGANIZATION: spring-projects
-      GITHUB_REPO: spring-boot
       GITHUB_USERNAME: ((github-username))
       GITHUB_PASSWORD: ((github-release-notes-access-token))
   - put: github-release
     params:
-      name: generated-release-notes/version
-      tag: generated-release-notes/version
-      body:  generated-release-notes/body
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
 - name: sync-to-maven-central
   serial: true
   plan:
