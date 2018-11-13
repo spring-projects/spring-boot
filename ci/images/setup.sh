@@ -39,7 +39,7 @@ case "$1" in
 esac
 mkdir -p /opt/openjdk
 cd /opt/openjdk
-curl ${JDK_URL} | tar zx --strip-components={JDK_STRIP}
+curl -L ${JDK_URL} | tar zx --strip-components=${JDK_STRIP}
 
 
 ###########################################################
