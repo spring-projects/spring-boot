@@ -19,19 +19,15 @@ curl https://raw.githubusercontent.com/spring-io/concourse-java-scripts/v0.0.2/c
 case "$1" in
 	java8)
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u192-b12/OpenJDK8U-jdk_x64_linux_hotspot_8u192b12.tar.gz
-		 JDK_STRIP=2
 	;;
 	java9)
-		 JDK_URL=https://download.java.net/java/GA/jdk9/9.0.4/binaries/openjdk-9.0.4_linux-x64_bin.tar.gz
-		 JDK_STRIP=1
+		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_linux_hotspot_9.0.4_11.tar.gz
 	;;
 	java10)
-		 JDK_URL=https://download.java.net/java/GA/jdk10/10.0.1/fb4372174a714e6b8c52526dc134031e/10/openjdk-10.0.1_linux-x64_bin.tar.gz
-		 JDK_STRIP=1
+		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk10-releases/releases/download/jdk-10.0.2%2B13/OpenJDK10_x64_Linux_jdk-10.0.2.13.tar.gz
 	;;
 	jav11)
-		 JDK_URL=https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz
-		 JDK_STRIP=1
+		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1%2B13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz
 	;;
 	*)
 		echo $"Unknown java version"
@@ -39,7 +35,7 @@ case "$1" in
 esac
 mkdir -p /opt/openjdk
 cd /opt/openjdk
-curl -L ${JDK_URL} | tar zx --strip-components=${JDK_STRIP}
+curl -L ${JDK_URL} | tar zx --strip-components=2
 
 
 ###########################################################
