@@ -1,6 +1,6 @@
 # Based on: https://github.com/concourse/docker-image-resource/blob/master/assets/common.sh
 
-LOG_FILE=${LOG_FILE:-/tmp/docker.log}
+DOCKER_LOG_FILE=${DOCKER_LOG_FILE:-/tmp/docker.log}
 SKIP_PRIVILEGED=${SKIP_PRIVILEGED:-false}
 STARTUP_TIMEOUT=${STARTUP_TIMEOUT:-120}
 
@@ -77,7 +77,7 @@ start_docker() {
   fi
 
   try_start() {
-    dockerd --data-root /scratch/docker ${server_args} >$LOG_FILE 2>&1 &
+    dockerd --data-root /scratch/docker ${server_args} >$DOCKER_LOG_FILE 2>&1 &
     echo $! > /tmp/docker.pid
 
     sleep 1
@@ -91,7 +91,7 @@ start_docker() {
     done
   }
 
-  export server_args LOG_FILE
+  export server_args DOCKER_LOG_FILE
   declare -fx try_start
   trap stop_docker EXIT
 
