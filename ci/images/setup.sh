@@ -18,16 +18,20 @@ curl https://raw.githubusercontent.com/spring-io/concourse-java-scripts/v0.0.2/c
 
 case "$1" in
 	java8)
-		 JDK_URL=https://java-buildpack.cloudfoundry.org/openjdk/bionic/x86_64/openjdk-1.8.0_192.tar.gz
+		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u192-b12/OpenJDK8U-jdk_x64_linux_hotspot_8u192b12.tar.gz
+		 JDK_STRIP=2
 	;;
 	java9)
 		 JDK_URL=https://download.java.net/java/GA/jdk9/9.0.4/binaries/openjdk-9.0.4_linux-x64_bin.tar.gz
+		 JDK_STRIP=1
 	;;
 	java10)
 		 JDK_URL=https://download.java.net/java/GA/jdk10/10.0.1/fb4372174a714e6b8c52526dc134031e/10/openjdk-10.0.1_linux-x64_bin.tar.gz
+		 JDK_STRIP=1
 	;;
 	jav11)
-		 JDK_URL=https://java-buildpack.cloudfoundry.org/openjdk/bionic/x86_64/openjdk-11.0.1_13.tar.gz
+		 JDK_URL=https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz
+		 JDK_STRIP=1
 	;;
 	*)
 		echo $"Unknown java version"
@@ -35,7 +39,7 @@ case "$1" in
 esac
 mkdir -p /opt/openjdk
 cd /opt/openjdk
-curl ${JDK_URL} | tar xz
+curl ${JDK_URL} | tar zx --strip-components={JDK_STRIP}
 
 
 ###########################################################
@@ -43,7 +47,7 @@ curl ${JDK_URL} | tar xz
 ###########################################################
 
 cd /
-curl https://download.docker.com/linux/static/stable/x86_64/docker-18.06.1-ce.tgz | tar zx
+curl -L https://download.docker.com/linux/static/stable/x86_64/docker-18.06.1-ce.tgz | tar zx
 mv /docker/* /bin/
 chmod +x /bin/docker*
 
