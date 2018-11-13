@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * written in the {@code logging.file.path} directory.
  *
  * @author Phillip Webb
+ * @author Christian Carriere-Tisseur
  * @since 1.2.1
  * @see #get(PropertyResolver)
  */
