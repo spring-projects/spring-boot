@@ -52,5 +52,3 @@ curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERSI
 chmod +x entrykit && \
 mv entrykit /bin/entrykit && \
 entrykit --symlink
-
-curl https://raw.githubusercontent.com/concourse/docker-image-resource/v1.0.0/assets/common.sh > /docker-lib.sh

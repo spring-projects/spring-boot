@@ -5,5 +5,6 @@ RUN ./setup.sh java8
 
 ENV JAVA_HOME /opt/openjdk
 ENV PATH $JAVA_HOME/bin:$PATH
+ADD docker-lib.sh /docker-lib.sh
 
 ENTRYPOINT [ "switch", "shell=/bin/bash", "--", "codep", "/bin/docker daemon" ]
