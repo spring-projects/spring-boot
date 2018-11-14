@@ -5,7 +5,7 @@ source $(dirname $0)/common.sh
 
 version=$( cat version/version )
 
-milestone=$( echo $version )
+milestone=${version}
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	milestone=${version%.RELEASE}
 fi
