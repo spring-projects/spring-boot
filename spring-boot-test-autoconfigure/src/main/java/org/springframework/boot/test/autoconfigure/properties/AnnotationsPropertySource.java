@@ -90,8 +90,11 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		if (annotations != null) {
 			for (Annotation annotation : annotations) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					mergedAnnotations
-							.add(findMergedAnnotation(root, annotation.annotationType()));
+					Annotation mergedAnnotation = findMergedAnnotation(root,
+							annotation.annotationType());
+					if (mergedAnnotation != null) {
+						mergedAnnotations.add(mergedAnnotation);
+					}
 				}
 			}
 		}
