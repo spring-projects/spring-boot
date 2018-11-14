@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEnd
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -49,6 +48,7 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Brian Clozel
  */
 class CloudFoundryWebFluxEndpointHandlerMapping
 		extends AbstractWebFluxEndpointHandlerMapping {
@@ -75,34 +75,47 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 	}
 
 	@Override
-	@ResponseBody
-	protected Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
-		ServerHttpRequest request = exchange.getRequest();
-		return this.securityInterceptor.preHandle(exchange, "")
-				.map((securityResponse) -> {
-					if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-						return new ResponseEntity<>(securityResponse.getStatus());
-					}
-					AccessLevel accessLevel = exchange
-							.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-					Map<String, Link> links = this.linksResolver
-							.resolveLinks(request.getURI().toString());
-					return new ResponseEntity<>(
-							Collections.singletonMap("_links",
-									getAccessibleLinks(accessLevel, links)),
-							HttpStatus.OK);
-				});
+	protected LinksHandler getLinksHandler() {
+		return new CloudFoundryLinksHandler();
 	}
 
-	private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel,
-			Map<String, Link> links) {
-		if (accessLevel == null) {
-			return new LinkedHashMap<>();
+	class CloudFoundryLinksHandler implements LinksHandler {
+
+		@Override
+		public Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
+			ServerHttpRequest request = exchange.getRequest();
+			return CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor
+					.preHandle(exchange, "").map((securityResponse) -> {
+						if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
+							return new ResponseEntity<>(securityResponse.getStatus());
+						}
+						AccessLevel accessLevel = exchange
+								.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+						Map<String, Link> links = CloudFoundryWebFluxEndpointHandlerMapping.this.linksResolver
+								.resolveLinks(request.getURI().toString());
+						return new ResponseEntity<>(
+								Collections.singletonMap("_links",
+										getAccessibleLinks(accessLevel, links)),
+								HttpStatus.OK);
+					});
 		}
-		return links.entrySet().stream()
-				.filter((entry) -> entry.getKey().equals("self")
-						|| accessLevel.isAccessAllowed(entry.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+		private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel,
+				Map<String, Link> links) {
+			if (accessLevel == null) {
+				return new LinkedHashMap<>();
+			}
+			return links.entrySet().stream()
+					.filter((entry) -> entry.getKey().equals("self")
+							|| accessLevel.isAccessAllowed(entry.getKey()))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		}
+
+		@Override
+		public String toString() {
+			return "Actuator root web endpoint";
+		}
+
 	}
 
 	/**

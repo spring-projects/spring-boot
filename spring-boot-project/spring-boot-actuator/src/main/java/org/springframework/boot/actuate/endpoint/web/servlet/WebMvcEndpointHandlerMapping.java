@@ -63,11 +63,29 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	}
 
 	@Override
-	@ResponseBody
-	protected Map<String, Map<String, Link>> links(HttpServletRequest request,
-			HttpServletResponse response) {
-		return Collections.singletonMap("_links",
-				this.linksResolver.resolveLinks(request.getRequestURL().toString()));
+	protected LinksHandler getLinksHandler() {
+		return new WebMvcLinksHandler();
+	}
+
+	/**
+	 * Handler for root endpoint providing links.
+	 */
+	class WebMvcLinksHandler implements LinksHandler {
+
+		@Override
+		@ResponseBody
+		public Map<String, Map<String, Link>> links(HttpServletRequest request,
+				HttpServletResponse response) {
+			return Collections.singletonMap("_links",
+					WebMvcEndpointHandlerMapping.this.linksResolver
+							.resolveLinks(request.getRequestURL().toString()));
+		}
+
+		@Override
+		public String toString() {
+			return "Actuator root web endpoint";
+		}
+
 	}
 
 }
