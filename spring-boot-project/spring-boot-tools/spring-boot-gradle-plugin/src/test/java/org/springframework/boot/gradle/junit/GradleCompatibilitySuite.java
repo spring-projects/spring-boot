@@ -39,7 +39,7 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
 public final class GradleCompatibilitySuite extends Suite {
 
 	private static final List<String> GRADLE_VERSIONS = Arrays.asList("default", "4.5.1",
-			"4.6", "4.7", "4.8.1", "4.9", "4.10.2", "5.0-rc-1");
+			"4.6", "4.7", "4.8.1", "4.9", "4.10.2", "5.0-rc-3");
 
 	public GradleCompatibilitySuite(Class<?> clazz) throws InitializationError {
 		super(clazz, createRunners(clazz));
