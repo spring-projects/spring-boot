@@ -333,12 +333,12 @@ public class Binder {
 				|| isUnbindableBean(name, target, context)) {
 			return null;
 		}
-		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
-				name.append(propertyName), propertyTarget, handler, context, false);
 		Class<?> type = target.getType().resolve(Object.class);
 		if (!allowRecursiveBinding && context.hasBoundBean(type)) {
 			return null;
 		}
+		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
+				name.append(propertyName), propertyTarget, handler, context, false);
 		return context.withBean(type, () -> {
 			Stream<?> boundBeans = BEAN_BINDERS.stream()
 					.map((b) -> b.bind(name, target, context, propertyBinder));
