@@ -46,7 +46,6 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -151,13 +150,13 @@ public class EndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenEndpointsArePrefixedWithScopedTargetShouldRegisterOnlyOneEndpoint() {
-		load(ScopedTargetEndpointConfiguration.class, (
-				context) -> {
-			Collection<TestExposableEndpoint> endpoints =
-					new TestEndpointDiscoverer(context).getEndpoints();
-			assertThat(endpoints).hasSize(1);
-			assertThat(endpoints.iterator().next().getEndpointBean()).isSameAs(context
-					.getBean(ScopedTargetEndpointConfiguration.class).testEndpoint());
+		load(ScopedTargetEndpointConfiguration.class, (context) -> {
+			TestEndpoint expectedEndpoint = context
+					.getBean(ScopedTargetEndpointConfiguration.class).testEndpoint();
+			Collection<TestExposableEndpoint> endpoints = new TestEndpointDiscoverer(
+					context).getEndpoints();
+			assertThat(endpoints).flatExtracting(TestExposableEndpoint::getEndpointBean)
+					.containsOnly(expectedEndpoint);
 		});
 	}
 
