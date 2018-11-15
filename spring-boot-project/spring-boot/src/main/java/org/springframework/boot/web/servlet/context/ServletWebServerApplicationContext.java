@@ -132,6 +132,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		beanFactory.addBeanPostProcessor(
 				new WebApplicationContextServletContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+		registerWebApplicationScopes(null);
 	}
 
 	@Override
@@ -226,17 +227,20 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	private void selfInitialize(ServletContext servletContext) throws ServletException {
 		prepareWebApplicationContext(servletContext);
-		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
-				beanFactory);
-		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory,
-				getServletContext());
-		existingScopes.restore();
-		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory,
-				getServletContext());
+		registerWebApplicationScopes(servletContext);
+		WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
+				servletContext);
 		for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
 			beans.onStartup(servletContext);
 		}
+	}
+
+	private void registerWebApplicationScopes(ServletContext servletContext) {
+		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
+				getBeanFactory());
+		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
+				servletContext);
+		existingScopes.restore();
 	}
 
 	/**

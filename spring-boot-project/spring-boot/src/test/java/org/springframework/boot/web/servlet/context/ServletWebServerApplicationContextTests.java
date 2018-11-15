@@ -37,12 +37,15 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
@@ -443,7 +446,8 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void doesNotReplaceExistingScopes() { // gh-2082
+	public void doesNotReplaceExistingScopes() {
+		// gh-2082
 		Scope scope = mock(Scope.class);
 		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
 		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
@@ -454,6 +458,29 @@ public class ServletWebServerApplicationContextTests {
 				.isSameAs(scope);
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
 				.isSameAs(scope);
+	}
+
+	@Test
+	public void servletRequestCanBeInjectedEarly() throws Exception {
+		// gh-14990
+		addWebServerFactoryBean();
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(
+				WithAutowiredServletRequest.class);
+		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
+		this.context.registerBeanDefinition("withAutowiredServletRequest",
+				beanDefinition);
+		this.context.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
+
+			@Override
+			public void postProcessBeanFactory(
+					ConfigurableListableBeanFactory beanFactory) throws BeansException {
+				WithAutowiredServletRequest bean = beanFactory
+						.getBean(WithAutowiredServletRequest.class);
+				assertThat(bean.getRequest()).isNotNull();
+			}
+
+		});
+		this.context.refresh();
 	}
 
 	private void addWebServerFactoryBean() {
@@ -504,6 +531,20 @@ public class ServletWebServerApplicationContextTests {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) {
+		}
+
+	}
+
+	protected static class WithAutowiredServletRequest {
+
+		private final ServletRequest request;
+
+		public WithAutowiredServletRequest(ServletRequest request) {
+			this.request = request;
+		}
+
+		public ServletRequest getRequest() {
+			return this.request;
 		}
 
 	}
