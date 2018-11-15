@@ -1,7 +1,7 @@
 FROM ubuntu:bionic-20181018
 
 ADD setup.sh /setup.sh
-RUN ./setup.sh java10
+RUN ./setup.sh java11
 
 ENV JAVA_HOME /opt/openjdk
 ENV PATH $JAVA_HOME/bin:$PATH
