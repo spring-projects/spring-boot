@@ -26,7 +26,7 @@ case "$1" in
 	java10)
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk10-releases/releases/download/jdk-10.0.2%2B13/OpenJDK10_x64_Linux_jdk-10.0.2.13.tar.gz
 	;;
-	jav11)
+	java11)
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1%2B13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz
 	;;
 	*)
