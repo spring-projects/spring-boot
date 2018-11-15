@@ -209,6 +209,37 @@ public class MultipartAutoConfigurationTests {
 		assertThat(multipartResolver).hasFieldOrPropertyWithValue("resolveLazily", true);
 	}
 
+	@Test
+	public void configureMultipartProperties() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		TestPropertyValues
+				.of("spring.servlet.multipart.max-file-size=2048KB",
+						"spring.servlet.multipart.max-request-size=15MB")
+				.applyTo(this.context);
+		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		MultipartConfigElement multipartConfigElement = this.context
+				.getBean(MultipartConfigElement.class);
+		assertThat(multipartConfigElement.getMaxFileSize()).isEqualTo(2048 * 1024);
+		assertThat(multipartConfigElement.getMaxRequestSize())
+				.isEqualTo(15 * 1024 * 1024);
+	}
+
+	@Test
+	public void configureMultipartPropertiesWithRawLongValues() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		TestPropertyValues
+				.of("spring.servlet.multipart.max-file-size=512",
+						"spring.servlet.multipart.max-request-size=2048")
+				.applyTo(this.context);
+		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		MultipartConfigElement multipartConfigElement = this.context
+				.getBean(MultipartConfigElement.class);
+		assertThat(multipartConfigElement.getMaxFileSize()).isEqualTo(512);
+		assertThat(multipartConfigElement.getMaxRequestSize()).isEqualTo(2048);
+	}
+
 	private void verify404() throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		ClientHttpRequest request = requestFactory.createRequest(new URI(
