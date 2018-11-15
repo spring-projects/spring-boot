@@ -46,6 +46,7 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -145,6 +146,18 @@ public class EndpointDiscovererTests {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage("Found two endpoints with the id 'test': ");
 			new TestEndpointDiscoverer(context).getEndpoints();
+		});
+	}
+
+	@Test
+	public void getEndpointsWhenEndpointsArePrefixedWithScopedTargetShouldRegisterOnlyOneEndpoint() {
+		load(ScopedTargetEndpointConfiguration.class, (
+				context) -> {
+			Collection<TestExposableEndpoint> endpoints =
+					new TestEndpointDiscoverer(context).getEndpoints();
+			assertThat(endpoints).hasSize(1);
+			assertThat(endpoints.iterator().next().getEndpointBean()).isSameAs(context
+					.getBean(ScopedTargetEndpointConfiguration.class).testEndpoint());
 		});
 	}
 
@@ -388,6 +401,21 @@ public class EndpointDiscovererTests {
 
 		@Bean
 		public TestEndpoint testEndpointOne() {
+			return new TestEndpoint();
+		}
+
+	}
+
+	@Configuration
+	static class ScopedTargetEndpointConfiguration {
+
+		@Bean
+		public TestEndpoint testEndpoint() {
+			return new TestEndpoint();
+		}
+
+		@Bean(name = "scopedTarget.testEndpoint")
+		public TestEndpoint scopedTargetTestEndpoint() {
 			return new TestEndpoint();
 		}
 
