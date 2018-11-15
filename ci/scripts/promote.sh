@@ -64,7 +64,7 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	else
 		curl \
 			-s \
-			-u ${BINTRAY_USERNAME}:${BINTRAY_PASSWORD} \
+			-u ${BINTRAY_USERNAME}:${BINTRAY_API_KEY} \
 			-H "Content-Type: application/json" \
 			-d '[ { "name": "gradle-plugin", "values": ["org.springframework.boot:org.springframework.boot:spring-boot-gradle-plugin"] } ]' \
 			-X POST \
