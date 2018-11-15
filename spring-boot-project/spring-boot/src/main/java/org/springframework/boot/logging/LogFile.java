@@ -39,28 +39,32 @@ public class LogFile {
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
+	 * @deprecated since 2.2.0 in favor of {@link #FILE_NAME_PROPERTY}
 	 */
-	public static final String FILE_PROPERTY = "logging.file.name";
+	@Deprecated
+	public static final String FILE_PROPERTY = "logging.file";
 
 	/**
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
+	 * @deprecated since 2.2.0 in favor of {@link #FILE_PATH_PROPERTY}
 	 */
-	public static final String PATH_PROPERTY = "logging.file.path";
+	@Deprecated
+	public static final String PATH_PROPERTY = "logging.path";
 
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
+	 * @since 2.2.0
 	 */
-	@Deprecated
-	public static final String DEPRECATED_FILE_PROPERTY = "logging.file";
+	public static final String FILE_NAME_PROPERTY = "logging.file.name";
 
 	/**
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
+	 * @since 2.2.0
 	 */
-	@Deprecated
-	public static final String DEPRECATED_PATH_PROPERTY = "logging.path";
+	public static final String FILE_PATH_PROPERTY = "logging.file.path";
 
 	private final String file;
 
@@ -128,13 +132,13 @@ public class LogFile {
 	 * suitable properties
 	 */
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = propertyResolver.getProperty(FILE_PROPERTY);
-		String path = propertyResolver.getProperty(PATH_PROPERTY);
+		String file = propertyResolver.getProperty(FILE_NAME_PROPERTY);
+		String path = propertyResolver.getProperty(FILE_PATH_PROPERTY);
 		if (file == null) {
-			file = propertyResolver.getProperty(DEPRECATED_FILE_PROPERTY);
+			file = propertyResolver.getProperty(FILE_PROPERTY);
 		}
 		if (path == null) {
-			path = propertyResolver.getProperty(DEPRECATED_PATH_PROPERTY);
+			path = propertyResolver.getProperty(PATH_PROPERTY);
 		}
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);

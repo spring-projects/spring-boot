@@ -63,24 +63,25 @@ public class LogFileWebEndpointAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			String config = environment
-					.resolvePlaceholders("${" + LogFile.FILE_PROPERTY + ":}");
+					.resolvePlaceholders("${" + LogFile.FILE_NAME_PROPERTY + ":}");
 			if (!StringUtils.hasText(config)) {
-				config = environment.resolvePlaceholders(
-						"${" + LogFile.DEPRECATED_FILE_PROPERTY + ":}");
+				config = environment
+						.resolvePlaceholders("${" + LogFile.FILE_PROPERTY + ":}");
 			}
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome
-						.match(message.found(LogFile.FILE_PROPERTY).items(config));
+						.match(message.found(LogFile.FILE_NAME_PROPERTY).items(config));
 			}
-			config = environment.resolvePlaceholders("${" + LogFile.PATH_PROPERTY + ":}");
+			config = environment
+					.resolvePlaceholders("${" + LogFile.FILE_PATH_PROPERTY + ":}");
 			if (!StringUtils.hasText(config)) {
-				config = environment.resolvePlaceholders(
-						"${" + LogFile.DEPRECATED_PATH_PROPERTY + ":}");
+				config = environment
+						.resolvePlaceholders("${" + LogFile.PATH_PROPERTY + ":}");
 			}
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome
-						.match(message.found(LogFile.PATH_PROPERTY).items(config));
+						.match(message.found(LogFile.FILE_PATH_PROPERTY).items(config));
 			}
 			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {
