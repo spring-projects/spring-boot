@@ -117,8 +117,8 @@ public final class EndpointId {
 	}
 
 	/**
-	 * Factory method to create a new {@link EndpointId} from a property value. Is more
-	 * lenient that {@link #of(String)} to allow for common "relaxed" property variants.
+	 * Factory method to create a new {@link EndpointId} from a property value. More
+	 * lenient than {@link #of(String)} to allow for common "relaxed" property variants.
 	 * @param value the property value to convert
 	 * @return an {@link EndpointId} instance
 	 */

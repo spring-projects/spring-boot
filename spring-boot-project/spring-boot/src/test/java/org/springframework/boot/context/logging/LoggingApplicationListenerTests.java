@@ -569,6 +569,7 @@ public class LoggingApplicationListenerTests {
 		assertTraceEnabled("org.springframework.core.codec", true);
 		assertTraceEnabled("org.springframework.http", true);
 		assertTraceEnabled("org.springframework.web", true);
+		assertTraceEnabled("org.springframework.boot.actuate.endpoint.web", true);
 	}
 
 	@Test

@@ -213,13 +213,12 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		private ConditionOutcome getOutcome(String candidates) {
 			try {
 				if (!candidates.contains(",")) {
-					return getOutcome(candidates, ClassNameFilter.MISSING,
-							this.beanClassLoader);
+					return getOutcome(candidates, this.beanClassLoader);
 				}
 				for (String candidate : StringUtils
 						.commaDelimitedListToStringArray(candidates)) {
 					ConditionOutcome outcome = getOutcome(candidate,
-							ClassNameFilter.MISSING, this.beanClassLoader);
+							this.beanClassLoader);
 					if (outcome != null) {
 						return outcome;
 					}
@@ -231,9 +230,8 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			return null;
 		}
 
-		private ConditionOutcome getOutcome(String className,
-				ClassNameFilter classNameFilter, ClassLoader classLoader) {
-			if (classNameFilter.matches(className, classLoader)) {
+		private ConditionOutcome getOutcome(String className, ClassLoader classLoader) {
+			if (ClassNameFilter.MISSING.matches(className, classLoader)) {
 				return ConditionOutcome.noMatch(ConditionMessage
 						.forCondition(ConditionalOnClass.class)
 						.didNotFind("required class").items(Style.QUOTE, className));

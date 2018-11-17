@@ -39,7 +39,6 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -189,7 +188,7 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void containerWithCommonsMultipartResolver() throws Exception {
+	public void containerWithCommonsMultipartResolver() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ContainerWithCommonsMultipartResolver.class, BaseConfiguration.class);
 		MultipartResolver multipartResolver = this.context
@@ -207,9 +206,38 @@ public class MultipartAutoConfigurationTests {
 		this.context.refresh();
 		StandardServletMultipartResolver multipartResolver = this.context
 				.getBean(StandardServletMultipartResolver.class);
-		boolean resolveLazily = (Boolean) ReflectionTestUtils.getField(multipartResolver,
-				"resolveLazily");
-		assertThat(resolveLazily).isTrue();
+		assertThat(multipartResolver).hasFieldOrPropertyWithValue("resolveLazily", true);
+	}
+
+	@Test
+	public void configureMultipartProperties() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		TestPropertyValues
+				.of("spring.servlet.multipart.max-file-size=2048KB",
+						"spring.servlet.multipart.max-request-size=15MB")
+				.applyTo(this.context);
+		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		MultipartConfigElement multipartConfigElement = this.context
+				.getBean(MultipartConfigElement.class);
+		assertThat(multipartConfigElement.getMaxFileSize()).isEqualTo(2048 * 1024);
+		assertThat(multipartConfigElement.getMaxRequestSize())
+				.isEqualTo(15 * 1024 * 1024);
+	}
+
+	@Test
+	public void configureMultipartPropertiesWithRawLongValues() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		TestPropertyValues
+				.of("spring.servlet.multipart.max-file-size=512",
+						"spring.servlet.multipart.max-request-size=2048")
+				.applyTo(this.context);
+		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		MultipartConfigElement multipartConfigElement = this.context
+				.getBean(MultipartConfigElement.class);
+		assertThat(multipartConfigElement.getMaxFileSize()).isEqualTo(512);
+		assertThat(multipartConfigElement.getMaxRequestSize()).isEqualTo(2048);
 	}
 
 	private void verify404() throws Exception {

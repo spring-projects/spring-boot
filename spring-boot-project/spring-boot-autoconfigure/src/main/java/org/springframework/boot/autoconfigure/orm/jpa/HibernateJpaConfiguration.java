@@ -116,8 +116,13 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			ConfigurableListableBeanFactory beanFactory,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		List<HibernatePropertiesCustomizer> customizers = new ArrayList<>();
-		customizers.add((properties) -> properties.put(AvailableSettings.BEAN_CONTAINER,
-				new SpringBeanContainer(beanFactory)));
+		if (ClassUtils.isPresent(
+				"org.hibernate.resource.beans.container.spi.BeanContainer",
+				getClass().getClassLoader())) {
+			customizers
+					.add((properties) -> properties.put(AvailableSettings.BEAN_CONTAINER,
+							new SpringBeanContainer(beanFactory)));
+		}
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
 			customizers.add(new NamingStrategiesHibernatePropertiesCustomizer(
 					physicalNamingStrategy, implicitNamingStrategy));

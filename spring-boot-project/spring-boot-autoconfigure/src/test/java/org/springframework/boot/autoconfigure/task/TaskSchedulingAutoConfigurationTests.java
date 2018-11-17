@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.task;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.Test;
 
@@ -97,6 +99,19 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
+	public void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
+				ScheduledExecutorServiceConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(TaskScheduler.class);
+					assertThat(context).hasSingleBean(ScheduledExecutorService.class);
+					TestBean bean = context.getBean(TestBean.class);
+					Thread.sleep(15);
+					assertThat(bean.threadNames)
+							.allMatch((name) -> name.contains("pool-"));
+				});
+	}
+
+	@Test
 	public void enableSchedulingWithConfigurerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
 				SchedulingConfigurerConfiguration.class).run((context) -> {
@@ -119,6 +134,16 @@ public class TaskSchedulingAutoConfigurationTests {
 		@Bean
 		public TaskScheduler customTaskScheduler() {
 			return new TestTaskScheduler();
+		}
+
+	}
+
+	@Configuration
+	static class ScheduledExecutorServiceConfiguration {
+
+		@Bean
+		public ScheduledExecutorService customScheduledExecutorService() {
+			return Executors.newScheduledThreadPool(2);
 		}
 
 	}

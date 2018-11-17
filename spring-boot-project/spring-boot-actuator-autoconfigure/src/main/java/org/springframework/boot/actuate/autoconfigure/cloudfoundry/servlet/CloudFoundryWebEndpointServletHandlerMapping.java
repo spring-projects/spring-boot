@@ -47,6 +47,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Brian Clozel
  */
 class CloudFoundryWebEndpointServletHandlerMapping
 		extends AbstractWebMvcEndpointHandlerMapping {
@@ -73,38 +74,52 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	}
 
 	@Override
-	@ResponseBody
-	protected Map<String, Map<String, Link>> links(HttpServletRequest request,
-			HttpServletResponse response) {
-		SecurityResponse securityResponse = this.securityInterceptor.preHandle(request,
-				null);
-		if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-			sendFailureResponse(response, securityResponse);
-		}
-		AccessLevel accessLevel = (AccessLevel) request
-				.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-		Map<String, Link> links = this.linksResolver
-				.resolveLinks(request.getRequestURL().toString());
-		Map<String, Link> filteredLinks = new LinkedHashMap<>();
-		if (accessLevel == null) {
-			return Collections.singletonMap("_links", filteredLinks);
-		}
-		filteredLinks = links.entrySet().stream()
-				.filter((e) -> e.getKey().equals("self")
-						|| accessLevel.isAccessAllowed(e.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		return Collections.singletonMap("_links", filteredLinks);
+	protected LinksHandler getLinksHandler() {
+		return new CloudFoundryLinksHandler();
 	}
 
-	private void sendFailureResponse(HttpServletResponse response,
-			SecurityResponse securityResponse) {
-		try {
-			response.sendError(securityResponse.getStatus().value(),
-					securityResponse.getMessage());
+	class CloudFoundryLinksHandler implements LinksHandler {
+
+		@Override
+		@ResponseBody
+		public Map<String, Map<String, Link>> links(HttpServletRequest request,
+				HttpServletResponse response) {
+			SecurityResponse securityResponse = CloudFoundryWebEndpointServletHandlerMapping.this.securityInterceptor
+					.preHandle(request, null);
+			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
+				sendFailureResponse(response, securityResponse);
+			}
+			AccessLevel accessLevel = (AccessLevel) request
+					.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
+					.resolveLinks(request.getRequestURL().toString());
+			Map<String, Link> filteredLinks = new LinkedHashMap<>();
+			if (accessLevel == null) {
+				return Collections.singletonMap("_links", filteredLinks);
+			}
+			filteredLinks = links.entrySet().stream()
+					.filter((e) -> e.getKey().equals("self")
+							|| accessLevel.isAccessAllowed(e.getKey()))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			return Collections.singletonMap("_links", filteredLinks);
 		}
-		catch (Exception ex) {
-			this.logger.debug("Failed to send error response", ex);
+
+		@Override
+		public String toString() {
+			return "Actuator root web endpoint";
 		}
+
+		private void sendFailureResponse(HttpServletResponse response,
+				SecurityResponse securityResponse) {
+			try {
+				response.sendError(securityResponse.getStatus().value(),
+						securityResponse.getMessage());
+			}
+			catch (Exception ex) {
+				logger.debug("Failed to send error response", ex);
+			}
+		}
+
 	}
 
 	/**

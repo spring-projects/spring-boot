@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,7 +46,8 @@ public class TaskSchedulingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
-	@ConditionalOnMissingBean({ SchedulingConfigurer.class, TaskScheduler.class })
+	@ConditionalOnMissingBean({ SchedulingConfigurer.class, TaskScheduler.class,
+			ScheduledExecutorService.class })
 	public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
 		return builder.build();
 	}

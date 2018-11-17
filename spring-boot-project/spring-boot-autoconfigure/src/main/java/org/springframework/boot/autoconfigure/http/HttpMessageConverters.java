@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,10 +70,10 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	/**
 	 * Create a new {@link HttpMessageConverters} instance with the specified additional
 	 * converters.
-	 * @param additionalConverters additional converters to be added. New converters will
-	 * be added to the front of the list, overrides will replace existing items without
-	 * changing the order. The {@link #getConverters()} methods can be used for further
-	 * converter manipulation.
+	 * @param additionalConverters additional converters to be added. Items are added just
+	 * before any default converter of the same type (or at the front of the list if no
+	 * default converter is found) The {@link #postProcessConverters(List)} method can be
+	 * used for further converter manipulation.
 	 */
 	public HttpMessageConverters(HttpMessageConverter<?>... additionalConverters) {
 		this(Arrays.asList(additionalConverters));

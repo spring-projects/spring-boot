@@ -20,10 +20,8 @@ import javax.servlet.MultipartConfigElement;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.util.unit.DataSize;
-import org.springframework.util.unit.DataUnit;
 
 /**
  * Properties to be used in configuring a {@link MultipartConfigElement}.
@@ -63,13 +61,11 @@ public class MultipartProperties {
 	/**
 	 * Max file size.
 	 */
-	@DataSizeUnit(DataUnit.MEGABYTES)
 	private DataSize maxFileSize = DataSize.ofMegabytes(1);
 
 	/**
 	 * Max request size.
 	 */
-	@DataSizeUnit(DataUnit.MEGABYTES)
 	private DataSize maxRequestSize = DataSize.ofMegabytes(10);
 
 	/**
