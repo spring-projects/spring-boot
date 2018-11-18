@@ -127,6 +127,9 @@ do as they were designed before this was clarified.
 | https://github.com/StripesFramework/stripes[Stripes]
 | https://github.com/juanpablo-santos/stripes-spring-boot
 
+| https://sentry.io[Sentry]
+| https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
+
 | http://teiid.org/[Teiid]
 | https://github.com/teiid/teiid-spring-boot
 
