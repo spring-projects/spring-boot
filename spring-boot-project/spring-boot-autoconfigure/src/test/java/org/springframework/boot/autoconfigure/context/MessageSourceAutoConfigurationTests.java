@@ -198,6 +198,48 @@ public class MessageSourceAutoConfigurationTests {
 								.isEqualTo("bar")));
 	}
 
+	@Test
+	public void messageSourceDeclaredWithNonStandardNameDoesNotBreakAutoConfig() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+				.withUserConfiguration(ConfigWithNonStandardMessageSourceBeanName.class)
+				.run((context) -> {
+					assertThat(context.getMessage("foo", null, Locale.US))
+							.isEqualTo("bar");
+				});
+	}
+
+	private static class CodeReturningMessageSource implements MessageSource {
+
+		@Override
+		public String getMessage(String code, Object[] args, String defaultMessage,
+				Locale locale) {
+			return code;
+		}
+
+		@Override
+		public String getMessage(String code, Object[] args, Locale locale)
+				throws NoSuchMessageException {
+			return code;
+		}
+
+		@Override
+		public String getMessage(MessageSourceResolvable resolvable, Locale locale)
+				throws NoSuchMessageException {
+			return resolvable.getCodes()[0];
+		}
+
+	}
+
+	@Configuration
+	protected static class ConfigWithNonStandardMessageSourceBeanName {
+
+		@Bean
+		public MessageSource codeReturningMessageSource() {
+			return new CodeReturningMessageSource();
+		}
+
+	}
+
 	@Configuration
 	@PropertySource("classpath:/switch-messages.properties")
 	protected static class Config {
@@ -209,27 +251,7 @@ public class MessageSourceAutoConfigurationTests {
 
 		@Bean
 		public MessageSource messageSource() {
-			return new MessageSource() {
-
-				@Override
-				public String getMessage(String code, Object[] args,
-						String defaultMessage, Locale locale) {
-					return code;
-				}
-
-				@Override
-				public String getMessage(String code, Object[] args, Locale locale)
-						throws NoSuchMessageException {
-					return code;
-				}
-
-				@Override
-				public String getMessage(MessageSourceResolvable resolvable,
-						Locale locale) throws NoSuchMessageException {
-					return resolvable.getCodes()[0];
-				}
-
-			};
+			return new CodeReturningMessageSource();
 		}
 
 	}
