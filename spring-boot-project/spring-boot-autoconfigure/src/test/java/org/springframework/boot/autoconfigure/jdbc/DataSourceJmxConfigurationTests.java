@@ -31,13 +31,16 @@ import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPool;
 import org.junit.Test;
 
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DataSourceJmxConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Tadaya Tsuyukubo
  */
 public class DataSourceJmxConfigurationTests {
 
@@ -162,6 +166,78 @@ public class DataSourceJmxConfigurationTests {
 				});
 	}
 
+	@Test
+	public void tomcatProxiedCanExposeMBeanPool() {
+		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.type=" + DataSource.class.getName(),
+						"spring.datasource.jmx-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionPool.class);
+					DataSourceProxy dataSourceProxy = (DataSourceProxy) AopProxyUtils
+							.getSingletonTarget(
+									context.getBean(javax.sql.DataSource.class));
+					assertThat(dataSourceProxy.createPool().getJmxPool())
+							.isSameAs(context.getBean(ConnectionPool.class));
+				});
+	}
+
+	@Test
+	public void tomcatDelegateCanExposeMBeanPool() {
+		this.contextRunner.withUserConfiguration(DataSourceDelegateConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.type=" + DataSource.class.getName(),
+						"spring.datasource.jmx-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionPool.class);
+					DataSourceProxy dataSourceProxy = (DataSourceProxy) context
+							.getBean(DelegatingDataSource.class).getTargetDataSource();
+					assertThat(dataSourceProxy.createPool().getJmxPool())
+							.isSameAs(context.getBean(ConnectionPool.class));
+				});
+	}
+
+	@Test
+	public void tomcatProxyAndDelegateCanExposeMBeanPool() {
+		this.contextRunner
+				.withUserConfiguration(DataSourceMixWrapAndProxyConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.type=" + DataSource.class.getName(),
+						"spring.datasource.jmx-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionPool.class);
+					DataSourceProxy dataSourceProxy = extractTomcatDataSource(
+							context.getBean(javax.sql.DataSource.class));
+					assertThat(dataSourceProxy.createPool().getJmxPool())
+							.isSameAs(context.getBean(ConnectionPool.class));
+				});
+	}
+
+	private static javax.sql.DataSource wrap(javax.sql.DataSource dataSource) {
+		return (javax.sql.DataSource) new ProxyFactory(dataSource).getProxy();
+	}
+
+	private static javax.sql.DataSource delegate(javax.sql.DataSource dataSource) {
+		return new DelegatingDataSource(dataSource);
+	}
+
+	private static DataSource extractTomcatDataSource(javax.sql.DataSource dataSource) {
+		if (dataSource instanceof DataSource) {
+			return (DataSource) dataSource;
+		}
+		else if (dataSource instanceof DelegatingDataSource) {
+			return extractTomcatDataSource(
+					((DelegatingDataSource) dataSource).getTargetDataSource());
+		}
+		else if (AopUtils.isAopProxy(dataSource)) {
+			return extractTomcatDataSource(
+					(javax.sql.DataSource) AopProxyUtils.getSingletonTarget(dataSource));
+		}
+
+		throw new RuntimeException(
+				"Not proxied or delegated tomcat DataSource: " + dataSource);
+	}
+
 	@Configuration
 	static class DataSourceProxyConfiguration {
 
@@ -182,8 +258,53 @@ public class DataSourceJmxConfigurationTests {
 			return bean;
 		}
 
-		private static javax.sql.DataSource wrap(javax.sql.DataSource dataSource) {
-			return (javax.sql.DataSource) new ProxyFactory(dataSource).getProxy();
+	}
+
+	@Configuration
+	static class DataSourceDelegateConfiguration {
+
+		@Bean
+		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+			return new DataSourceBeanPostProcessor() {
+				@Override
+				public Object postProcessAfterInitialization(Object bean,
+						String beanName) {
+					if (bean instanceof javax.sql.DataSource) {
+						return new DelegatingDataSource((javax.sql.DataSource) bean);
+					}
+					return bean;
+				}
+			};
+		}
+
+	}
+
+	@Configuration
+	static class DataSourceMixWrapAndProxyConfiguration {
+
+		@Bean
+		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+			return new DataSourceBeanPostProcessor() {
+				@Override
+				public Object postProcessAfterInitialization(Object bean,
+						String beanName) {
+					if (bean instanceof javax.sql.DataSource) {
+						javax.sql.DataSource dataSource = (javax.sql.DataSource) bean;
+						// delegate/wrap multiple times
+						for (int i = 0; i < 10; i++) {
+							if (i % 2 == 0) {
+								dataSource = wrap(dataSource);
+							}
+							else {
+								dataSource = delegate(dataSource);
+							}
+						}
+
+						return dataSource;
+					}
+					return bean;
+				}
+			};
 		}
 
 	}
