@@ -42,11 +42,11 @@ public enum ManagementPortType {
 	DIFFERENT;
 
 	static ManagementPortType get(Environment environment) {
-		Integer serverPort = getPortProperty(environment, "server.");
 		Integer managementPort = getPortProperty(environment, "management.server.");
 		if (managementPort != null && managementPort < 0) {
 			return DISABLED;
 		}
+		Integer serverPort = getPortProperty(environment, "server.");
 		return ((managementPort == null
 				|| (serverPort == null && managementPort.equals(8080))
 				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME
