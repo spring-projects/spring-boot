@@ -242,12 +242,12 @@ final class BindConverter {
 		}
 
 		private PropertyEditor getPropertyEditor(Class<?> type) {
-			SimpleTypeConverter typeConverter = this.typeConverter;
 			if (type == null || type == Object.class
 					|| Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)) {
 				return null;
 			}
+			SimpleTypeConverter typeConverter = this.typeConverter;
 			PropertyEditor editor = typeConverter.getDefaultEditor(type);
 			if (editor == null) {
 				editor = typeConverter.findCustomEditor(type, null);
