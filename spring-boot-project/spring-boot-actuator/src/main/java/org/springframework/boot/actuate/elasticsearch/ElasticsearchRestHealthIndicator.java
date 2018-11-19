@@ -16,8 +16,7 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.main.MainResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -42,28 +41,19 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ClusterHealthResponse response = this.client.cluster()
-				.health(new ClusterHealthRequest(), RequestOptions.DEFAULT);
+		MainResponse info = this.client.info(RequestOptions.DEFAULT);
 
-		switch (response.getStatus()) {
-		case GREEN:
-		case YELLOW:
+		if (info.isAvailable()) {
 			builder.up();
-			break;
-		case RED:
-		default:
+		}
+		else {
 			builder.down();
-			break;
 		}
 
-		builder.withDetail("clusterName", response.getClusterName());
-		builder.withDetail("numberOfNodes", response.getNumberOfNodes());
-		builder.withDetail("numberOfDataNodes", response.getNumberOfDataNodes());
-		builder.withDetail("activePrimaryShards", response.getActivePrimaryShards());
-		builder.withDetail("activeShards", response.getActiveShards());
-		builder.withDetail("relocatingShards", response.getRelocatingShards());
-		builder.withDetail("initializingShards", response.getInitializingShards());
-		builder.withDetail("unassignedShards", response.getUnassignedShards());
+		builder.withDetail("clusterName", info.getClusterName());
+		builder.withDetail("nodeName", info.getNodeName());
+		builder.withDetail("clusterUuid", info.getClusterUuid());
+		builder.withDetail("version", info.getVersion());
 	}
 
 }
