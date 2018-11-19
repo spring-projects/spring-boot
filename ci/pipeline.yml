@@ -332,7 +332,7 @@ jobs:
     params:
       RELEASE_TYPE: M
       GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: github-pre-release
     params:
       name: generated-release-notes/tag
@@ -362,7 +362,7 @@ jobs:
     params:
       RELEASE_TYPE: RC
       GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: github-pre-release
     params:
       name: generated-release-notes/tag
@@ -397,7 +397,7 @@ jobs:
     params:
       RELEASE_TYPE: RELEASE
       GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: github-release
     params:
       name: generated-release-notes/tag
