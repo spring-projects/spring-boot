@@ -343,12 +343,6 @@
 			<artifactId>jsonassert</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>1.10.1</version>
-			<scope>test</scope>
-		</dependency>
 
 	</dependencies>
 </project>
