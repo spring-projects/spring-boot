@@ -39,10 +39,12 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SessionAutoConfiguration}.
@@ -245,6 +247,15 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
 	}
 
+	@Test
+	public void userProvidedCustomHttpSessionStrategyConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(
+						UserProvidedCustomHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
+	}
+
 	@Configuration
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
@@ -293,6 +304,18 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		@Bean
 		public HeaderHttpSessionIdResolver httpSessionStrategy() {
 			return HeaderHttpSessionIdResolver.xAuthToken();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCustomHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public HttpSessionIdResolver httpSessionStrategy() {
+			return mock(HttpSessionIdResolver.class);
 		}
 
 	}
