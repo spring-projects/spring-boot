@@ -246,7 +246,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	private <T extends FileHeader> T getEntry(CharSequence name, Class<T> type,
 			boolean cacheEntry) {
 		T entry = doGetEntry(name, type, cacheEntry, null);
-		if (isMultiReleaseJar() && !isMetaInfEntry(name)) {
+		if (!isMetaInfEntry(name) && isMultiReleaseJar()) {
 			int version = RUNTIME_VERSION;
 			AsciiBytes nameAlias = (entry instanceof JarEntry)
 					? ((JarEntry) entry).getAsciiBytesName()
