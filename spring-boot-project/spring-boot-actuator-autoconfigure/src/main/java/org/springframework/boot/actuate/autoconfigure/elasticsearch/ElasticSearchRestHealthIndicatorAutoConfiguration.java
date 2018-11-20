@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.elasticsearch;
 
 import java.util.Map;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestClient;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
@@ -37,26 +37,26 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link ElasticsearchRestHealthIndicator} using the {@link RestHighLevelClient}.
+ * {@link ElasticsearchRestHealthIndicator} using the {@link RestClient}.
  *
  * @author Artsiom Yudovin
  * @since 2.1.0
  */
 
 @Configuration
-@ConditionalOnClass(RestHighLevelClient.class)
-@ConditionalOnBean(RestHighLevelClient.class)
+@ConditionalOnClass(RestClient.class)
+@ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ RestClientAutoConfiguration.class,
 		ElasticSearchClientHealthIndicatorAutoConfiguration.class })
 public class ElasticSearchRestHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<ElasticsearchRestHealthIndicator, RestHighLevelClient> {
+		CompositeHealthIndicatorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
 
-	private final Map<String, RestHighLevelClient> clients;
+	private final Map<String, RestClient> clients;
 
 	public ElasticSearchRestHealthIndicatorAutoConfiguration(
-			Map<String, RestHighLevelClient> clients) {
+			Map<String, RestClient> clients) {
 		this.clients = clients;
 	}
 
@@ -67,8 +67,7 @@ public class ElasticSearchRestHealthIndicatorAutoConfiguration extends
 	}
 
 	@Override
-	protected ElasticsearchRestHealthIndicator createHealthIndicator(
-			RestHighLevelClient client) {
+	protected ElasticsearchRestHealthIndicator createHealthIndicator(RestClient client) {
 		return new ElasticsearchRestHealthIndicator(client);
 	}
 

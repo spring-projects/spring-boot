@@ -16,9 +16,15 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
-import org.elasticsearch.action.main.MainResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import org.apache.http.HttpStatus;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -32,28 +38,37 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  */
 public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 
-	private final RestHighLevelClient client;
+	private final RestClient client;
 
-	public ElasticsearchRestHealthIndicator(RestHighLevelClient client) {
+	private final JsonParser jsonParser = new JsonParser();
+
+	public ElasticsearchRestHealthIndicator(RestClient client) {
 		super("Elasticsearch health check failed");
 		this.client = client;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		MainResponse info = this.client.info(RequestOptions.DEFAULT);
+		Response response = this.client
+				.performRequest(new Request("GET", "/_cluster/health/"));
 
-		if (info.isAvailable()) {
-			builder.up();
-		}
-		else {
+		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 			builder.down();
 		}
-
-		builder.withDetail("clusterName", info.getClusterName());
-		builder.withDetail("nodeName", info.getNodeName());
-		builder.withDetail("clusterUuid", info.getClusterUuid());
-		builder.withDetail("version", info.getVersion());
+		else {
+			try (InputStreamReader reader = new InputStreamReader(
+					response.getEntity().getContent(), StandardCharsets.UTF_8)) {
+				JsonElement root = this.jsonParser.parse(reader);
+				JsonElement status = root.getAsJsonObject().get("status");
+				if (status.getAsString()
+						.equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
+					builder.outOfService();
+				}
+				else {
+					builder.up();
+				}
+			}
+		}
 	}
 
 }
