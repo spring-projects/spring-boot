@@ -128,7 +128,7 @@
 		<liquibase.version>3.6.2</liquibase.version>
 		<log4j2.version>2.11.1</log4j2.version>
 		<logback.version>1.2.3</logback.version>
-		<lombok.version>1.18.2</lombok.version>
+		<lombok.version>1.18.4</lombok.version>
 		<mariadb.version>2.3.0</mariadb.version>
 		<micrometer.version>1.1.0</micrometer.version>
 		<mimepull.version>1.9.10</mimepull.version>
