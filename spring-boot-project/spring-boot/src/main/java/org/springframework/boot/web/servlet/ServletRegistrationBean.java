@@ -183,7 +183,6 @@ public class ServletRegistrationBean<T extends Servlet>
 	protected ServletRegistration.Dynamic addRegistration(String description,
 			ServletContext servletContext) {
 		String name = getServletName();
-		logger.info("Servlet " + name + " mapped to " + this.urlMappings);
 		return servletContext.addServlet(name, this.servlet);
 	}
 

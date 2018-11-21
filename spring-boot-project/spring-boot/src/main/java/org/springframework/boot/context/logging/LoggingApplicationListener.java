@@ -131,6 +131,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		loggers.add("web", "org.springframework.http");
 		loggers.add("web", "org.springframework.web");
 		loggers.add("web", "org.springframework.boot.actuate.endpoint.web");
+		loggers.add("web",
+				"org.springframework.boot.web.servlet.ServletContextInitializerBeans");
 		loggers.add("sql", "org.springframework.jdbc.core");
 		loggers.add("sql", "org.hibernate.SQL");
 		DEFAULT_GROUP_LOGGERS = Collections.unmodifiableMap(loggers);

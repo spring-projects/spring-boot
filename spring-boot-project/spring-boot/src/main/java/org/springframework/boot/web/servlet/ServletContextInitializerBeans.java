@@ -57,6 +57,7 @@ import org.springframework.util.MultiValueMap;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 1.4.0
  */
 public class ServletContextInitializerBeans
@@ -93,6 +94,7 @@ public class ServletContextInitializerBeans
 						.sorted(AnnotationAwareOrderComparator.INSTANCE))
 				.collect(Collectors.toList());
 		this.sortedList = Collections.unmodifiableList(sortedInitializers);
+		logBeansInformation(this.initializers);
 	}
 
 	private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) {
@@ -143,10 +145,10 @@ public class ServletContextInitializerBeans
 			// Mark the underlying source as seen in case it wraps an existing bean
 			this.seen.add(source);
 		}
-		if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
+		if (ServletContextInitializerBeans.logger.isTraceEnabled()) {
 			String resourceDescription = getResourceDescription(beanName, beanFactory);
 			int order = getOrder(initializer);
-			ServletContextInitializerBeans.logger.debug("Added existing "
+			ServletContextInitializerBeans.logger.trace("Added existing "
 					+ type.getSimpleName() + " initializer bean '" + beanName
 					+ "'; order=" + order + ", resource=" + resourceDescription);
 		}
@@ -200,8 +202,8 @@ public class ServletContextInitializerBeans
 						bean.getValue(), beans.size());
 				registration.setOrder(order);
 				this.initializers.add(type, registration);
-				if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
-					ServletContextInitializerBeans.logger.debug(
+				if (ServletContextInitializerBeans.logger.isTraceEnabled()) {
+					ServletContextInitializerBeans.logger.trace(
 							"Created " + type.getSimpleName() + " initializer for bean '"
 									+ beanName + "'; order=" + order + ", resource="
 									+ getResourceDescription(beanName, beanFactory));
@@ -243,6 +245,36 @@ public class ServletContextInitializerBeans
 		beans.addAll(map.entrySet());
 		beans.sort(comparator);
 		return beans;
+	}
+
+	private void logBeansInformation(
+			MultiValueMap<Class<?>, ServletContextInitializer> initializers) {
+		if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
+			List<ServletContextInitializer> filterRegistrations = new ArrayList<>();
+			filterRegistrations.addAll(initializers
+					.getOrDefault(FilterRegistrationBean.class, Collections.emptyList()));
+			filterRegistrations.addAll(
+					initializers.getOrDefault(Filter.class, Collections.emptyList()));
+			String filtersInfo = filterRegistrations.stream()
+					.map(FilterRegistrationBean.class::cast)
+					.map(FilterRegistrationBean::toString)
+					.collect(Collectors.joining(", "));
+			ServletContextInitializerBeans.logger
+					.debug("Mapping filters: " + filtersInfo);
+
+			List<ServletContextInitializer> servletRegistrations = new ArrayList<>();
+			servletRegistrations.addAll(initializers.getOrDefault(
+					ServletRegistrationBean.class, Collections.emptyList()));
+			servletRegistrations.addAll(
+					initializers.getOrDefault(Servlet.class, Collections.emptyList()));
+			String servletsInfo = servletRegistrations.stream()
+					.map(ServletRegistrationBean.class::cast)
+					.map((servlet) -> servlet.getServletName() + " "
+							+ servlet.getUrlMappings())
+					.collect(Collectors.joining(", "));
+			ServletContextInitializerBeans.logger
+					.debug("Mapping servlets: " + servletsInfo);
+		}
 	}
 
 	@Override

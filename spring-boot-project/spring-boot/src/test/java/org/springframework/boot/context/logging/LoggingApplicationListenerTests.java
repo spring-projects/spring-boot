@@ -570,6 +570,9 @@ public class LoggingApplicationListenerTests {
 		assertTraceEnabled("org.springframework.http", true);
 		assertTraceEnabled("org.springframework.web", true);
 		assertTraceEnabled("org.springframework.boot.actuate.endpoint.web", true);
+		assertTraceEnabled(
+				"org.springframework.boot.web.servlet.ServletContextInitializerBeans",
+				true);
 	}
 
 	@Test
