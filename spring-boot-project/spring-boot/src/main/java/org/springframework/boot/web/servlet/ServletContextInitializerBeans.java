@@ -256,8 +256,8 @@ public class ServletContextInitializerBeans
 			filterRegistrations.addAll(
 					initializers.getOrDefault(Filter.class, Collections.emptyList()));
 			String filtersInfo = filterRegistrations.stream()
-					.map(FilterRegistrationBean.class::cast)
-					.map(FilterRegistrationBean::toString)
+					.map(AbstractFilterRegistrationBean.class::cast)
+					.map(AbstractFilterRegistrationBean::toString)
 					.collect(Collectors.joining(", "));
 			ServletContextInitializerBeans.logger
 					.debug("Mapping filters: " + filtersInfo);
