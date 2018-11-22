@@ -35,7 +35,7 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.15.7</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.67</appengine-sdk.version>
+		<appengine-sdk.version>1.9.68</appengine-sdk.version>
 		<artemis.version>2.4.0</artemis.version>
 		<aspectj.version>1.8.13</aspectj.version>
 		<assertj.version>3.9.1</assertj.version>
@@ -99,7 +99,7 @@
 		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.26</jersey.version>
 		<jest.version>5.3.4</jest.version>
-		<jetty.version>9.4.12.v20180830</jetty.version>
+		<jetty.version>9.4.14.v20181114</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.33</jetty-el.version>
 		<jmustache.version>1.14</jmustache.version>
@@ -178,7 +178,7 @@
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.34</tomcat.version>
+		<tomcat.version>8.5.35</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.8</unboundid-ldapsdk.version>
 		<undertow.version>1.4.26.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
