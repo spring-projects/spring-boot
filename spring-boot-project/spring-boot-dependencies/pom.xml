@@ -78,7 +78,7 @@
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
-		<infinispan.version>9.4.0.Final</infinispan.version>
+		<infinispan.version>9.4.2.Final</infinispan.version>
 		<influxdb-java.version>2.14</influxdb-java.version>
 		<jackson.version>2.9.7</jackson.version>
 		<janino.version>3.0.11</janino.version>
@@ -2198,11 +2198,6 @@
 			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-lucene-directory</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-management-console</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
