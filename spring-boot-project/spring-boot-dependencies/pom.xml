@@ -104,7 +104,7 @@
 		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.27</jersey.version>
 		<jest.version>6.3.1</jest.version>
-		<jetty.version>9.4.14.v20181114</jetty.version>
+		<jetty.version>9.4.12.v20180830</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.33.1</jetty-el.version>
 		<jetty-reactive-httpclient.version>1.0.1</jetty-reactive-httpclient.version>
