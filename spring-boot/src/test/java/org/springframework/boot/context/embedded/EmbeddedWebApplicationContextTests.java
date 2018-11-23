@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -95,6 +96,9 @@ public class EmbeddedWebApplicationContextTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Rule
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	private EmbeddedWebApplicationContext context;
 
@@ -489,6 +493,7 @@ public class EmbeddedWebApplicationContextTests {
 	@Test
 	public void servletRequestCanBeInjectedEarly() throws Exception {
 		// gh-14990
+		int initialOutputLength = this.output.toString().length();
 		addEmbeddedServletContainerFactoryBean();
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				WithAutowiredServletRequest.class);
@@ -507,6 +512,16 @@ public class EmbeddedWebApplicationContextTests {
 
 		});
 		this.context.refresh();
+		String output = this.output.toString().substring(initialOutputLength);
+		assertThat(output).doesNotContain("Replacing scope");
+	}
+
+	@Test
+	public void webApplicationScopeIsRegistered() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory()
+				.getRegisteredScope(WebApplicationContext.SCOPE_APPLICATION)).isNotNull();
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {
@@ -571,6 +586,20 @@ public class EmbeddedWebApplicationContextTests {
 
 		public ServletRequest getRequest() {
 			return this.request;
+		}
+
+	}
+
+	protected static class WithAutowiredServletContext {
+
+		private final ServletContext context;
+
+		public WithAutowiredServletContext(ServletContext context) {
+			this.context = context;
+		}
+
+		public ServletContext getContext() {
+			return this.context;
 		}
 
 	}
