@@ -1,5 +1,6 @@
 [[production-ready]]
-= Spring Boot Actuator: Production-ready features
+= Spring Boot Actuator: Production-ready Features
+include::attributes.adoc[]
 
 [partintro]
 --

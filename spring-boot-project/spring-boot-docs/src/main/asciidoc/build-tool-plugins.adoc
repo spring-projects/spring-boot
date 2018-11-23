@@ -1,5 +1,6 @@
 [[build-tool-plugins]]
-= Build tool plugins
+= Build Tool Plugins
+include::attributes.adoc[]
 
 [partintro]
 --

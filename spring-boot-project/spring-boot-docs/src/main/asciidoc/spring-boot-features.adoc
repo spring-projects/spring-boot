@@ -1,5 +1,6 @@
 [[boot-features]]
-= Spring Boot features
+= Spring Boot Features
+include::attributes.adoc[]
 
 [partintro]
 --

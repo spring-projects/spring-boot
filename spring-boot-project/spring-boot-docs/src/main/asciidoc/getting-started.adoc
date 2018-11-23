@@ -1,5 +1,6 @@
 [[getting-started]]
 = Getting Started
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -627,7 +628,7 @@ important parts in the next few sections.
 
 
 [[getting-started-first-application-annotations]]
-==== The @RestController and @RequestMapping Annotations
+==== The `@RestController` and `@RequestMapping` Annotations
 The first annotation on our `Example` class is `@RestController`. This is known as a
 _stereotype_ annotation. It provides hints for people reading the code and for Spring
 that the class plays a specific role. In this case, our class is a web `@Controller`, so

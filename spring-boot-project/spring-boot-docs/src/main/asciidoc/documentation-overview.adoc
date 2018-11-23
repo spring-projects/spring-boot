@@ -1,5 +1,6 @@
 [[boot-documentation]]
 = Spring Boot Documentation
+include::attributes.adoc[]
 
 [partintro]
 --
