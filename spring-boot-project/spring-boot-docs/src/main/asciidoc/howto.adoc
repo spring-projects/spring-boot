@@ -1166,19 +1166,6 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-You may also want to add a dependency on Woodstox. It is faster than the default StAX
-implementation provided by the JDK and also adds pretty-print support and improved
-namespace handling. The following listing shows how to include a dependency on
-https://github.com/FasterXML/woodstox[Woodstox]:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependency>
-		<groupId>org.codehaus.woodstox</groupId>
-		<artifactId>woodstox-core-asl</artifactId>
-	</dependency>
-----
-
 If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
 used, with the additional requirement of having `MyThing` annotated as
 `@XmlRootElement`, as shown in the following example:
