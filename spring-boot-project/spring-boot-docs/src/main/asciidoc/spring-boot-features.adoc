@@ -7534,8 +7534,8 @@ The specific beans that you want to test should be specified by using the `value
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
 ==== Auto-configured Spring REST Docs Tests
 You can use the `@AutoConfigureRestDocs` annotation to use {spring-rest-docs}[Spring REST
-Docs] in your tests with Mock MVC or REST Assured. It removes the need for the JUnit rule
-in Spring REST Docs.
+Docs] in your tests with Mock MVC, REST Assured, or WebTestClient. It removes the need for
+the JUnit rule in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory
 (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
