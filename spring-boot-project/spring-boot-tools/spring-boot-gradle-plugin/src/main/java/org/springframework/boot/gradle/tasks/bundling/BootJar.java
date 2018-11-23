@@ -129,6 +129,14 @@ public class BootJar extends Jar implements BootArchive {
 				classpath);
 	}
 
+	public void setClasspath(Object classpath) {
+		this.classpath = getProject().files(classpath);
+	}
+
+	public void setClasspath(FileCollection classpath) {
+		this.classpath = getProject().files(classpath);
+	}
+
 	@Override
 	public boolean isExcludeDevtools() {
 		return this.support.isExcludeDevtools();
