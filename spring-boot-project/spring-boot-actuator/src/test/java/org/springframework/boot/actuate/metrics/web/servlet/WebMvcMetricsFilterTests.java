@@ -219,39 +219,24 @@ public class WebMvcMetricsFilterTests {
 		// once the mapping completes, we can gather information about status, etc.
 		this.callableBarrier.await();
 		MockClock.clock(this.registry).add(Duration.ofSeconds(2));
-		// while the mapping is running, it contributes to the activeTasks count
-		assertThat(this.registry.get("my.long.request").tags("region", "test")
-				.longTaskTimer().activeTasks()).isEqualTo(1);
 		this.callableBarrier.await();
 		backgroundRequest.join();
 		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests").tags("status", "200")
 				.tags("uri", "/api/c1/callable/{id}").timer().totalTime(TimeUnit.SECONDS))
 						.isEqualTo(2L);
-		// once the async dispatch is complete, it should no longer contribute to the
-		// activeTasks count
-		assertThat(this.registry.get("my.long.request").tags("region", "test")
-				.longTaskTimer().activeTasks()).isEqualTo(0);
 	}
 
 	@Test
 	public void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
 				.andExpect(request().asyncStarted()).andReturn();
-		// once the async dispatch is complete, it should no longer contribute to the
-		// activeTasks count
-		assertThat(this.registry.get("my.long.request.exception").longTaskTimer()
-				.activeTasks()).isEqualTo(1);
 		assertThatExceptionOfType(NestedServletException.class)
 				.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
 				.withRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.get("http.server.requests")
 				.tags("uri", "/api/c1/completableFutureException").timer().count())
 						.isEqualTo(1);
-		// once the async dispatch is complete, it should no longer contribute to the
-		// activeTasks count
-		assertThat(this.registry.get("my.long.request.exception").longTaskTimer()
-				.activeTasks()).isEqualTo(0);
 	}
 
 	@Test
@@ -375,7 +360,7 @@ public class WebMvcMetricsFilterTests {
 		@Bean
 		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
 				WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
 					"http.server.requests", true);
 		}
 
