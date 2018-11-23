@@ -565,18 +565,4 @@ public class ServletWebServerApplicationContextTests {
 
 	}
 
-	protected static class WithAutowiredServletContext {
-
-		private final ServletContext context;
-
-		public WithAutowiredServletContext(ServletContext context) {
-			this.context = context;
-		}
-
-		public ServletContext getContext() {
-			return this.context;
-		}
-
-	}
-
 }
