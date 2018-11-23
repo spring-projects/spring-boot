@@ -13,6 +13,7 @@
 	<description>Spring Boot Docs</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -943,6 +944,14 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Documentation generation -->
+		<dependency>
+			<groupId>io.spring.docresources</groupId>
+			<artifactId>spring-doc-resources</artifactId>
+			<version>0.1.0-BUILD-SNAPSHOT</version>
+			<type>zip</type>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -1150,6 +1159,42 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+							<execution>
+								<id>unpack-doc-resources</id>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<includeGroupIds>io.spring.docresources</includeGroupIds>
+									<includeArtifactIds>spring-doc-resources</includeArtifactIds>
+									<includeTypes>zip</includeTypes>
+									<excludeTransitive>true</excludeTransitive>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-asciidoc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/asciidoc</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -1221,161 +1266,41 @@
 					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<configuration>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+							<attributes>
+								<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+								<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
+								<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
+								<github-tag>${github-tag}</github-tag>
+								<spring-version>${spring.version}</spring-version>
+								<spring-docs-version>${spring.version}</spring-docs-version>
+								<spring-boot-version>${revision}</spring-boot-version>
+								<sources-root>${project.basedir}/src/</sources-root>
+							</attributes>
+						</configuration>
 						<executions>
 							<execution>
-								<id>generate-docbook</id>
+								<id>generate-html-documentation</id>
 								<phase>prepare-package</phase>
 								<goals>
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
-									<sourceDocumentName>index.adoc</sourceDocumentName>
-									<backend>docbook5</backend>
+									<backend>html5</backend>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
 									<doctype>book</doctype>
 									<attributes>
-										<docinfo>true</docinfo>
-										<jooq-version>${jooq.version}</jooq-version>
-										<spring-framework-version>${spring-framework.version}</spring-framework-version>
-										<spring-boot-version>${revision}</spring-boot-version>
-										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
-										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-										<spring-docs-version>${spring-framework.version}</spring-docs-version>
-										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
-										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
-										<github-tag>${github-tag}</github-tag>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>spring.css</stylesheet>
 									</attributes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>com.agilejava.docbkx</groupId>
-						<artifactId>docbkx-maven-plugin</artifactId>
-						<version>2.0.17</version>
-						<configuration>
-							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
-							<includes>index.xml</includes>
-							<xincludeSupported>true</xincludeSupported>
-							<chunkedOutput>false</chunkedOutput>
-							<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
-							<useExtensions>1</useExtensions>
-							<highlightSource>1</highlightSource>
-							<highlightXslthlConfig>${basedir}/src/main/docbook/xsl/xslthl-config.xml</highlightXslthlConfig>
-						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>net.sf.xslthl</groupId>
-								<artifactId>xslthl</artifactId>
-								<version>2.1.0</version>
-							</dependency>
-							<dependency>
-								<groupId>net.sf.docbook</groupId>
-								<artifactId>docbook-xml</artifactId>
-								<version>5.0-all</version>
-								<classifier>resources</classifier>
-								<type>zip</type>
-								<scope>runtime</scope>
-							</dependency>
-						</dependencies>
-						<executions>
-							<execution>
-								<id>html-single</id>
-								<goals>
-									<goal>generate-html</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
-									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/htmlsingle">
-											<fileset dir="${basedir}/target/docbook/htmlsingle">
-												<include name="**/*.html" />
-											</fileset>
-										</copy>
-										<copy todir="${basedir}/target/contents/reference/htmlsingle">
-											<fileset dir="${basedir}/src/main/docbook">
-												<include name="**/*.css" />
-												<include name="**/*.png" />
-												<include name="**/*.gif" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>html</id>
-								<goals>
-									<goal>generate-html</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
-									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
-									<chunkedOutput>true</chunkedOutput>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/html">
-											<fileset dir="${basedir}/target/docbook/html">
-												<include name="**/*.html" />
-											</fileset>
-										</copy>
-										<copy todir="${basedir}/target/contents/reference/html">
-											<fileset dir="${basedir}/src/main/docbook">
-												<include name="**/*.css" />
-												<include name="**/*.png" />
-												<include name="**/*.gif" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>pdf</id>
-								<goals>
-									<goal>generate-pdf</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
-									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference">
-											<fileset dir="${basedir}/target/docbook">
-												<include name="**/*.pdf" />
-											</fileset>
-										</copy>
-										<move file="${basedir}/target/contents/reference/pdf/index.pdf"
-											tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>epub</id>
-								<goals>
-									<goal>generate-epub3</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<epub3Customization>${basedir}/src/main/docbook/xsl/epub.xsl</epub3Customization>
-									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
-									<preProcess>
-										<copy todir="${basedir}/target/docbook/epub/images">
-											<fileset dir="${basedir}/src/main/docbook/images">
-												<include name="*.png" />
-											</fileset>
-										</copy>
-									</preProcess>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/epub">
-											<fileset dir="${basedir}/target/docbook">
-												<include name="**/*.epub" />
-											</fileset>
-										</copy>
-										<move file="${basedir}/target/contents/reference/epub/index.epub"
-											tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
-									</postProcess>
 								</configuration>
 							</execution>
 						</executions>
@@ -1421,6 +1346,7 @@
 												src="${project.build.directory}/${project.artifactId}-${revision}-javadoc.jar"
 												prefix="api" />
 											<fileset dir="${project.build.directory}/contents" />
+											<fileset dir="${project.build.directory}/generated-docs" />
 										</zip>
 									</target>
 								</configuration>
