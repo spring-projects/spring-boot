@@ -56,9 +56,6 @@ class MeterRegistryConfigurer {
 	}
 
 	void configure(MeterRegistry registry) {
-		if (registry instanceof CompositeMeterRegistry) {
-			return;
-		}
 		// Customizers must be applied before binders, as they may add custom
 		// tags or alter timer or summary configuration.
 		customize(registry);
