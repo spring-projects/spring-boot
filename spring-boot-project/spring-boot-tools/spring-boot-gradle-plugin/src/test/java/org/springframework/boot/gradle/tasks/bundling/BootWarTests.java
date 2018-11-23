@@ -49,6 +49,31 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	}
 
 	@Test
+	public void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
+		getTask().setMainClassName("com.example.Main");
+		getTask().providedClasspath(this.temp.newFile("one.jar"));
+		getTask().setProvidedClasspath(
+				getTask().getProject().files(this.temp.newFile("two.jar")));
+		getTask().execute();
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
+	public void providedClasspathCanBeSetUsingAnObject() throws IOException {
+		getTask().setMainClassName("com.example.Main");
+		getTask().providedClasspath(this.temp.newFile("one.jar"));
+		getTask().setProvidedClasspath(this.temp.newFile("two.jar"));
+		getTask().execute();
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
 	public void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath()
 			throws IOException {
 		getTask().setMainClassName("com.example.Main");

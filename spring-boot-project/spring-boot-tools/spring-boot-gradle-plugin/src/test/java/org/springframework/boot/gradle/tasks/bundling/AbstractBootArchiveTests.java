@@ -134,6 +134,31 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
+	public void classpathCanBeSetUsingAFileCollection() throws IOException {
+		this.task.setMainClassName("com.example.Main");
+		this.task.classpath(this.temp.newFile("one.jar"));
+		this.task
+				.setClasspath(this.task.getProject().files(this.temp.newFile("two.jar")));
+		this.task.execute();
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(jarFile.getEntry(this.libPath + "/one.jar")).isNull();
+			assertThat(jarFile.getEntry(this.libPath + "/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
+	public void classpathCanBeSetUsingAnObject() throws IOException {
+		this.task.setMainClassName("com.example.Main");
+		this.task.classpath(this.temp.newFile("one.jar"));
+		this.task.setClasspath(this.temp.newFile("two.jar"));
+		this.task.execute();
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(jarFile.getEntry(this.libPath + "/one.jar")).isNull();
+			assertThat(jarFile.getEntry(this.libPath + "/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
 	public void loaderIsWrittenToTheRootOfTheJar() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.execute();
