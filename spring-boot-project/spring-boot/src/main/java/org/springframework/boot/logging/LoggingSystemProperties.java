@@ -117,10 +117,9 @@ public class LoggingSystemProperties {
 
 	private PropertyResolver getPropertyResolver() {
 		if (this.environment instanceof ConfigurableEnvironment) {
-			PropertyResolver resolver = new PropertySourcesPropertyResolver(
+			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 					((ConfigurableEnvironment) this.environment).getPropertySources());
-			((PropertySourcesPropertyResolver) resolver)
-					.setIgnoreUnresolvableNestedPlaceholders(true);
+			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;
 		}
 		return this.environment;
