@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigu
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
+import org.springframework.boot.actuate.metrics.web.servlet.LongTaskTimingHandlerInterceptor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -47,6 +48,7 @@ import org.springframework.core.Ordered;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,6 +134,20 @@ public class WebMvcMetricsAutoConfigurationTests {
 					assertThat(this.output.toString())
 							.doesNotContain("Reached the maximum number of URI tags "
 									+ "for 'http.server.requests'");
+				});
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void longTaskTimingInterceptorIsRegistered() {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						WebMvcAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context.getBean(RequestMappingHandlerMapping.class))
+							.extracting("interceptors").element(0).asList()
+							.extracting((item) -> (Class) item.getClass())
+							.contains(LongTaskTimingHandlerInterceptor.class);
 				});
 	}
 

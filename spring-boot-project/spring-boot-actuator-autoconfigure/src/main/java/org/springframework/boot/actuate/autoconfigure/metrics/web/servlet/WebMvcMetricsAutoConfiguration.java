@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
+import org.springframework.boot.actuate.metrics.web.servlet.LongTaskTimingHandlerInterceptor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -41,8 +42,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring Web
@@ -75,11 +77,10 @@ public class WebMvcMetricsAutoConfiguration {
 
 	@Bean
 	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(
-			MeterRegistry registry, WebMvcTagsProvider tagsProvider,
-			WebApplicationContext context) {
+			MeterRegistry registry, WebMvcTagsProvider tagsProvider) {
 		Server serverProperties = this.properties.getWeb().getServer();
-		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(context, registry,
-				tagsProvider, serverProperties.getRequestsMetricName(),
+		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(registry, tagsProvider,
+				serverProperties.getRequestsMetricName(),
 				serverProperties.isAutoTimeRequests());
 		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
 				filter);
@@ -96,6 +97,32 @@ public class WebMvcMetricsAutoConfiguration {
 				.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
 				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+	}
+
+	@Bean
+	public MetricsWebMvcConfigurer metricsWebMvcConfigurer(MeterRegistry meterRegistry,
+			WebMvcTagsProvider tagsProvider) {
+		return new MetricsWebMvcConfigurer(meterRegistry, tagsProvider);
+	}
+
+	static class MetricsWebMvcConfigurer implements WebMvcConfigurer {
+
+		private final MeterRegistry meterRegistry;
+
+		private final WebMvcTagsProvider tagsProvider;
+
+		MetricsWebMvcConfigurer(MeterRegistry meterRegistry,
+				WebMvcTagsProvider tagsProvider) {
+			this.meterRegistry = meterRegistry;
+			this.tagsProvider = tagsProvider;
+		}
+
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			registry.addInterceptor(new LongTaskTimingHandlerInterceptor(
+					this.meterRegistry, this.tagsProvider));
+		}
+
 	}
 
 }
