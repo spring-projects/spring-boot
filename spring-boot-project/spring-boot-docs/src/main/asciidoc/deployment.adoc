@@ -674,7 +674,9 @@ description up front (and it need not change), you may as well provide it when t
 generated.
 
 To customize written elements, use the `embeddedLaunchScriptProperties` option of the
-Spring Boot Maven or Gradle plugins.
+Spring Boot Maven plugin or the
+{spring-boot-gradle-plugin-reference}/#packaging-executable-configuring-launch-script[`properties`
+property of the Spring Boot Gradle plugin's `launchScript`].
 
 The following property substitutions are supported with the default script:
 
