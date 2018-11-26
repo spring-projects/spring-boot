@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
@@ -89,9 +90,11 @@ class DataSourceJmxConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "dataSourceMBean")
 		public Object dataSourceMBean(DataSource dataSource) {
-			if (dataSource instanceof DataSourceProxy) {
+			DataSourceProxy dataSourceProxy = DataSourceUnwrapper.unwrap(dataSource,
+					DataSourceProxy.class);
+			if (dataSourceProxy != null) {
 				try {
-					return ((DataSourceProxy) dataSource).createPool().getJmxPool();
+					return dataSourceProxy.createPool().getJmxPool();
 				}
 				catch (SQLException ex) {
 					logger.warn("Cannot expose DataSource to JMX (could not connect)");
