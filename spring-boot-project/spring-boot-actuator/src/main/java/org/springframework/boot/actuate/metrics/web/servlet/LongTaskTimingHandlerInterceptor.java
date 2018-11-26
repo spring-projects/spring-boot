@@ -49,7 +49,7 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	private final WebMvcTagsProvider tagsProvider;
 
 	/**
-	 * Creates a new {@ode LongTaskTimingHandlerInterceptor} that will create
+	 * Creates a new {@code LongTaskTimingHandlerInterceptor} that will create
 	 * {@link LongTaskTimer LongTaskTimers} using the given registry. Timers will be
 	 * tagged using the given {@code tagsProvider}.
 	 * @param registry the registry
