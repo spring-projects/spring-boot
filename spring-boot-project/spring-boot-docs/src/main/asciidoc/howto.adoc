@@ -2899,7 +2899,12 @@ jar support, which assumes that the `jruby-complete.jar` is always directly avai
 file in its own right.
 
 To deal with any problematic libraries, you can flag that specific nested jars should be
-automatically unpacked to the "`temp folder`" when the executable jar first runs.
+automatically unpacked when the executable jar first runs. Such nested jars are written
+beneath the temporary directory identified by the `java.io.tmpdir` system property.
+
+WARNING: Care should be taken to ensure that your operating system is configured so that
+it will not delete the jars that have been unpacked to the temporary directory while the
+application is still running.
 
 For example, to indicate that JRuby should be flagged for unpacking by using the Maven
 Plugin, you would add the following configuration:
