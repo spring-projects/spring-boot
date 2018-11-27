@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,32 +25,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Tests for {@link WebFluxTest} when no explicit controller is defined.
+ * Tests for {@link WebFluxTest} to validate the {@link WebTestClient WebTestClient's}
+ * codecs are customized.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@WebFluxTest
-public class WebFluxTestAllControllersIntegrationTests {
+@WebFluxTest(controllers = JsonController.class)
+public class WebFluxTestWebTestClientCodecCustomizationIntegrationTests {
 
 	@Autowired
 	private WebTestClient webClient;
 
 	@Test
-	public void shouldFindController1() {
-		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("one");
-	}
-
-	@Test
-	public void shouldFindController2() {
-		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("two");
-	}
-
-	@Test
-	public void shouldFindJsonController() {
-		this.webClient.get().uri("/json").exchange().expectStatus().isOk();
+	public void shouldBeAbleToCreatePojoViaParametersModule() {
+		this.webClient.get().uri("/json").exchange().expectStatus().isOk()
+				.expectBody(ExamplePojo.class);
 	}
 
 }
