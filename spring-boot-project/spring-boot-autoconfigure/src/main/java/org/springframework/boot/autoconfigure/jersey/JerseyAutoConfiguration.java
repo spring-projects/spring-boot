@@ -65,7 +65,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.filter.RequestContextFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Jersey.
@@ -122,16 +121,6 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private void customize() {
 		this.customizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(this.config));
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
-		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
-		registration.setFilter(new RequestContextFilter());
-		registration.setOrder(this.jersey.getFilter().getOrder() - 1);
-		registration.setName("requestContextFilter");
-		return registration;
 	}
 
 	@Bean
