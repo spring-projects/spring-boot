@@ -364,18 +364,19 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private void setLogLevel(LoggingSystem system, String name, String level) {
 		try {
 			name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
-			system.setLogLevel(name, coerceLogLevel(level.trim()));
+			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {
-			this.logger.error("Cannot set level: " + level + " for '" + name + "'");
+			this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
 		}
 	}
 
 	private LogLevel coerceLogLevel(String level) {
-		if ("false".equalsIgnoreCase(level)) {
+		String trimmedLevel = level.trim();
+		if ("false".equalsIgnoreCase(trimmedLevel)) {
 			return LogLevel.OFF;
 		}
-		return LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH));
+		return LogLevel.valueOf(trimmedLevel.toUpperCase(Locale.ENGLISH));
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment,
