@@ -89,16 +89,11 @@ public class SessionAutoConfiguration {
 			SessionRepositoryFilterConfiguration.class })
 	static class ServletSessionConfiguration {
 
-		private final ServerProperties serverProperties;
-
-		ServletSessionConfiguration(ServerProperties serverProperties) {
-			this.serverProperties = serverProperties;
-		}
-
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		public DefaultCookieSerializer cookieSerializer() {
-			Cookie cookie = this.serverProperties.getServlet().getSession().getCookie();
+		public DefaultCookieSerializer cookieSerializer(
+				ServerProperties serverProperties) {
+			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(cookie::getName).to(cookieSerializer::setCookieName);
