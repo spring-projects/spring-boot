@@ -321,6 +321,19 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRabbitTemplateDefaultReceiveQueue() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues(
+						"spring.rabbitmq.template.default-receive-queue:default-queue")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue(
+							"defaultReceiveQueue", "default-queue");
+				});
+	}
+
+	@Test
+	@Deprecated
 	public void testRabbitTemplateDefaultQueue() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.template.queue:default-queue")

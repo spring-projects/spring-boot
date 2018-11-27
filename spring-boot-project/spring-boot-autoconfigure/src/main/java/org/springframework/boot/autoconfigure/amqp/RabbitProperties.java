@@ -24,6 +24,7 @@ import java.util.List;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -776,7 +777,7 @@ public class RabbitProperties {
 		 * Name of the default queue to receive messages from when none is specified
 		 * explicitly.
 		 */
-		private String queue;
+		private String defaultReceiveQueue;
 
 		public Retry getRetry() {
 			return this.retry;
@@ -822,12 +823,23 @@ public class RabbitProperties {
 			this.routingKey = routingKey;
 		}
 
-		public String getQueue() {
-			return this.queue;
+		public String getDefaultReceiveQueue() {
+			return this.defaultReceiveQueue;
 		}
 
+		public void setDefaultReceiveQueue(String defaultReceiveQueue) {
+			this.defaultReceiveQueue = defaultReceiveQueue;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.template.default-receive-queue")
+		public String getQueue() {
+			return getDefaultReceiveQueue();
+		}
+
+		@Deprecated
 		public void setQueue(String queue) {
-			this.queue = queue;
+			setDefaultReceiveQueue(queue);
 		}
 
 	}
