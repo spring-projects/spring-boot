@@ -24,13 +24,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Retrofit;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -118,10 +118,8 @@ public class InfluxDbAutoConfigurationTests {
 
 	private int getReadTimeoutProperty(AssertableApplicationContext context) {
 		InfluxDB influxDB = context.getBean(InfluxDB.class);
-		Retrofit retrofit = (Retrofit) new DirectFieldAccessor(influxDB)
-				.getPropertyValue("retrofit");
-		OkHttpClient callFactory = (OkHttpClient) new DirectFieldAccessor(retrofit)
-				.getPropertyValue("callFactory");
+		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDB, "retrofit");
+		OkHttpClient callFactory = (OkHttpClient) retrofit.callFactory();
 		return callFactory.readTimeoutMillis();
 	}
 

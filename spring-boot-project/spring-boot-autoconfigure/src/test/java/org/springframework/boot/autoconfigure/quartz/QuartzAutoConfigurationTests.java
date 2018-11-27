@@ -37,7 +37,6 @@ import org.quartz.impl.calendar.MonthlyCalendar;
 import org.quartz.impl.calendar.WeeklyCalendar;
 import org.quartz.simpl.RAMJobStore;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -233,16 +232,18 @@ public class QuartzAutoConfigurationTests {
 					assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
 					SchedulerFactoryBean schedulerFactory = context
 							.getBean(SchedulerFactoryBean.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(schedulerFactory);
 					QuartzProperties properties = new QuartzProperties();
 					assertThat(properties.isAutoStartup())
 							.isEqualTo(schedulerFactory.isAutoStartup());
-					assertThat((int) properties.getStartupDelay().getSeconds())
-							.isEqualTo(dfa.getPropertyValue("startupDelay"));
-					assertThat(properties.isWaitForJobsToCompleteOnShutdown()).isEqualTo(
-							dfa.getPropertyValue("waitForJobsToCompleteOnShutdown"));
-					assertThat(properties.isOverwriteExistingJobs())
-							.isEqualTo(dfa.getPropertyValue("overwriteExistingJobs"));
+					assertThat(schedulerFactory).hasFieldOrPropertyWithValue(
+							"startupDelay",
+							(int) properties.getStartupDelay().getSeconds());
+					assertThat(schedulerFactory).hasFieldOrPropertyWithValue(
+							"waitForJobsToCompleteOnShutdown",
+							properties.isWaitForJobsToCompleteOnShutdown());
+					assertThat(schedulerFactory).hasFieldOrPropertyWithValue(
+							"overwriteExistingJobs",
+							properties.isOverwriteExistingJobs());
 
 				});
 
@@ -257,13 +258,13 @@ public class QuartzAutoConfigurationTests {
 					assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
 					SchedulerFactoryBean schedulerFactory = context
 							.getBean(SchedulerFactoryBean.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(schedulerFactory);
 					assertThat(schedulerFactory.isAutoStartup()).isFalse();
-					assertThat(dfa.getPropertyValue("startupDelay")).isEqualTo(60);
-					assertThat(dfa.getPropertyValue("waitForJobsToCompleteOnShutdown"))
-							.isEqualTo(true);
-					assertThat(dfa.getPropertyValue("overwriteExistingJobs"))
-							.isEqualTo(true);
+					assertThat(schedulerFactory)
+							.hasFieldOrPropertyWithValue("startupDelay", 60);
+					assertThat(schedulerFactory).hasFieldOrPropertyWithValue(
+							"waitForJobsToCompleteOnShutdown", true);
+					assertThat(schedulerFactory)
+							.hasFieldOrPropertyWithValue("overwriteExistingJobs", true);
 				});
 	}
 
@@ -301,8 +302,8 @@ public class QuartzAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
 			SchedulerFactoryBean schedulerFactory = context
 					.getBean(SchedulerFactoryBean.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(schedulerFactory);
-			assertThat(dfa.getPropertyValue("schedulerName")).isEqualTo(schedulerName);
+			assertThat(schedulerFactory).hasFieldOrPropertyWithValue("schedulerName",
+					schedulerName);
 		};
 	}
 

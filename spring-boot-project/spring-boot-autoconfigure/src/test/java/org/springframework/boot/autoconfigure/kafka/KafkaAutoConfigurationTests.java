@@ -36,7 +36,6 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
+import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
@@ -52,6 +52,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -61,6 +62,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.kafka.transaction.ChainedKafkaTransactionManager;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -448,55 +450,43 @@ public class KafkaAutoConfigurationTests {
 							.getBean(DefaultKafkaConsumerFactory.class);
 					KafkaTemplate<?, ?> kafkaTemplate = context
 							.getBean(KafkaTemplate.class);
-					KafkaListenerContainerFactory<?> kafkaListenerContainerFactory = context
+					AbstractKafkaListenerContainerFactory kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory) context
 							.getBean(KafkaListenerContainerFactory.class);
 					assertThat(kafkaTemplate.getMessageConverter())
 							.isInstanceOf(MessagingMessageConverter.class);
-					assertThat(new DirectFieldAccessor(kafkaTemplate)
-							.getPropertyValue("producerFactory"))
-									.isEqualTo(producerFactory);
+					assertThat(kafkaTemplate).hasFieldOrPropertyWithValue(
+							"producerFactory", producerFactory);
 					assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
-					DirectFieldAccessor dfa = new DirectFieldAccessor(
-							kafkaListenerContainerFactory);
-					assertThat(dfa.getPropertyValue("consumerFactory"))
+					assertThat(kafkaListenerContainerFactory.getConsumerFactory())
 							.isEqualTo(consumerFactory);
-					assertThat(dfa.getPropertyValue("containerProperties.ackMode"))
+					ContainerProperties containerProperties = kafkaListenerContainerFactory
+							.getContainerProperties();
+					assertThat(containerProperties.getAckMode())
 							.isEqualTo(AckMode.MANUAL);
-					assertThat(dfa.getPropertyValue("containerProperties.clientId"))
-							.isEqualTo("client");
-					assertThat(dfa.getPropertyValue("containerProperties.ackCount"))
-							.isEqualTo(123);
-					assertThat(dfa.getPropertyValue("containerProperties.ackTime"))
-							.isEqualTo(456L);
-					assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
-					assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
-							.isEqualTo(2000L);
-					assertThat(
-							dfa.getPropertyValue("containerProperties.noPollThreshold"))
-									.isEqualTo(2.5f);
-					assertThat(
-							dfa.getPropertyValue("containerProperties.idleEventInterval"))
-									.isEqualTo(1000L);
-					assertThat(
-							dfa.getPropertyValue("containerProperties.monitorInterval"))
-									.isEqualTo(45);
-					assertThat(dfa
-							.getPropertyValue("containerProperties.logContainerConfig"))
-									.isEqualTo(Boolean.TRUE);
-					assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
+					assertThat(containerProperties.getClientId()).isEqualTo("client");
+					assertThat(containerProperties.getAckCount()).isEqualTo(123);
+					assertThat(containerProperties.getAckTime()).isEqualTo(456L);
+					assertThat(containerProperties.getPollTimeout()).isEqualTo(2000L);
+					assertThat(containerProperties.getNoPollThreshold()).isEqualTo(2.5f);
+					assertThat(containerProperties.getIdleEventInterval())
+							.isEqualTo(1000L);
+					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
+					assertThat(containerProperties.isLogContainerConfig()).isTrue();
+					assertThat(ReflectionTestUtils.getField(kafkaListenerContainerFactory,
+							"concurrency")).isEqualTo(3);
+					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
 					assertThat(
 							context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 									.hasSize(1);
 					KafkaJaasLoginModuleInitializer jaas = context
 							.getBean(KafkaJaasLoginModuleInitializer.class);
-					dfa = new DirectFieldAccessor(jaas);
-					assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
-					assertThat(dfa.getPropertyValue("controlFlag")).isEqualTo(
+					assertThat(jaas).hasFieldOrPropertyWithValue("loginModule", "foo");
+					assertThat(jaas).hasFieldOrPropertyWithValue("controlFlag",
 							AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
 					assertThat(context.getBeansOfType(KafkaTransactionManager.class))
 							.hasSize(1);
-					assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
-							.containsExactly(entry("useKeyTab", "true"));
+					assertThat(((Map<String, String>) ReflectionTestUtils.getField(jaas,
+							"options"))).containsExactly(entry("useKeyTab", "true"));
 				});
 	}
 
@@ -518,10 +508,8 @@ public class KafkaAutoConfigurationTests {
 				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(
-							kafkaListenerContainerFactory);
-					assertThat(dfa.getPropertyValue("messageConverter"))
-							.isSameAs(context.getBean("myMessageConverter"));
+					assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue(
+							"messageConverter", context.getBean("myMessageConverter"));
 				});
 	}
 
@@ -569,9 +557,9 @@ public class KafkaAutoConfigurationTests {
 				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(factory);
-					assertThat(dfa.getPropertyValue("afterRollbackProcessor"))
-							.isSameAs(context.getBean("afterRollbackProcessor"));
+					assertThat(factory).hasFieldOrPropertyWithValue(
+							"afterRollbackProcessor",
+							context.getBean("afterRollbackProcessor"));
 				});
 	}
 
@@ -580,10 +568,8 @@ public class KafkaAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
-			DirectFieldAccessor dfa = new DirectFieldAccessor(
-					kafkaListenerContainerFactory);
-			assertThat(dfa.getPropertyValue("replyTemplate"))
-					.isSameAs(context.getBean(KafkaTemplate.class));
+			assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue(
+					"replyTemplate", context.getBean(KafkaTemplate.class));
 		});
 	}
 

@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.session;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.RedisSessionConfiguration.SpringBootRedisHttpSessionConfiguration;
@@ -94,12 +93,12 @@ public class SessionAutoConfigurationRedisTests
 					context, RedisOperationsSessionRepository.class);
 			assertThat(repository.getSessionCreatedChannelPrefix())
 					.isEqualTo(sessionCreatedChannelPrefix);
-			assertThat(new DirectFieldAccessor(repository)
-					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
+			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode",
+					flushMode);
 			SpringBootRedisHttpSessionConfiguration configuration = context
 					.getBean(SpringBootRedisHttpSessionConfiguration.class);
-			assertThat(new DirectFieldAccessor(configuration)
-					.getPropertyValue("cleanupCron")).isEqualTo(cleanupCron);
+			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron",
+					cleanupCron);
 		};
 	}
 
