@@ -432,9 +432,8 @@ public class TomcatServletWebServerFactoryTests
 				((StandardContext) context).setFailCtxIfServletStartFails(true);
 			}
 		});
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(this.webServer::start);
 	}
@@ -447,9 +446,8 @@ public class TomcatServletWebServerFactoryTests
 				((StandardContext) context).setFailCtxIfServletStartFails(false);
 			}
 		});
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		this.webServer.start();
 	}
 
