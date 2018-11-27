@@ -156,7 +156,7 @@ use the following additional endpoints:
 | ID | Description | Enabled by default
 
 |`heapdump`
-|Returns a GZip compressed `hprof` heap dump file.
+|Returns an `hprof` heap dump file.
 |Yes
 
 |`jolokia`
