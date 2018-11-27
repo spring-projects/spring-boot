@@ -16,13 +16,17 @@
 package org.springframework.boot.autoconfigure.http.codec;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
@@ -34,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link CodecsAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
 public class CodecsAutoConfigurationTests {
 
@@ -76,12 +81,79 @@ public class CodecsAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	public void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.doesNotHaveBean("jacksonCodecCustomizer"));
+	}
+
+	@Test
+	public void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
+		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
+				.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
+	}
+
+	@Test
+	public void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
+		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class,
+				CodecCustomizerConfiguration.class).run((context) -> {
+					List<CodecCustomizer> codecCustomizers = context
+							.getBean(CodecCustomizers.class).codecCustomizers;
+					assertThat(codecCustomizers).hasSize(3);
+					assertThat(codecCustomizers.get(2))
+							.isInstanceOf(TestCodecCustomizer.class);
+				});
+	}
+
 	static class TestAnnotationAwareOrderComparator
 			extends AnnotationAwareOrderComparator {
 
 		@Override
 		public Integer findOrder(Object obj) {
 			return super.findOrder(obj);
+		}
+
+	}
+
+	@Configuration
+	static class ObjectMapperConfiguration {
+
+		@Bean
+		ObjectMapper objectMapper() {
+			return new ObjectMapper();
+		}
+
+	}
+
+	@Configuration
+	static class CodecCustomizerConfiguration {
+
+		@Bean
+		CodecCustomizer codecCustomizer() {
+			return new TestCodecCustomizer();
+		}
+
+		@Bean
+		CodecCustomizers codecCustomizers(List<CodecCustomizer> customizers) {
+			return new CodecCustomizers(customizers);
+		}
+
+	}
+
+	private static final class TestCodecCustomizer implements CodecCustomizer {
+
+		@Override
+		public void customize(CodecConfigurer configurer) {
+		}
+
+	}
+
+	private static final class CodecCustomizers {
+
+		private final List<CodecCustomizer> codecCustomizers;
+
+		private CodecCustomizers(List<CodecCustomizer> codecCustomizers) {
+			this.codecCustomizers = codecCustomizers;
 		}
 
 	}
