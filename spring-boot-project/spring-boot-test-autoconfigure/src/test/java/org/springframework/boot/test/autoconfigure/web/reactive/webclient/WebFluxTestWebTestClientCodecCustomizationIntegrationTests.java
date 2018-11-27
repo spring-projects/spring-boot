@@ -26,38 +26,23 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Tests for {@link WebFluxTest} when no explicit controller is defined.
+ * Tests for {@link WebFluxTest} to validate the {@link WebTestClient WebTestClient's}
+ * codecs are customized.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @WithMockUser
-@WebFluxTest
-public class WebFluxTestAllControllersIntegrationTests {
+@WebFluxTest(controllers = JsonController.class)
+public class WebFluxTestWebTestClientCodecCustomizationIntegrationTests {
 
 	@Autowired
 	private WebTestClient webClient;
 
 	@Test
-	public void shouldFindController1() {
-		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("one");
-	}
-
-	@Test
-	public void shouldFindController2() {
-		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("two");
-	}
-
-	@Test
-	public void webExceptionHandling() {
-		this.webClient.get().uri("/one/error").exchange().expectStatus().isBadRequest();
-	}
-
-	@Test
-	public void shouldFindJsonController() {
-		this.webClient.get().uri("/json").exchange().expectStatus().isOk();
+	public void shouldBeAbleToCreatePojoViaParametersModule() {
+		this.webClient.get().uri("/json").exchange().expectStatus().isOk()
+				.expectBody(ExamplePojo.class);
 	}
 
 }

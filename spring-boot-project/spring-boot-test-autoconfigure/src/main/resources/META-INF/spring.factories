@@ -94,6 +94,7 @@ org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfig
 
 # AutoConfigureWebFlux auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebFlux=\
+org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration,\
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration
