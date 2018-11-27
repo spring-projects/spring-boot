@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jmx;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -139,8 +138,7 @@ public class JmxAutoConfigurationTests {
 		this.context.refresh();
 		IntegrationMBeanExporter mbeanExporter = this.context
 				.getBean(IntegrationMBeanExporter.class);
-		DirectFieldAccessor dfa = new DirectFieldAccessor(mbeanExporter);
-		assertThat(dfa.getPropertyValue("domain")).isEqualTo("foo.my");
+		assertThat(mbeanExporter).hasFieldOrPropertyWithValue("domain", "foo.my");
 	}
 
 	@Configuration

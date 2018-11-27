@@ -27,7 +27,6 @@ import javax.validation.constraints.Size;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigurationTests.CustomValidatorConfiguration.TestBeanPostProcessor;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -35,6 +34,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.CustomValidatorBean;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -195,9 +195,8 @@ public class ValidationAutoConfigurationTests {
 				.isSameAs(userMethodValidationPostProcessor);
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
 				.hasSize(1);
-		assertThat(this.context.getBean(Validator.class))
-				.isNotSameAs(new DirectFieldAccessor(userMethodValidationPostProcessor)
-						.getPropertyValue("validator"));
+		assertThat(this.context.getBean(Validator.class)).isNotSameAs(ReflectionTestUtils
+				.getField(userMethodValidationPostProcessor, "validator"));
 	}
 
 	@Test

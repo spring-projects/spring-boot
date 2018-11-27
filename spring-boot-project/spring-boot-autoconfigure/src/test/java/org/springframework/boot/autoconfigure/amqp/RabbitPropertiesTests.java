@@ -22,7 +22,6 @@ import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.beans.DirectFieldAccessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -237,24 +236,22 @@ public class RabbitPropertiesTests {
 	public void simpleContainerUseConsistentDefaultValues() {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		SimpleMessageListenerContainer container = factory.createListenerContainer();
-		DirectFieldAccessor dfa = new DirectFieldAccessor(container);
 		RabbitProperties.SimpleContainer simple = this.properties.getListener()
 				.getSimple();
 		assertThat(simple.isAutoStartup()).isEqualTo(container.isAutoStartup());
-		assertThat(simple.isMissingQueuesFatal())
-				.isEqualTo(dfa.getPropertyValue("missingQueuesFatal"));
+		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
+				simple.isMissingQueuesFatal());
 	}
 
 	@Test
 	public void directContainerUseConsistentDefaultValues() {
 		DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
 		DirectMessageListenerContainer container = factory.createListenerContainer();
-		DirectFieldAccessor dfa = new DirectFieldAccessor(container);
 		RabbitProperties.DirectContainer direct = this.properties.getListener()
 				.getDirect();
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
-		assertThat(direct.isMissingQueuesFatal())
-				.isEqualTo(dfa.getPropertyValue("missingQueuesFatal"));
+		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
+				direct.isMissingQueuesFatal());
 	}
 
 }
