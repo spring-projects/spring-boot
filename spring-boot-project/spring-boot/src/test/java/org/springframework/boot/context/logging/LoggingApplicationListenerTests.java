@@ -319,6 +319,18 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	public void parseLevelsTrimsWhitespace() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.level.org.springframework.boot= trace ");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testattrace");
+	}
+
+	@Test
 	public void parseLevelsWithPlaceholder() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"foo=TRACE", "logging.level.org.springframework.boot=${foo}");
@@ -338,7 +350,7 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug")
-				.contains("Cannot set level: GARBAGE");
+				.contains("Cannot set level 'GARBAGE'");
 	}
 
 	@Test
