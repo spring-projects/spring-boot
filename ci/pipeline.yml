@@ -390,7 +390,6 @@ jobs:
       BINTRAY_SUBJECT: ((bintray-subject))
       BINTRAY_REPO: ((bintray-repo))
       BINTRAY_USERNAME: ((bintray-username))
-      BINTRAY_PASSWORD: ((bintray-password))
       BINTRAY_API_KEY: ((bintray-api-key))
   - task: generate-release-notes
     file: git-repo/ci/tasks/generate-release-notes.yml
@@ -418,7 +417,6 @@ jobs:
     file: git-repo/ci/tasks/sync-to-maven-central.yml
     params:
       BINTRAY_USERNAME: ((bintray-username))
-      BINTRAY_PASSWORD: ((bintray-password))
       BINTRAY_API_KEY: ((bintray-api-key))
       SONATYPE_USER_TOKEN: ((sonatype-user-token))
       SONATYPE_PASSWORD_TOKEN: ((sonatype-user-token-password))
