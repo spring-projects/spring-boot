@@ -2961,11 +2961,12 @@ endpoints, as shown in the following example:
 	}
 ----
 
-WARNING: Jersey's support for scanning executable archives is rather limited. For
-example, it cannot scan for endpoints in a package found in `WEB-INF/classes` when
-running an executable war file. To avoid this limitation, the `packages` method should
-not be used, and endpoints should be registered individually by using the `register`
-method, as shown in the preceding example.
+WARNING: Jersey's support for scanning executable archives is rather limited. For example,
+it cannot scan for endpoints in a package found in a <<deployment.adoc#deployment-install,
+fully executable jar file>> or in `WEB-INF/classes` when running an executable war file.
+To avoid this limitation, the `packages` method should not be used, and endpoints should
+be registered individually by using the `register` method, as shown in the preceding
+example.
 
 For more advanced customizations, you can also register an arbitrary number of beans that
 implement `ResourceConfigCustomizer`.
