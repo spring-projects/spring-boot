@@ -1027,6 +1027,10 @@ property:
 	spring.devtools.reload.trigger-file=.reloadtrigger
 ----
 
+NOTE: Profiles activated in `.spring-boot-devtools.properties` will not affect the
+loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties,
+profile-specific configuration files>>.
+
 
 
 [[using-boot-devtools-remote]]
@@ -1119,7 +1123,7 @@ TIP: If you need to use a proxy to access the remote application, configure the
 [[using-boot-devtools-remote-update]]
 ==== Remote Update
 The remote client monitors your application classpath for changes in the same way as the
-<<using-boot-devtools-restart,local restart>>. Any updated resource is pushed to the
+using-boot-devtools-restart,local restart>>. Any updated resource is pushed to the
 remote application and (_if required_) triggers a restart. This can be helpful if you
 iterate on a feature that uses a cloud service that you do not have locally. Generally,
 remote updates and restarts are much quicker than a full rebuild and deploy cycle.
