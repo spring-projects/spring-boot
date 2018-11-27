@@ -245,7 +245,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Artifact getArtifact(String classifier) {
 		if (classifier != null) {
 			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-				if (classifier.equals(attachedArtifact.getClassifier())) {
+				if (classifier.equals(attachedArtifact.getClassifier())
+						&& attachedArtifact.getFile() != null
+						&& attachedArtifact.getFile().isFile()) {
 					return attachedArtifact;
 				}
 			}
@@ -335,7 +337,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (this.attach) {
 			attachArtifact(source, target);
 		}
-		else if (source.getFile().equals(target)) {
+		else if (source.getFile().equals(target) && original.exists()) {
 			String artifactId = (this.classifier != null)
 					? "artifact with classifier " + this.classifier : "main artifact";
 			getLog().info(String.format("Updating %s %s to %s", artifactId,
