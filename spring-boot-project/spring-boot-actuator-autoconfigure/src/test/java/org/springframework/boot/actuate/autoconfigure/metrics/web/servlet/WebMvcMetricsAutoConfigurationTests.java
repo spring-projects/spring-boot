@@ -150,12 +150,11 @@ public class WebMvcMetricsAutoConfigurationTests {
 						MeterRegistryConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						WebMvcAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context.getBean(RequestMappingHandlerMapping.class))
-							.extracting("interceptors").element(0).asList()
-							.extracting((item) -> (Class) item.getClass())
-							.contains(LongTaskTimingHandlerInterceptor.class);
-				});
+				.run((context) -> assertThat(
+						context.getBean(RequestMappingHandlerMapping.class))
+								.extracting("interceptors").element(0).asList()
+								.extracting((item) -> (Class) item.getClass())
+								.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(

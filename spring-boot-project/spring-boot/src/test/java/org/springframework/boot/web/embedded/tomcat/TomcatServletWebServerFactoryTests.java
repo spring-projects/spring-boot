@@ -437,9 +437,8 @@ public class TomcatServletWebServerFactoryTests
 				((StandardContext) context).setFailCtxIfServletStartFails(true);
 			}
 		});
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		this.thrown.expect(WebServerException.class);
 		this.webServer.start();
 	}
