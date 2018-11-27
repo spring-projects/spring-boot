@@ -29,9 +29,6 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -54,8 +51,6 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 	 */
 	@Deprecated
 	protected static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 

@@ -26,9 +26,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -53,8 +50,6 @@ import org.springframework.util.StringUtils;
  */
 public class ServletRegistrationBean<T extends Servlet>
 		extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
-
-	private static final Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
