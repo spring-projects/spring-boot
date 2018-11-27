@@ -6837,7 +6837,7 @@ restricted set of auto-configuration classes. If you need to exclude one of them
 most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
 Alternatively, you can use `@ImportAutoConfiguration#exclude`.
 
-NOTE: Including multiple "`slices`" via the several `@...Test` annotations in one test is
+NOTE: Including multiple "`slices`" by using several `@...Test` annotations in one test is
 not supported. If you need multiple "`slices`", pick one of the `@...Test` annotations
 and include the `@AutoConfigure...` annotations of the other "`slices`" by hand.
 
