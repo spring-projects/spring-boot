@@ -54,6 +54,7 @@ public class CodecsAutoConfiguration {
 	static class JacksonCodecConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnBean(ObjectMapper.class)
 		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
 			return (configurer) -> {

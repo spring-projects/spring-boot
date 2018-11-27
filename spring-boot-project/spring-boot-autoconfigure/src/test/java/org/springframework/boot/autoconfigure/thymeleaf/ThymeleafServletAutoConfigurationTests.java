@@ -229,7 +229,8 @@ public class ThymeleafServletAutoConfigurationTests {
 			SecurityContextHolder.setContext(new SecurityContextImpl(
 					new TestingAuthenticationToken("alice", "admin")));
 			String result = engine.process("security-dialect", attrs);
-			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>\n");
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>"
+					+ System.lineSeparator());
 		}
 		finally {
 			SecurityContextHolder.clearContext();

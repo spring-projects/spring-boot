@@ -156,6 +156,8 @@ public class EmbeddedMongoAutoConfiguration {
 					return version;
 				}
 			}
+			return Versions.withFeatures(
+					new GenericVersion(this.embeddedProperties.getVersion()));
 		}
 		return Versions.withFeatures(
 				new GenericVersion(this.embeddedProperties.getVersion()),

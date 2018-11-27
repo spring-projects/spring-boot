@@ -113,7 +113,9 @@ public class SampleIntegrationApplicationTests {
 				.getResourcePatternResolver(new DefaultResourceLoader())
 				.getResources("file:target/output/**");
 		for (Resource candidate : candidates) {
-			if (candidate.contentLength() == 0) {
+			if ((candidate.getFilename() != null
+					&& candidate.getFilename().endsWith(".writing"))
+					|| candidate.contentLength() == 0) {
 				return new Resource[0];
 			}
 		}

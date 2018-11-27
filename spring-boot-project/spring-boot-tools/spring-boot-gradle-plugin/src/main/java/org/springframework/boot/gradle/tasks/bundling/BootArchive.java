@@ -93,10 +93,25 @@ public interface BootArchive extends Task {
 
 	/**
 	 * Adds files to the classpath to include in the archive. The given {@code classpath}
-	 * are evaluated as per {@link Project#files(Object...)}.
+	 * is evaluated as per {@link Project#files(Object...)}.
 	 * @param classpath the additions to the classpath
 	 */
 	void classpath(Object... classpath);
+
+	/**
+	 * Sets the classpath to include in the archive. The given {@code classpath} is
+	 * evaluated as per {@link Project#files(Object...)}.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	void setClasspath(Object classpath);
+
+	/**
+	 * Sets the classpath to include in the archive.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	void setClasspath(FileCollection classpath);
 
 	/**
 	 * Returns {@code true} if the Devtools jar should be excluded, otherwise

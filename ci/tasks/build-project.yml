@@ -10,7 +10,7 @@ caches:
 run:
   path: bash
   args:
-    - -exc
+    - -ec
     - |
       source /docker-lib.sh
       start_docker

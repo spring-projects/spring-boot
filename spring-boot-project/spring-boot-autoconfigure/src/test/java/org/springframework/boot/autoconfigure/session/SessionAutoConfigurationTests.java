@@ -26,11 +26,9 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
@@ -38,10 +36,13 @@ import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SessionAutoConfiguration}.
@@ -165,24 +166,83 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	public void sessionCookieConfigurationIsPickedUp() {
-		WebApplicationContextRunner webRunner = new WebApplicationContextRunner(
-				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(SessionRepositoryConfiguration.class)
-						.withPropertyValues("server.port=0",
-								"server.servlet.session.cookie.name=testname");
-		webRunner.run((context) -> {
-			SessionRepositoryFilter<?> filter = context
-					.getBean(SessionRepositoryFilter.class);
-			CookieHttpSessionIdResolver sessionIdResolver = (CookieHttpSessionIdResolver) ReflectionTestUtils
-					.getField(filter, "httpSessionIdResolver");
-			DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
-					.getField(sessionIdResolver, "cookieSerializer");
-			assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName",
-					"testname");
-		});
+	public void sessionCookieConfigurationIsAppliedToAutoConfiguredCookieSerializer() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.cookie.name=sid",
+						"server.servlet.session.cookie.domain=spring",
+						"server.servlet.session.cookie.path=/test",
+						"server.servlet.session.cookie.httpOnly=false",
+						"server.servlet.session.cookie.secure=false",
+						"server.servlet.session.cookie.maxAge=10s")
+				.run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName",
+							"sid");
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("domainName",
+							"spring");
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookiePath",
+							"/test");
+					assertThat(cookieSerializer)
+							.hasFieldOrPropertyWithValue("useHttpOnlyCookie", false);
+					assertThat(cookieSerializer)
+							.hasFieldOrPropertyWithValue("useSecureCookie", false);
+					assertThat(cookieSerializer)
+							.hasFieldOrPropertyWithValue("cookieMaxAge", 10);
+				});
+	}
+
+	@Test
+	public void autoConfiguredCookieSerializerIsUsedBySessionRepositoryFilter() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.port=0").run((context) -> {
+					SessionRepositoryFilter<?> filter = context
+							.getBean(SessionRepositoryFilter.class);
+					CookieHttpSessionIdResolver sessionIdResolver = (CookieHttpSessionIdResolver) ReflectionTestUtils
+							.getField(filter, "httpSessionIdResolver");
+					DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
+							.getField(sessionIdResolver, "cookieSerializer");
+					assertThat(cookieSerializer)
+							.isSameAs(context.getBean(DefaultCookieSerializer.class));
+				});
+	}
+
+	@Test
+	public void autoConfiguredCookieSerializerBacksOffWhenUserConfiguresACookieSerializer() {
+		this.contextRunner
+				.withUserConfiguration(UserProvidedCookieSerializerConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DefaultCookieSerializer.class);
+					assertThat(context).hasBean("myCookieSerializer");
+				});
+	}
+
+	@Test
+	public void cookiesSerializerIsAutoConfiguredWhenUserConfiguresCookieHttpSessionIdResolver() {
+		this.contextRunner
+				.withUserConfiguration(
+						UserProvidedCookieHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class))
+								.isNotEmpty());
+	}
+
+	@Test
+	public void autoConfiguredCookieSerializerBacksOffWhenUserConfiguresHeaderHttpSessionIdResolver() {
+		this.contextRunner
+				.withUserConfiguration(
+						UserProvidedHeaderHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
+	}
+
+	@Test
+	public void autoConfiguredCookieSerializerBacksOffWhenUserConfiguresCustomHttpSessionIdResolver() {
+		this.contextRunner
+				.withUserConfiguration(
+						UserProvidedCustomHttpSessionStrategyConfiguration.class)
+				.run((context) -> assertThat(
+						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
 	}
 
 	@Configuration
@@ -198,6 +258,54 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@EnableConfigurationProperties(ServerProperties.class)
 	static class ServerPropertiesConfiguration {
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCookieSerializerConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public DefaultCookieSerializer myCookieSerializer() {
+			return new DefaultCookieSerializer();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCookieHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public CookieHttpSessionIdResolver httpSessionStrategy() {
+			return new CookieHttpSessionIdResolver();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedHeaderHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public HeaderHttpSessionIdResolver httpSessionStrategy() {
+			return HeaderHttpSessionIdResolver.xAuthToken();
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class UserProvidedCustomHttpSessionStrategyConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public HttpSessionIdResolver httpSessionStrategy() {
+			return mock(HttpSessionIdResolver.class);
+		}
 
 	}
 

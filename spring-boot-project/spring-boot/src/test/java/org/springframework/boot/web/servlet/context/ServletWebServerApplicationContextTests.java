@@ -31,6 +31,7 @@ import javax.servlet.ServletResponse;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -47,6 +48,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -90,6 +92,9 @@ import static org.mockito.Mockito.withSettings;
 public class ServletWebServerApplicationContextTests {
 
 	private ServletWebServerApplicationContext context;
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Captor
 	private ArgumentCaptor<Filter> filterCaptor;
@@ -463,6 +468,7 @@ public class ServletWebServerApplicationContextTests {
 	@Test
 	public void servletRequestCanBeInjectedEarly() throws Exception {
 		// gh-14990
+		int initialOutputLength = this.output.toString().length();
 		addWebServerFactoryBean();
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				WithAutowiredServletRequest.class);
@@ -481,6 +487,16 @@ public class ServletWebServerApplicationContextTests {
 
 		});
 		this.context.refresh();
+		String output = this.output.toString().substring(initialOutputLength);
+		assertThat(output).doesNotContain("Replacing scope");
+	}
+
+	@Test
+	public void webApplicationScopeIsRegistered() throws Exception {
+		addWebServerFactoryBean();
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory()
+				.getRegisteredScope(WebApplicationContext.SCOPE_APPLICATION)).isNotNull();
 	}
 
 	private void addWebServerFactoryBean() {

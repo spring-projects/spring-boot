@@ -1049,9 +1049,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void exceptionThrownOnLoadFailureIsRethrown() {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(this.webServer::start)
 				.satisfies(this::wrapsFailingServletException);

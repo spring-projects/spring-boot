@@ -225,7 +225,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 						new TestingAuthenticationToken("alice", "admin")));
 		IContext attrs = new SpringWebFluxContext(exchange);
 		String result = engine.process("security-dialect", attrs);
-		assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>\n");
+		assertThat(result).isEqualTo(
+				"<html><body><div>alice</div></body></html>" + System.lineSeparator());
 	}
 
 	@Test

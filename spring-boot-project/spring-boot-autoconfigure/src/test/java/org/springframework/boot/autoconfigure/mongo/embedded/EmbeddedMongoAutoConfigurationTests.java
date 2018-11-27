@@ -24,6 +24,7 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
+import de.flapdoodle.embed.mongo.distribution.Version;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
@@ -67,7 +68,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void customVersion() {
-		assertVersionConfiguration("3.4.15", "3.4.15");
+		String version = Version.V3_4_15.asInDownloadPath();
+		assertVersionConfiguration(version, version);
+	}
+
+	@Test
+	public void customUnknownVersion() {
+		assertVersionConfiguration("3.4.1", "3.4.1");
 	}
 
 	@Test

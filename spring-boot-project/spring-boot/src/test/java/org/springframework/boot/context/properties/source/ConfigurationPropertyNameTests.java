@@ -610,6 +610,26 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	public void equalsWhenStartsWithOfAdaptedName() {
+		// gh-15152
+		ConfigurationPropertyName n1 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPHA", '.');
+		ConfigurationPropertyName n2 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPHA_BRAVO", '.');
+		assertThat(n1).isNotEqualTo(n2);
+	}
+
+	@Test
+	public void equalsWhenStartsWithOfAdaptedNameOfIllegalChars() {
+		// gh-15152
+		ConfigurationPropertyName n1 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPH!", '.');
+		ConfigurationPropertyName n2 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPHA!BRAVO", '.');
+		assertThat(n1).isNotEqualTo(n2);
+	}
+
+	@Test
 	public void isValidWhenValidShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();

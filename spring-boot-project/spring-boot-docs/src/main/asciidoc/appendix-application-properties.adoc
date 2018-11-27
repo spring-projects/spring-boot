@@ -1180,9 +1180,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.ssl.trust-store-type=JKS # Trust store type.
 	spring.rabbitmq.ssl.validate-server-certificate=true # Whether to enable server side certificate validation.
 	spring.rabbitmq.ssl.verify-hostname=true # Whether to enable hostname verification.
+	spring.rabbitmq.template.default-receive-queue= # Name of the default queue to receive messages from when none is specified explicitly.
 	spring.rabbitmq.template.exchange= # Name of the default exchange to use for send operations.
 	spring.rabbitmq.template.mandatory= # Whether to enable mandatory messages.
-	spring.rabbitmq.template.queue= # Name of the default queue to receive messages from when none is specified explicitly.
 	spring.rabbitmq.template.receive-timeout= # Timeout for `receive()` operations.
 	spring.rabbitmq.template.reply-timeout= # Timeout for `sendAndReceive()` operations.
 	spring.rabbitmq.template.retry.enabled=false # Whether publishing retries are enabled.

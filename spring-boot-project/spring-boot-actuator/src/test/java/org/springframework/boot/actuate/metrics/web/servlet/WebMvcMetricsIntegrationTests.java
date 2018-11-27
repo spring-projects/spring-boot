@@ -110,7 +110,7 @@ public class WebMvcMetricsIntegrationTests {
 		@Bean
 		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
 				WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
 					"http.server.requests", true);
 		}
 

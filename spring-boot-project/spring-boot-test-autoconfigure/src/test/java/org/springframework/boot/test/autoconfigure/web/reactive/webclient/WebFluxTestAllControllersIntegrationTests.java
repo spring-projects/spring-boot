@@ -55,4 +55,9 @@ public class WebFluxTestAllControllersIntegrationTests {
 		this.webClient.get().uri("/one/error").exchange().expectStatus().isBadRequest();
 	}
 
+	@Test
+	public void shouldFindJsonController() {
+		this.webClient.get().uri("/json").exchange().expectStatus().isOk();
+	}
+
 }
