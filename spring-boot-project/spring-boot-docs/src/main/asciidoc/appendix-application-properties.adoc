@@ -233,7 +233,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.servlet.session.timeout=30m # Session timeout. If a duration suffix is not specified, seconds will be used.
 	server.servlet.session.tracking-modes= # Session tracking modes.
 	server.ssl.ciphers= # Supported SSL ciphers.
-	server.ssl.client-auth= # Whether client authentication is not wanted ("none"), wanted ("want") or needed ("need"). Requires a trust store.
+	server.ssl.client-auth= # Client authentication mode.
 	server.ssl.enabled=true # Whether to enable SSL support.
 	server.ssl.enabled-protocols= # Enabled SSL protocols.
 	server.ssl.key-alias= # Alias that identifies the key in the key store.
@@ -1205,7 +1205,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.server.port= # Management endpoint HTTP port (uses the same port as the application by default). Configure a different port to use management-specific SSL.
 	management.server.servlet.context-path= # Management endpoint context-path (for instance, `/management`). Requires a custom management.server.port.
 	management.server.ssl.ciphers= # Supported SSL ciphers.
-	management.server.ssl.client-auth= # Whether client authentication is not wanted ("none"), wanted ("want") or needed ("need"). Requires a trust store.
+	management.server.ssl.client-auth= # Client authentication mode.
 	management.server.ssl.enabled=true # Whether to enable SSL support.
 	management.server.ssl.enabled-protocols= # Enabled SSL protocols.
 	management.server.ssl.key-alias= # Alias that identifies the key in the key store.
