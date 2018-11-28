@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -114,9 +115,13 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		@Autowired
 		public void bindMetricsRegistryToHikariDataSources(
 				Collection<DataSource> dataSources) {
-			dataSources.stream().filter(HikariDataSource.class::isInstance)
-					.map(HikariDataSource.class::cast)
-					.forEach(this::bindMetricsRegistryToHikariDataSource);
+			for (DataSource dataSource : dataSources) {
+				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource,
+						HikariDataSource.class);
+				if (hikariDataSource != null) {
+					bindMetricsRegistryToHikariDataSource(hikariDataSource);
+				}
+			}
 		}
 
 		private void bindMetricsRegistryToHikariDataSource(HikariDataSource hikari) {
