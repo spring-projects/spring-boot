@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -82,8 +81,8 @@ public class SessionAutoConfigurationMongoTests
 		return (context) -> {
 			MongoOperationsSessionRepository repository = validateSessionRepository(
 					context, MongoOperationsSessionRepository.class);
-			assertThat(new DirectFieldAccessor(repository)
-					.getPropertyValue("collectionName")).isEqualTo(collectionName);
+			assertThat(repository).hasFieldOrPropertyWithValue("collectionName",
+					collectionName);
 		};
 	}
 

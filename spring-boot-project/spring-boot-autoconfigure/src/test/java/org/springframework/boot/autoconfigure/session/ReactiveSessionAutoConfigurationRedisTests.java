@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
@@ -81,10 +80,9 @@ public class ReactiveSessionAutoConfigurationRedisTests
 		return (context) -> {
 			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(
 					context, ReactiveRedisOperationsSessionRepository.class);
-			assertThat(new DirectFieldAccessor(repository).getPropertyValue("namespace"))
-					.isEqualTo(namespace);
-			assertThat(new DirectFieldAccessor(repository)
-					.getPropertyValue("redisFlushMode")).isEqualTo(flushMode);
+			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
+			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode",
+					flushMode);
 		};
 	}
 

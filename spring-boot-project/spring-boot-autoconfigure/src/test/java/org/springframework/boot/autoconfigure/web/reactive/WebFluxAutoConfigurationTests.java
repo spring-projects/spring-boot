@@ -27,7 +27,6 @@ import javax.validation.ValidatorFactory;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
@@ -355,9 +354,8 @@ public class WebFluxAutoConfigurationTests {
 					Validator validator = context.getBean(Validator.class);
 					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 					Validator target = ((ValidatorAdapter) validator).getTarget();
-					assertThat(new DirectFieldAccessor(target)
-							.getPropertyValue("targetValidator"))
-									.isSameAs(context.getBean("customValidator"));
+					assertThat(target).hasFieldOrPropertyWithValue("targetValidator",
+							context.getBean("customValidator"));
 				});
 	}
 

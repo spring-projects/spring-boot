@@ -47,9 +47,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
-import org.springframework.amqp.rabbit.support.ValueExpression;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -96,7 +94,6 @@ public class RabbitAutoConfigurationTests {
 							.getBean(RabbitMessagingTemplate.class);
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
 					RabbitAdmin amqpAdmin = context.getBean(RabbitAdmin.class);
 					assertThat(rabbitTemplate.getConnectionFactory())
 							.isEqualTo(connectionFactory);
@@ -105,9 +102,8 @@ public class RabbitAutoConfigurationTests {
 							.isEqualTo(rabbitTemplate);
 					assertThat(amqpAdmin).isNotNull();
 					assertThat(connectionFactory.getHost()).isEqualTo("localhost");
-					assertThat(dfa.getPropertyValue("publisherConfirms"))
-							.isEqualTo(false);
-					assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(false);
+					assertThat(connectionFactory.isPublisherConfirms()).isFalse();
+					assertThat(connectionFactory.isPublisherReturns()).isFalse();
 					assertThat(context.containsBean("rabbitListenerContainerFactory"))
 							.as("Listener container factory should be created by default")
 							.isTrue();
@@ -155,11 +151,11 @@ public class RabbitAutoConfigurationTests {
 					assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
 					assertThat(connectionFactory.getPort()).isEqualTo(9000);
 					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
-					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-					com.rabbitmq.client.ConnectionFactory rcf = (com.rabbitmq.client.ConnectionFactory) dfa
-							.getPropertyValue("rabbitConnectionFactory");
+					com.rabbitmq.client.ConnectionFactory rcf = connectionFactory
+							.getRabbitConnectionFactory();
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
-					assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
+					assertThat((Address[]) ReflectionTestUtils.getField(connectionFactory,
+							"addresses")).hasSize(1);
 				});
 	}
 
@@ -170,14 +166,15 @@ public class RabbitAutoConfigurationTests {
 				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-					Address[] addresses = (Address[]) dfa.getPropertyValue("addresses");
+					Address[] addresses = (Address[]) ReflectionTestUtils
+							.getField(connectionFactory, "addresses");
 					assertThat(addresses).hasSize(1);
 					com.rabbitmq.client.ConnectionFactory rcf = mock(
 							com.rabbitmq.client.ConnectionFactory.class);
 					given(rcf.newConnection(isNull(), eq(addresses), anyString()))
 							.willReturn(mock(Connection.class));
-					dfa.setPropertyValue("rabbitConnectionFactory", rcf);
+					ReflectionTestUtils.setField(connectionFactory,
+							"rabbitConnectionFactory", rcf);
 					connectionFactory.createConnection();
 					verify(rcf).newConnection(isNull(), eq(addresses), eq("test#0"));
 					connectionFactory.resetConnection();
@@ -236,9 +233,8 @@ public class RabbitAutoConfigurationTests {
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-					assertThat(dfa.getPropertyValue("publisherConfirms")).isEqualTo(true);
-					assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(true);
+					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
+					assertThat(connectionFactory.isPublisherReturns()).isTrue();
 					assertThat(getMandatory(rabbitTemplate)).isTrue();
 				});
 	}
@@ -250,8 +246,8 @@ public class RabbitAutoConfigurationTests {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					assertThat(rabbitTemplate.getMessageConverter())
 							.isSameAs(context.getBean("myMessageConverter"));
-					DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
-					assertThat(dfa.getPropertyValue("retryTemplate")).isNull();
+					assertThat(rabbitTemplate)
+							.hasFieldOrPropertyWithValue("retryTemplate", null);
 				});
 	}
 
@@ -267,17 +263,17 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.template.replyTimeout:456")
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
-					assertThat(dfa.getPropertyValue("receiveTimeout")).isEqualTo(123L);
-					assertThat(dfa.getPropertyValue("replyTimeout")).isEqualTo(456L);
-					RetryTemplate retryTemplate = (RetryTemplate) dfa
-							.getPropertyValue("retryTemplate");
+					assertThat(rabbitTemplate)
+							.hasFieldOrPropertyWithValue("receiveTimeout", 123L);
+					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue("replyTimeout",
+							456L);
+					RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils
+							.getField(rabbitTemplate, "retryTemplate");
 					assertThat(retryTemplate).isNotNull();
-					dfa = new DirectFieldAccessor(retryTemplate);
-					SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa
-							.getPropertyValue("retryPolicy");
-					ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
-							.getPropertyValue("backOffPolicy");
+					SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils
+							.getField(retryTemplate, "retryPolicy");
+					ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) ReflectionTestUtils
+							.getField(retryTemplate, "backOffPolicy");
 					assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
 					assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 					assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
@@ -293,16 +289,13 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.template.retry.initialInterval:2000")
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
-					RetryTemplate retryTemplate = (RetryTemplate) dfa
-							.getPropertyValue("retryTemplate");
+					RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils
+							.getField(rabbitTemplate, "retryTemplate");
 					assertThat(retryTemplate).isNotNull();
-					dfa = new DirectFieldAccessor(retryTemplate);
-					assertThat(dfa.getPropertyValue("backOffPolicy"))
-							.isSameAs(context.getBean(
-									RabbitRetryTemplateCustomizerConfiguration.class).backOffPolicy);
-					ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
-							.getPropertyValue("backOffPolicy");
+					ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) ReflectionTestUtils
+							.getField(retryTemplate, "backOffPolicy");
+					assertThat(backOffPolicy).isSameAs(context.getBean(
+							RabbitRetryTemplateCustomizerConfiguration.class).backOffPolicy);
 					assertThat(backOffPolicy.getInitialInterval()).isEqualTo(100);
 				});
 	}
@@ -389,13 +382,12 @@ public class RabbitAutoConfigurationTests {
 				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
-					assertThat(dfa.getPropertyValue("channelCacheSize")).isEqualTo(23);
-					assertThat(dfa.getPropertyValue("cacheMode"))
+					assertThat(connectionFactory.getChannelCacheSize()).isEqualTo(23);
+					assertThat(connectionFactory.getCacheMode())
 							.isEqualTo(CacheMode.CONNECTION);
-					assertThat(dfa.getPropertyValue("connectionCacheSize")).isEqualTo(2);
-					assertThat(dfa.getPropertyValue("channelCheckoutTimeout"))
-							.isEqualTo(1000L);
+					assertThat(connectionFactory.getConnectionCacheSize()).isEqualTo(2);
+					assertThat(connectionFactory)
+							.hasFieldOrPropertyWithValue("channelCheckoutTimeout", 1000L);
 				});
 	}
 
@@ -453,10 +445,7 @@ public class RabbitAutoConfigurationTests {
 									SimpleRabbitListenerContainerFactory.class);
 					rabbitListenerContainerFactory.setTxSize(10);
 					verify(rabbitListenerContainerFactory).setTxSize(10);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(
-							rabbitListenerContainerFactory);
-					Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
-					assertThat(adviceChain).isNull();
+					assertThat(rabbitListenerContainerFactory.getAdviceChain()).isNull();
 				});
 	}
 
@@ -483,15 +472,15 @@ public class RabbitAutoConfigurationTests {
 					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 							.getBean("rabbitListenerContainerFactory",
 									SimpleRabbitListenerContainerFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(
-							rabbitListenerContainerFactory);
-					assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
-					assertThat(dfa.getPropertyValue("maxConcurrentConsumers"))
-							.isEqualTo(10);
-					assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
-					assertThat(dfa.getPropertyValue("missingQueuesFatal"))
-							.isEqualTo(false);
-					checkCommonProps(context, dfa);
+					assertThat(rabbitListenerContainerFactory)
+							.hasFieldOrPropertyWithValue("concurrentConsumers", 5);
+					assertThat(rabbitListenerContainerFactory)
+							.hasFieldOrPropertyWithValue("maxConcurrentConsumers", 10);
+					assertThat(rabbitListenerContainerFactory)
+							.hasFieldOrPropertyWithValue("txSize", 20);
+					assertThat(rabbitListenerContainerFactory)
+							.hasFieldOrPropertyWithValue("missingQueuesFatal", false);
+					checkCommonProps(context, rabbitListenerContainerFactory);
 				});
 	}
 
@@ -517,12 +506,11 @@ public class RabbitAutoConfigurationTests {
 					DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 							.getBean("rabbitListenerContainerFactory",
 									DirectRabbitListenerContainerFactory.class);
-					DirectFieldAccessor dfa = new DirectFieldAccessor(
-							rabbitListenerContainerFactory);
-					assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
-					assertThat(dfa.getPropertyValue("missingQueuesFatal"))
-							.isEqualTo(true);
-					checkCommonProps(context, dfa);
+					assertThat(rabbitListenerContainerFactory)
+							.hasFieldOrPropertyWithValue("consumersPerQueue", 5);
+					assertThat(rabbitListenerContainerFactory)
+							.hasFieldOrPropertyWithValue("missingQueuesFatal", true);
+					checkCommonProps(context, rabbitListenerContainerFactory);
 				});
 	}
 
@@ -562,15 +550,13 @@ public class RabbitAutoConfigurationTests {
 	private void assertListenerRetryTemplate(
 			AbstractRabbitListenerContainerFactory<?> rabbitListenerContainerFactory,
 			RetryPolicy retryPolicy) {
-		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
+		Advice[] adviceChain = rabbitListenerContainerFactory.getAdviceChain();
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);
-		dfa = new DirectFieldAccessor(adviceChain[0]);
-		RetryTemplate retryTemplate = (RetryTemplate) dfa
-				.getPropertyValue("retryOperations");
-		dfa = new DirectFieldAccessor(retryTemplate);
-		assertThat(dfa.getPropertyValue("retryPolicy")).isSameAs(retryPolicy);
+		Advice advice = adviceChain[0];
+		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice,
+				"retryOperations");
+		assertThat(retryTemplate).hasFieldOrPropertyWithValue("retryPolicy", retryPolicy);
 	}
 
 	@Test
@@ -628,36 +614,36 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	private void checkCommonProps(AssertableApplicationContext context,
-			DirectFieldAccessor dfa) {
-		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
-		assertThat(dfa.getPropertyValue("acknowledgeMode"))
-				.isEqualTo(AcknowledgeMode.MANUAL);
-		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
-		assertThat(dfa.getPropertyValue("messageConverter"))
-				.isSameAs(context.getBean("myMessageConverter"));
-		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
-				.isEqualTo(Boolean.FALSE);
-		assertThat(dfa.getPropertyValue("idleEventInterval")).isEqualTo(5L);
-		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
+			AbstractRabbitListenerContainerFactory containerFactory) {
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("autoStartup",
+				Boolean.FALSE);
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("acknowledgeMode",
+				AcknowledgeMode.MANUAL);
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("prefetchCount", 40);
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("messageConverter",
+				context.getBean("myMessageConverter"));
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("defaultRequeueRejected",
+				Boolean.FALSE);
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("idleEventInterval", 5L);
+		Advice[] adviceChain = containerFactory.getAdviceChain();
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);
-		dfa = new DirectFieldAccessor(adviceChain[0]);
+		Advice advice = adviceChain[0];
 		MessageRecoverer messageRecoverer = context.getBean("myMessageRecoverer",
 				MessageRecoverer.class);
-		MethodInvocationRecoverer<?> mir = (MethodInvocationRecoverer<?>) dfa
-				.getPropertyValue("recoverer");
+		MethodInvocationRecoverer<?> mir = (MethodInvocationRecoverer<?>) ReflectionTestUtils
+				.getField(advice, "recoverer");
 		Message message = mock(Message.class);
 		Exception ex = new Exception("test");
 		mir.recover(new Object[] { "foo", message }, ex);
 		verify(messageRecoverer).recover(message, ex);
-		RetryTemplate retryTemplate = (RetryTemplate) dfa
-				.getPropertyValue("retryOperations");
+		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice,
+				"retryOperations");
 		assertThat(retryTemplate).isNotNull();
-		dfa = new DirectFieldAccessor(retryTemplate);
-		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa
-				.getPropertyValue("retryPolicy");
-		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
-				.getPropertyValue("backOffPolicy");
+		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils
+				.getField(retryTemplate, "retryPolicy");
+		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) ReflectionTestUtils
+				.getField(retryTemplate, "backOffPolicy");
 		assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
 		assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 		assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
@@ -825,15 +811,11 @@ public class RabbitAutoConfigurationTests {
 			AssertableApplicationContext context) {
 		CachingConnectionFactory connectionFactory = context
 				.getBean(CachingConnectionFactory.class);
-		return (com.rabbitmq.client.ConnectionFactory) new DirectFieldAccessor(
-				connectionFactory).getPropertyValue("rabbitConnectionFactory");
+		return connectionFactory.getRabbitConnectionFactory();
 	}
 
-	@SuppressWarnings("unchecked")
 	private boolean getMandatory(RabbitTemplate rabbitTemplate) {
-		ValueExpression<Boolean> expression = (ValueExpression<Boolean>) new DirectFieldAccessor(
-				rabbitTemplate).getPropertyValue("mandatoryExpression");
-		return expression.getValue();
+		return rabbitTemplate.isMandatoryFor(mock(Message.class));
 	}
 
 	@Configuration

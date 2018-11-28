@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -100,13 +99,11 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void mainClassHasSensibleDefault() {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
-				.getPropertyValue("mainApplicationClass");
-		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
+		assertThat(this.application).hasFieldOrPropertyWithValue("mainApplicationClass",
+				WithConfigurationAnnotation.class);
 	}
 
 	@Test
