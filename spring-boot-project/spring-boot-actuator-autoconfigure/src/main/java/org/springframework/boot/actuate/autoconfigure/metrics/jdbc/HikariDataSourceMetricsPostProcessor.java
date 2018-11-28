@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
+import javax.sql.DataSource;
+
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -23,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 
@@ -48,11 +51,19 @@ class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor, Ordered
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
-		if (bean instanceof HikariDataSource) {
-			bindMetricsRegistryToHikariDataSource(getMeterRegistry(),
-					(HikariDataSource) bean);
+		HikariDataSource hikariDataSource = determineHikariDataSource(bean);
+		if (hikariDataSource != null) {
+			bindMetricsRegistryToHikariDataSource(getMeterRegistry(), hikariDataSource);
 		}
 		return bean;
+	}
+
+	private HikariDataSource determineHikariDataSource(Object bean) {
+		if (!(bean instanceof DataSource)) {
+			return null;
+		}
+		DataSource dataSource = (DataSource) bean;
+		return DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
 	}
 
 	private void bindMetricsRegistryToHikariDataSource(MeterRegistry registry,
