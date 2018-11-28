@@ -28,7 +28,7 @@ public class Ssl {
 
 	private boolean enabled = true;
 
-	private ClientAuth clientAuth = ClientAuth.NONE;
+	private ClientAuth clientAuth;
 
 	private String[] ciphers;
 
@@ -78,12 +78,7 @@ public class Ssl {
 	}
 
 	public void setClientAuth(ClientAuth clientAuth) {
-		if (clientAuth == null) {
-			this.clientAuth = ClientAuth.NONE;
-		}
-		else {
-			this.clientAuth = clientAuth;
-		}
+		this.clientAuth = clientAuth;
 	}
 
 	/**
