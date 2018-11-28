@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.apache.http.HttpStatus;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
@@ -29,22 +28,29 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.util.StreamUtils;
 
 /**
- * {@link HealthIndicator} for an Elasticsearch cluster by REST.
+ * {@link HealthIndicator} for an Elasticsearch cluster using a {@link RestClient}.
  *
  * @author Artsiom Yudovin
- * @since 2.1.0
+ * @author Brian Clozel
+ * @since 2.1.1
  */
 public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 
+	private static final String RED_STATUS = "red";
+
 	private final RestClient client;
 
-	private final JsonParser jsonParser = new JsonParser();
+	private final JsonParser jsonParser;
 
 	public ElasticsearchRestHealthIndicator(RestClient client) {
 		super("Elasticsearch health check failed");
 		this.client = client;
+		this.jsonParser = JsonParserFactory.getJsonParser();
 	}
 
 	@Override
@@ -56,12 +62,11 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 			builder.down();
 		}
 		else {
-			try (InputStreamReader reader = new InputStreamReader(
-					response.getEntity().getContent(), StandardCharsets.UTF_8)) {
-				JsonElement root = this.jsonParser.parse(reader);
-				JsonElement status = root.getAsJsonObject().get("status");
-				if (status.getAsString()
-						.equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
+			try (InputStream is = response.getEntity().getContent()) {
+				Map<String, Object> root = this.jsonParser
+						.parseMap(StreamUtils.copyToString(is, StandardCharsets.UTF_8));
+				String status = (String) root.get("status");
+				if (status.equals(RED_STATUS)) {
 					builder.outOfService();
 				}
 				else {

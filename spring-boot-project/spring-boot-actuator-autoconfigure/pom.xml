@@ -265,6 +265,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>elasticsearch-rest-client</artifactId>
 			<optional>true</optional>

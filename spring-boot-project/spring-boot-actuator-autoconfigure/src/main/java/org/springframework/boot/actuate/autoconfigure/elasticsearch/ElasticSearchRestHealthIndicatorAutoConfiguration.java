@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link ElasticsearchRestHealthIndicator} using the {@link RestClient}.
  *
  * @author Artsiom Yudovin
- * @since 2.1.0
+ * @since 2.1.1
  */
 
 @Configuration
