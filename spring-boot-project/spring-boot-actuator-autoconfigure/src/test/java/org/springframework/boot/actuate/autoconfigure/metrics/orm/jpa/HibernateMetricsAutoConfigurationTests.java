@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link HibernateMetricsAutoConfiguration}.
  *
  * @author Rui Figueira
+ * @author Stephane Nicoll
  */
 public class HibernateMetricsAutoConfigurationTests {
 
@@ -132,6 +134,19 @@ public class HibernateMetricsAutoConfigurationTests {
 					assertThatThrownBy(() -> context.getBean(EntityManagerFactory.class)
 							.unwrap(SessionFactory.class))
 									.isInstanceOf(PersistenceException.class);
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("hibernate.statements").meter()).isNull();
+				});
+	}
+
+	@Test
+	public void entityManagerFactoryInstrumentationIsDisabledIfHibernateIsNotAvailable() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(SessionFactory.class))
+				.withUserConfiguration(
+						NonHibernateEntityManagerFactoryConfiguration.class)
+				.run((context) -> {
+					assertThat(context)
+							.doesNotHaveBean(HibernateMetricsAutoConfiguration.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
