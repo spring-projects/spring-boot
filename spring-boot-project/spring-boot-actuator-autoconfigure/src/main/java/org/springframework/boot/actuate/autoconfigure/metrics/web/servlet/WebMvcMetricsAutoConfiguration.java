@@ -105,6 +105,9 @@ public class WebMvcMetricsAutoConfiguration {
 		return new MetricsWebMvcConfigurer(meterRegistry, tagsProvider);
 	}
 
+	/**
+	 * {@link WebMvcConfigurer} to add metrics interceptors.
+	 */
 	static class MetricsWebMvcConfigurer implements WebMvcConfigurer {
 
 		private final MeterRegistry meterRegistry;
