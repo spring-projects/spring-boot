@@ -450,7 +450,7 @@ public class KafkaAutoConfigurationTests {
 							.getBean(DefaultKafkaConsumerFactory.class);
 					KafkaTemplate<?, ?> kafkaTemplate = context
 							.getBean(KafkaTemplate.class);
-					AbstractKafkaListenerContainerFactory kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory) context
+					AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
 							.getBean(KafkaListenerContainerFactory.class);
 					assertThat(kafkaTemplate.getMessageConverter())
 							.isInstanceOf(MessagingMessageConverter.class);

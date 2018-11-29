@@ -614,7 +614,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	private void checkCommonProps(AssertableApplicationContext context,
-			AbstractRabbitListenerContainerFactory containerFactory) {
+			AbstractRabbitListenerContainerFactory<?> containerFactory) {
 		assertThat(containerFactory).hasFieldOrPropertyWithValue("autoStartup",
 				Boolean.FALSE);
 		assertThat(containerFactory).hasFieldOrPropertyWithValue("acknowledgeMode",
