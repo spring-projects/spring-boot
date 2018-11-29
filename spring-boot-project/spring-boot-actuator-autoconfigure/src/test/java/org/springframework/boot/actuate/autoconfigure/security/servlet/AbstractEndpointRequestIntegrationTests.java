@@ -161,7 +161,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 
 	}
 
-	interface TestPathMappedEndpoint
+	public interface TestPathMappedEndpoint
 			extends ExposableEndpoint<Operation>, PathMappedEndpoint {
 
 	}

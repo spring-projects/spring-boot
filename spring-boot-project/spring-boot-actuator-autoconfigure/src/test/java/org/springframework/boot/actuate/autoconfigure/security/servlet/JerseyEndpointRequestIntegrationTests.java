@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -40,12 +41,14 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  * Integration tests for {@link EndpointRequest} with Jersey.
@@ -59,6 +62,8 @@ public class JerseyEndpointRequestIntegrationTests
 	protected WebApplicationContextRunner getContextRunner() {
 		return new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(
+								"org.springframework.web.servlet.DispatcherServlet"))
 						.withUserConfiguration(JerseyEndpointConfiguration.class,
 								SecurityConfiguration.class, BaseConfiguration.class)
 						.withConfiguration(AutoConfigurations.of(
@@ -67,6 +72,41 @@ public class JerseyEndpointRequestIntegrationTests
 								SecurityRequestMatcherProviderAutoConfiguration.class,
 								JacksonAutoConfiguration.class,
 								JerseyAutoConfiguration.class));
+	}
+
+	@Test
+	public void toLinksWhenApplicationPathSetShouldMatch() {
+		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin")
+				.run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/").exchange().expectStatus()
+							.isOk();
+					webTestClient.get().uri("/admin/actuator").exchange().expectStatus()
+							.isOk();
+				});
+	}
+
+	@Test
+	public void toEndpointWhenApplicationPathSetShouldMatch() {
+		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin")
+				.run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/e1").exchange()
+							.expectStatus().isOk();
+				});
+	}
+
+	@Test
+	public void toAnyEndpointWhenApplicationPathSetShouldMatch() {
+		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin",
+				"spring.security.user.password=password").run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/e2").exchange()
+							.expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/e2")
+							.header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+				});
 	}
 
 	@Configuration
