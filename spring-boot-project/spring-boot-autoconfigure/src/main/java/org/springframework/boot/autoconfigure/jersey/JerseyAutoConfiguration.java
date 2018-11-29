@@ -109,16 +109,6 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		customize();
 	}
 
-	private String resolveApplicationPath() {
-		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
-			return this.jersey.getApplicationPath();
-		}
-		else {
-			return findApplicationPath(AnnotationUtils.findAnnotation(
-					this.config.getApplication().getClass(), ApplicationPath.class));
-		}
-	}
-
 	private void customize() {
 		if (this.customizers != null) {
 			AnnotationAwareOrderComparator.sort(this.customizers);
@@ -132,6 +122,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@ConditionalOnMissingBean
 	public JerseyApplicationPath jerseyApplicationPath() {
 		return this::resolveApplicationPath;
+	}
+
+	private String resolveApplicationPath() {
+		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
+			return this.jersey.getApplicationPath();
+		}
+		return findApplicationPath(AnnotationUtils.findAnnotation(
+				this.config.getApplication().getClass(), ApplicationPath.class));
 	}
 
 	@Bean

@@ -59,17 +59,15 @@ class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor, Ordered
 	}
 
 	private HikariDataSource determineHikariDataSource(Object bean) {
-		if (!(bean instanceof DataSource)) {
-			return null;
+		if (bean instanceof DataSource) {
+			return DataSourceUnwrapper.unwrap((DataSource) bean, HikariDataSource.class);
 		}
-		DataSource dataSource = (DataSource) bean;
-		return DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
+		return null;
 	}
 
 	private void bindMetricsRegistryToHikariDataSource(MeterRegistry registry,
 			HikariDataSource dataSource) {
-		if (dataSource.getMetricRegistry() == null
-				&& dataSource.getMetricsTrackerFactory() == null) {
+		if (!hasExisingMetrics(dataSource)) {
 			try {
 				dataSource.setMetricsTrackerFactory(
 						new MicrometerMetricsTrackerFactory(registry));
@@ -78,6 +76,11 @@ class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor, Ordered
 				logger.warn("Failed to bind Hikari metrics: " + ex.getMessage());
 			}
 		}
+	}
+
+	private boolean hasExisingMetrics(HikariDataSource dataSource) {
+		return dataSource.getMetricRegistry() != null
+				|| dataSource.getMetricsTrackerFactory() != null;
 	}
 
 	private MeterRegistry getMeterRegistry() {
