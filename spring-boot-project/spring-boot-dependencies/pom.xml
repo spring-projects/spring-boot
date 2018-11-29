@@ -139,7 +139,7 @@
 		<mysql.version>8.0.13</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.5</neo4j-ogm.version>
-		<netty.version>4.1.29.Final</netty.version>
+		<netty.version>4.1.31.Final</netty.version>
 		<netty-tcnative.version>2.0.17.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<pooled-jms-version>1.0.3</pooled-jms-version>
@@ -186,7 +186,7 @@
 		<thymeleaf-extras-springsecurity.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
-		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
+		<thymeleaf-extras-java8time.version>3.0.2.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.9</unboundid-ldapsdk.version>
 		<undertow.version>2.0.15.Final</undertow.version>
