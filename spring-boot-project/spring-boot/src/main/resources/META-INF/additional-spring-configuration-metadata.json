@@ -103,6 +103,20 @@
       "defaultValue": 0
     },
     {
+      "name": "logging.file.total-size-cap",
+      "type": "java.lang.String",
+      "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": 0
+    },
+    {
+      "name": "logging.file.clean-history-on-start",
+      "type": "java.lang.Boolean",
+      "description": "Whether to clean log backups on start. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
       "name": "logging.group",
       "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
       "description": "Log groups to quickly change multiple loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.",

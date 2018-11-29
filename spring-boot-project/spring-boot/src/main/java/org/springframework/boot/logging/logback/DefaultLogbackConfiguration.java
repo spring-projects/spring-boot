@@ -45,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Vedran Pavic
+ * @author Robert Thornton
  * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
@@ -145,6 +146,11 @@ class DefaultLogbackConfiguration {
 				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE));
 		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
 				Integer.class, CoreConstants.UNBOUND_HISTORY));
+		rollingPolicy.setTotalSizeCap(
+				FileSize.valueOf(this.patterns.getProperty("logging.file.total-size-cap",
+						"" + CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP)));
+		rollingPolicy.setCleanHistoryOnStart(Boolean.parseBoolean(this.patterns
+				.getProperty("logging.file.clean-history-on-start", "false")));
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
