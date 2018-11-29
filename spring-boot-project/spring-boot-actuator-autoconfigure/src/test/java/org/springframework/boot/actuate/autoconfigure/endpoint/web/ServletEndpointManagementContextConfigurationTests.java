@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
+import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -60,7 +61,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void servletPathShouldNotAffectJerseyConfiguration() {
+	public void contextWhenJerseyShouldContainServletEndpointRegistrar() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				DispatcherServlet.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
@@ -68,7 +69,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
 			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
-			assertThat(basePath).isEqualTo("/actuator");
+			assertThat(basePath).isEqualTo("/jersey/actuator");
 		});
 	}
 
@@ -92,6 +93,11 @@ public class ServletEndpointManagementContextConfigurationTests {
 		@Bean
 		public DispatcherServletPath dispatcherServletPath() {
 			return () -> "/test";
+		}
+
+		@Bean
+		public JerseyApplicationPath jerseyApplicationPath() {
+			return () -> "/jersey";
 		}
 
 	}
