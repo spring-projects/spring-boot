@@ -210,4 +210,9 @@ public class ServletRegistrationBean<T extends Servlet>
 		return getOrDeduceName(this.servlet);
 	}
 
+	@Override
+	public String toString() {
+		return getServletName() + " urls=" + getUrlMappings();
+	}
+
 }

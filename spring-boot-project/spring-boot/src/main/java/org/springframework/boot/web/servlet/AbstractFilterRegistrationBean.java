@@ -256,6 +256,12 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 		}
 	}
 
+	/**
+	 * Return the {@link Filter} to be registered.
+	 * @return the filter
+	 */
+	public abstract T getFilter();
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder(getOrDeduceName(this));
@@ -272,11 +278,5 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 		}
 		return builder.toString();
 	}
-
-	/**
-	 * Return the {@link Filter} to be registered.
-	 * @return the filter
-	 */
-	public abstract T getFilter();
 
 }
