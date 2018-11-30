@@ -24,10 +24,7 @@ case "$1" in
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_linux_hotspot_9.0.4_11.tar.gz
 	;;
 	java10)
-		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk10-releases/releases/download/jdk-10.0.2%2B13/OpenJDK10_x64_Linux_jdk-10.0.2.13.tar.gz
-	;;
-	java11)
-		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1%2B13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz
+		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk10-releases/releases/download/jdk-10.0.2%2B13/OpenJDK10_x64_Linux_jdk-10.0.2+13.tar.gz
 	;;
 	*)
 		echo $"Unknown java version"
@@ -36,6 +33,7 @@ esac
 mkdir -p /opt/openjdk
 cd /opt/openjdk
 curl -L ${JDK_URL} | tar zx --strip-components=2
+test -f /opt/openjdk/bin/java
 
 
 ###########################################################
