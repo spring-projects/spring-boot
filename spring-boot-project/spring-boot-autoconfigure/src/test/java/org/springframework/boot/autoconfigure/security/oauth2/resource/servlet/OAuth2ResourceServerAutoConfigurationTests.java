@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
@@ -80,6 +81,30 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context.getBean(JwtDecoder.class))
 							.isInstanceOf(NimbusJwtDecoderJwkSupport.class);
+					assertThat(getBearerTokenFilter(context)).isNotNull();
+				});
+	}
+
+	@Test
+	public void autoConfigurationShouldMatchDefaultJwsAlgorithm() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				.run((context) -> {
+					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+					assertThat(jwtDecoder).hasFieldOrPropertyWithValue("jwsAlgorithm",
+							JWSAlgorithm.RS256);
+				});
+	}
+
+	@Test
+	public void autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com",
+				"spring.security.oauth2.resourceserver.jwt.jws-algorithm=HS512")
+				.run((context) -> {
+					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+					assertThat(jwtDecoder).hasFieldOrPropertyWithValue("jwsAlgorithm",
+							JWSAlgorithm.HS512);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 				});
 	}
