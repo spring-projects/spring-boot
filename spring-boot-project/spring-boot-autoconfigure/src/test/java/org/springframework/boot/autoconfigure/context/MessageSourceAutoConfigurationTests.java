@@ -184,7 +184,7 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void existingMessageSourceIsPreferred() {
-		this.contextRunner.withUserConfiguration(CustomMessageSource.class)
+		this.contextRunner.withUserConfiguration(CustomMessageSourceConfiguration.class)
 				.run((context) -> assertThat(context.getMessage("foo", null, null, null))
 						.isEqualTo("foo"));
 	}
@@ -199,16 +199,42 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void messageSourceDeclaredWithNonStandardNameDoesNotBreakAutoConfig() {
+	public void messageSourceWithNonStandardBeanNameIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.withUserConfiguration(ConfigWithNonStandardMessageSourceBeanName.class)
+				.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context.getMessage("foo", null, Locale.US))
 							.isEqualTo("bar");
 				});
 	}
 
-	private static class CodeReturningMessageSource implements MessageSource {
+	@Configuration
+	@PropertySource("classpath:/switch-messages.properties")
+	protected static class Config {
+
+	}
+
+	@Configuration
+	protected static class CustomMessageSourceConfiguration {
+
+		@Bean
+		public MessageSource messageSource() {
+			return new TestMessageSource();
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomBeanNameMessageSourceConfiguration {
+
+		@Bean
+		public MessageSource codeReturningMessageSource() {
+			return new TestMessageSource();
+		}
+
+	}
+
+	private static class TestMessageSource implements MessageSource {
 
 		@Override
 		public String getMessage(String code, Object[] args, String defaultMessage,
@@ -226,32 +252,6 @@ public class MessageSourceAutoConfigurationTests {
 		public String getMessage(MessageSourceResolvable resolvable, Locale locale)
 				throws NoSuchMessageException {
 			return resolvable.getCodes()[0];
-		}
-
-	}
-
-	@Configuration
-	protected static class ConfigWithNonStandardMessageSourceBeanName {
-
-		@Bean
-		public MessageSource codeReturningMessageSource() {
-			return new CodeReturningMessageSource();
-		}
-
-	}
-
-	@Configuration
-	@PropertySource("classpath:/switch-messages.properties")
-	protected static class Config {
-
-	}
-
-	@Configuration
-	protected static class CustomMessageSource {
-
-		@Bean
-		public MessageSource messageSource() {
-			return new CodeReturningMessageSource();
 		}
 
 	}
