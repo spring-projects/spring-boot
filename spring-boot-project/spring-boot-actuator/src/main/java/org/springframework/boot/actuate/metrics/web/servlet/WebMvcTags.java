@@ -180,18 +180,20 @@ public final class WebMvcTags {
 	 */
 	public static Tag outcome(HttpServletResponse response) {
 		if (response != null) {
-			int status = response.getStatus();
-			if (status < 200) {
-				return OUTCOME_INFORMATIONAL;
-			}
-			if (status < 300) {
-				return OUTCOME_SUCCESS;
-			}
-			if (status < 400) {
-				return OUTCOME_REDIRECTION;
-			}
-			if (status < 500) {
-				return OUTCOME_CLIENT_ERROR;
+			HttpStatus status = extractStatus(response);
+			if (status != null) {
+				if (status.is1xxInformational()) {
+					return OUTCOME_INFORMATIONAL;
+				}
+				if (status.is2xxSuccessful()) {
+					return OUTCOME_SUCCESS;
+				}
+				if (status.is3xxRedirection()) {
+					return OUTCOME_REDIRECTION;
+				}
+				if (status.is4xxClientError()) {
+					return OUTCOME_CLIENT_ERROR;
+				}
 			}
 			return OUTCOME_SERVER_ERROR;
 		}
