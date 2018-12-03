@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class LogFileWebEndpointWebIntegrationTests {
 
 	@Test
 	public void getRequestProducesResponseWithLogFile() {
-		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
+		TestPropertyValues.of("logging.file.name:" + this.logFile.getAbsolutePath())
 				.applyTo(context);
 		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
 				.expectBody(String.class).isEqualTo("--TEST--");

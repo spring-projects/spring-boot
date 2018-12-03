@@ -164,9 +164,9 @@ use the following additional endpoints:
 |Yes
 
 |`logfile`
-|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
-been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
-content.
+|Returns the contents of the logfile (if `logging.file.name` or `logging.file.path`
+properties have been set). Supports the use of the HTTP `Range` header to retrieve part of
+the log file's content.
 |Yes
 
 |`prometheus`

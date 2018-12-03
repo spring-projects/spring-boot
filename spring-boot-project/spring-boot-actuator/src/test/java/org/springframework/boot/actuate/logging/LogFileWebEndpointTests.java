@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,12 +63,22 @@ public class LogFileWebEndpointTests {
 
 	@Test
 	public void nullResponseWithMissingLogFile() {
-		this.environment.setProperty("logging.file", "no_test.log");
+		this.environment.setProperty("logging.file.name", "no_test.log");
 		assertThat(this.endpoint.logFile()).isNull();
 	}
 
 	@Test
 	public void resourceResponseWithLogFile() throws Exception {
+		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
+		Resource resource = this.endpoint.logFile();
+		assertThat(resource).isNotNull();
+		assertThat(StreamUtils.copyToString(resource.getInputStream(),
+				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+	}
+
+	@Test
+	@Deprecated
+	public void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();

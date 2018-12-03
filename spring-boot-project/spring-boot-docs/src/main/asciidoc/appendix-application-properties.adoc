@@ -37,12 +37,12 @@ content into your application. Rather, pick only the properties that you need.
 	# LOGGING
 	logging.config= # Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.
 	logging.exception-conversion-word=%wEx # Conversion word used when logging exceptions.
-	logging.file= # Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.
 	logging.file.max-history=0 # Maximum of archive log files to keep. Only supported with the default logback setup.
 	logging.file.max-size=10MB # Maximum log file size. Only supported with the default logback setup.
+	logging.file.name= # Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.
+	logging.file.path= # Location of the log file. For instance, `/var/log`.
 	logging.group.*= # Log groups to quickly change multiple loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.
 	logging.level.*= # Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.
-	logging.path= # Location of the log file. For instance, `/var/log`.
 	logging.pattern.console= # Appender pattern for output to the console. Supported only with the default Logback setup.
 	logging.pattern.dateformat=yyyy-MM-dd HH:mm:ss.SSS # Appender pattern for log date format. Supported only with the default Logback setup.
 	logging.pattern.file= # Appender pattern for output to a file. Supported only with the default Logback setup.

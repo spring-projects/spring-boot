@@ -213,6 +213,22 @@ public class LoggingApplicationListenerTests {
 	public void addLogFileProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
+				"logging.file.name=target/foo.log");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		String existingOutput = this.outputCapture.toString();
+		logger.info("Hello world");
+		String output = this.outputCapture.toString().substring(existingOutput.length())
+				.trim();
+		assertThat(output).startsWith("target/foo.log");
+	}
+
+	@Test
+	@Deprecated
+	public void addLogFilePropertyWithDeprecatedProperty() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.config=classpath:logback-nondefault.xml",
 				"logging.file=target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -228,6 +244,19 @@ public class LoggingApplicationListenerTests {
 	public void addLogFilePropertyWithDefault() {
 		assertThat(new File("target/foo.log").exists()).isFalse();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.file.name=target/foo.log");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		logger.info("Hello world");
+		assertThat(new File("target/foo.log").exists()).isTrue();
+	}
+
+	@Test
+	@Deprecated
+	public void addLogFilePropertyWithDefaultAndDeprecatedProperty() {
+		assertThat(new File("target/foo.log").exists()).isFalse();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.file=target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -238,6 +267,21 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void addLogPathProperty() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.config=classpath:logback-nondefault.xml",
+				"logging.file.path=target/foo/");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		String existingOutput = this.outputCapture.toString();
+		logger.info("Hello world");
+		String output = this.outputCapture.toString().substring(existingOutput.length())
+				.trim();
+		assertThat(output).startsWith("target/foo/spring.log");
+	}
+
+	@Test
+	public void addLogPathPropertyWithDeprecatedProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
 				"logging.path=target/foo/");
@@ -491,9 +535,10 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void systemPropertiesAreSetForLoggingConfiguration() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.exception-conversion-word=conversion", "logging.file=target/log",
-				"logging.path=path", "logging.pattern.console=console",
-				"logging.pattern.file=file", "logging.pattern.level=level");
+				"logging.exception-conversion-word=conversion",
+				"logging.file.name=target/log", "logging.file.path=path",
+				"logging.pattern.console=console", "logging.pattern.file=file",
+				"logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
@@ -509,6 +554,19 @@ public class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
 				.isEqualTo("path");
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
+	}
+
+	@Test
+	@Deprecated
+	public void systemPropertiesAreSetForLoggingConfigurationWithDeprecatedProperties() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.file=target/log", "logging.path=path");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("target/log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("path");
 	}
 
 	@Test
@@ -536,7 +594,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void logFilePropertiesCanReferenceSystemProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file=target/${PID}.log");
+				"logging.file.name=target/${PID}.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
