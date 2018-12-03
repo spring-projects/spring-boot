@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,19 +131,25 @@ public class LogFile {
 	 * @return a {@link LogFile} or {@code null} if the environment didn't contain any
 	 * suitable properties
 	 */
+	@SuppressWarnings("deprecation")
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = propertyResolver.getProperty(FILE_NAME_PROPERTY);
-		String path = propertyResolver.getProperty(FILE_PATH_PROPERTY);
-		if (file == null) {
-			file = propertyResolver.getProperty(FILE_PROPERTY);
-		}
-		if (path == null) {
-			path = propertyResolver.getProperty(PATH_PROPERTY);
-		}
+		String file = getLogFileProperty(propertyResolver, FILE_NAME_PROPERTY,
+				FILE_PROPERTY);
+		String path = getLogFileProperty(propertyResolver, FILE_PATH_PROPERTY,
+				PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}
 		return null;
+	}
+
+	private static String getLogFileProperty(PropertyResolver propertyResolver,
+			String propertyName, String deprecatedPropertyName) {
+		String property = propertyResolver.getProperty(propertyName);
+		if (property != null) {
+			return property;
+		}
+		return propertyResolver.getProperty(deprecatedPropertyName);
 	}
 
 }
