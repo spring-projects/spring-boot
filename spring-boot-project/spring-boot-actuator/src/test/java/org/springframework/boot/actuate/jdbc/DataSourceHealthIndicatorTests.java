@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -68,6 +69,8 @@ public class DataSourceHealthIndicatorTests {
 		Health health = this.indicator.health();
 		assertThat(health.getDetails().get("database")).isNotNull();
 		assertThat(health.getDetails().get("result")).isNotNull();
+		assertThat(health.getDetails().get("validationQuery"))
+				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());
 	}
 
 	@Test
@@ -75,14 +78,14 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		new JdbcTemplate(this.dataSource)
 				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
-		this.indicator.setQuery("SELECT COUNT(*) from FOO");
+		String customValidationQuery = "SELECT COUNT(*) from FOO";
+		this.indicator.setQuery(customValidationQuery);
 		Health health = this.indicator.health();
-		System.err.println(health);
 		assertThat(health.getDetails().get("database")).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("result")).isNotNull();
 		assertThat(health.getDetails().get("validationQuery"))
-				.isEqualTo("SELECT COUNT(*) from FOO");
+				.isEqualTo(customValidationQuery);
 	}
 
 	@Test
