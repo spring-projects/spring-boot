@@ -136,6 +136,13 @@ public class TomcatWebServerFactoryCustomizer implements
 		});
 	}
 
+	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory,
+			int processorCache) {
+		factory.addConnectorCustomizers((
+				connector) -> ((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
+						.setProcessorCache(processorCache));
+	}
+
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,
 			int maxConnections) {
 		factory.addConnectorCustomizers((connector) -> {
@@ -156,13 +163,6 @@ public class TomcatWebServerFactoryCustomizer implements
 				protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
 			}
 		});
-	}
-
-	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory,
-			int processorCache) {
-		factory.addConnectorCustomizers((
-				connector) -> ((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
-						.setProcessorCache(processorCache));
 	}
 
 	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
