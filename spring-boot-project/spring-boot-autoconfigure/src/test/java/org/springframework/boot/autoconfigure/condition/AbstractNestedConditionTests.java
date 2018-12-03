@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.condition;
 import org.junit.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -31,18 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Razib Shahriar
  */
-public class AbstractNestedConditionTest {
+public class AbstractNestedConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void validMemberPhaseEvaluatesCorrectly() {
+	public void validPhase() {
 		this.contextRunner.withUserConfiguration(ValidConfig.class)
 				.run((context) -> assertThat(context).hasBean("myBean"));
 	}
 
 	@Test
-	public void invalidMemberPhaseThrowsIllegalState() {
+	public void invalidMemberPhase() {
 		this.contextRunner.withUserConfiguration(InvalidConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure().getCause())
@@ -55,7 +54,7 @@ public class AbstractNestedConditionTest {
 	}
 
 	@Test
-	public void invalidNestedMemberPhaseThrowsIllegalState() {
+	public void invalidNestedMemberPhase() {
 		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class)
 				.run((context) -> {
 					assertThat(context).hasFailed();
@@ -66,13 +65,6 @@ public class AbstractNestedConditionTest {
 									+ " uses a configuration phase that is inappropriate for class "
 									+ ValidNestedCondition.class.getName());
 				});
-	}
-
-	private AnnotationConfigApplicationContext load(Class<?> config) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(config);
-		context.refresh();
-		return context;
 	}
 
 	@Configuration
