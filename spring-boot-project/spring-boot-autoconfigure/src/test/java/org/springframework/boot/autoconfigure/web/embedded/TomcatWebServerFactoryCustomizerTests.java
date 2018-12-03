@@ -88,6 +88,12 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customProcessorCache() {
+		bind("server.tomcat.processor-cache=100");
+		assertThat(this.serverProperties.getTomcat().getProcessorCache()).isEqualTo(100);
+	}
+
+	@Test
 	public void customBackgroundProcessorDelay() {
 		bind("server.tomcat.background-processor-delay=5");
 		TomcatWebServer server = customizeAndGetServer();

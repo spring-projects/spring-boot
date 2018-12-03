@@ -207,6 +207,12 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void tomcatProcessorCacheMatchesProtocolDefault() throws Exception {
+		assertThat(this.properties.getTomcat().getProcessorCache())
+				.isEqualTo(getDefaultProtocol().getProcessorCache());
+	}
+
+	@Test
 	public void tomcatMaxConnectionsMatchesProtocolDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getMaxConnections())
 				.isEqualTo(getDefaultProtocol().getMaxConnections());
