@@ -184,7 +184,7 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void existingMessageSourceIsPreferred() {
-		this.contextRunner.withUserConfiguration(CustomMessageSource.class)
+		this.contextRunner.withUserConfiguration(CustomMessageSourceConfiguration.class)
 				.run((context) -> assertThat(context.getMessage("foo", null, null, null))
 						.isEqualTo("foo"));
 	}
@@ -198,6 +198,16 @@ public class MessageSourceAutoConfigurationTests {
 								.isEqualTo("bar")));
 	}
 
+	@Test
+	public void messageSourceWithNonStandardBeanNameIsIgnored() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+				.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context.getMessage("foo", null, Locale.US))
+							.isEqualTo("bar");
+				});
+	}
+
 	@Configuration
 	@PropertySource("classpath:/switch-messages.properties")
 	protected static class Config {
@@ -205,31 +215,43 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class CustomMessageSource {
+	protected static class CustomMessageSourceConfiguration {
 
 		@Bean
 		public MessageSource messageSource() {
-			return new MessageSource() {
+			return new TestMessageSource();
+		}
 
-				@Override
-				public String getMessage(String code, Object[] args,
-						String defaultMessage, Locale locale) {
-					return code;
-				}
+	}
 
-				@Override
-				public String getMessage(String code, Object[] args, Locale locale)
-						throws NoSuchMessageException {
-					return code;
-				}
+	@Configuration
+	protected static class CustomBeanNameMessageSourceConfiguration {
 
-				@Override
-				public String getMessage(MessageSourceResolvable resolvable,
-						Locale locale) throws NoSuchMessageException {
-					return resolvable.getCodes()[0];
-				}
+		@Bean
+		public MessageSource codeReturningMessageSource() {
+			return new TestMessageSource();
+		}
 
-			};
+	}
+
+	private static class TestMessageSource implements MessageSource {
+
+		@Override
+		public String getMessage(String code, Object[] args, String defaultMessage,
+				Locale locale) {
+			return code;
+		}
+
+		@Override
+		public String getMessage(String code, Object[] args, Locale locale)
+				throws NoSuchMessageException {
+			return code;
+		}
+
+		@Override
+		public String getMessage(MessageSourceResolvable resolvable, Locale locale)
+				throws NoSuchMessageException {
+			return resolvable.getCodes()[0];
 		}
 
 	}
