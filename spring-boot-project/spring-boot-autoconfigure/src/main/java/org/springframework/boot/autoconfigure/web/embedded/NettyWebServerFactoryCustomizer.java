@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.time.Duration;
+
+import io.netty.channel.ChannelOption;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -31,6 +35,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Chentao Qu
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 public class NettyWebServerFactoryCustomizer
@@ -60,6 +65,10 @@ public class NettyWebServerFactoryCustomizer
 				.asInt(DataSize::toBytes)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpRequestHeaderSize));
+		propertyMapper.from(this.serverProperties::getConnectionTimeout).whenNonNull()
+				.asInt(Duration::toMillis)
+				.to((duration) -> customizeConnectionTimeOut(factory, duration));
+
 	}
 
 	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
@@ -76,6 +85,14 @@ public class NettyWebServerFactoryCustomizer
 		factory.addServerCustomizers((NettyServerCustomizer) (httpServer) -> httpServer
 				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxHeaderSize(maxHttpHeaderSize)));
+	}
+
+	private void customizeConnectionTimeOut(NettyReactiveWebServerFactory factory,
+			int duration) {
+		factory.addServerCustomizers((NettyServerCustomizer) (httpServer) -> httpServer
+				.tcpConfiguration((tcpServer) -> tcpServer
+						.bootstrap((serverBootstrap) -> serverBootstrap.childOption(
+								ChannelOption.CONNECT_TIMEOUT_MILLIS, duration))));
 	}
 
 }
