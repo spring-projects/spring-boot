@@ -34,11 +34,11 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
  * @author Artsiom Yudovin
  */
 @Configuration
-class OAuth2ResourceServerJwkConfiguration {
+class OAuth2ResourceServerJwtConfiguration {
 
 	private final OAuth2ResourceServerProperties.Jwt properties;
 
-	OAuth2ResourceServerJwkConfiguration(OAuth2ResourceServerProperties properties) {
+	OAuth2ResourceServerJwtConfiguration(OAuth2ResourceServerProperties properties) {
 		this.properties = properties.getJwt();
 	}
 

@@ -37,7 +37,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass(JwtAuthenticationToken.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({ OAuth2ResourceServerJwkConfiguration.class,
+@Import({ OAuth2ResourceServerJwtConfiguration.class,
 		OAuth2ResourceServerWebSecurityConfiguration.class })
 public class OAuth2ResourceServerAutoConfiguration {
 
