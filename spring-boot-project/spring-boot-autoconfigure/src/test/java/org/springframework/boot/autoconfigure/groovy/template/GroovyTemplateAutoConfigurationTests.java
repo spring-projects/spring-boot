@@ -26,9 +26,9 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import groovy.text.markup.MarkupTemplateEngine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -55,12 +55,12 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
-	@Before
+	@BeforeEach
 	public void setupContext() {
 		this.context.setServletContext(new MockServletContext());
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		LocaleContextHolder.resetLocaleContext();
 		if (this.context != null) {

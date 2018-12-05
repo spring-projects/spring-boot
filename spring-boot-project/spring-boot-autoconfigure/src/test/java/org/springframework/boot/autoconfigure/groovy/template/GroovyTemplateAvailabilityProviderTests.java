@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.io.DefaultResourceLoader;

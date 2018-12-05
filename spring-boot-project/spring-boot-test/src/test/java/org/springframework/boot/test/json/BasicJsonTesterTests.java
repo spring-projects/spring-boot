@@ -19,10 +19,11 @@ package org.springframework.boot.test.json;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.support.io.TempDirectory;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -36,12 +37,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
+@ExtendWith(TempDirectory.class)
 public class BasicJsonTesterTests {
 
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
-
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private BasicJsonTester json = new BasicJsonTester(getClass());
 
@@ -72,8 +71,9 @@ public class BasicJsonTesterTests {
 	}
 
 	@Test
-	public void fromFileShouldReturnJsonContent() throws Exception {
-		File file = this.tempFolder.newFile("file.json");
+	public void fromFileShouldReturnJsonContent(@TempDirectory.TempDir Path temp)
+			throws Exception {
+		File file = new File(temp.toFile(), "file.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		assertThat(this.json.from(file)).isEqualToJson("source.json");
 	}

@@ -18,11 +18,11 @@ package sample.bitronix;
 
 import bitronix.tm.resource.jms.PoolingConnectionFactory;
 import org.assertj.core.api.Condition;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,17 +34,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SampleBitronixApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testTransactionRollback() throws Exception {
 		SampleBitronixApplication.main(new String[] {});
-		String output = this.outputCapture.toString();
-		assertThat(output).has(substring(1, "---->"));
-		assertThat(output).has(substring(1, "----> josh"));
-		assertThat(output).has(substring(2, "Count is 1"));
-		assertThat(output).has(substring(1, "Simulated error"));
+		assertThat(this.output.toString()).has(substring(1, "---->"));
+		assertThat(this.output.toString()).has(substring(1, "----> josh"));
+		assertThat(this.output.toString()).has(substring(2, "Count is 1"));
+		assertThat(this.output.toString()).has(substring(1, "Simulated error"));
 	}
 
 	@Test

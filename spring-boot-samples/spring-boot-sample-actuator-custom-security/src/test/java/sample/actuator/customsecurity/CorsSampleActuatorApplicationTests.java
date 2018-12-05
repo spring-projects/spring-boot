@@ -19,9 +19,8 @@ package sample.actuator.customsecurity;
 import java.net.URI;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("cors")
 public class CorsSampleActuatorApplicationTests {
@@ -52,7 +50,7 @@ public class CorsSampleActuatorApplicationTests {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(

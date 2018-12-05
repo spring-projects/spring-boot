@@ -21,7 +21,7 @@ import java.util.HashMap;
 import javax.validation.constraints.Min;
 
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

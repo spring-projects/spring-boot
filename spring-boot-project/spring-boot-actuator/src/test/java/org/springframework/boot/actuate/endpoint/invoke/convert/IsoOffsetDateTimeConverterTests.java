@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.invoke.convert;
 
 import java.time.OffsetDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.convert.support.DefaultConversionService;
 

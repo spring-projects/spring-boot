@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -47,7 +47,7 @@ public class ReflectiveOperationInvokerTests {
 
 	private ParameterValueMapper parameterValueMapper;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.target = new Example();
 		this.operationMethod = new OperationMethod(

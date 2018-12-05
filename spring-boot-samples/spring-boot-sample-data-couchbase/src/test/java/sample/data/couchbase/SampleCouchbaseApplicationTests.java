@@ -17,19 +17,19 @@ package sample.data.couchbase;
 
 import java.net.ConnectException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleCouchbaseApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() {
@@ -42,8 +42,7 @@ public class SampleCouchbaseApplicationTests {
 				return;
 			}
 		}
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+		assertThat(this.output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean serverNotRunning(RuntimeException ex) {

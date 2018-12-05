@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

@@ -19,9 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
@@ -31,7 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -53,20 +52,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ConditionsReportEndpointDocumentationTests
 		extends MockMvcEndpointDocumentationTests {
 
-	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
-
 	private MockMvc mockMvc;
 
 	@Autowired
 	private WebApplicationContext applicationContext;
 
 	@Override
-	@Before
-	public void before() {
+	@BeforeEach
+	public void setup(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
 				.apply(MockMvcRestDocumentation
-						.documentationConfiguration(this.restDocumentation).uris())
+						.documentationConfiguration(restDocumentation).uris())
 				.build();
 	}
 

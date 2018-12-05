@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context.assertj;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 

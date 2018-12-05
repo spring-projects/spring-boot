@@ -22,14 +22,15 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.support.io.TempDirectory;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
+@ExtendWith(TempDirectory.class)
 public abstract class AbstractJsonMarshalTesterTests {
 
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
@@ -57,9 +59,6 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	private static final ResolvableType TYPE = ResolvableType
 			.forClass(ExampleObject.class);
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void writeShouldReturnJsonContent() throws Exception {
@@ -125,8 +124,9 @@ public abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void readFileShouldReturnObject() throws Exception {
-		File file = this.temp.newFile("example.json");
+	public void readFileShouldReturnObject(@TempDirectory.TempDir Path temp)
+			throws Exception {
+		File file = new File(temp.toFile(), "example.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(file)).isEqualTo(OBJECT);

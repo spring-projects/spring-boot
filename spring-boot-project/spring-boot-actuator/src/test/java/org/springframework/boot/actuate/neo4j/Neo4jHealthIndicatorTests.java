@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
@@ -49,7 +49,7 @@ public class Neo4jHealthIndicatorTests {
 
 	private Neo4jHealthIndicator neo4jHealthIndicator;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		this.session = mock(Session.class);
 		SessionFactory sessionFactory = mock(SessionFactory.class);

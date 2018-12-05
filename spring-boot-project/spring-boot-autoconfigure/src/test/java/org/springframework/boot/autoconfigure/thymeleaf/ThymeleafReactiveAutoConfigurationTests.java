@@ -23,8 +23,8 @@ import java.util.Locale;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
 import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
@@ -38,7 +38,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -52,8 +52,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration} in Reactive applications.
@@ -63,7 +61,7 @@ import static org.hamcrest.Matchers.not;
  */
 public class ThymeleafReactiveAutoConfigurationTests {
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigReactiveWebApplicationContext context;
@@ -181,7 +179,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
-		this.output.expect(containsString("Cannot find template location"));
+		assertThat(this.output).contains("Cannot find template location");
 	}
 
 	@Test
@@ -189,7 +187,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		new File("target/test-classes/templates/empty-directory").mkdir();
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
-		this.output.expect(not(containsString("Cannot find template location")));
+		assertThat(this.output).doesNotContain("Cannot find template location");
 	}
 
 	@Test

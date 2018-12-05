@@ -16,22 +16,22 @@
 
 package sample.xml;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleSpringXmlApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
 		SampleSpringXmlApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
+		String output = this.output.toString();
 		assertThat(output).contains("Hello World");
 	}
 

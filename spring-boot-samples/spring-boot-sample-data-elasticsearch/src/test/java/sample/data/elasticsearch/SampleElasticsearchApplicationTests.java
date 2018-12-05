@@ -16,18 +16,12 @@
 
 package sample.data.elasticsearch;
 
-import java.io.File;
-
 import org.elasticsearch.client.transport.NoNodeAvailableException;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,11 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SampleElasticsearchApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
-
-	@ClassRule
-	public static SkipOnWindows skipOnWindows = new SkipOnWindows();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() {
@@ -55,8 +46,7 @@ public class SampleElasticsearchApplicationTests {
 			}
 			throw ex;
 		}
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+		assertThat(this.output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean elasticsearchRunning(Exception ex) {
@@ -68,28 +58,6 @@ public class SampleElasticsearchApplicationTests {
 			candidate = candidate.getCause();
 		}
 		return true;
-	}
-
-	static class SkipOnWindows implements TestRule {
-
-		@Override
-		public Statement apply(Statement base, Description description) {
-			return new Statement() {
-
-				@Override
-				public void evaluate() throws Throwable {
-					if (!runningOnWindows()) {
-						base.evaluate();
-					}
-				}
-
-				private boolean runningOnWindows() {
-					return File.separatorChar == '\\';
-				}
-
-			};
-		}
-
 	}
 
 }

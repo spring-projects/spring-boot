@@ -19,11 +19,13 @@ package org.springframework.boot.actuate.logging;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.support.io.TempDirectory;
 
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
@@ -39,10 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@ExtendWith(TempDirectory.class)
 public class LogFileWebEndpointTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -50,9 +50,9 @@ public class LogFileWebEndpointTests {
 
 	private File logFile;
 
-	@Before
-	public void before() throws IOException {
-		this.logFile = this.temp.newFile();
+	@BeforeEach
+	public void before(@TempDirectory.TempDir Path temp) throws IOException {
+		this.logFile = Files.createTempFile(temp, "junit", null).toFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), this.logFile);
 	}
 

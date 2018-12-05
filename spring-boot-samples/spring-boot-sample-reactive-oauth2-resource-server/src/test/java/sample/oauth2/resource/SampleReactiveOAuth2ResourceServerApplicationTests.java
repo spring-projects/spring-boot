@@ -18,19 +18,16 @@ package sample.oauth2.resource;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleReactiveOAuth2ResourceServerApplicationTests {
 
@@ -45,7 +42,7 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 			+ "afU57cmK3KocTeknPAM_L716sCuSYGvDl6xUTXO7oPdrXhS_EhxLP6KxrpI1uD4Ea_5OWTh7S0Wx5LLDfU6wBG1DowN20d374zepOIEkR-Jnmr_Ql"
 			+ "R44vmRqS5ncrF-1R0EGcPX49U6A";
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		server.start();
 		String url = server.url("/.well-known/jwks.json").toString();
@@ -53,7 +50,7 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 		System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", url);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void shutdown() throws Exception {
 		server.shutdown();
 		System.clearProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");

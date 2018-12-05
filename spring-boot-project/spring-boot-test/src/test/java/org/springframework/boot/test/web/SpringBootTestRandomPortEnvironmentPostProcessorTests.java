@@ -19,8 +19,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -43,7 +43,7 @@ public class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 
 	private MutablePropertySources propertySources;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.propertySources = this.environment.getPropertySources();

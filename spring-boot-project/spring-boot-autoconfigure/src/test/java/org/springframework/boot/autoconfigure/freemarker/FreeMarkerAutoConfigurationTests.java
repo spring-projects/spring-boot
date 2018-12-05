@@ -19,15 +19,14 @@ package org.springframework.boot.autoconfigure.freemarker;
 import java.io.File;
 import java.io.StringWriter;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
@@ -37,7 +36,7 @@ import static org.hamcrest.Matchers.containsString;
  */
 public class FreeMarkerAutoConfigurationTests {
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -63,8 +62,9 @@ public class FreeMarkerAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
-				.run((context) -> this.output
-						.expect(containsString("Cannot find template location")));
+				.run((context) -> {
+					assertThat(this.output).contains("Cannot find template location");
+				});
 	}
 
 	@Test

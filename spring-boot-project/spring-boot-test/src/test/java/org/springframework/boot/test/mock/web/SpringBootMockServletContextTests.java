@@ -23,14 +23,14 @@ import java.net.URLDecoder;
 
 import javax.servlet.ServletContext;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.ServletContextAware;
 
@@ -42,8 +42,8 @@ import static org.hamcrest.Matchers.nullValue;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @DirtiesContext
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration("src/test/webapp")
 public class SpringBootMockServletContextTests implements ServletContextAware {

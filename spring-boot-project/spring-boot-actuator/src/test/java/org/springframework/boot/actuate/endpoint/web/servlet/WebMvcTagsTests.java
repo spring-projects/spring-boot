@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags;
 import org.springframework.mock.web.MockHttpServletRequest;

@@ -16,11 +16,11 @@
 
 package sample.quartz;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,19 +32,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SampleQuartzApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void quartzJobIsTriggered() throws InterruptedException {
 		try (ConfigurableApplicationContext context = SpringApplication
 				.run(SampleQuartzApplication.class)) {
 			long end = System.currentTimeMillis() + 5000;
-			while ((!this.outputCapture.toString().contains("Hello World!"))
+			while ((!this.output.toString().contains("Hello World!"))
 					&& System.currentTimeMillis() < end) {
 				Thread.sleep(100);
 			}
-			assertThat(this.outputCapture.toString()).contains("Hello World!");
+			assertThat(this.output).contains("Hello World!");
 		}
 	}
 

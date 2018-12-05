@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -53,8 +53,8 @@ public class WebClientMetricsConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class,
 					HttpClientMetricsAutoConfiguration.class));
 
-	@Rule
-	public OutputCapture out = new OutputCapture();
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void webClientCreatedWithBuilderIsInstrumented() {
@@ -80,9 +80,9 @@ public class WebClientMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.out.toString()).contains(
+					assertThat(this.output.toString()).contains(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString())
+					assertThat(this.output.toString())
 							.contains("Are you using 'uriVariables'?");
 				});
 	}
@@ -94,9 +94,9 @@ public class WebClientMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.out.toString()).doesNotContain(
+					assertThat(this.output.toString()).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString())
+					assertThat(this.output.toString())
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
 	}

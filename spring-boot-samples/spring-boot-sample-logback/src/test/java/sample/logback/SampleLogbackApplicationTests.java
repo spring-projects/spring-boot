@@ -16,32 +16,31 @@
 
 package sample.logback;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleLogbackApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testLoadedCustomLogbackConfig() throws Exception {
 		SampleLogbackApplication.main(new String[0]);
-		this.outputCapture.expect(containsString("Sample Debug Message"));
-		this.outputCapture.expect(not(containsString("Sample Trace Message")));
+		assertThat(this.output).contains("Sample Debug Message");
+		assertThat(this.output).doesNotContain("Sample Trace Message");
 	}
 
 	@Test
 	public void testProfile() throws Exception {
 		SampleLogbackApplication
 				.main(new String[] { "--spring.profiles.active=staging" });
-		this.outputCapture.expect(containsString("Sample Debug Message"));
-		this.outputCapture.expect(containsString("Sample Trace Message"));
+		assertThat(this.output).contains("Sample Debug Message");
+		assertThat(this.output).contains("Sample Trace Message");
 	}
 
 }

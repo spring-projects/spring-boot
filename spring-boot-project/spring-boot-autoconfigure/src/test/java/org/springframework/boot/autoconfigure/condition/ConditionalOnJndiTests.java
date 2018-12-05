@@ -21,9 +21,9 @@ import java.util.Map;
 
 import javax.naming.Context;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
@@ -53,14 +53,14 @@ public class ConditionalOnJndiTests {
 
 	private MockableOnJndi condition = new MockableOnJndi();
 
-	@Before
+	@BeforeEach
 	public void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(
 				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {

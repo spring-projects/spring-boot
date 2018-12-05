@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 import javax.naming.Context;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JndiConnectionFactoryAutoConfiguration}.
+ * PersistenceExceptionTranslationAutoConfigurationTests
  *
  * @author Stephane Nicoll
  */
@@ -49,7 +50,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 
 	private String initialContextFactory;
 
-	@Before
+	@BeforeEach
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
@@ -59,7 +60,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {

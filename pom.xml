@@ -154,6 +154,14 @@
 			</snapshots>
 		</repository>
 		<repository>
+			<id>junit-snapshot</id>
+			<name>Junit Snapshot</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>rabbit-milestone</id>
 			<name>Rabbit Milestone</name>
 			<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>

@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.mustache;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;

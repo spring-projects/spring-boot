@@ -18,8 +18,8 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.exceptions.misusing.UnfinishedVerificationException;
 
 import org.springframework.cache.CacheManager;
@@ -32,10 +32,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,19 +45,18 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 
 	@SpyBean(proxyTargetAware = false)
 	private DateService dateService;
 
-	@Test(expected = UnfinishedVerificationException.class)
+	@Test
 	public void verifyShouldUseProxyTarget() {
 		this.dateService.getDate(false);
 		verify(this.dateService, times(1)).getDate(false);
-		verify(this.dateService, times(1)).getDate(eq(false));
-		verify(this.dateService, times(1)).getDate(anyBoolean());
-		reset(this.dateService);
+		assertThatExceptionOfType(UnfinishedVerificationException.class)
+				.isThrownBy(() -> reset(this.dateService));
 	}
 
 	@Configuration

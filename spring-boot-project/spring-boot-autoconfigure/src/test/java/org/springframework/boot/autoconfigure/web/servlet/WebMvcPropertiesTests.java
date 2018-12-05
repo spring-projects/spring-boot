@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.com.google.common.base.Throwables;
 
 import org.springframework.boot.context.properties.bind.BindException;

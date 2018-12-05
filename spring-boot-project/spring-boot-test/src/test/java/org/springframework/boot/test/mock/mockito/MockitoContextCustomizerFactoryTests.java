@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.ContextCustomizer;
@@ -33,7 +33,7 @@ public class MockitoContextCustomizerFactoryTests {
 
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}

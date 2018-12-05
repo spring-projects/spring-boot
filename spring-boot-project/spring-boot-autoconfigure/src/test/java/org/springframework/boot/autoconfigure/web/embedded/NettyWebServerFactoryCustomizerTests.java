@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -40,7 +40,7 @@ public class NettyWebServerFactoryCustomizerTests {
 
 	private NettyWebServerFactoryCustomizer customizer;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

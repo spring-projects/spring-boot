@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.management;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -44,8 +44,8 @@ public class ErrorMvcAutoConfigurationTests {
 					AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
 							ErrorMvcAutoConfiguration.class));
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void renderContainsViewWithExceptionDetails() throws Exception {
@@ -74,7 +74,7 @@ public class ErrorMvcAutoConfigurationTests {
 					new IllegalStateException("Exception message"), true);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
-			assertThat(this.outputCapture.toString())
+			assertThat(this.output)
 					.contains("Cannot render error page for request [/path] "
 							+ "and exception [Exception message] as the response has "
 							+ "already been committed. As a result, the response may "

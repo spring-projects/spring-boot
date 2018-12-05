@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
@@ -78,7 +78,7 @@ public class AutoConfigurationSorterTests {
 	private AutoConfigurationMetadata autoConfigurationMetadata = mock(
 			AutoConfigurationMetadata.class);
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.sorter = new AutoConfigurationSorter(new SkipCycleMetadataReaderFactory(),
 				this.autoConfigurationMetadata);

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.beans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sample.parent.SampleParentContextApplication;
 import sample.parent.producer.ProducerApplication;
 

@@ -21,7 +21,7 @@ import java.util.Set;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;

@@ -21,7 +21,7 @@ import java.util.Collections;
 
 import javax.annotation.PostConstruct;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;

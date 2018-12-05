@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,7 +41,7 @@ public class DefaultHealthIndicatorRegistryTests {
 
 	private DefaultHealthIndicatorRegistry registry;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		given(this.one.health())
 				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

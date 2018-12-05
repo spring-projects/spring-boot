@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import static org.mockito.BDDMockito.given;

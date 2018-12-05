@@ -22,8 +22,8 @@ import javax.mail.Session;
 import javax.naming.Context;
 
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -58,7 +58,7 @@ public class MailSenderAutoConfigurationTests {
 
 	private String initialContextFactory;
 
-	@Before
+	@BeforeEach
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,

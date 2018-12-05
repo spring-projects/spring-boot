@@ -16,12 +16,12 @@
 
 package sample.simple;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,17 +33,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SampleSimpleApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	private String profiles;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		this.profiles = System.getProperty("spring.profiles.active");
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		if (this.profiles != null) {
 			System.setProperty("spring.profiles.active", this.profiles);
@@ -56,14 +56,14 @@ public class SampleSimpleApplicationTests {
 	@Test
 	public void testDefaultSettings() throws Exception {
 		SampleSimpleApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
+		String output = this.output.toString();
 		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
 	public void testCommandLineOverrides() throws Exception {
 		SampleSimpleApplication.main(new String[] { "--name=Gordon", "--duration=1m" });
-		String output = this.outputCapture.toString();
+		String output = this.output.toString();
 		assertThat(output).contains("Hello Gordon for 60 seconds");
 	}
 

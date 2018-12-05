@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -34,6 +34,7 @@ import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
@@ -74,10 +75,11 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-		this.context.getBean(CityRepository.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(CityRepository.class));
 	}
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {

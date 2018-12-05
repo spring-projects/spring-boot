@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.data.solr;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SolrRepositoriesAutoConfiguration}.
@@ -71,11 +72,11 @@ public class SolrRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(CitySolrRepository.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
-
 		initContext(SortOfInvalidCustomConfiguration.class);
-		this.context.getBean(CityRepository.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(CityRepository.class));
 	}
 
 	private void initContext(Class<?> configClass) {

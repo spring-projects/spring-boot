@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.template;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.MimeTypeUtils;
 

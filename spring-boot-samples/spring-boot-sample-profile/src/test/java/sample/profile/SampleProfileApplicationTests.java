@@ -16,28 +16,28 @@
 
 package sample.profile;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleProfileApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	private String profiles;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		this.profiles = System.getProperty("spring.profiles.active");
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		if (this.profiles != null) {
 			System.setProperty("spring.profiles.active", this.profiles);
@@ -50,16 +50,14 @@ public class SampleProfileApplicationTests {
 	@Test
 	public void testDefaultProfile() throws Exception {
 		SampleProfileApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Hello Phil");
+		assertThat(this.output).contains("Hello Phil");
 	}
 
 	@Test
 	public void testGoodbyeProfile() throws Exception {
 		System.setProperty("spring.profiles.active", "goodbye");
 		SampleProfileApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Goodbye Everyone");
+		assertThat(this.output).contains("Goodbye Everyone");
 	}
 
 	@Test
@@ -72,16 +70,14 @@ public class SampleProfileApplicationTests {
 		 */
 		System.setProperty("spring.profiles.active", "generic");
 		SampleProfileApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Bonjour Phil");
+		assertThat(this.output).contains("Bonjour Phil");
 	}
 
 	@Test
 	public void testGoodbyeProfileFromCommandline() throws Exception {
 		SampleProfileApplication
 				.main(new String[] { "--spring.profiles.active=goodbye" });
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Goodbye Everyone");
+		assertThat(this.output).contains("Goodbye Everyone");
 	}
 
 }

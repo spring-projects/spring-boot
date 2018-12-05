@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

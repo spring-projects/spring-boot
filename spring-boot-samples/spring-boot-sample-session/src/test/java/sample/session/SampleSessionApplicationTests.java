@@ -19,7 +19,7 @@ package sample.session;
 import java.net.URI;
 import java.util.Base64;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;

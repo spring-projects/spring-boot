@@ -20,8 +20,8 @@ import java.util.Collections;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -49,7 +49,7 @@ public class RabbitHealthIndicatorTests {
 	@Mock
 	private Channel channel;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.rabbitTemplate.execute(any())).willAnswer((invocation) -> {

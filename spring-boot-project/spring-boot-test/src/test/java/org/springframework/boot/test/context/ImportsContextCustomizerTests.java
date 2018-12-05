@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import kotlin.Metadata;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.spockframework.runtime.model.SpecMetadata;
 import spock.lang.Issue;
 import spock.lang.Stepwise;

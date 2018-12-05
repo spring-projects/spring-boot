@@ -18,9 +18,9 @@ package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import javax.websocket.server.ServerContainer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -41,12 +41,12 @@ public class WebSocketServletAutoConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@Before
+	@BeforeEach
 	public void createContext() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

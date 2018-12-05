@@ -20,9 +20,9 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -50,7 +50,7 @@ public class DataSourceHealthIndicatorTests {
 
 	private SingleConnectionDataSource dataSource;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
 		this.dataSource = new SingleConnectionDataSource(
@@ -58,7 +58,7 @@ public class DataSourceHealthIndicatorTests {
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.dataSource != null) {
 			this.dataSource.destroy();

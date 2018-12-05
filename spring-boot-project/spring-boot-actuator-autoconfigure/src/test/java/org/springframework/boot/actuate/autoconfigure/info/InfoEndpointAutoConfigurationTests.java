@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

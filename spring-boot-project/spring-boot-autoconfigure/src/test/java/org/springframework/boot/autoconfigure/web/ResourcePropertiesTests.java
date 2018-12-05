@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Cache;
 import org.springframework.boot.testsupport.assertj.Matched;

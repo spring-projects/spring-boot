@@ -33,7 +33,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;

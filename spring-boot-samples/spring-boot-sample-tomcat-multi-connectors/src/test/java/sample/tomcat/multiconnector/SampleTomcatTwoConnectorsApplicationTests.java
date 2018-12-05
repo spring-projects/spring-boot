@@ -18,8 +18,7 @@ package sample.tomcat.multiconnector;
 
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import sample.tomcat.multiconnector.SampleTomcatTwoConnectorsApplicationTests.Ports;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brock Mills
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(Ports.class)
 public class SampleTomcatTwoConnectorsApplicationTests {

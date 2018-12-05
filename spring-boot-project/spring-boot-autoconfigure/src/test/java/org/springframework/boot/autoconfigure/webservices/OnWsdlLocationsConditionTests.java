@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

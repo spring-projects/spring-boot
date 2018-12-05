@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +34,7 @@ public class OrderedHealthAggregatorTests {
 
 	private OrderedHealthAggregator healthAggregator;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.healthAggregator = new OrderedHealthAggregator();
 	}

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.cassandra;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;

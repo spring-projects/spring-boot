@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -72,7 +72,7 @@ public class JobLauncherCommandLineRunnerTests {
 
 	private Step step;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		this.context.register(BatchConfiguration.class);
 		this.context.refresh();
@@ -91,7 +91,7 @@ public class JobLauncherCommandLineRunnerTests {
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 
-	@After
+	@AfterEach
 	public void closeContext() {
 		this.context.close();
 	}

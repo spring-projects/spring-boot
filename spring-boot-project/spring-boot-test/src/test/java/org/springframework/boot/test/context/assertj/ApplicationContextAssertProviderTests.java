@@ -18,8 +18,8 @@ package org.springframework.boot.test.context.assertj;
 
 import java.util.function.Supplier;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -49,7 +49,7 @@ public class ApplicationContextAssertProviderTests {
 
 	private Supplier<ApplicationContext> startupFailureSupplier;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.startupFailure = new RuntimeException();

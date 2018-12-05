@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 
 import org.jooq.SQLDialect;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;

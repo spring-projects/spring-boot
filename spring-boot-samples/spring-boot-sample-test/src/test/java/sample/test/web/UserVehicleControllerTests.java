@@ -16,8 +16,8 @@
 
 package sample.test.web;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import sample.test.WelcomeCommandLineRunner;
 import sample.test.domain.VehicleIdentificationNumber;
 import sample.test.service.VehicleDetails;
@@ -29,7 +29,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
@@ -43,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+
 @WebMvcTest(UserVehicleController.class)
 public class UserVehicleControllerTests {
 
@@ -99,10 +98,12 @@ public class UserVehicleControllerTests {
 		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
-		this.applicationContext.getBean(WelcomeCommandLineRunner.class);
+		Assertions.assertThatThrownBy(
+				() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class))
+				.isInstanceOf(NoSuchBeanDefinitionException.class);
 	}
 
 }

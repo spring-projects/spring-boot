@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.context;
 
 import java.util.Locale;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -126,7 +126,7 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Expected to fail per gh-1075")
+	@Disabled("Expected to fail per gh-1075")
 	public void testMessageSourceFromPropertySourceAnnotation() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.run((context) -> assertThat(

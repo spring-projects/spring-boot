@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.sendgrid;
 import com.sendgrid.SendGrid;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SendGridAutoConfiguration}.
@@ -54,10 +55,11 @@ public class SendGridAutoConfigurationTests {
 		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.SECRET-API-KEY");
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void autoConfigurationNotFiredWhenPropertiesNotSet() {
 		loadContext();
-		this.context.getBean(SendGrid.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(SendGrid.class));
 	}
 
 	@Test

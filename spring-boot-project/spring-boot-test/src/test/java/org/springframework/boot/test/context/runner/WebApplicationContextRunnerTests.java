@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context.runner;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.mock.web.MockServletContext;

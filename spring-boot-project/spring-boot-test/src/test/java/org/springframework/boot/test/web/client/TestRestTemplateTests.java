@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.http.client.config.RequestConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;

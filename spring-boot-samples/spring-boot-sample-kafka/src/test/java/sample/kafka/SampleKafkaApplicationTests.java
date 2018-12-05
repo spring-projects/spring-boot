@@ -15,14 +15,12 @@
  */
 package sample.kafka;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,22 +31,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka
 public class SampleKafkaApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testVanillaExchange() throws Exception {
 		long end = System.currentTimeMillis() + 10000;
-		while (!this.outputCapture.toString().contains("A simple test message")
+		while (!this.output.toString().contains("A simple test message")
 				&& System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}
-		assertThat(this.outputCapture.toString()).contains("A simple test message");
+		assertThat(this.output).contains("A simple test message");
 	}
 
 }

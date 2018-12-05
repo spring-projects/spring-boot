@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.redis;
 import java.util.Properties;
 
 import io.lettuce.core.RedisConnectionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 

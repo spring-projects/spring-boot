@@ -16,13 +16,11 @@
 
 package sample.data.mongo;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,16 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(OutputCapture.class)
 @SpringBootTest
 public class SampleMongoApplicationTests {
 
-	@ClassRule
-	public static OutputCapture outputCapture = new OutputCapture();
-
 	@Test
-	public void testDefaultSettings() {
-		String output = SampleMongoApplicationTests.outputCapture.toString();
+	public void testDefaultSettings(OutputCapture output) {
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 

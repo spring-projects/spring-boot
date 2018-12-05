@@ -21,7 +21,7 @@ import java.util.Collections;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.cache.caffeine.CaffeineCache;
 

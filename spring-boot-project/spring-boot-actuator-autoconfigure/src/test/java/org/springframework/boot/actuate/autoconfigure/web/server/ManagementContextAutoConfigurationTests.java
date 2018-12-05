@@ -15,8 +15,8 @@
  */
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagem
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +41,7 @@ public class ManagementContextAutoConfigurationTests {
 					AutoConfigurations.of(ManagementContextAutoConfiguration.class,
 							ServletManagementContextAutoConfiguration.class));
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	@Test
@@ -49,7 +49,7 @@ public class ManagementContextAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.server.port=8081")
 				.run((context) -> {
 					assertThat(context.getStartupFailure()).isNull();
-					assertThat(this.output.toString())
+					assertThat(this.output)
 							.contains("Could not start embedded management container on "
 									+ "different port (management endpoints are still available through JMX)");
 				});
@@ -66,7 +66,7 @@ public class ManagementContextAutoConfigurationTests {
 								WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("management.server.port=8081")
-				.run((context) -> assertThat(this.output.toString()).doesNotContain(
+				.run((context) -> assertThat(this.output).doesNotContain(
 						"Could not start embedded management container on "
 								+ "different port (management endpoints are still available through JMX)"));
 	}

@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactory;
