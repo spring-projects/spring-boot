@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import reactor.netty.http.server.HttpServer;
 

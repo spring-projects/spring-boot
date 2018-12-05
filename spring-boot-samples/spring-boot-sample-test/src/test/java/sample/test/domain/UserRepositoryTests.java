@@ -16,13 +16,11 @@
 
 package sample.test.domain;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,9 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
-public class UserRepositoryTests {
+class UserRepositoryTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"00000000000000000");
@@ -45,7 +42,7 @@ public class UserRepositoryTests {
 	private UserRepository repository;
 
 	@Test
-	public void findByUsernameShouldReturnUser() {
+	void findByUsernameShouldReturnUser() {
 		this.entityManager.persist(new User("sboot", VIN));
 		User user = this.repository.findByUsername("sboot");
 		assertThat(user.getUsername()).isEqualTo("sboot");
@@ -53,7 +50,7 @@ public class UserRepositoryTests {
 	}
 
 	@Test
-	public void findByUsernameWhenNoUserShouldReturnNull() {
+	void findByUsernameWhenNoUserShouldReturnNull() {
 		this.entityManager.persist(new User("sboot", VIN));
 		User user = this.repository.findByUsername("mmouse");
 		assertThat(user).isNull();

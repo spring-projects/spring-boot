@@ -18,10 +18,10 @@ package sample.parent.consumer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import sample.parent.SampleParentContextApplication;
 import sample.parent.producer.ProducerApplication;
 
@@ -40,15 +40,12 @@ import static org.junit.Assert.fail;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class SampleIntegrationParentApplicationTests {
-
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+class SampleIntegrationParentApplicationTests {
 
 	@Test
-	public void testVanillaExchange() throws Exception {
-		File inputDir = new File(this.temp.getRoot(), "input");
-		File outputDir = new File(this.temp.getRoot(), "output");
+	void testVanillaExchange(@TempDir Path temp) throws Exception {
+		File inputDir = new File(temp.toFile(), "input");
+		File outputDir = new File(temp.toFile(), "output");
 		ConfigurableApplicationContext app = SpringApplication.run(
 				SampleParentContextApplication.class, "--service.input-dir=" + inputDir,
 				"--service.output-dir=" + outputDir);

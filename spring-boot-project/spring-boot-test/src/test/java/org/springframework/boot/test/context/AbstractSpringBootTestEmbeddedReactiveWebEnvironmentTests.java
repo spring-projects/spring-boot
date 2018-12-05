@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -18,8 +18,7 @@ package sample.freemarker;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +30,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,15 +39,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleWebFreeMarkerApplicationTests {
+class SampleWebFreeMarkerApplicationTests {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 
 	@Test
-	public void testFreeMarkerTemplate() {
+	void testFreeMarkerTemplate() {
 		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("/",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -57,7 +54,7 @@ public class SampleWebFreeMarkerApplicationTests {
 	}
 
 	@Test
-	public void testFreeMarkerErrorTemplate() {
+	void testFreeMarkerErrorTemplate() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);

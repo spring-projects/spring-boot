@@ -18,17 +18,17 @@ package samples.websocket.tomcat.snake;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
-public class SnakeTimerTests {
+class SnakeTimerTests {
 
 	@Test
-	public void removeDysfunctionalSnakes() throws Exception {
+	void removeDysfunctionalSnakes() throws Exception {
 		Snake snake = mock(Snake.class);
 		willThrow(new IOException()).given(snake).sendMessage(anyString());
 		SnakeTimer.addSnake(snake);

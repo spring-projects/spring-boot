@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.properties;
 
 import io.micrometer.core.instrument.step.StepRegistryConfig;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,8 +37,5 @@ public abstract class StepRegistryPropertiesTests {
 		assertThat(properties.getNumThreads()).isEqualTo(config.numThreads());
 		assertThat(properties.getBatchSize()).isEqualTo(config.batchSize());
 	}
-
-	@Test
-	public abstract void defaultValuesAreConsistent();
 
 }

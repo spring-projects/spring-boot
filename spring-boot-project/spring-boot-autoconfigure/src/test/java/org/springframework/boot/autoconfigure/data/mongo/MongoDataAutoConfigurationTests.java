@@ -22,7 +22,7 @@ import java.util.Set;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;

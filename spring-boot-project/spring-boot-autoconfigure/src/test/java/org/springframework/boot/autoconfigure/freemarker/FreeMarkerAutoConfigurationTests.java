@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.freemarker;
 import java.io.File;
 import java.io.StringWriter;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.testsupport.BuildOutput;
-import org.springframework.boot.testsupport.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,13 +37,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FreeMarkerAutoConfigurationTests {
 
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
+
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
-
-	@Rule
-	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void renderNonWebAppTemplate() {
@@ -65,7 +65,7 @@ public class FreeMarkerAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
-				.run((context) -> assertThat(this.output.toString())
+				.run((context) -> assertThat(this.output)
 						.contains("Cannot find template location"));
 	}
 

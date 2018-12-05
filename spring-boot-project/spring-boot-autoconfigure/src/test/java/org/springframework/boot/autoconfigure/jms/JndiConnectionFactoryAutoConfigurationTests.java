@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 import javax.naming.Context;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -50,7 +50,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 
 	private String initialContextFactory;
 
-	@Before
+	@BeforeEach
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
@@ -60,7 +60,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {

@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.filtersample.ExampleConfiguration;
@@ -44,7 +44,7 @@ public class AutoConfigurationExcludeFilterTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

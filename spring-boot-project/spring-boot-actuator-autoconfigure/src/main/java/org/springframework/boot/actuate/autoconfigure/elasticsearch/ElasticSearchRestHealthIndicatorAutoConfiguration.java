@@ -42,7 +42,6 @@ import org.springframework.context.annotation.Configuration;
  * @author Artsiom Yudovin
  * @since 2.1.1
  */
-
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestClient.class)
 @ConditionalOnBean(RestClient.class)

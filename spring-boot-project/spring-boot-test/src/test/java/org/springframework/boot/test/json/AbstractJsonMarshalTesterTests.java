@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
@@ -57,9 +57,6 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	private static final ResolvableType TYPE = ResolvableType
 			.forClass(ExampleObject.class);
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void writeShouldReturnJsonContent() throws Exception {
@@ -125,8 +122,8 @@ public abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void readFileShouldReturnObject() throws Exception {
-		File file = this.temp.newFile("example.json");
+	public void readFileShouldReturnObject(@TempDir Path temp) throws Exception {
+		File file = new File(temp.toFile(), "example.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(file)).isEqualTo(OBJECT);

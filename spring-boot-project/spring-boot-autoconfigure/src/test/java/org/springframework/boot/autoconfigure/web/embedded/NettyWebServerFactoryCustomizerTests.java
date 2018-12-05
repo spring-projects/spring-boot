@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -40,7 +40,7 @@ public class NettyWebServerFactoryCustomizerTests {
 
 	private NettyWebServerFactoryCustomizer customizer;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

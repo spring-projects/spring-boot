@@ -19,9 +19,8 @@ package sample.actuator.customsecurity;
 import java.net.URI;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,17 +40,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("cors")
-public class CorsSampleActuatorApplicationTests {
+class CorsSampleActuatorApplicationTests {
 
 	private TestRestTemplate testRestTemplate;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
@@ -62,14 +59,14 @@ public class CorsSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void endpointShouldReturnUnauthorized() {
+	void endpointShouldReturnUnauthorized() {
 		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void preflightRequestToEndpointShouldReturnOk() throws Exception {
+	void preflightRequestToEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/actuator/env"))
 				.header("Origin", "http://localhost:8080")
 				.header("Access-Control-Request-Method", "GET").build();
@@ -79,8 +76,7 @@ public class CorsSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden()
-			throws Exception {
+	void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
 		RequestEntity<?> entity = RequestEntity.options(new URI("/actuator/env"))
 				.header("Origin", "http://localhost:9095")
 				.header("Access-Control-Request-Method", "GET").build();

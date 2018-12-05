@@ -21,7 +21,7 @@ import java.io.FileFilter;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.util.FileCopyUtils;
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SampleAntApplicationIT {
 
 	@Test
-	public void runJar() throws Exception {
+	void runJar() throws Exception {
 		File target = new File("target");
 		File[] jarFiles = target.listFiles(new FileFilter() {
 

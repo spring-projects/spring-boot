@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags;
 import org.springframework.mock.web.MockHttpServletRequest;

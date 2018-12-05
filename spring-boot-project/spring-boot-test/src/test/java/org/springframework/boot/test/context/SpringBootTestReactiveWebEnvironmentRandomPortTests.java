@@ -16,12 +16,9 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.runner.RunWith;
-
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
@@ -34,7 +31,6 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "spring.main.webApplicationType=reactive", "value=123" })
-@RunWith(SpringRunner.class)
 public class SpringBootTestReactiveWebEnvironmentRandomPortTests
 		extends AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 

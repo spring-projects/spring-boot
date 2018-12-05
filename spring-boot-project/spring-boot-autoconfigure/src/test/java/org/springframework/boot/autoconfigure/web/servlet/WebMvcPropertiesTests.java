@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.assertj.core.util.Throwables;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;

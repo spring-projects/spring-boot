@@ -22,8 +22,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +36,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,9 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleTomcatApplicationTests {
+class SampleTomcatApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -59,14 +56,14 @@ public class SampleTomcatApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void testCompression() throws Exception {
+	void testCompression() throws Exception {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
@@ -81,7 +78,7 @@ public class SampleTomcatApplicationTests {
 	}
 
 	@Test
-	public void testTimeout() {
+	void testTimeout() {
 		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
 		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context
 				.getWebServer();

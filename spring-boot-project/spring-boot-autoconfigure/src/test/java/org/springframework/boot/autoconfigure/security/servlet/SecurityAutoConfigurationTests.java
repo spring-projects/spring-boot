@@ -20,8 +20,8 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -64,7 +64,7 @@ public class SecurityAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class));
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	@Test

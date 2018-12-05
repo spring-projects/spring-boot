@@ -23,8 +23,8 @@ import java.util.Arrays;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xnio.Option;
 import org.xnio.OptionMap;
 
@@ -61,7 +61,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 
 	private UndertowWebServerFactoryCustomizer customizer;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

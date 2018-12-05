@@ -23,7 +23,7 @@ import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.beans.BeansException;

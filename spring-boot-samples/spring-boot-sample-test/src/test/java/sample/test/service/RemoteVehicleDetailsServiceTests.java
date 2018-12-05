@@ -16,8 +16,7 @@
 
 package sample.test.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import sample.test.domain.VehicleIdentificationNumber;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -42,9 +40,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @RestClientTest({ RemoteVehicleDetailsService.class, ServiceProperties.class })
-public class RemoteVehicleDetailsServiceTests {
+class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";
 
@@ -55,14 +52,14 @@ public class RemoteVehicleDetailsServiceTests {
 	private MockRestServiceServer server;
 
 	@Test
-	public void getVehicleDetailsWhenVinIsNullShouldThrowException() {
+	void getVehicleDetailsWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.service.getVehicleDetails(null))
 				.withMessage("VIN must not be null");
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
+	void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"),
 						MediaType.APPLICATION_JSON));
@@ -73,7 +70,7 @@ public class RemoteVehicleDetailsServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException() {
+	void getVehicleDetailsWhenResultIsNotFoundShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		assertThatExceptionOfType(VehicleIdentificationNumberNotFoundException.class)
@@ -82,7 +79,7 @@ public class RemoteVehicleDetailsServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException() {
+	void getVehicleDetailsWhenResultIServerErrorShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withServerError());
 		assertThatExceptionOfType(HttpServerErrorException.class)

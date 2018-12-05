@@ -19,15 +19,13 @@ package sample.session;
 import java.time.Duration;
 import java.util.Base64;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -38,10 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Vedran Pavic
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(properties = "server.servlet.session.timeout:2",
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SampleSessionWebFluxApplicationTests {
+class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort
 	private int port;
@@ -50,7 +47,7 @@ public class SampleSessionWebFluxApplicationTests {
 	private WebClient.Builder webClientBuilder;
 
 	@Test
-	public void userDefinedMappingsSecureByDefault() throws Exception {
+	void userDefinedMappingsSecureByDefault() throws Exception {
 		WebClient webClient = this.webClientBuilder
 				.baseUrl("http://localhost:" + this.port + "/").build();
 		ClientResponse response = webClient.get().header("Authorization", getBasicAuth())

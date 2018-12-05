@@ -19,15 +19,15 @@ package sample.integration.consumer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import sample.integration.SampleIntegrationApplication;
 import sample.integration.ServiceProperties;
 import sample.integration.producer.ProducerApplication;
@@ -47,14 +47,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class SampleIntegrationApplicationTests {
-
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+class SampleIntegrationApplicationTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void stop() {
 		if (this.context != null) {
 			this.context.close();
@@ -62,9 +59,9 @@ public class SampleIntegrationApplicationTests {
 	}
 
 	@Test
-	public void testVanillaExchange() throws Exception {
-		File inputDir = new File(this.temp.getRoot(), "input");
-		File outputDir = new File(this.temp.getRoot(), "output");
+	void testVanillaExchange(@TempDir Path temp) throws Exception {
+		File inputDir = new File(temp.toFile(), "input");
+		File outputDir = new File(temp.toFile(), "output");
 		this.context = SpringApplication.run(SampleIntegrationApplication.class,
 				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir);
 		SpringApplication.run(ProducerApplication.class, "World",
@@ -74,9 +71,9 @@ public class SampleIntegrationApplicationTests {
 	}
 
 	@Test
-	public void testMessageGateway() throws Exception {
-		File inputDir = new File(this.temp.getRoot(), "input");
-		File outputDir = new File(this.temp.getRoot(), "output");
+	void testMessageGateway(@TempDir Path temp) throws Exception {
+		File inputDir = new File(temp.toFile(), "input");
+		File outputDir = new File(temp.toFile(), "output");
 		this.context = SpringApplication.run(SampleIntegrationApplication.class,
 				"testviamg", "--service.input-dir=" + inputDir,
 				"--service.output-dir=" + outputDir);

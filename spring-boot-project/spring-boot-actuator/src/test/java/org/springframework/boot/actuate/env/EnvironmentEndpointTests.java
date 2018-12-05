@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class EnvironmentEndpointTests {
 
-	@After
+	@AfterEach
 	public void close() {
 		System.clearProperty("VCAP_SERVICES");
 	}

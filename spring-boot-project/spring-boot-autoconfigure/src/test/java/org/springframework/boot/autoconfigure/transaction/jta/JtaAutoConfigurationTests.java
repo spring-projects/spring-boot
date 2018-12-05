@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.TemporaryQueue;
@@ -35,10 +36,9 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -73,12 +73,9 @@ import static org.mockito.Mockito.mock;
  */
 public class JtaAutoConfigurationTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
-
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void closeContext() {
 		if (this.context != null) {
 			this.context.close();
@@ -153,9 +150,10 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultAtomikosTransactionManagerName() throws IOException {
+	public void defaultAtomikosTransactionManagerName(@TempDir Path dir)
+			throws IOException {
 		this.context = new AnnotationConfigApplicationContext();
-		File logs = this.temp.newFolder("jta");
+		File logs = new File(dir.toFile(), "jta");
 		TestPropertyValues.of("spring.jta.logDir:" + logs.getAbsolutePath())
 				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class);

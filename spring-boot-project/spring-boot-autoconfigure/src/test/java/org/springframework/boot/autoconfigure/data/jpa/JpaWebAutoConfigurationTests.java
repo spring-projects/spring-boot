@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.jpa;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -45,7 +45,7 @@ public class JpaWebAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		this.context.close();
 	}

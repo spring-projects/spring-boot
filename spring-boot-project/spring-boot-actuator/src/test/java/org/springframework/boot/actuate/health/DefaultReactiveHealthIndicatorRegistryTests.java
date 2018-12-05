@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 
 	private DefaultReactiveHealthIndicatorRegistry registry;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		given(this.one.health()).willReturn(
 				Mono.just(new Health.Builder().unknown().withDetail("1", "1").build()));

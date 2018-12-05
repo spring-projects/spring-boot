@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.hazelcast.util.Base64;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Credentials;
@@ -41,7 +41,7 @@ public class Neo4jPropertiesTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

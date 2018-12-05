@@ -16,23 +16,20 @@
 
 package sample.actuator.noweb;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Basic integration tests for service demo application.
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class SampleActuatorNoWebApplicationTests {
+class SampleActuatorNoWebApplicationTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 
 	}
 

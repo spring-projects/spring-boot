@@ -22,8 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import samples.websocket.jetty.SampleJettyWebSocketsApplication;
 import samples.websocket.jetty.client.GreetingService;
 import samples.websocket.jetty.client.SimpleClientWebSocketHandler;
@@ -42,18 +41,16 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(
 		classes = { SampleJettyWebSocketsApplication.class,
 				CustomContainerConfiguration.class },
 		webEnvironment = WebEnvironment.RANDOM_PORT)
-public class CustomContainerWebSocketsApplicationTests {
+class CustomContainerWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory
 			.getLog(CustomContainerWebSocketsApplicationTests.class);
@@ -62,7 +59,7 @@ public class CustomContainerWebSocketsApplicationTests {
 	private int port;
 
 	@Test
-	public void echoEndpoint() {
+	void echoEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
@@ -78,7 +75,7 @@ public class CustomContainerWebSocketsApplicationTests {
 	}
 
 	@Test
-	public void reverseEndpoint() {
+	void reverseEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port

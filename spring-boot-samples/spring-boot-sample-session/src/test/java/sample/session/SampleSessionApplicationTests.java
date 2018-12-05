@@ -19,7 +19,7 @@ package sample.session;
 import java.net.URI;
 import java.util.Base64;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
@@ -38,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  */
-public class SampleSessionApplicationTests {
+class SampleSessionApplicationTests {
 
 	@Test
-	public void sessionExpiry() throws Exception {
+	void sessionExpiry() throws Exception {
 		ConfigurableApplicationContext context = createContext();
 		String port = context.getEnvironment().getProperty("local.server.port");
 		URI uri = URI.create("http://localhost:" + port + "/");

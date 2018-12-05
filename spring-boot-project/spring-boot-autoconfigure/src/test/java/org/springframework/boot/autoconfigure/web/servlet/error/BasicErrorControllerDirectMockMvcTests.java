@@ -28,8 +28,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
- * {@link org.springframework.test.context.junit4.SpringRunner}.
+ * {@link org.springframework.test.context.junit.jupiter.SpringExtension}.
  *
  * @author Dave Syer
  * @author Sebastien Deleuze
@@ -67,7 +67,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	private MockMvc mockMvc;
 
-	@After
+	@AfterEach
 	public void close() {
 		ApplicationContextTestUtils.closeAll(this.wac);
 	}

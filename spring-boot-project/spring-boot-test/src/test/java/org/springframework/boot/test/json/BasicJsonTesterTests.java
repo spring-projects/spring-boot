@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package org.springframework.boot.test.json;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -41,9 +41,6 @@ public class BasicJsonTesterTests {
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
 	private BasicJsonTester json = new BasicJsonTester(getClass());
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
@@ -72,8 +69,8 @@ public class BasicJsonTesterTests {
 	}
 
 	@Test
-	public void fromFileShouldReturnJsonContent() throws Exception {
-		File file = this.temp.newFile("file.json");
+	public void fromFileShouldReturnJsonContent(@TempDir Path temp) throws Exception {
+		File file = new File(temp.toFile(), "file.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		assertThat(this.json.from(file)).isEqualToJson("source.json");
 	}

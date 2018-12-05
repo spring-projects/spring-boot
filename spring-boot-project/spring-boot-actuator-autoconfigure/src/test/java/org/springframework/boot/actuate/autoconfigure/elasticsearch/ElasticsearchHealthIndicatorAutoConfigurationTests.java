@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.elasticsearch;
 
 import io.searchbox.client.JestClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicator;

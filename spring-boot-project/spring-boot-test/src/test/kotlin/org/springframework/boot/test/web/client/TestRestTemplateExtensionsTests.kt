@@ -19,7 +19,7 @@ package org.springframework.boot.test.web.client
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod

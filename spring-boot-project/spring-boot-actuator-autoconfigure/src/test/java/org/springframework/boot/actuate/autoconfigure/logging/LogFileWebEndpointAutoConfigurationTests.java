@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -46,9 +46,6 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
-
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void runWithOnlyExposedShouldNotHaveEndpointBean() {
@@ -130,8 +127,9 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
-		File file = this.temp.newFile();
+	public void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp)
+			throws IOException {
+		File file = new File(temp.toFile(), "logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
 		this.contextRunner.withPropertyValues(
 				"management.endpoints.web.exposure.include=logfile",

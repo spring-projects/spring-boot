@@ -16,9 +16,8 @@
 
 package sample.test;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sample.test.domain.VehicleIdentificationNumber;
 import sample.test.service.VehicleDetails;
 import sample.test.service.VehicleDetailsService;
@@ -29,7 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.mockito.BDDMockito.given;
 
@@ -38,10 +36,9 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
-public class SampleTestApplicationWebIntegrationTests {
+class SampleTestApplicationWebIntegrationTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"01234567890123456");
@@ -52,14 +49,14 @@ public class SampleTestApplicationWebIntegrationTests {
 	@MockBean
 	private VehicleDetailsService vehicleDetailsService;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		given(this.vehicleDetailsService.getVehicleDetails(VIN))
 				.willReturn(new VehicleDetails("Honda", "Civic"));
 	}
 
 	@Test
-	public void test() {
+	void test() {
 		this.restTemplate.getForEntity("/{username}/vehicle", String.class, "sframework");
 	}
 

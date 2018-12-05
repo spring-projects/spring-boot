@@ -22,7 +22,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBean;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

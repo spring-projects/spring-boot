@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
@@ -30,10 +31,9 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import org.bson.Document;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,12 +59,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class EmbeddedMongoAutoConfigurationTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
-
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -153,8 +150,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void mongoWritesToCustomDatabaseDir() throws IOException {
-		File customDatabaseDir = this.temp.newFolder("custom-database-dir");
+	public void mongoWritesToCustomDatabaseDir(@TempDir Path temp) throws IOException {
+		File customDatabaseDir = new File(temp.toFile(), "custom-database-dir");
 		FileSystemUtils.deleteRecursively(customDatabaseDir);
 		load("spring.mongodb.embedded.storage.databaseDir="
 				+ customDatabaseDir.getPath());

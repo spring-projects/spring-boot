@@ -18,8 +18,7 @@ package sample.actuator.ui;
 
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +27,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,10 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port:0" })
-public class SampleActuatorUiApplicationPortTests {
+class SampleActuatorUiApplicationPortTests {
 
 	@LocalServerPort
 	private int port;
@@ -49,14 +46,14 @@ public class SampleActuatorUiApplicationPortTests {
 	private int managementPort;
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void testMetrics() {
+	void testMetrics() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/actuator/metrics",
@@ -65,7 +62,7 @@ public class SampleActuatorUiApplicationPortTests {
 	}
 
 	@Test
-	public void testHealth() {
+	void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword()).getForEntity(
 						"http://localhost:" + this.managementPort + "/actuator/health",

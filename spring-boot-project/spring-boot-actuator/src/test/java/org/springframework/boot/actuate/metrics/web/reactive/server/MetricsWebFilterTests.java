@@ -21,8 +21,8 @@ import java.time.Duration;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.metrics.Autotime;
@@ -46,7 +46,7 @@ public class MetricsWebFilterTests {
 
 	private MetricsWebFilter webFilter;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockClock clock = new MockClock();
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);

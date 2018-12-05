@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.Filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

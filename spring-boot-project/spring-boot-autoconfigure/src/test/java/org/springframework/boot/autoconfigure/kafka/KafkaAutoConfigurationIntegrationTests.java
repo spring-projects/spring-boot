@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.Producer;
-import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -58,7 +58,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

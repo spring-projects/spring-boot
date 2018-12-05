@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +34,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -46,9 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleMethodSecurityApplicationTests {
+class SampleMethodSecurityApplicationTests {
 
 	@LocalServerPort
 	private int port;
@@ -57,7 +54,7 @@ public class SampleMethodSecurityApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
@@ -67,7 +64,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testLogin() {
+	void testLogin() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -82,7 +79,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testDenied() {
+	void testDenied() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -102,7 +99,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testManagementProtected() {
+	void testManagementProtected() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans",
@@ -111,7 +108,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testManagementAuthorizedAccess() {
+	void testManagementAuthorizedAccess() {
 		BasicAuthenticationInterceptor basicAuthInterceptor = new BasicAuthenticationInterceptor(
 				"admin", "admin");
 		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);

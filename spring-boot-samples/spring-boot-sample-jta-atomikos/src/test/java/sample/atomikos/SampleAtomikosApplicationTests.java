@@ -17,10 +17,10 @@
 package sample.atomikos;
 
 import org.assertj.core.api.Condition;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class SampleAtomikosApplicationTests {
+class SampleAtomikosApplicationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
-	public void testTransactionRollback() throws Exception {
+	void testTransactionRollback() throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
 		assertThat(this.output.toString()).has(substring(1, "---->"));
 		assertThat(this.output.toString()).has(substring(1, "----> josh"));

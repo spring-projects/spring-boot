@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.api.MigrationState;
 import org.flywaydb.core.api.MigrationType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.audit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;

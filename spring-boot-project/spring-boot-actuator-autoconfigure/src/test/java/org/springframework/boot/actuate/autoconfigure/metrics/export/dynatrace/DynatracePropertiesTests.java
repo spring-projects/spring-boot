@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
 import io.micrometer.dynatrace.DynatraceConfig;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesTests;
 
@@ -29,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DynatracePropertiesTests extends StepRegistryPropertiesTests {
 
-	@Override
+	@Test
 	public void defaultValuesAreConsistent() {
 		DynatraceProperties properties = new DynatraceProperties();
 		DynatraceConfig config = (key) -> null;

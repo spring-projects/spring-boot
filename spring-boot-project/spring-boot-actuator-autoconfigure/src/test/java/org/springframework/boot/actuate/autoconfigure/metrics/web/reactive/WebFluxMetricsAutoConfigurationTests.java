@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -49,8 +49,8 @@ public class WebFluxMetricsAutoConfigurationTests {
 			.with(MetricsRun.simple()).withConfiguration(
 					AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void shouldProvideWebFluxMetricsBeans() {

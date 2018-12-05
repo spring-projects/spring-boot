@@ -15,8 +15,7 @@
  */
 package sample.jersey;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
@@ -25,7 +24,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,10 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 		"management.server.port=0", "spring.jersey.application-path=/app" })
-public class JerseyApplicationPathAndManagementPortTests {
+class JerseyApplicationPathAndManagementPortTests {
 
 	@LocalServerPort
 	private int port;
@@ -50,7 +47,7 @@ public class JerseyApplicationPathAndManagementPortTests {
 	private TestRestTemplate testRestTemplate;
 
 	@Test
-	public void applicationPathShouldNotAffectActuators() {
+	void applicationPathShouldNotAffectActuators() {
 		ResponseEntity<String> entity = this.testRestTemplate.getForEntity(
 				"http://localhost:" + this.managementPort + "/actuator/health",
 				String.class);

@@ -17,8 +17,8 @@
 package org.springframework.boot.test.mock.mockito;
 
 import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runners.MethodSorters;
 
 import org.springframework.beans.factory.FactoryBean;
@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ResetMocksTestExecutionListenerTests {
 

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.jpa;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -37,7 +37,6 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author Dave Syer
  */
-
 @ContextConfiguration(classes = JpaUserDetailsTests.Main.class,
 		loader = SpringBootContextLoader.class)
 @DirtiesContext

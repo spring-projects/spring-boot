@@ -16,29 +16,29 @@
 
 package sample.jooq;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link SampleJooqApplication}.
  */
-public class SampleJooqApplicationTests {
+class SampleJooqApplicationTests {
 
 	private static final String[] NO_ARGS = {};
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
-	public void outputResults() {
+	void outputResults() {
 		SampleJooqApplication.main(NO_ARGS);
-		assertThat(this.output.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
-		assertThat(this.output.toString()).contains("jOOQ Fetch 2 Craig Walls");
-		assertThat(this.output.toString())
+		assertThat(this.output).contains("jOOQ Fetch 1 Greg Turnquest");
+		assertThat(this.output).contains("jOOQ Fetch 2 Craig Walls");
+		assertThat(this.output)
 				.contains("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
 						+ "Spring Boot in Action : Craig Walls]");
 	}

@@ -16,13 +16,11 @@
 
 package sample.data.rest;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -41,29 +39,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Oliver Gierke
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 // Separate profile for web tests to avoid clashing databases
-public class SampleDataRestApplicationTests {
+class SampleDataRestApplicationTests {
 
 	@Autowired
 	private WebApplicationContext context;
 
 	private MockMvc mvc;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
 
 	@Test
-	public void testHome() throws Exception {
+	void testHome() throws Exception {
 		this.mvc.perform(get("/api")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("hotels")));
 	}
 
 	@Test
-	public void findByNameAndCountry() throws Exception {
+	void findByNameAndCountry() throws Exception {
 		this.mvc.perform(get(
 				"/api/cities/search/findByNameAndCountryAllIgnoringCase?name=Melbourne&country=Australia"))
 				.andExpect(status().isOk())
@@ -72,7 +69,7 @@ public class SampleDataRestApplicationTests {
 	}
 
 	@Test
-	public void findByContaining() throws Exception {
+	void findByContaining() throws Exception {
 		this.mvc.perform(get(
 				"/api/cities/search/findByNameContainingAndCountryContainingAllIgnoringCase?name=&country=UK"))
 				.andExpect(status().isOk())

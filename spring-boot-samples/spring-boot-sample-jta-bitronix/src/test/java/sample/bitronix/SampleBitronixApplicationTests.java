@@ -18,11 +18,11 @@ package sample.bitronix;
 
 import bitronix.tm.resource.jms.PoolingConnectionFactory;
 import org.assertj.core.api.Condition;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,13 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class SampleBitronixApplicationTests {
+class SampleBitronixApplicationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
-	public void testTransactionRollback() throws Exception {
+	void testTransactionRollback() throws Exception {
 		SampleBitronixApplication.main(new String[] {});
 		assertThat(this.output.toString()).has(substring(1, "---->"));
 		assertThat(this.output.toString()).has(substring(1, "----> josh"));
@@ -47,7 +47,7 @@ public class SampleBitronixApplicationTests {
 	}
 
 	@Test
-	public void testExposesXaAndNonXa() {
+	void testExposesXaAndNonXa() {
 		ApplicationContext context = SpringApplication
 				.run(SampleBitronixApplication.class);
 		Object jmsConnectionFactory = context.getBean("jmsConnectionFactory");

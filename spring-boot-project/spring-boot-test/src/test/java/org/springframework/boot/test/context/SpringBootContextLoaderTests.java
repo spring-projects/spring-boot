@@ -18,8 +18,8 @@ package org.springframework.boot.test.context;
 
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,7 +81,7 @@ public class SpringBootContextLoaderTests {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void environmentPropertiesNewLineInValue() {
 		// gh-4384
 		Map<String, Object> config = getEnvironmentProperties(NewLineInValue.class);

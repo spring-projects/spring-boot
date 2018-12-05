@@ -26,7 +26,7 @@ import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;

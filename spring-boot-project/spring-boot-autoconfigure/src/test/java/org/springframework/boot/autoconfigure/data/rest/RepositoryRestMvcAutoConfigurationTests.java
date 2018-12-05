@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import java.net.URI;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -57,7 +57,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.context != null) {
 			this.context.close();

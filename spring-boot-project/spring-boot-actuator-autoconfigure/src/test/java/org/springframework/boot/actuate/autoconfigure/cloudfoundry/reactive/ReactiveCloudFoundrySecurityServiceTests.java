@@ -21,9 +21,9 @@ import java.util.function.Consumer;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
@@ -54,7 +54,7 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 
 	private WebClient.Builder builder;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.server = new MockWebServer();
 		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
@@ -62,7 +62,7 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 				CLOUD_CONTROLLER, false);
 	}
 
-	@After
+	@AfterEach
 	public void shutdown() throws Exception {
 		this.server.shutdown();
 	}

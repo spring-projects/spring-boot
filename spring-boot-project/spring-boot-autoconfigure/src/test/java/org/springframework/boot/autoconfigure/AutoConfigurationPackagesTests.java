@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
 import org.springframework.boot.autoconfigure.packagestest.one.FirstConfiguration;

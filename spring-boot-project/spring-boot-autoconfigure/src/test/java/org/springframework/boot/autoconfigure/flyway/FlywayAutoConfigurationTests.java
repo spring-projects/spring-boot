@@ -33,7 +33,7 @@ import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.internal.license.FlywayProUpgradeRequiredException;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;

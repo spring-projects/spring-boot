@@ -15,15 +15,12 @@
  */
 package sample.kafka;
 
-import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,24 +31,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(
 		properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka
-public class SampleKafkaApplicationTests {
+class SampleKafkaApplicationTests {
 
-	@Autowired
-	private Consumer consumer;
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
-	public void testVanillaExchange() throws Exception {
+	void testVanillaExchange() throws Exception {
 		long end = System.currentTimeMillis() + 10000;
-		List<SampleMessage> messages = this.consumer.getMessages();
-		while (messages.size() != 1 && System.currentTimeMillis() < end) {
+		while (!this.output.toString().contains("A simple test message")
+				&& System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}
-		assertThat(messages).hasSize(1);
-		assertThat(messages.get(0).getMessage()).isEqualTo("A simple test message");
+		assertThat(this.output).contains("A simple test message");
 	}
 
 }

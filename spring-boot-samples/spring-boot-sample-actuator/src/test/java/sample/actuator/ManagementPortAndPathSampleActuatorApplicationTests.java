@@ -18,8 +18,7 @@ package sample.actuator;
 
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
@@ -30,7 +29,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,12 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0",
 				"management.endpoints.web.base-path=/admin",
 				"management.endpoint.health.show-details=never" })
-public class ManagementPortAndPathSampleActuatorApplicationTests {
+class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
 	private int port;
@@ -56,7 +53,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	private Environment environment;
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port, Map.class);
@@ -67,7 +64,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetrics() {
+	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
@@ -76,7 +73,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() {
+	void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword())
 				.getForEntity("http://localhost:" + this.managementPort + "/admin/health",
@@ -86,7 +83,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testEnvNotFound() {
+	void testEnvNotFound() {
 		String unknownProperty = "test-does-not-exist";
 		assertThat(this.environment.containsProperty(unknownProperty)).isFalse();
 		ResponseEntity<String> entity = new TestRestTemplate()
@@ -97,7 +94,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMissing() {
+	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity(
 						"http://localhost:" + this.managementPort + "/admin/missing",
@@ -107,7 +104,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPage() {
+	void testErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/error", Map.class);
@@ -118,7 +115,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testManagementErrorPage() {
+	void testManagementErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.managementPort + "/error",

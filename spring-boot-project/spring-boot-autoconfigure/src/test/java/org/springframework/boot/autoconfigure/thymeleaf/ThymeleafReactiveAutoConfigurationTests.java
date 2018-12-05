@@ -22,8 +22,8 @@ import java.util.Locale;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingRespectLayoutTitleStrategy;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
@@ -37,7 +37,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,8 +59,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ThymeleafReactiveAutoConfigurationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
@@ -190,7 +190,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.thymeleaf.prefix:classpath:/no-such-directory/")
-				.run((context) -> assertThat(this.output.toString())
+				.run((context) -> assertThat(this.output)
 						.contains("Cannot find template location"));
 	}
 

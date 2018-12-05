@@ -19,7 +19,7 @@ package org.springframework.boot.test.mock.mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
 import org.springframework.beans.factory.annotation.Qualifier;

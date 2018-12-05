@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +46,7 @@ public class GsonTesterIntegrationTests {
 
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.gson = new Gson();
 		GsonTester.initFields(this, this.gson);

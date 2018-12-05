@@ -16,8 +16,8 @@
 
 package sample.test.web;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sample.test.domain.User;
@@ -37,7 +37,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  */
-public class UserVehicleServiceTests {
+class UserVehicleServiceTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"00000000000000000");
@@ -50,7 +50,7 @@ public class UserVehicleServiceTests {
 
 	private UserVehicleService service;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.service = new UserVehicleService(this.userRepository,
@@ -58,21 +58,21 @@ public class UserVehicleServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
+	void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.service.getVehicleDetails(null))
 				.withMessage("Username must not be null");
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() {
+	void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		assertThatExceptionOfType(UserNameNotFoundException.class)
 				.isThrownBy(() -> this.service.getVehicleDetails("sboot"));
 	}
 
 	@Test
-	public void getVehicleDetailsShouldReturnMakeAndModel() {
+	void getVehicleDetailsShouldReturnMakeAndModel() {
 		given(this.userRepository.findByUsername(anyString()))
 				.willReturn(new User("sboot", VIN));
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");

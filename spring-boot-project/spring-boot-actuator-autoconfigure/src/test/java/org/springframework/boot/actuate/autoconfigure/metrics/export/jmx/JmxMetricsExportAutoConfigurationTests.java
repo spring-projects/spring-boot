@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

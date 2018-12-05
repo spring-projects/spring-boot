@@ -18,9 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import javax.validation.Valid;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -31,7 +30,7 @@ import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFact
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,7 +47,6 @@ import org.springframework.web.server.WebFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Integration tests for {@link DefaultErrorWebExceptionHandler}
@@ -57,10 +55,10 @@ import static org.hamcrest.Matchers.containsString;
  */
 public class DefaultErrorWebExceptionHandlerIntegrationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
-
 	private final LogIdFilter logIdFilter = new LogIdFilter();
+
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
@@ -85,9 +83,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
 					.jsonPath("trace").doesNotExist().jsonPath("requestId")
 					.isEqualTo(this.logIdFilter.getLogId());
-			this.outputCapture.expect(Matchers.allOf(
-					containsString("500 Server Error for HTTP GET \"/\""),
-					containsString("java.lang.IllegalStateException: Expected!")));
+			assertThat(this.output).contains("500 Server Error for HTTP GET \"/\"")
+					.contains("java.lang.IllegalStateException: Expected!");
 		});
 	}
 
@@ -112,9 +109,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.expectHeader().contentType(MediaType.TEXT_HTML)
 					.expectBody(String.class).returnResult().getResponseBody();
 			assertThat(body).contains("status: 500").contains("message: Expected!");
-			this.outputCapture.expect(Matchers.allOf(
-					containsString("500 Server Error for HTTP GET \"/\""),
-					containsString("java.lang.IllegalStateException: Expected!")));
 		});
 	}
 

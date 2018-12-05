@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,18 @@ package sample.oauth2.resource;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SampleReactiveOAuth2ResourceServerApplicationTests {
+class SampleReactiveOAuth2ResourceServerApplicationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -45,7 +42,7 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 			+ "afU57cmK3KocTeknPAM_L716sCuSYGvDl6xUTXO7oPdrXhS_EhxLP6KxrpI1uD4Ea_5OWTh7S0Wx5LLDfU6wBG1DowN20d374zepOIEkR-Jnmr_Ql"
 			+ "R44vmRqS5ncrF-1R0EGcPX49U6A";
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		server.start();
 		String url = server.url("/.well-known/jwks.json").toString();
@@ -53,14 +50,14 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 		System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", url);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void shutdown() throws Exception {
 		server.shutdown();
 		System.clearProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
 	}
 
 	@Test
-	public void getWhenValidTokenShouldBeOk() {
+	void getWhenValidTokenShouldBeOk() {
 		this.webTestClient.get().uri("/")
 				.headers((headers) -> headers.setBearerAuth(VALID_TOKEN)).exchange()
 				.expectStatus().isOk().expectBody(String.class)
@@ -68,7 +65,7 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 	}
 
 	@Test
-	public void getWhenNoTokenShouldBeUnauthorized() {
+	void getWhenNoTokenShouldBeUnauthorized() {
 		this.webTestClient.get().uri("/").exchange().expectStatus().isUnauthorized()
 				.expectHeader().valueEquals(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
 	}

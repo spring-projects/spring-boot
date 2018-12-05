@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -53,7 +53,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -80,7 +80,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void testJpaRepositoryConfigurationWithNeo4jOverlap() {
 		load(OverlapConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();

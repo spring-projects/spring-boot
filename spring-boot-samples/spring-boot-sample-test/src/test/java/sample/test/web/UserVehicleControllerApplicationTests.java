@@ -16,8 +16,7 @@
 
 package sample.test.web;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import sample.test.WelcomeCommandLineRunner;
 import sample.test.service.VehicleDetails;
 
@@ -28,7 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,11 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-public class UserVehicleControllerApplicationTests {
+class UserVehicleControllerApplicationTests {
 
 	@Autowired
 	private MockMvc mvc;
@@ -58,7 +55,7 @@ public class UserVehicleControllerApplicationTests {
 	private UserVehicleService userVehicleService;
 
 	@Test
-	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
+	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot"))
 				.willReturn(new VehicleDetails("Honda", "Civic"));
 		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
@@ -66,7 +63,7 @@ public class UserVehicleControllerApplicationTests {
 	}
 
 	@Test
-	public void welcomeCommandLineRunnerShouldBeAvailable() {
+	void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @SpringBootTest all beans should be available.
 		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class))
 				.isNotNull();

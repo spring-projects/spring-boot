@@ -18,14 +18,14 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,7 +57,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 			.withUserConfiguration(TestSecurityConfiguration.class).withConfiguration(
 					AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	@Test
