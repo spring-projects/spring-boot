@@ -103,6 +103,9 @@ do as they were designed before this was clarified.
 | https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
 | https://github.com/javamelody/javamelody/wiki/SpringBootStarter
 
+| https://javers.org[JaVers]
+| https://github.com/javers/javers
+
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
