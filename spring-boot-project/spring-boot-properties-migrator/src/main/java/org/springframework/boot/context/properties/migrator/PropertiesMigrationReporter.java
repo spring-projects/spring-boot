@@ -137,6 +137,9 @@ class PropertiesMigrationReporter {
 		if (lastDot != -1) {
 			ConfigurationMetadataProperty property = this.allProperties
 					.get(fullId.substring(0, lastDot));
+			if (property == null) {
+				return null;
+			}
 			String type = property.getType();
 			if (type != null && type.startsWith(Map.class.getName())) {
 				int lastComma = type.lastIndexOf(',');
