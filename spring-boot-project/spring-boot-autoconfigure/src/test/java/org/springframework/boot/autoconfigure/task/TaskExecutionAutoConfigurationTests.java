@@ -105,7 +105,6 @@ public class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	public void taskExecutorAutoConfigured() {
-		this.output.reset();
 		this.contextRunner.run((context) -> {
 			assertThat(this.output.toString())
 					.doesNotContain("Initializing ExecutorService");

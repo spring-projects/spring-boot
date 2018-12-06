@@ -84,6 +84,9 @@ public class OutputCapture implements BeforeEachCallback, AfterEachCallback,
 	}
 
 	private void releaseOutput() {
+		if (this.captureOut == null) {
+			return;
+		}
 		AnsiOutputControl.get().enabledAnsiOutput();
 		System.setOut(this.captureOut.getOriginal());
 		System.setErr(this.captureErr.getOriginal());
