@@ -61,7 +61,7 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 
 		@Bean
 		public WebEndpointsSupplier webEndpointsSupplier() {
-			return () -> Collections.emptyList();
+			return Collections::emptyList;
 		}
 
 	}

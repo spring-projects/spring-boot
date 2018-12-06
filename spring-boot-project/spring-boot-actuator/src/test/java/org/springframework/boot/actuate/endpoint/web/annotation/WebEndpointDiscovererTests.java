@@ -182,7 +182,7 @@ public class WebEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenHasCacheWithTtlShouldCacheReadOperationWithTtlValue() {
-		load((id) -> 500L, (id) -> id.toString(), TestEndpointConfiguration.class,
+		load((id) -> 500L, EndpointId::toString, TestEndpointConfiguration.class,
 				(discoverer) -> {
 					Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(
 							discoverer.getEndpoints());
@@ -246,7 +246,7 @@ public class WebEndpointDiscovererTests {
 	}
 
 	private void load(Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
-		this.load((id) -> null, (id) -> id.toString(), configuration, consumer);
+		this.load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
 	private void load(Function<EndpointId, Long> timeToLive,
