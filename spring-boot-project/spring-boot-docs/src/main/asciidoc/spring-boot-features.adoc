@@ -7915,7 +7915,7 @@ following example:
 
 
 [[boot-features-webservices-template]]
-== Calling Web Services with `WebServiceTemplate`
+=== Calling Web Services with `WebServiceTemplate`
 If you need to call remote Web services from your application, you can use the
 {spring-webservices-reference}#client-web-service-template[`WebServiceTemplate`] class.
 Since `WebServiceTemplate` instances often need to be customized before being used, Spring
