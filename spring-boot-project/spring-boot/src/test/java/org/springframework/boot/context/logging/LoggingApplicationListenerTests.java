@@ -26,15 +26,16 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -89,9 +90,11 @@ public class LoggingApplicationListenerTests {
 
 	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
-	private final SLF4JLogFactory logFactory = new SLF4JLogFactory();
+	private final LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder
+			.getSingleton().getLoggerFactory();
 
-	private final Log logger = this.logFactory.getInstance(getClass());
+	private final ch.qos.logback.classic.Logger logger = this.loggerContext
+			.getLogger(getClass());
 
 	private final SpringApplication springApplication = new SpringApplication();
 
@@ -404,9 +407,9 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		this.logger.fatal("testatfatal");
+		this.logger.error("testaterror");
 		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug")
-				.doesNotContain("testatfatal");
+				.doesNotContain("testaterror");
 	}
 
 	@Test
@@ -416,9 +419,9 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		this.logger.fatal("testatfatal");
+		this.logger.error("testaterror");
 		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug")
-				.doesNotContain("testatfatal");
+				.doesNotContain("testaterror");
 	}
 
 	@Test
@@ -657,7 +660,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	private void assertTraceEnabled(String name, boolean expected) {
-		assertThat(this.logFactory.getInstance(name).isTraceEnabled())
+		assertThat(this.loggerContext.getLogger(name).isTraceEnabled())
 				.isEqualTo(expected);
 	}
 

@@ -31,8 +31,6 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -87,7 +85,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
 			getClass().getClassLoader());
 
-	private Log logger;
+	private Logger logger;
 
 	private LoggingInitializationContext initializationContext;
 
@@ -96,7 +94,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Before
 	public void setup() {
 		this.loggingSystem.cleanUp();
-		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
+		this.logger = ((LoggerContext) StaticLoggerBinder.getSingleton()
+				.getLoggerFactory()).getLogger(getClass());
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
 	}
