@@ -184,9 +184,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File documentRoot = getValidDocumentRoot();
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
-		if (documentRoot != null) {
-			context.setResources(new LoaderHidingResourceRoot(context));
-		}
+		context.setResources(new LoaderHidingResourceRoot(context));
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
