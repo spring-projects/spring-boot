@@ -174,6 +174,15 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
 	}
 
+	@Test
+	public void autoConfigurationShouldBeConditionalOnJwtDecoderClass() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				.withUserConfiguration(JwtDecoderConfig.class)
+				.withClassLoader(new FilteredClassLoader(JwtDecoder.class))
+				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
+	}
+
 	@SuppressWarnings("unchecked")
 	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
