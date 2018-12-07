@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 
 /**
@@ -39,7 +39,7 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
 @AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass({ EnableWebFluxSecurity.class, BearerTokenAuthenticationToken.class,
-		JwtDecoder.class })
+		ReactiveJwtDecoder.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @Import({ ReactiveOAuth2ResourceServerJwkConfiguration.class,
 		ReactiveOAuth2ResourceServerWebSecurityConfiguration.class })
