@@ -21,7 +21,7 @@ import java.util.Properties;
 import javax.mail.Session;
 import javax.naming.Context;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +68,7 @@ public class MailSenderAutoConfigurationTests {
 				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
