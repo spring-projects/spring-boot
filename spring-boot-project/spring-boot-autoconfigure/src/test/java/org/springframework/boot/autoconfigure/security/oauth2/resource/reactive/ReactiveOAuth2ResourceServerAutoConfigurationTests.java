@@ -155,6 +155,16 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationShouldBeConditionalOnReactiveJwtDecoderClass() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				.withUserConfiguration(JwtDecoderConfig.class)
+				.withClassLoader(new FilteredClassLoader(ReactiveJwtDecoder.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
+	}
+
+	@Test
 	public void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
