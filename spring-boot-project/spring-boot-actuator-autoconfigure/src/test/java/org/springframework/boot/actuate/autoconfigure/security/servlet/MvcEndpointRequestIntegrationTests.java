@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -130,7 +131,7 @@ public class MvcEndpointRequestIntegrationTests
 					mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
 					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, Arrays.asList((id) -> id.toString()),
+					endpointMediaTypes, Arrays.asList(EndpointId::toString),
 					Collections.emptyList(), Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"),
 					discoverer.getEndpoints(), endpointMediaTypes,

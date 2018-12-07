@@ -66,8 +66,8 @@ public class BindResultTests {
 	@Test
 	public void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
-		assertThatExceptionOfType(NoSuchElementException.class)
-				.isThrownBy(() -> result.get()).withMessageContaining("No value bound");
+		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(result::get)
+				.withMessageContaining("No value bound");
 	}
 
 	@Test

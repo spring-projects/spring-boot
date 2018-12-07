@@ -92,7 +92,7 @@ public class TokenTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		Token token = createToken(header, claims);
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> token.getSignatureAlgorithm())
+				.isThrownBy(token::getSignatureAlgorithm)
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
 	}
 
@@ -102,7 +102,7 @@ public class TokenTests {
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> token.getIssuer())
+				.isThrownBy(token::getIssuer)
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
 	}
 
@@ -112,7 +112,7 @@ public class TokenTests {
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> token.getKeyId())
+				.isThrownBy(token::getKeyId)
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
 	}
 
@@ -122,7 +122,7 @@ public class TokenTests {
 		String claims = "{\"iss\": \"http://localhost:8080/uaa/oauth/token\"" + "}";
 		Token token = createToken(header, claims);
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> token.getExpiry())
+				.isThrownBy(token::getExpiry)
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
 	}
 

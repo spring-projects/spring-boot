@@ -260,7 +260,7 @@ public class HttpExchangeTracerTests {
 	public void principalIsNotIncludedByDefault() {
 		HttpTrace trace = new HttpTrace(createRequest());
 		new HttpExchangeTracer(EnumSet.noneOf(Include.class)).sendingResponse(trace,
-				createResponse(), () -> createPrincipal(), null);
+				createResponse(), this::createPrincipal, null);
 		assertThat(trace.getPrincipal()).isNull();
 	}
 
@@ -268,7 +268,7 @@ public class HttpExchangeTracerTests {
 	public void principalCanBeIncluded() {
 		HttpTrace trace = new HttpTrace(createRequest());
 		new HttpExchangeTracer(EnumSet.of(Include.PRINCIPAL)).sendingResponse(trace,
-				createResponse(), () -> createPrincipal(), null);
+				createResponse(), this::createPrincipal, null);
 		assertThat(trace.getPrincipal()).isNotNull();
 		assertThat(trace.getPrincipal().getName()).isEqualTo("alice");
 	}
