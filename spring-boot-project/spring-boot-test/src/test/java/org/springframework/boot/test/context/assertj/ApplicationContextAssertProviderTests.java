@@ -131,8 +131,7 @@ public class ApplicationContextAssertProviderTests {
 	public void getSourceContextWhenContextFailsShouldThrowException() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(
 				this.startupFailureSupplier);
-		assertThatIllegalStateException()
-				.isThrownBy(context::getSourceApplicationContext)
+		assertThatIllegalStateException().isThrownBy(context::getSourceApplicationContext)
 				.withCause(this.startupFailure).withMessageContaining("failed to start");
 	}
 
