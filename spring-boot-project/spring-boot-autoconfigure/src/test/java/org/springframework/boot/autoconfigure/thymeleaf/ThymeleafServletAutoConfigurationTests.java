@@ -372,8 +372,7 @@ public class ThymeleafServletAutoConfigurationTests {
 
 		@Bean
 		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
-			return new FilterRegistrationBean<>(
-					new OrderedCharacterEncodingFilter());
+			return new FilterRegistrationBean<>(new OrderedCharacterEncodingFilter());
 		}
 
 	}
