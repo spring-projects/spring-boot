@@ -18,7 +18,6 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -77,14 +77,10 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 				linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'http://localhost:8080/'"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
+				.contains("'http://localhost:8080/'");
 		assertThat(new File(defaultSnippetsDir, "links.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
 	}
 
 	@TestConfiguration

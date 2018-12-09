@@ -18,7 +18,6 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -61,15 +61,11 @@ public class MockMvcRestDocsAutoConfigurationIntegrationTests {
 		this.mvc.perform(get("/")).andDo(document("default-snippets"));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.adoc"))
-				.has(contentContaining("api.example.com"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc")))
+				.contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc")))
+				.contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
 	}
 
 }
