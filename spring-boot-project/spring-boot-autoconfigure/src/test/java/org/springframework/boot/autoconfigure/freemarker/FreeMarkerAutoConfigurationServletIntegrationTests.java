@@ -243,7 +243,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 		@Bean
 		public FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegistration() {
-			FilterRegistrationBean<ResourceUrlEncodingFilter> bean = new FilterRegistrationBean<ResourceUrlEncodingFilter>(
+			FilterRegistrationBean<ResourceUrlEncodingFilter> bean = new FilterRegistrationBean<>(
 					new ResourceUrlEncodingFilter());
 			bean.setDispatcherTypes(EnumSet.of(DispatcherType.INCLUDE));
 			return bean;
@@ -257,8 +257,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 		@Bean
 		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
-			return new FilterRegistrationBean<OrderedCharacterEncodingFilter>(
-					new OrderedCharacterEncodingFilter());
+			return new FilterRegistrationBean<>(new OrderedCharacterEncodingFilter());
 		}
 
 	}
