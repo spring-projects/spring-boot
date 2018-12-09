@@ -252,9 +252,8 @@ public class WebEndpointDiscovererTests {
 	private void load(Function<EndpointId, Long> timeToLive,
 			PathMapper endpointPathMapper, Class<?> configuration,
 			Consumer<WebEndpointDiscoverer> consumer) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				configuration)) {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
 			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
@@ -266,9 +265,6 @@ public class WebEndpointDiscovererTests {
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
 					Collections.emptyList());
 			consumer.accept(discoverer);
-		}
-		finally {
-			context.close();
 		}
 	}
 
