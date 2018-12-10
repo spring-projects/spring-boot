@@ -15,11 +15,12 @@
  */
 package sample.kafka;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,17 +37,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EmbeddedKafka
 public class SampleKafkaApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
-
 	@Test
-	public void testVanillaExchange() throws Exception {
+	public void testVanillaExchange(@Autowired Consumer consumer) throws Exception {
 		long end = System.currentTimeMillis() + 10000;
-		while (!this.output.toString().contains("A simple test message")
-				&& System.currentTimeMillis() < end) {
+		List<SampleMessage> messages = consumer.getMessages();
+		while (messages.size() != 1 && System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}
-		assertThat(this.output).contains("A simple test message");
+		assertThat(messages).hasSize(1);
+		assertThat(messages.get(0).getMessage()).isEqualTo("A simple test message");
 	}
 
 }
