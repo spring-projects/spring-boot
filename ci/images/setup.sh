@@ -18,11 +18,11 @@ curl https://raw.githubusercontent.com/spring-io/concourse-java-scripts/v0.0.2/c
 
 case "$1" in
 	java8)
-		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u192-b12/OpenJDK8U-jdk_x64_linux_hotspot_8u192b12.tar.gz
+		 JDK_URL=`curl https://api.adoptopenjdk.net/v2/info/releases/openjdk8?type=jdk\&os\=linux\&arch\=x64\&openjdk_impl\=hotspot\&release\=latest | jq -r '.binaries[].binary_link'`
 		 COMPONENTS=2
 	;;
 	java11)
-		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1%2B13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz
+		 JDK_URL=`curl https://api.adoptopenjdk.net/v2/info/releases/openjdk11?type=jdk\&os\=linux\&arch\=x64\&openjdk_impl\=hotspot\&release\=latest | jq -r '.binaries[].binary_link'`
 		 COMPONENTS=1
 	;;
 	*)
