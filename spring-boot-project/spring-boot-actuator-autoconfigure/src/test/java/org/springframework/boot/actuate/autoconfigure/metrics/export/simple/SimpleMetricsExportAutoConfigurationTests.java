@@ -90,14 +90,7 @@ public class SimpleMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public SimpleConfig customConfig() {
-			return new SimpleConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (k) -> null;
 		}
 
 	}
