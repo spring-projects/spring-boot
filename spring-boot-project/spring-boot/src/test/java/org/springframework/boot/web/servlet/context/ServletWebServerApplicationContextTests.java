@@ -38,11 +38,9 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
@@ -475,16 +473,10 @@ public class ServletWebServerApplicationContextTests {
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
 		this.context.registerBeanDefinition("withAutowiredServletRequest",
 				beanDefinition);
-		this.context.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
-
-			@Override
-			public void postProcessBeanFactory(
-					ConfigurableListableBeanFactory beanFactory) throws BeansException {
-				WithAutowiredServletRequest bean = beanFactory
-						.getBean(WithAutowiredServletRequest.class);
-				assertThat(bean.getRequest()).isNotNull();
-			}
-
+		this.context.addBeanFactoryPostProcessor((beanFactory) -> {
+			WithAutowiredServletRequest bean = beanFactory
+					.getBean(WithAutowiredServletRequest.class);
+			assertThat(bean.getRequest()).isNotNull();
 		});
 		this.context.refresh();
 		String output = this.output.toString().substring(initialOutputLength);

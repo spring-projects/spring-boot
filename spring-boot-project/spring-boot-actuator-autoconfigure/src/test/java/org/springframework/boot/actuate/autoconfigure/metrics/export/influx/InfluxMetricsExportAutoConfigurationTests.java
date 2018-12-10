@@ -107,14 +107,7 @@ public class InfluxMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public InfluxConfig customConfig() {
-			return new InfluxConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (k) -> null;
 		}
 
 	}

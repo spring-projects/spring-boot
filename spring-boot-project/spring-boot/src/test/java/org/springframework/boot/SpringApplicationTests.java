@@ -669,26 +669,18 @@ public class SpringApplicationTests {
 		CommandLineRunner commandLineRunner = mock(CommandLineRunner.class);
 		application.addInitializers((context) -> {
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			beanFactory.registerSingleton("commandLineRunner", new CommandLineRunner() {
-
-				@Override
-				public void run(String... args) throws Exception {
-					assertThat(SpringApplicationTests.this.output.toString())
-							.contains("Started");
-					commandLineRunner.run(args);
-				}
-
-			});
-			beanFactory.registerSingleton("applicationRunner", new ApplicationRunner() {
-
-				@Override
-				public void run(ApplicationArguments args) throws Exception {
-					assertThat(SpringApplicationTests.this.output.toString())
-							.contains("Started");
-					applicationRunner.run(args);
-				}
-
-			});
+			beanFactory.registerSingleton("commandLineRunner",
+					(CommandLineRunner) (args) -> {
+						assertThat(SpringApplicationTests.this.output.toString())
+								.contains("Started");
+						commandLineRunner.run(args);
+					});
+			beanFactory.registerSingleton("applicationRunner",
+					(ApplicationRunner) (args) -> {
+						assertThat(SpringApplicationTests.this.output.toString())
+								.contains("Started");
+						applicationRunner.run(args);
+					});
 		});
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ApplicationListener<ApplicationReadyEvent> eventListener = mock(

@@ -301,25 +301,20 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void faultyListenerCausesStartFailure() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.addServerCustomizers(new JettyServerCustomizer() {
+		factory.addServerCustomizers((JettyServerCustomizer) (server) -> {
+			Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);
+			contexts.iterator().next().addEventListener(new ServletContextListener() {
 
-			@Override
-			public void customize(Server server) {
-				Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);
-				contexts.iterator().next().addEventListener(new ServletContextListener() {
+				@Override
+				public void contextInitialized(ServletContextEvent sce) {
+					throw new RuntimeException();
+				}
 
-					@Override
-					public void contextInitialized(ServletContextEvent sce) {
-						throw new RuntimeException();
-					}
+				@Override
+				public void contextDestroyed(ServletContextEvent sce) {
+				}
 
-					@Override
-					public void contextDestroyed(ServletContextEvent sce) {
-					}
-
-				});
-			}
-
+			});
 		});
 		assertThatExceptionOfType(WebServerException.class).isThrownBy(() -> {
 			JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
