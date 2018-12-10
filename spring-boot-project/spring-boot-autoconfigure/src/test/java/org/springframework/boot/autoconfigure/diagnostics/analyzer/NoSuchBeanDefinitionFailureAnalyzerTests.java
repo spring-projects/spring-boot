@@ -37,8 +37,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -166,7 +169,8 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
 				String.class);
 		assertUserDefinedBean(analysis, "as the bean value is null",
-				TestNullBeanConfiguration.class, "string");
+				ClassUtils.getShortName(TestNullBeanConfiguration.class), "string",
+				"string", String.class);
 		assertActionMissingType(analysis, String.class);
 	}
 
@@ -178,13 +182,37 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 				"@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
 	}
 
+	@Test
+	public void failureAnalysisForQualifierBeanByType() {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(TestClassQualifierComponentBeanConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, TestClassQualifierHandler.class,
+				0, TestClass.class);
+		assertThat(analysis.getDescription())
+				.containsPattern("Qualifier\\(value=\"*test-class\"*\\)");
+		assertUserDefinedBean(analysis, null, null, null, "testClass", TestClass.class);
+		assertActionMissingType(analysis, TestClass.class);
+	}
+
+	@Test
+	public void failureAnalysisForQualifierBeanByTypeXmlResource() {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(TestClassQualifierXmlBeanConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, TestClassQualifierHandler.class,
+				0, TestClass.class);
+		assertUserDefinedBean(analysis, null,
+				"class path resource [org/springframework/boot/autoconfigure/diagnostics/analyzer/beans.xml]",
+				null, "xmlTestBean", TestClass.class);
+		assertActionMissingType(analysis, TestClass.class);
+	}
+
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis,
 			Class<?> component, int index, Class<?> type) {
 		String expected = String.format(
 				"Parameter %s of constructor in %s required a bean of "
 						+ "type '%s' that could not be found.",
 				index, component.getName(), type.getName());
-		assertThat(analysis.getDescription()).startsWith(expected);
+		assertThat(analysis.getDescription()).contains(expected);
 	}
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
@@ -218,11 +246,19 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private void assertUserDefinedBean(FailureAnalysis analysis, String description,
-			Class<?> target, String methodName) {
-		String expected = String.format("User-defined bean method '%s' in '%s' ignored",
-				methodName, ClassUtils.getShortName(target));
+			String target, String methodName, String beanName, Class<?> beanClass) {
+		StringBuilder expected = new StringBuilder(String.format(
+				"User-defined bean '%s' of type '%s'", beanName, beanClass.getName()));
+		if (StringUtils.hasText(methodName)) {
+			expected.append(String.format(" : defined by method '%s'", methodName));
+		}
+		if (StringUtils.hasText(target)) {
+			expected.append(String.format(" in %s", target));
+		}
 		assertThat(analysis.getDescription()).contains(expected);
-		assertThat(analysis.getDescription()).contains(description);
+		if (StringUtils.hasText(description)) {
+			assertThat(analysis.getDescription()).contains(description);
+		}
 	}
 
 	private static void addExclusions(NoSuchBeanDefinitionFailureAnalyzer analyzer,
@@ -290,6 +326,20 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@ImportAutoConfiguration(TestMissingBeanAutoConfiguration.class)
 	@Import(StringNameHandler.class)
 	protected static class StringMissingBeanNameConfiguration {
+
+	}
+
+	@Configuration
+	@Import({ TestClass.class, TestClassQualifierHandler.class })
+	protected static class TestClassQualifierComponentBeanConfiguration {
+
+	}
+
+	@Configuration
+	@Import({ TestClassQualifierHandler.class })
+	@ImportResource("classpath:/org/springframework/boot/autoconfigure/diagnostics"
+			+ "/analyzer/beans.xml")
+	protected static class TestClassQualifierXmlBeanConfiguration {
 
 	}
 
@@ -387,6 +437,18 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		public StringNameHandler(BeanFactory beanFactory) {
 			beanFactory.getBean("test-string");
 		}
+
+	}
+
+	protected static class TestClassQualifierHandler {
+
+		public TestClassQualifierHandler(@Qualifier("test-class") TestClass foo) {
+		}
+
+	}
+
+	@Component("testClass")
+	protected static class TestClass {
 
 	}
 
