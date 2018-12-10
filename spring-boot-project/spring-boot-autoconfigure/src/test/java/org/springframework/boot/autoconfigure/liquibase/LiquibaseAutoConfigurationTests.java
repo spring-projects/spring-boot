@@ -205,14 +205,15 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void overrideUser() {
+		String jdbcUrl = "jdbc:hsqldb:mem:normal";
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
+				.withPropertyValues("spring.datasource.url:" + jdbcUrl,
 						"spring.datasource.username:not-sa", "spring.liquibase.user:sa")
 				.run(assertLiquibase((liquibase) -> {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
-							.isEqualTo("jdbc:hsqldb:mem:normal");
+							.isEqualTo(jdbcUrl);
 					assertThat(((HikariDataSource) dataSource).getUsername())
 							.isEqualTo("sa");
 				}));
