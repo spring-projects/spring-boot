@@ -948,7 +948,7 @@
 		<dependency>
 			<groupId>io.spring.docresources</groupId>
 			<artifactId>spring-doc-resources</artifactId>
-			<version>0.1.0-BUILD-SNAPSHOT</version>
+			<version>0.1.0.BUILD-SNAPSHOT</version>
 			<type>zip</type>
 			<optional>true</optional>
 		</dependency>
