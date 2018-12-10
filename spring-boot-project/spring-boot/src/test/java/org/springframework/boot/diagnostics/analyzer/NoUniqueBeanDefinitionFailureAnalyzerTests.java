@@ -22,6 +22,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
 import org.springframework.boot.diagnostics.analyzer.nounique.TestBean;
 import org.springframework.boot.diagnostics.analyzer.nounique.TestBeanConsumer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -117,23 +118,27 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 		}
 	}
 
-	private FailureAnalysis analyzeFailure(BeanCreationException failure) {
-		return this.analyzer.analyze(failure);
+	private FailureAnalysis analyzeFailure(Exception failure) {
+		FailureAnalysis analysis = this.analyzer.analyze(failure);
+		if (analysis != null) {
+			new LoggingFailureAnalysisReporter().report(analysis);
+		}
+		return analysis;
 	}
 
 	private void assertFoundBeans(FailureAnalysis analysis) {
-		assertThat(analysis.getDescription())
-				.contains("beanOne: defined by method 'beanOne' in "
+		String type = TestBean.class.getName();
+		assertThat(analysis.getDescription()).contains(
+				"'beanOne' of type '" + type + "' defined by method 'beanOne' in "
 						+ DuplicateBeansProducer.class.getName());
-		assertThat(analysis.getDescription())
-				.contains("beanTwo: defined by method 'beanTwo' in "
+		assertThat(analysis.getDescription()).contains(
+				"'beanTwo' of type '" + type + "' defined by method 'beanTwo' in "
 						+ DuplicateBeansProducer.class.getName());
-		assertThat(analysis.getDescription())
-				.contains("beanThree: defined by method 'beanThree' in "
-						+ ParentProducer.class.getName());
-		assertThat(analysis.getDescription()).contains("barTestBean");
-		assertThat(analysis.getDescription()).contains("fooTestBean");
-		assertThat(analysis.getDescription()).contains("xmlTestBean");
+		assertThat(analysis.getDescription()).contains("'beanThree' of type '" + type
+				+ "' defined by method 'beanThree' in " + ParentProducer.class.getName());
+		assertThat(analysis.getDescription()).contains("'barTestBean'");
+		assertThat(analysis.getDescription()).contains("'fooTestBean'");
+		assertThat(analysis.getDescription()).contains("'xmlTestBean'");
 	}
 
 	@Configuration
