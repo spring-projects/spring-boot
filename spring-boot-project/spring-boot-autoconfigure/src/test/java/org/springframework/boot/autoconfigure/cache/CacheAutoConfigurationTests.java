@@ -172,6 +172,16 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	}
 
 	@Test
+	public void multiplyCacheManagers() {
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(CacheManagerConfiguration.class))
+				.withPropertyValues("spring.cache.type=simple")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"expected single matching bean of type 'org.springframework.cache.CacheManager' but found 2: cacheManager,customCacheManager"));
+	}
+
+	@Test
 	public void genericCacheWithCaches() {
 		this.contextRunner.withUserConfiguration(GenericCacheConfiguration.class)
 				.run((context) -> {
@@ -191,8 +201,8 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 				.withPropertyValues("spring.cache.type=generic")
 				.run((context) -> assertThat(context).getFailure()
 						.isInstanceOf(BeanCreationException.class)
-						.hasMessageContaining("No cache manager could be auto-configured")
-						.hasMessageContaining("GENERIC"));
+						.hasMessageContaining(" No qualifying bean of type 'org"
+								+ ".springframework.cache.CacheManager'"));
 	}
 
 	@Test
@@ -362,8 +372,8 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 				.withPropertyValues("spring.cache.type=jcache")
 				.run((context) -> assertThat(context).getFailure()
 						.isInstanceOf(BeanCreationException.class)
-						.hasMessageContaining("No cache manager could be auto-configured")
-						.hasMessageContaining("JCACHE"));
+						.hasMessageContaining(" No qualifying bean of type 'org"
+								+ ".springframework.cache.CacheManager'"));
 	}
 
 	@Test
@@ -808,6 +818,16 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@EnableCaching
 	@Import(CacheManagerCustomizersConfiguration.class)
 	static class DefaultCacheAndCustomizersConfiguration {
+
+	}
+
+	@Configuration
+	static class CacheManagerConfiguration {
+
+		@Bean
+		public CacheManager customCacheManager() {
+			return new SimpleCacheManager();
+		}
 
 	}
 

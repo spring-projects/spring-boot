@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -42,7 +44,8 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the cache abstraction. Creates a
@@ -74,8 +77,9 @@ public class CacheAutoConfiguration {
 
 	@Bean
 	public CacheManagerValidator cacheAutoConfigurationValidator(
-			CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
-		return new CacheManagerValidator(cacheProperties, cacheManager);
+			CacheProperties cacheProperties,
+			ObjectProvider<Map<String, CacheManager>> cacheManagers) {
+		return new CacheManagerValidator(cacheProperties, cacheManagers);
 	}
 
 	@Configuration
@@ -91,27 +95,29 @@ public class CacheAutoConfiguration {
 	}
 
 	/**
-	 * Bean used to validate that a CacheManager exists and provide a more meaningful
-	 * exception.
+	 * Bean used to validate that a CacheManager exists and it unique.
 	 */
 	static class CacheManagerValidator implements InitializingBean {
 
 		private final CacheProperties cacheProperties;
 
-		private final ObjectProvider<CacheManager> cacheManager;
+		private final Map<String, CacheManager> cacheManagers;
 
 		CacheManagerValidator(CacheProperties cacheProperties,
-				ObjectProvider<CacheManager> cacheManager) {
+				ObjectProvider<Map<String, CacheManager>> cacheManagers) {
 			this.cacheProperties = cacheProperties;
-			this.cacheManager = cacheManager;
+			this.cacheManagers = cacheManagers.getIfAvailable();
 		}
 
 		@Override
 		public void afterPropertiesSet() {
-			Assert.notNull(this.cacheManager.getIfAvailable(),
-					() -> "No cache manager could "
-							+ "be auto-configured, check your configuration (caching "
-							+ "type is '" + this.cacheProperties.getType() + "')");
+			if (CollectionUtils.isEmpty(this.cacheManagers)) {
+				throw new NoSuchCacheManagerException(this.cacheProperties);
+			}
+			if (this.cacheManagers.size() > 1) {
+				throw new NoUniqueCacheManagerException(this.cacheManagers.keySet(),
+						this.cacheProperties);
+			}
 		}
 
 	}
@@ -129,6 +135,54 @@ public class CacheAutoConfiguration {
 				imports[i] = CacheConfigurations.getConfigurationClass(types[i]);
 			}
 			return imports;
+		}
+
+	}
+
+	/**
+	 * Exception thrown when {@link org.springframework.cache.CacheManager} implementation
+	 * are not specified.
+	 */
+	static class NoSuchCacheManagerException extends RuntimeException {
+
+		private final CacheProperties properties;
+
+		NoSuchCacheManagerException(CacheProperties properties) {
+			super(String.format("No qualifying bean of type '%s' available",
+					CacheManager.class.getName()));
+			this.properties = properties;
+		}
+
+		NoSuchCacheManagerException(String message, CacheProperties properties) {
+			super(message);
+			this.properties = properties;
+		}
+
+		CacheProperties getProperties() {
+			return this.properties;
+		}
+
+	}
+
+	/**
+	 * Exception thrown when multiple {@link org.springframework.cache.CacheManager}
+	 * implementations are available with no way to know which implementation should be
+	 * used.
+	 */
+	static class NoUniqueCacheManagerException extends NoSuchCacheManagerException {
+
+		private final Set<String> beanNames;
+
+		NoUniqueCacheManagerException(Set<String> beanNames, CacheProperties properties) {
+			super(String.format(
+					"expected single matching bean of type '%s' but found " + "%d: %s",
+					CacheManager.class.getName(), beanNames.size(),
+					StringUtils.collectionToCommaDelimitedString(beanNames)), properties);
+			this.beanNames = beanNames;
+		}
+
+		Set<String> getBeanNames() {
+			return this.beanNames;
 		}
 
 	}
