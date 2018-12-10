@@ -145,13 +145,11 @@ public class MappingsEndpointServletDocumentationTests
 						.type(JsonFieldType.OBJECT)
 						.description("Details of the method, if any, "
 								+ "that will handle requests to this mapping."),
-				fieldWithPath("*.[].details.handlerMethod.className").optional()
-						.type(JsonFieldType.STRING)
+				fieldWithPath("*.[].details.handlerMethod.className")
 						.description("Fully qualified name of the class of the method."),
-				fieldWithPath("*.[].details.handlerMethod.name").optional()
-						.type(JsonFieldType.STRING).description("Name of the method."),
-				fieldWithPath("*.[].details.handlerMethod.descriptor").optional()
-						.type(JsonFieldType.STRING)
+				fieldWithPath("*.[].details.handlerMethod.name")
+						.description("Name of the method."),
+				fieldWithPath("*.[].details.handlerMethod.descriptor")
 						.description("Descriptor of the method as specified in the Java "
 								+ "Language Specification."));
 		dispatcherServletFields.addAll(handlerMethod);
