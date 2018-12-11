@@ -42,7 +42,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
@@ -57,7 +56,6 @@ import org.springframework.util.ReflectionUtils;
  * @author Johannes Edmeier
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.jackson")
 public class JacksonProperties {
 
 	private static final Map<?, Boolean> FEATURE_DEFAULTS;
@@ -161,7 +159,9 @@ public class JacksonProperties {
 		configureFeatures(builder, getGenerator());
 		configureDateFormat(builder);
 		configurePropertyNamingStrategy(builder);
-		configureModules(builder, applicationContext);
+		if (applicationContext != null) {
+			configureModules(builder, applicationContext);
+		}
 		configureLocale(builder);
 		return builder;
 	}
