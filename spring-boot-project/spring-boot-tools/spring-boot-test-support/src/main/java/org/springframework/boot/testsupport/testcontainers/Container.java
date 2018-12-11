@@ -77,6 +77,10 @@ class Container implements TestRule {
 		return this.container.getMappedPort(this.port);
 	}
 
+	protected GenericContainer<?> getContainer() {
+		return this.container;
+	}
+
 	private static class SkipStatement extends Statement {
 
 		@Override

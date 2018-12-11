@@ -235,11 +235,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<optional>true</optional>
@@ -488,7 +483,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
+			<artifactId>log4j-to-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

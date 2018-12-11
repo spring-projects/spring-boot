@@ -25,11 +25,12 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.jupiter.api.Test;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
@@ -43,6 +44,9 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  */
 public class RestClientAutoConfigurationTests {
+
+	@ClassRule
+	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
@@ -77,9 +81,9 @@ public class RestClientAutoConfigurationTests {
 
 	@Test
 	public void restClientCanQueryElasticsearchNode() {
-		new ElasticsearchNodeTemplate().doWithNode((node) -> this.contextRunner
+		this.contextRunner
 				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
-						+ node.getHttpPort())
+						+ RestClientAutoConfigurationTests.elasticsearch.getMappedPort())
 				.run((context) -> {
 					RestHighLevelClient client = context
 							.getBean(RestHighLevelClient.class);
@@ -92,7 +96,7 @@ public class RestClientAutoConfigurationTests {
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
 					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists())
 							.isTrue();
-				}));
+				});
 	}
 
 	@Configuration
