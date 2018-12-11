@@ -93,6 +93,10 @@ resources:
   type: slack-notification
   source:
     url: ((slack-webhook-url))
+- name: every-wednesday
+  type: time
+  source:
+    days: [Wednesday]
 jobs:
 - name: build-spring-boot-ci-images
   plan:
@@ -106,6 +110,30 @@ jobs:
     params:
       build: ci-images-git-repo/ci/images
       dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image/Dockerfile
+- name: detect-jdk-updates
+  plan:
+  - get: git-repo
+  - get: every-wednesday
+    trigger: true
+  - aggregate:
+    - task: detect-jdk8-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java8
+      image: spring-boot-ci-image
+    - task: detect-jdk11-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java11
+      image: spring-boot-ci-image
 - name: build
   serial: true
   public: true
@@ -428,6 +456,6 @@ groups:
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
-  jobs: ["build-spring-boot-ci-images"]
+  jobs: ["build-spring-boot-ci-images", "detect-jdk-updates"]
 - name: "Build Pull Requests"
   jobs: ["build-pull-requests"]
