@@ -16,7 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jackson;
 
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -28,9 +34,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration properties to configure Jackson.
@@ -42,6 +59,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.jackson")
 public class JacksonProperties {
+
+	private static final Map<?, Boolean> FEATURE_DEFAULTS;
+
+	static {
+		Map<Object, Boolean> featureDefaults = new HashMap<>();
+		featureDefaults.put(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		FEATURE_DEFAULTS = Collections.unmodifiableMap(featureDefaults);
+	}
 
 	/**
 	 * Date format string or a fully-qualified date format class name. For instance,
@@ -113,6 +138,134 @@ public class JacksonProperties {
 	 * Locale used for formatting.
 	 */
 	private Locale locale;
+
+	public Jackson2ObjectMapperBuilder initializeJackson2ObjectMapperBuilder() {
+		return initializeJackson2ObjectMapperBuilder(null);
+	}
+
+	public Jackson2ObjectMapperBuilder initializeJackson2ObjectMapperBuilder(
+			ApplicationContext applicationContext) {
+		Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+		if (this.getDefaultPropertyInclusion() != null) {
+			builder.serializationInclusion(this.getDefaultPropertyInclusion());
+		}
+		if (this.getTimeZone() != null) {
+			builder.timeZone(this.getTimeZone());
+		}
+		configureFeatures(builder, FEATURE_DEFAULTS);
+		configureVisibility(builder, getVisibility());
+		configureFeatures(builder, getDeserialization());
+		configureFeatures(builder, getSerialization());
+		configureFeatures(builder, getMapper());
+		configureFeatures(builder, getParser());
+		configureFeatures(builder, getGenerator());
+		configureDateFormat(builder);
+		configurePropertyNamingStrategy(builder);
+		configureModules(builder, applicationContext);
+		configureLocale(builder);
+		return builder;
+	}
+
+	private void configureFeatures(Jackson2ObjectMapperBuilder builder,
+			Map<?, Boolean> features) {
+		features.forEach((feature, value) -> {
+			if (value != null) {
+				if (value) {
+					builder.featuresToEnable(feature);
+				}
+				else {
+					builder.featuresToDisable(feature);
+				}
+			}
+		});
+	}
+
+	private void configureVisibility(Jackson2ObjectMapperBuilder builder,
+			Map<PropertyAccessor, JsonAutoDetect.Visibility> visibilities) {
+		visibilities.forEach(builder::visibility);
+	}
+
+	private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {
+		// We support a fully qualified class name extending DateFormat or a date
+		// pattern string value
+		String dateFormat = getDateFormat();
+		if (dateFormat != null) {
+			try {
+				Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
+				builder.dateFormat(
+						(DateFormat) BeanUtils.instantiateClass(dateFormatClass));
+			}
+			catch (ClassNotFoundException ex) {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+				// Since Jackson 2.6.3 we always need to set a TimeZone (see
+				// gh-4170). If none in our properties fallback to the Jackson's
+				// default
+				TimeZone timeZone = getTimeZone();
+				if (timeZone == null) {
+					timeZone = new ObjectMapper().getSerializationConfig().getTimeZone();
+				}
+				simpleDateFormat.setTimeZone(timeZone);
+				builder.dateFormat(simpleDateFormat);
+			}
+		}
+	}
+
+	private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
+		// We support a fully qualified class name extending Jackson's
+		// PropertyNamingStrategy or a string value corresponding to the constant
+		// names in PropertyNamingStrategy which hold default provided
+		// implementations
+		String strategy = getPropertyNamingStrategy();
+		if (strategy != null) {
+			try {
+				configurePropertyNamingStrategyClass(builder,
+						ClassUtils.forName(strategy, null));
+			}
+			catch (ClassNotFoundException ex) {
+				configurePropertyNamingStrategyField(builder, strategy);
+			}
+		}
+	}
+
+	private void configurePropertyNamingStrategyClass(Jackson2ObjectMapperBuilder builder,
+			Class<?> propertyNamingStrategyClass) {
+		builder.propertyNamingStrategy((PropertyNamingStrategy) BeanUtils
+				.instantiateClass(propertyNamingStrategyClass));
+	}
+
+	private void configurePropertyNamingStrategyField(Jackson2ObjectMapperBuilder builder,
+			String fieldName) {
+		// Find the field (this way we automatically support new constants
+		// that may be added by Jackson in the future)
+		Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
+				PropertyNamingStrategy.class);
+		Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found on "
+				+ PropertyNamingStrategy.class.getName());
+		try {
+			builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private void configureModules(Jackson2ObjectMapperBuilder builder,
+			ApplicationContext applicationContext) {
+		Collection<Module> moduleBeans = getBeans(applicationContext, Module.class);
+		builder.modulesToInstall(moduleBeans.toArray(new Module[0]));
+	}
+
+	private void configureLocale(Jackson2ObjectMapperBuilder builder) {
+		Locale locale = getLocale();
+		if (locale != null) {
+			builder.locale(locale);
+		}
+	}
+
+	private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
+			Class<T> type) {
+		return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
+	}
 
 	public String getDateFormat() {
 		return this.dateFormat;
