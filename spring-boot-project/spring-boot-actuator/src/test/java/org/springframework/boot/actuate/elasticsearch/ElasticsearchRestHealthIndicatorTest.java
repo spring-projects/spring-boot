@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.elasticsearch;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.http.StatusLine;
 import org.apache.http.entity.BasicHttpEntity;
@@ -64,17 +65,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-
-		assertThat(health.getDetails()).contains(entry("cluster_name", "elasticsearch"),
-				entry("status", "green"), entry("timed_out", false),
-				entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
-				entry("active_primary_shards", 0), entry("active_shards", 0),
-				entry("relocating_shards", 0), entry("initializing_shards", 0),
-				entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
-				entry("number_of_pending_tasks", 0),
-				entry("number_of_in_flight_fetch", 0),
-				entry("task_max_waiting_in_queue_millis", 0),
-				entry("active_shards_percent_as_number", 100.0));
+		assertHealthDetailsWithStatus(health.getDetails(), "green");
 	}
 
 	@Test
@@ -93,17 +84,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-
-		assertThat(health.getDetails()).contains(entry("cluster_name", "elasticsearch"),
-				entry("status", "yellow"), entry("timed_out", false),
-				entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
-				entry("active_primary_shards", 0), entry("active_shards", 0),
-				entry("relocating_shards", 0), entry("initializing_shards", 0),
-				entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
-				entry("number_of_pending_tasks", 0),
-				entry("number_of_in_flight_fetch", 0),
-				entry("task_max_waiting_in_queue_millis", 0),
-				entry("active_shards_percent_as_number", 100.0));
+		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
 	}
 
 	@Test
@@ -119,7 +100,6 @@ public class ElasticsearchRestHealthIndicatorTest {
 
 	@Test
 	public void elasticsearchIsDownByResponseCode() throws IOException {
-
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 
@@ -150,8 +130,13 @@ public class ElasticsearchRestHealthIndicatorTest {
 
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
-		assertThat(health.getDetails()).contains(entry("cluster_name", "elasticsearch"),
-				entry("status", "red"), entry("timed_out", false),
+		assertHealthDetailsWithStatus(health.getDetails(), "red");
+	}
+
+	private void assertHealthDetailsWithStatus(Map<String, Object> details,
+			String status) {
+		assertThat(details).contains(entry("cluster_name", "elasticsearch"),
+				entry("status", status), entry("timed_out", false),
 				entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
 				entry("active_primary_shards", 0), entry("active_shards", 0),
 				entry("relocating_shards", 0), entry("initializing_shards", 0),

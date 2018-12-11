@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.elasticsearch;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
@@ -31,6 +32,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -56,6 +58,16 @@ public class ElasticsearchJestHealthIndicatorTests {
 				.willReturn(createJestResult(200, true, "green"));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertHealthDetailsWithStatus(health.getDetails(), "green");
+	}
+
+	@Test
+	public void elasticsearchWithYellowStatusIsUp() throws IOException {
+		given(this.jestClient.execute(any(Action.class)))
+				.willReturn(createJestResult(200, true, "yellow"));
+		Health health = this.healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,6 +95,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 				.willReturn(createJestResult(500, false, ""));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails()).contains(entry("statusCode", 500));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,6 +105,21 @@ public class ElasticsearchJestHealthIndicatorTests {
 				.willReturn(createJestResult(200, true, "red"));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+		assertHealthDetailsWithStatus(health.getDetails(), "red");
+	}
+
+	private void assertHealthDetailsWithStatus(Map<String, Object> details,
+			String status) {
+		assertThat(details).contains(entry("cluster_name", "elasticsearch"),
+				entry("status", status), entry("timed_out", false),
+				entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
+				entry("active_primary_shards", 0), entry("active_shards", 0),
+				entry("relocating_shards", 0), entry("initializing_shards", 0),
+				entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
+				entry("number_of_pending_tasks", 0),
+				entry("number_of_in_flight_fetch", 0),
+				entry("task_max_waiting_in_queue_millis", 0),
+				entry("active_shards_percent_as_number", 100.0));
 	}
 
 	private static JestResult createJestResult(int responseCode, boolean succeeded,
