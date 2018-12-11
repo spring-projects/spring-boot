@@ -96,6 +96,8 @@ resources:
 - name: every-wednesday
   type: time
   source:
+    start: 8:00 PM
+    stop: 9:00 PM
     days: [Wednesday]
 jobs:
 - name: build-spring-boot-ci-images
