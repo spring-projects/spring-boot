@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.elasticsearch;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.http.StatusLine;
 import org.apache.http.entity.BasicHttpEntity;
@@ -26,9 +27,11 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.when;
@@ -37,6 +40,7 @@ import static org.mockito.BDDMockito.when;
  * Tests for {@link ElasticsearchRestHealthIndicator}.
  *
  * @author Artsiom Yudovin
+ * @author Filip Hrisafov
  */
 public class ElasticsearchRestHealthIndicatorTest {
 
@@ -59,8 +63,28 @@ public class ElasticsearchRestHealthIndicatorTest {
 		when(response.getEntity()).thenReturn(httpEntity);
 		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
 
-		assertThat(this.elasticsearchRestHealthIndicator.health().getStatus())
-				.isEqualTo(Status.UP);
+		Health health = this.elasticsearchRestHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertHealthDetailsWithStatus(health.getDetails(), "green");
+	}
+
+	@Test
+	public void elasticsearchWithYellowStatusIsUp() throws IOException {
+		BasicHttpEntity httpEntity = new BasicHttpEntity();
+		httpEntity.setContent(
+				new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()));
+
+		Response response = mock(Response.class);
+		StatusLine statusLine = mock(StatusLine.class);
+
+		when(statusLine.getStatusCode()).thenReturn(200);
+		when(response.getStatusLine()).thenReturn(statusLine);
+		when(response.getEntity()).thenReturn(httpEntity);
+		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
+
+		Health health = this.elasticsearchRestHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
 	}
 
 	@Test
@@ -68,22 +92,26 @@ public class ElasticsearchRestHealthIndicatorTest {
 		when(this.restClient.performRequest(any(Request.class)))
 				.thenThrow(new IOException("Couldn't connect"));
 
-		assertThat(this.elasticsearchRestHealthIndicator.health().getStatus())
-				.isEqualTo(Status.DOWN);
+		Health health = this.elasticsearchRestHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails())
+				.contains(entry("error", "java.io.IOException: Couldn't connect"));
 	}
 
 	@Test
 	public void elasticsearchIsDownByResponseCode() throws IOException {
-
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 
 		when(statusLine.getStatusCode()).thenReturn(500);
+		when(statusLine.getReasonPhrase()).thenReturn("Internal server error");
 		when(response.getStatusLine()).thenReturn(statusLine);
 		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
 
-		assertThat(this.elasticsearchRestHealthIndicator.health().getStatus())
-				.isEqualTo(Status.DOWN);
+		Health health = this.elasticsearchRestHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails()).contains(entry("statusCode", 500),
+				entry("reasonPhrase", "Internal server error"));
 	}
 
 	@Test
@@ -100,8 +128,23 @@ public class ElasticsearchRestHealthIndicatorTest {
 		when(response.getEntity()).thenReturn(httpEntity);
 		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
 
-		assertThat(this.elasticsearchRestHealthIndicator.health().getStatus())
-				.isEqualTo(Status.OUT_OF_SERVICE);
+		Health health = this.elasticsearchRestHealthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+		assertHealthDetailsWithStatus(health.getDetails(), "red");
+	}
+
+	private void assertHealthDetailsWithStatus(Map<String, Object> details,
+			String status) {
+		assertThat(details).contains(entry("cluster_name", "elasticsearch"),
+				entry("status", status), entry("timed_out", false),
+				entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
+				entry("active_primary_shards", 0), entry("active_shards", 0),
+				entry("relocating_shards", 0), entry("initializing_shards", 0),
+				entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
+				entry("number_of_pending_tasks", 0),
+				entry("number_of_in_flight_fetch", 0),
+				entry("task_max_waiting_in_queue_millis", 0),
+				entry("active_shards_percent_as_number", 100.0));
 	}
 
 	private String createJsonResult(int responseCode, String status) {
