@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
 
 import javax.jms.ConnectionFactory;
@@ -39,9 +37,9 @@ import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -64,12 +62,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@ExtendWith(TempDirectory.class)
 public class ArtemisAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
 					JmsAutoConfiguration.class));
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void connectionFactoryIsCachedByDefault() {
@@ -273,9 +273,8 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedWithPersistentMode(@TempDirectory.TempDir Path temp)
-			throws IOException {
-		File dataFolder = Files.createTempDirectory(temp, null).toFile();
+	public void embeddedWithPersistentMode() throws IOException {
+		File dataFolder = this.temp.newFolder();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package sample.data.mongo;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,13 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ExtendWith(OutputCapture.class)
 @SpringBootTest
+@RunWith(SpringRunner.class)
 public class SampleMongoApplicationTests {
 
+	@ClassRule
+	public static final OutputCapture output = new OutputCapture();
+
 	@Test
-	public void testDefaultSettings(OutputCapture output) {
-		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+	public void testDefaultSettings() {
+		assertThat(output.toString()).contains("firstName='Alice', lastName='Smith'");
 	}
 
 }

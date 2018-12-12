@@ -25,7 +25,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;

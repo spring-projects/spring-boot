@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -46,7 +46,7 @@ public class SpringApplicationHierarchyTests {
 
 	private ConfigurableApplicationContext context;
 
-	@AfterEach
+	@After
 	public void after() {
 		ApplicationContextTestUtils.closeAll(this.context);
 	}

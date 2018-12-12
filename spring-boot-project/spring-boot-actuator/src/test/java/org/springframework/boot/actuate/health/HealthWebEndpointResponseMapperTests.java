@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;

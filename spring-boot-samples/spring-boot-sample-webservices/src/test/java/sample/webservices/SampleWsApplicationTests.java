@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,30 +21,33 @@ import java.io.StringReader;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleWsApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	private WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 
 	@LocalServerPort
 	private int serverPort;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		this.webServiceTemplate
 				.setDefaultUri("http://localhost:" + this.serverPort + "/services/");

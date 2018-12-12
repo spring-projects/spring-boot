@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.util.Collection;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;

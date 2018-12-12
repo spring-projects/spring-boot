@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.context.assertj;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.test.context.assertj.ApplicationContextAssert.Scope;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -46,14 +46,14 @@ public class ApplicationContextAssertTests {
 
 	private RuntimeException failure = new RuntimeException();
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.parent = new StaticApplicationContext();
 		this.context = new StaticApplicationContext();
 		this.context.setParent(this.parent);
 	}
 
-	@AfterEach
+	@After
 	public void cleanup() {
 		this.context.close();
 		this.parent.close();

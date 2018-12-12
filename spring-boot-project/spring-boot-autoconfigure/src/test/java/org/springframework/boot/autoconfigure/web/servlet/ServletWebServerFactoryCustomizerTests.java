@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -53,7 +53,7 @@ public class ServletWebServerFactoryCustomizerTests {
 
 	private ServletWebServerFactoryCustomizer customizer;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
 	}

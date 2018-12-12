@@ -21,7 +21,7 @@ import java.sql.DatabaseMetaData;
 
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.orm.jpa.vendor.Database;
 

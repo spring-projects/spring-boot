@@ -22,8 +22,8 @@ import java.util.Arrays;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.xnio.OptionMap;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -56,7 +56,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 
 	private UndertowWebServerFactoryCustomizer customizer;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

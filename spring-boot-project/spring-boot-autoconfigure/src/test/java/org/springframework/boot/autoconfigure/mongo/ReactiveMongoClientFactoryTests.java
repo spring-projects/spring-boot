@@ -24,7 +24,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;

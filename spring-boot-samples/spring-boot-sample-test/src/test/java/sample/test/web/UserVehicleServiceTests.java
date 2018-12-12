@@ -16,8 +16,8 @@
 
 package sample.test.web;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sample.test.domain.User;
@@ -50,7 +50,7 @@ public class UserVehicleServiceTests {
 
 	private UserVehicleService service;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.service = new UserVehicleService(this.userRepository,

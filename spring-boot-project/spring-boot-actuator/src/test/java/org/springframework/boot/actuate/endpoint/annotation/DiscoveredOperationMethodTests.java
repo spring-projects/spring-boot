@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.core.annotation.AnnotationAttributes;

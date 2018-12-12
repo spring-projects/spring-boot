@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,31 @@
 
 package sample.logback;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleLogbackApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testLoadedCustomLogbackConfig() throws Exception {
 		SampleLogbackApplication.main(new String[0]);
-		assertThat(this.output).contains("Sample Debug Message");
-		assertThat(this.output).doesNotContain("Sample Trace Message");
+		assertThat(this.output.toString()).contains("Sample Debug Message");
+		assertThat(this.output.toString()).doesNotContain("Sample Trace Message");
 	}
 
 	@Test
 	public void testProfile() throws Exception {
 		SampleLogbackApplication
 				.main(new String[] { "--spring.profiles.active=staging" });
-		assertThat(this.output).contains("Sample Debug Message");
-		assertThat(this.output).contains("Sample Trace Message");
+		assertThat(this.output.toString()).contains("Sample Debug Message");
+		assertThat(this.output.toString()).contains("Sample Trace Message");
 	}
 
 }

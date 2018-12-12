@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.webservices;
 
 import java.util.Collection;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

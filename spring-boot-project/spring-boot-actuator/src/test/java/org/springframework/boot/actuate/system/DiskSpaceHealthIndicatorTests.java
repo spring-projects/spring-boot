@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.system;
 
 import java.io.File;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -48,7 +48,7 @@ public class DiskSpaceHealthIndicatorTests {
 
 	private HealthIndicator healthIndicator;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);

@@ -16,18 +16,18 @@
 
 package sample.data.solr;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleSolrApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
@@ -39,7 +39,7 @@ public class SampleSolrApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output).contains("name=Sony Playstation");
+		assertThat(this.output.toString()).contains("name=Sony Playstation");
 	}
 
 	@SuppressWarnings("serial")

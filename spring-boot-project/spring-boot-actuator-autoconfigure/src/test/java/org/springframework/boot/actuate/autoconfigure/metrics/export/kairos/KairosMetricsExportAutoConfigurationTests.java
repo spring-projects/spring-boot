@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.kairos;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.kairos.KairosConfig;
 import io.micrometer.kairos.KairosMeterRegistry;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

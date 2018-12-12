@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.health.Health;

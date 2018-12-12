@@ -19,8 +19,8 @@ package org.springframework.boot.test.mock.mockito;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -56,7 +56,7 @@ public class MockitoTestExecutionListenerTests {
 	@Captor
 	private ArgumentCaptor<Field> fieldCaptor;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.applicationContext.getBean(MockitoPostProcessor.class))

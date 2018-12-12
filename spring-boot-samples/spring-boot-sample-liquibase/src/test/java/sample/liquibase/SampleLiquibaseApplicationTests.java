@@ -18,18 +18,18 @@ package sample.liquibase;
 
 import java.net.ConnectException;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleLiquibaseApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
@@ -41,7 +41,8 @@ public class SampleLiquibaseApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output).contains("Successfully acquired change log lock")
+		assertThat(this.output.toString())
+				.contains("Successfully acquired change log lock")
 				.contains("Creating database history "
 						+ "table with name: PUBLIC.DATABASECHANGELOG")
 				.contains("Table person created")

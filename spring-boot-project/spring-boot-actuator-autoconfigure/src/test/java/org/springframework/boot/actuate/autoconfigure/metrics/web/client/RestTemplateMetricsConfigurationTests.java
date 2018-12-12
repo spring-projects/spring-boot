@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -49,8 +49,8 @@ public class RestTemplateMetricsConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
 					HttpClientMetricsAutoConfiguration.class));
 
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -79,9 +79,10 @@ public class RestTemplateMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.output).contains(
+					assertThat(this.output.toString()).contains(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.output).contains("Are you using 'uriVariables'?");
+					assertThat(this.output.toString())
+							.contains("Are you using 'uriVariables'?");
 				});
 	}
 
@@ -92,9 +93,9 @@ public class RestTemplateMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.output).doesNotContain(
+					assertThat(this.output.toString()).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.output)
+					assertThat(this.output.toString())
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
 	}

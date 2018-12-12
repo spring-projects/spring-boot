@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;

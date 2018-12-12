@@ -26,8 +26,8 @@ import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.http.HttpMethod;
@@ -59,7 +59,7 @@ public class MetricsWebClientFilterFunctionTests {
 
 	private ExchangeFunction exchange;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.filterFunction = new MetricsWebClientFilterFunction(this.registry,

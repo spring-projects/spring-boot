@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class EndpointIdTests {
 
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void ofWhenNullThrowsException() {

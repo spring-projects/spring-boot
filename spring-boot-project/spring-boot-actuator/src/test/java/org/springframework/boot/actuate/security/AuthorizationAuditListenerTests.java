@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.security;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -46,7 +46,7 @@ public class AuthorizationAuditListenerTests {
 	private final ApplicationEventPublisher publisher = mock(
 			ApplicationEventPublisher.class);
 
-	@BeforeEach
+	@Before
 	public void init() {
 		this.listener.setApplicationEventPublisher(this.publisher);
 	}

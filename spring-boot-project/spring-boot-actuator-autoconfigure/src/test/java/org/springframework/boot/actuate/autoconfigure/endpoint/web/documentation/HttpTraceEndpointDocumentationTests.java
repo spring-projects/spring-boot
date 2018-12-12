@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTrace;

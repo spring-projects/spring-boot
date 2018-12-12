@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,28 @@
 
 package sample.profile;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleProfileApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	private String profiles;
 
-	@BeforeEach
+	@Before
 	public void before() {
 		this.profiles = System.getProperty("spring.profiles.active");
 	}
 
-	@AfterEach
+	@After
 	public void after() {
 		if (this.profiles != null) {
 			System.setProperty("spring.profiles.active", this.profiles);
@@ -50,14 +50,14 @@ public class SampleProfileApplicationTests {
 	@Test
 	public void testDefaultProfile() throws Exception {
 		SampleProfileApplication.main(new String[0]);
-		assertThat(this.output).contains("Hello Phil");
+		assertThat(this.output.toString()).contains("Hello Phil");
 	}
 
 	@Test
 	public void testGoodbyeProfile() throws Exception {
 		System.setProperty("spring.profiles.active", "goodbye");
 		SampleProfileApplication.main(new String[0]);
-		assertThat(this.output).contains("Goodbye Everyone");
+		assertThat(this.output.toString()).contains("Goodbye Everyone");
 	}
 
 	@Test
@@ -70,14 +70,14 @@ public class SampleProfileApplicationTests {
 		 */
 		System.setProperty("spring.profiles.active", "generic");
 		SampleProfileApplication.main(new String[0]);
-		assertThat(this.output).contains("Bonjour Phil");
+		assertThat(this.output.toString()).contains("Bonjour Phil");
 	}
 
 	@Test
 	public void testGoodbyeProfileFromCommandline() throws Exception {
 		SampleProfileApplication
 				.main(new String[] { "--spring.profiles.active=goodbye" });
-		assertThat(this.output).contains("Goodbye Everyone");
+		assertThat(this.output.toString()).contains("Goodbye Everyone");
 	}
 
 }

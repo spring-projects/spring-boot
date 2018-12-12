@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;

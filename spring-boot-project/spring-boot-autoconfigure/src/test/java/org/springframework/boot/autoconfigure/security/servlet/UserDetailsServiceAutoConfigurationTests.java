@@ -18,14 +18,14 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,14 +57,14 @@ public class UserDetailsServiceAutoConfigurationTests {
 			.withUserConfiguration(TestSecurityConfiguration.class).withConfiguration(
 					AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
-	@RegisterExtension
-	public OutputCapture outputCapture = new OutputCapture();
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultUsernamePassword() {
 		this.contextRunner.run((context) -> {
 			UserDetailsService manager = context.getBean(UserDetailsService.class);
-			assertThat(this.outputCapture.toString())
+			assertThat(this.output.toString())
 					.contains("Using generated security password:");
 			assertThat(manager.loadUserByUsername("user")).isNotNull();
 		});
@@ -79,7 +79,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 							.getBean(AuthenticationManager.class);
 					assertThat(manager).isEqualTo(context.getBean(
 							TestAuthenticationManagerConfiguration.class).authenticationManager);
-					assertThat(this.outputCapture.toString())
+					assertThat(this.output.toString())
 							.doesNotContain("Using generated security password: ");
 					TestingAuthenticationToken token = new TestingAuthenticationToken(
 							"foo", "bar");
@@ -94,7 +94,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 				.run((context) -> {
 					UserDetailsService userDetailsService = context
 							.getBean(UserDetailsService.class);
-					assertThat(this.outputCapture.toString())
+					assertThat(this.output.toString())
 							.doesNotContain("Using generated security password: ");
 					assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
 				});
@@ -107,7 +107,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 				.run((context) -> {
 					AuthenticationProvider provider = context
 							.getBean(AuthenticationProvider.class);
-					assertThat(this.outputCapture.toString())
+					assertThat(this.output.toString())
 							.doesNotContain("Using generated security password: ");
 					TestingAuthenticationToken token = new TestingAuthenticationToken(
 							"foo", "bar");
@@ -155,7 +155,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 	public void generatedPasswordShouldNotBePrintedIfAuthenticationManagerBuilderIsUsed() {
 		this.contextRunner
 				.withUserConfiguration(TestConfigWithAuthenticationManagerBuilder.class)
-				.run(((context) -> assertThat(this.outputCapture.toString())
+				.run(((context) -> assertThat(this.output.toString())
 						.doesNotContain("Using generated security password: ")));
 	}
 

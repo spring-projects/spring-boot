@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package sample.test;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import sample.test.domain.VehicleIdentificationNumber;
 import sample.test.service.VehicleDetails;
 import sample.test.service.VehicleDetailsService;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.mockito.BDDMockito.given;
 
@@ -36,7 +38,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  */
-
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 public class SampleTestApplicationWebIntegrationTests {
@@ -50,7 +52,7 @@ public class SampleTestApplicationWebIntegrationTests {
 	@MockBean
 	private VehicleDetailsService vehicleDetailsService;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		given(this.vehicleDetailsService.getVehicleDetails(VIN))
 				.willReturn(new VehicleDetails("Honda", "Civic"));

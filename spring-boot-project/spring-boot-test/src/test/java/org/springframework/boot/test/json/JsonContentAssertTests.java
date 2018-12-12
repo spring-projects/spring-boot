@@ -20,12 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 
 import org.assertj.core.api.AssertProvider;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.comparator.DefaultComparator;
 import org.skyscreamer.jsonassert.comparator.JSONComparator;
@@ -46,7 +45,6 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  */
-@ExtendWith(TempDirectory.class)
 public class JsonContentAssertTests {
 
 	private static final String SOURCE = loadJson("source.json");
@@ -62,11 +60,8 @@ public class JsonContentAssertTests {
 	private static JSONComparator COMPARATOR = new DefaultComparator(
 			JSONCompareMode.LENIENT);
 
-	private final File temp;
-
-	public JsonContentAssertTests(@TempDirectory.TempDir Path temp) throws IOException {
-		this.temp = new File(temp.toFile(), "file.json");
-	}
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void isEqualToWhenStringIsMatchingShouldPass() {
@@ -1313,7 +1308,7 @@ public class JsonContentAssertTests {
 	}
 
 	private File createFile(String content) throws IOException {
-		File file = this.temp;
+		File file = this.temp.newFile("example.json");
 		FileCopyUtils.copy(content.getBytes(), file);
 		return file;
 	}

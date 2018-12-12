@@ -39,7 +39,7 @@ import org.jooq.TransactionalRunnable;
 import org.jooq.VisitListener;
 import org.jooq.VisitListenerProvider;
 import org.jooq.impl.DefaultExecuteListenerProvider;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;

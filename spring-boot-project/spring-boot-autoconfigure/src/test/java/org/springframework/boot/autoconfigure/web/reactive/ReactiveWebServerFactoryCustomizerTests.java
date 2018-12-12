@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.net.InetAddress;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
@@ -40,7 +40,7 @@ public class ReactiveWebServerFactoryCustomizerTests {
 
 	private ReactiveWebServerFactoryCustomizer customizer;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties);
 	}

@@ -20,11 +20,13 @@ import java.util.regex.Pattern;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -42,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Biju Kunjummen
  * @author Doo-Hwan, Kwak
  */
-
+@RunWith(SpringRunner.class)
 @SpringBootTest
 public class MessageControllerWebTests {
 
@@ -51,7 +53,7 @@ public class MessageControllerWebTests {
 
 	private MockMvc mockMvc;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}

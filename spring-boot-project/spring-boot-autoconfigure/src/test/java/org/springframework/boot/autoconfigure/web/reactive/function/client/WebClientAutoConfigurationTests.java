@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.net.URI;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -21,7 +21,7 @@ import java.util.Collections;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.web.tomcat.TomcatMetricsBinder;

@@ -20,8 +20,8 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -45,7 +45,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -69,8 +69,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class QuartzAutoConfigurationTests {
 
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
@@ -186,8 +186,9 @@ public class QuartzAutoConfigurationTests {
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger")))
 							.isNotNull();
 					Thread.sleep(1000L);
-					assertThat(this.output).contains("withConfiguredJobAndTrigger");
-					assertThat(this.output).contains("jobDataValue");
+					assertThat(this.output.toString())
+							.contains("withConfiguredJobAndTrigger");
+					assertThat(this.output.toString()).contains("jobDataValue");
 				});
 	}
 

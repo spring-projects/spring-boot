@@ -18,8 +18,8 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>
  */
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 public class SpyBeanWithAopProxyTests {
 
 	@SpyBean

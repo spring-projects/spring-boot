@@ -22,9 +22,9 @@ import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.assertj.core.api.Condition;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -47,12 +47,12 @@ public class HazelcastAutoConfigurationClientTests {
 	 */
 	private static HazelcastInstance hazelcastServer;
 
-	@BeforeAll
+	@BeforeClass
 	public static void init() {
 		hazelcastServer = Hazelcast.newHazelcastInstance();
 	}
 
-	@AfterAll
+	@AfterClass
 	public static void close() {
 		if (hazelcastServer != null) {
 			hazelcastServer.shutdown();

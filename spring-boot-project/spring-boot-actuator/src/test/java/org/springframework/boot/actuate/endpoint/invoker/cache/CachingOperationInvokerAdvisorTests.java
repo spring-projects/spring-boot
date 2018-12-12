@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -54,7 +54,7 @@ public class CachingOperationInvokerAdvisorTests {
 
 	private CachingOperationInvokerAdvisor advisor;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.advisor = new CachingOperationInvokerAdvisor(this.timeToLive);

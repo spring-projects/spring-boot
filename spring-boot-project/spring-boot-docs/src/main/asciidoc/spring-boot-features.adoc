@@ -6546,7 +6546,7 @@ specific slices>> of an application.
 
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to
 your test, otherwise the annotations will be ignored. If you are using JUnit 5, there's no
-need to add the equivalent `@ExtendWith(SpringExtension)` as `@SpringBootTest` and the
+need to add the equivalent `@RunWith(SpringExtension)` as `@SpringBootTest` and the
 other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server. You can use the `webEnvironment`
@@ -8504,7 +8504,7 @@ be configured] with the `spring-boot-configuration-processor` dependency.
 While it is possible to use JUnit 4 (the default provided by `spring-boot-starter-test`)
 to test Kotlin code, JUnit 5 is recommended. JUnit 5 enables a test class to be
 instantiated once and reused for all of the class's tests. This makes it possible to use
-`@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for
+`@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for
 Kotlin.
 
 To use JUnit 5, exclude `junit:junit` dependency from `spring-boot-starter-test`, add

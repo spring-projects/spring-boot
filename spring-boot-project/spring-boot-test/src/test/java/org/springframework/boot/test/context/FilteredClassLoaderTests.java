@@ -18,7 +18,7 @@ package org.springframework.boot.test.context;
 
 import java.net.URL;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.core.io.ClassPathResource;
 

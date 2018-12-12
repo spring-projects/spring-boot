@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 import reactor.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -88,7 +88,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					HealthEndpointAutoConfiguration.class,
 					ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
-	@AfterEach
+	@After
 	public void close() {
 		HttpResources.reset();
 	}

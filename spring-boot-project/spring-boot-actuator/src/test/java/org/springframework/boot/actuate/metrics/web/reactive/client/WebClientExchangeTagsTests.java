@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -47,7 +47,7 @@ public class WebClientExchangeTagsTests {
 
 	private ClientResponse response;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.request = ClientRequest
 				.create(HttpMethod.GET,

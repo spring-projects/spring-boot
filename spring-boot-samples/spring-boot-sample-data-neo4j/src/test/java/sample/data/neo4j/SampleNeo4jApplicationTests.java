@@ -16,11 +16,11 @@
 
 package sample.data.neo4j;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SampleNeo4jApplicationTests {
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() {
@@ -44,7 +44,8 @@ public class SampleNeo4jApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output).contains("firstName='Alice', lastName='Smith'");
+		assertThat(this.output.toString())
+				.contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean neo4jServerRunning(Throwable ex) {

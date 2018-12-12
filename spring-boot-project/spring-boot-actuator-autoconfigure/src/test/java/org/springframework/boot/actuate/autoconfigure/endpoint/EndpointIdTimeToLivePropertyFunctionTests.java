@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.function.Function;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.mock.env.MockEnvironment;

@@ -19,11 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -41,11 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Christian Carriere-Tisseur
  */
-@ExtendWith(TempDirectory.class)
 public class LogFileWebEndpointAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(LogFileWebEndpointAutoConfiguration.class);
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
@@ -92,9 +93,8 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void logFileWebEndpointUsesConfiguredExternalFile(
-			@TempDirectory.TempDir Path temp) throws IOException {
-		File file = new File(temp.toFile(), "logfile");
+	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
+		File file = this.temp.newFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
 		this.contextRunner.withPropertyValues(
 				"management.endpoint.logfile.external-file:" + file.getAbsolutePath())

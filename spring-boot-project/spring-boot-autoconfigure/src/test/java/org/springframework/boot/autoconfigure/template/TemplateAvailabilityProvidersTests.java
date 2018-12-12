@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.template;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -56,7 +56,7 @@ public class TemplateAvailabilityProvidersTests {
 	@Mock
 	private ResourceLoader resourceLoader;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.providers = new TemplateAvailabilityProviders(

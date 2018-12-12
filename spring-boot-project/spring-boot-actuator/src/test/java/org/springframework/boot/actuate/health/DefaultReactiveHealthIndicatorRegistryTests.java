@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 
 	private DefaultReactiveHealthIndicatorRegistry registry;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		given(this.one.health()).willReturn(
 				Mono.just(new Health.Builder().unknown().withDetail("1", "1").build()));

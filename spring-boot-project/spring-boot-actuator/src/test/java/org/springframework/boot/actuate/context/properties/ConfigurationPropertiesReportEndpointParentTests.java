@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;

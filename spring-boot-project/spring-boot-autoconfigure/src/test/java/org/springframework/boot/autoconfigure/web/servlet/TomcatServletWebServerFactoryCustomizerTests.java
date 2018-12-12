@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import org.apache.catalina.Context;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -44,7 +44,7 @@ public class TomcatServletWebServerFactoryCustomizerTests {
 
 	private ServerProperties serverProperties;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

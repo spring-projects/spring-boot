@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
 import org.junit.After;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;

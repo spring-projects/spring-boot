@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
