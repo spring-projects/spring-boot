@@ -31,7 +31,8 @@ public class ElasticsearchContainer extends Container {
 	public ElasticsearchContainer() {
 		super("elasticsearch:6.4.3", 9200,
 				(container) -> container.withStartupTimeout(Duration.ofSeconds(120))
-						.withStartupAttempts(5).addExposedPort(9300));
+						.withStartupAttempts(5).withEnv("discovery.type", "single-node")
+						.addExposedPort(9300));
 	}
 
 	public int getMappedTransportPort() {
