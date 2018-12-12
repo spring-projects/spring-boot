@@ -117,6 +117,7 @@ jobs:
   - get: git-repo
   - get: every-wednesday
     trigger: true
+  - get: spring-boot-ci-image
   - aggregate:
     - task: detect-jdk8-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
