@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
+import java.time.Duration;
+
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -27,7 +29,9 @@ import org.junit.runners.model.Statement;
 public class ElasticsearchContainer extends Container {
 
 	public ElasticsearchContainer() {
-		super("elasticsearch:6.4.3", 9200, (container) -> container.addExposedPort(9300));
+		super("elasticsearch:6.4.3", 9200,
+				(container) -> container.withStartupTimeout(Duration.ofSeconds(120))
+						.withStartupAttempts(5).addExposedPort(9300));
 	}
 
 	public int getMappedTransportPort() {
