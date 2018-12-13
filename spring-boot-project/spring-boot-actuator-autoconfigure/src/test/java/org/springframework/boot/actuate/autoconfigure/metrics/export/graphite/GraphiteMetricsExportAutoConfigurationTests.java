@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.graphite.GraphiteConfig;
+import io.micrometer.graphite.GraphiteHierarchicalNameMapper;
 import io.micrometer.graphite.GraphiteMeterRegistry;
 import org.junit.Test;
 
@@ -29,12 +31,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link GraphiteMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Johnny Lim
  */
 public class GraphiteMetricsExportAutoConfigurationTests {
 
@@ -108,6 +112,36 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void autoConfigureGraphiteHierarchicalNameMapper() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					assertThat(context.getBean(HierarchicalNameMapper.class))
+							.isInstanceOf(GraphiteHierarchicalNameMapper.class);
+				});
+	}
+
+	@Test
+	public void backOffGraphiteHierarchicalNameMapperWhenAlreadyDefined() {
+		this.contextRunner
+				.withUserConfiguration(CustomHierarchicalNameMapperConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HierarchicalNameMapper.class)
+							.hasBean("customHierarchicalNameMapper");
+				});
+	}
+
+	@Test
+	public void graphiteMeterRegistryUsesUserProvidedHierarchicalNameMapper() {
+		this.contextRunner
+				.withUserConfiguration(CustomHierarchicalNameMapperConfiguration.class)
+				.run((context) -> {
+					assertThat(context).getBean(GraphiteMeterRegistry.class)
+							.hasFieldOrPropertyWithValue("nameMapper",
+									context.getBean("customHierarchicalNameMapper"));
+				});
+	}
+
 	@Configuration
 	static class BaseConfiguration {
 
@@ -146,6 +180,17 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 		@Bean
 		public GraphiteMeterRegistry customRegistry(GraphiteConfig config, Clock clock) {
 			return new GraphiteMeterRegistry(config, clock);
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class CustomHierarchicalNameMapperConfiguration {
+
+		@Bean
+		public HierarchicalNameMapper customHierarchicalNameMapper() {
+			return mock(HierarchicalNameMapper.class);
 		}
 
 	}
