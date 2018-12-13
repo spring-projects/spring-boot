@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.web.servlet.DispatcherServlet;
 

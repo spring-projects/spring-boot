@@ -16,9 +16,10 @@
 
 package sample.secure;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +28,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -36,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Dave Syer
  */
-
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SampleSecureApplication.class })
 public class SampleSecureApplicationTests {
 
@@ -45,12 +47,12 @@ public class SampleSecureApplicationTests {
 
 	private Authentication authentication;
 
-	@BeforeEach
+	@Before
 	public void init() {
 		this.authentication = new UsernamePasswordAuthenticationToken("user", "password");
 	}
 
-	@AfterEach
+	@After
 	public void close() {
 		SecurityContextHolder.clearContext();
 	}

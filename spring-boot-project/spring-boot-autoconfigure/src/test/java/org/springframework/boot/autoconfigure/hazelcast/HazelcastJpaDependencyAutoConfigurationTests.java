@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

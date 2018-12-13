@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -49,7 +49,7 @@ public class ControllerEndpointWebFluxIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
-	@AfterEach
+	@After
 	public void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();

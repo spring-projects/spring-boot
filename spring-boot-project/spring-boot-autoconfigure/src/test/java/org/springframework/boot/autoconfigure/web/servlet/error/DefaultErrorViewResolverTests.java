@@ -22,8 +22,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -69,7 +69,7 @@ public class DefaultErrorViewResolverTests {
 
 	private HttpServletRequest request = new MockHttpServletRequest();
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();

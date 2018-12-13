@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -39,7 +39,7 @@ public class SecurityPropertiesTests {
 
 	private MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		this.binder = new Binder(this.source);
 	}

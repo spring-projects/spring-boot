@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
@@ -39,7 +39,7 @@ public class OnClassConditionAutoConfigurationImportFilterTests {
 
 	private DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.filter.setBeanClassLoader(getClass().getClassLoader());
 		this.filter.setBeanFactory(this.beanFactory);

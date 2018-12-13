@@ -22,7 +22,7 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.ServerProperties;

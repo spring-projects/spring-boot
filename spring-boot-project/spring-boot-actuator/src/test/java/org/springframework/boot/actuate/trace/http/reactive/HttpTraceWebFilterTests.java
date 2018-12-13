@@ -22,7 +22,7 @@ import java.util.EnumSet;
 
 import javax.servlet.ServletException;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;

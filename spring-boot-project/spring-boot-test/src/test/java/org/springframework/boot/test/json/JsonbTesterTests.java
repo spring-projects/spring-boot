@@ -21,7 +21,7 @@ import java.util.List;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.core.ResolvableType;
 

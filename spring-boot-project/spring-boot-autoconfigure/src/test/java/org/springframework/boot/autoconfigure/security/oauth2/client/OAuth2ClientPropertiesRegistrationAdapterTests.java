@@ -23,7 +23,7 @@ import java.util.Map;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
@@ -269,8 +269,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
-		String cleanIssuerPath = cleanIssuerPath(issuer);
-		setupMockResponse(cleanIssuerPath);
+		setupMockResponse(issuer);
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setProvider("okta-oidc");
 		registration.setClientId("clientId");
@@ -297,7 +296,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType())
 				.isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
-		assertThat(adapted.getClientName()).isEqualTo(cleanIssuerPath);
+		assertThat(adapted.getClientName()).isEqualTo(issuer);
 		assertThat(adapted.getScopes()).containsOnly("user");
 		assertThat(adapted.getRedirectUriTemplate())
 				.isEqualTo("http://example.com/redirect");
@@ -316,8 +315,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
-		String cleanIssuerPath = cleanIssuerPath(issuer);
-		setupMockResponse(cleanIssuerPath);
+		setupMockResponse(issuer);
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Provider provider = new Provider();
 		provider.setIssuerUri(issuer);
@@ -332,7 +330,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType())
 				.isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
-		assertThat(adapted.getClientName()).isEqualTo(cleanIssuerPath);
+		assertThat(adapted.getClientName()).isEqualTo(issuer);
 		assertThat(adapted.getScopes()).containsOnly("openid");
 		assertThat(providerDetails.getAuthorizationUri())
 				.isEqualTo("https://example.com/o/oauth2/v2/auth");

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.audit;
 import java.util.Collections;
 
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 

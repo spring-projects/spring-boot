@@ -29,8 +29,8 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -62,7 +62,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 
 	private TomcatWebServerFactoryCustomizer customizer;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

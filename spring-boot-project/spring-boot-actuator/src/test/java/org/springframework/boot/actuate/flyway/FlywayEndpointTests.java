@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.flyway;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;

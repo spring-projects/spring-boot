@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.test.context.filter;
 
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Abstract test with nest {@code @Configuration} and {@code @RunWith} used by
@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  *
  * @author Phillip Webb
  */
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 public abstract class AbstractTestWithConfigAndRunWith {
 
 	@Configuration

@@ -25,7 +25,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.junit.After;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigurationTests.CustomValidatorConfiguration.TestBeanPostProcessor;

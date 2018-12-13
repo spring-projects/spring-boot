@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.json;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.core.ResolvableType;
 

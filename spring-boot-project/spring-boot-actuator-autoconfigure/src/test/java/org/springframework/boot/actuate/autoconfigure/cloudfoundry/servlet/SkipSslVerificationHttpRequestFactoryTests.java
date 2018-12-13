@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import javax.net.ssl.SSLHandshakeException;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -41,7 +41,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 
 	private WebServer webServer;
 
-	@AfterEach
+	@After
 	public void shutdownContainer() {
 		if (this.webServer != null) {
 			this.webServer.stop();

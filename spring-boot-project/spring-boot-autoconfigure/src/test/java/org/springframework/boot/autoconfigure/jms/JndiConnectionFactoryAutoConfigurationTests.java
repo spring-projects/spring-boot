@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 import javax.naming.Context;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -50,7 +50,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 
 	private String initialContextFactory;
 
-	@BeforeEach
+	@Before
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
@@ -60,7 +60,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@AfterEach
+	@After
 	public void cleanUp() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {

@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -44,7 +44,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.listener = new ConditionEvaluationReportAutoConfigurationImportListener();
 		this.listener.setBeanFactory(this.beanFactory);

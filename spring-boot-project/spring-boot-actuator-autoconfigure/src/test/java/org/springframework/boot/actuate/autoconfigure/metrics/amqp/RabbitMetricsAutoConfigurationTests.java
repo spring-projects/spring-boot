@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.amqp;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

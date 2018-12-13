@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.hazelcast.util.Base64;
 import org.junit.After;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Credentials;

@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.boot.test.util.TestPropertyValues;

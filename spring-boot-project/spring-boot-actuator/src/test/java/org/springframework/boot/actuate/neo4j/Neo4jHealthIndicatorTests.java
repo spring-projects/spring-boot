@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.model.Result;
 import org.neo4j.ogm.session.Session;
@@ -49,7 +49,7 @@ public class Neo4jHealthIndicatorTests {
 
 	private Neo4jHealthIndicator neo4jHealthIndicator;
 
-	@BeforeEach
+	@Before
 	public void before() {
 		this.session = mock(Session.class);
 		SessionFactory sessionFactory = mock(SessionFactory.class);

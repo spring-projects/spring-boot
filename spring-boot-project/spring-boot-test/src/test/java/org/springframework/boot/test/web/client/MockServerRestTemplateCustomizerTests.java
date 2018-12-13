@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.web.client;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.web.client.RequestExpectationManager;
@@ -40,7 +40,7 @@ public class MockServerRestTemplateCustomizerTests {
 
 	private MockServerRestTemplateCustomizer customizer;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.customizer = new MockServerRestTemplateCustomizer();
 	}

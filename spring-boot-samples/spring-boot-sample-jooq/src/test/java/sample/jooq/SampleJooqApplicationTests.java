@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package sample.jooq;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,15 +30,15 @@ public class SampleJooqApplicationTests {
 
 	private static final String[] NO_ARGS = {};
 
-	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void outputResults() {
 		SampleJooqApplication.main(NO_ARGS);
-		assertThat(this.output).contains("jOOQ Fetch 1 Greg Turnquest");
-		assertThat(this.output).contains("jOOQ Fetch 2 Craig Walls");
-		assertThat(this.output)
+		assertThat(this.output.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
+		assertThat(this.output.toString()).contains("jOOQ Fetch 2 Craig Walls");
+		assertThat(this.output.toString())
 				.contains("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
 						+ "Spring Boot in Action : Craig Walls]");
 	}

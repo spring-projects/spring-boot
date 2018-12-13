@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.data.rest;
 import java.net.URI;
 
 import org.junit.After;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;

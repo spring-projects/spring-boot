@@ -17,11 +17,13 @@ package sample.kafka;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,15 +34,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
-
+@RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka
 public class SampleKafkaApplicationTests {
 
+	@Autowired
+	private Consumer consumer;
+
 	@Test
-	public void testVanillaExchange(@Autowired Consumer consumer) throws Exception {
+	public void testVanillaExchange() throws Exception {
 		long end = System.currentTimeMillis() + 10000;
-		List<SampleMessage> messages = consumer.getMessages();
+		List<SampleMessage> messages = this.consumer.getMessages();
 		while (messages.size() != 1 && System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}

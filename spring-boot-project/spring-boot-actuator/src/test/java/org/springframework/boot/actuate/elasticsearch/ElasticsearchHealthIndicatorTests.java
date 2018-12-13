@@ -31,8 +31,8 @@ import org.elasticsearch.cluster.block.ClusterBlocks;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.cluster.routing.RoutingTable;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -62,7 +62,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	private ElasticsearchHealthIndicator indicator;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.client.admin()).willReturn(this.admin);

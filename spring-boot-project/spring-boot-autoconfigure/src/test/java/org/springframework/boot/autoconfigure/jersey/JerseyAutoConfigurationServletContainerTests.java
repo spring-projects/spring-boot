@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,9 @@ import org.apache.catalina.Wrapper;
 import org.apache.tomcat.util.buf.UDecoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -36,12 +37,13 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServ
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,16 +53,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(OutputCapture.class)
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class JerseyAutoConfigurationServletContainerTests {
 
+	@ClassRule
+	public static final OutputCapture output = new OutputCapture();
+
 	@Test
-	public void existingJerseyServletIsAmended(OutputCapture output) {
-		assertThat(output)
+	public void existingJerseyServletIsAmended() {
+		assertThat(output.toString())
 				.contains("Configuring existing registration for Jersey servlet");
-		assertThat(output).contains(
+		assertThat(output.toString()).contains(
 				"Servlet " + Application.class.getName() + " was not registered");
 	}
 

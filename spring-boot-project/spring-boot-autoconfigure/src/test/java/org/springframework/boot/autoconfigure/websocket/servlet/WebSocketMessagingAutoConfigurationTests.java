@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.websocket.WsWebSocketContainer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -82,7 +82,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 
 	private SockJsClient sockJsClient;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		List<Transport> transports = Arrays.asList(
 				new WebSocketTransport(
@@ -91,7 +91,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 		this.sockJsClient = new SockJsClient(transports);
 	}
 
-	@AfterEach
+	@After
 	public void tearDown() {
 		this.context.close();
 		this.sockJsClient.stop();

@@ -24,9 +24,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import sample.integration.SampleIntegrationApplication;
 import sample.integration.producer.ProducerApplication;
 
@@ -50,7 +50,7 @@ public class SampleIntegrationApplicationTests {
 
 	private ConfigurableApplicationContext context;
 
-	@BeforeEach
+	@Before
 	public void deleteInputAndOutput() {
 		deleteIfExists(new File("target/input"));
 		deleteIfExists(new File("target/output"));
@@ -62,7 +62,7 @@ public class SampleIntegrationApplicationTests {
 		}
 	}
 
-	@AfterEach
+	@After
 	public void stop() {
 		if (this.context != null) {
 			this.context.close();

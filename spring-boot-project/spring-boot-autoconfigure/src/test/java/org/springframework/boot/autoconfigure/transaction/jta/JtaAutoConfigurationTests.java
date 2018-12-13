@@ -34,9 +34,9 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -74,12 +74,12 @@ public class JtaAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@BeforeEach
+	@Before
 	public void cleanUpLogs() {
 		FileSystemUtils.deleteRecursively(new File("target/transaction-logs"));
 	}
 
-	@AfterEach
+	@After
 	public void closeContext() {
 		if (this.context != null) {
 			this.context.close();

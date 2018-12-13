@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -29,9 +27,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.logging.core.Slf4jLogger;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.SpringApplication;
@@ -43,8 +41,8 @@ import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationList
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.testsupport.Assume;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -63,8 +61,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Dominic Gunn
  */
-@ExtendWith({ OutputCapture.class, TempDirectory.class })
 public class LiquibaseAutoConfigurationTests {
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Before
 	public void init() {
@@ -242,12 +245,12 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void logging(OutputCapture output) {
+	public void logging() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.run(assertLiquibase((liquibase) -> {
 					Object log = ReflectionTestUtils.getField(liquibase, "log");
 					assertThat(log).isInstanceOf(Slf4jLogger.class);
-					assertThat(output).doesNotContain(": liquibase:");
+					assertThat(this.output.toString()).doesNotContain(": liquibase:");
 				}));
 	}
 
@@ -273,8 +276,8 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void rollbackFile(@TempDirectory.TempDir Path temp) throws IOException {
-		File file = Files.createTempFile(temp, "rollback-file", "sql").toFile();
+	public void rollbackFile() throws IOException {
+		File file = this.temp.newFile("rollback-file.sql");
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
 						"spring.liquibase.rollbackFile:" + file.getAbsolutePath())

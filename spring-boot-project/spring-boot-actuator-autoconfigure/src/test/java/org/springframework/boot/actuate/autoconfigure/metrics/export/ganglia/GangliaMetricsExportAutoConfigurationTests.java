@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

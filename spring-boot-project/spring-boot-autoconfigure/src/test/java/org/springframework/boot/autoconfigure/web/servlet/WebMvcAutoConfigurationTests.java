@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidatorFactory;
 
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;

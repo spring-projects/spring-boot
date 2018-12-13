@@ -26,7 +26,7 @@ import com.couchbase.client.core.message.internal.EndpointHealth;
 import com.couchbase.client.core.service.ServiceType;
 import com.couchbase.client.core.state.LifecycleState;
 import com.couchbase.client.java.Cluster;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;

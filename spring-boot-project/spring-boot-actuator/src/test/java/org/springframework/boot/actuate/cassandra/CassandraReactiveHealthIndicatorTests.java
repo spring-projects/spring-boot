@@ -16,7 +16,7 @@
 package org.springframework.boot.actuate.cassandra;
 
 import com.datastax.driver.core.querybuilder.Select;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;

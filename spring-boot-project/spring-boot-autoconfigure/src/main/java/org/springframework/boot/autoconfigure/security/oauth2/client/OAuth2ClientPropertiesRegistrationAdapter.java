@@ -85,21 +85,12 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
-				String cleanedIssuer = cleanIssuerPath(issuer);
-				Builder builder = ClientRegistrations
-						.fromOidcIssuerLocation(cleanedIssuer)
+				Builder builder = ClientRegistrations.fromOidcIssuerLocation(issuer)
 						.registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
 		}
 		return null;
-	}
-
-	private static String cleanIssuerPath(String issuer) {
-		if (issuer.endsWith("/")) {
-			return issuer.substring(0, issuer.length() - 1);
-		}
-		return issuer;
 	}
 
 	private static Builder getBuilder(String registrationId, String configuredProviderId,

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import liquibase.changelog.ChangeSet.ExecType;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;

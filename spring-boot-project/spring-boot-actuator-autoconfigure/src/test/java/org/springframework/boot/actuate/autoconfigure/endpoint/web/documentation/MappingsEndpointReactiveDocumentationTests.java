@@ -21,9 +21,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
@@ -37,10 +38,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,20 +61,23 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
+@RunWith(SpringRunner.class)
 public class MappingsEndpointReactiveDocumentationTests
 		extends AbstractEndpointDocumentationTests {
+
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
 	@LocalServerPort
 	private int port;
 
 	private WebTestClient client;
 
-	@BeforeEach
-	public void webTestClient(RestDocumentationContextProvider restDocumentation) {
+	@Before
+	public void webTestClient() {
 		this.client = WebTestClient
-				.bindToServer().filter(documentationConfiguration(restDocumentation)
+				.bindToServer().filter(documentationConfiguration(this.restDocumentation)
 						.snippets().withDefaults())
 				.baseUrl("http://localhost:" + this.port).build();
 	}

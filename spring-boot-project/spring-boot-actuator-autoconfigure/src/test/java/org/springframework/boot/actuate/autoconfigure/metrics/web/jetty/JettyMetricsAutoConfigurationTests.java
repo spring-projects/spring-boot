@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.web.jetty.JettyServerThreadPoolMetricsBinder;

@@ -24,7 +24,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.cache.ehcache.EhCacheCache;
 

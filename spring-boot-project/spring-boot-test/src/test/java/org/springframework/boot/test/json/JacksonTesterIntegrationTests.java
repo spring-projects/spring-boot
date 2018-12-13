@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.core.io.ByteArrayResource;
 
@@ -51,7 +51,7 @@ public class JacksonTesterIntegrationTests {
 
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.objectMapper = new ObjectMapper();
 		JacksonTester.initFields(this, this.objectMapper);

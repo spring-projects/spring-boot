@@ -26,8 +26,8 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -60,7 +60,7 @@ public class ServletEndpointRegistrarTests {
 	@Captor
 	private ArgumentCaptor<Servlet> servlet;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addServlet(any(String.class), any(Servlet.class)))

@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
@@ -51,7 +51,7 @@ public class DiscoveredOperationsFactoryTests {
 
 	private List<OperationInvokerAdvisor> invokerAdvisors;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.parameterValueMapper = (parameter, value) -> value.toString();
 		this.invokerAdvisors = new ArrayList<>();

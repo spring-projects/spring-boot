@@ -25,8 +25,8 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -71,7 +71,7 @@ public class JmxEndpointExporterTests {
 
 	private JmxEndpointExporter exporter;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.exporter = new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory,

@@ -16,8 +16,8 @@
 
 package sample.propertyvalidation;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -37,7 +37,7 @@ public class SamplePropertyValidationApplicationTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@AfterEach
+	@After
 	public void closeContext() {
 		this.context.close();
 	}

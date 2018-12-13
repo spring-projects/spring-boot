@@ -18,8 +18,8 @@ package org.springframework.boot.test.web.client;
 
 import java.net.URI;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -61,7 +61,7 @@ public class RootUriRequestExpectationManagerTests {
 	@Captor
 	private ArgumentCaptor<ClientHttpRequest> requestCaptor;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.manager = new RootUriRequestExpectationManager(this.uri, this.delegate);

@@ -23,8 +23,8 @@ import java.util.Locale;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
 import org.junit.After;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.Rule;
+import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
@@ -38,8 +38,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,8 +61,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ThymeleafReactiveAutoConfigurationTests {
 
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
@@ -179,7 +179,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
-		assertThat(this.output).contains("Cannot find template location");
+		assertThat(this.output.toString()).contains("Cannot find template location");
 	}
 
 	@Test
@@ -187,7 +187,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		new File("target/test-classes/templates/empty-directory").mkdir();
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
-		assertThat(this.output).doesNotContain("Cannot find template location");
+		assertThat(this.output.toString())
+				.doesNotContain("Cannot find template location");
 	}
 
 	@Test
