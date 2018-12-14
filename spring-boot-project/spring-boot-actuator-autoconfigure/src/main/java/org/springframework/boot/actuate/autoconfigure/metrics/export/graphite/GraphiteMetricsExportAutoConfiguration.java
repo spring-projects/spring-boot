@@ -59,8 +59,9 @@ public class GraphiteMetricsExportAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public HierarchicalNameMapper graphiteHierarchicalNameMapper(GraphiteConfig config) {
+	@ConditionalOnMissingBean(HierarchicalNameMapper.class)
+	public GraphiteHierarchicalNameMapper graphiteHierarchicalNameMapper(
+			GraphiteConfig config) {
 		return new GraphiteHierarchicalNameMapper(config.tagsAsPrefix());
 	}
 
