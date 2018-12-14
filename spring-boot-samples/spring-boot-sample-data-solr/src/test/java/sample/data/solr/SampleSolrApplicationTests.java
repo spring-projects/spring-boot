@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,19 @@ package sample.data.solr;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.OutputCapture;
+
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleSolrApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-
 		try {
 			SampleSolrApplication.main(new String[0]);
 		}
@@ -39,13 +39,11 @@ public class SampleSolrApplicationTests {
 				return;
 			}
 		}
-		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("name=Sony Playstation"));
+		assertThat(this.output.toString()).contains("name=Sony Playstation");
 	}
 
+	@SuppressWarnings("serial")
 	private boolean serverNotRunning(IllegalStateException ex) {
-
-		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		Throwable root = nested.getRootCause();

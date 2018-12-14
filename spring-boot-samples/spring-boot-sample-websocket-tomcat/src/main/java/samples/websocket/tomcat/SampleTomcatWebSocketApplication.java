@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,18 @@
 
 package samples.websocket.tomcat;
 
+import samples.websocket.tomcat.client.GreetingService;
+import samples.websocket.tomcat.client.SimpleGreetingService;
+import samples.websocket.tomcat.echo.DefaultEchoService;
+import samples.websocket.tomcat.echo.EchoService;
+import samples.websocket.tomcat.echo.EchoWebSocketHandler;
+import samples.websocket.tomcat.reverse.ReverseWebSocketEndpoint;
+import samples.websocket.tomcat.snake.SnakeWebSocketHandler;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
@@ -28,14 +36,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
-
-import samples.websocket.tomcat.client.GreetingService;
-import samples.websocket.tomcat.client.SimpleGreetingService;
-import samples.websocket.tomcat.echo.DefaultEchoService;
-import samples.websocket.tomcat.echo.EchoService;
-import samples.websocket.tomcat.echo.EchoWebSocketHandler;
-import samples.websocket.tomcat.reverse.ReverseWebSocketEndpoint;
-import samples.websocket.tomcat.snake.SnakeWebSocketHandler;
 
 @Configuration
 @EnableAutoConfiguration

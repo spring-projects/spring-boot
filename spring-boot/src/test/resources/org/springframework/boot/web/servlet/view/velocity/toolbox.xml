@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<toolbox>
-	<tool>
-		<key>math</key>
-		<scope>application</scope>
-		<class>org.apache.velocity.tools.generic.MathTool</class>
-	</tool>
-</toolbox>

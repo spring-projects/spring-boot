@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,117 +22,113 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import sample.security.method.SampleMethodSecurityApplication;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleMethodSecurityApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port:0")
-@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleMethodSecurityApplicationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Login"));
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("<title>Login");
 	}
 
 	@Test
-	public void testLogin() throws Exception {
+	public void testLogin() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "admin");
 		form.set("password", "admin");
 		getCsrf(form, headers);
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/login", HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertEquals("http://localhost:" + this.port + "/", entity.getHeaders()
-				.getLocation().toString());
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
+				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation().toString())
+				.isEqualTo("http://localhost:" + this.port + "/");
 	}
 
 	@Test
-	public void testDenied() throws Exception {
+	public void testDenied() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "user");
 		getCsrf(form, headers);
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/login", HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
+				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
-		ResponseEntity<String> page = new TestRestTemplate().exchange(entity.getHeaders()
-				.getLocation(), HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
-		assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
-		assertTrue("Wrong body (message doesn't match):\n" + entity.getBody(), page
-				.getBody().contains("Access denied"));
+		ResponseEntity<String> page = this.restTemplate.exchange(
+				entity.getHeaders().getLocation(), HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
+		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+		assertThat(page.getBody()).contains("Access denied");
 	}
 
 	@Test
-	public void testManagementProtected() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/beans", String.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+	public void testManagementProtected() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans",
+				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void testManagementAuthorizedAccess() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-	}
-
-	@Test
-	public void testManagementUnauthorizedAccess() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate("user", "user")
-				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
-		assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
+	public void testManagementAuthorizedAccess() {
+		BasicAuthenticationInterceptor basicAuthInterceptor = new BasicAuthenticationInterceptor(
+				"admin", "admin");
+		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
+		try {
+			ResponseEntity<String> entity = this.restTemplate
+					.getForEntity("/actuator/beans", String.class);
+			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		}
+		finally {
+			this.restTemplate.getRestTemplate().getInterceptors()
+					.remove(basicAuthInterceptor);
+		}
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
-		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/login", String.class);
+		ResponseEntity<String> page = this.restTemplate.getForEntity("/login",
+				String.class);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
 		String body = page.getBody();

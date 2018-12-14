@@ -1,0 +1,15 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot' version '{version}'
+}
+
+group = 'com.example'
+version = '1.0'
+
+bootWar {
+	baseName = 'foo'
+}
+
+springBoot {
+	buildInfo()
+}

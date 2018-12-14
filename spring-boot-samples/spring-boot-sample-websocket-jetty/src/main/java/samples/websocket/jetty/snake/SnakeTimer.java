@@ -1,10 +1,9 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2012-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,37 +24,46 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Sets up the timer for the multi-player snake game WebSocket example.
  */
-public class SnakeTimer {
-
-	private static final Logger log = LoggerFactory.getLogger(SnakeTimer.class);
-
-	private static Timer gameTimer = null;
+public final class SnakeTimer {
 
 	private static final long TICK_DELAY = 100;
 
-	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<Integer, Snake>();
+	private static final Object MONITOR = new Object();
 
-	public static synchronized void addSnake(Snake snake) {
-		if (snakes.size() == 0) {
-			startTimer();
+	private static final Log logger = LogFactory.getLog(SnakeTimer.class);
+
+	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
+
+	private static Timer gameTimer = null;
+
+	private SnakeTimer() {
+	}
+
+	public static void addSnake(Snake snake) {
+		synchronized (MONITOR) {
+			if (snakes.isEmpty()) {
+				startTimer();
+			}
+			snakes.put(Integer.valueOf(snake.getId()), snake);
 		}
-		snakes.put(Integer.valueOf(snake.getId()), snake);
 	}
 
 	public static Collection<Snake> getSnakes() {
 		return Collections.unmodifiableCollection(snakes.values());
 	}
 
-	public static synchronized void removeSnake(Snake snake) {
-		snakes.remove(Integer.valueOf(snake.getId()));
-		if (snakes.size() == 0) {
-			stopTimer();
+	public static void removeSnake(Snake snake) {
+		synchronized (MONITOR) {
+			snakes.remove(Integer.valueOf(snake.getId()));
+			if (snakes.isEmpty()) {
+				stopTimer();
+			}
 		}
 	}
 
@@ -95,7 +103,7 @@ public class SnakeTimer {
 					tick();
 				}
 				catch (Throwable ex) {
-					log.error("Caught to prevent timer from shutting down", ex);
+					logger.error("Caught to prevent timer from shutting down", ex);
 				}
 			}
 		}, TICK_DELAY, TICK_DELAY);
@@ -106,4 +114,5 @@ public class SnakeTimer {
 			gameTimer.cancel();
 		}
 	}
+
 }

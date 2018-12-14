@@ -1,0 +1,16 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootWar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::properties-launcher[]
+bootWar {
+	manifest {
+		attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+	}
+}
+// end::properties-launcher[]

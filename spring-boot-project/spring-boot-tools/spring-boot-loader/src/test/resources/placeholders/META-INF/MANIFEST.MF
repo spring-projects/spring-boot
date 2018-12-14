@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+Start-Class: ${foo.main}

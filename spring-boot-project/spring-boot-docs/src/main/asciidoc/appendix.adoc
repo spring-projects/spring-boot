@@ -1,0 +1,11 @@
+[[appendix]]
+= Appendices
+
+include::attributes.adoc[]
+
+include::appendix/application-properties.adoc[]
+include::appendix/configuration-metadata.adoc[]
+include::appendix/auto-configuration-classes.adoc[]
+include::appendix/test-auto-configuration.adoc[]
+include::appendix/executable-jar-format.adoc[]
+include::appendix/dependency-versions.adoc[]

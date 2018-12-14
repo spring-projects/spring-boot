@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sample.parent.SampleParentContextApplication;
+import sample.parent.producer.ProducerApplication;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.StreamUtils;
-
-import sample.parent.SampleParentContextApplication;
-import sample.parent.producer.ProducerApplication;
 
 import static org.junit.Assert.fail;
 
@@ -44,7 +44,7 @@ public class SampleIntegrationParentApplicationTests {
 	private static ConfigurableApplicationContext context;
 
 	@BeforeClass
-	public static void start() throws Exception {
+	public static void start() {
 		context = SpringApplication.run(SampleParentContextApplication.class);
 	}
 
@@ -61,7 +61,7 @@ public class SampleIntegrationParentApplicationTests {
 		awaitOutputContaining("Hello World");
 	}
 
-	private void awaitOutputContaining(final String requiredContents) throws Exception {
+	private void awaitOutputContaining(String requiredContents) throws Exception {
 		long endTime = System.currentTimeMillis() + 30000;
 		String output = null;
 		while (System.currentTimeMillis() < endTime) {
@@ -86,16 +86,18 @@ public class SampleIntegrationParentApplicationTests {
 	}
 
 	private Resource[] findResources() throws IOException {
-		return ResourcePatternUtils.getResourcePatternResolver(
-				new DefaultResourceLoader()).getResources("file:target/output/**/*.msg");
+		return ResourcePatternUtils
+				.getResourcePatternResolver(new DefaultResourceLoader())
+				.getResources("file:target/output/*.txt");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			builder.append(new String(StreamUtils.copyToByteArray(resource
-					.getInputStream())));
+			builder.append(
+					new String(StreamUtils.copyToByteArray(resource.getInputStream())));
 		}
 		return builder.toString();
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,79 @@
 
 package sample.tomcat;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
+
+import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleTomcatApplication.class)
-@WebIntegrationTest(randomPort = true)
-@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleTomcatApplicationTests {
 
-	@Value("${local.server.port}")
-	private int port;
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@Test
-	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+	public void testHome() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void testCompression() throws Exception {
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Accept-Encoding", "gzip");
+		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
+		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
+				requestEntity, byte[].class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		try (GZIPInputStream inflater = new GZIPInputStream(
+				new ByteArrayInputStream(entity.getBody()))) {
+			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8))
+					.isEqualTo("Hello World");
+		}
+	}
+
+	@Test
+	public void testTimeout() {
+		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
+		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context
+				.getWebServer();
+		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat()
+				.getConnector().getProtocolHandler();
+		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();
+		assertThat(timeout).isEqualTo(5000);
 	}
 
 }

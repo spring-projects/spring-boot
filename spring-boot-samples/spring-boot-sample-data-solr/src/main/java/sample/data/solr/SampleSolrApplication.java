@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class SampleSolrApplication implements CommandLineRunner {
 		System.out.println();
 
 		// fetch a single product
-		System.out.println("Products founds with findByNameStartingWith('So'):");
+		System.out.println("Products found with findByNameStartingWith('So'):");
 		System.out.println("--------------------------------");
 		for (Product product : this.repository.findByNameStartingWith("So")) {
 			System.out.println(product);
@@ -54,7 +54,7 @@ public class SampleSolrApplication implements CommandLineRunner {
 		System.out.println();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleSolrApplication.class, args);
 	}
 

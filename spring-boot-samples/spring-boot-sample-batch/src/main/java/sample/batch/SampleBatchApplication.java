@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ public class SampleBatchApplication {
 
 	@Bean
 	protected Tasklet tasklet() {
+
 		return new Tasklet() {
 			@Override
 			public RepeatStatus execute(StepContribution contribution,
@@ -49,6 +50,7 @@ public class SampleBatchApplication {
 				return RepeatStatus.FINISHED;
 			}
 		};
+
 	}
 
 	@Bean
@@ -61,11 +63,11 @@ public class SampleBatchApplication {
 		return this.steps.get("step1").tasklet(tasklet()).build();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		// System.exit is common for Batch applications since the exit code can be used to
 		// drive a workflow
-		System.exit(SpringApplication.exit(SpringApplication.run(
-				SampleBatchApplication.class, args)));
+		System.exit(SpringApplication
+				.exit(SpringApplication.run(SampleBatchApplication.class, args)));
 	}
 
 }

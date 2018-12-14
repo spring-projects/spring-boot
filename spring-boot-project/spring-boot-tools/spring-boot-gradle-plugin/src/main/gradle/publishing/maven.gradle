@@ -1,0 +1,21 @@
+plugins {
+	id 'java'
+	id 'maven'
+	id 'org.springframework.boot' version '{version}'
+}
+
+// tag::upload[]
+uploadBootArchives {
+	repositories {
+		mavenDeployer {
+			repository url: 'https://repo.example.com'
+		}
+	}
+}
+// end::upload[]
+
+task deployerRepository {
+	doLast {
+		println uploadBootArchives.repositories.mavenDeployer.repository.url
+	}
+}

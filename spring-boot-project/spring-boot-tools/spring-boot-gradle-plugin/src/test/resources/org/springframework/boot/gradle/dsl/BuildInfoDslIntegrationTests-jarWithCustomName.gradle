@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+group = 'com.example'
+version = '1.0'
+
+bootJar {
+	baseName = 'foo'
+}
+
+springBoot {
+	buildInfo()
+}

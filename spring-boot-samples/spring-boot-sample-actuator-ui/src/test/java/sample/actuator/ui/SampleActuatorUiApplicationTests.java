@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,82 +21,74 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorUiApplication.class)
-@IntegrationTest("server.port=0")
-@WebAppConfiguration
-@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleActuatorUiApplicationTests {
 
-	@Value("${local.server.port}")
-	private int port;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Hello"));
+		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword()).exchange("/", HttpMethod.GET,
+						new HttpEntity<Void>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("<title>Hello");
 	}
 
 	@Test
-	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+	public void testCss() {
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/css/bootstrap.min.css", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("body");
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
+	public void testMetrics() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/metrics",
+				Map.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void testError() throws Exception {
+	public void testError() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/error", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<html>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<body>"));
-		assertTrue(
-				"Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains(
-						"Please contact the operator with the above information"));
+		ResponseEntity<String> entity = this.restTemplate
+				.withBasicAuth("user", getPassword()).exchange("/error", HttpMethod.GET,
+						new HttpEntity<Void>(headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		assertThat(entity.getBody()).contains("<html>").contains("<body>")
+				.contains("Please contact the operator with the above information");
+	}
+
+	private String getPassword() {
+		return "password";
 	}
 
 }

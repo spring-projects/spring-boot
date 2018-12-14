@@ -17,6 +17,7 @@
 package sample.jersey;
 
 import org.glassfish.jersey.server.ResourceConfig;
+
 import org.springframework.stereotype.Component;
 
 @Component

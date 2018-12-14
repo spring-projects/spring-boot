@@ -1,0 +1,20 @@
+plugins {
+	id 'java'
+	id 'maven'
+	id 'org.springframework.boot' version '{version}'
+}
+
+task('conf2ScopeMappings') {
+	doFirst {
+		tasks.getByName('uploadBootArchives').repositories.withType(MavenResolver) {
+			println "Conf2ScopeMappings = ${pom.scopeMappings.mappings.size()}"
+		}
+	}
+}
+
+uploadBootArchives {
+	repositories {
+		mavenDeployer {
+		}
+	}
+}

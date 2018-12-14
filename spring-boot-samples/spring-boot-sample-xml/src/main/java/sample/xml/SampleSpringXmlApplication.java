@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package sample.xml;
 
+import java.util.Collections;
+
+import sample.xml.service.HelloWorldService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 
-import sample.xml.service.HelloWorldService;
-
 public class SampleSpringXmlApplication implements CommandLineRunner {
+
+	private static final String CONTEXT_XML = "classpath:/META-INF/application-context.xml";
 
 	@Autowired
 	private HelloWorldService helloWorldService;
@@ -32,8 +36,10 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 		System.out.println(this.helloWorldService.getHelloMessage());
 	}
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run("classpath:/META-INF/application-context.xml", args);
+	public static void main(String[] args) {
+		SpringApplication application = new SpringApplication();
+		application.setSources(Collections.singleton(CONTEXT_XML));
+		application.run(args);
 	}
 
 }

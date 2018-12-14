@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package sample.jpa.web;
 
 import java.util.List;
 
+import sample.jpa.domain.Note;
+import sample.jpa.repository.NoteRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import sample.jpa.domain.Note;
-import sample.jpa.repository.NoteRepository;
 
 @Controller
 public class IndexController {
@@ -33,7 +33,7 @@ public class IndexController {
 	@Autowired
 	private NoteRepository noteRepository;
 
-	@RequestMapping("/")
+	@GetMapping("/")
 	@Transactional(readOnly = true)
 	public ModelAndView index() {
 		List<Note> notes = this.noteRepository.findAll();

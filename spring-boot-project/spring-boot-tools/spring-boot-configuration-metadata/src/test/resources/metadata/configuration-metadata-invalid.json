@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Invalid"
+    }
+  ]
+}

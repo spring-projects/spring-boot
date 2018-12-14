@@ -1,0 +1,442 @@
+{
+  "groups": [
+    {
+      "name": "logging",
+      "type": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.banner.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "Banner file encoding.",
+      "defaultValue": "UTF-8"
+    },
+    {
+      "name": "spring.banner.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner text resource location.",
+      "defaultValue": "classpath:banner.txt"
+    },
+    {
+      "name": "spring.banner.image.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner image file location (jpg or png can also be used).",
+      "defaultValue": "classpath:banner.gif"
+    },
+    {
+      "name": "spring.banner.image.width",
+      "type": "java.lang.Integer",
+      "description": "Width of the banner image in chars.",
+      "defaultValue": 76
+    },
+    {
+      "name": "spring.banner.image.height",
+      "type": "java.lang.Integer",
+      "description": "Height of the banner image in chars (default based on image height)."
+    },
+    {
+      "name": "spring.banner.image.margin",
+      "type": "java.lang.Integer",
+      "description": "Left hand image margin in chars.",
+      "defaultValue": 2
+    },
+    {
+      "name": "spring.banner.image.invert",
+      "type": "java.lang.Boolean",
+      "description": "Whether images should be inverted for dark terminal themes.",
+      "defaultValue": false
+    },
+    {
+      "name": "debug",
+      "type": "java.lang.Boolean",
+      "description": "Enable debug logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "logging.config",
+      "type": "java.lang.String",
+      "description": "Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.exception-conversion-word",
+      "type": "java.lang.String",
+      "description": "Conversion word used when logging exceptions.",
+      "defaultValue": "%wEx",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.name"
+      }
+    },
+    {
+      "name": "logging.file.name",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file.max-size",
+      "type": "java.lang.String",
+      "description": "Maximum log file size. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "10MB"
+    },
+    {
+      "name": "logging.file.max-history",
+      "type": "java.lang.Integer",
+      "description": "Maximum of archive log files to keep. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": 0
+    },
+    {
+      "name": "logging.group",
+      "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
+      "description": "Log groups to quickly change multiple loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.level",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.path"
+      }
+    },
+    {
+      "name": "logging.pattern.console",
+      "type": "java.lang.String",
+      "description": "Appender pattern for output to the console. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    },
+    {
+      "name": "logging.pattern.dateformat",
+      "type": "java.lang.String",
+      "description": "Appender pattern for log date format. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "yyyy-MM-dd HH:mm:ss.SSS"
+    },
+    {
+      "name": "logging.pattern.file",
+      "type": "java.lang.String",
+      "description": "Appender pattern for output to a file. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    },
+    {
+      "name": "logging.pattern.level",
+      "type": "java.lang.String",
+      "description": "Appender pattern for log level. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "%5p"
+    },
+    {
+      "name": "logging.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "description": "Register a shutdown hook for the logging system when it is initialized.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.application.name",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
+      "description": "Application name."
+    },
+    {
+      "name": "spring.beaninfo.ignore",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Whether to skip search of BeanInfo classes.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.config.additional-location",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Config file locations used in addition to the defaults."
+    },
+    {
+      "name": "spring.config.name",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Config file name.",
+      "defaultValue": "application"
+    },
+    {
+      "name": "spring.config.location",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Config file locations that replace the defaults."
+    },
+    {
+      "name": "spring.main.allow-bean-definition-overriding",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.main.banner-mode",
+      "type": "org.springframework.boot.Banner$Mode",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Mode used to display the banner when the application runs.",
+      "defaultValue": "console"
+    },
+    {
+      "name": "spring.main.show-banner",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Display the banner when the application runs.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.main.banner-mode"
+      }
+    },
+    {
+      "name": "spring.main.sources",
+      "type": "java.util.Set<java.lang.String>",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Sources (class names, package names, or XML resource locations) to include in the ApplicationContext."
+    },
+    {
+      "name": "spring.main.web-application-type",
+      "type": "org.springframework.boot.WebApplicationType",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath."
+    },
+    {
+      "name": "spring.main.web-environment",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Run the application in a web environment (auto-detected by default).",
+      "deprecation": {
+        "replacement": "spring.main.web-application-type"
+      }
+    },
+    {
+      "name": "spring.mandatory-file-encoding",
+      "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
+      "type": "java.nio.charset.Charset",
+      "description": "Expected character encoding the application must use."
+    },
+    {
+      "name": "spring.output.ansi.enabled",
+      "type": "org.springframework.boot.ansi.AnsiOutput$Enabled",
+      "description": "Configures the ANSI output.",
+      "defaultValue": "detect"
+    },
+    {
+      "name": "spring.pid.file",
+      "type": "java.lang.String",
+      "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
+      "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
+    },
+    {
+      "name": "spring.pid.fail-on-write-error",
+      "type": "java.lang.Boolean",
+      "description": "Fails if ApplicationPidFileWriter is used but it cannot write the PID file.",
+      "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
+    },
+    {
+      "name": "spring.profiles.active",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
+    },
+    {
+      "name": "spring.profiles.include",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
+    },
+    {
+      "name": "trace",
+      "type": "java.lang.Boolean",
+      "description": "Enable trace logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "banner.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "Banner file encoding.",
+      "defaultValue": "UTF-8",
+      "deprecation": {
+        "replacement": "spring.banner.charset",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.height",
+      "type": "java.lang.Integer",
+      "description": "Banner image height (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.height",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.invert",
+      "type": "java.lang.Boolean",
+      "description": "Invert images for dark console themes.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.banner.image.invert",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner image file location (jpg/png can also be used).",
+      "defaultValue": "banner.gif",
+      "deprecation": {
+        "replacement": "spring.banner.image.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.margin",
+      "type": "java.lang.Integer",
+      "description": "Left hand image margin (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.margin",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.width",
+      "type": "java.lang.Integer",
+      "description": "Banner image width (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.width",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner text resource location.",
+      "defaultValue": "classpath:banner.txt",
+      "deprecation": {
+        "replacement": "spring.banner.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.application.index",
+      "type": "java.lang.Integer",
+      "description": "Application index.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Application context ids are now unique by default."
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "logging.group.values",
+      "providers": [
+        {
+          "name": "logger-name",
+          "parameters": {
+            "group": false
+          }
+
+        }
+      ]
+    },
+    {
+      "name": "logging.level.keys",
+      "values": [
+        {
+          "value": "root",
+          "description": "Root logger used to assign the default logging level."
+        },
+        {
+          "value": "sql",
+          "description": "SQL logging group including Hibernate SQL logger."
+        },
+        {
+          "value": "web",
+          "description": "Web logging group including codecs."
+        }
+      ],
+      "providers": [
+        {
+          "name": "logger-name"
+        }
+      ]
+    },
+    {
+      "name": "logging.level.values",
+      "values": [
+        {
+          "value": "trace"
+        },
+        {
+          "value": "debug"
+        },
+        {
+          "value": "info"
+        },
+        {
+          "value": "warn"
+        },
+        {
+          "value": "error"
+        },
+        {
+          "value": "fatal"
+        },
+        {
+          "value": "off"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.profiles.active",
+      "providers": [
+        {
+          "name": "spring-profile-name"
+        }
+      ]
+    },
+    {
+      "name": "spring.profiles.include",
+      "providers": [
+        {
+          "name": "spring-profile-name"
+        }
+      ]
+    }
+  ]
+}
+

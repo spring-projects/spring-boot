@@ -1,0 +1,187 @@
+ -----
+ Repackage classifier
+ -----
+ Stephane Nicoll
+ -----
+ 2014-05-02
+ -----
+
+  By default, the <<<repackage>>> goal will replace the original artifact with the
+  repackaged one. That's a sane behavior for modules that represent an app but if
+  your module is used as a dependency of another module, you need to provide a
+  classifier for the repackaged one.
+
+  The reason for that is that application classes are packaged in <<<BOOT-INF/classes>>>
+  so that the dependent module cannot load a repackaged jar's classes. If that is the
+  case or if you prefer to keep the original artifact and attach the repackaged one
+  with a different classifier, configure the plugin as follows:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <classifier>exec</classifier>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  If you are using `spring-boot-starter-parent`, the `repackage` goal is executed
+  automatically in an execution with id `repackage`. In that setup, only the configuration
+  should be specified as shown in the following example:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <configuration>
+              <classifier>exec</classifier>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  This configuration will generate two artifacts: the original one and the repackaged
+  counter part produced by the repackage goal. Both will be installed/deployed
+  transparently.
+
+  You can also use the same configuration if you want to repackage a secondary artifact
+  the same way the main artifact is replaced. The following configuration installs/deploys
+  a single <<<task>>> classified artifact with the repackaged app:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>@maven-jar-plugin.version@</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <classifier>task</classifier>
+            </configuration>
+          </execution>
+        </executions>
+    </plugin>
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <classifier>task</classifier>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  As both the <<<maven-jar-plugin>>> and the <<<spring-boot-maven-plugin>>> runs at the
+  same phase, it is important that the jar plugin is defined first (so that it runs before
+  the repackage goal).
+
+  Again, if you are using `spring-boot-starter-parent`, this can be simplified as follows:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <configuration>
+              <classifier>task</classifier>
+            </configuration>
+          </execution>
+        </executions>
+    </plugin>
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <configuration>
+              <classifier>task</classifier>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+
+
+

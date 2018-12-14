@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,14 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import sample.groovytemplates.SampleGroovyTemplateApplication;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,10 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Biju Kunjummen
  * @author Doo-Hwan, Kwak
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@SpringApplicationConfiguration(classes = SampleGroovyTemplateApplication.class)
-@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class MessageControllerWebTests {
 
 	@Autowired
@@ -83,14 +79,11 @@ public class MessageControllerWebTests {
 	}
 
 	private static class RegexMatcher extends TypeSafeMatcher<String> {
+
 		private final String regex;
 
-		public RegexMatcher(String regex) {
+		RegexMatcher(String regex) {
 			this.regex = regex;
-		}
-
-		public static org.hamcrest.Matcher<java.lang.String> matches(String regex) {
-			return new RegexMatcher(regex);
 		}
 
 		@Override
@@ -108,5 +101,11 @@ public class MessageControllerWebTests {
 			description.appendText("a string that matches regex: ")
 					.appendText(this.regex);
 		}
+
+		public static org.hamcrest.Matcher<java.lang.String> matches(String regex) {
+			return new RegexMatcher(regex);
+		}
+
 	}
+
 }

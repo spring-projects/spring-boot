@@ -1,0 +1,4 @@
+---
+spring.profiles: activeprofilewithdifferentsubdoc2
+foobar: baz
+---

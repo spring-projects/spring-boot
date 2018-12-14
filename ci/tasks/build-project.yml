@@ -1,0 +1,18 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+outputs:
+- name: distribution-repository
+caches:
+- path: maven
+- path: gradle
+run:
+  path: bash
+  args:
+    - -ec
+    - |
+      source /docker-lib.sh
+      start_docker
+      ${PWD}/git-repo/ci/scripts/build-project.sh
+

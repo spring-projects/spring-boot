@@ -1,0 +1,11 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.springframework.boot' version '{version}'
+}
+
+applicationName = 'custom'
+
+bootJar {
+	mainClassName = 'com.example.ExampleApplication'
+}

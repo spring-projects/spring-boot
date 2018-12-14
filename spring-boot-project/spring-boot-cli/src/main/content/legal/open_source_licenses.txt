@@ -1,0 +1,259 @@
+open_source_licenses.txt
+
+Spring Boot CLI
+==================================================================
+
+Pivotal makes available all content in this download ("Content").
+Unless otherwise indicated below, the Content is provided to you under
+the terms and conditions of the Apache License 2.0 (the "License"). A
+copy of the license is available in the file called LICENSE.txt or you
+ may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+The following copyright statements and licenses apply to various open
+source software packages (or portions thereof) that are distributed with
+this content.
+
+
+=================================================================
+TABLE OF CONTENTS
+=================================================================
+
+
+The following is a listing of the open source components detailed in this
+document.  This list is provided for your convenience; please read further if
+you wish to review the copyright notice(s) and the full text of the license
+associated with each component.
+
+
+SECTION 1: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
+
+   >>> JLine (jline:jline)
+   >>> JOpt Simple (net.sf.jopt-simple:jopt-simple)
+   >>> ASM 4.0 (org.ow2.asm:asm)
+
+
+SECTION 2: Apache License, V2.0
+
+   >>> JSON library from Android SDK (com.vaadin.external.google:android-json)
+   >>> Apache Commons Codec (commons-codec:commons-codec)
+   >>> Apache HttpClient (org.apache.httpcomponents:httpclient)
+   >>> Apache HttpCore (org.apache.httpcomponents:httpcore)
+   >>> Plexus Cipher: encryption/decryption Component (org.sonatype.plexus:plexus-cipher)
+   >>> Plexus Security Dispatcher Component (org.sonatype.plexus:plexus-sec-dispatcher)
+   >>> Apache Commons Logging (commons-logging:commons-logging)
+   >>> Apache Groovy (org.codehaus.groovy:groovy)
+   >>> Maven Aether Provider (org.apache.maven:maven-aether-provider)
+   >>> Maven Model (org.apache.maven:maven-model)
+   >>> Maven Model Builder (org.apache.maven:maven-model-builder)
+   >>> Maven Repository Metadata Model (org.apache.maven:maven-repository-metadata)
+   >>> Maven Settings (org.apache.maven:maven-settings)
+   >>> Maven Settings Builder (org.apache.maven:maven-settings-builder)
+   >>> Plexus :: Component Annotations (org.codehaus.plexus:plexus-component-annotations)
+   >>> Plexus Common Utilities (org.codehaus.plexus:plexus-utils)
+   >>> Plexus Component API (org.codehaus.plexus:plexus-component-api)
+   >>> Plexus Interpolation API (org.codehaus.plexus:plexus-interpolation)
+
+
+SECTION 3: Eclipse Public License, Version 1.0
+
+   >>> Aether API (org.eclipse.aether:aether-api)
+   >>> Aether Connector Basic (org.eclipse.aether:aether-connector-basic)
+   >>> Aether Implementation (org.eclipse.aether:aether-impl)
+   >>> Aether SPI (org.eclipse.aether:aether-spi)
+   >>> Aether Transport File (org.eclipse.aether:aether-transport-file)
+   >>> Aether Transport HTTP (org.eclipse.aether:aether-transport-http)
+   >>> Aether Utilities (org.eclipse.aether:aether-util)
+
+
+
+--------------- SECTION 1:  BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES ----------
+
+BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES are applicable to the following component(s).
+
+
+>>> JLine (jline:jline)
+
+Copyright (c) 2002-2006, Marc Prud'hommeaux <mwp1@cornell.edu>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the following
+conditions are met:
+
+Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with
+the distribution.
+
+Neither the name of JLine nor the names of its contributors
+may be used to endorse or promote products derived from this
+software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+>>> net.sf.jopt-simple:jopt-simple:4.5
+
+The MIT License (MIT)
+
+Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+>>> org.ow2.asm:asm
+
+Copyright (c) 2000-2011 INRIA, France Telecom
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holders nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+--------------- SECTION 2: Apache License, V2.0 ----------
+
+Apache License, V2.0 is applicable to the following component(s).
+
+
+>>> org.apache.httpcomponents:httpclient
+>>> org.apache.httpcomponents:httpcore
+>>> org.sonatype.plexus:plexus-cipher
+>>> org.sonatype.plexus:plexus-sec-dispatcher
+>>> commons-logging:commons-logging
+>>> org.codehaus.groovy:groovy
+>>> org.apache.maven:maven-aether-provider
+>>> org.apache.maven:maven-model
+>>> org.apache.maven:maven-model-builder
+>>> org.apache.maven:maven-repository-metadata
+>>> org.apache.maven:maven-settings
+>>> org.apache.maven:maven-settings-builder
+>>> org.codehaus.plexus:plexus-component-annotations
+>>> org.codehaus.plexus:plexus-utils
+>>> org.codehaus.plexus:plexus-component-api
+>>> org.codehaus.plexus:plexus-interpolation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License
+
+>>> CGLIB 3.0 (cglib:cglib:3.0):
+
+Per the LICENSE file in the CGLIB JAR distribution downloaded from
+http://sourceforge.net/projects/cglib/files/cglib3/3.0/cglib-3.0.jar/download,
+CGLIB 3.0 is licensed under the Apache License, version 2.0, the text of which
+is included above.
+
+
+--------------- SECTION 3: Eclipse Public License, Version 1.0 ----------
+
+Eclipse Public License, Version 1.0 is applicable to the following component(s).
+
+>>> org.eclipse.aether:aether-api
+>>> org.eclipse.aether:aether-connector-basic
+>>> org.eclipse.aether:aether-impl
+>>> org.eclipse.aether:aether-spi
+>>> org.eclipse.aether:aether-transport-file
+>>> org.eclipse.aether:aether-transport-http
+>>> org.eclipse.aether:aether-util
+
+The Eclipse Foundation makes available all content in this plug-in ("Content").
+Unless otherwise  indicated below, the Content is provided to you under the terms
+and conditions  of the Eclipse Public License Version 1.0 ("EPL").  A copy of the
+EPL is available  at http://www.eclipse.org/legal/epl-v10.html.
+
+For purposes of the EPL, "Program" will mean the Content.
+
+If you did not receive this Content directly from the Eclipse Foundation, the
+Content is  being redistributed by another party ("Redistributor") and different
+terms and conditions may apply to your use of any object code in the Content.
+Check the Redistributor's license that was provided with the Content.  If no such
+license exists, contact the Redistributor.  Unless otherwise indicated below, the
+terms and conditions of the EPL still apply to any source code in the Content and
+such source code may be obtained at http://www.eclipse.org/
+
+
+
+===========================================================================
+
+To the extent any open source subcomponents are licensed under the EPL and/or
+other similar licenses that require the source code and/or modifications to
+source code to be made available (as would be noted above), you may obtain a
+copy of the source code corresponding to the binaries for such open source
+components and modifications thereto, if any, (the "Source Files"), by
+downloading the Source Files from https://github.com/spring-projects/spring-boot,
+or by sending a request, with your name and address to:
+
+    Pivotal, Inc., 875 Howard St,
+    San Francisco, CA 94103
+    United States of America
+
+or email info@pivotal.io.  All such requests should clearly specify:
+
+    OPEN SOURCE FILES REQUEST
+    Attention General Counsel
