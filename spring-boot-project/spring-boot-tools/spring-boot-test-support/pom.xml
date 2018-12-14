@@ -13,17 +13,6 @@
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>

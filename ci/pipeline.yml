@@ -191,6 +191,7 @@ jobs:
       build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
       disable_checksum_uploads: true
       exclude:
+      - "**/spring-boot-test-support/**"
       - "**/*.effective-pom"
       artifact_set:
       - include:
