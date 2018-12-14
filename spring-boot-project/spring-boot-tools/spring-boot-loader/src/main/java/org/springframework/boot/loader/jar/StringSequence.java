@@ -126,7 +126,7 @@ final class StringSequence implements CharSequence {
 			}
 			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
