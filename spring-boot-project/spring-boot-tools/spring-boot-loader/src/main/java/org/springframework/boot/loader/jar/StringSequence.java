@@ -66,6 +66,9 @@ final class StringSequence implements CharSequence {
 		if (subSequenceEnd > this.end) {
 			throw new StringIndexOutOfBoundsException(end);
 		}
+		if (start == 0 && subSequenceEnd == this.end) {
+			return this;
+		}
 		return new StringSequence(this.source, subSequenceStart, subSequenceEnd);
 	}
 
@@ -100,10 +103,18 @@ final class StringSequence implements CharSequence {
 	}
 
 	public boolean startsWith(CharSequence prefix, int offset) {
-		if (length() - prefix.length() - offset < 0) {
+		int prefixLength = prefix.length();
+		if (length() - prefixLength - offset < 0) {
 			return false;
 		}
-		return subSequence(offset, offset + prefix.length()).equals(prefix);
+		int prefixOffset = 0;
+		int sourceOffset = offset;
+		while (prefixLength-- != 0) {
+			if (charAt(sourceOffset++) != prefix.charAt(prefixOffset++)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
