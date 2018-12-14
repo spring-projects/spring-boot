@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.tests;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,13 +30,16 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FixedValue;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,9 +55,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(Parameterized.class)
 public class DevToolsIntegrationTests {
 
+	@ClassRule
+	public static final TemporaryFolder temp = new TemporaryFolder();
+
+	private static final BuildOutput buildOutput = new BuildOutput(
+			DevToolsIntegrationTests.class);
+
 	private LaunchedApplication launchedApplication;
 
-	private final File serverPortFile = new File("target/server.port");
+	private final File serverPortFile;
 
 	private final ApplicationLauncher applicationLauncher;
 
@@ -61,14 +72,15 @@ public class DevToolsIntegrationTests {
 
 	public DevToolsIntegrationTests(ApplicationLauncher applicationLauncher) {
 		this.applicationLauncher = applicationLauncher;
+		this.serverPortFile = new File(
+				DevToolsIntegrationTests.buildOutput.getRootLocation(), "server.port");
 	}
 
 	@Before
 	public void launchApplication() throws Exception {
 		this.serverPortFile.delete();
-		System.out.println("Launching " + this.javaLauncher.getClass());
 		this.launchedApplication = this.applicationLauncher
-				.launchApplication(this.javaLauncher);
+				.launchApplication(this.javaLauncher, this.serverPortFile);
 	}
 
 	@After
@@ -205,13 +217,15 @@ public class DevToolsIntegrationTests {
 	}
 
 	private int awaitServerPort() throws Exception {
-		long end = System.currentTimeMillis() + 40000;
+		Duration timeToWait = Duration.ofSeconds(40);
+		long end = System.currentTimeMillis() + timeToWait.toMillis();
+		System.out.println("Reading server port from '" + this.serverPortFile + "'");
 		while (this.serverPortFile.length() == 0) {
-			System.out.println("Getting server port " + this.serverPortFile.length());
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
-						"server.port file was not written within 30 seconds. "
-								+ "Application output:%n%s%s",
+						"server.port file '" + this.serverPortFile
+								+ "' was not written within " + timeToWait.toMillis()
+								+ "ms. " + "Application output:%n%s%s",
 						FileCopyUtils.copyToString(new FileReader(
 								this.launchedApplication.getStandardOut())),
 						FileCopyUtils.copyToString(new FileReader(
@@ -234,10 +248,11 @@ public class DevToolsIntegrationTests {
 	}
 
 	@Parameters(name = "{0}")
-	public static Object[] parameters() {
-		return new Object[] { new Object[] { new LocalApplicationLauncher() },
-				new Object[] { new ExplodedRemoteApplicationLauncher() },
-				new Object[] { new JarFileRemoteApplicationLauncher() } };
+	public static Object[] parameters() throws IOException {
+		Directories directories = new Directories(buildOutput, temp);
+		return new Object[] { new Object[] { new LocalApplicationLauncher(directories) },
+				new Object[] { new ExplodedRemoteApplicationLauncher(directories) },
+				new Object[] { new JarFileRemoteApplicationLauncher(directories) } };
 	}
 
 	private static final class ControllerBuilder {

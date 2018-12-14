@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -52,6 +53,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 public class GroovyTemplateAutoConfigurationTests {
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
@@ -76,7 +79,8 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void emptyTemplateLocation() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		registerAndRefreshContext("spring.groovy.template.resource-loader-path:"
 				+ "classpath:/templates/empty-directory/");
 	}

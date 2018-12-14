@@ -16,7 +16,6 @@
 
 package sample.integration;
 
-import java.io.File;
 import java.util.function.Consumer;
 
 import org.springframework.boot.SpringApplication;
@@ -35,10 +34,16 @@ import org.springframework.integration.file.FileWritingMessageHandler;
 @EnableConfigurationProperties(ServiceProperties.class)
 public class SampleIntegrationApplication {
 
+	private final ServiceProperties serviceProperties;
+
+	public SampleIntegrationApplication(ServiceProperties serviceProperties) {
+		this.serviceProperties = serviceProperties;
+	}
+
 	@Bean
 	public FileReadingMessageSource fileReader() {
 		FileReadingMessageSource reader = new FileReadingMessageSource();
-		reader.setDirectory(new File("target/input"));
+		reader.setDirectory(this.serviceProperties.getInputDir());
 		return reader;
 	}
 
@@ -55,7 +60,7 @@ public class SampleIntegrationApplication {
 	@Bean
 	public FileWritingMessageHandler fileWriter() {
 		FileWritingMessageHandler writer = new FileWritingMessageHandler(
-				new File("target/output"));
+				this.serviceProperties.getOutputDir());
 		writer.setExpectReply(false);
 		return writer;
 	}

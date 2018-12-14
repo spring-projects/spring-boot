@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 
 package sample.integration;
 
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SampleCommandLineRunner implements CommandLineRunner {
+public class SampleApplicationRunner implements ApplicationRunner {
 
 	private final SampleMessageGateway gateway;
 
-	public SampleCommandLineRunner(SampleMessageGateway gateway) {
+	public SampleApplicationRunner(SampleMessageGateway gateway) {
 		this.gateway = gateway;
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
-		for (String arg : args) {
+	public void run(ApplicationArguments args) throws Exception {
+		for (String arg : args.getNonOptionArgs()) {
 			this.gateway.echo(arg);
 		}
 	}

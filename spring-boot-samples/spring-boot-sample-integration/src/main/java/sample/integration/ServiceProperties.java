@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package sample.integration;
 
+import java.io.File;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -26,6 +28,10 @@ public class ServiceProperties {
 
 	private String greeting = "Hello";
 
+	private File inputDir;
+
+	private File outputDir;
+
 	@ManagedAttribute
 	public String getGreeting() {
 		return this.greeting;
@@ -33,6 +39,22 @@ public class ServiceProperties {
 
 	public void setGreeting(String greeting) {
 		this.greeting = greeting;
+	}
+
+	public File getInputDir() {
+		return this.inputDir;
+	}
+
+	public void setInputDir(File inputDir) {
+		this.inputDir = inputDir;
+	}
+
+	public File getOutputDir() {
+		return this.outputDir;
+	}
+
+	public void setOutputDir(File outputDir) {
+		this.outputDir = outputDir;
 	}
 
 }

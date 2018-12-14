@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.transaction.jta;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -35,8 +36,9 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -55,7 +57,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -72,12 +73,10 @@ import static org.mockito.Mockito.mock;
  */
 public class JtaAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
-	@Before
-	public void cleanUpLogs() {
-		FileSystemUtils.deleteRecursively(new File("target/transaction-logs"));
-	}
+	private AnnotationConfigApplicationContext context;
 
 	@After
 	public void closeContext() {
@@ -155,15 +154,16 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultAtomikosTransactionManagerName() {
+	public void defaultAtomikosTransactionManagerName() throws IOException {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.jta.logDir:target/transaction-logs")
+		File logs = this.temp.newFolder("jta");
+		TestPropertyValues.of("spring.jta.logDir:" + logs.getAbsolutePath())
 				.applyTo(this.context);
 		this.context.register(JtaPropertiesConfiguration.class,
 				AtomikosJtaConfiguration.class);
 		this.context.refresh();
 
-		File epochFile = new File("target/transaction-logs/tmlog0.log");
+		File epochFile = new File(logs, "tmlog0.log");
 		assertThat(epochFile.isFile()).isTrue();
 	}
 

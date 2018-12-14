@@ -39,6 +39,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +61,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kazuki Shimizu
  */
 public class ThymeleafReactiveAutoConfigurationTests {
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	@Rule
 	public final OutputCapture output = new OutputCapture();
@@ -184,9 +187,10 @@ public class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	public void templateLocationEmpty() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		load(BaseConfiguration.class,
-				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
+				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/");
 		assertThat(this.output.toString())
 				.doesNotContain("Cannot find template location");
 	}

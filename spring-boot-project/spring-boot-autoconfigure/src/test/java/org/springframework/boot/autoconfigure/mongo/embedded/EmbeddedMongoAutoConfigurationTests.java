@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,9 @@ import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -51,6 +54,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class EmbeddedMongoAutoConfigurationTests {
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -143,8 +149,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void mongoWritesToCustomDatabaseDir() {
-		File customDatabaseDir = new File("target/custom-database-dir");
+	public void mongoWritesToCustomDatabaseDir() throws IOException {
+		File customDatabaseDir = this.temp.newFolder("custom-database-dir");
 		FileSystemUtils.deleteRecursively(customDatabaseDir);
 		load("spring.mongodb.embedded.storage.databaseDir="
 				+ customDatabaseDir.getPath());

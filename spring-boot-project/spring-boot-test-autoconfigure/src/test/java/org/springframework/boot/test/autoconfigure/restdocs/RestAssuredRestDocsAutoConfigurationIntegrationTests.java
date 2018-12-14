@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileSystemUtils;
@@ -51,13 +52,17 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 	@LocalServerPort
 	private int port;
 
-	@Before
-	public void deleteSnippets() {
-		FileSystemUtils.deleteRecursively(new File("target/generated-snippets"));
-	}
-
 	@Autowired
 	private RequestSpecification documentationSpec;
+
+	private File generatedSnippets;
+
+	@Before
+	public void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
+				"generated-snippets");
+		FileSystemUtils.deleteRecursively(this.generatedSnippets);
+	}
 
 	@Test
 	public void defaultSnippetsAreWritten() {
@@ -66,7 +71,7 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 						preprocessRequest(modifyUris().scheme("https")
 								.host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
-		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
+		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
 				.has(contentContaining("'https://api.example.com/'"));

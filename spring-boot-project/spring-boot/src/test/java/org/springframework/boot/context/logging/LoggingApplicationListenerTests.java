@@ -33,6 +33,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
@@ -88,6 +89,9 @@ public class LoggingApplicationListenerTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
 	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
 	private final LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder
@@ -100,12 +104,14 @@ public class LoggingApplicationListenerTests {
 
 	private final GenericApplicationContext context = new GenericApplicationContext();
 
+	private File logFile;
+
 	@Before
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
 		multicastEvent(new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
-		new File("target/foo.log").delete();
+		this.logFile = new File(this.temp.getRoot(), "foo.log");
 		new File(tmpDir() + "/spring.log").delete();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		ConfigurationPropertySources.attach(environment);
@@ -216,7 +222,7 @@ public class LoggingApplicationListenerTests {
 	public void addLogFileProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
-				"logging.file.name=target/foo.log");
+				"logging.file.name=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -224,7 +230,7 @@ public class LoggingApplicationListenerTests {
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().substring(existingOutput.length())
 				.trim();
-		assertThat(output).startsWith("target/foo.log");
+		assertThat(output).startsWith(this.logFile.getAbsolutePath());
 	}
 
 	@Test
@@ -232,7 +238,7 @@ public class LoggingApplicationListenerTests {
 	public void addLogFilePropertyWithDeprecatedProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
-				"logging.file=target/foo.log");
+				"logging.file=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -240,39 +246,39 @@ public class LoggingApplicationListenerTests {
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().substring(existingOutput.length())
 				.trim();
-		assertThat(output).startsWith("target/foo.log");
+		assertThat(output).startsWith(this.logFile.getAbsolutePath());
 	}
 
 	@Test
 	public void addLogFilePropertyWithDefault() {
-		assertThat(new File("target/foo.log").exists()).isFalse();
+		assertThat(this.logFile).doesNotExist();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file.name=target/foo.log");
+				"logging.file.name=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
-		assertThat(new File("target/foo.log").exists()).isTrue();
+		assertThat(this.logFile).isFile();
 	}
 
 	@Test
 	@Deprecated
 	public void addLogFilePropertyWithDefaultAndDeprecatedProperty() {
-		assertThat(new File("target/foo.log").exists()).isFalse();
+		assertThat(this.logFile).doesNotExist();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file=target/foo.log");
+				"logging.file=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
-		assertThat(new File("target/foo.log").exists()).isTrue();
+		assertThat(this.logFile).isFile();
 	}
 
 	@Test
 	public void addLogPathProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
-				"logging.file.path=target/foo/");
+				"logging.file.path=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -280,14 +286,14 @@ public class LoggingApplicationListenerTests {
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().substring(existingOutput.length())
 				.trim();
-		assertThat(output).startsWith("target/foo/spring.log");
+		assertThat(output).startsWith(this.logFile.getAbsolutePath());
 	}
 
 	@Test
 	public void addLogPathPropertyWithDeprecatedProperty() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
-				"logging.path=target/foo/");
+				"logging.path=" + this.temp.getRoot());
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -295,7 +301,8 @@ public class LoggingApplicationListenerTests {
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().substring(existingOutput.length())
 				.trim();
-		assertThat(output).startsWith("target/foo/spring.log");
+		assertThat(output).startsWith(
+				new File(this.temp.getRoot(), "spring.log").getAbsolutePath());
 	}
 
 	@Test
@@ -539,7 +546,7 @@ public class LoggingApplicationListenerTests {
 	public void systemPropertiesAreSetForLoggingConfiguration() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.exception-conversion-word=conversion",
-				"logging.file.name=target/log", "logging.file.path=path",
+				"logging.file.name=" + this.logFile, "logging.file.path=path",
 				"logging.pattern.console=console", "logging.pattern.file=file",
 				"logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -551,7 +558,7 @@ public class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD))
 				.isEqualTo("conversion");
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("target/log");
+				.isEqualTo(this.logFile.getAbsolutePath());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN))
 				.isEqualTo("level");
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
@@ -563,11 +570,11 @@ public class LoggingApplicationListenerTests {
 	@Deprecated
 	public void systemPropertiesAreSetForLoggingConfigurationWithDeprecatedProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file=target/log", "logging.path=path");
+				"logging.file=" + this.logFile, "logging.path=path");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("target/log");
+				.isEqualTo(this.logFile.getAbsolutePath());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
 				.isEqualTo("path");
 	}
@@ -597,11 +604,13 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void logFilePropertiesCanReferenceSystemProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file.name=target/${PID}.log");
+				"logging.file.name=" + this.temp.getRoot().getAbsolutePath()
+						+ "${PID}.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("target/" + new ApplicationPid().toString() + ".log");
+				.isEqualTo(this.temp.getRoot().getAbsolutePath()
+						+ new ApplicationPid().toString() + ".log");
 	}
 
 	@Test

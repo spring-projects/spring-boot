@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kazuki Shimizu
  */
 public class FreeMarkerAutoConfigurationTests {
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
@@ -68,19 +71,24 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void emptyTemplateLocation() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
-		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/templates/empty-directory/").run((context) -> {
-				});
+		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory");
+		emptyDirectory.mkdirs();
+		this.contextRunner
+				.withPropertyValues("spring.freemarker.templateLoaderPath:"
+						+ "classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(this.output.toString())
+						.doesNotContain("Cannot find template location"));
 	}
 
 	@Test
 	public void nonExistentLocationAndEmptyLocation() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/")
-				.run((context) -> {
-				});
+				+ "classpath:/does-not-exist/,classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(this.output.toString())
+						.doesNotContain("Cannot find template location"));
 	}
 
 }

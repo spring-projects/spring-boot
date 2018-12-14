@@ -26,6 +26,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -47,6 +48,9 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 		}
 
 	};
+
+	public static final BuildOutput buildOutput = new BuildOutput(
+			AbstractEmbeddedServletContainerIntegrationTests.class);
 
 	@Rule
 	public final AbstractApplicationLauncher launcher;
@@ -70,8 +74,9 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
 			try {
 				AbstractApplicationLauncher launcher = launcherClass
-						.getDeclaredConstructor(ApplicationBuilder.class)
-						.newInstance(applicationBuilder);
+						.getDeclaredConstructor(ApplicationBuilder.class,
+								BuildOutput.class)
+						.newInstance(applicationBuilder, buildOutput);
 				String name = StringUtils.capitalize(container) + ": "
 						+ launcher.getDescription(packaging);
 				parameters.add(new Object[] { name, launcher });
