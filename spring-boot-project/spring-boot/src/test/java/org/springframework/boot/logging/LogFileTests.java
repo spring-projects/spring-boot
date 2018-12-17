@@ -93,7 +93,7 @@ public class LogFileTests {
 		assertThat(logFile.toString())
 				.isEqualTo("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("logpath/spring.log");
+				.isEqualTo("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
 				.isEqualTo("logpath");
 	}
