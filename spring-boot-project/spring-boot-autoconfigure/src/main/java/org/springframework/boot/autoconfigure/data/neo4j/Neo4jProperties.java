@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,13 @@ import org.springframework.util.ClassUtils;
  * @author Michael Hunger
  * @author Vince Bickers
  * @author Aurélien Leboulanger
+ * @author Michael Simons
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.data.neo4j")
+@ConfigurationProperties(prefix = Neo4jProperties.CONFIGURATION_PREFIX)
 public class Neo4jProperties implements ApplicationContextAware {
+
+	static final String CONFIGURATION_PREFIX = "spring.data.neo4j";
 
 	static final String EMBEDDED_DRIVER = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
 
@@ -71,6 +74,12 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 * entire processing of the request.",
 	 */
 	private Boolean openInView;
+
+	/**
+	 * Disables the conversion of java.time.* and spatial types in Neo4j-OGM entities and
+	 * uses Neo4j native types wherever possible.
+	 */
+	private boolean useNativeTypes = false;
 
 	private final Embedded embedded = new Embedded();
 
@@ -116,6 +125,14 @@ public class Neo4jProperties implements ApplicationContextAware {
 		this.openInView = openInView;
 	}
 
+	public boolean isUseNativeTypes() {
+		return this.useNativeTypes;
+	}
+
+	public void setUseNativeTypes(boolean useNativeTypes) {
+		this.useNativeTypes = useNativeTypes;
+	}
+
 	public Embedded getEmbedded() {
 		return this.embedded;
 	}
@@ -146,6 +163,9 @@ public class Neo4jProperties implements ApplicationContextAware {
 			builder.credentials(this.username, this.password);
 		}
 		builder.autoIndex(this.getAutoIndex().getName());
+		if (this.useNativeTypes) {
+			builder.useNativeTypes();
+		}
 	}
 
 	private void configureUriWithDefaults(Builder builder) {

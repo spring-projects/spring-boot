@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Neo4jProperties}.
  *
  * @author Stephane Nicoll
+ * @author Michael Simons
  */
 public class Neo4jPropertiesTests {
 
@@ -145,6 +146,21 @@ public class Neo4jPropertiesTests {
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
 				"file:relative/path/to/my.db");
+	}
+
+	@Test
+	public void nativeTypesAreSetToFalseByDefault() {
+		Neo4jProperties properties = load(true);
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getUseNativeTypes()).isFalse();
+	}
+
+	@Test
+	public void nativeTypesCanBeConfigured() {
+		Neo4jProperties properties = load(true,
+				"spring.data.neo4j.use-native-types=true");
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getUseNativeTypes()).isTrue();
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {
