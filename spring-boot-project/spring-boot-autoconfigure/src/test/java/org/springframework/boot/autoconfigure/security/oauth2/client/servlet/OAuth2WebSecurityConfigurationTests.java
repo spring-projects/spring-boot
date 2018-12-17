@@ -165,14 +165,12 @@ public class OAuth2WebSecurityConfigurationTests {
 				});
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<Filter> getFilters(AssertableApplicationContext context,
 			Class<? extends Filter> filter) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
-		List<Filter> filters = (List<Filter>) ReflectionTestUtils
-				.getField(filterChains.get(0), "filters");
+		List<Filter> filters = filterChains.get(0).getFilters();
 		return filters.stream().filter(filter::isInstance).collect(Collectors.toList());
 	}
 

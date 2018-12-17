@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -175,14 +175,12 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	@SuppressWarnings("unchecked")
 	private void assertFilterConfiguredWithJwtAuthenticationManager(
 			AssertableReactiveWebApplicationContext context) {
 		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
-		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils
-				.getField(filterChain, "filters");
-		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters.stream()
+		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
+		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
 				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst()
 				.orElse(null);
 		ReactiveAuthenticationManager authenticationManager = (ReactiveAuthenticationManager) ReflectionTestUtils
