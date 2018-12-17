@@ -47,7 +47,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -183,13 +182,11 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
 	}
 
-	@SuppressWarnings("unchecked")
 	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
-		List<Filter> filters = (List<Filter>) ReflectionTestUtils
-				.getField(filterChains.get(0), "filters");
+		List<Filter> filters = filterChains.get(0).getFilters();
 		return filters.stream()
 				.filter((f) -> f instanceof BearerTokenAuthenticationFilter).findFirst()
 				.orElse(null);

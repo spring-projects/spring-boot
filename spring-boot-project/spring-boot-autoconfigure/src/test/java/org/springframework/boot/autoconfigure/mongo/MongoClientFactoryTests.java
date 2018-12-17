@@ -21,15 +21,12 @@ import java.util.List;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.connection.Cluster;
-import com.mongodb.connection.ClusterSettings;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +47,7 @@ public class MongoClientFactoryTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
 		MongoClient client = createMongoClient(properties);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 12345);
 	}
@@ -60,7 +57,7 @@ public class MongoClientFactoryTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
 		MongoClient client = createMongoClient(properties);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
 	}
@@ -103,7 +100,7 @@ public class MongoClientFactoryTests {
 		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
 				+ "mongo2.example.com:23456/test");
 		MongoClient client = createMongoClient(properties);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
@@ -118,7 +115,7 @@ public class MongoClientFactoryTests {
 		properties.setUri("mongodb://mongo.example.com:1234/mydb");
 		this.environment.setProperty("local.mongo.port", "4000");
 		MongoClient client = createMongoClient(properties, this.environment);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 4000);
 	}
@@ -130,14 +127,6 @@ public class MongoClientFactoryTests {
 	private MongoClient createMongoClient(MongoProperties properties,
 			Environment environment) {
 		return new MongoClientFactory(properties, environment).createMongoClient(null);
-	}
-
-	private List<ServerAddress> extractServerAddresses(MongoClient client) {
-		Cluster cluster = (Cluster) ReflectionTestUtils
-				.getField(ReflectionTestUtils.getField(client, "delegate"), "cluster");
-		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
-				.getField(cluster, "settings");
-		return clusterSettings.getHosts();
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
