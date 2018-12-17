@@ -111,20 +111,20 @@ final class StringSequence implements CharSequence {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null || !CharSequence.class.isInstance(obj)) {
+		if (!(obj instanceof CharSequence)) {
 			return false;
 		}
 		CharSequence other = (CharSequence) obj;
 		int n = length();
-		if (n == other.length()) {
-			int i = 0;
-			while (n-- != 0) {
-				if (charAt(i) != other.charAt(i)) {
-					return false;
-				}
-				i++;
+		if (n != other.length()) {
+			return false;
+		}
+		int i = 0;
+		while (n-- != 0) {
+			if (charAt(i) != other.charAt(i)) {
+				return false;
 			}
-			return true;
+			i++;
 		}
 		return true;
 	}
