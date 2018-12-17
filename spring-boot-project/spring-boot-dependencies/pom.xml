@@ -2061,6 +2061,11 @@
 				<version>${hibernate.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-vibur</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
