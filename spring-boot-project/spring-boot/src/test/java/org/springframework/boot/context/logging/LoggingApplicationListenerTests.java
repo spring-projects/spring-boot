@@ -19,7 +19,9 @@ package org.springframework.boot.context.logging;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -56,13 +58,13 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -159,20 +161,19 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void overrideConfigLocation() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertThat(output).contains("Hello world").doesNotContain("???")
-				.startsWith("LOG_FILE_IS_UNDEFINED").endsWith("BOOTBOOT");
+				.startsWith("null ").endsWith("BOOTBOOT");
 	}
 
 	@Test
 	public void overrideConfigDoesNotExist() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.config=doesnotexist.xml");
+		addPropertiesToEnvironment(this.context, "logging.config=doesnotexist.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {
 			this.outputCapture.expect(containsString(
 					"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
@@ -183,8 +184,8 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void azureDefaultLoggingConfigDoesNotCauseAFailure() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.config: -Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
+		addPropertiesToEnvironment(this.context,
+				"logging.config=-Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
@@ -195,8 +196,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void tomcatNopLoggingConfigDoesNotCauseAFailure() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"LOGGING_CONFIG: -Dnop");
+		addPropertiesToEnvironment(this.context, "LOGGING_CONFIG=-Dnop");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
@@ -207,7 +207,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void overrideConfigBroken() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-broken.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {
 			this.outputCapture.expect(containsString(
@@ -220,7 +220,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void addLogFileProperty() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
 				"logging.file.name=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -236,7 +236,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	@Deprecated
 	public void addLogFilePropertyWithDeprecatedProperty() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
 				"logging.file=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -252,8 +252,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void addLogFilePropertyWithDefault() {
 		assertThat(this.logFile).doesNotExist();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file.name=" + this.logFile);
+		addPropertiesToEnvironment(this.context, "logging.file.name=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -265,8 +264,7 @@ public class LoggingApplicationListenerTests {
 	@Deprecated
 	public void addLogFilePropertyWithDefaultAndDeprecatedProperty() {
 		assertThat(this.logFile).doesNotExist();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file=" + this.logFile);
+		addPropertiesToEnvironment(this.context, "logging.file=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -276,9 +274,9 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void addLogPathProperty() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
-				"logging.file.path=" + this.logFile);
+				"logging.file.path=" + this.temp.getRoot());
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -286,12 +284,13 @@ public class LoggingApplicationListenerTests {
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().substring(existingOutput.length())
 				.trim();
-		assertThat(output).startsWith(this.logFile.getAbsolutePath());
+		assertThat(output).startsWith(
+				new File(this.temp.getRoot(), "spring.log").getAbsolutePath());
 	}
 
 	@Test
 	public void addLogPathPropertyWithDeprecatedProperty() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-nondefault.xml",
 				"logging.path=" + this.temp.getRoot());
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -307,7 +306,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseDebugArg() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "debug");
+		addPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -318,7 +317,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseTraceArg() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "trace");
+		addPropertiesToEnvironment(this.context, "trace");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -338,8 +337,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	private void disableDebugTraceArg(String... environment) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				environment);
+		addPropertiesToEnvironment(this.context, environment);
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -350,7 +348,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevels() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=TRACE");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -362,7 +360,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsCaseInsensitive() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=TrAcE");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -374,7 +372,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsTrimsWhitespace() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot= trace ");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -386,8 +384,8 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsWithPlaceholder() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"foo=TRACE", "logging.level.org.springframework.boot=${foo}");
+		addPropertiesToEnvironment(this.context, "foo=TRACE",
+				"logging.level.org.springframework.boot=${foo}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -398,7 +396,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsFails() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=GARBAGE");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -409,7 +407,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsNone() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=OFF");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -421,7 +419,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsMapsFalseToOff() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=false");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -434,7 +432,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void parseArgsDisabled() {
 		this.initializer.setParseArgs(false);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "debug");
+		addPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -473,8 +471,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void overrideExceptionConversionWord() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.exceptionConversionWord=%rEx");
+		addPropertiesToEnvironment(this.context, "logging.exceptionConversionWord=%rEx");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.outputCapture.expect(containsString("Hello world"));
@@ -500,8 +497,7 @@ public class LoggingApplicationListenerTests {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		System.setProperty(LoggingSystem.class.getName(),
 				TestShutdownHandlerLoggingSystem.class.getName());
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.register_shutdown_hook=true");
+		addPropertiesToEnvironment(this.context, "logging.register_shutdown_hook=true");
 		multicastEvent(listener,
 				new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
@@ -544,7 +540,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void systemPropertiesAreSetForLoggingConfiguration() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.exception-conversion-word=conversion",
 				"logging.file.name=" + this.logFile, "logging.file.path=path",
 				"logging.pattern.console=console", "logging.pattern.file=file",
@@ -569,8 +565,8 @@ public class LoggingApplicationListenerTests {
 	@Test
 	@Deprecated
 	public void systemPropertiesAreSetForLoggingConfigurationWithDeprecatedProperties() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file=" + this.logFile, "logging.path=path");
+		addPropertiesToEnvironment(this.context, "logging.file=" + this.logFile,
+				"logging.path=path");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
@@ -582,7 +578,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void environmentPropertiesIgnoreUnresolvablePlaceholders() {
 		// gh-7719
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.pattern.console=console ${doesnotexist}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -592,7 +588,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void environmentPropertiesResolvePlaceholders() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.pattern.console=console ${pid}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -603,9 +599,8 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void logFilePropertiesCanReferenceSystemProperties() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.file.name=" + this.temp.getRoot().getAbsolutePath()
-						+ "${PID}.log");
+		addPropertiesToEnvironment(this.context, "logging.file.name="
+				+ this.temp.getRoot().getAbsolutePath() + "${PID}.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
@@ -643,8 +638,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void loggingGroupsDefaultsAreApplied() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.level.web=TRACE");
+		addPropertiesToEnvironment(this.context, "logging.level.web=TRACE");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertTraceEnabled("org.springframework.core", false);
@@ -659,7 +653,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void loggingGroupsCanBeDefined() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+		addPropertiesToEnvironment(this.context,
 				"logging.group.foo=com.foo.bar,com.foo.baz", "logging.level.foo=TRACE");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -692,6 +686,19 @@ public class LoggingApplicationListenerTests {
 			}
 		}
 		return false;
+	}
+
+	private void addPropertiesToEnvironment(ConfigurableApplicationContext context,
+			String... pairs) {
+		ConfigurableEnvironment environment = context.getEnvironment();
+		Map<String, Object> properties = new HashMap<>();
+		for (String pair : pairs) {
+			String[] split = pair.split("=", 2);
+			properties.put(split[0], (split.length == 2) ? split[1] : "");
+		}
+		MapPropertySource propertySource = new MapPropertySource("logging-config",
+				properties);
+		environment.getPropertySources().addFirst(propertySource);
 	}
 
 	public static class TestShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
