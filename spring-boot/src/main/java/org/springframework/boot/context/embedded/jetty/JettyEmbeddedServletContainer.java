@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
+import java.io.IOException;
 import java.net.BindException;
 import java.util.List;
 
@@ -142,8 +143,9 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					try {
 						connector.start();
 					}
-					catch (BindException ex) {
-						if (connector instanceof NetworkConnector) {
+					catch (IOException ex) {
+						if (connector instanceof NetworkConnector
+								&& findBindException(ex) != null) {
 							throw new PortInUseException(
 									((NetworkConnector) connector).getPort());
 						}
@@ -164,6 +166,16 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 						"Unable to start embedded Jetty servlet container", ex);
 			}
 		}
+	}
+
+	private BindException findBindException(Throwable ex) {
+		if (ex == null) {
+			return null;
+		}
+		if (ex instanceof BindException) {
+			return (BindException) ex;
+		}
+		return findBindException(ex.getCause());
 	}
 
 	private String getActualPortsDescription() {
