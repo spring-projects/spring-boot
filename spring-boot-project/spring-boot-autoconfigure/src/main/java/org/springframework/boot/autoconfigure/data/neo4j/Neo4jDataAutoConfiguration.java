@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.neo4j.ogm.driver.NativeTypesException;
+import org.neo4j.ogm.driver.NativeTypesNotAvailableException;
+import org.neo4j.ogm.driver.NativeTypesNotSupportedException;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.EventListener;
 
@@ -34,12 +37,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -53,6 +58,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Vince Bickers
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Michael Simons
  * @since 1.4.0
  */
 @Configuration
@@ -73,10 +79,44 @@ public class Neo4jDataAutoConfiguration {
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
 			ApplicationContext applicationContext,
 			ObjectProvider<EventListener> eventListeners) {
-		SessionFactory sessionFactory = new SessionFactory(configuration,
-				getPackagesToScan(applicationContext));
-		eventListeners.stream().forEach(sessionFactory::register);
-		return sessionFactory;
+		try {
+			SessionFactory sessionFactory = new SessionFactory(configuration,
+					getPackagesToScan(applicationContext));
+			eventListeners.forEach(sessionFactory::register);
+			return sessionFactory;
+		}
+		catch (NativeTypesException ex) {
+			InvalidConfigurationPropertyValueException translatedMessage = translateNativeTypesException(
+					ex);
+			throw (translatedMessage != null) ? translatedMessage : ex;
+		}
+	}
+
+	@Nullable
+	private static InvalidConfigurationPropertyValueException translateNativeTypesException(
+			NativeTypesException cause) {
+
+		String propertyName = Neo4jProperties.CONFIGURATION_PREFIX + ".use-native-types";
+		boolean propertyValue = true;
+
+		if (cause instanceof NativeTypesNotAvailableException) {
+			String message = String.format(
+					"The native type module for your Neo4j-OGM driver is not available. "
+							+ "Please add the following dependency to your build:%n'%s'.",
+					((NativeTypesNotAvailableException) cause).getRequiredModule());
+			return new InvalidConfigurationPropertyValueException(propertyName,
+					propertyValue, message);
+		}
+		if (cause instanceof NativeTypesNotSupportedException) {
+			String message = String.format(
+					"The configured Neo4j-OGM driver %s does not support Neo4j native types. "
+							+ "Please consider one of the drivers that support Neo4js native types like the Bolt or the embedded driver.",
+					cause.getDriverClassName());
+			return new InvalidConfigurationPropertyValueException(propertyName,
+					propertyValue, message);
+		}
+
+		return null;
 	}
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -46,13 +47,14 @@ import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
- * use Lucene 4 and Neo4j still requires 3.
+ * Tests for {@link Neo4jDataAutoConfiguration}. Tests should not use the embedded driver
+ * as it requires the complete Neo4j-Kernel and server to function properly.
  *
  * @author Stephane Nicoll
  * @author Michael Hunger
@@ -116,7 +118,6 @@ public class Neo4jDataAutoConfigurationTests {
 					assertThat(context)
 							.hasSingleBean(org.neo4j.ogm.config.Configuration.class);
 				});
-
 	}
 
 	@Test
@@ -142,6 +143,50 @@ public class Neo4jDataAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.neo4j.open-in-view:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(OpenSessionInViewInterceptor.class));
+	}
+
+	@Test
+	public void shouldBeAbleToUseNativeTypesWithBolt() {
+		this.contextRunner
+				.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.getBean(org.neo4j.ogm.config.Configuration.class)
+						.hasFieldOrPropertyWithValue("useNativeTypes", true));
+	}
+
+	@Test
+	public void shouldDealWithNativeTypesNotAvailableException() {
+		assertThatIllegalStateException().isThrownBy(() -> {
+			this.contextRunner
+					.withClassLoader(
+							new FilteredClassLoader("org.neo4j.ogm.drivers.bolt.types"))
+					.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+							"spring.data.neo4j.use-native-types:true")
+					.withConfiguration(
+							AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+									TransactionAutoConfiguration.class))
+					.run((context) -> context.getBean(SessionFactory.class));
+		}).withRootCauseInstanceOf(InvalidConfigurationPropertyValueException.class)
+				.withStackTraceContaining(
+						"The native type module for your Neo4j-OGM driver is not available. Please add the following dependency to your build:");
+	}
+
+	@Test
+	public void shouldDealWithNativeTypesNotSupportedException() {
+		assertThatIllegalStateException().isThrownBy(() -> {
+			this.contextRunner
+					.withPropertyValues("spring.data.neo4j.uri=http://localhost:7474",
+							"spring.data.neo4j.use-native-types:true")
+					.withConfiguration(
+							AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+									TransactionAutoConfiguration.class))
+					.run((context) -> context.getBean(SessionFactory.class));
+		}).withRootCauseInstanceOf(InvalidConfigurationPropertyValueException.class)
+				.withStackTraceContaining(
+						" The configured Neo4j-OGM driver org.neo4j.ogm.drivers.http.driver.HttpDriver does not support Neo4j native types.");
 	}
 
 	@Test
