@@ -233,9 +233,10 @@ public class DataSourceInitializerInvokerTests {
 				.withPropertyValues("spring.datasource.initialization-mode=always",
 						"spring.datasource.url:jdbc:hsqldb:mem:testdb-"
 								+ new Random().nextInt(),
-						"spring.datasource.schema:"
+						"spring.datasource.schema:classpath*:"
 								+ getRelativeLocationFor("lexical-schema-*.sql"),
-						"spring.datasource.data:" + getRelativeLocationFor("data.sql"))
+						"spring.datasource.data:classpath*:"
+								+ getRelativeLocationFor("data.sql"))
 				.run((context) -> {
 					DataSource dataSource = context.getBean(DataSource.class);
 					assertThat(dataSource).isInstanceOf(HikariDataSource.class);
