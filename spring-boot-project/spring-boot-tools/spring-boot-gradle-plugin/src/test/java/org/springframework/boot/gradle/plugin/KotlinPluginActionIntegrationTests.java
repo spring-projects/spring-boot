@@ -43,12 +43,10 @@ public class KotlinPluginActionIntegrationTests {
 	}
 
 	@Test
-	public void kotlinVersionMatchesKotlinPluginVersion() {
+	public void kotlinVersionPropertyIsSet() {
 		String output = this.gradleBuild.build("kotlinVersion", "dependencies",
 				"--configuration", "compileClasspath").getOutput();
-		assertThat(output).contains("Kotlin version: 1.2.20");
-		assertThat(output)
-				.containsPattern("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.20");
+		assertThat(output).containsPattern("Kotlin version: [0-9]\\.[0-9]\\.[0-9]+");
 	}
 
 	@Test

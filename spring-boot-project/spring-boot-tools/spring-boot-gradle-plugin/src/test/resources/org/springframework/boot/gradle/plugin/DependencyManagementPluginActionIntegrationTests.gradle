@@ -17,7 +17,7 @@ if (project.hasProperty('applyDependencyManagementPlugin')) {
 }
 
 repositories {
-	mavenLocal()
+	maven { url 'file:repository' }
 }
 
 task doesNotHaveDependencyManagement {

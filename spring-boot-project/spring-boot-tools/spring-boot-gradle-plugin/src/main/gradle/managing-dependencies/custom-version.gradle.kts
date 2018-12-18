@@ -6,22 +6,24 @@ plugins {
 
 apply(plugin = "io.spring.dependency-management")
 
-the<DependencyManagementExtension>().apply {
-	resolutionStrategy {
-		eachDependency {
-			if (requested.group == "org.springframework.boot") {
-				useVersion("{version}")
-			}
-		}
-	}
-}
-
 // tag::custom-version[]
 extra["slf4j.version"] = "1.7.20"
 // end::custom-version[]
 
 repositories {
-	mavenLocal()
+	maven {
+		url = uri("file:repository")
+	}
+}
+
+the<DependencyManagementExtension>().apply {
+	resolutionStrategy {
+		eachDependency {
+			if (requested.group == "org.springframework.boot") {
+				useVersion("TEST-SNAPSHOT")
+			}
+		}
+	}
 }
 
 task("slf4jVersion") {

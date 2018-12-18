@@ -1,3 +1,5 @@
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+
 // tag::configure-bom[]
 plugins {
 	java
@@ -12,16 +14,18 @@ dependencyManagement {
 }
 // end::configure-bom[]
 
-dependencyManagement {
+the<DependencyManagementExtension>().apply {
 	resolutionStrategy {
 		eachDependency {
 			if (requested.group == "org.springframework.boot") {
-				useVersion("{version}")
+				useVersion("TEST-SNAPSHOT")
 			}
 		}
 	}
 }
 
 repositories {
-	mavenLocal()
+	maven {
+		url = uri("file:repository")
+	}
 }

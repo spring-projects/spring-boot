@@ -19,12 +19,14 @@ the<DependencyManagementExtension>().apply {
 	resolutionStrategy {
 		eachDependency {
 			if (requested.group == "org.springframework.boot") {
-				useVersion("{version}")
+				useVersion("TEST-SNAPSHOT")
 			}
 		}
 	}
 }
 
 repositories {
-	mavenLocal()
+	maven {
+		url = uri("file:repository")
+	}
 }
