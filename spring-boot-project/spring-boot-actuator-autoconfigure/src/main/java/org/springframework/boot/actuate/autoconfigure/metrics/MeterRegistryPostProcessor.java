@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -68,16 +65,11 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
-			this.configurer = new MeterRegistryConfigurer(
-					asOrderedList(this.meterBinders), asOrderedList(this.meterFilters),
-					asOrderedList(this.meterRegistryCustomizers),
+			this.configurer = new MeterRegistryConfigurer(this.meterRegistryCustomizers,
+					this.meterFilters, this.meterBinders,
 					this.metricsProperties.getObject().isUseGlobalRegistry());
 		}
 		return this.configurer;
-	}
-
-	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
-		return provider.orderedStream().collect(Collectors.toList());
 	}
 
 }

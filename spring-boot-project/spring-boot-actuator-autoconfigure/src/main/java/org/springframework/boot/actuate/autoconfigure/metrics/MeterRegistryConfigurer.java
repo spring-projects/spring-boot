@@ -16,14 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.util.LambdaSafe;
 
 /**
@@ -36,21 +37,20 @@ import org.springframework.boot.util.LambdaSafe;
  */
 class MeterRegistryConfigurer {
 
-	private final Collection<MeterRegistryCustomizer<?>> customizers;
+	private final ObjectProvider<MeterRegistryCustomizer<?>> customizers;
 
-	private final Collection<MeterFilter> filters;
+	private final ObjectProvider<MeterFilter> filters;
 
-	private final Collection<MeterBinder> binders;
+	private final ObjectProvider<MeterBinder> binders;
 
 	private final boolean addToGlobalRegistry;
 
-	MeterRegistryConfigurer(Collection<MeterBinder> binders,
-			Collection<MeterFilter> filters,
-			Collection<MeterRegistryCustomizer<?>> customizers,
+	MeterRegistryConfigurer(ObjectProvider<MeterRegistryCustomizer<?>> customizers,
+			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders,
 			boolean addToGlobalRegistry) {
-		this.binders = (binders != null) ? binders : Collections.emptyList();
-		this.filters = (filters != null) ? filters : Collections.emptyList();
-		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
+		this.customizers = customizers;
+		this.filters = filters;
+		this.binders = binders;
 		this.addToGlobalRegistry = addToGlobalRegistry;
 	}
 
@@ -67,17 +67,23 @@ class MeterRegistryConfigurer {
 
 	@SuppressWarnings("unchecked")
 	private void customize(MeterRegistry registry) {
-		LambdaSafe.callbacks(MeterRegistryCustomizer.class, this.customizers, registry)
+		LambdaSafe
+				.callbacks(MeterRegistryCustomizer.class, asOrderedList(this.customizers),
+						registry)
 				.withLogger(MeterRegistryConfigurer.class)
 				.invoke((customizer) -> customizer.customize(registry));
 	}
 
 	private void addFilters(MeterRegistry registry) {
-		this.filters.forEach(registry.config()::meterFilter);
+		this.filters.orderedStream().forEach(registry.config()::meterFilter);
 	}
 
 	private void addBinders(MeterRegistry registry) {
-		this.binders.forEach((binder) -> binder.bindTo(registry));
+		this.binders.orderedStream().forEach((binder) -> binder.bindTo(registry));
+	}
+
+	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
+		return provider.orderedStream().collect(Collectors.toList());
 	}
 
 }
