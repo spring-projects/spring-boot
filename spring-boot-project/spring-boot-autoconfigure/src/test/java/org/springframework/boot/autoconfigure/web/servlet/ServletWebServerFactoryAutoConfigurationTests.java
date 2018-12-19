@@ -300,7 +300,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	static class TomcatContextCustomizerConfiguration {
 
 		@Bean
-		public TomcatContextCustomizer connectorCustomizer() {
+		public TomcatContextCustomizer contextCustomizer() {
 			return (context) -> {
 			};
 		}
