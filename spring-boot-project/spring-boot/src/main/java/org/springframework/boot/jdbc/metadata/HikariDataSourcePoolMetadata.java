@@ -39,7 +39,12 @@ public class HikariDataSourcePoolMetadata
 	@Override
 	public Integer getActive() {
 		try {
-			return getHikariPool().getActiveConnections();
+			HikariPool pool = getHikariPool();
+			if (pool != null) {
+				return pool.getActiveConnections();
+			} else {
+				return null;
+			}
 		}
 		catch (Exception ex) {
 			return null;
