@@ -1845,6 +1845,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-jaxb</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-jmx</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
