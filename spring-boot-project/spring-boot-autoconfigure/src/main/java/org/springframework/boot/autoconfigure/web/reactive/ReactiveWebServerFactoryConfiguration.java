@@ -74,11 +74,6 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory() {
-			return new TomcatReactiveWebServerFactory();
-		}
-
-		@Bean
 		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers) {

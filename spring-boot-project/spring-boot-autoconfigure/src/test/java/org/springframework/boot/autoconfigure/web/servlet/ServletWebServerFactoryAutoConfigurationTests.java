@@ -31,6 +31,7 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -161,9 +162,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								TomcatContextCustomizerConfiguration.class);
+								.of(ServletWebServerFactoryAutoConfiguration.class));
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context
 					.getBean(TomcatServletWebServerFactory.class);
@@ -291,13 +290,20 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatConnectorCustomizer connectorCustomizer() {
-			return (connector) -> connector.setPort(9001);
+			return (connector) -> {
+			};
 		}
 
 	}
 
 	@Configuration
 	static class TomcatContextCustomizerConfiguration {
+
+		@Bean
+		public TomcatContextCustomizer connectorCustomizer() {
+			return (context) -> {
+			};
+		}
 
 	}
 

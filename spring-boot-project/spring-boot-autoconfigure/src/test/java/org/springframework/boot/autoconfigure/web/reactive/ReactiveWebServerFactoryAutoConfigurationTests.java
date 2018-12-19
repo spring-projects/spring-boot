@@ -176,7 +176,8 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatConnectorCustomizer connectorCustomizer() {
-			return (connector) -> connector.setPort(9001);
+			return (connector) -> {
+			};
 		}
 
 	}
@@ -186,7 +187,8 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatContextCustomizer connectorCustomizer() {
-			return (context) -> context.setConfigured(true);
+			return (context) -> {
+			};
 		}
 
 	}

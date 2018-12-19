@@ -63,11 +63,6 @@ class ServletWebServerFactoryConfiguration {
 	public static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcatServletWebServerFactory() {
-			return new TomcatServletWebServerFactory();
-		}
-
-		@Bean
 		public TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers) {
