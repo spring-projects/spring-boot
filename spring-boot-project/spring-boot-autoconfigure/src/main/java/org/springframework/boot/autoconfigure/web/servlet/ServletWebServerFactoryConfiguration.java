@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.stream.Collectors;
+
 import javax.servlet.Servlet;
 
 import io.undertow.Undertow;
@@ -26,10 +28,13 @@ import org.eclipse.jetty.util.Loader;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.xnio.SslClientAuthMode;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -47,6 +52,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Ivan Sopov
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Raheela Asalm
  */
 @Configuration
 class ServletWebServerFactoryConfiguration {
@@ -57,8 +63,15 @@ class ServletWebServerFactoryConfiguration {
 	public static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcatServletWebServerFactory() {
-			return new TomcatServletWebServerFactory();
+		public TomcatServletWebServerFactory tomcatServletWebServerFactory(
+				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
+				ObjectProvider<TomcatContextCustomizer> contextCustomizers) {
+			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+			factory.getTomcatConnectorCustomizers().addAll(
+					connectorCustomizers.orderedStream().collect(Collectors.toList()));
+			factory.getTomcatContextCustomizers().addAll(
+					contextCustomizers.orderedStream().collect(Collectors.toList()));
+			return factory;
 		}
 
 	}
