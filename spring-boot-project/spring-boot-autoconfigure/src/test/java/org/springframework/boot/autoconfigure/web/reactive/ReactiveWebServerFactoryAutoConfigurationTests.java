@@ -21,7 +21,10 @@ import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -37,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ReactiveWebServerFactoryAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Raheela Aslam
  */
 public class ReactiveWebServerFactoryAutoConfigurationTests {
 
@@ -97,6 +101,36 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 								.isInstanceOf(TomcatReactiveWebServerFactory.class));
 	}
 
+	@Test
+	public void tomcatConnectorCustomizerBeanIsAddedToFactory() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								TomcatConnectorCustomizerConfiguration.class);
+		runner.run((context) -> {
+			TomcatReactiveWebServerFactory factory = context
+					.getBean(TomcatReactiveWebServerFactory.class);
+			assertThat(factory.getTomcatConnectorCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void tomcatContextCustomizerBeanIsAddedToFactory() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								TomcatContextCustomizerConfiguration.class);
+		runner.run((context) -> {
+			TomcatReactiveWebServerFactory factory = context
+					.getBean(TomcatReactiveWebServerFactory.class);
+			assertThat(factory.getTomcatContextCustomizers()).hasSize(1);
+		});
+	}
+
 	@Configuration
 	protected static class HttpHandlerConfiguration {
 
@@ -133,6 +167,28 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 		@Bean
 		public MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
+		}
+
+	}
+
+	@Configuration
+	static class TomcatConnectorCustomizerConfiguration {
+
+		@Bean
+		public TomcatConnectorCustomizer connectorCustomizer() {
+			return (connector) -> {
+			};
+		}
+
+	}
+
+	@Configuration
+	static class TomcatContextCustomizerConfiguration {
+
+		@Bean
+		public TomcatContextCustomizer contextCustomizer() {
+			return (context) -> {
+			};
 		}
 
 	}
