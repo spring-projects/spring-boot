@@ -1789,12 +1789,37 @@
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-backports-compat23</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-bsf</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-cli-commons</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-cli-picocli</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-console</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-datetime</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-dateutil</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
@@ -1824,7 +1849,17 @@
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-json-direct</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-jsr223</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-macro</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
@@ -1855,6 +1890,11 @@
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-test</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-test-junit5</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
