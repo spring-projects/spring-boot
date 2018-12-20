@@ -71,8 +71,8 @@ public class HttpTraceWebFilterTests {
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> {
-					exchange.getSession().block(Duration.ofSeconds(30))
-								.getAttributes().put("a", "alpha");
+					exchange.getSession().block(Duration.ofSeconds(30)).getAttributes()
+							.put("a", "alpha");
 					return Mono.empty();
 				}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
@@ -109,8 +109,8 @@ public class HttpTraceWebFilterTests {
 			}
 
 		}, (exchange) -> {
-			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes()
-						.put("a", "alpha");
+			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a",
+					"alpha");
 			return Mono.empty();
 		}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
@@ -124,10 +124,11 @@ public class HttpTraceWebFilterTests {
 	public void statusIsAssumedToBe500WhenChainFails()
 			throws ServletException, IOException {
 		try {
-			this.filter.filter(
-					MockServerWebExchange
+			this.filter
+					.filter(MockServerWebExchange
 							.from(MockServerHttpRequest.get("https://api.example.com")),
-					(exchange) -> Mono.error(new RuntimeException())).block(Duration.ofSeconds(30));
+							(exchange) -> Mono.error(new RuntimeException()))
+					.block(Duration.ofSeconds(30));
 			fail();
 		}
 		catch (Exception ex) {
