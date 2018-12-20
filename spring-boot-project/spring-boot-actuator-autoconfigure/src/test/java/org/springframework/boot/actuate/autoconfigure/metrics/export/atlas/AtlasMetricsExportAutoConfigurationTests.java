@@ -107,14 +107,7 @@ public class AtlasMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public AtlasConfig customConfig() {
-			return new AtlasConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (k) -> null;
 		}
 
 	}

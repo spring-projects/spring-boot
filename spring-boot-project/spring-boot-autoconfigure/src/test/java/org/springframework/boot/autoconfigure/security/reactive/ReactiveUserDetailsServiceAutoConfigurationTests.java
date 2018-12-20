@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.security.reactive;
 import java.time.Duration;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -30,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -156,12 +154,7 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 		@Bean
 		public ReactiveAuthenticationManager reactiveAuthenticationManager() {
-			return new ReactiveAuthenticationManager() {
-				@Override
-				public Mono<Authentication> authenticate(Authentication authentication) {
-					return null;
-				}
-			};
+			return (authentication) -> null;
 		}
 
 	}
