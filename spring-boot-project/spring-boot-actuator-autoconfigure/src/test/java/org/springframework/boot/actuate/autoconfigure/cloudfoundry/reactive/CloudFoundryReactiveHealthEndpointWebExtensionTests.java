@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
+import java.time.Duration;
+
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -63,7 +65,8 @@ public class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 		this.contextRunner.run((context) -> {
 			CloudFoundryReactiveHealthEndpointWebExtension extension = context
 					.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
-			assertThat(extension.health().block().getBody().getDetails()).isNotEmpty();
+			assertThat(extension.health().block(Duration.ofSeconds(30)).getBody()
+					.getDetails()).isNotEmpty();
 		});
 	}
 

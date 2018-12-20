@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.client.reactive;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 					ReactiveClientRegistrationRepository repository = context
 							.getBean(ReactiveClientRegistrationRepository.class);
 					ClientRegistration registration = repository
-							.findByRegistrationId("foo").block();
+							.findByRegistrationId("foo").block(Duration.ofSeconds(30));
 					assertThat(registration).isNotNull();
 					assertThat(registration.getClientSecret()).isEqualTo("secret");
 				});
