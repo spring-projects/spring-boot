@@ -101,7 +101,7 @@
 		<jboss-logging.version>3.3.2.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jedis.version>2.9.0</jedis.version>
+		<jedis.version>2.9.1</jedis.version>
 		<jersey.version>2.27</jersey.version>
 		<jest.version>6.3.1</jest.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
