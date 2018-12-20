@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.web.reactive.result.view;
+
+import java.time.Duration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,12 +48,15 @@ public class MustacheViewResolverTests {
 
 	@Test
 	public void resolveNonExistent() {
-		assertThat(this.resolver.resolveViewName("bar", null).block()).isNull();
+		assertThat(
+				this.resolver.resolveViewName("bar", null).block(Duration.ofSeconds(30)))
+						.isNull();
 	}
 
 	@Test
 	public void resolveExisting() {
-		assertThat(this.resolver.resolveViewName("template", null).block()).isNotNull();
+		assertThat(this.resolver.resolveViewName("template", null)
+				.block(Duration.ofSeconds(30))).isNotNull();
 	}
 
 }
