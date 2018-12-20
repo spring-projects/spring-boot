@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 import java.io.File;
 
 import io.restassured.specification.RequestSpecification;
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +38,7 @@ import org.springframework.util.FileSystemUtils;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -81,16 +81,12 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.md"))
-				.has(contentContaining("api.example.com"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
+				.contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md")))
+				.contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
 	}
 
 	@TestConfiguration
