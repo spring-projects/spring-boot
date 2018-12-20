@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -201,16 +202,17 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					Boolean cfRequestMatches = filters.get(0)
 							.matches(MockServerWebExchange.from(MockServerHttpRequest
 									.get("/cloudfoundryapplication/my-path").build()))
-							.block();
+							.block(Duration.ofSeconds(30));
 					Boolean otherRequestMatches = filters.get(0)
 							.matches(MockServerWebExchange.from(MockServerHttpRequest
 									.get("/some-other-path").build()))
-							.block();
+							.block(Duration.ofSeconds(30));
 					assertThat(cfRequestMatches).isTrue();
 					assertThat(otherRequestMatches).isFalse();
-					otherRequestMatches = filters.get(1).matches(MockServerWebExchange
-							.from(MockServerHttpRequest.get("/some-other-path").build()))
-							.block();
+					otherRequestMatches = filters.get(1)
+							.matches(MockServerWebExchange.from(MockServerHttpRequest
+									.get("/some-other-path").build()))
+							.block(Duration.ofSeconds(30));
 					assertThat(otherRequestMatches).isTrue();
 				});
 
@@ -314,7 +316,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					WebClient webClient = (WebClient) ReflectionTestUtils
 							.getField(interceptorSecurityService, "webClient");
 					webClient.get().uri("https://self-signed.badssl.com/").exchange()
-							.block();
+							.block(Duration.ofSeconds(30));
 				});
 	}
 
@@ -337,7 +339,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							.getField(interceptorSecurityService, "webClient");
 					this.thrown.expectCause(instanceOf(SSLException.class));
 					webClient.get().uri("https://self-signed.badssl.com/").exchange()
-							.block();
+							.block(Duration.ofSeconds(30));
 				});
 	}
 
