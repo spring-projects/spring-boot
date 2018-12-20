@@ -102,9 +102,15 @@
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.9.1</jedis.version>
+<<<<<<< HEAD
 		<jersey.version>2.27</jersey.version>
 		<jest.version>6.3.1</jest.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
+=======
+		<jersey.version>2.26</jersey.version>
+		<jest.version>5.3.4</jest.version>
+		<jetty.version>9.4.14.v20181114</jetty.version>
+>>>>>>> 2.0.x
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.35.1</jetty-el.version>
 		<jetty-reactive-httpclient.version>1.0.2</jetty-reactive-httpclient.version>
