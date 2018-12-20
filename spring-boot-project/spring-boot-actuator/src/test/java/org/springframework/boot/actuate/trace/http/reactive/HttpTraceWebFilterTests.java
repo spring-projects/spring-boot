@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.trace.http.reactive;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.EnumSet;
 
 import javax.servlet.ServletException;
@@ -68,7 +69,7 @@ public class HttpTraceWebFilterTests {
 						return Mono.empty();
 					}
 
-				}).block();
+				}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
@@ -82,11 +83,12 @@ public class HttpTraceWebFilterTests {
 
 					@Override
 					public Mono<Void> filter(ServerWebExchange exchange) {
-						exchange.getSession().block().getAttributes().put("a", "alpha");
+						exchange.getSession().block(Duration.ofSeconds(30))
+								.getAttributes().put("a", "alpha");
 						return Mono.empty();
 					}
 
-				}).block();
+				}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNotNull();
@@ -103,11 +105,11 @@ public class HttpTraceWebFilterTests {
 
 					@Override
 					public Mono<Void> filter(ServerWebExchange exchange) {
-						exchange.getSession().block();
+						exchange.getSession().block(Duration.ofSeconds(30));
 						return Mono.empty();
 					}
 
-				}).block();
+				}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNull();
@@ -129,11 +131,12 @@ public class HttpTraceWebFilterTests {
 
 			@Override
 			public Mono<Void> filter(ServerWebExchange exchange) {
-				exchange.getSession().block().getAttributes().put("a", "alpha");
+				exchange.getSession().block(Duration.ofSeconds(30)).getAttributes()
+						.put("a", "alpha");
 				return Mono.empty();
 			}
 
-		}).block();
+		}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository
 				.findAll().get(0).getPrincipal();
@@ -155,7 +158,7 @@ public class HttpTraceWebFilterTests {
 							return Mono.error(new RuntimeException());
 						}
 
-					}).block();
+					}).block(Duration.ofSeconds(30));
 			fail();
 		}
 		catch (Exception ex) {

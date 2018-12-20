@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.reactive;
 
+import java.time.Duration;
+
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.Rule;
 import org.junit.Test;
@@ -116,8 +118,8 @@ public class StaticResourceRequestTests {
 		}
 
 		private void matches(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block().isMatch())
-					.as("Matches " + getRequestPath(exchange)).isTrue();
+			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30))
+					.isMatch()).as("Matches " + getRequestPath(exchange)).isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -128,8 +130,9 @@ public class StaticResourceRequestTests {
 		}
 
 		private void doesNotMatch(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block().isMatch())
-					.as("Does not match " + getRequestPath(exchange)).isFalse();
+			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30))
+					.isMatch()).as("Does not match " + getRequestPath(exchange))
+							.isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {

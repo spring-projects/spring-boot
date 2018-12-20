@@ -102,7 +102,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-		assertThat(result.block()).isEqualTo("Hello World");
+		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
 	}
 
@@ -131,7 +131,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-		assertThat(result.block()).isEqualTo("Hello World");
+		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
@@ -187,7 +187,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-		assertThat(result.block()).isEqualTo("Hello World");
+		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -245,7 +245,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	public void compressionOfResponseToGetRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.get().exchange()
-				.flatMap((res) -> res.toEntity(Void.class)).block();
+				.flatMap((res) -> res.toEntity(Void.class)).block(Duration.ofSeconds(30));
 		assertResponseIsCompressed(response);
 	}
 
@@ -253,7 +253,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	public void compressionOfResponseToPostRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.post().exchange()
-				.flatMap((res) -> res.toEntity(Void.class)).block();
+				.flatMap((res) -> res.toEntity(Void.class)).block(Duration.ofSeconds(30));
 		assertResponseIsCompressed(response);
 	}
 
@@ -264,7 +264,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setMinResponseSize(3001);
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().exchange()
-				.flatMap((res) -> res.toEntity(Void.class)).block();
+				.flatMap((res) -> res.toEntity(Void.class)).block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 
@@ -274,7 +274,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().exchange()
-				.flatMap((res) -> res.toEntity(Void.class)).block();
+				.flatMap((res) -> res.toEntity(Void.class)).block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 
@@ -285,7 +285,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().header("User-Agent", "testUserAgent")
-				.exchange().flatMap((res) -> res.toEntity(Void.class)).block();
+				.exchange().flatMap((res) -> res.toEntity(Void.class))
+				.block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 

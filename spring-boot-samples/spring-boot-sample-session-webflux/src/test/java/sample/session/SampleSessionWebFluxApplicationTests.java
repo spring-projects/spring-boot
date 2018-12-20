@@ -16,6 +16,7 @@
 
 package sample.session;
 
+import java.time.Duration;
 import java.util.Base64;
 
 import org.junit.Test;
@@ -52,17 +53,19 @@ public class SampleSessionWebFluxApplicationTests {
 		WebClient webClient = this.webClientBuilder
 				.baseUrl("http://localhost:" + this.port + "/").build();
 		ClientResponse response = webClient.get().header("Authorization", getBasicAuth())
-				.exchange().block();
+				.exchange().block(Duration.ofSeconds(30));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 		ResponseCookie sessionCookie = response.cookies().getFirst("SESSION");
-		String sessionId = response.bodyToMono(String.class).block();
+		String sessionId = response.bodyToMono(String.class)
+				.block(Duration.ofSeconds(30));
 		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
-				.block();
+				.block(Duration.ofSeconds(30));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.bodyToMono(String.class).block()).isEqualTo(sessionId);
+		assertThat(response.bodyToMono(String.class).block(Duration.ofSeconds(30)))
+				.isEqualTo(sessionId);
 		Thread.sleep(2000);
 		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
-				.block();
+				.block(Duration.ofSeconds(30));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
