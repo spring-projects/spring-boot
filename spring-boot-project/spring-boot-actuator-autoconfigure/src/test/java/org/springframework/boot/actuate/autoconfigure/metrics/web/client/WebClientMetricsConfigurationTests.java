@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
+import java.time.Duration;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Rule;
 import org.junit.Test;
@@ -106,7 +108,8 @@ public class WebClientMetricsConfigurationTests {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
 		for (int i = 0; i < 3; i++) {
-			webClient.get().uri("http://example.org/projects/" + i).exchange().block();
+			webClient.get().uri("http://example.org/projects/" + i).exchange()
+					.block(Duration.ofSeconds(30));
 		}
 		return registry;
 	}
@@ -115,7 +118,7 @@ public class WebClientMetricsConfigurationTests {
 		WebClient webClient = mockWebClient(builder);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
 		webClient.get().uri("http://example.org/projects/{project}", "spring-boot")
-				.exchange().block();
+				.exchange().block(Duration.ofSeconds(30));
 		assertThat(registry.find("http.client.requests")
 				.tags("uri", "/projects/{project}").meter()).isNotNull();
 	}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.reactive;
 
+import java.time.Duration;
+
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
@@ -55,8 +57,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run((context) -> {
 					ReactiveUserDetailsService userDetailsService = context
 							.getBean(ReactiveUserDetailsService.class);
-					assertThat(userDetailsService.findByUsername("user").block())
-							.isNotNull();
+					assertThat(userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30))).isNotNull();
 				});
 	}
 
@@ -67,12 +69,12 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run((context) -> {
 					ReactiveUserDetailsService userDetailsService = context
 							.getBean(ReactiveUserDetailsService.class);
-					assertThat(userDetailsService.findByUsername("user").block())
-							.isNull();
-					assertThat(userDetailsService.findByUsername("foo").block())
-							.isNotNull();
-					assertThat(userDetailsService.findByUsername("admin").block())
-							.isNotNull();
+					assertThat(userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30))).isNull();
+					assertThat(userDetailsService.findByUsername("foo")
+							.block(Duration.ofSeconds(30))).isNotNull();
+					assertThat(userDetailsService.findByUsername("admin")
+							.block(Duration.ofSeconds(30))).isNotNull();
 				});
 	}
 
@@ -93,8 +95,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
-					String password = userDetailsService.findByUsername("user").block()
-							.getPassword();
+					String password = userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30)).getPassword();
 					assertThat(password).startsWith("{noop}");
 				}));
 	}
@@ -122,8 +124,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
-					String password = userDetailsService.findByUsername("user").block()
-							.getPassword();
+					String password = userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30)).getPassword();
 					assertThat(password).isEqualTo(expectedPassword);
 				}));
 	}
