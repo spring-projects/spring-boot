@@ -109,14 +109,7 @@ public class HumioMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public HumioConfig customConfig() {
-			return new HumioConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (k) -> null;
 		}
 
 	}

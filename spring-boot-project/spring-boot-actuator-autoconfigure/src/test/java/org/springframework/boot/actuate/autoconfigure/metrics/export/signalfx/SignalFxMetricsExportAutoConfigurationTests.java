@@ -124,16 +124,11 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public SignalFxConfig customConfig() {
-			return new SignalFxConfig() {
-
-				@Override
-				public String get(String k) {
-					if ("signalfx.accessToken".equals(k)) {
-						return "abcde";
-					}
-					return null;
+			return (k) -> {
+				if ("signalfx.accessToken".equals(k)) {
+					return "abcde";
 				}
-
+				return null;
 			};
 		}
 
