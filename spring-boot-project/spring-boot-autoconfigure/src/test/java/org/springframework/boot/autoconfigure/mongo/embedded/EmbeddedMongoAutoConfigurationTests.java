@@ -22,10 +22,13 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Rule;
@@ -180,6 +183,30 @@ public class EmbeddedMongoAutoConfigurationTests {
 						.isEqualTo("testing");
 	}
 
+	@Test
+	public void defaultDownloadConfiguration() {
+		load();
+		IDownloadConfig downloadConfig = this.context.getBean(IDownloadConfig.class);
+
+		assertThat(downloadConfig.getDownloadPath().getClass().getSimpleName())
+				.isEqualTo("PlatformDependentDownloadPath");
+		assertThat(downloadConfig.getUserAgent()).isEqualTo(
+				"Mozilla/5.0 (compatible; Embedded MongoDB; +https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de)");
+		assertThat(downloadConfig.getProgressListener())
+				.isInstanceOf(Slf4jProgressListener.class);
+	}
+
+	@Test
+	public void customizedDownloadConfiguration() {
+		load(TestEmbeddedMongoDownloadConfigBuilderCustomizer.class);
+
+		IDownloadConfig downloadConfig = this.context.getBean(IDownloadConfig.class);
+		assertThat(downloadConfig.getDownloadPath().getPath(null)).isEqualTo("test");
+		assertThat(downloadConfig.getUserAgent()).isEqualTo("Test User Agent");
+		assertThat(downloadConfig.getProgressListener())
+				.isInstanceOf(Slf4jProgressListener.class);
+	}
+
 	private void assertVersionConfiguration(String configuredVersion,
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
@@ -223,6 +250,17 @@ public class EmbeddedMongoAutoConfigurationTests {
 		@Bean
 		public MongoClient mongoClient(@Value("${local.mongo.port}") int port) {
 			return new MongoClient("localhost", port);
+		}
+
+	}
+
+	private static class TestEmbeddedMongoDownloadConfigBuilderCustomizer
+			implements EmbeddedMongoDownloadConfigBuilderCustomizer {
+
+		@Override
+		public void customize(DownloadConfigBuilder downloadConfigBuilder) {
+			downloadConfigBuilder.downloadPath("test");
+			downloadConfigBuilder.userAgent("Test User Agent");
 		}
 
 	}

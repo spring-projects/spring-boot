@@ -39,6 +39,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
@@ -48,6 +49,7 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -202,24 +204,43 @@ public class EmbeddedMongoAutoConfiguration {
 	@ConditionalOnMissingBean(IRuntimeConfig.class)
 	static class RuntimeConfigConfiguration {
 
+		private static Logger EMBEDDED_MONGO_LOGGER = LoggerFactory
+				.getLogger(RuntimeConfigConfiguration.class.getPackage().getName()
+						+ ".EmbeddedMongo");
+
 		@Bean
-		public IRuntimeConfig embeddedMongoRuntimeConfig() {
-			Logger logger = LoggerFactory
-					.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
+		public IRuntimeConfig embeddedMongoRuntimeConfig(
+				IDownloadConfig embeddedMongoDownloadConfig) {
 			ProcessOutput processOutput = new ProcessOutput(
-					Processors.logTo(logger, Slf4jLevel.INFO),
-					Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named(
-							"[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
-			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
-					.processOutput(processOutput).artifactStore(getArtifactStore(logger))
-					.build();
+					Processors.logTo(EMBEDDED_MONGO_LOGGER, Slf4jLevel.INFO),
+					Processors.logTo(EMBEDDED_MONGO_LOGGER, Slf4jLevel.ERROR),
+					Processors.named("[console>]",
+							Processors.logTo(EMBEDDED_MONGO_LOGGER, Slf4jLevel.DEBUG)));
+			return new RuntimeConfigBuilder()
+					.defaultsWithLogger(Command.MongoD, EMBEDDED_MONGO_LOGGER)
+					.processOutput(processOutput)
+					.artifactStore(getArtifactStore(embeddedMongoDownloadConfig)).build();
 		}
 
-		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
+		@Bean
+		@ConditionalOnMissingBean
+		public IDownloadConfig embeddedMongoDownloadConfig(
+				ObjectProvider<EmbeddedMongoDownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizer) {
+			DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
+					.defaultsForCommand(Command.MongoD);
+
+			downloadConfigBuilder
+					.progressListener(new Slf4jProgressListener(EMBEDDED_MONGO_LOGGER));
+
+			downloadConfigBuilderCustomizer.stream()
+					.forEach((c) -> c.customize(downloadConfigBuilder));
+
+			return downloadConfigBuilder.build();
+		}
+
+		private ArtifactStoreBuilder getArtifactStore(IDownloadConfig downloadConfig) {
 			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
-					.download(new DownloadConfigBuilder()
-							.defaultsForCommand(Command.MongoD)
-							.progressListener(new Slf4jProgressListener(logger)).build());
+					.download(downloadConfig);
 		}
 
 	}
