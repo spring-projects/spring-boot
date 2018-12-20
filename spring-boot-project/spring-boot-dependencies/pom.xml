@@ -3015,6 +3015,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-assertj</artifactId>
+				<version>${xmlunit2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
 				<artifactId>xmlunit-core</artifactId>
 				<version>${xmlunit2.version}</version>
 			</dependency>
@@ -3026,6 +3031,11 @@
 			<dependency>
 				<groupId>org.xmlunit</groupId>
 				<artifactId>xmlunit-matchers</artifactId>
+				<version>${xmlunit2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-placeholders</artifactId>
 				<version>${xmlunit2.version}</version>
 			</dependency>
 			<dependency>
