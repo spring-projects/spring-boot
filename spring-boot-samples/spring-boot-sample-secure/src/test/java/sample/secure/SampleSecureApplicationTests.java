@@ -31,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Basic integration tests for demo application.
@@ -56,9 +57,10 @@ public class SampleSecureApplicationTests {
 		SecurityContextHolder.clearContext();
 	}
 
-	@Test(expected = AuthenticationException.class)
+	@Test
 	public void secure() {
-		assertThat("Hello Security").isEqualTo(this.service.secure());
+		assertThatExceptionOfType(AuthenticationException.class)
+				.isThrownBy(() -> SampleSecureApplicationTests.this.service.secure());
 	}
 
 	@Test
@@ -73,10 +75,11 @@ public class SampleSecureApplicationTests {
 		assertThat("Hello World").isEqualTo(this.service.authorized());
 	}
 
-	@Test(expected = AccessDeniedException.class)
+	@Test
 	public void denied() {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertThat("Goodbye World").isEqualTo(this.service.denied());
+		assertThatExceptionOfType(AccessDeniedException.class)
+				.isThrownBy(() -> SampleSecureApplicationTests.this.service.denied());
 	}
 
 }

@@ -1,5 +1,6 @@
 [[production-ready]]
-= Spring Boot Actuator: Production-ready features
+= Spring Boot Actuator: Production-ready Features
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -156,7 +157,7 @@ use the following additional endpoints:
 | ID | Description | Enabled by default
 
 |`heapdump`
-|Returns a GZip compressed `hprof` heap dump file.
+|Returns an `hprof` heap dump file.
 |Yes
 
 |`jolokia`
@@ -164,9 +165,9 @@ use the following additional endpoints:
 |Yes
 
 |`logfile`
-|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
-been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
-content.
+|Returns the contents of the logfile (if `logging.file.name` or `logging.file.path`
+properties have been set). Supports the use of the HTTP `Range` header to retrieve part of
+the log file's content.
 |Yes
 
 |`prometheus`

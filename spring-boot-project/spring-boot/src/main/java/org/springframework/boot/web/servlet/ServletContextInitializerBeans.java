@@ -20,7 +20,6 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,6 +56,7 @@ import org.springframework.util.MultiValueMap;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 1.4.0
  */
 public class ServletContextInitializerBeans
@@ -93,6 +93,7 @@ public class ServletContextInitializerBeans
 						.sorted(AnnotationAwareOrderComparator.INSTANCE))
 				.collect(Collectors.toList());
 		this.sortedList = Collections.unmodifiableList(sortedInitializers);
+		logMappings(this.initializers);
 	}
 
 	private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) {
@@ -143,12 +144,12 @@ public class ServletContextInitializerBeans
 			// Mark the underlying source as seen in case it wraps an existing bean
 			this.seen.add(source);
 		}
-		if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
+		if (logger.isTraceEnabled()) {
 			String resourceDescription = getResourceDescription(beanName, beanFactory);
 			int order = getOrder(initializer);
-			ServletContextInitializerBeans.logger.debug("Added existing "
-					+ type.getSimpleName() + " initializer bean '" + beanName
-					+ "'; order=" + order + ", resource=" + resourceDescription);
+			logger.trace("Added existing " + type.getSimpleName() + " initializer bean '"
+					+ beanName + "'; order=" + order + ", resource="
+					+ resourceDescription);
 		}
 	}
 
@@ -189,19 +190,20 @@ public class ServletContextInitializerBeans
 
 	private <T, B extends T> void addAsRegistrationBean(ListableBeanFactory beanFactory,
 			Class<T> type, Class<B> beanType, RegistrationBeanAdapter<T> adapter) {
-		List<Map.Entry<String, B>> beans = getOrderedBeansOfType(beanFactory, beanType,
+		List<Map.Entry<String, B>> entries = getOrderedBeansOfType(beanFactory, beanType,
 				this.seen);
-		for (Entry<String, B> bean : beans) {
-			if (this.seen.add(bean.getValue())) {
-				int order = getOrder(bean.getValue());
-				String beanName = bean.getKey();
+		for (Entry<String, B> entry : entries) {
+			String beanName = entry.getKey();
+			B bean = entry.getValue();
+			if (this.seen.add(bean)) {
 				// One that we haven't already seen
 				RegistrationBean registration = adapter.createRegistrationBean(beanName,
-						bean.getValue(), beans.size());
+						bean, entries.size());
+				int order = getOrder(bean);
 				registration.setOrder(order);
 				this.initializers.add(type, registration);
-				if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
-					ServletContextInitializerBeans.logger.debug(
+				if (logger.isTraceEnabled()) {
+					logger.trace(
 							"Created " + type.getSimpleName() + " initializer for bean '"
 									+ beanName + "'; order=" + order + ", resource="
 									+ getResourceDescription(beanName, beanFactory));
@@ -226,9 +228,6 @@ public class ServletContextInitializerBeans
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(
 			ListableBeanFactory beanFactory, Class<T> type, Set<?> excludes) {
-		Comparator<Entry<String, T>> comparator = (o1,
-				o2) -> AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
-						o2.getValue());
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		Map<String, T> map = new LinkedHashMap<>();
 		for (String name : names) {
@@ -241,8 +240,31 @@ public class ServletContextInitializerBeans
 		}
 		List<Entry<String, T>> beans = new ArrayList<>();
 		beans.addAll(map.entrySet());
-		beans.sort(comparator);
+		beans.sort((o1, o2) -> AnnotationAwareOrderComparator.INSTANCE
+				.compare(o1.getValue(), o2.getValue()));
 		return beans;
+	}
+
+	private void logMappings(
+			MultiValueMap<Class<?>, ServletContextInitializer> initializers) {
+		if (logger.isDebugEnabled()) {
+			logMappings("filters", initializers, Filter.class,
+					FilterRegistrationBean.class);
+			logMappings("servlets", initializers, Servlet.class,
+					ServletRegistrationBean.class);
+		}
+	}
+
+	private void logMappings(String name,
+			MultiValueMap<Class<?>, ServletContextInitializer> initializers,
+			Class<?> type, Class<? extends RegistrationBean> registrationType) {
+		List<ServletContextInitializer> registrations = new ArrayList<>();
+		registrations.addAll(
+				initializers.getOrDefault(registrationType, Collections.emptyList()));
+		registrations.addAll(initializers.getOrDefault(type, Collections.emptyList()));
+		String info = registrations.stream().map(Object::toString)
+				.collect(Collectors.joining(", "));
+		logger.debug("Mapping " + name + ": " + info);
 	}
 
 	@Override

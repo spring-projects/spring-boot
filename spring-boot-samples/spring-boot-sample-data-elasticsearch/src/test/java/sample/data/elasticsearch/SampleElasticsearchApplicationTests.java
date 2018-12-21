@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,9 @@
 
 package sample.data.elasticsearch;
 
-import java.io.File;
-
 import org.elasticsearch.client.transport.NoNodeAvailableException;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.rule.OutputCapture;
@@ -39,10 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SampleElasticsearchApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
-
-	@ClassRule
-	public static SkipOnWindows skipOnWindows = new SkipOnWindows();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() {
@@ -55,8 +46,8 @@ public class SampleElasticsearchApplicationTests {
 			}
 			throw ex;
 		}
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+		assertThat(this.output.toString())
+				.contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean elasticsearchRunning(Exception ex) {
@@ -68,28 +59,6 @@ public class SampleElasticsearchApplicationTests {
 			candidate = candidate.getCause();
 		}
 		return true;
-	}
-
-	static class SkipOnWindows implements TestRule {
-
-		@Override
-		public Statement apply(Statement base, Description description) {
-			return new Statement() {
-
-				@Override
-				public void evaluate() throws Throwable {
-					if (!runningOnWindows()) {
-						base.evaluate();
-					}
-				}
-
-				private boolean runningOnWindows() {
-					return File.separatorChar == '\\';
-				}
-
-			};
-		}
-
 	}
 
 }

@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -57,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
- * {@link SpringRunner}.
+ * {@link org.springframework.test.context.junit4.SpringRunner}.
  *
  * @author Dave Syer
  * @author Sebastien Deleuze

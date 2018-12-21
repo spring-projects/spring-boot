@@ -65,8 +65,8 @@ public class ManagingDependenciesDocumentationTests {
 		Assume.assumeTrue(this.gradleBuild.getDsl() == Dsl.KOTLIN);
 		assertThat(this.gradleBuild.script(
 				"src/main/gradle/managing-dependencies/configure-bom-with-plugins")
-				.build("dependencyManagement").getOutput())
-						.contains("org.springframework.boot:spring-boot-starter ");
+				.build("dependencyManagement").getOutput()).contains(
+						"org.springframework.boot:spring-boot-starter TEST-SNAPSHOT");
 	}
 
 }

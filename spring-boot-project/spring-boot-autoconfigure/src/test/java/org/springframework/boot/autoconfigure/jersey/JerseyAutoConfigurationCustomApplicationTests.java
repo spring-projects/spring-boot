@@ -46,9 +46,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class JerseyAutoConfigurationCustomApplicationTests {
 
 	@Autowired

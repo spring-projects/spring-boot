@@ -103,6 +103,9 @@ do as they were designed before this was clarified.
 | https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
 | https://github.com/javamelody/javamelody/wiki/SpringBootStarter
 
+| https://javers.org[JaVers]
+| https://github.com/javers/javers
+
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
@@ -138,6 +141,9 @@ do as they were designed before this was clarified.
 
 | https://github.com/rollbar/rollbar-java/[Rollbar]
 | https://github.com/olmero/rollbar-spring-boot-starter
+
+| https://sentry.io[Sentry]
+| https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web

@@ -40,10 +40,10 @@ public class BasicJsonTesterTests {
 
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
 	private BasicJsonTester json = new BasicJsonTester(getClass());
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
@@ -73,7 +73,7 @@ public class BasicJsonTesterTests {
 
 	@Test
 	public void fromFileShouldReturnJsonContent() throws Exception {
-		File file = this.tempFolder.newFile("file.json");
+		File file = this.temp.newFile("file.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		assertThat(this.json.from(file)).isEqualToJson("source.json");
 	}

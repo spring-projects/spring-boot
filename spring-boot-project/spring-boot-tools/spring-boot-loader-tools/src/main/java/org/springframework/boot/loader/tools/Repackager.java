@@ -179,11 +179,11 @@ public class Repackager {
 		if (this.layout == null) {
 			this.layout = getLayoutFactory().getLayout(this.source);
 		}
-		if (alreadyRepackaged()) {
-			return;
-		}
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
+		if (alreadyRepackaged() && this.source.equals(destination)) {
+			return;
+		}
 		if (this.source.equals(destination)) {
 			workingSource = getBackupFile();
 			workingSource.delete();

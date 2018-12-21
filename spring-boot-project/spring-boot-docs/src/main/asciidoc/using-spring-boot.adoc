@@ -1,5 +1,6 @@
 [[using-boot]]
 = Using Spring Boot
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -1026,6 +1027,10 @@ property:
 ----
 	spring.devtools.reload.trigger-file=.reloadtrigger
 ----
+
+NOTE: Profiles activated in `.spring-boot-devtools.properties` will not affect the
+loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties,
+profile-specific configuration files>>.
 
 
 

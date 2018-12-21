@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.testcontainers.shaded.org.apache.http.HttpStatus;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -32,6 +31,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -63,26 +63,26 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	@Test
 	public void permitAllForHealth() {
 		this.contextRunner.run((context) -> {
-			int status = getResponseStatus(context, "/actuator/health");
-			assertThat(status).isEqualTo(HttpStatus.SC_OK);
+			HttpStatus status = getResponseStatus(context, "/actuator/health");
+			assertThat(status).isEqualTo(HttpStatus.OK);
 		});
 	}
 
 	@Test
 	public void permitAllForInfo() {
 		this.contextRunner.run((context) -> {
-			int status = getResponseStatus(context, "/actuator/info");
-			assertThat(status).isEqualTo(HttpStatus.SC_OK);
+			HttpStatus status = getResponseStatus(context, "/actuator/info");
+			assertThat(status).isEqualTo(HttpStatus.OK);
 		});
 	}
 
 	@Test
 	public void securesEverythingElse() {
 		this.contextRunner.run((context) -> {
-			int status = getResponseStatus(context, "/actuator");
-			assertThat(status).isEqualTo(HttpStatus.SC_UNAUTHORIZED);
+			HttpStatus status = getResponseStatus(context, "/actuator");
+			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
 			status = getResponseStatus(context, "/foo");
-			assertThat(status).isEqualTo(HttpStatus.SC_UNAUTHORIZED);
+			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
 		});
 	}
 
@@ -90,8 +90,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	public void usesMatchersBasedOffConfiguredActuatorBasePath() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/")
 				.run((context) -> {
-					int status = getResponseStatus(context, "/health");
-					assertThat(status).isEqualTo(HttpStatus.SC_OK);
+					HttpStatus status = getResponseStatus(context, "/health");
+					assertThat(status).isEqualTo(HttpStatus.OK);
 				});
 	}
 
@@ -99,15 +99,15 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	public void backOffIfCustomSecurityIsAdded() {
 		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class)
 				.run((context) -> {
-					int status = getResponseStatus(context, "/actuator/health");
-					assertThat(status).isEqualTo(HttpStatus.SC_UNAUTHORIZED);
+					HttpStatus status = getResponseStatus(context, "/actuator/health");
+					assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
 					status = getResponseStatus(context, "/foo");
-					assertThat(status).isEqualTo(HttpStatus.SC_OK);
+					assertThat(status).isEqualTo(HttpStatus.OK);
 				});
 	}
 
-	private int getResponseStatus(AssertableWebApplicationContext context, String path)
-			throws IOException, javax.servlet.ServletException {
+	private HttpStatus getResponseStatus(AssertableWebApplicationContext context,
+			String path) throws IOException, javax.servlet.ServletException {
 		FilterChainProxy filterChainProxy = context.getBean(FilterChainProxy.class);
 		MockServletContext servletContext = new MockServletContext();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -117,7 +117,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		request.setServletPath(path);
 		request.setMethod("GET");
 		filterChainProxy.doFilter(request, response, new MockFilterChain());
-		return response.getStatus();
+		return HttpStatus.valueOf(response.getStatus());
 	}
 
 	@Configuration

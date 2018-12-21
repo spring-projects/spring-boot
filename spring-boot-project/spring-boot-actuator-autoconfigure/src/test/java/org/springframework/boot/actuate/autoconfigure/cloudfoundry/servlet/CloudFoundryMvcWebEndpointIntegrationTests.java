@@ -163,14 +163,10 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		BiConsumer<ApplicationContext, WebTestClient> consumer = (context,
 				client) -> clientConsumer.accept(client);
-		AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(
-				configuration, CloudFoundryMvcConfiguration.class);
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(
+				configuration, CloudFoundryMvcConfiguration.class)) {
 			consumer.accept(context, WebTestClient.bindToServer()
 					.baseUrl("http://localhost:" + getPort(context)).build());
-		}
-		finally {
-			context.close();
 		}
 	}
 

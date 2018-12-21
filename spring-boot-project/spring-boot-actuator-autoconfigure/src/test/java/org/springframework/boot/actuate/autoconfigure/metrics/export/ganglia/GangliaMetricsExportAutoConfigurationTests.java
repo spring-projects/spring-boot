@@ -107,14 +107,7 @@ public class GangliaMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public GangliaConfig customConfig() {
-			return new GangliaConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (k) -> null;
 		}
 
 	}

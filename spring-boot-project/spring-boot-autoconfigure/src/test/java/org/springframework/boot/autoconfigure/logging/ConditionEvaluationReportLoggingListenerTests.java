@@ -55,7 +55,7 @@ import static org.junit.Assert.fail;
 public class ConditionEvaluationReportLoggingListenerTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	private ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener();
 
@@ -67,8 +67,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		context.refresh();
 		withDebugLogging(() -> this.initializer
 				.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(this.outputCapture.toString())
-				.contains("CONDITIONS EVALUATION REPORT");
+		assertThat(this.output.toString()).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -85,8 +84,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 					() -> this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 							new SpringApplication(), new String[0], context, ex)));
 		}
-		assertThat(this.outputCapture.toString())
-				.contains("CONDITIONS EVALUATION REPORT");
+		assertThat(this.output.toString()).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -102,7 +100,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 					new SpringApplication(), new String[0], context, ex));
 		}
-		assertThat(this.outputCapture.toString()).contains("Error starting"
+		assertThat(this.output.toString()).contains("Error starting"
 				+ " ApplicationContext. To display the conditions report re-run"
 				+ " your application with 'debug' enabled.");
 	}
@@ -117,7 +115,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		context.refresh();
 		withDebugLogging(() -> this.initializer
 				.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(this.outputCapture.toString())
+		assertThat(this.output.toString())
 				.contains("not a servlet web application (OnWebApplicationCondition)");
 	}
 
@@ -149,8 +147,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		context.register(Config.class);
 		context.refresh();
 		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		assertThat(this.outputCapture.toString())
-				.contains("CONDITIONS EVALUATION REPORT");
+		assertThat(this.output.toString()).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -165,7 +162,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		this.initializer
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
 						new String[0], null, new RuntimeException("Planned")));
-		assertThat(this.outputCapture.toString())
+		assertThat(this.output.toString())
 				.contains("Unable to provide the conditions report");
 	}
 

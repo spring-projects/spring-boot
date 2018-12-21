@@ -30,6 +30,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -51,6 +54,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Raheela Aslam
  */
 public class ServletWebServerFactoryAutoConfigurationTests {
 
@@ -136,6 +140,34 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 					assertThat(servletContext.getInitParameter("a")).isEqualTo("alpha");
 					assertThat(servletContext.getInitParameter("b")).isEqualTo("bravo");
 				});
+	}
+
+	@Test
+	public void tomcatConnectorCustomizerBeanIsAddedToFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								TomcatConnectorCustomizerConfiguration.class);
+		runner.run((context) -> {
+			TomcatServletWebServerFactory factory = context
+					.getBean(TomcatServletWebServerFactory.class);
+			assertThat(factory.getTomcatConnectorCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void tomcatContextCustomizerBeanIsAddedToFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class));
+		runner.run((context) -> {
+			TomcatServletWebServerFactory factory = context
+					.getBean(TomcatServletWebServerFactory.class);
+			assertThat(factory.getTomcatContextCustomizers()).hasSize(1);
+		});
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
@@ -249,6 +281,28 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		@Override
 		public void customize(ConfigurableServletWebServerFactory serverFactory) {
 			serverFactory.setPort(9000);
+		}
+
+	}
+
+	@Configuration
+	static class TomcatConnectorCustomizerConfiguration {
+
+		@Bean
+		public TomcatConnectorCustomizer connectorCustomizer() {
+			return (connector) -> {
+			};
+		}
+
+	}
+
+	@Configuration
+	static class TomcatContextCustomizerConfiguration {
+
+		@Bean
+		public TomcatContextCustomizer contextCustomizer() {
+			return (context) -> {
+			};
 		}
 
 	}

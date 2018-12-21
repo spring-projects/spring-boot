@@ -129,19 +129,14 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public NewRelicConfig customConfig() {
-			return new NewRelicConfig() {
-
-				@Override
-				public String get(String k) {
-					if ("newrelic.accountId".equals(k)) {
-						return "abcde";
-					}
-					if ("newrelic.apiKey".equals(k)) {
-						return "12345";
-					}
-					return null;
+			return (k) -> {
+				if ("newrelic.accountId".equals(k)) {
+					return "abcde";
 				}
-
+				if ("newrelic.apiKey".equals(k)) {
+					return "12345";
+				}
+				return null;
 			};
 		}
 

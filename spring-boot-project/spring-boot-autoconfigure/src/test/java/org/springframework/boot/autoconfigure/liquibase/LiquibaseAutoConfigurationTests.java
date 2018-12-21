@@ -41,8 +41,8 @@ import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationList
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.testsupport.Assume;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -64,10 +64,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LiquibaseAutoConfigurationTests {
 
 	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Before
 	public void init() {
@@ -208,14 +208,15 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void overrideUser() {
+		String jdbcUrl = "jdbc:hsqldb:mem:normal";
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
+				.withPropertyValues("spring.datasource.url:" + jdbcUrl,
 						"spring.datasource.username:not-sa", "spring.liquibase.user:sa")
 				.run(assertLiquibase((liquibase) -> {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
-							.isEqualTo("jdbc:hsqldb:mem:normal");
+							.isEqualTo(jdbcUrl);
 					assertThat(((HikariDataSource) dataSource).getUsername())
 							.isEqualTo("sa");
 				}));
@@ -249,8 +250,7 @@ public class LiquibaseAutoConfigurationTests {
 				.run(assertLiquibase((liquibase) -> {
 					Object log = ReflectionTestUtils.getField(liquibase, "log");
 					assertThat(log).isInstanceOf(Slf4jLogger.class);
-					assertThat(this.outputCapture.toString())
-							.doesNotContain(": liquibase:");
+					assertThat(this.output.toString()).doesNotContain(": liquibase:");
 				}));
 	}
 

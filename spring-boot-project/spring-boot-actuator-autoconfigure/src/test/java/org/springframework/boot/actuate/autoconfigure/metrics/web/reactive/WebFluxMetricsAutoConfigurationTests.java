@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -50,7 +50,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 					AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void shouldProvideWebFluxMetricsBeans() {

@@ -38,8 +38,9 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,8 +53,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration} in Reactive applications.
@@ -63,8 +62,10 @@ import static org.hamcrest.Matchers.not;
  */
 public class ThymeleafReactiveAutoConfigurationTests {
 
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
+
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
@@ -181,15 +182,17 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
-		this.output.expect(containsString("Cannot find template location"));
+		assertThat(this.output.toString()).contains("Cannot find template location");
 	}
 
 	@Test
 	public void templateLocationEmpty() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		load(BaseConfiguration.class,
-				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
-		this.output.expect(not(containsString("Cannot find template location")));
+				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/");
+		assertThat(this.output.toString())
+				.doesNotContain("Cannot find template location");
 	}
 
 	@Test
@@ -225,7 +228,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 						new TestingAuthenticationToken("alice", "admin")));
 		IContext attrs = new SpringWebFluxContext(exchange);
 		String result = engine.process("security-dialect", attrs);
-		assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>\n");
+		assertThat(result).isEqualTo(
+				"<html><body><div>alice</div></body></html>" + System.lineSeparator());
 	}
 
 	@Test

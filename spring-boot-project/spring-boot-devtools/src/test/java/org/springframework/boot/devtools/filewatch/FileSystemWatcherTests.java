@@ -50,7 +50,7 @@ public class FileSystemWatcherTests {
 	private FileSystemWatcher watcher;
 
 	private List<Set<ChangedFiles>> changes = Collections
-			.synchronizedList(new ArrayList<Set<ChangedFiles>>());
+			.synchronizedList(new ArrayList<>());
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();

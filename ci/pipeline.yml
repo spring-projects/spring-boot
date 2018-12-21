@@ -93,6 +93,12 @@ resources:
   type: slack-notification
   source:
     url: ((slack-webhook-url))
+- name: every-wednesday
+  type: time
+  source:
+    start: 8:00 PM
+    stop: 9:00 PM
+    days: [Wednesday]
 jobs:
 - name: build-spring-boot-ci-images
   plan:
@@ -106,6 +112,31 @@ jobs:
     params:
       build: ci-images-git-repo/ci/images
       dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image/Dockerfile
+- name: detect-jdk-updates
+  plan:
+  - get: git-repo
+  - get: every-wednesday
+    trigger: true
+  - get: spring-boot-ci-image
+  - aggregate:
+    - task: detect-jdk8-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java8
+      image: spring-boot-ci-image
+    - task: detect-jdk11-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java11
+      image: spring-boot-ci-image
 - name: build
   serial: true
   public: true
@@ -160,6 +191,7 @@ jobs:
       build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
       disable_checksum_uploads: true
       exclude:
+      - "**/spring-boot-test-support/**"
       - "**/*.effective-pom"
       artifact_set:
       - include:
@@ -332,7 +364,7 @@ jobs:
     params:
       RELEASE_TYPE: M
       GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: github-pre-release
     params:
       name: generated-release-notes/tag
@@ -362,7 +394,7 @@ jobs:
     params:
       RELEASE_TYPE: RC
       GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: github-pre-release
     params:
       name: generated-release-notes/tag
@@ -390,14 +422,13 @@ jobs:
       BINTRAY_SUBJECT: ((bintray-subject))
       BINTRAY_REPO: ((bintray-repo))
       BINTRAY_USERNAME: ((bintray-username))
-      BINTRAY_PASSWORD: ((bintray-password))
       BINTRAY_API_KEY: ((bintray-api-key))
   - task: generate-release-notes
     file: git-repo/ci/tasks/generate-release-notes.yml
     params:
       RELEASE_TYPE: RELEASE
       GITHUB_USERNAME: ((github-username))
-      GITHUB_PASSWORD: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: github-release
     params:
       name: generated-release-notes/tag
@@ -418,7 +449,6 @@ jobs:
     file: git-repo/ci/tasks/sync-to-maven-central.yml
     params:
       BINTRAY_USERNAME: ((bintray-username))
-      BINTRAY_PASSWORD: ((bintray-password))
       BINTRAY_API_KEY: ((bintray-api-key))
       SONATYPE_USER_TOKEN: ((sonatype-user-token))
       SONATYPE_PASSWORD_TOKEN: ((sonatype-user-token-password))
@@ -430,6 +460,6 @@ groups:
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
-  jobs: ["build-spring-boot-ci-images"]
+  jobs: ["build-spring-boot-ci-images", "detect-jdk-updates"]
 - name: "Build Pull Requests"
   jobs: ["build-pull-requests"]

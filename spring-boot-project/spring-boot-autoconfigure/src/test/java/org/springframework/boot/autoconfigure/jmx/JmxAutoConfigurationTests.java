@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jmx;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,6 +36,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JmxAutoConfiguration}.
@@ -77,7 +77,7 @@ public class JmxAutoConfigurationTests {
 		assertThat(this.context.getBean(MBeanExporter.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void testDisabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "false");
@@ -85,7 +85,8 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(MBeanExporter.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(MBeanExporter.class));
 	}
 
 	@Test
@@ -139,8 +140,7 @@ public class JmxAutoConfigurationTests {
 		this.context.refresh();
 		IntegrationMBeanExporter mbeanExporter = this.context
 				.getBean(IntegrationMBeanExporter.class);
-		DirectFieldAccessor dfa = new DirectFieldAccessor(mbeanExporter);
-		assertThat(dfa.getPropertyValue("domain")).isEqualTo("foo.my");
+		assertThat(mbeanExporter).hasFieldOrPropertyWithValue("domain", "foo.my");
 	}
 
 	@Configuration

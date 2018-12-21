@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DataSourceJmxConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Tadaya Tsuyukubo
  */
 public class DataSourceJmxConfigurationTests {
 
@@ -155,10 +157,37 @@ public class DataSourceJmxConfigurationTests {
 		this.contextRunner.withPropertyValues(
 				"spring.datasource.type=" + DataSource.class.getName(),
 				"spring.datasource.jmx-enabled=true").run((context) -> {
+					assertThat(context).hasBean("dataSourceMBean");
 					assertThat(context).hasSingleBean(ConnectionPool.class);
 					assertThat(context.getBean(DataSourceProxy.class).createPool()
 							.getJmxPool())
 									.isSameAs(context.getBean(ConnectionPool.class));
+				});
+	}
+
+	@Test
+	public void tomcatProxiedCanExposeMBeanPool() {
+		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.type=" + DataSource.class.getName(),
+						"spring.datasource.jmx-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasBean("dataSourceMBean");
+					assertThat(context).getBean("dataSourceMBean")
+							.isInstanceOf(ConnectionPool.class);
+				});
+	}
+
+	@Test
+	public void tomcatDelegateCanExposeMBeanPool() {
+		this.contextRunner.withUserConfiguration(DataSourceDelegateConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.type=" + DataSource.class.getName(),
+						"spring.datasource.jmx-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasBean("dataSourceMBean");
+					assertThat(context).getBean("dataSourceMBean")
+							.isInstanceOf(ConnectionPool.class);
 				});
 	}
 
@@ -177,13 +206,28 @@ public class DataSourceJmxConfigurationTests {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (bean instanceof javax.sql.DataSource) {
-				return wrap((javax.sql.DataSource) bean);
+				return new ProxyFactory(bean).getProxy();
 			}
 			return bean;
 		}
 
-		private static javax.sql.DataSource wrap(javax.sql.DataSource dataSource) {
-			return (javax.sql.DataSource) new ProxyFactory(dataSource).getProxy();
+	}
+
+	@Configuration
+	static class DataSourceDelegateConfiguration {
+
+		@Bean
+		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+			return new DataSourceBeanPostProcessor() {
+				@Override
+				public Object postProcessAfterInitialization(Object bean,
+						String beanName) {
+					if (bean instanceof javax.sql.DataSource) {
+						return new DelegatingDataSource((javax.sql.DataSource) bean);
+					}
+					return bean;
+				}
+			};
 		}
 
 	}

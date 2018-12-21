@@ -14,7 +14,7 @@ params:
   GITHUB_ORGANIZATION:
   GITHUB_REPO:
   GITHUB_USERNAME:
-  GITHUB_PASSWORD:
+  GITHUB_TOKEN:
   RELEASE_TYPE:
 run:
   path: git-repo/ci/scripts/generate-release-notes.sh

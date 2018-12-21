@@ -24,6 +24,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * @author Dmytro Nosan
  * @since 2.1.0
  */
+@FunctionalInterface
 public interface WebServiceTemplateCustomizer {
 
 	/**

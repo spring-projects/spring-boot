@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,19 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -43,28 +44,28 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
 public class MockMvcRestDocsAutoConfigurationIntegrationTests {
 
-	@Before
-	public void deleteSnippets() {
-		FileSystemUtils.deleteRecursively(new File("target/generated-snippets"));
-	}
-
 	@Autowired
 	private MockMvc mvc;
+
+	private File generatedSnippets;
+
+	@Before
+	public void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
+				"generated-snippets");
+		FileSystemUtils.deleteRecursively(this.generatedSnippets);
+	}
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
 		this.mvc.perform(get("/")).andDo(document("default-snippets"));
-		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
+		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.adoc"))
-				.has(contentContaining("api.example.com"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc")))
+				.contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc")))
+				.contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
 	}
 
 }

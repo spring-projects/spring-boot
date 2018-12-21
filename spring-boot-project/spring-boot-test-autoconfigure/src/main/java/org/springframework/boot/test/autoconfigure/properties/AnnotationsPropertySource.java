@@ -120,7 +120,6 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		if (skip == SkipPropertyMapping.YES) {
 			return;
 		}
-		String name = getName(typeMapping, attributeMapping, attribute);
 		ReflectionUtils.makeAccessible(attribute);
 		Object value = ReflectionUtils.invokeMethod(attribute, annotation);
 		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
@@ -130,6 +129,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 				return;
 			}
 		}
+		String name = getName(typeMapping, attributeMapping, attribute);
 		putProperties(name, value, properties);
 	}
 
