@@ -439,7 +439,7 @@ public class ConditionalOnBeanTests {
 
 		@Bean
 		public TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
-			return new TestParameterizedContainer<OtherExampleBean>();
+			return new TestParameterizedContainer<>();
 		}
 
 	}
@@ -449,7 +449,7 @@ public class ConditionalOnBeanTests {
 
 		@Bean
 		public TestParameterizedContainer<CustomExampleBean> customExampleBean() {
-			return new TestParameterizedContainer<CustomExampleBean>();
+			return new TestParameterizedContainer<>();
 		}
 
 	}
@@ -482,7 +482,7 @@ public class ConditionalOnBeanTests {
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
 		public TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
-			return new TestParameterizedContainer<CustomExampleBean>();
+			return new TestParameterizedContainer<>();
 		}
 
 	}

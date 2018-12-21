@@ -141,10 +141,10 @@ public class Neo4jPropertiesTests {
 	@Test
 	public void embeddedModeWithRelativeLocation() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=file:target/neo4j/my.db");
+				"spring.data.neo4j.uri=file:relative/path/to/my.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
-				"file:target/neo4j/my.db");
+				"file:relative/path/to/my.db");
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {

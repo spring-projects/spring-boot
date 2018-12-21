@@ -84,7 +84,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 
 		@Bean
 		public ServletEndpointsSupplier servletEndpointsSupplier() {
-			return () -> Collections.emptyList();
+			return Collections::emptyList;
 		}
 
 		@Bean

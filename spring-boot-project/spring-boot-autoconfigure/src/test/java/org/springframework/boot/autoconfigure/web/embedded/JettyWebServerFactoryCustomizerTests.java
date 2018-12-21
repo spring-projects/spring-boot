@@ -40,7 +40,6 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -172,8 +171,10 @@ public class JettyWebServerFactoryCustomizerTests {
 
 	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
 		List<Integer> requestHeaderSizes = new ArrayList<>();
-		Connector[] connectors = (Connector[]) ReflectionTestUtils.getField(server,
-				"connectors");
+		// Start (and directly stop) server to have connectors available
+		server.start();
+		server.stop();
+		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
 			connector.getConnectionFactories().stream()
 					.filter((factory) -> factory instanceof ConnectionFactory)

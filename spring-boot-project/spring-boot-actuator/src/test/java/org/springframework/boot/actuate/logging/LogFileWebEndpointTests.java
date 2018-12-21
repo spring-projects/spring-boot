@@ -41,12 +41,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LogFileWebEndpointTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private final MockEnvironment environment = new MockEnvironment();
 
 	private final LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment);
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	private File logFile;
 

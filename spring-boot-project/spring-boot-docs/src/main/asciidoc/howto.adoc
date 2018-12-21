@@ -1,5 +1,6 @@
 [[howto]]
-= '`How-to`' guides
+= "`How-to`" Guides
+include::attributes.adoc[]
 
 [partintro]
 --

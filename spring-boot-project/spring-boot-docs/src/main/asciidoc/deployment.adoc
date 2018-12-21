@@ -1,5 +1,6 @@
 [[deployment]]
 = Deploying Spring Boot Applications
+include::attributes.adoc[]
 
 [partintro]
 --

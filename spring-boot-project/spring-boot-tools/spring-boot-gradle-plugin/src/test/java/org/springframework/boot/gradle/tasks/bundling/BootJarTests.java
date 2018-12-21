@@ -42,7 +42,7 @@ public class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		bootJar.setMainClassName("com.example.Application");
 		bootJar.getBootInf().into("test")
 				.from(new File("build.gradle").getAbsolutePath());
-		bootJar.execute();
+		bootJar.copy();
 		try (JarFile jarFile = new JarFile(bootJar.getArchivePath())) {
 			assertThat(jarFile.getJarEntry("BOOT-INF/test/build.gradle")).isNotNull();
 		}
@@ -54,10 +54,15 @@ public class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		bootJar.setMainClassName("com.example.Application");
 		bootJar.bootInf((copySpec) -> copySpec.into("test")
 				.from(new File("build.gradle").getAbsolutePath()));
-		bootJar.execute();
+		bootJar.copy();
 		try (JarFile jarFile = new JarFile(bootJar.getArchivePath())) {
 			assertThat(jarFile.getJarEntry("BOOT-INF/test/build.gradle")).isNotNull();
 		}
+	}
+
+	@Override
+	protected void executeTask() {
+		getTask().copy();
 	}
 
 }

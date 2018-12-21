@@ -36,6 +36,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JmxAutoConfiguration}.
@@ -76,7 +77,7 @@ public class JmxAutoConfigurationTests {
 		assertThat(this.context.getBean(MBeanExporter.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void testDisabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "false");
@@ -84,7 +85,8 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(MBeanExporter.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(MBeanExporter.class));
 	}
 
 	@Test

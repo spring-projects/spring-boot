@@ -42,11 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LogFileWebEndpointAutoConfigurationTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(LogFileWebEndpointAutoConfiguration.class);
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
@@ -94,7 +94,7 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
-		File file = this.temp.newFile("logfile");
+		File file = this.temp.newFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
 		this.contextRunner.withPropertyValues(
 				"management.endpoint.logfile.external-file:" + file.getAbsolutePath())

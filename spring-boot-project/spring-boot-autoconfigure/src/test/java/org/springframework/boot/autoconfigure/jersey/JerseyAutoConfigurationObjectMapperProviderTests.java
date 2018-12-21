@@ -54,9 +54,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jackson.default-property-inclusion:non-null")
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	@Autowired

@@ -62,7 +62,7 @@ public class RestarterTests {
 
 	@Before
 	public void setup() {
-		Restarter.setInstance(new TestableRestarter());
+		RestarterInitializer.setRestarterInstance();
 	}
 
 	@After
@@ -176,6 +176,13 @@ public class RestarterTests {
 		assertThat(Restarter.getInstance().getInitialUrls()).isEqualTo(urls);
 	}
 
+	@FunctionalInterface
+	private interface WithMainAction {
+
+		void perform() throws Exception;
+
+	}
+
 	@Component
 	@EnableScheduling
 	public static class SampleApplication {
@@ -268,6 +275,18 @@ public class RestarterTests {
 
 		public ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
+		}
+
+	}
+
+	static class RestarterInitializer {
+
+		static void setRestarterInstance() {
+			main(new String[0]);
+		}
+
+		static void main(String[] args) {
+			Restarter.setInstance(new TestableRestarter());
 		}
 
 	}

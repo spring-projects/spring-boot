@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.util.FileSystemUtils;
@@ -38,12 +39,14 @@ import static org.junit.Assert.fail;
 public class GrabCommandIntegrationTests {
 
 	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
+
+	@Rule
 	public CliTester cli = new CliTester("src/test/resources/grab-samples/");
 
 	@Before
 	@After
 	public void deleteLocalRepository() {
-		FileSystemUtils.deleteRecursively(new File("target/repository"));
 		System.clearProperty("grape.root");
 		System.clearProperty("groovy.grape.report.downloads");
 	}
@@ -51,13 +54,13 @@ public class GrabCommandIntegrationTests {
 	@Test
 	public void grab() throws Exception {
 
-		System.setProperty("grape.root", "target");
+		System.setProperty("grape.root", this.temp.getRoot().getAbsolutePath());
 		System.setProperty("groovy.grape.report.downloads", "true");
 
 		// Use --autoconfigure=false to limit the amount of downloaded dependencies
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
-		assertThat(new File("target/repository/joda-time/joda-time").isDirectory())
-				.isTrue();
+		assertThat(new File(this.temp.getRoot(), "repository/joda-time/joda-time"))
+				.isDirectory();
 		// Should be resolved from local repository cache
 		assertThat(output.contains("Downloading: file:")).isTrue();
 	}
@@ -76,13 +79,12 @@ public class GrabCommandIntegrationTests {
 
 	@Test
 	public void customMetadata() throws Exception {
-		System.setProperty("grape.root", "target");
+		System.setProperty("grape.root", this.temp.getRoot().getAbsolutePath());
+		File repository = new File(this.temp.getRoot().getAbsolutePath(), "repository");
 		FileSystemUtils.copyRecursively(
-				new File("src/test/resources/grab-samples/repository"),
-				new File("target/repository"));
+				new File("src/test/resources/grab-samples/repository"), repository);
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
-		assertThat(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory())
-				.isTrue();
+		assertThat(new File(repository, "javax/ejb/ejb-api/3.0")).isDirectory();
 	}
 
 }

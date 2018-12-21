@@ -69,9 +69,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class BasicErrorControllerMockMvcTests {
 
 	@Autowired

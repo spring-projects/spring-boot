@@ -25,7 +25,6 @@ import java.util.function.BiFunction;
 import org.springframework.boot.devtools.RemoteSpringApplication;
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,18 +33,23 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-abstract class RemoteApplicationLauncher implements ApplicationLauncher {
+abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
+
+	RemoteApplicationLauncher(Directories directories) {
+		super(directories);
+	}
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher javaLauncher)
-			throws Exception {
+	public LaunchedApplication launchApplication(JvmLauncher javaLauncher,
+			File serverPortFile) throws Exception {
 		LaunchedJvm applicationJvm = javaLauncher.launch("app",
 				createApplicationClassPath(), "com.example.DevToolsTestApplication",
-				"--server.port=0", "--spring.devtools.remote.secret=secret");
-		int port = awaitServerPort(applicationJvm.getStandardOut());
+				serverPortFile.getAbsolutePath(), "--server.port=0",
+				"--spring.devtools.remote.secret=secret");
+		int port = awaitServerPort(applicationJvm.getStandardOut(), serverPortFile);
 		BiFunction<Integer, File, Process> remoteRestarter = getRemoteRestarter(
 				javaLauncher);
-		return new LaunchedApplication(new File("target/remote"),
+		return new LaunchedApplication(getDirectories().getRemoteAppDirectory(),
 				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
 				applicationJvm.getProcess(), remoteRestarter.apply(port, null),
 				remoteRestarter);
@@ -74,24 +78,18 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 
 	private String createRemoteSpringApplicationClassPath(File classesDirectory)
 			throws Exception {
+		File remoteAppDirectory = getDirectories().getRemoteAppDirectory();
 		if (classesDirectory == null) {
-			File remoteDirectory = new File("target/remote");
-			FileSystemUtils.deleteRecursively(remoteDirectory);
-			remoteDirectory.mkdirs();
-			FileSystemUtils.copyRecursively(new File("target/test-classes/com"),
-					new File("target/remote/com"));
+			copyApplicationTo(remoteAppDirectory);
 		}
 		List<String> entries = new ArrayList<>();
-		entries.add("target/remote");
-		for (File jar : new File("target/dependencies").listFiles()) {
-			entries.add(jar.getAbsolutePath());
-		}
+		entries.add(remoteAppDirectory.getAbsolutePath());
+		entries.addAll(getDependencyJarPaths());
 		return StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 	}
 
-	private int awaitServerPort(File standardOut) throws Exception {
+	private int awaitServerPort(File standardOut, File serverPortFile) throws Exception {
 		long end = System.currentTimeMillis() + 30000;
-		File serverPortFile = new File("target/server.port");
 		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(

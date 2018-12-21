@@ -18,8 +18,10 @@ package org.springframework.boot.actuate.elasticsearch;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
@@ -36,6 +38,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Artsiom Yudovin
  * @author Brian Clozel
+ * @author Filip Hrisafov
  * @since 2.1.1
  */
 public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
@@ -56,8 +59,11 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Response response = this.client
 				.performRequest(new Request("GET", "/_cluster/health/"));
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+		StatusLine statusLine = response.getStatusLine();
+		if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
 			builder.down();
+			builder.withDetail("statusCode", statusLine.getStatusCode());
+			builder.withDetail("reasonPhrase", statusLine.getReasonPhrase());
 			return;
 		}
 		try (InputStream inputStream = response.getEntity().getContent()) {
@@ -67,12 +73,16 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private void doHealthCheck(Health.Builder builder, String json) {
-		String status = (String) this.jsonParser.parseMap(json).get("status");
+		Map<String, Object> response = this.jsonParser.parseMap(json);
+		String status = (String) response.get("status");
 		if (RED_STATUS.equals(status)) {
 			builder.outOfService();
-			return;
 		}
-		builder.up();
+		else {
+			builder.up();
+		}
+
+		builder.withDetails(response);
 	}
 
 }

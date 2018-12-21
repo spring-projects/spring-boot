@@ -27,6 +27,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.bundling.Jar;
 
 /**
@@ -153,6 +154,7 @@ public class BootJar extends Jar implements BootArchive {
 	 * @return a {@code CopySpec} for {@code BOOT-INF}
 	 * @since 2.0.3
 	 */
+	@Internal
 	public CopySpec getBootInf() {
 		CopySpec child = getProject().copySpec();
 		this.bootInf.with(child);

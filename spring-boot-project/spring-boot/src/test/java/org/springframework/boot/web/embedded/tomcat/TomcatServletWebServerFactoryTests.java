@@ -23,9 +23,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -49,6 +49,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
+import org.apache.tomcat.JarScanType;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -399,7 +400,6 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void tldSkipPatternsShouldBeAppliedToContextJarScanner() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.addTldSkipPatterns("foo.jar", "bar.jar");
@@ -408,9 +408,9 @@ public class TomcatServletWebServerFactoryTests
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
-		Set<String> tldSkipSet = (Set<String>) ReflectionTestUtils.getField(jarScanFilter,
-				"tldSkipSet");
-		assertThat(tldSkipSet).contains("foo.jar", "bar.jar");
+		assertThat(jarScanFilter.check(JarScanType.TLD, "foo.jar")).isFalse();
+		assertThat(jarScanFilter.check(JarScanType.TLD, "bar.jar")).isFalse();
+		assertThat(jarScanFilter.check(JarScanType.TLD, "test.jar")).isTrue();
 	}
 
 	@Test
@@ -463,13 +463,15 @@ public class TomcatServletWebServerFactoryTests
 		return (JspServlet) standardWrapper.getServlet();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
 		Context context = (Context) ((TomcatWebServer) this.webServer).getTomcat()
 				.getHost().findChildren()[0];
-		return (Map<String, String>) ReflectionTestUtils.getField(context,
-				"mimeMappings");
+		Map<String, String> mimeMappings = new HashMap<>();
+		for (String extension : context.findMimeMappings()) {
+			mimeMappings.put(extension, context.findMimeMapping(extension));
+		}
+		return mimeMappings;
 	}
 
 	@Override

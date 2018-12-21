@@ -62,6 +62,7 @@
 		<module>spring-boot-sample-logback</module>
 		<module>spring-boot-sample-oauth2-client</module>
 		<module>spring-boot-sample-oauth2-resource-server</module>
+		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>
 		<module>spring-boot-sample-quartz</module>

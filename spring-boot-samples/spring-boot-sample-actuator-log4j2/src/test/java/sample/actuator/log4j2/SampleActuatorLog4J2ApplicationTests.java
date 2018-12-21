@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Base64;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +32,6 @@ import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -52,7 +52,7 @@ public class SampleActuatorLog4J2ApplicationTests {
 			.getLogger(SampleActuatorLog4J2ApplicationTests.class);
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Autowired
 	private MockMvc mvc;
@@ -60,7 +60,7 @@ public class SampleActuatorLog4J2ApplicationTests {
 	@Test
 	public void testLogger() {
 		logger.info("Hello World");
-		this.output.expect(containsString("Hello World"));
+		Assertions.assertThat(this.output.toString()).contains("Hello World");
 	}
 
 	@Test

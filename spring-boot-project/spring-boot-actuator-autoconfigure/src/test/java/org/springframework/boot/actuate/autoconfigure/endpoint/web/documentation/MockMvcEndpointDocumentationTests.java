@@ -35,8 +35,8 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
+@RunWith(SpringRunner.class)
 public abstract class MockMvcEndpointDocumentationTests
 		extends AbstractEndpointDocumentationTests {
 
@@ -49,7 +49,7 @@ public abstract class MockMvcEndpointDocumentationTests
 	private WebApplicationContext applicationContext;
 
 	@Before
-	public void before() {
+	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
 				.apply(MockMvcRestDocumentation
 						.documentationConfiguration(this.restDocumentation).uris())

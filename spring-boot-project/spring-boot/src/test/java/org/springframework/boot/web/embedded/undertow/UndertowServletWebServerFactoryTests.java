@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
+import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
 import org.apache.jasper.servlet.JspServlet;
 import org.junit.Test;
@@ -263,8 +263,7 @@ public class UndertowServletWebServerFactoryTests
 		UndertowServletWebServer container = (UndertowServletWebServer) getFactory()
 				.getWebServer();
 		try {
-			return ((DeploymentManager) ReflectionTestUtils.getField(container,
-					"manager")).getDeployment().getServletContainer();
+			return container.getDeploymentManager().getDeployment().getServletContainer();
 		}
 		finally {
 			container.stop();
@@ -273,8 +272,8 @@ public class UndertowServletWebServerFactoryTests
 
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		return ((DeploymentManager) ReflectionTestUtils.getField(this.webServer,
-				"manager")).getDeployment().getMimeExtensionMappings();
+		return ((UndertowServletWebServer) this.webServer).getDeploymentManager()
+				.getDeployment().getMimeExtensionMappings();
 	}
 
 	@Override
@@ -288,8 +287,8 @@ public class UndertowServletWebServerFactoryTests
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils
-				.getField(this.webServer, "manager")).getDeployment().getDeploymentInfo();
+		DeploymentInfo info = ((UndertowServletWebServer) this.webServer)
+				.getDeploymentManager().getDeployment().getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
@@ -299,9 +298,9 @@ public class UndertowServletWebServerFactoryTests
 			int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
-		Object undertow = ReflectionTestUtils.getField(this.webServer, "undertow");
-		Object worker = ReflectionTestUtils.getField(undertow, "worker");
-		assertThat(worker).isNull();
+		Undertow undertow = (Undertow) ReflectionTestUtils.getField(this.webServer,
+				"undertow");
+		assertThat(undertow.getWorker()).isNull();
 	}
 
 }

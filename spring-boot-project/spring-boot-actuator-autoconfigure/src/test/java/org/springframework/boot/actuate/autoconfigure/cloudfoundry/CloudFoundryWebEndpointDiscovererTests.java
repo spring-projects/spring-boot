@@ -80,15 +80,14 @@ public class CloudFoundryWebEndpointDiscovererTests {
 
 	private void load(Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		this.load((id) -> null, (id) -> id.toString(), configuration, consumer);
+		this.load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
 	private void load(Function<EndpointId, Long> timeToLive,
 			PathMapper endpointPathMapper, Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				configuration)) {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
 			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
@@ -100,9 +99,6 @@ public class CloudFoundryWebEndpointDiscovererTests {
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
 					Collections.emptyList());
 			consumer.accept(discoverer);
-		}
-		finally {
-			context.close();
 		}
 	}
 

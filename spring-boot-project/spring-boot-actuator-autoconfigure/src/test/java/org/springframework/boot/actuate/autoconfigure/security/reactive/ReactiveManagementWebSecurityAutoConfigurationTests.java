@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.security.reactive;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,7 +140,8 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 		ServerWebExchange exchange = webHandler(context).createExchange(
 				MockServerHttpRequest.get(path).build(), new MockServerHttpResponse());
 		WebFilterChainProxy proxy = context.getBean(WebFilterChainProxy.class);
-		proxy.filter(exchange, (serverWebExchange) -> Mono.empty()).block();
+		proxy.filter(exchange, (serverWebExchange) -> Mono.empty())
+				.block(Duration.ofSeconds(30));
 		return exchange;
 	}
 

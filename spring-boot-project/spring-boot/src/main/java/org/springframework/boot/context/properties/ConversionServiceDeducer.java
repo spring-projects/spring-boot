@@ -81,7 +81,7 @@ class ConversionServiceDeducer {
 
 		private <T> List<T> beans(Class<T> type, String qualifier,
 				ListableBeanFactory beanFactory) {
-			return new ArrayList<T>(BeanFactoryAnnotationUtils
+			return new ArrayList<>(BeanFactoryAnnotationUtils
 					.qualifiedBeansOfType(beanFactory, type, qualifier).values());
 		}
 

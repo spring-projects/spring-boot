@@ -64,12 +64,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ArtemisAutoConfigurationTests {
 
-	@Rule
-	public final TemporaryFolder folder = new TemporaryFolder();
-
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
 					JmsAutoConfiguration.class));
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void connectionFactoryIsCachedByDefault() {
@@ -274,7 +274,7 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void embeddedWithPersistentMode() throws IOException {
-		File dataFolder = this.folder.newFolder();
+		File dataFolder = this.temp.newFolder();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)

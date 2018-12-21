@@ -1,5 +1,6 @@
 [[using-boot]]
 = Using Spring Boot
+include::attributes.adoc[]
 
 [partintro]
 --

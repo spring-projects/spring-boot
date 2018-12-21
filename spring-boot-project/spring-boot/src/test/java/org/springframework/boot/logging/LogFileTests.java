@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -89,9 +90,10 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString()).isEqualTo("logpath/spring.log");
+		assertThat(logFile.toString())
+				.isEqualTo("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("logpath/spring.log");
+				.isEqualTo("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
 				.isEqualTo("logpath");
 	}

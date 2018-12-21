@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.springframework.core.env.Environment;
@@ -117,11 +118,7 @@ public class LogFile {
 		if (StringUtils.hasLength(this.file)) {
 			return this.file;
 		}
-		String path = this.path;
-		if (!path.endsWith("/")) {
-			path = path + "/";
-		}
-		return StringUtils.applyRelativePath(path, "spring.log");
+		return new File(this.path, "spring.log").getPath();
 	}
 
 	/**
