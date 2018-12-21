@@ -3283,7 +3283,7 @@ The basic features you get by default in a web application are:
 bean with in-memory store and a single user with a generated password (see
 {dc-spring-boot}/autoconfigure/security/SecurityProperties.User.html[`SecurityProperties.User`]
 for the properties of the user).
-* Form-based login or HTTP Basic security (depending on Content-Type) for the entire
+* Form-based login or HTTP Basic security (if HTTP header `Authorization` present in a HTTP request) for the entire
 application (including actuator endpoints if actuator is on the classpath).
 * A `DefaultAuthenticationEventPublisher` for publishing authentication events.
 
