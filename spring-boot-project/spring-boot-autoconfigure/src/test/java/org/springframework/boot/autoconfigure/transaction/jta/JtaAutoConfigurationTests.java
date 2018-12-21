@@ -172,8 +172,7 @@ public class JtaAutoConfigurationTests {
 				.of("spring.jta.atomikos.connectionfactory.minPoolSize:5",
 						"spring.jta.atomikos.connectionfactory.maxPoolSize:10")
 				.applyTo(this.context);
-		this.context.register(AtomikosJtaConfiguration.class,
-				PoolConfiguration.class);
+		this.context.register(AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		AtomikosConnectionFactoryBean connectionFactory = this.context
 				.getBean(AtomikosConnectionFactoryBean.class);
@@ -188,8 +187,7 @@ public class JtaAutoConfigurationTests {
 				.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
 						"spring.jta.bitronix.connectionfactory.maxPoolSize:10")
 				.applyTo(this.context);
-		this.context.register(BitronixJtaConfiguration.class,
-				PoolConfiguration.class);
+		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		PoolingConnectionFactoryBean connectionFactory = this.context
 				.getBean(PoolingConnectionFactoryBean.class);
@@ -204,8 +202,7 @@ public class JtaAutoConfigurationTests {
 				.of("spring.jta.atomikos.datasource.minPoolSize:5",
 						"spring.jta.atomikos.datasource.maxPoolSize:10")
 				.applyTo(this.context);
-		this.context.register(AtomikosJtaConfiguration.class,
-				PoolConfiguration.class);
+		this.context.register(AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		AtomikosDataSourceBean dataSource = this.context
 				.getBean(AtomikosDataSourceBean.class);
@@ -220,8 +217,7 @@ public class JtaAutoConfigurationTests {
 				.of("spring.jta.bitronix.datasource.minPoolSize:5",
 						"spring.jta.bitronix.datasource.maxPoolSize:10")
 				.applyTo(this.context);
-		this.context.register(BitronixJtaConfiguration.class,
-				PoolConfiguration.class);
+		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		PoolingDataSourceBean dataSource = this.context
 				.getBean(PoolingDataSourceBean.class);
