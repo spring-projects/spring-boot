@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -33,6 +32,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Josh Long
  * @author Phillip Webb
+ * @author Nishant Raut
  * @since 1.2.0
  */
 @Configuration
@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Import;
 		HibernateJpaAutoConfiguration.class })
 @Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
 		AtomikosJtaConfiguration.class })
-@EnableConfigurationProperties(JtaProperties.class)
 public class JtaAutoConfiguration {
 
 }
