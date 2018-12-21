@@ -61,7 +61,7 @@ public final class ConditionMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !ConditionMessage.class.isInstance(obj)) {
+		if (!(obj instanceof ConditionMessage)) {
 			return false;
 		}
 		if (obj == this) {
