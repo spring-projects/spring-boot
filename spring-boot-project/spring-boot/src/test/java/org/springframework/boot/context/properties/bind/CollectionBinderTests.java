@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +44,7 @@ import static org.assertj.core.api.Assertions.fail;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nishant Raut
  */
 public class CollectionBinderTests {
 
@@ -447,6 +449,16 @@ public class CollectionBinderTests {
 				.bind("foo", Bindable.of(BeanWithGetterException.class)).get();
 		assertThat(result.getValues()).containsExactly("a", "b", "c");
 	}
+	
+	@Test
+	public void bindToBeanWithEnumSet() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values", "A,B");
+		this.sources.add(source);
+		Bindable<EnumSetBean> target = Bindable.of(EnumSetBean.class);
+		EnumSetBean bean = this.binder.bind("foo", target).get();
+		assertThat(bean.getValues()).containsExactly(ExampleEnum.A, ExampleEnum.B);
+	}
 
 	public static class ExampleCollectionBean {
 
@@ -566,4 +578,22 @@ public class CollectionBinderTests {
 
 	}
 
+	public static class EnumSetBean {
+
+		private EnumSet<ExampleEnum> values;
+
+		public void setValues(EnumSet<ExampleEnum> values) {
+			this.values = values;
+		}
+
+		public EnumSet<ExampleEnum> getValues() {
+			return EnumSet.copyOf(this.values);
+		}
+
+	}
+
+	public static enum ExampleEnum {
+		A, B
+	}
+	
 }
