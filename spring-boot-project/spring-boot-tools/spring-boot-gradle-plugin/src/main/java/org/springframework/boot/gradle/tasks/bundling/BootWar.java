@@ -27,6 +27,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 
@@ -114,6 +115,7 @@ public class BootWar extends War implements BootArchive {
 	 * @return the provided classpath
 	 */
 	@Optional
+	@Classpath
 	public FileCollection getProvidedClasspath() {
 		return this.providedClasspath;
 	}
