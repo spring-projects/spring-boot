@@ -68,7 +68,7 @@ class OnManagementPortCondition extends SpringBootCondition {
 				context.getClassLoader())) {
 			return false;
 		}
-		return WebApplicationContext.class.isInstance(resourceLoader);
+		return resourceLoader instanceof WebApplicationContext;
 	}
 
 }
