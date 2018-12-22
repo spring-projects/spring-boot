@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -27,10 +28,12 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -106,7 +109,35 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void backOffIfOAuth2ResourceServerAutoConfigurationSecurityIsAdded() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations
+						.of(OAuth2ResourceServerAutoConfiguration.class))
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
+				.run((context) -> {
+					assertThat(
+							getAuthenticateHeader(context, "/actuator/info").toString())
+									.contains("Bearer");
+					assertThat(getAuthenticateHeader(context, "/anything").toString())
+							.contains("Bearer");
+				});
+	}
+
+	private List<String> getAuthenticateHeader(AssertableWebApplicationContext context,
+			String path) throws IOException, javax.servlet.ServletException {
+		MockHttpServletResponse response = getResponse(context, path);
+		return response.getHeaders(HttpHeaders.WWW_AUTHENTICATE);
+	}
+
 	private HttpStatus getResponseStatus(AssertableWebApplicationContext context,
+			String path) throws IOException, javax.servlet.ServletException {
+		MockHttpServletResponse response = getResponse(context, path);
+		return HttpStatus.valueOf(response.getStatus());
+	}
+
+	private MockHttpServletResponse getResponse(AssertableWebApplicationContext context,
 			String path) throws IOException, javax.servlet.ServletException {
 		FilterChainProxy filterChainProxy = context.getBean(FilterChainProxy.class);
 		MockServletContext servletContext = new MockServletContext();
@@ -117,7 +148,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		request.setServletPath(path);
 		request.setMethod("GET");
 		filterChainProxy.doFilter(request, response, new MockFilterChain());
-		return HttpStatus.valueOf(response.getStatus());
+		return response;
 	}
 
 	@Configuration
