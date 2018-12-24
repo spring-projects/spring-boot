@@ -164,9 +164,9 @@ public class SessionAutoConfiguration {
 		protected final String[] selectImports(WebApplicationType webApplicationType) {
 			List<String> imports = new ArrayList<>();
 			StoreType[] types = StoreType.values();
-			for (int i = 0; i < types.length; i++) {
+			for (StoreType type : types) {
 				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType,
-						types[i]));
+						type));
 			}
 			return StringUtils.toStringArray(imports);
 		}
