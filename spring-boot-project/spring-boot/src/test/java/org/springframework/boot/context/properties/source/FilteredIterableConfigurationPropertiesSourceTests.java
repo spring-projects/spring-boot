@@ -57,7 +57,7 @@ public class FilteredIterableConfigurationPropertiesSourceTests
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {
-		return name.toString().indexOf("[") == -1;
+		return !name.toString().contains("[");
 	}
 
 }

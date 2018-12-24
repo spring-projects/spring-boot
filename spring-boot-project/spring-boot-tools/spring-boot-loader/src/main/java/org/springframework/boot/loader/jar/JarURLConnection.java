@@ -130,7 +130,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (spec.endsWith(SEPARATOR)) {
 				spec = spec.substring(0, spec.length() - SEPARATOR.length());
 			}
-			if (spec.indexOf(SEPARATOR) == -1) {
+			if (!spec.contains(SEPARATOR)) {
 				return new URL(spec);
 			}
 			return new URL("jar:" + spec);
