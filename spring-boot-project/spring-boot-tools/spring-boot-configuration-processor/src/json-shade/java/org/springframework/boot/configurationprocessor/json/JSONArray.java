@@ -65,8 +65,8 @@ public class JSONArray {
 	public JSONArray(Collection copyFrom) {
 		this();
 		if (copyFrom != null) {
-			for (Object value : copyFrom) {
-				put(JSONObject.wrap(value));
+			for (Iterator it = copyFrom.iterator(); it.hasNext();) {
+				put(JSONObject.wrap(it.next()));
 			}
 		}
 	}
