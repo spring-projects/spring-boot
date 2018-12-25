@@ -124,6 +124,15 @@ public class HibernatePropertiesTests {
 	}
 
 	@Test
+	public void useArchiveScanner() {
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.hibernate.archive-scanner:org.hibernate.boot.archive.scan.internal.DisabledScanner")
+				.run(assertHibernateProperties((hibernateProperties) -> assertThat(
+						hibernateProperties).containsEntry(AvailableSettings.SCANNER,
+								"org.hibernate.boot.archive.scan.internal.DisabledScanner")));
+	}
+
+	@Test
 	public void defaultDdlAutoIsNotInvokedIfPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.hibernate.ddl-auto=validate")
 				.run(assertDefaultDdlAutoNotInvoked("validate"));

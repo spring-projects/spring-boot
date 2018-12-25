@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * Configuration properties for Hibernate.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.1.0
  * @see JpaProperties
  */
@@ -56,6 +57,8 @@ public class HibernateProperties {
 	 */
 	private Boolean useNewIdGeneratorMappings;
 
+	private String archiveScanner;
+
 	public String getDdlAuto() {
 		return this.ddlAuto;
 	}
@@ -70,6 +73,14 @@ public class HibernateProperties {
 
 	public void setUseNewIdGeneratorMappings(Boolean useNewIdGeneratorMappings) {
 		this.useNewIdGeneratorMappings = useNewIdGeneratorMappings;
+	}
+
+	public String getArchiveScanner() {
+		return this.archiveScanner;
+	}
+
+	public void setArchiveScanner(String archiveScanner) {
+		this.archiveScanner = archiveScanner;
 	}
 
 	public Naming getNaming() {
@@ -95,6 +106,7 @@ public class HibernateProperties {
 			HibernateSettings settings) {
 		Map<String, Object> result = new HashMap<>(existing);
 		applyNewIdGeneratorMappings(result);
+		applyArchiveScanner(result);
 		getNaming().applyNamingStrategies(result);
 		String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
 		if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
@@ -118,6 +130,12 @@ public class HibernateProperties {
 		}
 		else if (!result.containsKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS)) {
 			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+		}
+	}
+
+	private void applyArchiveScanner(Map<String, Object> result) {
+		if (!StringUtils.isEmpty(this.archiveScanner)) {
+			result.put(AvailableSettings.SCANNER, this.archiveScanner);
 		}
 	}
 
