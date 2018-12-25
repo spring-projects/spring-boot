@@ -270,8 +270,8 @@ public class Repackager {
 	}
 
 	private boolean isZip(InputStream inputStream) throws IOException {
-		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
-			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+		for (byte magicByte : ZIP_FILE_HEADER) {
+			if (inputStream.read() != magicByte) {
 				return false;
 			}
 		}
