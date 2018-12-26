@@ -57,7 +57,12 @@ public class HibernateProperties {
 	 */
 	private Boolean useNewIdGeneratorMappings;
 
-	private String archiveScanner;
+	/**
+	 * Archive Scanner. This is actually a shortcut for the "hibernate.archive.scanner"
+	 * property. When not specified will default to
+	 * "org.hibernate.boot.archive.scan.internal.DisabledScanner".
+	 */
+	private String archiveScanner = "org.hibernate.boot.archive.scan.internal.DisabledScanner";
 
 	public String getDdlAuto() {
 		return this.ddlAuto;
@@ -134,9 +139,7 @@ public class HibernateProperties {
 	}
 
 	private void applyArchiveScanner(Map<String, Object> result) {
-		if (!StringUtils.isEmpty(this.archiveScanner)) {
-			result.put(AvailableSettings.SCANNER, this.archiveScanner);
-		}
+		result.put(AvailableSettings.SCANNER, this.archiveScanner);
 	}
 
 	private String determineDdlAuto(Map<String, String> existing,
