@@ -127,7 +127,7 @@ public class HibernatePropertiesTests {
 	@Test
 	public void useArchiveScanner() {
 		this.contextRunner.withPropertyValues(
-				"spring.jpa.hibernate.archive-scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
+				"spring.jpa.properties.hibernate.archive.scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
 				.run(assertHibernateProperties((hibernateProperties) -> assertThat(
 						hibernateProperties).containsEntry(AvailableSettings.SCANNER,
 								"org.hibernate.boot.archive.scan.internal.StandardScanner")));
