@@ -161,7 +161,7 @@ public class PropertiesMigrationReporterTests {
 		assertThat(report).isNotNull();
 		assertThat(report).containsSubsequence("Property source 'first'",
 				"deprecated.six.test", "Line: 1", "Reason",
-				"Replacement key 'does.not.exist' uses an incompatible target type");
+				"No metadata found for replacement key 'does.not.exist'");
 		assertThat(report).doesNotContain("null");
 	}
 
