@@ -63,10 +63,9 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	@Override
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);
-		if (adapter.isPresent()) {
-			return adapter.get().getLastModified(request, handler);
-		}
-		return 0;
+		return adapter
+				.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler))
+				.orElse(0L);
 	}
 
 	private Optional<HandlerAdapter> getAdapter(Object handler) {
