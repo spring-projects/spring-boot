@@ -68,9 +68,9 @@ public interface ConfigurableUndertowWebServerFactory
 
 	/**
 	 * Set whether direct buffers should be used.
-	 * @param useForwardHeaders whether direct buffers should be used
+	 * @param useDirectBuffers whether direct buffers should be used
 	 */
-	void setUseDirectBuffers(Boolean useForwardHeaders);
+	void setUseDirectBuffers(Boolean useDirectBuffers);
 
 	/**
 	 * Set the access log directory.
