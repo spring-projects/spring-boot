@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.web.tomcat;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -29,35 +32,42 @@ import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
+import io.micrometer.core.instrument.ImmutableTag;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Tests for {@link TomcatMetricsBinder}.
+ *
+ * @author Oleksii Bondar
+ */
 public class TomcatMetricsBinderTests {
 
     @Test
-    public void reportExpectedMetrics() {
-        ApplicationStartedEvent event = mock(ApplicationStartedEvent.class);
-        AnnotationConfigServletWebServerApplicationContext context = mock(
-                AnnotationConfigServletWebServerApplicationContext.class);
-        given(event.getApplicationContext()).willReturn(context);
-        TomcatWebServer webServer = mock(TomcatWebServer.class);
-        given(context.getWebServer()).willReturn(webServer);
-        Tomcat tomcat = mock(Tomcat.class);
-        given(webServer.getTomcat()).willReturn(tomcat);
-        Host host = mock(Host.class);
-        given(tomcat.getHost()).willReturn(host);
-        Context container = mock(Context.class);
-        given(host.findChildren()).willReturn(new Container[] {container});
-        Manager manager = mock(Manager.class);
-        given(container.getManager()).willReturn(manager);
+    public void reportTomcatMetricsWithOutTags() {
+        ApplicationStartedEvent event = setupMocks();
 
         MeterRegistry meterRegistry = bindToMeterRegistry(event);
 
-        meterRegistry.get("tomcat.sessions.active.max").gauge();
+        verifyExpectedMetric(meterRegistry);
+    }
+
+    @Test
+    public void reportTomcatMetricsWithExpectedTags() {
+        ApplicationStartedEvent event = setupMocks();
+
+        MeterRegistry meterRegistry = new SimpleMeterRegistry();
+        ImmutableTag expectedTag = new ImmutableTag("version", "1");
+        List<Tag> tags = Arrays.asList(expectedTag);
+        TomcatMetricsBinder metricsBinder = new TomcatMetricsBinder(meterRegistry, tags);
+        metricsBinder.onApplicationEvent(event);
+
+        meterRegistry.get("tomcat.sessions.active.max").tags(tags).gauge();
     }
 
     @Test(expected = MeterNotFoundException.class)
@@ -68,7 +78,7 @@ public class TomcatMetricsBinderTests {
 
         MeterRegistry meterRegistry = bindToMeterRegistry(event);
 
-        meterRegistry.get("tomcat.sessions.active.max").gauge();
+        verifyExpectedMetric(meterRegistry);
     }
 
     @Test(expected = MeterNotFoundException.class)
@@ -82,7 +92,7 @@ public class TomcatMetricsBinderTests {
 
         MeterRegistry meterRegistry = bindToMeterRegistry(event);
 
-        meterRegistry.get("tomcat.sessions.active.max").gauge();
+        verifyExpectedMetric(meterRegistry);
     }
 
     @Test(expected = MeterNotFoundException.class)
@@ -101,7 +111,7 @@ public class TomcatMetricsBinderTests {
 
         MeterRegistry meterRegistry = bindToMeterRegistry(event);
 
-        meterRegistry.get("tomcat.sessions.active.max").gauge();
+        verifyExpectedMetric(meterRegistry);
     }
 
     @Test(expected = MeterNotFoundException.class)
@@ -121,7 +131,25 @@ public class TomcatMetricsBinderTests {
 
         MeterRegistry meterRegistry = bindToMeterRegistry(event);
 
-        meterRegistry.get("tomcat.sessions.active.max").gauge();
+        verifyExpectedMetric(meterRegistry);
+    }
+
+    private ApplicationStartedEvent setupMocks() {
+        ApplicationStartedEvent event = mock(ApplicationStartedEvent.class);
+        AnnotationConfigServletWebServerApplicationContext context = mock(
+                AnnotationConfigServletWebServerApplicationContext.class);
+        given(event.getApplicationContext()).willReturn(context);
+        TomcatWebServer webServer = mock(TomcatWebServer.class);
+        given(context.getWebServer()).willReturn(webServer);
+        Tomcat tomcat = mock(Tomcat.class);
+        given(webServer.getTomcat()).willReturn(tomcat);
+        Host host = mock(Host.class);
+        given(tomcat.getHost()).willReturn(host);
+        Context container = mock(Context.class);
+        given(host.findChildren()).willReturn(new Container[] {container});
+        Manager manager = mock(Manager.class);
+        given(container.getManager()).willReturn(manager);
+        return event;
     }
 
     private MeterRegistry bindToMeterRegistry(ApplicationStartedEvent event) {
@@ -130,4 +158,9 @@ public class TomcatMetricsBinderTests {
         metricsBinder.onApplicationEvent(event);
         return meterRegistry;
     }
+
+    private void verifyExpectedMetric(MeterRegistry meterRegistry) {
+        meterRegistry.get("tomcat.sessions.active.max").gauge();
+    }
+    
 }
