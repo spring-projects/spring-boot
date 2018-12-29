@@ -132,7 +132,8 @@ public class EndpointServletTests {
 
 	}
 
-	private static class TestServlet extends GenericServlet {
+	@SuppressWarnings("serial")
+    private static class TestServlet extends GenericServlet {
 
 		@Override
 		public void service(ServletRequest req, ServletResponse res)
