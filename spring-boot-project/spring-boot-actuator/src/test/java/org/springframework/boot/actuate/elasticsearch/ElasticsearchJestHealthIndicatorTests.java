@@ -61,7 +61,8 @@ public class ElasticsearchJestHealthIndicatorTests {
 		assertHealthDetailsWithStatus(health.getDetails(), "green");
 	}
 
-	@Test
+	@SuppressWarnings("unchecked")
+    @Test
 	public void elasticsearchWithYellowStatusIsUp() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
 				.willReturn(createJestResult(200, true, "yellow"));

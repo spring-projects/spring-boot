@@ -345,13 +345,6 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 						org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
 	}
 
-	private String cleanIssuerPath(String issuer) {
-		if (issuer.endsWith("/")) {
-			return issuer.substring(0, issuer.length() - 1);
-		}
-		return issuer;
-	}
-
 	private void setupMockResponse(String issuer) throws Exception {
 		MockResponse mockResponse = new MockResponse()
 				.setResponseCode(HttpStatus.OK.value())
