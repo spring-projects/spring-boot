@@ -138,11 +138,13 @@ public class WebMvcMetricsIntegrationTests {
 
 	}
 
-	static class Exception1 extends RuntimeException {
+	@SuppressWarnings("serial")
+    static class Exception1 extends RuntimeException {
 
 	}
 
-	static class Exception2 extends RuntimeException {
+	@SuppressWarnings("serial")
+    static class Exception2 extends RuntimeException {
 
 	}
 

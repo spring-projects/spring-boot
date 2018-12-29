@@ -82,7 +82,8 @@ public class MetricsWebFilterTests {
 		assertMetricsContainsTag("exception", "IllegalStateException");
 	}
 
-	@Test
+	@SuppressWarnings("serial")
+    @Test
 	public void filterAddsNonEmptyTagsToRegistryForAnonymousExceptions() {
 		final Exception anonymous = new Exception("test error") {
 		};

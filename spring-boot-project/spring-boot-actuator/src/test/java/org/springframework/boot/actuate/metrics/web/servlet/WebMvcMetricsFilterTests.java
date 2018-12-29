@@ -437,7 +437,8 @@ public class WebMvcMetricsFilterTests {
 			throw new IllegalStateException("Boom on " + id + "!");
 		}
 
-		@Timed
+		@SuppressWarnings("serial")
+        @Timed
 		@GetMapping("/anonymousError/{id}")
 		public String alwaysThrowsAnonymousException(@PathVariable Long id)
 				throws Exception {

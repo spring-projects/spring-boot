@@ -69,7 +69,8 @@ public class HttpTraceFilterTests {
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
-	@Test
+	@SuppressWarnings("serial")
+    @Test
 	public void filterCapturesSessionId() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
 				new MockFilterChain(new HttpServlet() {
@@ -103,7 +104,8 @@ public class HttpTraceFilterTests {
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
 
-	@Test
+	@SuppressWarnings("serial")
+    @Test
 	public void statusIsAssumedToBe500WhenChainFails()
 			throws ServletException, IOException {
 		try {
