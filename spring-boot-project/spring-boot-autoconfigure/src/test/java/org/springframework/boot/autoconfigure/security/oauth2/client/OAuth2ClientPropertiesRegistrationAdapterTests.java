@@ -33,12 +33,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails;
+import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails.UserInfoEndpoint;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.springframework.security.oauth2.core.AuthenticationMethod.HEADER;
 
 /**
  * Tests for {@link OAuth2ClientPropertiesRegistrationAdapter}.
@@ -61,13 +65,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	@Test
 	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
-		Provider provider = new Provider();
-		provider.setAuthorizationUri("http://example.com/auth");
-		provider.setTokenUri("http://example.com/token");
-		provider.setUserInfoUri("http://example.com/info");
+		Provider provider = createProvider();
 		provider.setUserInfoAuthenticationMethod("form");
-		provider.setUserNameAttribute("sub");
-		provider.setJwkSetUri("http://example.com/jwk");
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setProvider("provider");
 		registration.setClientId("clientId");
@@ -168,8 +167,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
 				.isEqualTo(IdTokenClaimNames.SUB);
 		assertThat(adaptedProvider.getUserInfoEndpoint().getAuthenticationMethod())
-				.isEqualTo(
-						org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+				.isEqualTo(HEADER);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
@@ -215,8 +213,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getAuthenticationMethod())
-				.isEqualTo(
-						org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+				.isEqualTo(HEADER);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("google");
@@ -270,20 +267,9 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		this.server.start();
 		String issuer = this.server.url("").toString();
 		setupMockResponse(issuer);
-		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
-		registration.setProvider("okta-oidc");
-		registration.setClientId("clientId");
-		registration.setClientSecret("clientSecret");
-		registration.setClientAuthenticationMethod("post");
-		registration.setRedirectUri("http://example.com/redirect");
-		registration.setScope(Collections.singleton("user"));
-		Provider provider = new Provider();
+		OAuth2ClientProperties.Registration registration = createRegistration();
+		Provider provider = createProvider();
 		provider.setIssuerUri(issuer);
-		provider.setAuthorizationUri("http://example.com/auth");
-		provider.setTokenUri("http://example.com/token");
-		provider.setUserInfoUri("http://example.com/info");
-		provider.setUserNameAttribute("sub");
-		provider.setJwkSetUri("http://example.com/jwk");
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		properties.getProvider().put("okta-oidc", provider);
 		properties.getRegistration().put("okta", registration);
@@ -308,6 +294,27 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("http://example.com/info");
 		assertThat(providerDetails.getUserInfoEndpoint().getUserNameAttributeName())
 				.isEqualTo("sub");
+	}
+
+	private Provider createProvider() {
+		Provider provider = new Provider();
+		provider.setAuthorizationUri("http://example.com/auth");
+		provider.setTokenUri("http://example.com/token");
+		provider.setUserInfoUri("http://example.com/info");
+		provider.setUserNameAttribute("sub");
+		provider.setJwkSetUri("http://example.com/jwk");
+		return provider;
+	}
+
+	private OAuth2ClientProperties.Registration createRegistration() {
+		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
+		registration.setProvider("okta-oidc");
+		registration.setClientId("clientId");
+		registration.setClientSecret("clientSecret");
+		registration.setClientAuthenticationMethod("post");
+		registration.setRedirectUri("http://example.com/redirect");
+		registration.setScope(Collections.singleton("user"));
+		return registration;
 	}
 
 	private void testOidcConfiguration(OAuth2ClientProperties.Registration registration,
@@ -338,18 +345,11 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://example.com/oauth2/v4/token");
 		assertThat(providerDetails.getJwkSetUri())
 				.isEqualTo("https://example.com/oauth2/v3/certs");
-		assertThat(providerDetails.getUserInfoEndpoint().getUri())
+		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri())
 				.isEqualTo("https://example.com/oauth2/v3/userinfo");
-		assertThat(providerDetails.getUserInfoEndpoint().getAuthenticationMethod())
-				.isEqualTo(
-						org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
-	}
-
-	private String cleanIssuerPath(String issuer) {
-		if (issuer.endsWith("/")) {
-			return issuer.substring(0, issuer.length() - 1);
-		}
-		return issuer;
+		assertThat(userInfoEndpoint.getAuthenticationMethod())
+				.isEqualTo(HEADER);
 	}
 
 	private void setupMockResponse(String issuer) throws Exception {
@@ -363,20 +363,18 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	private Map<String, Object> getResponse(String issuer) {
 		Map<String, Object> response = new HashMap<>();
 		response.put("authorization_endpoint", "https://example.com/o/oauth2/v2/auth");
-		response.put("claims_supported", Collections.emptyList());
-		response.put("code_challenge_methods_supported", Collections.emptyList());
-		response.put("id_token_signing_alg_values_supported", Collections.emptyList());
+		response.put("claims_supported", emptyList());
+		response.put("code_challenge_methods_supported", emptyList());
+		response.put("id_token_signing_alg_values_supported", emptyList());
 		response.put("issuer", issuer);
 		response.put("jwks_uri", "https://example.com/oauth2/v3/certs");
-		response.put("response_types_supported", Collections.emptyList());
+		response.put("response_types_supported", emptyList());
 		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
-		response.put("scopes_supported", Collections.singletonList("openid"));
-		response.put("subject_types_supported", Collections.singletonList("public"));
-		response.put("grant_types_supported",
-				Collections.singletonList("authorization_code"));
+		response.put("scopes_supported", singletonList("openid"));
+		response.put("subject_types_supported", singletonList("public"));
+		response.put("grant_types_supported", singletonList("authorization_code"));
 		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
-		response.put("token_endpoint_auth_methods_supported",
-				Collections.singletonList("client_secret_basic"));
+		response.put("token_endpoint_auth_methods_supported", singletonList("client_secret_basic"));
 		response.put("userinfo_endpoint", "https://example.com/oauth2/v3/userinfo");
 		return response;
 	}
