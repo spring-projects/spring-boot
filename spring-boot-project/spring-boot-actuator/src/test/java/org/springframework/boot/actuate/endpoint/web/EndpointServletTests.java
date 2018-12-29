@@ -16,18 +16,14 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.TestServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -129,16 +125,6 @@ public class EndpointServletTests {
 		extra.put("e", "f");
 		assertThat(endpointServlet.withInitParameters(extra).getInitParameters())
 				.containsExactly(entry("a", "b1"), entry("c", "d"), entry("e", "f"));
-
-	}
-
-	@SuppressWarnings("serial")
-    private static class TestServlet extends GenericServlet {
-
-		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
-		}
 
 	}
 

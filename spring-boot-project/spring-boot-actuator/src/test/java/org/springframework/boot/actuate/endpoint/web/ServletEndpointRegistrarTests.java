@@ -18,13 +18,10 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import java.util.Collections;
 
-import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.boot.actuate.TestServlet;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,15 +123,6 @@ public class ServletEndpointRegistrarTests {
 		given(endpoint.getEndpointServlet()).willReturn(endpointServlet);
 		given(endpoint.getRootPath()).willReturn("test");
 		return endpoint;
-	}
-
-	@SuppressWarnings("serial")
-    public static class TestServlet extends GenericServlet {
-
-		@Override
-		public void service(ServletRequest req, ServletResponse res) {
-		}
-
 	}
 
 }

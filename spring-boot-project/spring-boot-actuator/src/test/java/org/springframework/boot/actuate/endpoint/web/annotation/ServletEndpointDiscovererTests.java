@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,13 +23,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.servlet.GenericServlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.junit.Test;
-
+import org.springframework.boot.actuate.TestServlet;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
@@ -204,15 +198,6 @@ public class ServletEndpointDiscovererTests {
 		@ReadOperation
 		public String read() {
 			return "error";
-		}
-
-	}
-
-	private static class TestServlet extends GenericServlet {
-
-		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
 		}
 
 	}
