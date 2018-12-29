@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that only matches when the specified classes are on the classpath.
- *
+ * @ConditionalOnClass should not be used directly on methods.
  * @author Phillip Webb
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
