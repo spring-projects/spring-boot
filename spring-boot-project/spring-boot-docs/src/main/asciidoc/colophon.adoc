@@ -1,5 +1,5 @@
 [colophon]
-= Colophon
+= Legal
 
 {spring-boot-version}
 
