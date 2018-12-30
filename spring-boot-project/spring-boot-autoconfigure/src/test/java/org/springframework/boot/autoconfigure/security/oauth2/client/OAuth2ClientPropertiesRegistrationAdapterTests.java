@@ -42,8 +42,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.springframework.security.oauth2.core.AuthenticationMethod.FORM;
-import static org.springframework.security.oauth2.core.AuthenticationMethod.HEADER;
 
 /**
  * Tests for {@link OAuth2ClientPropertiesRegistrationAdapter}.
@@ -80,12 +78,10 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("http://example.com/auth");
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
 		UserInfoEndpoint userInfoEndpoint = adaptedProvider.getUserInfoEndpoint();
-		assertThat(userInfoEndpoint.getUri())
-				.isEqualTo("http://example.com/info");
-		assertThat(userInfoEndpoint.getAuthenticationMethod())
-				.isEqualTo(FORM);
-		assertThat(userInfoEndpoint.getUserNameAttributeName())
-				.isEqualTo("sub");
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("http://example.com/info");
+		assertThat(userInfoEndpoint.getAuthenticationMethod()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthenticationMethod.FORM);
+		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
@@ -149,12 +145,13 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(adaptedProvider.getTokenUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+		UserInfoEndpoint userInfoEndpoint = adaptedProvider.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+		assertThat(userInfoEndpoint.getUserNameAttributeName())
 				.isEqualTo(IdTokenClaimNames.SUB);
-		assertThat(adaptedProvider.getUserInfoEndpoint().getAuthenticationMethod())
-				.isEqualTo(HEADER);
+		assertThat(userInfoEndpoint.getAuthenticationMethod()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
@@ -197,10 +194,11 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(adaptedProvider.getTokenUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+		UserInfoEndpoint userInfoEndpoint = adaptedProvider.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getAuthenticationMethod())
-				.isEqualTo(HEADER);
+		assertThat(userInfoEndpoint.getAuthenticationMethod()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("google");
@@ -254,7 +252,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		this.server.start();
 		String issuer = this.server.url("").toString();
 		setupMockResponse(issuer);
-		OAuth2ClientProperties.Registration registration = createRegistration("okta-oidc");
+		OAuth2ClientProperties.Registration registration = createRegistration(
+				"okta-oidc");
 		Provider provider = createProvider();
 		provider.setIssuerUri(issuer);
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
@@ -336,8 +335,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
 		assertThat(userInfoEndpoint.getUri())
 				.isEqualTo("https://example.com/oauth2/v3/userinfo");
-		assertThat(userInfoEndpoint.getAuthenticationMethod())
-				.isEqualTo(HEADER);
+		assertThat(userInfoEndpoint.getAuthenticationMethod()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
 	}
 
 	private void setupMockResponse(String issuer) throws Exception {
@@ -362,7 +361,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		response.put("subject_types_supported", singletonList("public"));
 		response.put("grant_types_supported", singletonList("authorization_code"));
 		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
-		response.put("token_endpoint_auth_methods_supported", singletonList("client_secret_basic"));
+		response.put("token_endpoint_auth_methods_supported",
+				singletonList("client_secret_basic"));
 		response.put("userinfo_endpoint", "https://example.com/oauth2/v3/userinfo");
 		return response;
 	}
