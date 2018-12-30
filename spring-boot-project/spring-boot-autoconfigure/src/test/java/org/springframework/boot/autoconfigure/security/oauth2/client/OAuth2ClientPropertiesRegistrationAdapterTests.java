@@ -38,8 +38,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -350,19 +348,19 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	private Map<String, Object> getResponse(String issuer) {
 		Map<String, Object> response = new HashMap<>();
 		response.put("authorization_endpoint", "https://example.com/o/oauth2/v2/auth");
-		response.put("claims_supported", emptyList());
-		response.put("code_challenge_methods_supported", emptyList());
-		response.put("id_token_signing_alg_values_supported", emptyList());
+		response.put("claims_supported", Collections.emptyList());
+		response.put("code_challenge_methods_supported", Collections.emptyList());
+		response.put("id_token_signing_alg_values_supported", Collections.emptyList());
 		response.put("issuer", issuer);
 		response.put("jwks_uri", "https://example.com/oauth2/v3/certs");
-		response.put("response_types_supported", emptyList());
+		response.put("response_types_supported", Collections.emptyList());
 		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
-		response.put("scopes_supported", singletonList("openid"));
-		response.put("subject_types_supported", singletonList("public"));
-		response.put("grant_types_supported", singletonList("authorization_code"));
+		response.put("scopes_supported", Collections.singletonList("openid"));
+		response.put("subject_types_supported", Collections.singletonList("public"));
+		response.put("grant_types_supported", Collections.singletonList("authorization_code"));
 		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
 		response.put("token_endpoint_auth_methods_supported",
-				singletonList("client_secret_basic"));
+				Collections.singletonList("client_secret_basic"));
 		response.put("userinfo_endpoint", "https://example.com/oauth2/v3/userinfo");
 		return response;
 	}
