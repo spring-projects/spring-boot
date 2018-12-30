@@ -49,6 +49,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author David Liu
  * @author Daniel Young
  * @author Dmytro Nosan
+ * @author Nishant Raut
  * @see RunMojo
  * @see StartMojo
  */
@@ -79,8 +80,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * forking a new JVM.
 	 * @since 1.0
 	 */
-	@Parameter(property = "spring-boot.run.agent")
-	private File[] agent;
+	@Parameter(property = "spring-boot.run.agents")
+	private File[] agents;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
@@ -218,7 +219,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private boolean hasAgent() {
-		return (this.agent != null && this.agent.length > 0);
+		return (this.agents != null && this.agents.length > 0);
 	}
 
 	private boolean hasJvmArgs() {
@@ -360,11 +361,11 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addAgents(List<String> args) {
-		if (this.agent != null) {
+		if (this.agents != null) {
 			if (getLog().isInfoEnabled()) {
-				getLog().info("Attaching agents: " + Arrays.asList(this.agent));
+				getLog().info("Attaching agents: " + Arrays.asList(this.agents));
 			}
-			for (File agent : this.agent) {
+			for (File agent : this.agents) {
 				args.add("-javaagent:" + agent);
 			}
 		}
