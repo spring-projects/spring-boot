@@ -285,7 +285,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		@Override
 		public List<Object> getValues(AnnotationMirror annotation) {
 			List<Object> values = super.getValues(annotation);
-			Collections.sort(values, this::compare);
+			values.sort(this::compare);
 			return values;
 		}
 
