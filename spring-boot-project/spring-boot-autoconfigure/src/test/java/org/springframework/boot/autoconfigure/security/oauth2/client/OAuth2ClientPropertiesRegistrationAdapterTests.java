@@ -110,9 +110,10 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(adaptedProvider.getTokenUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+		UserInfoEndpoint userInfoEndpoint = adaptedProvider.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
-		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+		assertThat(userInfoEndpoint.getUserNameAttributeName())
 				.isEqualTo(IdTokenClaimNames.SUB);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
@@ -274,10 +275,9 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("http://example.com/auth");
 		assertThat(providerDetails.getTokenUri()).isEqualTo("http://example.com/token");
 		assertThat(providerDetails.getJwkSetUri()).isEqualTo("http://example.com/jwk");
-		assertThat(providerDetails.getUserInfoEndpoint().getUri())
-				.isEqualTo("http://example.com/info");
-		assertThat(providerDetails.getUserInfoEndpoint().getUserNameAttributeName())
-				.isEqualTo("sub");
+		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("http://example.com/info");
+		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 	}
 
 	private Provider createProvider() {
@@ -357,7 +357,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
 		response.put("scopes_supported", Collections.singletonList("openid"));
 		response.put("subject_types_supported", Collections.singletonList("public"));
-		response.put("grant_types_supported", Collections.singletonList("authorization_code"));
+		response.put("grant_types_supported",
+				Collections.singletonList("authorization_code"));
 		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
 		response.put("token_endpoint_auth_methods_supported",
 				Collections.singletonList("client_secret_basic"));
