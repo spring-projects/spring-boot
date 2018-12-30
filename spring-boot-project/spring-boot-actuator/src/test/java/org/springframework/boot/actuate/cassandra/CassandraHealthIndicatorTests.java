@@ -27,6 +27,7 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.cql.CqlOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -36,12 +37,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Oleksii Bondar
  */
-
 public class CassandraHealthIndicatorTests {
 
-	@Test(expected = IllegalArgumentException.class)
-	public void throwsExceptionOnNullCassandraOperations() {
-		new CassandraHealthIndicator(null);
+	@Test
+	public void createWhenCassandraOperationsIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new CassandraHealthIndicator(null));
 	}
 
 	@Test
@@ -54,9 +55,7 @@ public class CassandraHealthIndicatorTests {
 		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
 		given(cqlOperations.queryForResultSet(any(Select.class))).willReturn(resultSet);
 		given(resultSet.isExhausted()).willReturn(true);
-
 		Health health = healthIndicator.health();
-
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
@@ -74,9 +73,7 @@ public class CassandraHealthIndicatorTests {
 		given(resultSet.one()).willReturn(row);
 		String expectedVersion = "1.0.0";
 		given(row.getString(0)).willReturn(expectedVersion);
-
 		Health health = healthIndicator.health();
-
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo(expectedVersion);
 	}
