@@ -55,7 +55,7 @@ public class YamlPropertySourceLoaderTests {
 		StringBuilder yaml = new StringBuilder();
 		List<String> expected = new ArrayList<>();
 		for (char c = 'a'; c <= 'z'; c++) {
-			yaml.append(c + ": value" + c + "\n");
+			yaml.append(c).append(": value").append(c).append("\n");
 			expected.add(String.valueOf(c));
 		}
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());

@@ -1260,7 +1260,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 						Object existing = session.getAttribute("boot");
 						session.setAttribute("boot", value);
 						PrintWriter writer = response.getWriter();
-						writer.append(String.valueOf(existing) + ":" + value);
+						writer.append(String.valueOf(existing)).append(":")
+								.append(String.valueOf(value));
 					}
 
 				}, "/session");

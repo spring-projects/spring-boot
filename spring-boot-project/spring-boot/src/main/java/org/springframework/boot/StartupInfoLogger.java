@@ -88,7 +88,7 @@ class StartupInfoLogger {
 		message.append(stopWatch.getTotalTimeSeconds());
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;
-			message.append(" seconds (JVM running for " + uptime + ")");
+			message.append(" seconds (JVM running for ").append(uptime).append(")");
 		}
 		catch (Throwable ex) {
 			// No JVM time available

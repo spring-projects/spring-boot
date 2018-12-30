@@ -124,12 +124,12 @@ public final class WebOperationRequestPredicate {
 		StringBuilder result = new StringBuilder(
 				this.httpMethod + " to path '" + this.path + "'");
 		if (!CollectionUtils.isEmpty(this.consumes)) {
-			result.append(" consumes: "
-					+ StringUtils.collectionToCommaDelimitedString(this.consumes));
+			result.append(" consumes: ")
+					.append(StringUtils.collectionToCommaDelimitedString(this.consumes));
 		}
 		if (!CollectionUtils.isEmpty(this.produces)) {
-			result.append(" produces: "
-					+ StringUtils.collectionToCommaDelimitedString(this.produces));
+			result.append(" produces: ")
+					.append(StringUtils.collectionToCommaDelimitedString(this.produces));
 		}
 		return result.toString();
 	}
