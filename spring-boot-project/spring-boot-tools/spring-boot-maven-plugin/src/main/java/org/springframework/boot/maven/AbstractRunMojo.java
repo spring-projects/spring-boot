@@ -76,7 +76,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private boolean addResources = false;
 
 	/**
-	 * Path to agent jar. NOTE: the use of agents means that processes will be started by
+	 * Path to agents jar. NOTE: the use of agents means that processes will be started by
 	 * forking a new JVM.
 	 * @since 1.0
 	 */
