@@ -114,7 +114,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {
-		return name.toString().indexOf("[") == -1;
+		return !name.toString().contains("[");
 	}
 
 }

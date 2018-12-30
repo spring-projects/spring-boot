@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.migrator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +24,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
-import org.springframework.boot.configurationmetadata.Deprecation;
-import org.springframework.util.StringUtils;
 
 /**
  * Provides a properties migration report.
@@ -51,8 +48,7 @@ class PropertiesMigrationReport {
 		StringBuilder report = new StringBuilder();
 		report.append(String.format("%nThe use of configuration keys that have been "
 				+ "renamed was found in the environment:%n%n"));
-		append(report, content, (metadata) -> "Replacement: "
-				+ metadata.getDeprecation().getReplacement());
+		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Each configuration key has been temporarily mapped to its "
 				+ "replacement for your convenience. To silence this warning, please "
@@ -75,25 +71,12 @@ class PropertiesMigrationReport {
 		StringBuilder report = new StringBuilder();
 		report.append(String.format("%nThe use of configuration keys that are no longer "
 				+ "supported was found in the environment:%n%n"));
-		append(report, content, this::determineReason);
+		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Please refer to the migration guide or reference guide for "
 				+ "potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
-	}
-
-	private String determineReason(ConfigurationMetadataProperty metadata) {
-		Deprecation deprecation = metadata.getDeprecation();
-		if (StringUtils.hasText(deprecation.getShortReason())) {
-			return "Reason: " + deprecation.getShortReason();
-		}
-		if (StringUtils.hasText(deprecation.getReplacement())) {
-			return String.format(
-					"Reason: Replacement key '%s' uses an incompatible " + "target type",
-					deprecation.getReplacement());
-		}
-		return "Reason: none";
 	}
 
 	private Map<String, List<PropertyMigration>> getContent(
@@ -105,8 +88,7 @@ class PropertiesMigrationReport {
 	}
 
 	private void append(StringBuilder report,
-			Map<String, List<PropertyMigration>> content,
-			Function<ConfigurationMetadataProperty, String> deprecationMessage) {
+			Map<String, List<PropertyMigration>> content) {
 		content.forEach((name, properties) -> {
 			report.append(String.format("Property source '%s':%n", name));
 			properties.sort(PropertyMigration.COMPARATOR);
@@ -117,8 +99,7 @@ class PropertiesMigrationReport {
 					report.append(
 							String.format("\t\tLine: %d%n", property.getLineNumber()));
 				}
-				report.append(
-						String.format("\t\t%s%n", deprecationMessage.apply(metadata)));
+				report.append(String.format("\t\t%s%n", property.determineReason()));
 			});
 			report.append(String.format("%n"));
 		});
@@ -127,36 +108,29 @@ class PropertiesMigrationReport {
 	/**
 	 * Register a new property source.
 	 * @param name the name of the property source
-	 * @param renamed the properties that were renamed
-	 * @param unsupported the properties that are no longer supported
+	 * @param properties the {@link PropertyMigration} instances
 	 */
-	void add(String name, List<PropertyMigration> renamed,
-			List<PropertyMigration> unsupported) {
-		this.content.put(name, new LegacyProperties(renamed, unsupported));
+	void add(String name, List<PropertyMigration> properties) {
+		this.content.put(name, new LegacyProperties(properties));
 	}
 
 	private static class LegacyProperties {
 
-		private final List<PropertyMigration> renamed;
+		private final List<PropertyMigration> properties;
 
-		private final List<PropertyMigration> unsupported;
-
-		LegacyProperties(List<PropertyMigration> renamed,
-				List<PropertyMigration> unsupported) {
-			this.renamed = asNewList(renamed);
-			this.unsupported = asNewList(unsupported);
-		}
-
-		private <T> List<T> asNewList(List<T> source) {
-			return (source != null) ? new ArrayList<>(source) : Collections.emptyList();
+		LegacyProperties(List<PropertyMigration> properties) {
+			this.properties = new ArrayList<>(properties);
 		}
 
 		public List<PropertyMigration> getRenamed() {
-			return this.renamed;
+			return this.properties.stream().filter(PropertyMigration::isCompatibleType)
+					.collect(Collectors.toList());
 		}
 
 		public List<PropertyMigration> getUnsupported() {
-			return this.unsupported;
+			return this.properties.stream()
+					.filter((property) -> !property.isCompatibleType())
+					.collect(Collectors.toList());
 		}
 
 	}

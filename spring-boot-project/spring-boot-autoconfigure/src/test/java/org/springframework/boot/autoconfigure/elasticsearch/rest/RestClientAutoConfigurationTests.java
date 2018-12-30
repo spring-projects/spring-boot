@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +32,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -71,11 +69,8 @@ public class RestClientAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
-					Field field = ReflectionUtils.findField(RestClient.class,
-							"maxRetryTimeoutMillis");
-					ReflectionUtils.makeAccessible(field);
-					assertThat(ReflectionUtils.getField(field, restClient))
-							.isEqualTo(42L);
+					assertThat(restClient)
+							.hasFieldOrPropertyWithValue("maxRetryTimeoutMillis", 42L);
 				});
 	}
 

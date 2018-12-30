@@ -70,7 +70,7 @@ public class HypermediaAutoConfigurationTests {
 		LinkDiscoverers discoverers = this.context.getBean(LinkDiscoverers.class);
 		assertThat(discoverers).isNotNull();
 		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
-		assertThat(HalLinkDiscoverer.class.isInstance(discoverer)).isTrue();
+		assertThat(discoverer).isInstanceOf(HalLinkDiscoverer.class);
 	}
 
 	@Test

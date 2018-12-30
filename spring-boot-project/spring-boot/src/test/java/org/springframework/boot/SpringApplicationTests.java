@@ -16,7 +16,6 @@
 
 package org.springframework.boot;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,7 +95,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
@@ -285,24 +283,22 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void triggersConfigFileApplicationListenerBeforeBinding() throws Exception {
+	public void triggersConfigFileApplicationListenerBeforeBinding() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=bindtoapplication");
-		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
-		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(application)).isEqualTo(Banner.Mode.OFF);
+		assertThat(application).hasFieldOrPropertyWithValue("bannerMode",
+				Banner.Mode.OFF);
 	}
 
 	@Test
-	public void bindsSystemPropertyToSpringApplication() throws Exception {
+	public void bindsSystemPropertyToSpringApplication() {
 		System.setProperty("spring.main.banner-mode", "off");
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
-		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(application)).isEqualTo(Banner.Mode.OFF);
+		assertThat(application).hasFieldOrPropertyWithValue("bannerMode",
+				Banner.Mode.OFF);
 	}
 
 	@Test
