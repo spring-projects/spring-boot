@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.Properties;
 
@@ -55,7 +54,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -129,17 +127,13 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void doesNotRegistersShutdownHook() throws Exception {
+	public void doesNotRegistersShutdownHook() {
 		// See gh-314 for background. We no longer register the shutdown hook
 		// since it is really the callers responsibility. The shutdown hook could
 		// also be problematic in a classic WAR deployment.
 		addWebServerFactoryBean();
 		this.context.refresh();
-		Field shutdownHookField = AbstractApplicationContext.class
-				.getDeclaredField("shutdownHook");
-		shutdownHookField.setAccessible(true);
-		Object shutdownHook = shutdownHookField.get(this.context);
-		assertThat(shutdownHook).isNull();
+		assertThat(this.context).hasFieldOrPropertyWithValue("shutdownHook", null);
 	}
 
 	@Test
