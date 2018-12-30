@@ -180,9 +180,9 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		public String toString() {
 			StringBuilder result = new StringBuilder(this.name);
 			if (this.description != null) {
-				result.append(" (" + this.description + ")");
+				result.append(" (").append(this.description).append(")");
 			}
-			result.append(":" + this.type);
+			result.append(":").append(this.type);
 			return result.toString();
 		}
 
