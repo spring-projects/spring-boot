@@ -125,20 +125,20 @@ public class HibernatePropertiesTests {
 	}
 
 	@Test
-	public void useArchiveScanner() {
+	public void scannerUsesDisabledScannerByDefault() {
+		this.contextRunner.run(assertHibernateProperties(
+				(hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
+						AvailableSettings.SCANNER,
+						"org.hibernate.boot.archive.scan.internal.DisabledScanner")));
+	}
+
+	@Test
+	public void scannerCanBeCustomized() {
 		this.contextRunner.withPropertyValues(
 				"spring.jpa.properties.hibernate.archive.scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
 				.run(assertHibernateProperties((hibernateProperties) -> assertThat(
 						hibernateProperties).containsEntry(AvailableSettings.SCANNER,
 								"org.hibernate.boot.archive.scan.internal.StandardScanner")));
-	}
-
-	@Test
-	public void defaultArchiveScanner() {
-		this.contextRunner.run(assertHibernateProperties(
-				(hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
-						AvailableSettings.SCANNER,
-						"org.hibernate.boot.archive.scan.internal.DisabledScanner")));
 	}
 
 	@Test
