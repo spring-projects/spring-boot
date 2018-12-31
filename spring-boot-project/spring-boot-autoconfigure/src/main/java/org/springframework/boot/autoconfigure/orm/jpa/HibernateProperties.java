@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -39,6 +40,8 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties("spring.jpa.hibernate")
 public class HibernateProperties {
+
+	private static final String DISABLED_SCANNER_CLASS = "org.hibernate.boot.archive.scan.internal.DisabledScanner";
 
 	private final Naming naming = new Naming();
 
@@ -95,6 +98,7 @@ public class HibernateProperties {
 			HibernateSettings settings) {
 		Map<String, Object> result = new HashMap<>(existing);
 		applyNewIdGeneratorMappings(result);
+		applyScanner(result);
 		getNaming().applyNamingStrategies(result);
 		String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
 		if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
@@ -118,6 +122,13 @@ public class HibernateProperties {
 		}
 		else if (!result.containsKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS)) {
 			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+		}
+	}
+
+	private void applyScanner(Map<String, Object> result) {
+		if (!result.containsKey(AvailableSettings.SCANNER)
+				&& ClassUtils.isPresent(DISABLED_SCANNER_CLASS, null)) {
+			result.put(AvailableSettings.SCANNER, DISABLED_SCANNER_CLASS);
 		}
 	}
 
