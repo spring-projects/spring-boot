@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  * Default implementation of {@link RestTemplateExchangeTagsProvider}.
  *
  * @author Jon Schneider
+ * @author Nishant Raut
  * @since 2.0.0
  */
 public class DefaultRestTemplateExchangeTagsProvider
@@ -41,7 +42,8 @@ public class DefaultRestTemplateExchangeTagsProvider
 				: RestTemplateExchangeTags.uri(request));
 		return Arrays.asList(RestTemplateExchangeTags.method(request), uriTag,
 				RestTemplateExchangeTags.status(response),
-				RestTemplateExchangeTags.clientName(request));
+				RestTemplateExchangeTags.clientName(request),
+				RestTemplateExchangeTags.outcome(response));
 	}
 
 }
