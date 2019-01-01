@@ -126,11 +126,9 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
 				.run((context) -> {
-					assertThat(
-							getAuthenticateHeader(context, "/actuator/health").toString())
-									.contains("Bearer");
-					assertThat(getAuthenticateHeader(context, "/anything").toString())
-							.contains("Bearer");
+					assertThat(context.getBeanNamesForType(
+							ReactiveManagementWebSecurityAutoConfiguration.class))
+									.isEmpty();
 				});
 	}
 
