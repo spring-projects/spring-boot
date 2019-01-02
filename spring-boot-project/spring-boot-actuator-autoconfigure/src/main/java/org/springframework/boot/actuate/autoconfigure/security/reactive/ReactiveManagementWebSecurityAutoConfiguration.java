@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +52,8 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 @AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
 @AutoConfigureAfter({ HealthEndpointAutoConfiguration.class,
 		InfoEndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-		ReactiveOAuth2ClientAutoConfiguration.class })
+		ReactiveOAuth2ClientAutoConfiguration.class,
+		ReactiveOAuth2ResourceServerAutoConfiguration.class })
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean
