@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,10 +62,10 @@ class JsonConverter {
 	public JSONObject toJsonObject(ItemMetadata item) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", item.getName());
-		putIfPresent(jsonObject, "type", item.getType());
-		putIfPresent(jsonObject, "description", item.getDescription());
-		putIfPresent(jsonObject, "sourceType", item.getSourceType());
-		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
+		jsonObject.putOpt("type", item.getType());
+		jsonObject.putOpt("description", item.getDescription());
+		jsonObject.putOpt("sourceType", item.getSourceType());
+		jsonObject.putOpt("sourceMethod", item.getSourceMethod());
 		Object defaultValue = item.getDefaultValue();
 		if (defaultValue != null) {
 			putDefaultValue(jsonObject, defaultValue);
@@ -111,7 +111,7 @@ class JsonConverter {
 	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws Exception {
 		JSONObject result = new JSONObject();
 		putHintValue(result, value.getValue());
-		putIfPresent(result, "description", value.getDescription());
+		result.putOpt("description", value.getDescription());
 		return result;
 	}
 
@@ -135,13 +135,6 @@ class JsonConverter {
 			result.put("parameters", parameters);
 		}
 		return result;
-	}
-
-	private void putIfPresent(JSONObject jsonObject, String name, Object value)
-			throws Exception {
-		if (value != null) {
-			jsonObject.put(name, value);
-		}
 	}
 
 	private void putHintValue(JSONObject jsonObject, Object value) throws Exception {
