@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
@@ -116,6 +117,17 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 							.contains("/login");
 					assertThat(getLocationHeader(context, "/foo")).isNull();
 				});
+	}
+
+	@Test
+	public void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations
+						.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
+				.run((context) -> assertThat(context).doesNotHaveBean(
+						ReactiveManagementWebSecurityAutoConfiguration.class));
 	}
 
 	@Test
