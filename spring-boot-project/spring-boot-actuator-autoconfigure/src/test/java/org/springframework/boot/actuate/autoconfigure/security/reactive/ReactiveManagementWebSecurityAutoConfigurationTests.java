@@ -120,17 +120,14 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backsOffIfReactiveOAuth2ResourceServerAutoConfigurationSecurityIsAdded() {
+	public void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations
 						.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
-				.run((context) -> {
-					assertThat(context.getBeanNamesForType(
-							ReactiveManagementWebSecurityAutoConfiguration.class))
-									.isEmpty();
-				});
+				.run((context) -> assertThat(context).doesNotHaveBean(
+						ReactiveManagementWebSecurityAutoConfiguration.class));
 	}
 
 	@Test

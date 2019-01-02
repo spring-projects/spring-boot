@@ -108,16 +108,14 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffIfOAuth2ResourceServerAutoConfigurationSecurityIsAdded() {
+	public void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations
 						.of(OAuth2ResourceServerAutoConfiguration.class))
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
-				.run((context) -> {
-					assertThat(context.getBeanNamesForType(
-							ManagementWebSecurityConfigurerAdapter.class)).isEmpty();
-				});
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ManagementWebSecurityConfigurerAdapter.class));
 	}
 
 	private HttpStatus getResponseStatus(AssertableWebApplicationContext context,
