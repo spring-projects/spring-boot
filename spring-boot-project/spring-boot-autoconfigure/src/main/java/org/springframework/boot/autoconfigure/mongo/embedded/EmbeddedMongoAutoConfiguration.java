@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
@@ -39,6 +40,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
@@ -48,6 +50,7 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -203,7 +206,8 @@ public class EmbeddedMongoAutoConfiguration {
 	static class RuntimeConfigConfiguration {
 
 		@Bean
-		public IRuntimeConfig embeddedMongoRuntimeConfig() {
+		public IRuntimeConfig embeddedMongoRuntimeConfig(
+				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory
 					.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
 			ProcessOutput processOutput = new ProcessOutput(
@@ -211,15 +215,21 @@ public class EmbeddedMongoAutoConfiguration {
 					Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named(
 							"[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
 			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
-					.processOutput(processOutput).artifactStore(getArtifactStore(logger))
+					.processOutput(processOutput).artifactStore(getArtifactStore(logger,
+							downloadConfigBuilderCustomizers.orderedStream()))
 					.build();
 		}
 
-		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
+		private ArtifactStoreBuilder getArtifactStore(Logger logger,
+				Stream<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
+			DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
+					.defaultsForCommand(Command.MongoD);
+			downloadConfigBuilder.progressListener(new Slf4jProgressListener(logger));
+			downloadConfigBuilderCustomizers
+					.forEach((customizer) -> customizer.customize(downloadConfigBuilder));
+			IDownloadConfig downloadConfig = downloadConfigBuilder.build();
 			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
-					.download(new DownloadConfigBuilder()
-							.defaultsForCommand(Command.MongoD)
-							.progressListener(new Slf4jProgressListener(logger)).build());
+					.download(downloadConfig);
 		}
 
 	}
