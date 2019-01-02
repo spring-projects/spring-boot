@@ -4292,7 +4292,8 @@ If you have SLF4J on the classpath, the output produced by Mongo is automaticall
 to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
 
 You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of
-the Mongo instance's configuration and logging routing.
+the Mongo instance's configuration and logging routing. The download configuration can be
+customized by declaring a `DownloadConfigBuilderCustomizer` bean.
 
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,19 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
-import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
-import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -184,27 +184,12 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultDownloadConfiguration() {
-		load();
-		IDownloadConfig downloadConfig = this.context.getBean(IDownloadConfig.class);
-
-		assertThat(downloadConfig.getDownloadPath().getClass().getSimpleName())
-				.isEqualTo("PlatformDependentDownloadPath");
-		assertThat(downloadConfig.getUserAgent()).isEqualTo(
-				"Mozilla/5.0 (compatible; Embedded MongoDB; +https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de)");
-		assertThat(downloadConfig.getProgressListener())
-				.isInstanceOf(Slf4jProgressListener.class);
-	}
-
-	@Test
-	public void customizedDownloadConfiguration() {
-		load(TestEmbeddedMongoDownloadConfigBuilderCustomizer.class);
-
-		IDownloadConfig downloadConfig = this.context.getBean(IDownloadConfig.class);
-		assertThat(downloadConfig.getDownloadPath().getPath(null)).isEqualTo("test");
+	public void customizeDownloadConfiguration() {
+		load(DownloadConfigBuilderCustomizerConfiguration.class);
+		IRuntimeConfig runtimeConfig = this.context.getBean(IRuntimeConfig.class);
+		IDownloadConfig downloadConfig = (IDownloadConfig) new DirectFieldAccessor(
+				runtimeConfig.getArtifactStore()).getPropertyValue("downloadConfig");
 		assertThat(downloadConfig.getUserAgent()).isEqualTo("Test User Agent");
-		assertThat(downloadConfig.getProgressListener())
-				.isInstanceOf(Slf4jProgressListener.class);
 	}
 
 	private void assertVersionConfiguration(String configuredVersion,
@@ -254,13 +239,14 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	}
 
-	private static class TestEmbeddedMongoDownloadConfigBuilderCustomizer
-			implements EmbeddedMongoDownloadConfigBuilderCustomizer {
+	@Configuration
+	static class DownloadConfigBuilderCustomizerConfiguration {
 
-		@Override
-		public void customize(DownloadConfigBuilder downloadConfigBuilder) {
-			downloadConfigBuilder.downloadPath("test");
-			downloadConfigBuilder.userAgent("Test User Agent");
+		@Bean
+		public DownloadConfigBuilderCustomizer testDownloadConfigBuilderCustomizer() {
+			return (downloadConfigBuilder) -> {
+				downloadConfigBuilder.userAgent("Test User Agent");
+			};
 		}
 
 	}
