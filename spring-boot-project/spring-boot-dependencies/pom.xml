@@ -220,7 +220,7 @@
 		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
 		<xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
-		<flatten-maven-plugin.version>1.0.1</flatten-maven-plugin.version>
+		<flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
