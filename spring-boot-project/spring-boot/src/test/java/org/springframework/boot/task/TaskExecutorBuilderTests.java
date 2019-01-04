@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -48,11 +47,10 @@ public class TaskExecutorBuilderTests {
 		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10).corePoolSize(4)
 				.maxPoolSize(8).allowCoreThreadTimeOut(true)
 				.keepAlive(Duration.ofMinutes(1)).build();
-		DirectFieldAccessor dfa = new DirectFieldAccessor(executor);
-		assertThat(dfa.getPropertyValue("queueCapacity")).isEqualTo(10);
+		assertThat(executor).hasFieldOrPropertyWithValue("queueCapacity", 10);
 		assertThat(executor.getCorePoolSize()).isEqualTo(4);
 		assertThat(executor.getMaxPoolSize()).isEqualTo(8);
-		assertThat(dfa.getPropertyValue("allowCoreThreadTimeOut")).isEqualTo(true);
+		assertThat(executor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 		assertThat(executor.getKeepAliveSeconds()).isEqualTo(60);
 	}
 

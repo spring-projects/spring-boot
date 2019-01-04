@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -113,7 +114,7 @@ public class ReactiveMongoClientFactoryTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://localhost/test?retryWrites=true");
 		MongoClient client = createMongoClient(properties);
-		assertThat(client.getSettings().getRetryWrites()).isTrue();
+		assertThat(getSettings(client).getRetryWrites()).isTrue();
 	}
 
 	@Test
@@ -190,14 +191,19 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
-		com.mongodb.async.client.MongoClientSettings settings = client.getSettings();
+		MongoClientSettings settings = getSettings(client);
 		ClusterSettings clusterSettings = settings.getClusterSettings();
 		return clusterSettings.getHosts();
 	}
 
 	private MongoCredential extractMongoCredentials(MongoClient client) {
-		com.mongodb.async.client.MongoClientSettings settings = client.getSettings();
-		return settings.getCredential();
+		return getSettings(client).getCredential();
+	}
+
+	@SuppressWarnings("deprecation")
+	private MongoClientSettings getSettings(MongoClient client) {
+		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(),
+				"wrapped");
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

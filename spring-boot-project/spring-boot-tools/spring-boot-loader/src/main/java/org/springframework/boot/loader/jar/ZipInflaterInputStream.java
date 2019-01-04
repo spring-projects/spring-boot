@@ -35,10 +35,6 @@ class ZipInflaterInputStream extends InflaterInputStream {
 	private boolean extraBytesWritten;
 
 	ZipInflaterInputStream(InputStream inputStream, int size) {
-		this(inputStream, new Inflater(true), size);
-	}
-
-	private ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
 		super(inputStream, new Inflater(true), getInflaterBufferSize(size));
 		this.available = size;
 	}

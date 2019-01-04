@@ -22,7 +22,7 @@ import javax.transaction.TransactionManager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -61,16 +61,20 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(DataSource.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
-	@Autowired
-	private XADataSourceWrapper wrapper;
+	private final XADataSourceWrapper wrapper;
 
-	@Autowired
-	private DataSourceProperties properties;
+	private final DataSourceProperties properties;
 
-	@Autowired(required = false)
-	private XADataSource xaDataSource;
+	private final XADataSource xaDataSource;
 
 	private ClassLoader classLoader;
+
+	public XADataSourceAutoConfiguration(XADataSourceWrapper wrapper,
+			DataSourceProperties properties, ObjectProvider<XADataSource> xaDataSource) {
+		this.wrapper = wrapper;
+		this.properties = properties;
+		this.xaDataSource = xaDataSource.getIfAvailable();
+	}
 
 	@Bean
 	public DataSource dataSource() throws Exception {

@@ -1,5 +1,6 @@
 [[getting-started]]
 = Getting Started
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -38,8 +39,9 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8 or 9] and
-{spring-reference}[Spring Framework {spring-framework-version}] or above.
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible
+up to Java 11 (included). {spring-reference}[Spring Framework {spring-framework-version}]
+or above is also required.
 
 Explicit build support is provided for the following build tools:
 
@@ -626,7 +628,7 @@ important parts in the next few sections.
 
 
 [[getting-started-first-application-annotations]]
-==== The @RestController and @RequestMapping Annotations
+==== The `@RestController` and `@RequestMapping` Annotations
 The first annotation on our `Example` class is `@RestController`. This is known as a
 _stereotype_ annotation. It provides hints for people reading the code and for Spring
 that the class plays a specific role. In this case, our class is a web `@Controller`, so

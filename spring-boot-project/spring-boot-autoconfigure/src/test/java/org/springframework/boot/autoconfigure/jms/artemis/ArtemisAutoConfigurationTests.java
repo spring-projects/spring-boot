@@ -64,12 +64,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ArtemisAutoConfigurationTests {
 
-	@Rule
-	public final TemporaryFolder folder = new TemporaryFolder();
-
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
 					JmsAutoConfiguration.class));
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void connectionFactoryIsCachedByDefault() {
@@ -81,10 +81,8 @@ public class ArtemisAutoConfigurationTests {
 							.getBean(CachingConnectionFactory.class);
 					assertThat(connectionFactory.getTargetConnectionFactory())
 							.isInstanceOf(ActiveMQConnectionFactory.class);
-					assertThat(connectionFactory)
-							.hasFieldOrPropertyWithValue("cacheConsumers", false);
-					assertThat(connectionFactory)
-							.hasFieldOrPropertyWithValue("cacheProducers", true);
+					assertThat(connectionFactory.isCacheConsumers()).isFalse();
+					assertThat(connectionFactory.isCacheProducers()).isTrue();
 					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(1);
 				});
 	}
@@ -100,10 +98,8 @@ public class ArtemisAutoConfigurationTests {
 					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
-					assertThat(connectionFactory)
-							.hasFieldOrPropertyWithValue("cacheConsumers", true);
-					assertThat(connectionFactory)
-							.hasFieldOrPropertyWithValue("cacheProducers", false);
+					assertThat(connectionFactory.isCacheConsumers()).isTrue();
+					assertThat(connectionFactory.isCacheProducers()).isFalse();
 					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(10);
 				});
 	}
@@ -278,7 +274,7 @@ public class ArtemisAutoConfigurationTests {
 
 	@Test
 	public void embeddedWithPersistentMode() throws IOException {
-		File dataFolder = this.folder.newFolder();
+		File dataFolder = this.temp.newFolder();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)

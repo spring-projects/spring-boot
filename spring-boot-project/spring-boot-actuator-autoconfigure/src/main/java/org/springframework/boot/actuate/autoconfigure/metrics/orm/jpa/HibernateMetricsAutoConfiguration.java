@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jpa.HibernateMetrics;
+import org.hibernate.SessionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -46,7 +47,8 @@ import org.springframework.util.StringUtils;
 @Configuration
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
-@ConditionalOnClass({ EntityManagerFactory.class, MeterRegistry.class })
+@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class,
+		MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
 public class HibernateMetricsAutoConfiguration {
 

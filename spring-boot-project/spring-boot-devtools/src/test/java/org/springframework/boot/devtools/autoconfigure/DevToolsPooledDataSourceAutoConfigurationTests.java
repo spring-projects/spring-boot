@@ -16,6 +16,7 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -23,7 +24,9 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -40,9 +43,13 @@ import static org.mockito.Mockito.verify;
 public class DevToolsPooledDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
 	@Before
-	public void before() {
-		System.setProperty("derby.stream.error.file", "target/derby.log");
+	public void before() throws IOException {
+		System.setProperty("derby.stream.error.file",
+				this.temp.newFile("derby.log").getAbsolutePath());
 	}
 
 	@After

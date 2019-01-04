@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @param <P> properties used by the tests
  * @param <A> adapter used by the tests
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 public abstract class StepRegistryPropertiesConfigAdapterTests<P extends StepRegistryProperties, A extends StepRegistryPropertiesConfigAdapter<P>> {
 
@@ -48,22 +49,6 @@ public abstract class StepRegistryPropertiesConfigAdapterTests<P extends StepReg
 		P properties = createProperties();
 		properties.setEnabled(false);
 		assertThat(createConfigAdapter(properties).enabled()).isFalse();
-	}
-
-	@Test
-	public void whenPropertiesConnectTimeoutIsSetAdapterConnectTimeoutReturnsIt() {
-		P properties = createProperties();
-		properties.setConnectTimeout(Duration.ofMinutes(42));
-		assertThat(createConfigAdapter(properties).connectTimeout())
-				.isEqualTo(Duration.ofMinutes(42));
-	}
-
-	@Test
-	public void whenPropertiesReadTimeoutIsSetAdapterReadTimeoutReturnsIt() {
-		P properties = createProperties();
-		properties.setReadTimeout(Duration.ofMillis(42));
-		assertThat(createConfigAdapter(properties).readTimeout())
-				.isEqualTo(Duration.ofMillis(42));
 	}
 
 	@Test

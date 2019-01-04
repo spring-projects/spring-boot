@@ -25,8 +25,8 @@ import java.util.concurrent.ScheduledFuture;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Class that can be used to managed the pushing of metrics to a {@link PushGateway
+ * Class that can be used to manage the pushing of metrics to a {@link PushGateway
  * Prometheus PushGateway}. Handles the scheduling of push operations, error handling and
  * shutdown operations.
  *
@@ -44,8 +44,8 @@ import org.springframework.util.StringUtils;
  */
 public class PrometheusPushGatewayManager {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PrometheusPushGatewayManager.class);
+	private static final Log logger = LogFactory
+			.getLog(PrometheusPushGatewayManager.class);
 
 	private final PushGateway pushGateway;
 
@@ -115,9 +115,9 @@ public class PrometheusPushGatewayManager {
 		}
 		catch (UnknownHostException ex) {
 			String host = ex.getMessage();
-			String message = "Unable to locate prometheus push gateway host";
-			message += StringUtils.hasLength(host) ? " '" + host + "'" : "";
-			message += ". No longer attempting metrics publication to this host";
+			String message = "Unable to locate prometheus push gateway host"
+					+ (StringUtils.hasLength(host) ? " '" + host + "'" : "")
+					+ ". No longer attempting metrics publication to this host";
 			logger.error(message, ex);
 			shutdown(ShutdownOperation.NONE);
 		}

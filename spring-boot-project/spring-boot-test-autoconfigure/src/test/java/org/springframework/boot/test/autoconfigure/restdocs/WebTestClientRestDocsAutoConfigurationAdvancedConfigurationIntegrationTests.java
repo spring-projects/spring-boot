@@ -18,7 +18,6 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -36,6 +36,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
@@ -51,30 +52,30 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
 public class WebTestClientRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
-	@Before
-	public void deleteSnippets() {
-		FileSystemUtils.deleteRecursively(new File("target/generated-snippets"));
-	}
-
 	@Autowired
 	private WebTestClient webTestClient;
+
+	private File generatedSnippets;
+
+	@Before
+	public void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
+				"generated-snippets");
+		FileSystemUtils.deleteRecursively(this.generatedSnippets);
+	}
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
 		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful()
 				.expectBody().consumeWith(document("default-snippets"));
-		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
+		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.md"))
-				.has(contentContaining("api.example.com"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
+				.contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md")))
+				.contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
 	}
 
 	@TestConfiguration

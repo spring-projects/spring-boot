@@ -27,8 +27,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when no beans of the specified classes and/or
- * with the specified names are already contained in the {@link BeanFactory}.
+ * {@link Conditional} that only matches when no beans meeting the specified requirements
+ * are already contained in the {@link BeanFactory}. None of the requirements must be met
+ * for the condition to match and the requirements do not have to be met by the same bean.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of
  * the factory method:
@@ -112,5 +113,15 @@ public @interface ConditionalOnMissingBean {
 	 * @return the search strategy
 	 */
 	SearchStrategy search() default SearchStrategy.ALL;
+
+	/**
+	 * Additional classes that may contain the specified bean types within their generic
+	 * parameters. For example, an annotation declaring {@code value=Name.class} and
+	 * {@code parameterizedContainer=NameRegistration.class} would detect both
+	 * {@code Name} and {@code NameRegistration<Name>}.
+	 * @return the container types
+	 * @since 2.1.0
+	 */
+	Class<?>[] parameterizedContainer() default {};
 
 }

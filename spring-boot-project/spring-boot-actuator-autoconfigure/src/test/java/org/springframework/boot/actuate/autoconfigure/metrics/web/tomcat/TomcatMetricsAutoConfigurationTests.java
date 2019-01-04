@@ -102,9 +102,8 @@ public class TomcatMetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(TomcatMetricsAutoConfiguration.class))
 				.withUserConfiguration(MeterRegistryConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
-				});
+				.run((context) -> assertThat(context)
+						.hasSingleBean(TomcatMetricsBinder.class));
 	}
 
 	@Test

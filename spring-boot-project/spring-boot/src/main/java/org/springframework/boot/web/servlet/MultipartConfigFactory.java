@@ -57,7 +57,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the maximum size in bytes allowed for uploaded files.
 	 * @param maxFileSize the maximum file size
-	 * @deprecated since 2.1.0 in favour of {@link #setMaxFileSize(DataSize)}
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxFileSize(DataSize)}
 	 */
 	@Deprecated
 	public void setMaxFileSize(long maxFileSize) {
@@ -68,7 +68,7 @@ public class MultipartConfigFactory {
 	 * Sets the maximum size allowed for uploaded files. Values can use the suffixed "MB"
 	 * or "KB" to indicate a Megabyte or Kilobyte size.
 	 * @param maxFileSize the maximum file size
-	 * @deprecated since 2.1.0 in favour of {@link #setMaxFileSize(DataSize)}
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxFileSize(DataSize)}
 	 */
 	@Deprecated
 	public void setMaxFileSize(String maxFileSize) {
@@ -86,7 +86,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the maximum size allowed in bytes for multipart/form-data requests.
 	 * @param maxRequestSize the maximum request size
-	 * @deprecated since 2.1.0 in favour of {@link #setMaxRequestSize(DataSize)}
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxRequestSize(DataSize)}
 	 */
 	@Deprecated
 	public void setMaxRequestSize(long maxRequestSize) {
@@ -97,7 +97,7 @@ public class MultipartConfigFactory {
 	 * Sets the maximum size allowed for multipart/form-data requests. Values can use the
 	 * suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	 * @param maxRequestSize the maximum request size
-	 * @deprecated since 2.1.0 in favour of {@link #setMaxRequestSize(DataSize)}
+	 * @deprecated since 2.1.0 in favor of {@link #setMaxRequestSize(DataSize)}
 	 */
 	@Deprecated
 	public void setMaxRequestSize(String maxRequestSize) {
@@ -115,7 +115,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the size threshold in bytes after which files will be written to disk.
 	 * @param fileSizeThreshold the file size threshold
-	 * @deprecated since 2.1.0 in favour of {@link #setFileSizeThreshold(DataSize)}
+	 * @deprecated since 2.1.0 in favor of {@link #setFileSizeThreshold(DataSize)}
 	 */
 	@Deprecated
 	public void setFileSizeThreshold(int fileSizeThreshold) {
@@ -126,7 +126,7 @@ public class MultipartConfigFactory {
 	 * Sets the size threshold after which files will be written to disk. Values can use
 	 * the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	 * @param fileSizeThreshold the file size threshold
-	 * @deprecated since 2.1.0 in favour of {@link #setFileSizeThreshold(DataSize)}
+	 * @deprecated since 2.1.0 in favor of {@link #setFileSizeThreshold(DataSize)}
 	 */
 	@Deprecated
 	public void setFileSizeThreshold(String fileSizeThreshold) {

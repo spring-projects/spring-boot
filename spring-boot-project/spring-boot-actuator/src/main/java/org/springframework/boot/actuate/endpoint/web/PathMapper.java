@@ -49,7 +49,7 @@ public interface PathMapper {
 	 */
 	@Deprecated
 	static PathMapper useEndpointId() {
-		return (id) -> id.toString();
+		return EndpointId::toString;
 	}
 
 	/**

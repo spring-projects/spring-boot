@@ -1,5 +1,6 @@
 [[boot-documentation]]
 = Spring Boot Documentation
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -11,14 +12,8 @@ as a map for the rest of the document.
 
 [[boot-documentation-about]]
 == About the Documentation
-The Spring Boot reference guide is available as
-
-* {spring-boot-docs}/html[HTML]
-* {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
-* {spring-boot-docs}/epub/spring-boot-reference.epub[EPUB]
-
 The latest copy
-is available at {spring-boot-docs-current}.
+of the reference documentation is available at {spring-boot-docs-current}.
 
 Copies of this document may be made for your own use and for distribution to others,
 provided that you do not charge any fee for such copies and further provided that each

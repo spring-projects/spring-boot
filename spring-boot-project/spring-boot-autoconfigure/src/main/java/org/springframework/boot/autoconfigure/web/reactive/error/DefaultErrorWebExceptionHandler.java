@@ -122,7 +122,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
 				.contentType(MediaType.TEXT_HTML);
 		return Flux
-				.just("error/" + errorStatus.toString(),
+				.just("error/" + errorStatus.value(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
 				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
 				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()

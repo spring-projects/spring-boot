@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -147,15 +149,42 @@ public class JettyWebServerFactoryCustomizerTests {
 	public void customizeMaxHttpHeaderSize() {
 		bind("server.max-http-header-size=2048");
 		JettyWebServer server = customizeAndGetServer();
-		for (Connector connector : server.getServer().getConnectors()) {
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(2048);
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
+		List<Integer> requestHeaderSizes = new ArrayList<>();
+		// Start (and directly stop) server to have connectors available
+		server.start();
+		server.stop();
+		Connector[] connectors = server.getServer().getConnectors();
+		for (Connector connector : connectors) {
 			connector.getConnectionFactories().stream()
 					.filter((factory) -> factory instanceof ConnectionFactory)
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();
-						assertThat(configuration.getRequestHeaderSize()).isEqualTo(2048);
+						requestHeaderSizes.add(configuration.getRequestHeaderSize());
 					});
 		}
+		return requestHeaderSizes;
 	}
 
 	private void bind(String... inlinedProperties) {

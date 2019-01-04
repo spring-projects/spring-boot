@@ -34,6 +34,7 @@ import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -67,8 +68,8 @@ import org.springframework.util.StringUtils;
  * {@literal java -jar myapp.jar [--debug | --trace]}). If you prefer to ignore these
  * properties you can set {@link #setParseArgs(boolean) parseArgs} to {@code false}.
  * <p>
- * By default, log output is only written to the console. If a log file is required the
- * {@code logging.path} and {@code logging.file} properties can be used.
+ * By default, log output is only written to the console. If a log file is required, the
+ * {@code logging.file.path} and {@code logging.file.name} properties can be used.
  * <p>
  * Some system properties may be set as side effects, and these can be useful if the
  * logging configuration supports placeholders (i.e. log4j or logback):
@@ -87,6 +88,12 @@ import org.springframework.util.StringUtils;
  * @see LoggingSystem#get(ClassLoader)
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
+
+	private static final ConfigurationPropertyName LOGGING_LEVEL = ConfigurationPropertyName
+			.of("logging.level");
+
+	private static final ConfigurationPropertyName LOGGING_GROUP = ConfigurationPropertyName
+			.of("logging.group");
 
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
 			.mapOf(String.class, String.class);
@@ -123,6 +130,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		loggers.add("web", "org.springframework.core.codec");
 		loggers.add("web", "org.springframework.http");
 		loggers.add("web", "org.springframework.web");
+		loggers.add("web", "org.springframework.boot.actuate.endpoint.web");
+		loggers.add("web",
+				"org.springframework.boot.web.servlet.ServletContextInitializerBeans");
 		loggers.add("sql", "org.springframework.jdbc.core");
 		loggers.add("sql", "org.hibernate.SQL");
 		DEFAULT_GROUP_LOGGERS = Collections.unmodifiableMap(loggers);
@@ -324,8 +334,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		Binder binder = Binder.get(environment);
 		Map<String, String[]> groups = getGroups();
-		binder.bind("logging.group", STRING_STRINGS_MAP.withExistingValue(groups));
-		Map<String, String> levels = binder.bind("logging.level", STRING_STRING_MAP)
+		binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP.withExistingValue(groups));
+		Map<String, String> levels = binder.bind(LOGGING_LEVEL, STRING_STRING_MAP)
 				.orElseGet(Collections::emptyMap);
 		levels.forEach((name, level) -> {
 			String[] groupedNames = groups.get(name);
@@ -357,15 +367,16 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {
-			this.logger.error("Cannot set level: " + level + " for '" + name + "'");
+			this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
 		}
 	}
 
 	private LogLevel coerceLogLevel(String level) {
-		if ("false".equalsIgnoreCase(level)) {
+		String trimmedLevel = level.trim();
+		if ("false".equalsIgnoreCase(trimmedLevel)) {
 			return LogLevel.OFF;
 		}
-		return LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH));
+		return LogLevel.valueOf(trimmedLevel.toUpperCase(Locale.ENGLISH));
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment,

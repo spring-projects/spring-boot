@@ -131,8 +131,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 			String job = properties.getJob();
 			job = (job != null) ? job
 					: environment.getProperty("spring.application.name");
-			job = (job != null) ? job : FALLBACK_JOB;
-			return job;
+			return (job != null) ? job : FALLBACK_JOB;
 		}
 
 	}

@@ -179,11 +179,11 @@ public class Repackager {
 		if (this.layout == null) {
 			this.layout = getLayoutFactory().getLayout(this.source);
 		}
-		if (alreadyRepackaged()) {
-			return;
-		}
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
+		if (alreadyRepackaged() && this.source.equals(destination)) {
+			return;
+		}
 		if (this.source.equals(destination)) {
 			workingSource = getBackupFile();
 			workingSource.delete();
@@ -270,8 +270,8 @@ public class Repackager {
 	}
 
 	private boolean isZip(InputStream inputStream) throws IOException {
-		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
-			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+		for (byte magicByte : ZIP_FILE_HEADER) {
+			if (inputStream.read() != magicByte) {
 				return false;
 			}
 		}

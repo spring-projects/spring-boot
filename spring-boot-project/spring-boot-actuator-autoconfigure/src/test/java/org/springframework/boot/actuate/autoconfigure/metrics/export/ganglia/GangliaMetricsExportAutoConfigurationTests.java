@@ -16,24 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia;
 
-import java.util.Map;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link GangliaMetricsExportAutoConfiguration}.
@@ -89,25 +83,12 @@ public class GangliaMetricsExportAutoConfigurationTests {
 	public void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> {
-					GangliaMeterRegistry registry = spyOnDisposableBean(
-							GangliaMeterRegistry.class, context);
+					GangliaMeterRegistry registry = context
+							.getBean(GangliaMeterRegistry.class);
+					assertThat(registry.isClosed()).isFalse();
 					context.close();
-					verify(registry).stop();
+					assertThat(registry.isClosed()).isTrue();
 				});
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T spyOnDisposableBean(Class<T> type,
-			AssertableApplicationContext context) {
-		String[] names = context.getBeanNamesForType(type);
-		assertThat(names).hasSize(1);
-		String registryBeanName = names[0];
-		Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils
-				.getField(context.getAutowireCapableBeanFactory(), "disposableBeans");
-		Object registryAdapter = disposableBeans.get(registryBeanName);
-		T registry = (T) spy(ReflectionTestUtils.getField(registryAdapter, "bean"));
-		ReflectionTestUtils.setField(registryAdapter, "bean", registry);
-		return registry;
 	}
 
 	@Configuration
@@ -126,14 +107,7 @@ public class GangliaMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public GangliaConfig customConfig() {
-			return new GangliaConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (k) -> null;
 		}
 
 	}

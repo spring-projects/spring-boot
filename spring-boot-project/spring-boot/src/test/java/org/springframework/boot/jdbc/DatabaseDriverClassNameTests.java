@@ -46,7 +46,7 @@ public class DatabaseDriverClassNameTests {
 	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
 			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE,
 					DatabaseDriver.DB2, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-					DatabaseDriver.SAP, DatabaseDriver.TERADATA));
+					DatabaseDriver.HANA, DatabaseDriver.TERADATA));
 
 	private final String className;
 

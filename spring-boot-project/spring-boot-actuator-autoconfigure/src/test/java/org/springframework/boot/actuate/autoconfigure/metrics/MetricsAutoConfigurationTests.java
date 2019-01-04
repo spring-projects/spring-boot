@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.List;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -36,7 +34,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -68,13 +65,13 @@ public class MetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class)
 				.run((context) -> {
 					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-					List<MeterFilter> filters = (List<MeterFilter>) ReflectionTestUtils
+					MeterFilter[] filters = (MeterFilter[]) ReflectionTestUtils
 							.getField(meterRegistry, "filters");
 					assertThat(filters).hasSize(3);
-					assertThat(filters.get(0).accept((Meter.Id) null))
+					assertThat(filters[0].accept((Meter.Id) null))
 							.isEqualTo(MeterFilterReply.DENY);
-					assertThat(filters.get(1)).isInstanceOf(PropertiesMeterFilter.class);
-					assertThat(filters.get(2).accept((Meter.Id) null))
+					assertThat(filters[1]).isInstanceOf(PropertiesMeterFilter.class);
+					assertThat(filters[2].accept((Meter.Id) null))
 							.isEqualTo(MeterFilterReply.ACCEPT);
 					verify((MeterBinder) context.getBean("meterBinder"))
 							.bindTo(meterRegistry);
@@ -98,8 +95,7 @@ public class MetricsAutoConfigurationTests {
 
 		@Bean
 		MeterRegistry meterRegistry() {
-			SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
-			return spy(meterRegistry);
+			return new SimpleMeterRegistry();
 		}
 
 		@Bean

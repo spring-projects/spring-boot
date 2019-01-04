@@ -1,5 +1,6 @@
 [[howto]]
-= '`How-to`' guides
+= "`How-to`" Guides
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -1166,19 +1167,6 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-You may also want to add a dependency on Woodstox. It is faster than the default StAX
-implementation provided by the JDK and also adds pretty-print support and improved
-namespace handling. The following listing shows how to include a dependency on
-https://github.com/FasterXML/woodstox[Woodstox]:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependency>
-		<groupId>org.codehaus.woodstox</groupId>
-		<artifactId>woodstox-core-asl</artifactId>
-	</dependency>
-----
-
 If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
 used, with the additional requirement of having `MyThing` annotated as
 `@XmlRootElement`, as shown in the following example:
@@ -1531,7 +1519,7 @@ in the following example:
 ----
 
 You can also set the location of a file to which to write the log (in addition to the
-console) by using "logging.file".
+console) by using "logging.file.name".
 
 To configure the more fine-grained settings of a logging system, you need to use the native
 configuration format supported by the `LoggingSystem` in question. By default, Spring Boot
@@ -1561,8 +1549,8 @@ If you look at `base.xml` in the spring-boot jar, you can see that it uses
 some useful System properties that the `LoggingSystem` takes care of creating for you:
 
 * `${PID}`: The current process ID.
-* `${LOG_FILE}`: Whether `logging.file` was set in Boot's external configuration.
-* `${LOG_PATH}`: Whether `logging.path` (representing a directory for
+* `${LOG_FILE}`: Whether `logging.file.name` was set in Boot's external configuration.
+* `${LOG_PATH}`: Whether `logging.file.path` (representing a directory for
    log files to live in) was set in Boot's external configuration.
 * `${LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set
    in Boot's external configuration.
@@ -1595,12 +1583,12 @@ shown in the following example:
 	</configuration>
 ----
 
-You also need to add `logging.file` to your `application.properties`, as shown in the
+You also need to add `logging.file.name` to your `application.properties`, as shown in the
 following example:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	logging.file=myapplication.log
+	logging.file.name=myapplication.log
 ----
 
 
@@ -2013,8 +2001,9 @@ include::{code-examples}/jpa/HibernateSecondLevelCacheExample.java[tag=configura
 ----
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that
-the application uses. It is also possible to use separate `CacheManager` instances, refer
-to {hibernate-documentation}#caching-provider-jcache[the Hibernate user guide].
+the application uses. It is also possible to use separate `CacheManager` instances. For
+details, refer to {hibernate-documentation}#caching-provider-jcache[the Hibernate user
+guide].
 
 
 
@@ -2455,6 +2444,16 @@ By default, it executes *all* `Jobs` in the application context on startup (see
 {sc-spring-boot-autoconfigure}/batch/JobLauncherCommandLineRunner.{sc-ext}[JobLauncherCommandLineRunner]
 for details). You can narrow down to a specific job or jobs by specifying
 `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
+
+[TIP]
+.Specifying job parameters on the command line
+====
+Unlike command line option arguments that
+<<spring-boot-features.adoc#boot-features-external-config-command-line-args,set properties
+in the `Environment`>> (i.e. by starting with `--`, such as
+`--my-property=value`), job parameters have to be specified on the command line without
+dashes (e.g. `jobParam=value`).
+====
 
 If the application context includes a `JobRegistry`, the jobs in
 `spring.batch.job.names` are looked up in the registry instead of being autowired from the
@@ -2901,7 +2900,12 @@ jar support, which assumes that the `jruby-complete.jar` is always directly avai
 file in its own right.
 
 To deal with any problematic libraries, you can flag that specific nested jars should be
-automatically unpacked to the "`temp folder`" when the executable jar first runs.
+automatically unpacked when the executable jar first runs. Such nested jars are written
+beneath the temporary directory identified by the `java.io.tmpdir` system property.
+
+WARNING: Care should be taken to ensure that your operating system is configured so that
+it will not delete the jars that have been unpacked to the temporary directory while the
+application is still running.
 
 For example, to indicate that JRuby should be flagged for unpacking by using the Maven
 Plugin, you would add the following configuration:

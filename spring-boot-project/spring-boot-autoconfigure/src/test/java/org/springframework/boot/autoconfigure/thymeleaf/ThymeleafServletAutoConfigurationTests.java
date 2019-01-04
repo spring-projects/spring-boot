@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.DispatcherType;
 
@@ -41,7 +42,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,6 +75,8 @@ import static org.hamcrest.Matchers.containsString;
  * @author Artsiom Yudovin
  */
 public class ThymeleafServletAutoConfigurationTests {
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -174,9 +179,10 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	public void templateLocationEmpty() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		load(BaseConfiguration.class,
-				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
+				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/");
 	}
 
 	@Test
@@ -227,7 +233,8 @@ public class ThymeleafServletAutoConfigurationTests {
 			SecurityContextHolder.setContext(new SecurityContextImpl(
 					new TestingAuthenticationToken("alice", "admin")));
 			String result = engine.process("security-dialect", attrs);
-			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>\n");
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>"
+					+ System.lineSeparator());
 		}
 		finally {
 			SecurityContextHolder.clearContext();
@@ -276,6 +283,38 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithOtherRegistrationBean() {
+		// gh-14897
+		load(FilterRegistrationOtherConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(2);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithResourceRegistrationBean() {
+		// gh-14926
+		load(FilterRegistrationResourceConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(1);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.INCLUDE));
+	}
+
+	@Test
 	public void layoutDialectCanBeCustomized() {
 		load(LayoutDialectConfiguration.class);
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
@@ -295,9 +334,6 @@ public class ThymeleafServletAutoConfigurationTests {
 	private void load(Class<?> config, String... envVariables) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		TestPropertyValues.of(envVariables).applyTo(this.context);
-		if (config != null) {
-			this.context.register(config);
-		}
 		this.context.register(config);
 		this.context.refresh();
 	}
@@ -316,6 +352,31 @@ public class ThymeleafServletAutoConfigurationTests {
 		@Bean
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect(new GroupingStrategy());
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationResourceConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegistration() {
+			FilterRegistrationBean<ResourceUrlEncodingFilter> bean = new FilterRegistrationBean<>(
+					new ResourceUrlEncodingFilter());
+			bean.setDispatcherTypes(EnumSet.of(DispatcherType.INCLUDE));
+			return bean;
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationOtherConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
+			return new FilterRegistrationBean<>(new OrderedCharacterEncodingFilter());
 		}
 
 	}

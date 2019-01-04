@@ -26,9 +26,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
@@ -130,12 +132,15 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
 				this.applicationContext, Endpoint.class);
 		for (String beanName : beanNames) {
-			EndpointBean endpointBean = createEndpointBean(beanName);
-			EndpointBean previous = byId.putIfAbsent(endpointBean.getId(), endpointBean);
-			Assert.state(previous == null,
-					() -> "Found two endpoints with the id '" + endpointBean.getId()
-							+ "': '" + endpointBean.getBeanName() + "' and '"
-							+ previous.getBeanName() + "'");
+			if (!ScopedProxyUtils.isScopedTarget(beanName)) {
+				EndpointBean endpointBean = createEndpointBean(beanName);
+				EndpointBean previous = byId.putIfAbsent(endpointBean.getId(),
+						endpointBean);
+				Assert.state(previous == null,
+						() -> "Found two endpoints with the id '" + endpointBean.getId()
+								+ "': '" + endpointBean.getBeanName() + "' and '"
+								+ previous.getBeanName() + "'");
+			}
 		}
 		return byId.values();
 	}
@@ -147,7 +152,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private void addExtensionBeans(Collection<EndpointBean> endpointBeans) {
 		Map<EndpointId, EndpointBean> byId = endpointBeans.stream()
-				.collect(Collectors.toMap(EndpointBean::getId, (bean) -> bean));
+				.collect(Collectors.toMap(EndpointBean::getId, Function.identity()));
 		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
 				this.applicationContext, EndpointExtension.class);
 		for (String beanName : beanNames) {

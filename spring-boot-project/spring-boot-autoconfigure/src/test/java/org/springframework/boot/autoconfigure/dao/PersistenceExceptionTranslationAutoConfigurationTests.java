@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 import org.springframework.stereotype.Repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PersistenceExceptionTranslationAutoConfiguration}
@@ -85,24 +86,27 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.entrySet()).isEmpty();
+		assertThat(beans).isEmpty();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
-		this.context = new AnnotationConfigApplicationContext(
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class, TestConfiguration.class);
-		this.context.getBean(TestRepository.class).doSomething();
-	}
+	// @Test
+	// public void
+	// persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
+	// this.context = new AnnotationConfigApplicationContext(
+	// EmbeddedDataSourceConfiguration.class,
+	// HibernateJpaAutoConfiguration.class, TestConfiguration.class);
+	// assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
+	// () -> this.context.getBean(TestRepository.class).doSomething());
+	// }
 
-	@Test(expected = InvalidDataAccessApiUsageException.class)
+	@Test
 	public void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
 		this.context = new AnnotationConfigApplicationContext(
 				EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);
-		this.context.getBean(TestRepository.class).doSomething();
+		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class).isThrownBy(
+				() -> this.context.getBean(TestRepository.class).doSomething());
 	}
 
 	@Configuration

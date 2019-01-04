@@ -104,11 +104,7 @@ class TypeElementMembers {
 			else if (isSetter(method)) {
 				String propertyName = getAccessorName(name);
 				List<ExecutableElement> matchingSetters = this.publicSetters
-						.get(propertyName);
-				if (matchingSetters == null) {
-					matchingSetters = new ArrayList<>();
-					this.publicSetters.put(propertyName, matchingSetters);
-				}
+						.computeIfAbsent(propertyName, (k) -> new ArrayList<>());
 				TypeMirror paramType = method.getParameters().get(0).asType();
 				if (getMatchingSetter(matchingSetters, paramType) == null) {
 					matchingSetters.add(method);

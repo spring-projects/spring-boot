@@ -53,6 +53,7 @@ final class DatabaseLookup {
 		map.put(DatabaseDriver.SQLSERVER, Database.SQL_SERVER);
 		map.put(DatabaseDriver.DB2, Database.DB2);
 		map.put(DatabaseDriver.INFORMIX, Database.INFORMIX);
+		map.put(DatabaseDriver.HANA, Database.HANA);
 		LOOKUP = Collections.unmodifiableMap(map);
 	}
 

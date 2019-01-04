@@ -72,8 +72,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
 		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
-		map.from(properties::getScope).as((scope) -> StringUtils.toStringArray(scope))
-				.to(builder::scope);
+		map.from(properties::getScope).as(StringUtils::toStringArray).to(builder::scope);
 		map.from(properties::getClientName).to(builder::clientName);
 		return builder.build();
 	}
@@ -86,21 +85,12 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
-				String cleanedIssuer = cleanIssuerPath(issuer);
-				Builder builder = ClientRegistrations
-						.fromOidcIssuerLocation(cleanedIssuer)
+				Builder builder = ClientRegistrations.fromOidcIssuerLocation(issuer)
 						.registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
 		}
 		return null;
-	}
-
-	private static String cleanIssuerPath(String issuer) {
-		if (issuer.endsWith("/")) {
-			return issuer.substring(0, issuer.length() - 1);
-		}
-		return issuer;
 	}
 
 	private static Builder getBuilder(String registrationId, String configuredProviderId,

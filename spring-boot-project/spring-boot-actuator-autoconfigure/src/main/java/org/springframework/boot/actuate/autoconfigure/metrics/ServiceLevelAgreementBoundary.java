@@ -21,7 +21,7 @@ import java.time.Duration;
 import io.micrometer.core.instrument.Meter;
 
 /**
- * A service level agreement boundary for use when configuring micrometer. Can be
+ * A service level agreement boundary for use when configuring Micrometer. Can be
  * specified as either a {@link Long} (applicable to timers and distribution summaries) or
  * a {@link Duration} (applicable to only timers).
  *
@@ -57,7 +57,7 @@ public final class ServiceLevelAgreementBoundary {
 	}
 
 	/**
-	 * Return a new {@link ServiceLevelAgreementBoundary} instance for the given long
+	 * Return a new {@link ServiceLevelAgreementBoundary} instance for the given String
 	 * value.
 	 * @param value the source value
 	 * @return a {@link ServiceLevelAgreementBoundary} instance

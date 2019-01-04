@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
+import java.time.Duration;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -54,7 +56,7 @@ public class WebClientMetricsConfigurationTests {
 					HttpClientMetricsAutoConfiguration.class));
 
 	@Rule
-	public OutputCapture out = new OutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void webClientCreatedWithBuilderIsInstrumented() {
@@ -80,9 +82,9 @@ public class WebClientMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.out.toString()).contains(
+					assertThat(this.output.toString()).contains(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString())
+					assertThat(this.output.toString())
 							.contains("Are you using 'uriVariables'?");
 				});
 	}
@@ -94,9 +96,9 @@ public class WebClientMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.out.toString()).doesNotContain(
+					assertThat(this.output.toString()).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString())
+					assertThat(this.output.toString())
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
 	}
@@ -106,7 +108,8 @@ public class WebClientMetricsConfigurationTests {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
 		for (int i = 0; i < 3; i++) {
-			webClient.get().uri("http://example.org/projects/" + i).exchange().block();
+			webClient.get().uri("http://example.org/projects/" + i).exchange()
+					.block(Duration.ofSeconds(30));
 		}
 		return registry;
 	}
@@ -115,7 +118,7 @@ public class WebClientMetricsConfigurationTests {
 		WebClient webClient = mockWebClient(builder);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
 		webClient.get().uri("http://example.org/projects/{project}", "spring-boot")
-				.exchange().block();
+				.exchange().block(Duration.ofSeconds(30));
 		assertThat(registry.find("http.client.requests")
 				.tags("uri", "/projects/{project}").meter()).isNotNull();
 	}

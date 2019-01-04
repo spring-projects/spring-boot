@@ -16,8 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
 
@@ -31,7 +36,13 @@ import org.springframework.util.Assert;
  */
 public final class EndpointId {
 
-	private static final Pattern VALID_CHARS = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
+	private static final Log logger = LogFactory.getLog(EndpointId.class);
+
+	private static Set<String> loggedWarnings = new HashSet<>();
+
+	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
+
+	private static final Pattern WARNING_PATTERN = Pattern.compile("[\\.\\-]+");
 
 	private final String value;
 
@@ -41,12 +52,15 @@ public final class EndpointId {
 
 	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		Assert.isTrue(VALID_CHARS.matcher(value).matches(),
+		Assert.isTrue(VALID_PATTERN.matcher(value).matches(),
 				"Value must only contain valid chars");
 		Assert.isTrue(!Character.isDigit(value.charAt(0)),
 				"Value must not start with a number");
 		Assert.isTrue(!Character.isUpperCase(value.charAt(0)),
 				"Value must not start with an uppercase letter");
+		if (WARNING_PATTERN.matcher(value).find()) {
+			logWarning(value);
+		}
 		this.value = value;
 		this.lowerCaseValue = value.toLowerCase(Locale.ENGLISH);
 		this.lowerCaseAlphaNumeric = getAlphaNumerics(this.lowerCaseValue);
@@ -103,13 +117,24 @@ public final class EndpointId {
 	}
 
 	/**
-	 * Factory method to create a new {@link EndpointId} from a property value. Is more
-	 * lenient that {@link #of(String)} to allow for common "relaxed" property variants.
+	 * Factory method to create a new {@link EndpointId} from a property value. More
+	 * lenient than {@link #of(String)} to allow for common "relaxed" property variants.
 	 * @param value the property value to convert
 	 * @return an {@link EndpointId} instance
 	 */
 	public static EndpointId fromPropertyValue(String value) {
 		return new EndpointId(value.replace("-", ""));
+	}
+
+	static void resetLoggedWarnings() {
+		loggedWarnings.clear();
+	}
+
+	private static void logWarning(String value) {
+		if (logger.isWarnEnabled() && loggedWarnings.add(value)) {
+			logger.warn("Endpoint ID '" + value
+					+ "' contains invalid characters, please migrate to a valid format.");
+		}
 	}
 
 }

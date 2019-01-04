@@ -34,6 +34,9 @@ do as they were designed before this was clarified.
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
+| http://arangodb.com/[ArangoDB]
+| https://github.com/arangodb/spring-boot-starter
+
 | http://www.axonframework.org/[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
 
@@ -88,6 +91,9 @@ do as they were designed before this was clarified.
 | http://hdiv.org/[HDIV]
 | https://github.com/hdiv/spring-boot-starter-hdiv
 
+| Hiatus for Spring Boot
+| https://github.com/jihor/hiatus-spring-boot
+
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
@@ -96,6 +102,9 @@ do as they were designed before this was clarified.
 
 | https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
 | https://github.com/javamelody/javamelody/wiki/SpringBootStarter
+
+| https://javers.org[JaVers]
+| https://github.com/javers/javers
 
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
@@ -115,6 +124,9 @@ do as they were designed before this was clarified.
 | http://narayana.io/[Narayana]
 | https://github.com/snowdrop/narayana-spring-boot
 
+| https://github.com/nutzam/nutz[Nutz]
+| https://github.com/nutzam/nutzmore
+
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
@@ -132,6 +144,9 @@ do as they were designed before this was clarified.
 
 | https://github.com/rollbar/rollbar-java/[Rollbar]
 | https://github.com/olmero/rollbar-spring-boot-starter
+
+| https://sentry.io[Sentry]
+| https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web

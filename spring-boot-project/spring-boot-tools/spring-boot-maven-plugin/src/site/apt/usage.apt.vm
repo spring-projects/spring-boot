@@ -109,9 +109,6 @@ Usage
 
     * <<<ZIP>>> (alias to <<<DIR>>>): similar to the <<<JAR>>> layout using <<<PropertiesLauncher>>>.
 
-    * <<<MODULE>>>: Bundle dependencies (excluding those with <<<provided>>> scope) and project resources.
-      Does not bundle a bootstrap loader.
-
     * <<<NONE>>>: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
 
     []

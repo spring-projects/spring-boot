@@ -33,8 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.AbstractResourceBasedMessageSource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
@@ -51,7 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  */
 @Configuration
-@ConditionalOnMissingBean(value = MessageSource.class, search = SearchStrategy.CURRENT)
+@ConditionalOnMissingBean(name = AbstractApplicationContext.MESSAGE_SOURCE_BEAN_NAME, search = SearchStrategy.CURRENT)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
@@ -67,9 +66,7 @@ public class MessageSourceAutoConfiguration {
 
 	@Bean
 	public MessageSource messageSource(MessageSourceProperties properties) {
-		AbstractResourceBasedMessageSource messageSource = (properties.isReloadable()
-				? new ReloadableResourceBundleMessageSource()
-				: new ResourceBundleMessageSource());
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(properties.getBasename())) {
 			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(
 					StringUtils.trimAllWhitespace(properties.getBasename())));

@@ -20,7 +20,6 @@ import javax.management.MBeanServer;
 
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -213,8 +212,8 @@ public class IntegrationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(MessageSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasBean("myMessageSource");
-					assertThat(new DirectFieldAccessor(context.getBean("myMessageSource"))
-							.getPropertyValue("countsEnabled")).isEqualTo(true);
+					assertThat(((MessageProcessorMessageSource) context
+							.getBean("myMessageSource")).isCountsEnabled()).isTrue();
 				});
 	}
 

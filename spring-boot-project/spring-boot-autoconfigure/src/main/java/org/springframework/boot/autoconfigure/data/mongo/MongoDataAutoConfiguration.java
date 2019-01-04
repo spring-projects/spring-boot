@@ -168,6 +168,7 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
+		@Deprecated
 		public DB getLegacyDb() {
 			return this.mongoDbFactory.getLegacyDb();
 		}

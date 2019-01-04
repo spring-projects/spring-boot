@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -64,7 +63,7 @@ public class WebMvcTestWebDriverIntegrationTests {
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
 		try {
-			ReflectionTestUtils.invokeMethod(previousWebDriver, "getCurrentWindow");
+			previousWebDriver.getWindowHandle();
 			fail("Did not call quit()");
 		}
 		catch (NoSuchWindowException ex) {

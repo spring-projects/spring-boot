@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.Arrays;
 
 import io.undertow.Undertow;
@@ -122,7 +123,7 @@ public class UndertowReactiveWebServerFactoryTests
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-		assertThat(result.block()).isEqualTo("Hello World");
+		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, expectedFile);
 		awaitFile(accessLog);
 		assertThat(accessLogDirectory.listFiles()).contains(accessLog);

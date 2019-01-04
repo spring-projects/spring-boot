@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -75,9 +76,9 @@ public class JettyWebServerFactoryCustomizer implements
 		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
 				.to(factory::setSelectors);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
-				.asInt(DataSize::toBytes)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
-						maxHttpHeaderSize));
+				.asInt(DataSize::toBytes).when(this::isPositive)
+				.to((maxHttpHeaderSize) -> factory.addServerCustomizers(
+						new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize).asInt(DataSize::toBytes)
 				.when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
@@ -112,32 +113,6 @@ public class JettyWebServerFactoryCustomizer implements
 							.setIdleTimeout(connectionTimeout.toMillis());
 				}
 			}
-		});
-	}
-
-	private void customizeMaxHttpHeaderSize(ConfigurableJettyWebServerFactory factory,
-			int maxHttpHeaderSize) {
-		factory.addServerCustomizers(new JettyServerCustomizer() {
-
-			@Override
-			public void customize(Server server) {
-				for (org.eclipse.jetty.server.Connector connector : server
-						.getConnectors()) {
-					for (ConnectionFactory connectionFactory : connector
-							.getConnectionFactories()) {
-						if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-							customize(
-									(HttpConfiguration.ConnectionFactory) connectionFactory);
-						}
-					}
-				}
-			}
-
-			private void customize(HttpConfiguration.ConnectionFactory factory) {
-				HttpConfiguration configuration = factory.getHttpConfiguration();
-				configuration.setRequestHeaderSize(maxHttpHeaderSize);
-			}
-
 		});
 	}
 
@@ -197,6 +172,32 @@ public class JettyWebServerFactoryCustomizer implements
 			log.setLogLatency(properties.isLogLatency());
 			server.setRequestLog(log);
 		});
+	}
+
+	private static class MaxHttpHeaderSizeCustomizer implements JettyServerCustomizer {
+
+		private final int maxHttpHeaderSize;
+
+		MaxHttpHeaderSizeCustomizer(int maxHttpHeaderSize) {
+			this.maxHttpHeaderSize = maxHttpHeaderSize;
+		}
+
+		@Override
+		public void customize(Server server) {
+			Arrays.stream(server.getConnectors()).forEach(this::customize);
+		}
+
+		private void customize(org.eclipse.jetty.server.Connector connector) {
+			connector.getConnectionFactories().forEach(this::customize);
+		}
+
+		private void customize(ConnectionFactory factory) {
+			if (factory instanceof HttpConfiguration.ConnectionFactory) {
+				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
+						.setRequestHeaderSize(this.maxHttpHeaderSize);
+			}
+		}
+
 	}
 
 }

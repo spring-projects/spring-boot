@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
@@ -40,10 +41,12 @@ import org.springframework.util.StringUtils;
  */
 class IdeApplicationLauncher extends AbstractApplicationLauncher {
 
-	private final File exploded = new File("target/the+ide application");
+	private final File exploded;
 
-	IdeApplicationLauncher(ApplicationBuilder applicationBuilder) {
-		super(applicationBuilder);
+	IdeApplicationLauncher(ApplicationBuilder applicationBuilder,
+			BuildOutput buildOutput) {
+		super(applicationBuilder, buildOutput);
+		this.exploded = new File(buildOutput.getRootLocation(), "the+ide application");
 	}
 
 	@Override
@@ -57,18 +60,18 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
-	protected List<String> getArguments(File archive) {
+	protected List<String> getArguments(File archive, File serverPortFile) {
 		try {
 			explodeArchive(archive, this.exploded);
 			deleteLauncherClasses();
-			File targetClasses = populateTargetClasses(archive);
+			File builtClasses = populateBuiltClasses(archive);
 			File dependencies = populateDependencies(archive);
 			File resourcesProject = explodedResourcesProject(dependencies);
 			if (archive.getName().endsWith(".war")) {
 				populateSrcMainWebapp();
 			}
 			List<String> classpath = new ArrayList<>();
-			classpath.add(targetClasses.getAbsolutePath());
+			classpath.add(builtClasses.getAbsolutePath());
 			for (File dependency : dependencies.listFiles()) {
 				classpath.add(dependency.getAbsolutePath());
 			}
@@ -76,20 +79,21 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 			return Arrays.asList("-cp",
 					StringUtils.collectionToDelimitedString(classpath,
 							File.pathSeparator),
-					"com.example.ResourceHandlingApplication");
+					"com.example.ResourceHandlingApplication",
+					serverPortFile.getAbsolutePath());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	private File populateTargetClasses(File archive) throws IOException {
-		File targetClasses = new File(this.exploded, "target/classes");
-		targetClasses.mkdirs();
+	private File populateBuiltClasses(File archive) throws IOException {
+		File builtClasses = new File(this.exploded, "built/classes");
+		builtClasses.mkdirs();
 		File source = new File(this.exploded, getClassesPath(archive));
-		FileSystemUtils.copyRecursively(source, targetClasses);
+		FileSystemUtils.copyRecursively(source, builtClasses);
 		FileSystemUtils.deleteRecursively(source);
-		return targetClasses;
+		return builtClasses;
 	}
 
 	private File populateDependencies(File archive) throws IOException {
@@ -108,7 +112,7 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 
 	private File explodedResourcesProject(File dependencies) throws IOException {
 		File resourcesProject = new File(this.exploded,
-				"resources-project/target/classes");
+				"resources-project/built/classes");
 		File resourcesJar = new File(dependencies, "resources-1.0.jar");
 		explodeArchive(resourcesJar, resourcesProject);
 		resourcesJar.delete();

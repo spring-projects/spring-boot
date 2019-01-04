@@ -62,6 +62,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * Create a {@link FilteredClassLoader} that hides resources from the given
 	 * {@link ClassPathResource classpath resources}.
 	 * @param hiddenResources the resources to hide
+	 * @since 2.1.0
 	 */
 	public FilteredClassLoader(ClassPathResource... hiddenResources) {
 		this(Collections.emptyList(),
@@ -164,6 +165,8 @@ public class FilteredClassLoader extends URLClassLoader {
 
 	/**
 	 * Filter to restrict the resources that can be loaded.
+	 *
+	 * @since 2.1.0
 	 */
 	public static final class ClassPathResourceFilter implements Predicate<String> {
 

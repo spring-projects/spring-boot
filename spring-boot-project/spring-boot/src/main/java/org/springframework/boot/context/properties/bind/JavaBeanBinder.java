@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
@@ -44,8 +45,7 @@ class JavaBeanBinder implements BeanBinder {
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			BeanPropertyBinder propertyBinder) {
-		boolean hasKnownBindableProperties = context.streamSources().anyMatch((
-				s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT);
+		boolean hasKnownBindableProperties = hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;
@@ -55,11 +55,21 @@ class JavaBeanBinder implements BeanBinder {
 		return (bound ? beanSupplier.get() : null);
 	}
 
+	private boolean hasKnownBindableProperties(ConfigurationPropertyName name,
+			Context context) {
+		for (ConfigurationPropertySource source : context.getSources()) {
+			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private <T> boolean bind(BeanPropertyBinder propertyBinder, Bean<T> bean,
 			BeanSupplier<T> beanSupplier) {
 		boolean bound = false;
-		for (Map.Entry<String, BeanProperty> entry : bean.getProperties().entrySet()) {
-			bound |= bind(beanSupplier, propertyBinder, entry.getValue());
+		for (BeanProperty beanProperty : bean.getProperties().values()) {
+			bound |= bind(beanSupplier, propertyBinder, beanProperty);
 		}
 		return bound;
 	}

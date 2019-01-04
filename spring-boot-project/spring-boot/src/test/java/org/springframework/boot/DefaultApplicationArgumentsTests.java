@@ -80,8 +80,7 @@ public class DefaultApplicationArgumentsTests {
 
 	@Test
 	public void getNoNonOptionArgs() {
-		ApplicationArguments arguments = new DefaultApplicationArguments(
-				new String[] { "--debug" });
+		ApplicationArguments arguments = new DefaultApplicationArguments("--debug");
 		assertThat(arguments.getNonOptionArgs()).isEmpty();
 	}
 

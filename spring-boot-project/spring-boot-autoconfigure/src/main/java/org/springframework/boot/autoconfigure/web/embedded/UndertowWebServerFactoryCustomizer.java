@@ -86,7 +86,7 @@ public class UndertowWebServerFactoryCustomizer implements
 		propertyMapper.from(this::getOrDeduceUseForwardHeaders)
 				.to(factory::setUseForwardHeaders);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
-				.asInt(DataSize::toBytes)
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(undertowProperties::getMaxHttpPostSize)

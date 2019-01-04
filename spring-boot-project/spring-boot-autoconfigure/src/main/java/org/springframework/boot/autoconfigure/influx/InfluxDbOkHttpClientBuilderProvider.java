@@ -22,8 +22,8 @@ import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
 
 /**
- * Provide the {@link OkHttpClient.Builder} to use to customize the auto-configured
- * {@link InfluxDB} instance.
+ * Provide the {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} to use to
+ * customize the auto-configured {@link InfluxDB} instance.
  *
  * @author Stephane Nicoll
  * @since 2.1.0

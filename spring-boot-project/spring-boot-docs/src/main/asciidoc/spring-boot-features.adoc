@@ -1,5 +1,6 @@
 [[boot-features]]
-= Spring Boot features
+= Spring Boot Features
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -1686,7 +1687,7 @@ The following colors and styles are supported:
 === File Output
 By default, Spring Boot logs only to the console and does not write log files. If you
 want to write log files in addition to the console output, you need to set a
-`logging.file` or `logging.path` property (for example, in your
+`logging.file.name` or `logging.file.path` property (for example, in your
 `application.properties`).
 
 The following table shows how the `logging.*` properties can be used together:
@@ -1694,7 +1695,7 @@ The following table shows how the `logging.*` properties can be used together:
 .Logging properties
 [cols="1,1,1,4"]
 |===
-|`logging.file` |`logging.path` |Example |Description
+|`logging.file.name` |`logging.file.path` |Example |Description
 
 |_(none)_
 |_(none)_
@@ -1835,7 +1836,7 @@ To help with the customization, some other properties are transferred from the S
 |`LOG_EXCEPTION_CONVERSION_WORD`
 |The conversion word used when logging exceptions.
 
-|`logging.file`
+|`logging.file.name`
 |`LOG_FILE`
 |If defined, it is used in the default log configuration.
 
@@ -1849,7 +1850,7 @@ setup.)
 |Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
 the default Logback setup.)
 
-|`logging.path`
+|`logging.file.path`
 |`LOG_PATH`
 |If defined, it is used in the default log configuration.
 
@@ -2352,13 +2353,21 @@ suffix pattern matching, the following configuration is required:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.mvc.contentnegotiation.favor-path-extension=true
+	spring.mvc.pathmatch.use-suffix-pattern=true
+----
 
-	# You can also restrict that feature to known extensions only
-	# spring.mvc.pathmatch.use-registered-suffix-pattern=true
+Alternatively, rather than open all suffix patterns, it's more secure to just support
+registered suffix patterns:
 
-	# We can also register additional file extensions/media types with:
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.contentnegotiation.favor-path-extension=true
+	spring.mvc.pathmatch.use-registered-suffix-pattern=true
+
+	# You can also register additional file extensions/media types with:
 	# spring.mvc.contentnegotiation.media-types.adoc=text/asciidoc
 ----
+
 
 
 [[boot-features-spring-mvc-web-binding-initializer]]
@@ -2953,11 +2962,12 @@ endpoints, as shown in the following example:
 	}
 ----
 
-WARNING: Jersey's support for scanning executable archives is rather limited. For
-example, it cannot scan for endpoints in a package found in `WEB-INF/classes` when
-running an executable war file. To avoid this limitation, the `packages` method should
-not be used, and endpoints should be registered individually by using the `register`
-method, as shown in the preceding example.
+WARNING: Jersey's support for scanning executable archives is rather limited. For example,
+it cannot scan for endpoints in a package found in a <<deployment.adoc#deployment-install,
+fully executable jar file>> or in `WEB-INF/classes` when running an executable war file.
+To avoid this limitation, the `packages` method should not be used, and endpoints should
+be registered individually by using the `register` method, as shown in the preceding
+example.
 
 For more advanced customizations, you can also register an arbitrary number of beans that
 implement `ResourceConfigCustomizer`.
@@ -4282,7 +4292,8 @@ If you have SLF4J on the classpath, the output produced by Mongo is automaticall
 to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
 
 You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of
-the Mongo instance's configuration and logging routing.
+the Mongo instance's configuration and logging routing. The download configuration can be
+customized by declaring a `DownloadConfigBuilderCustomizer` bean.
 
 
 
@@ -6297,9 +6308,10 @@ following example:
 	spring.quartz.jdbc.initialize-schema=always
 ----
 
-NOTE: By default, the database is detected and initialized by using the standard scripts
-provided with the Quartz library. It is also possible to provide a custom script by
-setting the `spring.quartz.jdbc.schema` property.
+WARNING: By default, the database is detected and initialized by using the standard scripts
+provided with the Quartz library. These scripts drop existing tables, deleting all triggers
+on every restart. It is also possible to provide a custom script by setting the
+`spring.quartz.jdbc.schema` property.
 
 To have Quartz use a `DataSource` other than the application's main `DataSource`, declare
 a `DataSource` bean, annotating its `@Bean` method with `@QuartzDataSource`. Doing so
@@ -6374,8 +6386,8 @@ A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated
 scheduled task execution (`@EnableScheduling`). The thread pool uses one thread by default
 and those settings can be fine-tuned using the `spring.task.scheduling` namespace.
 
-Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the
-context if a custom executor or scheduler needs to be created.
+Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in
+the context if a custom executor or scheduler needs to be created.
 
 
 
@@ -6535,7 +6547,7 @@ specific slices>> of an application.
 
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to
 your test, otherwise the annotations will be ignored. If you are using JUnit 5, there's no
-need to add the equivalent `@ExtendWith(SpringExtension)` as `@SpringBootTest` and the
+need to add the equivalent `@RunWith(SpringExtension)` as `@SpringBootTest` and the
 other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server. You can use the `webEnvironment`
@@ -6827,6 +6839,10 @@ NOTE: Each slice restricts component scan to appropriate components and loads a 
 restricted set of auto-configuration classes. If you need to exclude one of them,
 most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
 Alternatively, you can use `@ImportAutoConfiguration#exclude`.
+
+NOTE: Including multiple "`slices`" by using several `@...Test` annotations in one test is
+not supported. If you need multiple "`slices`", pick one of the `@...Test` annotations
+and include the `@AutoConfigure...` annotations of the other "`slices`" by hand.
 
 TIP: It is also possible to use the `@AutoConfigure...` annotations with the standard
 `@SpringBootTest` annotation. You can use this combination if you are not interested in
@@ -7526,8 +7542,8 @@ The specific beans that you want to test should be specified by using the `value
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
 ==== Auto-configured Spring REST Docs Tests
 You can use the `@AutoConfigureRestDocs` annotation to use {spring-rest-docs}[Spring REST
-Docs] in your tests with Mock MVC or REST Assured. It removes the need for the JUnit rule
-in Spring REST Docs.
+Docs] in your tests with Mock MVC, REST Assured, or WebTestClient. It removes the need for
+the JUnit rule in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory
 (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
@@ -7723,10 +7739,10 @@ can specify a source for your test, which disables the behavior of finding a def
 ==== Using Spock to Test Spring Boot Applications
 If you wish to use Spock to test a Spring Boot application, you should add a dependency
 on Spock's `spock-spring` module to your application's build. `spock-spring` integrates
-Spring's test framework into Spock. It is recommended that you use Spock 1.1 or later to
+Spring's test framework into Spock. It is recommended that you use Spock 1.2 or later to
 benefit from a number of improvements to Spock's Spring Framework and Spring Boot
-integration. See http://spockframework.org/spock/docs/1.1/modules.html[the documentation
-for Spock's Spring module] for further details.
+integration. See http://spockframework.org/spock/docs/1.2/modules.html#_spring_module[the
+documentation for Spock's Spring module] for further details.
 
 
 
@@ -7901,7 +7917,7 @@ following example:
 
 
 [[boot-features-webservices-template]]
-== Calling Web Services with `WebServiceTemplate`
+=== Calling Web Services with `WebServiceTemplate`
 If you need to call remote Web services from your application, you can use the
 {spring-webservices-reference}#client-web-service-template[`WebServiceTemplate`] class.
 Since `WebServiceTemplate` instances often need to be customized before being used, Spring
@@ -8033,12 +8049,41 @@ annotations include:
 
 [[boot-features-class-conditions]]
 ==== Class Conditions
-The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let configuration
-be included based on the presence or absence of specific classes. Due to the fact that
-annotation metadata is parsed by using http://asm.ow2.org/[ASM], you can use the `value`
-attribute to refer to the real class, even though that class might not actually appear on
-the running application classpath. You can also use the `name` attribute if you prefer to
-specify the class name by using a `String` value.
+The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let
+`@Configuration` classes be included based on the presence or absence of specific classes.
+Due to the fact that annotation metadata is parsed by using http://asm.ow2.org/[ASM], you
+can use the `value` attribute to refer to the real class, even though that class might not
+actually appear on the running application classpath. You can also use the `name`
+attribute if you prefer to specify the class name by using a `String` value.
+
+This mechanism does not apply the same way to `@Bean` methods where typically the return
+type is the target of the condition: before the condition on the method applies, the JVM
+will have loaded the class and potentially processed method references which will fail if
+the class is not present.
+
+To handle this scenario, a separate `@Configuration` class can be used to isolate the
+condition, as shown in the following example:
+
+[source,java,indent=0]
+----
+	@Configuration
+	// Some conditions
+	public class MyAutoConfiguration {
+
+		// Auto-configured beans
+
+		@Configuration
+		@ConditionalOnClass(EmbeddedAcmeService.class)
+		static class EmbeddedConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			public EmbeddedAcmeService embeddedAcmeService() { ... }
+
+		}
+
+	}
+----
 
 [TIP]
 ====
@@ -8489,7 +8534,7 @@ be configured] with the `spring-boot-configuration-processor` dependency.
 While it is possible to use JUnit 4 (the default provided by `spring-boot-starter-test`)
 to test Kotlin code, JUnit 5 is recommended. JUnit 5 enables a test class to be
 instantiated once and reused for all of the class's tests. This makes it possible to use
-`@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for
+`@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for
 Kotlin.
 
 To use JUnit 5, exclude `junit:junit` dependency from `spring-boot-starter-test`, add

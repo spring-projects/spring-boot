@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JndiConnectionFactoryAutoConfiguration}.
+ * PersistenceExceptionTranslationAutoConfigurationTests
  *
  * @author Stephane Nicoll
  */

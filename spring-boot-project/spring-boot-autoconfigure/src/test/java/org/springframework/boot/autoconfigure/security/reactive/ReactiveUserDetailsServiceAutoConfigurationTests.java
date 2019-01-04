@@ -16,8 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.reactive;
 
+import java.time.Duration;
+
 import org.junit.Test;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -55,8 +55,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run((context) -> {
 					ReactiveUserDetailsService userDetailsService = context
 							.getBean(ReactiveUserDetailsService.class);
-					assertThat(userDetailsService.findByUsername("user").block())
-							.isNotNull();
+					assertThat(userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30))).isNotNull();
 				});
 	}
 
@@ -67,12 +67,12 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run((context) -> {
 					ReactiveUserDetailsService userDetailsService = context
 							.getBean(ReactiveUserDetailsService.class);
-					assertThat(userDetailsService.findByUsername("user").block())
-							.isNull();
-					assertThat(userDetailsService.findByUsername("foo").block())
-							.isNotNull();
-					assertThat(userDetailsService.findByUsername("admin").block())
-							.isNotNull();
+					assertThat(userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30))).isNull();
+					assertThat(userDetailsService.findByUsername("foo")
+							.block(Duration.ofSeconds(30))).isNotNull();
+					assertThat(userDetailsService.findByUsername("admin")
+							.block(Duration.ofSeconds(30))).isNotNull();
 				});
 	}
 
@@ -93,8 +93,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
-					String password = userDetailsService.findByUsername("user").block()
-							.getPassword();
+					String password = userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30)).getPassword();
 					assertThat(password).startsWith("{noop}");
 				}));
 	}
@@ -122,8 +122,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
-					String password = userDetailsService.findByUsername("user").block()
-							.getPassword();
+					String password = userDetailsService.findByUsername("user")
+							.block(Duration.ofSeconds(30)).getPassword();
 					assertThat(password).isEqualTo(expectedPassword);
 				}));
 	}
@@ -154,12 +154,7 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 		@Bean
 		public ReactiveAuthenticationManager reactiveAuthenticationManager() {
-			return new ReactiveAuthenticationManager() {
-				@Override
-				public Mono<Authentication> authenticate(Authentication authentication) {
-					return null;
-				}
-			};
+			return (authentication) -> null;
 		}
 
 	}

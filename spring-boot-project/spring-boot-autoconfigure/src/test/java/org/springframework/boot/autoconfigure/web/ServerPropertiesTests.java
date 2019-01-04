@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -207,6 +206,12 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void tomcatProcessorCacheMatchesProtocolDefault() throws Exception {
+		assertThat(this.properties.getTomcat().getProcessorCache())
+				.isEqualTo(getDefaultProtocol().getProcessorCache());
+	}
+
+	@Test
 	public void tomcatMaxConnectionsMatchesProtocolDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getMaxConnections())
 				.isEqualTo(getDefaultProtocol().getMaxConnections());
@@ -270,13 +275,9 @@ public class ServerPropertiesTests {
 	@Test
 	public void jettyMaxHttpPostSizeMatchesDefault() throws Exception {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
-		JettyWebServer jetty = (JettyWebServer) jettyFactory
-				.getWebServer(new ServletContextInitializer() {
-
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						servletContext.addServlet("formPost", new HttpServlet() {
+		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer(
+				(ServletContextInitializer) (servletContext) -> servletContext
+						.addServlet("formPost", new HttpServlet() {
 
 							@Override
 							protected void doPost(HttpServletRequest req,
@@ -285,10 +286,7 @@ public class ServerPropertiesTests {
 								req.getParameterMap();
 							}
 
-						}).addMapping("/form");
-					}
-
-				});
+						}).addMapping("/form"));
 		jetty.start();
 		org.eclipse.jetty.server.Connector connector = jetty.getServer()
 				.getConnectors()[0];

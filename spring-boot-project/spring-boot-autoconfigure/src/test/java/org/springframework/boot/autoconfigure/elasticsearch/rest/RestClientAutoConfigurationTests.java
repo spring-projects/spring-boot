@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,14 +24,14 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,6 +42,9 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  */
 public class RestClientAutoConfigurationTests {
+
+	@ClassRule
+	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
@@ -67,19 +69,16 @@ public class RestClientAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
-					Field field = ReflectionUtils.findField(RestClient.class,
-							"maxRetryTimeoutMillis");
-					ReflectionUtils.makeAccessible(field);
-					assertThat(ReflectionUtils.getField(field, restClient))
-							.isEqualTo(42L);
+					assertThat(restClient)
+							.hasFieldOrPropertyWithValue("maxRetryTimeoutMillis", 42L);
 				});
 	}
 
 	@Test
 	public void restClientCanQueryElasticsearchNode() {
-		new ElasticsearchNodeTemplate().doWithNode((node) -> this.contextRunner
+		this.contextRunner
 				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
-						+ node.getHttpPort())
+						+ RestClientAutoConfigurationTests.elasticsearch.getMappedPort())
 				.run((context) -> {
 					RestHighLevelClient client = context
 							.getBean(RestHighLevelClient.class);
@@ -92,7 +91,7 @@ public class RestClientAutoConfigurationTests {
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
 					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists())
 							.isTrue();
-				}));
+				});
 	}
 
 	@Configuration

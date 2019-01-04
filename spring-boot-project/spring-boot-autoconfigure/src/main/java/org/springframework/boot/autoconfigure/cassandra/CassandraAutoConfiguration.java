@@ -80,8 +80,7 @@ public class CassandraAutoConfiguration {
 		map.from(this::getSocketOptions).to(builder::withSocketOptions);
 		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);
 		map.from(this::getPoolingOptions).to(builder::withPoolingOptions);
-		map.from(properties::getContactPoints)
-				.as((list) -> StringUtils.toStringArray(list))
+		map.from(properties::getContactPoints).as(StringUtils::toStringArray)
 				.to(builder::addContactPoints);
 		map.from(properties::isJmxEnabled).whenFalse()
 				.toCall(builder::withoutJMXReporting);

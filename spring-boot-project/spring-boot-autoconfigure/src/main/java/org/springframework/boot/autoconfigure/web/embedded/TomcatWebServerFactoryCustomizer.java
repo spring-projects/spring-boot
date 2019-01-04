@@ -86,7 +86,7 @@ public class TomcatWebServerFactoryCustomizer implements
 		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
 		propertyMapper.from(this::determineMaxHttpHeaderSize).whenNonNull()
-				.asInt(DataSize::toBytes)
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull()
@@ -108,6 +108,8 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
+		propertyMapper.from(tomcatProperties::getProcessorCache).when(this::isPositive)
+				.to((processorCache) -> customizeProcessorCache(factory, processorCache));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
 	}
@@ -132,6 +134,13 @@ public class TomcatWebServerFactoryCustomizer implements
 				protocol.setAcceptCount(acceptCount);
 			}
 		});
+	}
+
+	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory,
+			int processorCache) {
+		factory.addConnectorCustomizers((
+				connector) -> ((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
+						.setProcessorCache(processorCache));
 	}
 
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,

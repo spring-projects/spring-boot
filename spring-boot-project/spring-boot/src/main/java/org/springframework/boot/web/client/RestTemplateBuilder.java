@@ -379,6 +379,7 @@ public class RestTemplateBuilder {
 	 * @deprecated since 2.1.0 in favor of
 	 * {@link #basicAuthentication(String username, String password)}
 	 */
+	@Deprecated
 	public RestTemplateBuilder basicAuthorization(String username, String password) {
 		return basicAuthentication(username, password);
 	}
@@ -517,7 +518,7 @@ public class RestTemplateBuilder {
 	 * {@link ClientHttpRequestFactory}.
 	 * @param readTimeout the read timeout in milliseconds
 	 * @return a new builder instance.
-	 * @deprecated since 2.1.0 in favour of {@link #setReadTimeout(Duration)}
+	 * @deprecated since 2.1.0 in favor of {@link #setReadTimeout(Duration)}
 	 */
 	@Deprecated
 	public RestTemplateBuilder setReadTimeout(int readTimeout) {

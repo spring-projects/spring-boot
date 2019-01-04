@@ -38,7 +38,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link ArrayBinder}.
@@ -76,8 +75,7 @@ public class ArrayBinderTests {
 	@Test
 	public void bindToCollectionShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")),
@@ -211,8 +209,7 @@ public class ArrayBinderTests {
 	@Test
 	public void bindToArrayShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Bindable<Integer[]> target = INTEGER_ARRAY;
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);

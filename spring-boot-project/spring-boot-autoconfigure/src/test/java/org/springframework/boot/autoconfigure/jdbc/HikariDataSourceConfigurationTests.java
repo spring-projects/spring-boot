@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.lang.reflect.Field;
-
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -25,7 +23,6 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -103,13 +100,6 @@ public class HikariDataSourceConfigurationTests {
 					HikariDataSource ds = context.getBean(HikariDataSource.class);
 					assertThat(ds.getPoolName()).isEqualTo("myHikariDS");
 				});
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T getField(Class<?> target, String name) {
-		Field field = ReflectionUtils.findField(target, name, null);
-		ReflectionUtils.makeAccessible(field);
-		return (T) ReflectionUtils.getField(field, target);
 	}
 
 }

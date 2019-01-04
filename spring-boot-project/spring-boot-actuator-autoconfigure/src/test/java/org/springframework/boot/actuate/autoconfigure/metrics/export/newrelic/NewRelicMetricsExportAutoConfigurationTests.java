@@ -16,24 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
-import java.util.Map;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  *
@@ -111,25 +105,12 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					NewRelicMeterRegistry registry = spyOnDisposableBean(
-							NewRelicMeterRegistry.class, context);
+					NewRelicMeterRegistry registry = context
+							.getBean(NewRelicMeterRegistry.class);
+					assertThat(registry.isClosed()).isFalse();
 					context.close();
-					verify(registry).stop();
+					assertThat(registry.isClosed()).isTrue();
 				});
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T spyOnDisposableBean(Class<T> type,
-			AssertableApplicationContext context) {
-		String[] names = context.getBeanNamesForType(type);
-		assertThat(names).hasSize(1);
-		String registryBeanName = names[0];
-		Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils
-				.getField(context.getAutowireCapableBeanFactory(), "disposableBeans");
-		Object registryAdapter = disposableBeans.get(registryBeanName);
-		T registry = (T) spy(ReflectionTestUtils.getField(registryAdapter, "bean"));
-		ReflectionTestUtils.setField(registryAdapter, "bean", registry);
-		return registry;
 	}
 
 	@Configuration
@@ -148,19 +129,14 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public NewRelicConfig customConfig() {
-			return new NewRelicConfig() {
-
-				@Override
-				public String get(String k) {
-					if ("newrelic.accountId".equals(k)) {
-						return "abcde";
-					}
-					if ("newrelic.apiKey".equals(k)) {
-						return "12345";
-					}
-					return null;
+			return (k) -> {
+				if ("newrelic.accountId".equals(k)) {
+					return "abcde";
 				}
-
+				if ("newrelic.apiKey".equals(k)) {
+					return "12345";
+				}
+				return null;
 			};
 		}
 
