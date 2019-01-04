@@ -69,7 +69,7 @@
 		<h2.version>1.4.197</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<hazelcast.version>3.11.1</hazelcast.version>
-		<hazelcast-hibernate5.version>1.3.0</hazelcast-hibernate5.version>
+		<hazelcast-hibernate5.version>1.3.1</hazelcast-hibernate5.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
 		<hikaricp.version>3.2.0</hikaricp.version>
