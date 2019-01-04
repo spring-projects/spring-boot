@@ -1349,7 +1349,7 @@ monitoring systems, including:
 - <<production-ready-metrics-export-atlas,Atlas>>
 - <<production-ready-metrics-export-datadog,Datadog>>
 - <<production-ready-metrics-export-dynatrace,Dynatrace>>
-- <<production-ready-metrics-export-dynatrace,Elastic>>
+- <<production-ready-metrics-export-elastic,Elastic>>
 - <<production-ready-metrics-export-ganglia,Ganglia>>
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-humio,Humio>>
