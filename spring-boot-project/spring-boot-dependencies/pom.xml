@@ -55,16 +55,16 @@
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
-		<dropwizard-metrics.version>4.0.3</dropwizard-metrics.version>
+		<dropwizard-metrics.version>4.0.5</dropwizard-metrics.version>
 		<ehcache.version>2.10.6</ehcache.version>
-		<ehcache3.version>3.6.2</ehcache3.version>
+		<ehcache3.version>3.6.3</ehcache3.version>
 		<embedded-mongo.version>2.2.0</embedded-mongo.version>
 		<flyway.version>5.2.4</flyway.version>
 		<freemarker.version>2.3.28</freemarker.version>
 		<elasticsearch.version>6.4.3</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<glassfish-jaxb.version>2.3.1</glassfish-jaxb.version>
-		<groovy.version>2.5.4</groovy.version>
+		<groovy.version>2.5.5</groovy.version>
 		<gson.version>2.8.5</gson.version>
 		<h2.version>1.4.197</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
@@ -113,9 +113,9 @@
 		<joda-time.version>2.10.1</joda-time.version>
 		<jolokia.version>1.6.0</jolokia.version>
 		<!-- Deprecated in favor of "johnzon.version" -->
-		<johnzon-jsonb.version>1.1.10</johnzon-jsonb.version>
+		<johnzon-jsonb.version>1.1.11</johnzon-jsonb.version>
 		<johnzon.version>${johnzon-jsonb.version}</johnzon.version>
-		<jooq.version>3.11.7</jooq.version>
+		<jooq.version>3.11.9</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
@@ -153,7 +153,7 @@
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.2.4</rxjava2.version>
+		<rxjava2.version>2.2.5</rxjava2.version>
 		<selenium.version>3.141.59</selenium.version>
 		<selenium-htmlunit.version>2.33.3</selenium-htmlunit.version>
 		<sendgrid.version>4.3.0</sendgrid.version>
@@ -200,7 +200,7 @@
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 		<git-commit-id-plugin.version>2.2.5</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+		<maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
