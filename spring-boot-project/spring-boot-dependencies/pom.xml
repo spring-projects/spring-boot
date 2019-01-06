@@ -680,6 +680,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast-hibernate53</artifactId>
+				<version>${hazelcast-hibernate5.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast-spring</artifactId>
 				<version>${hazelcast.version}</version>
 			</dependency>
