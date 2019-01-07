@@ -99,7 +99,12 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers</artifactId>
-				<version>1.8.3</version>
+				<version>1.10.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>neo4j</artifactId>
+				<version>1.10.5</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin.external.google</groupId>
