@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,12 +42,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(CacheManager.class)
+@ConditionalOnEnabledEndpoint(endpoint = CachesEndpoint.class)
 @AutoConfigureAfter(CacheAutoConfiguration.class)
 public class CachesEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	public CachesEndpoint cachesEndpoint(
 			ObjectProvider<Map<String, CacheManager>> cacheManagers) {
 		return new CachesEndpoint(cacheManagers.getIfAvailable(LinkedHashMap::new));
@@ -55,7 +55,6 @@ public class CachesEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	@ConditionalOnBean(CachesEndpoint.class)
 	public CachesEndpointWebExtension cachesEndpointWebExtension(
 			CachesEndpoint cachesEndpoint) {
