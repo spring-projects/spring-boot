@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neo4j.ogm.session.Session;
+import org.testcontainers.containers.Neo4jContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.Neo4jContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Michael Simons
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(initializers = DataNeo4jTestIntegrationTests.Initializer.class)
@@ -46,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class DataNeo4jTestIntegrationTests {
 
 	@ClassRule
-	public static Neo4jContainer neo4j = new Neo4jContainer();
+	public static Neo4jContainer neo4j = new Neo4jContainer().withAdminPassword(null);
 
 	@Autowired
 	private Session session;
@@ -79,8 +80,7 @@ public class DataNeo4jTestIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort())
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 
