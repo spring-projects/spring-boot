@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,20 +41,19 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
+@ConditionalOnEnabledEndpoint(endpoint = LiquibaseEndpoint.class)
 @AutoConfigureAfter(LiquibaseAutoConfiguration.class)
 public class LiquibaseEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	public LiquibaseEndpoint liquibaseEndpoint(ApplicationContext context) {
 		return new LiquibaseEndpoint(context);
 	}
 
 	@Bean
 	@ConditionalOnBean(SpringLiquibase.class)
-	@ConditionalOnEnabledEndpoint(endpoint = LiquibaseEndpoint.class)
 	public static BeanPostProcessor preventDataSourceCloseBeanPostProcessor() {
 		return new BeanPostProcessor() {
 
