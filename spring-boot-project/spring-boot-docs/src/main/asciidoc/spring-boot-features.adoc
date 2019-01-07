@@ -6361,10 +6361,23 @@ in a similar manner, as shown in the following example:
 
 [[boot-features-task-execution-scheduling]]
 == Task Execution and Scheduling
-In the absence of a `TaskExecutor` bean in the context, Spring Boot auto-configures a
+In the absence of an `Executor` bean in the context, Spring Boot auto-configures a
 `ThreadPoolTaskExecutor` with sensible defaults that can be automatically associated to
 asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request
 processing.
+
+[TIP]
+====
+If you have defined a custom `Executor` in the context, regular task execution (i.e.
+`@EnableAsync`) will use it transparently but the Spring MVC support will not be
+configured as it requires an `AsyncTaskExecutor` implementation (named
+`applicationTaskExecutor`). Depending on your target arrangement, you could change your
+`Executor` into a `ThreadPoolTaskExecutor` or define both a `ThreadPoolTaskExecutor` and
+an `AsyncConfigurer` wrapping your custom `Executor`.
+
+The auto-configured `TaskExecutorBuilder` allows you to easily create instances that
+reproduces what the auto-configuration does by default.
+====
 
 The thread pool uses 8 core threads that can grow and shrink according to the load. Those
 default settings can be fine-tuned using the `spring.task.execution` namespace as shown in
