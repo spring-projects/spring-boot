@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,6 +153,13 @@ public class WebClientExchangeTagsTests {
 		given(this.response.statusCode()).willReturn(HttpStatus.BAD_GATEWAY);
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
+	}
+
+	@Test
+	public void outcomeTagIsUknownWhenResponseStatusIsUknown() {
+		given(this.response.statusCode()).willThrow(IllegalArgumentException.class);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 
 }

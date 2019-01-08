@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,9 +133,9 @@ public final class WebClientExchangeTags {
 	 * @since 2.2.0
 	 */
 	public static Tag outcome(ClientResponse response) {
-		if (response != null) {
-			HttpStatus status = response.statusCode();
-			if (status != null) {
+		try {
+			if (response != null) {
+				HttpStatus status = response.statusCode();
 				if (status.is1xxInformational()) {
 					return OUTCOME_INFORMATIONAL;
 				}
@@ -148,10 +148,15 @@ public final class WebClientExchangeTags {
 				if (status.is4xxClientError()) {
 					return OUTCOME_CLIENT_ERROR;
 				}
+				if (status.is5xxServerError()) {
+					return OUTCOME_SERVER_ERROR;
+				}
 			}
-			return OUTCOME_SERVER_ERROR;
+			return OUTCOME_UNKNOWN;
 		}
-		return OUTCOME_UNKNOWN;
+		catch (IllegalArgumentException exc) {
+			return OUTCOME_UNKNOWN;
+		}
 	}
 
 }
