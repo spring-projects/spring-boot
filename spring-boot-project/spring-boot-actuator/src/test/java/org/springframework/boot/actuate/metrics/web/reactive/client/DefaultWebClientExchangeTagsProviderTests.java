@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link DefaultWebClientExchangeTagsProvider}
  *
  * @author Brian Clozel
+ * @author Nishant Raut
  */
 public class DefaultWebClientExchangeTagsProviderTests {
 
@@ -66,7 +67,7 @@ public class DefaultWebClientExchangeTagsProviderTests {
 		Iterable<Tag> tags = this.tagsProvider.tags(this.request, this.response, null);
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"),
 				Tag.of("uri", "/projects/{project}"), Tag.of("clientName", "example.org"),
-				Tag.of("status", "200"));
+				Tag.of("status", "200"), Tag.of("outcome", "SUCCESS"));
 	}
 
 	@Test
@@ -76,7 +77,8 @@ public class DefaultWebClientExchangeTagsProviderTests {
 		Iterable<Tag> tags = this.tagsProvider.tags(request, this.response, null);
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"),
 				Tag.of("uri", "/projects/spring-boot"),
-				Tag.of("clientName", "example.org"), Tag.of("status", "200"));
+				Tag.of("clientName", "example.org"), Tag.of("status", "200"),
+				Tag.of("outcome", "SUCCESS"));
 	}
 
 	@Test

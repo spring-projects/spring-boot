@@ -27,6 +27,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
  * Default implementation of {@link WebClientExchangeTagsProvider}.
  *
  * @author Brian Clozel
+ * @author Nishant Raut
  * @since 2.1.0
  */
 public class DefaultWebClientExchangeTagsProvider
@@ -40,7 +41,8 @@ public class DefaultWebClientExchangeTagsProvider
 		Tag clientName = WebClientExchangeTags.clientName(request);
 		if (response != null) {
 			return Arrays.asList(method, uri, clientName,
-					WebClientExchangeTags.status(response));
+					WebClientExchangeTags.status(response),
+					WebClientExchangeTags.outcome(response));
 		}
 		else {
 			return Arrays.asList(method, uri, clientName,
