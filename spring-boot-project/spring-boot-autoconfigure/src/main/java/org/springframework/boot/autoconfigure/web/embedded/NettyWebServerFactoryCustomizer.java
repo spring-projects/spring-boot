@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,8 +91,7 @@ public class NettyWebServerFactoryCustomizer
 			int duration) {
 		factory.addServerCustomizers((NettyServerCustomizer) (httpServer) -> httpServer
 				.tcpConfiguration((tcpServer) -> tcpServer
-						.bootstrap((serverBootstrap) -> serverBootstrap.childOption(
-								ChannelOption.CONNECT_TIMEOUT_MILLIS, duration))));
+						.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, duration)));
 	}
 
 }
