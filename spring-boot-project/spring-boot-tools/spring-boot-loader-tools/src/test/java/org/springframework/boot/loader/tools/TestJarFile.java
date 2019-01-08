@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,25 +27,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.junit.rules.TemporaryFolder;
-import org.zeroturnaround.zip.FileSource;
-import org.zeroturnaround.zip.ZipEntrySource;
-import org.zeroturnaround.zip.ZipUtil;
+
+import org.springframework.util.FileCopyUtils;
 
 /**
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Christoph Dreis
  */
 public class TestJarFile {
-
-	private final byte[] buffer = new byte[4096];
 
 	private final TemporaryFolder temporaryFolder;
 
 	private final File jarSource;
 
-	private final List<ZipEntrySource> entries = new ArrayList<>();
+	private final List<FileEntry> entries = new ArrayList<>();
 
 	public TestJarFile(TemporaryFolder temporaryFolder) throws IOException {
 		this.temporaryFolder = temporaryFolder;
@@ -65,16 +65,14 @@ public class TestJarFile {
 		if (time != null) {
 			file.setLastModified(time);
 		}
-		this.entries.add(new FileSource(filename, file));
+		this.entries.add(new FileEntry(file, filename));
 	}
 
 	public void addFile(String filename, File fileToCopy) throws IOException {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
-		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
-			copyToFile(inputStream, file);
-		}
-		this.entries.add(new FileSource(filename, file));
+		FileCopyUtils.copy(fileToCopy, file);
+		this.entries.add(new FileEntry(file, filename));
 	}
 
 	public void addManifest(Manifest manifest) throws IOException {
@@ -83,7 +81,7 @@ public class TestJarFile {
 		try (OutputStream outputStream = new FileOutputStream(manifestFile)) {
 			manifest.write(outputStream);
 		}
-		this.entries.add(new FileSource("META-INF/MANIFEST.MF", manifestFile));
+		this.entries.add(new FileEntry(manifestFile, "META-INF/MANIFEST.MF"));
 	}
 
 	private File getFilePath(String filename) {
@@ -97,14 +95,7 @@ public class TestJarFile {
 
 	private void copyToFile(InputStream inputStream, File file) throws IOException {
 		try (OutputStream outputStream = new FileOutputStream(file)) {
-			copy(inputStream, outputStream);
-		}
-	}
-
-	private void copy(InputStream in, OutputStream out) throws IOException {
-		int bytesRead;
-		while ((bytesRead = in.read(this.buffer)) != -1) {
-			out.write(this.buffer, 0, bytesRead);
+			FileCopyUtils.copy(inputStream, outputStream);
 		}
 	}
 
@@ -123,8 +114,51 @@ public class TestJarFile {
 	public File getFile(String extension) throws IOException {
 		File file = this.temporaryFolder.newFile();
 		file = new File(file.getParent(), file.getName() + "." + extension);
-		ZipUtil.pack(this.entries.toArray(new ZipEntrySource[0]), file);
+		writeEntriesToFile(file);
 		return file;
+	}
+
+	private void writeEntriesToFile(File file) throws IOException {
+		try (JarWriter writer = new JarWriter(file)) {
+			for (FileEntry entry : this.entries) {
+				writeFileEntry(writer, entry);
+			}
+		}
+	}
+
+	private void writeFileEntry(JarWriter writer, FileEntry entry) throws IOException {
+		writer.writeEntry(entry.getName(), entry.getInputStream(), entry.getTime());
+	}
+
+	private static class FileEntry {
+
+		private final File file;
+
+		private final ZipEntry entry;
+
+		FileEntry(File file, String filename) {
+			this.file = file;
+			this.entry = new ZipEntry(filename);
+			this.entry.setTime(file.lastModified());
+		}
+
+		InputStream getInputStream() throws IOException {
+			if (this.file.isDirectory()) {
+				return null;
+			}
+			else {
+				return new BufferedInputStream(new FileInputStream(this.file));
+			}
+		}
+
+		String getName() {
+			return this.entry.getName();
+		}
+
+		long getTime() {
+			return this.entry.getTime();
+		}
+
 	}
 
 }

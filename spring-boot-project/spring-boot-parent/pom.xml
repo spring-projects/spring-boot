@@ -242,11 +242,6 @@
 				<artifactId>spock-spring</artifactId>
 				<version>${spock.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.zeroturnaround</groupId>
-				<artifactId>zt-zip</artifactId>
-				<version>1.13</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>

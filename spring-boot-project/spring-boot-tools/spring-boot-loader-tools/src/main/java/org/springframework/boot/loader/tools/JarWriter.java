@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,22 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry(entryName);
+		writeEntry(entry, new InputStreamEntryWriter(inputStream, true));
+	}
+
+	/**
+	 * Writes an entry with the specified modification time. The {@code inputStream} is
+	 * closed once the entry has been written.
+	 * @param entryName the name of the entry
+	 * @param inputStream the stream from which the entry's data can be read
+	 * @param time the modification time of the entry
+	 * @throws IOException if the write fails
+	 */
+	@Override
+	public void writeEntry(String entryName, InputStream inputStream, long time)
+			throws IOException {
+		JarArchiveEntry entry = new JarArchiveEntry(entryName);
+		entry.setTime(time);
 		writeEntry(entry, new InputStreamEntryWriter(inputStream, true));
 	}
 

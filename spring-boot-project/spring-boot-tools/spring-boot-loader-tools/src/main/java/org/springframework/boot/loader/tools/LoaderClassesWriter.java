@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,5 +49,14 @@ public interface LoaderClassesWriter {
 	 * @throws IOException if the entry cannot be written
 	 */
 	void writeEntry(String name, InputStream inputStream) throws IOException;
+
+	/**
+	 * Write a single entry to the JAR with a specified modification time.
+	 * @param name the name of the entry
+	 * @param inputStream the input stream content
+	 * @param time the modification time of the entry
+	 * @throws IOException if the entry cannot be written
+	 */
+	void writeEntry(String name, InputStream inputStream, long time) throws IOException;
 
 }
