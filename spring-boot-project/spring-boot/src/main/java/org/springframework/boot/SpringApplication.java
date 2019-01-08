@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  *   // ... Bean definitions
  *
- *   public static void main(String[] args) throws Exception {
+ *   public static void main(String[] args) {
  *     SpringApplication.run(MyApplication.class, args);
  *   }
  * }
@@ -117,7 +117,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * customized before being run:
  *
  * <pre class="code">
- * public static void main(String[] args) throws Exception {
+ * public static void main(String[] args) {
  *   SpringApplication application = new SpringApplication(MyApplication.class);
  *   // ... customize application settings here
  *   application.run(args)
