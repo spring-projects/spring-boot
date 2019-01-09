@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.codec.DecodingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -93,6 +94,9 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	private HttpStatus determineHttpStatus(Throwable error) {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
+		}
+		if (error instanceof DecodingException) {
+			return HttpStatus.BAD_REQUEST;
 		}
 		ResponseStatus responseStatus = AnnotatedElementUtils
 				.findMergedAnnotation(error.getClass(), ResponseStatus.class);

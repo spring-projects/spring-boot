@@ -25,6 +25,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.core.codec.DecodingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -119,6 +120,17 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("error"))
 				.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
 		assertThat(attributes.get("status")).isEqualTo(404);
+	}
+
+	@Test
+	public void returnRequestErrorWhenDecodingException() {
+		DecodingException error = new DecodingException("Decoding error");
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(buildServerRequest(request, error), false);
+		assertThat(attributes.get("error"))
+				.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+		assertThat(attributes.get("status")).isEqualTo(400);
 	}
 
 	@Test
