@@ -176,13 +176,6 @@ public class RestarterTests {
 		assertThat(Restarter.getInstance().getInitialUrls()).isEqualTo(urls);
 	}
 
-	@FunctionalInterface
-	private interface WithMainAction {
-
-		void perform() throws Exception;
-
-	}
-
 	@Component
 	@EnableScheduling
 	public static class SampleApplication {
