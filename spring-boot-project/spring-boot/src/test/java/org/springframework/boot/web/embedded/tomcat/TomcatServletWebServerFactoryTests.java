@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -449,6 +449,18 @@ public class TomcatServletWebServerFactoryTests
 		this.webServer = factory.getWebServer((context) -> context
 				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		this.webServer.start();
+	}
+
+	@Test
+	public void referenceClearingIsDisabled() {
+		TomcatServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
+		StandardContext context = (StandardContext) tomcat.getHost().findChildren()[0];
+		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
+		assertThat(context.getClearReferencesRmiTargets()).isFalse();
+		assertThat(context.getClearReferencesThreadLocals()).isFalse();
 	}
 
 	@Override
