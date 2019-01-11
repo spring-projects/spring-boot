@@ -174,7 +174,7 @@
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
+		<spring-retry.version>1.2.3.RELEASE</spring-retry.version>
 		<spring-security.version>5.1.3.RELEASE</spring-security.version>
 		<spring-session-bom.version>Bean-SR2</spring-session-bom.version>
 		<spring-ws.version>3.0.6.RELEASE</spring-ws.version>
@@ -198,7 +198,7 @@
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-		<git-commit-id-plugin.version>2.2.5</git-commit-id-plugin.version>
+		<git-commit-id-plugin.version>2.2.6</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
