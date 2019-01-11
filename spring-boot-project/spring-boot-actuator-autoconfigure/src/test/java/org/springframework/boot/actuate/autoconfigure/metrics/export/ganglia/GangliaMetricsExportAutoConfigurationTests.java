@@ -107,7 +107,7 @@ public class GangliaMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public GangliaConfig customConfig() {
-			return (k) -> null;
+			return (key) -> null;
 		}
 
 	}

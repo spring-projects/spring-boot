@@ -403,9 +403,9 @@ public class RestTemplateBuilderTests {
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
 		RestTemplate template = this.builder.customizers(customizer1)
 				.additionalCustomizers(customizer2).build();
-		InOrder inOrder = inOrder(customizer1, customizer2);
-		inOrder.verify(customizer1).customize(template);
-		inOrder.verify(customizer2).customize(template);
+		InOrder ordered = inOrder(customizer1, customizer2);
+		ordered.verify(customizer1).customize(template);
+		ordered.verify(customizer2).customize(template);
 	}
 
 	@Test

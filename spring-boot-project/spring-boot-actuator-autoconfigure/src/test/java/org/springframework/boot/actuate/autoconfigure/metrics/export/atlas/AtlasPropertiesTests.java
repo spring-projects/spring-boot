@@ -31,7 +31,7 @@ public class AtlasPropertiesTests {
 	@Test
 	public void defaultValuesAreConsistent() {
 		AtlasProperties properties = new AtlasProperties();
-		AtlasConfig config = (k) -> null;
+		AtlasConfig config = (key) -> null;
 		assertThat(properties.getStep()).isEqualTo(config.step());
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());
 		assertThat(properties.getConnectTimeout()).isEqualTo(config.connectTimeout());

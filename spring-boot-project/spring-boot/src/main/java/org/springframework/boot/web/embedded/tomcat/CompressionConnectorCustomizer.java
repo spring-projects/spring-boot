@@ -54,30 +54,37 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 		}
 	}
 
-	private void customize(Http2Protocol upgradeProtocol) {
+	private void customize(Http2Protocol protocol) {
 		Compression compression = this.compression;
-		upgradeProtocol.setCompression("on");
-		upgradeProtocol
-				.setCompressionMinSize((int) compression.getMinResponseSize().toBytes());
-		upgradeProtocol.setCompressibleMimeType(
-				StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
+		protocol.setCompression("on");
+		protocol.setCompressionMinSize(getMinResponseSize(compression));
+		protocol.setCompressibleMimeType(getMimeTypes(compression));
 		if (this.compression.getExcludedUserAgents() != null) {
-			upgradeProtocol
-					.setNoCompressionUserAgents(StringUtils.arrayToCommaDelimitedString(
-							this.compression.getExcludedUserAgents()));
+			protocol.setNoCompressionUserAgents(getExcludedUserAgents());
 		}
 	}
 
 	private void customize(AbstractHttp11Protocol<?> protocol) {
 		Compression compression = this.compression;
 		protocol.setCompression("on");
-		protocol.setCompressionMinSize((int) compression.getMinResponseSize().toBytes());
-		protocol.setCompressibleMimeType(
-				StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
+		protocol.setCompressionMinSize(getMinResponseSize(compression));
+		protocol.setCompressibleMimeType(getMimeTypes(compression));
 		if (this.compression.getExcludedUserAgents() != null) {
-			protocol.setNoCompressionUserAgents(StringUtils.arrayToCommaDelimitedString(
-					this.compression.getExcludedUserAgents()));
+			protocol.setNoCompressionUserAgents(getExcludedUserAgents());
 		}
+	}
+
+	private int getMinResponseSize(Compression compression) {
+		return (int) compression.getMinResponseSize().toBytes();
+	}
+
+	private String getMimeTypes(Compression compression) {
+		return StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes());
+	}
+
+	private String getExcludedUserAgents() {
+		return StringUtils
+				.arrayToCommaDelimitedString(this.compression.getExcludedUserAgents());
 	}
 
 }

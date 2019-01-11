@@ -306,12 +306,12 @@ public class JettyServletWebServerFactoryTests
 			contexts.iterator().next().addEventListener(new ServletContextListener() {
 
 				@Override
-				public void contextInitialized(ServletContextEvent sce) {
+				public void contextInitialized(ServletContextEvent event) {
 					throw new RuntimeException();
 				}
 
 				@Override
-				public void contextDestroyed(ServletContextEvent sce) {
+				public void contextDestroyed(ServletContextEvent event) {
 				}
 
 			});

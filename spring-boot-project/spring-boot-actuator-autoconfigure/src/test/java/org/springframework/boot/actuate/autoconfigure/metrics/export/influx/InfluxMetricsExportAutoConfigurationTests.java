@@ -107,7 +107,7 @@ public class InfluxMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public InfluxConfig customConfig() {
-			return (k) -> null;
+			return (key) -> null;
 		}
 
 	}

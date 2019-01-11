@@ -81,7 +81,6 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 		else {
 			builder.up();
 		}
-
 		builder.withDetails(response);
 	}
 

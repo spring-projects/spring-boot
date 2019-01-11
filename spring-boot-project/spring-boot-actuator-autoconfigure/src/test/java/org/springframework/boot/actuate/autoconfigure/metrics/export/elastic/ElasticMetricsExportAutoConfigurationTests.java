@@ -108,7 +108,7 @@ public class ElasticMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public ElasticConfig customConfig() {
-			return (k) -> null;
+			return (key) -> null;
 		}
 
 	}

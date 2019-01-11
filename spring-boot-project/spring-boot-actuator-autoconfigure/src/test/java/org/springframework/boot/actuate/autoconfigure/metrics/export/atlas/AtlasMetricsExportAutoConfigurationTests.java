@@ -107,7 +107,7 @@ public class AtlasMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public AtlasConfig customConfig() {
-			return (k) -> null;
+			return (key) -> null;
 		}
 
 	}

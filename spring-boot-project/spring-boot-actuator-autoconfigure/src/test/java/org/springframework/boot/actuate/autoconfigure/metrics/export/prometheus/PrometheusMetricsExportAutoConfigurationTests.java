@@ -157,7 +157,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public PrometheusConfig customConfig() {
-			return (k) -> null;
+			return (key) -> null;
 		}
 
 	}

@@ -116,8 +116,8 @@ public class DatadogMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public DatadogConfig customConfig() {
-			return (k) -> {
-				if ("datadog.apiKey".equals(k)) {
+			return (key) -> {
+				if ("datadog.apiKey".equals(key)) {
 					return "12345";
 				}
 				return null;

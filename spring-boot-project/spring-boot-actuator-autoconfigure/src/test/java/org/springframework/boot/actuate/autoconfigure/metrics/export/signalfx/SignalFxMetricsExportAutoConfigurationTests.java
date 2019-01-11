@@ -124,8 +124,8 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public SignalFxConfig customConfig() {
-			return (k) -> {
-				if ("signalfx.accessToken".equals(k)) {
+			return (key) -> {
+				if ("signalfx.accessToken".equals(key)) {
 					return "abcde";
 				}
 				return null;

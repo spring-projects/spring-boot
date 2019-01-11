@@ -129,11 +129,11 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public NewRelicConfig customConfig() {
-			return (k) -> {
-				if ("newrelic.accountId".equals(k)) {
+			return (key) -> {
+				if ("newrelic.accountId".equals(key)) {
 					return "abcde";
 				}
-				if ("newrelic.apiKey".equals(k)) {
+				if ("newrelic.apiKey".equals(key)) {
 					return "12345";
 				}
 				return null;

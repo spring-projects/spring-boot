@@ -124,8 +124,8 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public GraphiteConfig customConfig() {
-			return (k) -> {
-				if ("Graphite.apiKey".equals(k)) {
+			return (key) -> {
+				if ("Graphite.apiKey".equals(key)) {
 					return "12345";
 				}
 				return null;
