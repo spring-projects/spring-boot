@@ -21,9 +21,13 @@ import java.lang.reflect.Method;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.contrib.jackson.JacksonJsonFormatter;
+import ch.qos.logback.contrib.json.classic.JsonLayout;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.encoder.Encoder;
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
@@ -58,6 +62,10 @@ class DefaultLogbackConfiguration {
 			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
 
 	private static final String MAX_FILE_SIZE = "10MB";
+
+	private static final String JSON = "json";
+
+	private static final String TEXT = "text";
 
 	private final PropertyResolver patterns;
 
@@ -112,10 +120,33 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("logging.pattern.console",
-				CONSOLE_LOG_PATTERN);
-		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
+		final String format = this.patterns.getProperty("logging.format", TEXT);
+		final Encoder<ILoggingEvent> encoder;
+		if (JSON.equalsIgnoreCase(format)) {
+			final JacksonJsonFormatter jacksonJsonFormatter = new JacksonJsonFormatter();
+			jacksonJsonFormatter.setPrettyPrint(true);
+
+			final JsonLayout jsonLayout = new JsonLayout();
+			jsonLayout.setJsonFormatter(jacksonJsonFormatter);
+			jsonLayout.setTimestampFormat("yyyy-MM-dd' 'HH:mm:ss.SSS");
+			jsonLayout.setAppendLineSeparator(true);
+
+			final LayoutWrappingEncoder<ILoggingEvent> layoutWrappingEncoder = new LayoutWrappingEncoder<>();
+			layoutWrappingEncoder.setLayout(jsonLayout);
+
+			config.start(layoutWrappingEncoder);
+			appender.setEncoder(layoutWrappingEncoder);
+
+			encoder = layoutWrappingEncoder;
+		}
+		else {
+			final PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();
+			final String logPattern = this.patterns.getProperty("logging.pattern.console",
+					CONSOLE_LOG_PATTERN);
+			patternLayoutEncoder
+					.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
+			encoder = patternLayoutEncoder;
+		}
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);

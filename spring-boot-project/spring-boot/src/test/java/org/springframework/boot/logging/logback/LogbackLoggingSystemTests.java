@@ -18,8 +18,11 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -31,6 +34,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -492,6 +496,27 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		String output = this.output.toString().trim();
 		assertThat(getLineWithText(output, "Hello world"))
 				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
+	}
+
+	@Test
+	public void testJsonFormat() throws IOException {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.console", "%logger %msg");
+		environment.setProperty("logging.format", "json");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello Json!");
+
+		final Map<String, Object> result = new ObjectMapper()
+				.readValue(this.output.toString(), HashMap.class);
+
+		assertThat(result.get("level")).isEqualTo("INFO");
+		assertThat(result.get("thread")).isEqualTo("main");
+		assertThat(result.get("logger")).isEqualTo(
+				"org.springframework.boot.logging.logback.LogbackLoggingSystemTests");
+		assertThat(result.get("message")).isEqualTo("Hello Json!");
+		assertThat(result.get("context")).isEqualTo("default");
 	}
 
 	private static Logger getRootLogger() {
