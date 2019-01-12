@@ -141,12 +141,12 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface Unrelated1 {
+	@interface Unrelated1 {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface Unrelated2 {
+	@interface Unrelated2 {
 
 	}
 
