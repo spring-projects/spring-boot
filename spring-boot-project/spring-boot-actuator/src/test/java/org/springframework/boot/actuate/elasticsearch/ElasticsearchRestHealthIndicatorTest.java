@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import org.springframework.boot.actuate.health.Status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ElasticsearchRestHealthIndicator}.
@@ -54,15 +54,12 @@ public class ElasticsearchRestHealthIndicatorTest {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
 		httpEntity.setContent(
 				new ByteArrayInputStream(createJsonResult(200, "green").getBytes()));
-
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
-
-		when(statusLine.getStatusCode()).thenReturn(200);
-		when(response.getStatusLine()).thenReturn(statusLine);
-		when(response.getEntity()).thenReturn(httpEntity);
-		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
-
+		given(statusLine.getStatusCode()).willReturn(200);
+		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getEntity()).willReturn(httpEntity);
+		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "green");
@@ -73,15 +70,12 @@ public class ElasticsearchRestHealthIndicatorTest {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
 		httpEntity.setContent(
 				new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()));
-
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
-
-		when(statusLine.getStatusCode()).thenReturn(200);
-		when(response.getStatusLine()).thenReturn(statusLine);
-		when(response.getEntity()).thenReturn(httpEntity);
-		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
-
+		given(statusLine.getStatusCode()).willReturn(200);
+		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getEntity()).willReturn(httpEntity);
+		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
@@ -89,9 +83,8 @@ public class ElasticsearchRestHealthIndicatorTest {
 
 	@Test
 	public void elasticsearchIsDown() throws IOException {
-		when(this.restClient.performRequest(any(Request.class)))
-				.thenThrow(new IOException("Couldn't connect"));
-
+		given(this.restClient.performRequest(any(Request.class)))
+				.willThrow(new IOException("Couldn't connect"));
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails())
@@ -102,12 +95,10 @@ public class ElasticsearchRestHealthIndicatorTest {
 	public void elasticsearchIsDownByResponseCode() throws IOException {
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
-
-		when(statusLine.getStatusCode()).thenReturn(500);
-		when(statusLine.getReasonPhrase()).thenReturn("Internal server error");
-		when(response.getStatusLine()).thenReturn(statusLine);
-		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
-
+		given(statusLine.getStatusCode()).willReturn(500);
+		given(statusLine.getReasonPhrase()).willReturn("Internal server error");
+		given(response.getStatusLine()).willReturn(statusLine);
+		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).contains(entry("statusCode", 500),
@@ -119,15 +110,12 @@ public class ElasticsearchRestHealthIndicatorTest {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
 		httpEntity.setContent(
 				new ByteArrayInputStream(createJsonResult(200, "red").getBytes()));
-
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
-
-		when(statusLine.getStatusCode()).thenReturn(200);
-		when(response.getStatusLine()).thenReturn(statusLine);
-		when(response.getEntity()).thenReturn(httpEntity);
-		when(this.restClient.performRequest(any(Request.class))).thenReturn(response);
-
+		given(statusLine.getStatusCode()).willReturn(200);
+		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getEntity()).willReturn(httpEntity);
+		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 		assertHealthDetailsWithStatus(health.getDetails(), "red");
@@ -148,9 +136,8 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	private String createJsonResult(int responseCode, String status) {
-		String json;
 		if (responseCode == 200) {
-			json = String.format("{\"cluster_name\":\"elasticsearch\","
+			return String.format("{\"cluster_name\":\"elasticsearch\","
 					+ "\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1,"
 					+ "\"number_of_data_nodes\":1,\"active_primary_shards\":0,"
 					+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
@@ -159,12 +146,8 @@ public class ElasticsearchRestHealthIndicatorTest {
 					+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
 					status);
 		}
-		else {
-			json = "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": "
-					+ responseCode + "\n" + "}";
-		}
-
-		return json;
+		return "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": "
+				+ responseCode + "\n" + "}";
 	}
 
 }

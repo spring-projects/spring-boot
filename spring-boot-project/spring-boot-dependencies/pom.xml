@@ -164,7 +164,7 @@
 		<!-- deprecated in favor of "spring-framework.version" -->
 		<spring.version>5.1.4.RELEASE</spring.version>
 		<spring-amqp.version>2.1.3.RELEASE</spring-amqp.version>
-		<spring-batch.version>4.1.0.RELEASE</spring-batch.version>
+		<spring-batch.version>4.1.1.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.4.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Lovelace-SR4</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
