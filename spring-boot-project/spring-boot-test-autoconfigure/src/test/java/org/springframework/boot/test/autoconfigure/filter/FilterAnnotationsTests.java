@@ -119,7 +119,7 @@ public class FilterAnnotationsTests {
 	@Target({ ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	static @interface Filters {
+	@interface Filters {
 
 		Filter[] value();
 

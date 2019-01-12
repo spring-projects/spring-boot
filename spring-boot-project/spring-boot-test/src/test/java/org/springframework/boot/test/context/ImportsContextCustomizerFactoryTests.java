@@ -164,7 +164,7 @@ public class ImportsContextCustomizerFactoryTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@SelfAnnotating
-	static @interface SelfAnnotating {
+	@interface SelfAnnotating {
 
 	}
 

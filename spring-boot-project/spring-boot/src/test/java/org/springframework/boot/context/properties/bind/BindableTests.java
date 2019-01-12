@@ -181,7 +181,7 @@ public class BindableTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface TestAnnotation {
+	@interface TestAnnotation {
 
 	}
 

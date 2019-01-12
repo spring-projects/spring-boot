@@ -115,7 +115,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface NoMappingAnnotation {
+	@interface NoMappingAnnotation {
 
 	}
 
@@ -132,7 +132,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface TypeMappingAnnotation {
+	@interface TypeMappingAnnotation {
 
 		String mapped() default "Mapped";
 
@@ -149,7 +149,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface AttributeMappingAnnotation {
+	@interface AttributeMappingAnnotation {
 
 		@PropertyMapping("mapped")
 		String value() default "Mapped";
