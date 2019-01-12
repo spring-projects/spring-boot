@@ -212,7 +212,7 @@ public class EmbeddedMongoAutoConfiguration {
 							"[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
 			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
 					.processOutput(processOutput).artifactStore(getArtifactStore(logger))
-					.build();
+					.daemonProcess(false).build();
 		}
 
 		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
