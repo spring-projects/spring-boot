@@ -138,8 +138,8 @@ public class ElasticsearchJestHealthIndicatorTests {
 					status);
 		}
 		else {
-			json = "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": "
-					+ responseCode + "\n" + "}";
+			json = "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": \""
+					+ status + "\"\n" + "}";
 		}
 		searchResult.setJsonString(json);
 		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());

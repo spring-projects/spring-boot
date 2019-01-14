@@ -77,8 +77,8 @@ public class DataSourceUnwrapperTests {
 	@Test
 	public void unwrapWithSeveralLevelOfWrapping() {
 		DataSource dataSource = new HikariDataSource();
-		DataSource actual = wrapInProxy(wrapInDelegate(
-				wrapInDelegate((wrapInProxy(wrapInDelegate(dataSource))))));
+		DataSource actual = wrapInProxy(
+				wrapInDelegate(wrapInDelegate(wrapInProxy(wrapInDelegate(dataSource)))));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
 				.isSameAs(dataSource);
 	}
