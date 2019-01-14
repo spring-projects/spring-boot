@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,7 @@ public class LdapAutoConfigurationTests {
 	public void contextSourceWithDefaultUrl() {
 		this.contextRunner.run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			String[] urls = getUrls(contextSource);
-			assertThat(urls).containsExactly("ldap://localhost:389");
+			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
 			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
 		});
 	}
@@ -58,8 +57,8 @@ public class LdapAutoConfigurationTests {
 				.run((context) -> {
 					LdapContextSource contextSource = context
 							.getBean(LdapContextSource.class);
-					String[] urls = getUrls(contextSource);
-					assertThat(urls).containsExactly("ldap://localhost:123");
+					assertThat(contextSource.getUrls())
+							.containsExactly("ldap://localhost:123");
 				});
 	}
 
@@ -72,9 +71,8 @@ public class LdapAutoConfigurationTests {
 					LdapContextSource contextSource = context
 							.getBean(LdapContextSource.class);
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
-					String[] urls = getUrls(contextSource);
-					assertThat(urls).containsExactly("ldap://localhost:123",
-							"ldap://mycompany:123");
+					assertThat(contextSource.getUrls()).containsExactly(
+							"ldap://localhost:123", "ldap://mycompany:123");
 					assertThat(ldapProperties.getUrls()).hasSize(2);
 				});
 	}
@@ -112,14 +110,10 @@ public class LdapAutoConfigurationTests {
 				.run((context) -> {
 					LdapContextSource contextSource = context
 							.getBean(LdapContextSource.class);
-					String[] urls = getUrls(contextSource);
-					assertThat(urls).containsExactly("ldap://localhost:389");
+					assertThat(contextSource.getUrls())
+							.containsExactly("ldap://localhost:389");
 					assertThat(contextSource.isAnonymousReadOnly()).isFalse();
 				});
-	}
-
-	private String[] getUrls(LdapContextSource contextSource) {
-		return contextSource.getUrls();
 	}
 
 	@Configuration

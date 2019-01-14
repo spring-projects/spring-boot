@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ class SpringBootTestRandomPortEnvironmentPostProcessor
 			return environment.getConversionService().convert(value, Integer.class);
 		}
 		catch (ConversionFailedException ex) {
-			if (ClassUtils.isAssignable(value.getClass(), String.class)) {
+			if (value instanceof String) {
 				return getResolvedValueIfPossible(environment, (String) value);
 			}
 			throw ex;
