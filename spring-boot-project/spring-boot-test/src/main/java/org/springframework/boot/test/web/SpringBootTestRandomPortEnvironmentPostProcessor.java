@@ -97,7 +97,7 @@ class SpringBootTestRandomPortEnvironmentPostProcessor
 			return environment.getConversionService().convert(value, Integer.class);
 		}
 		catch (ConversionFailedException ex) {
-			if (ClassUtils.isAssignable(value.getClass(), String.class)) {
+			if (value instanceof String) {
 				return getResolvedValueIfPossible(environment, (String) value);
 			}
 			throw ex;

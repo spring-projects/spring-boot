@@ -63,7 +63,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 					.invoke(runtimeVersion);
 		}
 		catch (Throwable ex) {
-			version = 8;
+			version = BASE_VERSION;
 		}
 		RUNTIME_VERSION = version;
 	}

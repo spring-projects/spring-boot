@@ -80,8 +80,7 @@ public class RestTemplateMetricsConfigurationTests {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
 					assertThat(this.output.toString()).contains(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.output.toString())
+							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.contains("Are you using 'uriVariables'?");
 				});
 	}
@@ -94,8 +93,7 @@ public class RestTemplateMetricsConfigurationTests {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
 					assertThat(this.output.toString()).doesNotContain(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.output.toString())
+							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
 	}

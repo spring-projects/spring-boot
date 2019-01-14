@@ -38,7 +38,7 @@ public final class EndpointId {
 
 	private static final Log logger = LogFactory.getLog(EndpointId.class);
 
-	private static Set<String> loggedWarnings = new HashSet<>();
+	private static final Set<String> loggedWarnings = new HashSet<>();
 
 	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
 
