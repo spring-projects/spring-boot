@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -41,12 +42,14 @@ import org.xnio.SslClientAuthMode;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ResourceUtils;
 
 /**
  * {@link UndertowBuilderCustomizer} that configures SSL on the given builder instance.
  *
  * @author Brian Clozel
+ * @author Raheela Aslam
  */
 class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
@@ -166,21 +169,39 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
+		return loadTrustStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
 				ssl.getTrustStore(), ssl.getTrustStorePassword());
 	}
 
 	private KeyStore loadKeyStore(String type, String provider, String resource,
 			String password) throws Exception {
-		type = (type != null) ? type : "JKS";
+		return loadStore(type, provider, resource, password);
+	}
+
+	private KeyStore loadTrustStore(String type, String provider, String resource,
+			String password) throws Exception {
 		if (resource == null) {
 			return null;
 		}
+		else {
+			return loadStore(type, provider, resource, password);
+		}
+	}
+
+	private KeyStore loadStore(String type, String provider, String resource,
+			String password) throws Exception {
+		type = (type != null) ? type : "JKS";
 		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider)
 				: KeyStore.getInstance(type);
-		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
-		return store;
+		try {
+			URL url = ResourceUtils.getURL(resource);
+			store.load(url.openStream(),
+					(password != null) ? password.toCharArray() : null);
+			return store;
+		}
+		catch (FileNotFoundException ex) {
+			throw new WebServerException("Could not load store: " + ex.getMessage(), ex);
+		}
 	}
 
 	/**

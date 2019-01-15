@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SslServerCustomizer}.
  *
  * @author Andy Wilkinson
+ * @author Raheela Aslam
  */
 public class SslServerCustomizerTests {
 
@@ -65,6 +66,22 @@ public class SslServerCustomizerTests {
 			Throwable cause = ex.getCause();
 			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
 			assertThat(cause).hasMessageContaining("com.example.TrustStoreProvider");
+		}
+	}
+
+	@Test
+	public void keyStoreProviderIsUsedWhenKeyStoreNotContaining() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
+		try {
+			customizer.getKeyManagerFactory(ssl, null);
+			fail();
+		}
+		catch (IllegalStateException ex) {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isInstanceOf(IllegalArgumentException.class);
+			assertThat(cause).hasMessageContaining("Resource location must not be null");
 		}
 	}
 
