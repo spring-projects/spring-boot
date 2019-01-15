@@ -33,6 +33,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SslBuilderCustomizer}
  *
  * @author Brian Clozel
+ * @author Raheela Aslam
  */
 public class SslBuilderCustomizerTests {
 
@@ -85,6 +86,26 @@ public class SslBuilderCustomizerTests {
 			Throwable cause = ex.getCause();
 			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
 			assertThat(cause).hasMessageContaining("com.example.TrustStoreProvider");
+		}
+	}
+
+	@Test
+	public void getKeyManagersWhenKeyStoreIsNotProvided() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
+				InetAddress.getLocalHost(), ssl, null);
+		try {
+			KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer,
+					"getKeyManagers", ssl, null);
+			Class<?> name = Class.forName("org.springframework.boot.web.embedded.undertow"
+					+ ".SslBuilderCustomizer$ConfigurableAliasKeyManager");
+			assertThat(keyManagers[0]).isNotInstanceOf(name);
+		}
+		catch (IllegalStateException ex) {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isInstanceOf(IllegalArgumentException.class);
+			assertThat(cause).hasMessageContaining("Resource location must not be null");
 		}
 	}
 
