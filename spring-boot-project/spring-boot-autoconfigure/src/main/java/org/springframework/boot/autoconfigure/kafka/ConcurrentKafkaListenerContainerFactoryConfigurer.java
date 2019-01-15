@@ -26,6 +26,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
+import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
@@ -122,8 +123,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
 		map.from(this.messageConverter).to(factory::setMessageConverter);
 		map.from(this.replyTemplate).to(factory::setReplyTemplate);
-		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH)
-				.toCall(() -> factory.setBatchListener(true));
+		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH).toCall(() -> {
+			factory.setBatchListener(true);
+			factory.setMessageConverter(new BatchMessagingMessageConverter(this.messageConverter));
+		});
 		map.from(this.errorHandler).to(factory::setErrorHandler);
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
 	}
