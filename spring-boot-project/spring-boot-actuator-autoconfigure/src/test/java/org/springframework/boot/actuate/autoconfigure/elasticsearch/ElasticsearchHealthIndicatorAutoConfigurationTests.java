@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ElasticSearchClientHealthIndicatorAutoConfiguration} and
- * {@link ElasticSearchJestHealthIndicatorAutoConfiguration}.
+ * {@link ElasticsearchJestHealthIndicatorAutoConfiguration}.
  *
  * @author Phillip Webb
  */
@@ -45,7 +45,7 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
 					ElasticSearchClientHealthIndicatorAutoConfiguration.class,
-					ElasticSearchJestHealthIndicatorAutoConfiguration.class,
+					ElasticsearchJestHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test

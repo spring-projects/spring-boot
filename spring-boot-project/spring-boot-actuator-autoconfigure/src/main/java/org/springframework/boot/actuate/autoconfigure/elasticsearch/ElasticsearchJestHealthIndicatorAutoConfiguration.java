@@ -50,12 +50,12 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ JestAutoConfiguration.class,
 		ElasticSearchClientHealthIndicatorAutoConfiguration.class })
-public class ElasticSearchJestHealthIndicatorAutoConfiguration extends
+public class ElasticsearchJestHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<ElasticsearchJestHealthIndicator, JestClient> {
 
 	private final Map<String, JestClient> clients;
 
-	public ElasticSearchJestHealthIndicatorAutoConfiguration(
+	public ElasticsearchJestHealthIndicatorAutoConfiguration(
 			Map<String, JestClient> clients) {
 		this.clients = clients;
 	}
