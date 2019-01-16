@@ -125,7 +125,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.replyTemplate).to(factory::setReplyTemplate);
 		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH).toCall(() -> {
 			factory.setBatchListener(true);
-			factory.setMessageConverter(new BatchMessagingMessageConverter(this.messageConverter));
+			factory.setMessageConverter(
+					new BatchMessagingMessageConverter(this.messageConverter));
 		});
 		map.from(this.errorHandler).to(factory::setErrorHandler);
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
