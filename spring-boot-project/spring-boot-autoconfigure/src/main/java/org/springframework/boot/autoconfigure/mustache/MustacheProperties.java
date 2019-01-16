@@ -42,6 +42,10 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	 */
 	private String suffix = DEFAULT_SUFFIX;
 
+	private String defaultValue;
+
+	private String nullValue;
+
 	public MustacheProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 	}
@@ -66,4 +70,19 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 		this.suffix = suffix;
 	}
 
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public String getNullValue() {
+		return nullValue;
+	}
+
+	public void setNullValue(String nullValue) {
+		this.nullValue = nullValue;
+	}
 }
