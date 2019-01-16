@@ -32,6 +32,8 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -57,12 +59,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Sebastien Deleuze
  * @author Eddú Meléndez
+ * @author Artsiom Yudovin
  */
 public class HttpMessageConvertersAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
+
+	private ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
+
+	private WebApplicationContextRunner servletContextRunner = new WebApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
+
+	@Test
+	public void conditionalOnNotReactiveApplication() {
+		this.reactiveContextRunner.run((context) -> assertThat(context)
+				.doesNotHaveBean(HttpMessageConvertersAutoConfiguration.class));
+
+		this.servletContextRunner.run((context) -> assertThat(context)
+				.hasBean("httpMessageConvertersAutoConfiguration"));
+
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasBean("httpMessageConvertersAutoConfiguration"));
+	}
 
 	@Test
 	public void jacksonNotAvailable() {
