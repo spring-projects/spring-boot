@@ -35,6 +35,7 @@ import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.Validate;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -510,6 +511,38 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 		final Map<String, Object> result = new ObjectMapper()
 				.readValue(this.output.toString(), HashMap.class);
+
+		assertThat(this.output.toString().charAt(this.output.toString().length() - 1))
+				.isEqualTo('\n');
+
+		assertThat(result.get("level")).isEqualTo("INFO");
+		assertThat(result.get("thread")).isEqualTo("main");
+		assertThat(result.get("logger")).isEqualTo(
+				"org.springframework.boot.logging.logback.LogbackLoggingSystemTests");
+		assertThat(result.get("message")).isEqualTo("Hello Json!");
+		assertThat(result.get("context")).isEqualTo("default");
+	}
+
+	@Test
+	public void testJsonFormatWithCustomTimestampAndNoLineSeparator() throws IOException {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.console", "%logger %msg");
+		environment.setProperty("logging.format", "json");
+		environment.setProperty("logging.timestampFormat", "yyyy-MM-dd' 'HH:mm:ss.SSS");
+		environment.setProperty("logging.appendLineSeparator", "false");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello Json!");
+
+		final Map<String, Object> result = new ObjectMapper()
+				.readValue(this.output.toString(), HashMap.class);
+
+		assertThat(this.output.toString().charAt(this.output.toString().length() - 1))
+				.isEqualTo('}');
+
+		Validate.matchesPattern(result.get("timestamp").toString(),
+				"\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}");
 
 		assertThat(result.get("level")).isEqualTo("INFO");
 		assertThat(result.get("thread")).isEqualTo("main");

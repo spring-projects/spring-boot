@@ -32,6 +32,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
+import org.apache.commons.lang3.BooleanUtils;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -66,6 +67,8 @@ class DefaultLogbackConfiguration {
 	private static final String JSON = "json";
 
 	private static final String TEXT = "text";
+
+	private static final String ISO_8601_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
 
 	private final PropertyResolver patterns;
 
@@ -121,6 +124,10 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		final String format = this.patterns.getProperty("logging.format", TEXT);
+		final String timestampFormat = this.patterns
+				.getProperty("logging.timestampFormat", ISO_8601_TIMESTAMP_FORMAT);
+		final boolean appendLineSeparator = this.patterns
+				.getProperty("logging.appendLineSeparator", Boolean.class, Boolean.TRUE);
 		final Encoder<ILoggingEvent> encoder;
 		if (JSON.equalsIgnoreCase(format)) {
 			final JacksonJsonFormatter jacksonJsonFormatter = new JacksonJsonFormatter();
@@ -128,8 +135,9 @@ class DefaultLogbackConfiguration {
 
 			final JsonLayout jsonLayout = new JsonLayout();
 			jsonLayout.setJsonFormatter(jacksonJsonFormatter);
-			jsonLayout.setTimestampFormat("yyyy-MM-dd' 'HH:mm:ss.SSS");
-			jsonLayout.setAppendLineSeparator(true);
+			jsonLayout.setTimestampFormat(timestampFormat);
+			jsonLayout
+					.setAppendLineSeparator(BooleanUtils.toBoolean(appendLineSeparator));
 
 			final LayoutWrappingEncoder<ILoggingEvent> layoutWrappingEncoder = new LayoutWrappingEncoder<>();
 			layoutWrappingEncoder.setLayout(jsonLayout);
