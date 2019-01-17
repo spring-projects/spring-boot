@@ -509,8 +509,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello Json!");
 
-		final Map<String, Object> result = new ObjectMapper()
-				.readValue(this.output.toString(), HashMap.class);
+		Map<String, Object> result = new ObjectMapper().readValue(this.output.toString(), HashMap.class);
 
 		assertThat(this.output.toString().charAt(this.output.toString().length() - 1))
 				.isEqualTo('\n');
@@ -535,8 +534,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello Json!");
 
-		final Map<String, Object> result = new ObjectMapper()
-				.readValue(this.output.toString(), HashMap.class);
+		Map<String, Object> result = new ObjectMapper().readValue(this.output.toString(), HashMap.class);
 
 		assertThat(this.output.toString().charAt(this.output.toString().length() - 1))
 				.isEqualTo('}');

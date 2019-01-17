@@ -123,23 +123,23 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
-		final String format = this.patterns.getProperty("logging.format", TEXT);
-		final String timestampFormat = this.patterns
+		String format = this.patterns.getProperty("logging.format", TEXT);
+		String timestampFormat = this.patterns
 				.getProperty("logging.timestampFormat", ISO_8601_TIMESTAMP_FORMAT);
-		final boolean appendLineSeparator = this.patterns
+		boolean appendLineSeparator = this.patterns
 				.getProperty("logging.appendLineSeparator", Boolean.class, Boolean.TRUE);
-		final Encoder<ILoggingEvent> encoder;
+		Encoder<ILoggingEvent> encoder;
 		if (JSON.equalsIgnoreCase(format)) {
-			final JacksonJsonFormatter jacksonJsonFormatter = new JacksonJsonFormatter();
+			JacksonJsonFormatter jacksonJsonFormatter = new JacksonJsonFormatter();
 			jacksonJsonFormatter.setPrettyPrint(true);
 
-			final JsonLayout jsonLayout = new JsonLayout();
+			JsonLayout jsonLayout = new JsonLayout();
 			jsonLayout.setJsonFormatter(jacksonJsonFormatter);
 			jsonLayout.setTimestampFormat(timestampFormat);
 			jsonLayout
 					.setAppendLineSeparator(BooleanUtils.toBoolean(appendLineSeparator));
 
-			final LayoutWrappingEncoder<ILoggingEvent> layoutWrappingEncoder = new LayoutWrappingEncoder<>();
+			LayoutWrappingEncoder<ILoggingEvent> layoutWrappingEncoder = new LayoutWrappingEncoder<>();
 			layoutWrappingEncoder.setLayout(jsonLayout);
 
 			config.start(layoutWrappingEncoder);
@@ -148,8 +148,8 @@ class DefaultLogbackConfiguration {
 			encoder = layoutWrappingEncoder;
 		}
 		else {
-			final PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();
-			final String logPattern = this.patterns.getProperty("logging.pattern.console",
+			PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();
+			String logPattern = this.patterns.getProperty("logging.pattern.console",
 					CONSOLE_LOG_PATTERN);
 			patternLayoutEncoder
 					.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
