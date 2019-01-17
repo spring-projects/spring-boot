@@ -38,7 +38,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
 
 /**
- * Utility design to run and an {@link ApplicationContext} and provide AssertJ style
+ * Utility design to run an {@link ApplicationContext} and provide AssertJ style
  * assertions. The test is best used as a field of a test class, describing the shared
  * configuration required for the test:
  *
