@@ -69,9 +69,10 @@ public class BackgroundPreinitializer
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (!Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
+		if ((!Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
 				&& event instanceof ApplicationStartingEvent
-				&& preinitializationStarted.compareAndSet(false, true)) {
+				&& preinitializationStarted.compareAndSet(false, true))
+				|| isOneProcessor()) {
 			performPreinitialization();
 		}
 		if ((event instanceof ApplicationReadyEvent
@@ -84,6 +85,10 @@ public class BackgroundPreinitializer
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	private boolean isOneProcessor() {
+		return Runtime.getRuntime().availableProcessors() == 1;
 	}
 
 	private void performPreinitialization() {
