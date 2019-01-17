@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 
+import com.jayway.jsonpath.Configuration;
 import org.assertj.core.api.Assertions;
 
 import org.springframework.beans.factory.ObjectFactory;
@@ -72,6 +73,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	private ResolvableType type;
 
+	private Configuration configuration;
+
 	/**
 	 * Create a new uninitialized {@link AbstractJsonMarshalTester} instance.
 	 */
@@ -83,11 +86,14 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @param resourceLoadClass the source class used when loading relative classpath
 	 * resources
 	 * @param type the type under test
+	 * @param configuration the json-path configuration
 	 */
-	public AbstractJsonMarshalTester(Class<?> resourceLoadClass, ResolvableType type) {
+	public AbstractJsonMarshalTester(Class<?> resourceLoadClass, ResolvableType type,
+			Configuration configuration) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
 		Assert.notNull(type, "Type must not be null");
-		initialize(resourceLoadClass, type);
+		Assert.notNull(configuration, "Configuration must not be null");
+		initialize(resourceLoadClass, type, configuration);
 	}
 
 	/**
@@ -95,11 +101,15 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @param resourceLoadClass the source class used when loading relative classpath
 	 * resources
 	 * @param type the type under test
+	 * @param configuration the json-path configuration
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
-		if (this.resourceLoadClass == null && this.type == null) {
+	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type,
+			Configuration configuration) {
+		if (this.resourceLoadClass == null && this.type == null
+				&& this.configuration == null) {
 			this.resourceLoadClass = resourceLoadClass;
 			this.type = type;
+			this.configuration = configuration;
 		}
 	}
 
@@ -129,7 +139,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 		verify();
 		Assert.notNull(value, "Value must not be null");
 		String json = writeObject(value, this.type);
-		return new JsonContent<>(this.resourceLoadClass, this.type, json);
+		return new JsonContent<>(this.resourceLoadClass, this.type, json,
+				this.configuration);
 	}
 
 	/**

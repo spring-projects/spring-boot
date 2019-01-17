@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import com.jayway.jsonpath.Configuration;
+
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -49,6 +51,8 @@ public class BasicJsonTester {
 
 	private JsonLoader loader;
 
+	private Configuration configuration;
+
 	/**
 	 * Create a new uninitialized {@link BasicJsonTester} instance.
 	 */
@@ -70,8 +74,21 @@ public class BasicJsonTester {
 	 * @since 1.4.1
 	 */
 	public BasicJsonTester(Class<?> resourceLoadClass, Charset charset) {
+		this(resourceLoadClass, charset, Configuration.defaultConfiguration());
+	}
+
+	/**
+	 * Create a new {@link BasicJsonTester} instance.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param charset the charset used to load resources
+	 * @param configuration the json-path configuration
+	 */
+	public BasicJsonTester(Class<?> resourceLoadClass, Charset charset,
+			Configuration configuration) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
+		Assert.notNull(configuration, "Configuration must not be null");
 		this.loader = new JsonLoader(resourceLoadClass, charset);
+		this.configuration = configuration;
 	}
 
 	/**
@@ -92,8 +109,22 @@ public class BasicJsonTester {
 	 * @since 1.4.1
 	 */
 	protected final void initialize(Class<?> resourceLoadClass, Charset charset) {
-		if (this.loader == null) {
+		initialize(resourceLoadClass, charset, Configuration.defaultConfiguration());
+	}
+
+	/**
+	 * Initialize the marshal tester for use.
+	 * @param resourceLoadClass the source class used when loading relative classpath
+	 * resources
+	 * @param charset the charset used when loading relative classpath resources
+	 * @param configuration the json-path configuration
+	 * @since
+	 */
+	protected final void initialize(Class<?> resourceLoadClass, Charset charset,
+			Configuration configuration) {
+		if (this.loader == null && this.configuration == null) {
 			this.loader = new JsonLoader(resourceLoadClass, charset);
+			this.configuration = configuration;
 		}
 	}
 
@@ -165,7 +196,8 @@ public class BasicJsonTester {
 	}
 
 	private JsonContent<Object> getJsonContent(String json) {
-		return new JsonContent<>(this.loader.getResourceLoadClass(), null, json);
+		return new JsonContent<>(this.loader.getResourceLoadClass(), null, json,
+				this.configuration);
 	}
 
 }

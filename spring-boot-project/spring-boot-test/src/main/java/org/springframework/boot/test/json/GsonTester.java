@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 import com.google.gson.Gson;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.spi.json.GsonJsonProvider;
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -74,7 +77,22 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @see #initFields(Object, Gson)
 	 */
 	public GsonTester(Class<?> resourceLoadClass, ResolvableType type, Gson gson) {
-		super(resourceLoadClass, type);
+		this(resourceLoadClass, type, gson,
+				Configuration.builder().jsonProvider(new GsonJsonProvider())
+						.mappingProvider(new GsonMappingProvider()).build());
+	}
+
+	/**
+	 * Create a new {@link GsonTester} instance.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param type the type under test
+	 * @param gson the Gson instance
+	 * @param configuration the json-path configuration
+	 * @see #initFields(Object, Gson)
+	 */
+	public GsonTester(Class<?> resourceLoadClass, ResolvableType type, Gson gson,
+			Configuration configuration) {
+		super(resourceLoadClass, type, configuration);
 		Assert.notNull(gson, "Gson must not be null");
 		this.gson = gson;
 	}

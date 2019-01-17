@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -86,7 +89,9 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type,
 			ObjectMapper objectMapper, Class<?> view) {
-		super(resourceLoadClass, type);
+		super(resourceLoadClass, type, Configuration.builder()
+				.jsonProvider(new JacksonJsonProvider(objectMapper))
+				.mappingProvider(new JacksonMappingProvider(objectMapper)).build());
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
 		this.view = view;
