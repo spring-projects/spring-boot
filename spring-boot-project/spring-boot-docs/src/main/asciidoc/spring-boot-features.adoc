@@ -6477,9 +6477,13 @@ If that property is not set, the auto-configuration falls back to the value of
 [[boot-features-jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
-applications. By default, Spring Boot creates an `MBeanServer` bean with an ID of
-`mbeanServer` and exposes any of your beans that are annotated with Spring JMX
-annotations (`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`).
+applications. Spring Boot exposes the most suitable `MBeanServer` as a bean with an ID of
+`mbeanServer`. Any of your beans that are annotated with Spring JMX annotations (
+`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`) are exposed to it.
+
+If your platform provides a standard `MBeanServer`, Spring Boot will use that and default
+to the VM `MBeanServer` if necessary. If all that fails, a new `MBeanServer` will be
+created.
 
 See the
 {sc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{sc-ext}[`JmxAutoConfiguration`]
