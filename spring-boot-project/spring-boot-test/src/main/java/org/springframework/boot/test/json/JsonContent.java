@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.json;
 
+import com.jayway.jsonpath.Configuration;
 import org.assertj.core.api.AssertProvider;
 
 import org.springframework.core.ResolvableType;
@@ -38,6 +39,8 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 
 	private final String json;
 
+	private final Configuration configuration;
+
 	/**
 	 * Create a new {@link JsonContent} instance.
 	 * @param resourceLoadClass the source class used to load resources
@@ -45,11 +48,25 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param json the actual JSON content
 	 */
 	public JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json) {
+		this(resourceLoadClass, type, json, Configuration.defaultConfiguration());
+	}
+
+	/**
+	 * Create a new {@link JsonContent} instance.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param type the type under test (or {@code null} if not known)
+	 * @param json the actual JSON content
+	 * @param configuration the json-path configuration
+	 */
+	public JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json,
+			Configuration configuration) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
 		Assert.notNull(json, "JSON must not be null");
+		Assert.notNull(configuration, "Configuration must not be null");
 		this.resourceLoadClass = resourceLoadClass;
 		this.type = type;
 		this.json = json;
+		this.configuration = configuration;
 	}
 
 	/**
@@ -61,7 +78,8 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	@Override
 	@Deprecated
 	public JsonContentAssert assertThat() {
-		return new JsonContentAssert(this.resourceLoadClass, this.json);
+		return new JsonContentAssert(this.resourceLoadClass, null, this.json,
+				this.configuration);
 	}
 
 	/**
