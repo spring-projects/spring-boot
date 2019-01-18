@@ -24,6 +24,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -122,6 +124,24 @@ public class RestTemplateAutoConfigurationTests {
 	public void builderShouldBeFreshForEachUse() {
 		this.contextRunner.withUserConfiguration(DirtyRestTemplateConfig.class)
 				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void whenServletWebApplicationRestTemplateBuilderIsConfigured() {
+		new WebApplicationContextRunner()
+				.withConfiguration(
+						AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.hasSingleBean(RestTemplateBuilder.class));
+	}
+
+	@Test
+	public void whenReactiveWebApplicationRestTemplateIsNotConfigured() {
+		new ReactiveWebApplicationContextRunner()
+				.withConfiguration(
+						AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(RestTemplateBuilder.class));
 	}
 
 	@Configuration
