@@ -36,6 +36,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TaskExecutor}.
  *
  * @author Stephane Nicoll
+ * @author Camille Vienot
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
@@ -47,6 +48,8 @@ public class TaskExecutionAutoConfiguration {
 	 * Bean name of the application {@link TaskExecutor}.
 	 */
 	public static final String APPLICATION_TASK_EXECUTOR_BEAN_NAME = "applicationTaskExecutor";
+
+	public static final String ASYNC_TASK_EXECUTOR_BEAN_NAME = "taskExecutor";
 
 	private final TaskExecutionProperties properties;
 
@@ -79,7 +82,7 @@ public class TaskExecutionAutoConfiguration {
 	}
 
 	@Lazy
-	@Bean(name = APPLICATION_TASK_EXECUTOR_BEAN_NAME)
+	@Bean(name = { APPLICATION_TASK_EXECUTOR_BEAN_NAME, ASYNC_TASK_EXECUTOR_BEAN_NAME })
 	@ConditionalOnMissingBean(Executor.class)
 	public ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder builder) {
 		return builder.build();
