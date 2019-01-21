@@ -28,6 +28,7 @@ import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -36,6 +37,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TaskExecutor}.
  *
  * @author Stephane Nicoll
+ * @author Camille Vienot
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
@@ -80,6 +82,7 @@ public class TaskExecutionAutoConfiguration {
 
 	@Lazy
 	@Bean(name = APPLICATION_TASK_EXECUTOR_BEAN_NAME)
+	@Primary
 	@ConditionalOnMissingBean(Executor.class)
 	public ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder builder) {
 		return builder.build();
