@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  * {@link Source#toInstance(Function) new instance}.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public final class PropertyMapper {
@@ -331,6 +332,22 @@ public final class PropertyMapper {
 				throw new NoSuchElementException("No value present");
 			}
 			return factory.apply(value);
+		}
+
+		/**
+		 * Complete the mapping by creating a new instance from the non-filtered value.
+		 * @param <R> the resulting type
+		 * @param factory the factory used to create the instance
+		 * @param defaultValue the default value used in case of predicate is false.
+		 * @return the instance
+		 */
+		public <R> R toInstance(Function<T, R> factory, R defaultValue) {
+			Assert.notNull(factory, "Factory must not be null");
+			T value = this.supplier.get();
+			if (this.predicate.test(value)) {
+				return factory.apply(value);
+			}
+			return defaultValue;
 		}
 
 		/**

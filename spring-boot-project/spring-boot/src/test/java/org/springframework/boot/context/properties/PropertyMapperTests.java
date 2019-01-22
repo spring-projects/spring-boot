@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link PropertyMapper}.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 public class PropertyMapperTests {
 
@@ -52,6 +53,20 @@ public class PropertyMapperTests {
 		Integer result = this.map.from("123").asInt(Long::valueOf)
 				.toInstance(Integer::new);
 		assertThat(result).isEqualTo(123);
+	}
+
+	@Test
+	public void fromValueAsIntShouldAdaptValueNotDefault() {
+		Integer result = this.map.from("123").whenNonNull().asInt(Long::valueOf)
+				.toInstance(Integer::new, 1);
+		assertThat(result).isEqualTo(123);
+	}
+
+	@Test
+	public void fromValueAsIntShouldAdaptDefaultValue() {
+		Integer result = this.map.<String>from(() -> null).whenNonNull()
+				.asInt(Long::valueOf).toInstance(Integer::new, 1);
+		assertThat(result).isEqualTo(1);
 	}
 
 	@Test

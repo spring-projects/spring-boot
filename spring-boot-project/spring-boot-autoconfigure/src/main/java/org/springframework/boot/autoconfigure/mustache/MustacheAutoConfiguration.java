@@ -27,8 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,8 +81,31 @@ public class MustacheAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
-		return Mustache.compiler().withLoader(mustacheTemplateLoader)
-				.withCollector(collector());
+		PropertyMapper pm = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Mustache.Compiler compiler = Mustache.compiler();
+
+		compiler = pm.from(this.mustache.getDefaultValue())
+				.toInstance(compiler::defaultValue, compiler);
+		compiler = pm.from(this.mustache.getNullValue()).toInstance(compiler::nullValue,
+				compiler);
+
+		compiler = compiler.withLoader(mustacheTemplateLoader).withCollector(collector());
+
+		return compiler;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty("spring.mustache.formatter.value")
+	public Mustache.Formatter mustacheFormatter() {
+		return (value) -> this.mustache.getFormatter().getValue();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty("spring.mustache.escaper.value")
+	public Mustache.Escaper mustacheEscaper() {
+		return (value) -> this.mustache.getEscaper().getValue();
 	}
 
 	private Collector collector() {

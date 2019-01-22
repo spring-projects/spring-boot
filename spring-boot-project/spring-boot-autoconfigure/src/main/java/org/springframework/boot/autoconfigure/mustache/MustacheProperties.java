@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for Mustache.
  *
  * @author Dave Syer
+ * @author Artsiom Yudovin
  * @since 1.2.2
  */
 @ConfigurationProperties(prefix = "spring.mustache")
@@ -42,9 +43,25 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	 */
 	private String suffix = DEFAULT_SUFFIX;
 
+	/**
+	 * Default value for any variable that is missing.
+	 */
 	private String defaultValue;
 
+	/**
+	 * Value for any variable that resolves to null.
+	 */
 	private String nullValue;
+
+	/**
+	 * Handles converting objects to strings.
+	 */
+	private final Formatter formatter = new Formatter();
+
+	/**
+	 * Handles escaping characters in substituted text.
+	 */
+	private final Escaper escaper = new Escaper();
 
 	public MustacheProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
@@ -71,7 +88,7 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	}
 
 	public String getDefaultValue() {
-		return defaultValue;
+		return this.defaultValue;
 	}
 
 	public void setDefaultValue(String defaultValue) {
@@ -79,10 +96,47 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	}
 
 	public String getNullValue() {
-		return nullValue;
+		return this.nullValue;
 	}
 
 	public void setNullValue(String nullValue) {
 		this.nullValue = nullValue;
 	}
+
+	public Formatter getFormatter() {
+		return this.formatter;
+	}
+
+	public Escaper getEscaper() {
+		return this.escaper;
+	}
+
+	public static class Formatter {
+
+		private String value;
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+	}
+
+	public static class Escaper {
+
+		private String value;
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+	}
+
 }
