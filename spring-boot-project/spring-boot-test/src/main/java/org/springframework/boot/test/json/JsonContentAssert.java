@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected instanceof Resource) {
 			return isEqualToJson((Resource) expected);
 		}
-		throw new AssertionError("Unsupport type for JSON assert " + expected.getClass());
+		throw new AssertionError(
+				"Unsupported type for JSON assert " + expected.getClass());
 	}
 
 	/**
@@ -432,7 +433,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected instanceof Resource) {
 			return isNotEqualToJson((Resource) expected);
 		}
-		throw new AssertionError("Unsupport type for JSON assert " + expected.getClass());
+		throw new AssertionError(
+				"Unsupported type for JSON assert " + expected.getClass());
 	}
 
 	/**
