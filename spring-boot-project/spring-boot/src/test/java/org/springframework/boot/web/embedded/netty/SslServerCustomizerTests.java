@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.security.NoSuchProviderException;
 import org.junit.Test;
 
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServerException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -29,6 +30,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SslServerCustomizer}.
  *
  * @author Andy Wilkinson
+ * @author Raheela Aslam
  */
 public class SslServerCustomizerTests {
 
@@ -65,6 +67,22 @@ public class SslServerCustomizerTests {
 			Throwable cause = ex.getCause();
 			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
 			assertThat(cause).hasMessageContaining("com.example.TrustStoreProvider");
+		}
+	}
+
+	@Test
+	public void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException()
+			throws Exception {
+		Ssl ssl = new Ssl();
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
+		try {
+			customizer.getKeyManagerFactory(ssl, null);
+			fail();
+		}
+		catch (IllegalStateException ex) {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isInstanceOf(WebServerException.class);
+			assertThat(cause).hasMessageContaining("Could not load key store 'null'");
 		}
 	}
 

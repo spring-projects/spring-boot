@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,13 @@ import org.junit.Test;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -187,6 +189,19 @@ public class SslConnectorCustomizerTests {
 		this.tomcat.start();
 		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
 		assertThat(this.output.toString()).doesNotContain("Password verification failed");
+	}
+
+	@Test
+	public void customizeWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
+		try {
+			new SslConnectorCustomizer(new Ssl(), null)
+					.customize(this.tomcat.getConnector());
+			fail();
+		}
+		catch (Exception ex) {
+			assertThat(ex).isInstanceOf(WebServerException.class);
+			assertThat(ex).hasMessageContaining("Could not load key store 'null'");
+		}
 	}
 
 	private KeyStore loadStore() throws KeyStoreException, IOException,
