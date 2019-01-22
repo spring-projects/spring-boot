@@ -96,7 +96,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected instanceof Resource) {
 			return isEqualToJson((Resource) expected);
 		}
-		throw new AssertionError("Unsupport type for JSON assert " + expected.getClass());
+		throw new AssertionError(
+				"Unsupported type for JSON assert " + expected.getClass());
 	}
 
 	/**
@@ -432,7 +433,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected instanceof Resource) {
 			return isNotEqualToJson((Resource) expected);
 		}
-		throw new AssertionError("Unsupport type for JSON assert " + expected.getClass());
+		throw new AssertionError(
+				"Unsupported type for JSON assert " + expected.getClass());
 	}
 
 	/**
