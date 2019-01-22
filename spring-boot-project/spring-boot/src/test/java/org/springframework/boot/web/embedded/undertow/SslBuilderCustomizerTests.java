@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.net.ssl.KeyManager;
 import org.junit.Test;
 
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,22 +91,19 @@ public class SslBuilderCustomizerTests {
 	}
 
 	@Test
-	public void getKeyManagersWhenKeyStoreIsNotProvided() throws Exception {
+	public void getKeyManagersWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException()
+			throws Exception {
 		Ssl ssl = new Ssl();
-		ssl.setKeyPassword("password");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
 				InetAddress.getLocalHost(), ssl, null);
 		try {
-			KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer,
-					"getKeyManagers", ssl, null);
-			Class<?> name = Class.forName("org.springframework.boot.web.embedded.undertow"
-					+ ".SslBuilderCustomizer$ConfigurableAliasKeyManager");
-			assertThat(keyManagers[0]).isNotInstanceOf(name);
+			ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
+			fail();
 		}
 		catch (IllegalStateException ex) {
 			Throwable cause = ex.getCause();
-			assertThat(cause).isInstanceOf(IllegalArgumentException.class);
-			assertThat(cause).hasMessageContaining("Resource location must not be null");
+			assertThat(cause).isInstanceOf(WebServerException.class);
+			assertThat(cause).hasMessageContaining("Could not load key store 'null'");
 		}
 	}
 

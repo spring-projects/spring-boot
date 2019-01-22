@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Base for testing classes that extends {@link AbstractReactiveWebServerFactory}.
@@ -289,6 +290,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
+	}
+
+	@Test
+	public void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
+		assertThatThrownBy(() -> testBasicSslWithKeyStore(null, null))
+				.hasMessageContaining("Could not load key store 'null'");
 	}
 
 	protected WebClient prepareCompressionTest() {
