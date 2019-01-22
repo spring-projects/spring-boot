@@ -124,8 +124,8 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		String format = this.patterns.getProperty("logging.format", TEXT);
-		String timestampFormat = this.patterns
-				.getProperty("logging.timestampFormat", ISO_8601_TIMESTAMP_FORMAT);
+		String timestampFormat = this.patterns.getProperty("logging.timestampFormat",
+				ISO_8601_TIMESTAMP_FORMAT);
 		boolean appendLineSeparator = this.patterns
 				.getProperty("logging.appendLineSeparator", Boolean.class, Boolean.TRUE);
 		Encoder<ILoggingEvent> encoder;
