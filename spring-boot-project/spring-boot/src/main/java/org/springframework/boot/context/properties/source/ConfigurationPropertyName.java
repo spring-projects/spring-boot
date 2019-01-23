@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,7 +195,7 @@ public final class ConfigurationPropertyName
 		if (elementValue == null) {
 			return this;
 		}
-		Elements additionalElements = of(elementValue).elements;
+		Elements additionalElements = elementsOf(elementValue);
 		return new ConfigurationPropertyName(this.elements.append(additionalElements));
 	}
 
@@ -420,12 +420,21 @@ public final class ConfigurationPropertyName
 	 * {@code returnNullIfInvalid} is {@code false}
 	 */
 	static ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
+		Elements elements = elementsOf(name, returnNullIfInvalid);
+		return (elements != null) ? new ConfigurationPropertyName(elements) : null;
+	}
+
+	private static Elements elementsOf(CharSequence name) {
+		return elementsOf(name, false);
+	}
+
+	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid) {
 		if (name == null) {
 			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
 			return null;
 		}
 		if (name.length() == 0) {
-			return EMPTY;
+			return Elements.EMPTY;
 		}
 		if (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.') {
 			if (returnNullIfInvalid) {
@@ -444,7 +453,7 @@ public final class ConfigurationPropertyName
 						getInvalidChars(elements, i));
 			}
 		}
-		return new ConfigurationPropertyName(elements);
+		return elements;
 	}
 
 	private static List<Character> getInvalidChars(Elements elements, int index) {
