@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1049,9 +1049,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void exceptionThrownOnLoadFailureIsRethrown() {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(this.webServer::start)
 				.satisfies(this::wrapsFailingServletException);
@@ -1261,7 +1260,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 						Object existing = session.getAttribute("boot");
 						session.setAttribute("boot", value);
 						PrintWriter writer = response.getWriter();
-						writer.append(String.valueOf(existing) + ":" + value);
+						writer.append(String.valueOf(existing)).append(":")
+								.append(String.valueOf(value));
 					}
 
 				}, "/session");

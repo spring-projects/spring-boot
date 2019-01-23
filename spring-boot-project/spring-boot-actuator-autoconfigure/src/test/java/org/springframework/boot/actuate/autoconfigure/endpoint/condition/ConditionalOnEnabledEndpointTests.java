@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,6 +148,14 @@ public class ConditionalOnEnabledEndpointTests {
 				.run((context) -> assertThat(context).hasBean("fooBar"));
 	}
 
+	@Test
+	public void outcomeWhenEndpointEnabledPropertyIsFalseOnClassShouldNotMatch() {
+		this.contextRunner.withPropertyValues("management.endpoint.foo.enabled=false")
+				.withUserConfiguration(
+						FooEndpointEnabledByDefaultTrueOnConfigurationConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
+	}
+
 	@Endpoint(id = "foo", enableByDefault = true)
 	static class FooEndpointEnabledByDefaultTrue {
 
@@ -187,6 +195,17 @@ public class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
+		public FooEndpointEnabledByDefaultTrue foo() {
+			return new FooEndpointEnabledByDefaultTrue();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnEnabledEndpoint(endpoint = FooEndpointEnabledByDefaultTrue.class)
+	static class FooEndpointEnabledByDefaultTrueOnConfigurationConfiguration {
+
+		@Bean
 		public FooEndpointEnabledByDefaultTrue foo() {
 			return new FooEndpointEnabledByDefaultTrue();
 		}

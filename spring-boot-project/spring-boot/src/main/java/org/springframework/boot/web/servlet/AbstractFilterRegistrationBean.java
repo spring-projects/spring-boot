@@ -29,9 +29,6 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +38,7 @@ import org.springframework.util.StringUtils;
  *
  * @param <T> the type of {@link Filter} to register
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 2.0.1
  */
 public abstract class AbstractFilterRegistrationBean<T extends Filter>
@@ -53,8 +51,6 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 	 */
 	@Deprecated
 	protected static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 
@@ -245,21 +241,15 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 		}
 		servletNames.addAll(this.servletNames);
 		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
-			this.logger.info("Mapping filter: '" + registration.getName() + "' to: "
-					+ Arrays.asList(DEFAULT_URL_MAPPINGS));
 			registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 					DEFAULT_URL_MAPPINGS);
 		}
 		else {
 			if (!servletNames.isEmpty()) {
-				this.logger.info("Mapping filter: '" + registration.getName()
-						+ "' to servlets: " + servletNames);
 				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
 						StringUtils.toStringArray(servletNames));
 			}
 			if (!this.urlPatterns.isEmpty()) {
-				this.logger.info("Mapping filter: '" + registration.getName()
-						+ "' to urls: " + this.urlPatterns);
 				registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 						StringUtils.toStringArray(this.urlPatterns));
 			}
@@ -271,5 +261,22 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter>
 	 * @return the filter
 	 */
 	public abstract T getFilter();
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(getOrDeduceName(this));
+		if (this.servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
+			builder.append(" urls=").append(Arrays.toString(DEFAULT_URL_MAPPINGS));
+		}
+		else {
+			if (!this.servletNames.isEmpty()) {
+				builder.append(" servlets=").append(this.servletNames);
+			}
+			if (!this.urlPatterns.isEmpty()) {
+				builder.append(" urls=").append(this.urlPatterns);
+			}
+		}
+		return builder.toString();
+	}
 
 }

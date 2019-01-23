@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
@@ -38,6 +37,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -227,8 +227,8 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private static void addExclusions(NoSuchBeanDefinitionFailureAnalyzer analyzer,
 			Class<?>... classes) {
-		ConditionEvaluationReport report = (ConditionEvaluationReport) new DirectFieldAccessor(
-				analyzer).getPropertyValue("report");
+		ConditionEvaluationReport report = (ConditionEvaluationReport) ReflectionTestUtils
+				.getField(analyzer, "report");
 		List<String> exclusions = new ArrayList<>(report.getExclusions());
 		for (Class<?> c : classes) {
 			exclusions.add(c.getName());

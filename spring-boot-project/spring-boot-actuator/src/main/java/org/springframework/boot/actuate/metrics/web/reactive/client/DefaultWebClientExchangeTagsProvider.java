@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
  * Default implementation of {@link WebClientExchangeTagsProvider}.
  *
  * @author Brian Clozel
+ * @author Nishant Raut
  * @since 2.1.0
  */
 public class DefaultWebClientExchangeTagsProvider
@@ -40,7 +41,8 @@ public class DefaultWebClientExchangeTagsProvider
 		Tag clientName = WebClientExchangeTags.clientName(request);
 		if (response != null) {
 			return Arrays.asList(method, uri, clientName,
-					WebClientExchangeTags.status(response));
+					WebClientExchangeTags.status(response),
+					WebClientExchangeTags.outcome(response));
 		}
 		else {
 			return Arrays.asList(method, uri, clientName,

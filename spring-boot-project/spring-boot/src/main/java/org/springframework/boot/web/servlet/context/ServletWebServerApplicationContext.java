@@ -55,6 +55,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 import org.springframework.web.context.support.ServletContextResource;
+import org.springframework.web.context.support.ServletContextScope;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -132,6 +133,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		beanFactory.addBeanPostProcessor(
 				new WebApplicationContextServletContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+		registerWebApplicationScopes();
 	}
 
 	@Override
@@ -226,17 +228,26 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	private void selfInitialize(ServletContext servletContext) throws ServletException {
 		prepareWebApplicationContext(servletContext);
-		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
-				beanFactory);
-		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory,
-				getServletContext());
-		existingScopes.restore();
-		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory,
-				getServletContext());
+		registerApplicationScope(servletContext);
+		WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
+				servletContext);
 		for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
 			beans.onStartup(servletContext);
 		}
+	}
+
+	private void registerApplicationScope(ServletContext servletContext) {
+		ServletContextScope appScope = new ServletContextScope(servletContext);
+		getBeanFactory().registerScope(WebApplicationContext.SCOPE_APPLICATION, appScope);
+		// Register as ServletContext attribute, for ContextCleanupListener to detect it.
+		servletContext.setAttribute(ServletContextScope.class.getName(), appScope);
+	}
+
+	private void registerWebApplicationScopes() {
+		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
+				getBeanFactory());
+		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory());
+		existingScopes.restore();
 	}
 
 	/**

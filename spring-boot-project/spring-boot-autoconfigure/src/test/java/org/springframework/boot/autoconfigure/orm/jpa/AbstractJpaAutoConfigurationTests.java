@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -232,11 +231,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				.run((context) -> {
 					LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class);
-					Field field = LocalContainerEntityManagerFactoryBean.class
-							.getDeclaredField("persistenceUnitManager");
-					field.setAccessible(true);
-					assertThat(field.get(entityManagerFactoryBean))
-							.isEqualTo(context.getBean(PersistenceUnitManager.class));
+					assertThat(entityManagerFactoryBean).hasFieldOrPropertyWithValue(
+							"persistenceUnitManager",
+							context.getBean(PersistenceUnitManager.class));
 				});
 	}
 

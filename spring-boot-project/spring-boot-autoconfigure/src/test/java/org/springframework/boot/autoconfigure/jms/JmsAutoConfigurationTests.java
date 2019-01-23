@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
@@ -184,9 +183,9 @@ public class JmsAutoConfigurationTests {
 					DefaultMessageListenerContainer container = getContainer(context,
 							"jmsListenerContainerFactory");
 					assertThat(container.isSessionTransacted()).isFalse();
-					assertThat(new DirectFieldAccessor(container)
-							.getPropertyValue("transactionManager")).isSameAs(
-									context.getBean(JtaTransactionManager.class));
+					assertThat(container).hasFieldOrPropertyWithValue(
+							"transactionManager",
+							context.getBean(JtaTransactionManager.class));
 				});
 	}
 
@@ -197,8 +196,8 @@ public class JmsAutoConfigurationTests {
 					DefaultMessageListenerContainer container = getContainer(context,
 							"jmsListenerContainerFactory");
 					assertThat(container.isSessionTransacted()).isTrue();
-					assertThat(new DirectFieldAccessor(container)
-							.getPropertyValue("transactionManager")).isNull();
+					assertThat(container)
+							.hasFieldOrPropertyWithValue("transactionManager", null);
 				});
 	}
 
@@ -209,8 +208,8 @@ public class JmsAutoConfigurationTests {
 					DefaultMessageListenerContainer container = getContainer(context,
 							"jmsListenerContainerFactory");
 					assertThat(container.isSessionTransacted()).isTrue();
-					assertThat(new DirectFieldAccessor(container)
-							.getPropertyValue("transactionManager")).isNull();
+					assertThat(container)
+							.hasFieldOrPropertyWithValue("transactionManager", null);
 				});
 	}
 

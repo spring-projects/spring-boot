@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,13 +51,12 @@ public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 	@SpyBean(proxyTargetAware = false)
 	private DateService dateService;
 
-	@Test(expected = UnfinishedVerificationException.class)
+	@Test
 	public void verifyShouldUseProxyTarget() {
 		this.dateService.getDate(false);
 		verify(this.dateService, times(1)).getDate(false);
-		verify(this.dateService, times(1)).getDate(eq(false));
-		verify(this.dateService, times(1)).getDate(anyBoolean());
-		reset(this.dateService);
+		assertThatExceptionOfType(UnfinishedVerificationException.class)
+				.isThrownBy(() -> reset(this.dateService));
 	}
 
 	@Configuration

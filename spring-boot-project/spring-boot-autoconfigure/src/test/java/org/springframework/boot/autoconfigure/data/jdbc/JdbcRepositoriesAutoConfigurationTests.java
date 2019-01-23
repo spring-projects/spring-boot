@@ -75,7 +75,8 @@ public class JdbcRepositoriesAutoConfigurationTests {
 						EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
 						"spring.datasource.schema=classpath:data-jdbc-schema.sql",
-						"spring.datasource.data=classpath:city.sql")
+						"spring.datasource.data=classpath:city.sql",
+						"spring.datasource.generate-unique-name:true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);
@@ -107,7 +108,8 @@ public class JdbcRepositoriesAutoConfigurationTests {
 						EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
 						"spring.datasource.schema=classpath:data-jdbc-schema.sql",
-						"spring.datasource.data=classpath:city.sql")
+						"spring.datasource.data=classpath:city.sql",
+						"spring.datasource.generate-unique-name:true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);

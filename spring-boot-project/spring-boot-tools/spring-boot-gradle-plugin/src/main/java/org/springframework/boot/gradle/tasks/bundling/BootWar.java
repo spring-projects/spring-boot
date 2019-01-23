@@ -27,6 +27,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 
@@ -114,13 +115,14 @@ public class BootWar extends War implements BootArchive {
 	 * @return the provided classpath
 	 */
 	@Optional
+	@Classpath
 	public FileCollection getProvidedClasspath() {
 		return this.providedClasspath;
 	}
 
 	/**
 	 * Adds files to the provided classpath to include in the {@code WEB-INF/lib-provided}
-	 * directory of the war. The given {@code classpath} are evaluated as per
+	 * directory of the war. The given {@code classpath} is evaluated as per
 	 * {@link Project#files(Object...)}.
 	 * @param classpath the additions to the classpath
 	 */
@@ -129,6 +131,27 @@ public class BootWar extends War implements BootArchive {
 		this.providedClasspath = getProject().files(
 				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
+	}
+
+	/**
+	 * Sets the provided classpath to include in the {@code WEB-INF/lib-provided}
+	 * directory of the war.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	public void setProvidedClasspath(FileCollection classpath) {
+		this.providedClasspath = getProject().files(classpath);
+	}
+
+	/**
+	 * Sets the provided classpath to include in the {@code WEB-INF/lib-provided}
+	 * directory of the war. The given {@code classpath} is evaluated as per
+	 * {@link Project#files(Object...)}.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	public void setProvidedClasspath(Object classpath) {
+		this.providedClasspath = getProject().files(classpath);
 	}
 
 	@Override

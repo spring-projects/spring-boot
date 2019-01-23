@@ -91,6 +91,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("another-nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("space nested.jar");
+		assertThat(entries.nextElement().getName()).isEqualTo("multi-release.jar");
 		assertThat(entries.hasMoreElements()).isFalse();
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
@@ -134,6 +135,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("another-nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("space nested.jar");
+		assertThat(entries.nextElement().getName()).isEqualTo("multi-release.jar");
 		assertThat(entries.hasMoreElements()).isFalse();
 	}
 
@@ -496,6 +498,28 @@ public class JarFileTests {
 		}
 		finally {
 			JarURLConnection.setUseFastExceptions(false);
+		}
+	}
+
+	@Test
+	public void multiReleaseEntry() throws Exception {
+		JarFile multiRelease = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("multi-release.jar"));
+		ZipEntry entry = multiRelease.getEntry("multi-release.dat");
+		assertThat(entry.getName()).isEqualTo("multi-release.dat");
+		InputStream inputStream = multiRelease.getInputStream(entry);
+		assertThat(inputStream.available()).isEqualTo(1);
+		assertThat(inputStream.read()).isEqualTo(getJavaVersion());
+	}
+
+	private int getJavaVersion() {
+		try {
+			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
+			return (int) runtimeVersion.getClass().getMethod("major")
+					.invoke(runtimeVersion);
+		}
+		catch (Throwable ex) {
+			return 8;
 		}
 	}
 

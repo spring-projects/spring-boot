@@ -30,6 +30,7 @@ import org.springframework.boot.origin.OriginTrackedValue;
  * @see OriginTrackedValue
  * @see #getConfigurationProperty(ConfigurationPropertyName)
  */
+@FunctionalInterface
 public interface ConfigurationPropertySource {
 
 	/**

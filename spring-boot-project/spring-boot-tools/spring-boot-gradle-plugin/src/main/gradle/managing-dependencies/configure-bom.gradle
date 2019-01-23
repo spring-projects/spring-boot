@@ -17,12 +17,12 @@ dependencyManagement {
 	resolutionStrategy {
 		eachDependency {
 			if (it.requested.group == 'org.springframework.boot') {
-				it.useVersion '{version}'
+				it.useVersion 'TEST-SNAPSHOT'
 			}
 		}
 	}
 }
 
 repositories {
-	mavenLocal()
+	maven { url 'file:repository' }
 }

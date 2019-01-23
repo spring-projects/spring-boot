@@ -192,6 +192,35 @@ need to import the root `spring-boot` pom and the `spring-boot-samples` pom sepa
 
 
 
+=== Importing into IntelliJ IDEA
+To open the project in IntelliJ IDEA, select "`File`" -> "`Open`" and then click on the
+root `pom.xml`.
+
+
+
+==== Install the Spring Formatter plugin
+If you haven't done so, install the formatter plugin so that proper formatting rules are
+applied automatically when you reformat code in the IDE.
+
+* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-plugin[Intellij IDEA plugin]
+* Select "`IntelliJ IDEA`" -> "`Preferences`".
+* Select "`Plugins`"
+* Select the wheel and "`Install Plugin from Disk...`"
+* Select the jar file you've downloaded
+
+
+
+==== Import additional code style
+The formatter does not cover all rules (such as order of imports) and an additional file
+needs to be added.
+
+* Select "`IntelliJ IDEA`" -> "`Preferences`".
+* Select "`Editor`" -> "`Code Style`".
+* Select the wheel and "`Import Scheme`" -> "`IntelliJ IDEA code style XML`".
+* Select `idea/codeStyleConfig.xml` from this repository
+
+
+
 === Importing into Other IDEs
 Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 

@@ -794,7 +794,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void cachePeriod() {
 		this.contextRunner.withPropertyValues("spring.resources.cache.period:5")
-				.run((context) -> assertCachePeriod(context));
+				.run(this::assertCachePeriod);
 	}
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
@@ -817,7 +817,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
-				.run((context) -> assertCacheControl(context));
+				.run(this::assertCacheControl);
 	}
 
 	@Test

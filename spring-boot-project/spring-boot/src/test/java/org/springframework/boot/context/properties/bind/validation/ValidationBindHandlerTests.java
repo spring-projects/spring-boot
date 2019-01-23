@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.bind.AbstractBindHandler;
+import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -35,6 +37,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.boot.origin.Origin;
+import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
@@ -57,12 +60,14 @@ public class ValidationBindHandlerTests {
 
 	private Binder binder;
 
+	private LocalValidatorFactoryBean validator;
+
 	@Before
 	public void setup() {
 		this.binder = new Binder(this.sources);
-		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-		validator.afterPropertiesSet();
-		this.handler = new ValidationBindHandler(validator);
+		this.validator = new LocalValidatorFactoryBean();
+		this.validator.afterPropertiesSet();
+		this.handler = new ValidationBindHandler(this.validator);
 	}
 
 	@Test
@@ -160,6 +165,34 @@ public class ValidationBindHandlerTests {
 				Bindable.of(ExampleValidatedBeanWithGetterException.class)
 						.withExistingValue(existingValue),
 				this.handler);
+	}
+
+	@Test
+	public void bindShouldNotValidateIfOtherHandlersInChainThrowError() {
+		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
+		ExampleValidatedBean bean = new ExampleValidatedBean();
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(
+						() -> this.binder.bind("foo",
+								Bindable.of(ExampleValidatedBean.class)
+										.withExistingValue(bean),
+								this.handler))
+				.withCauseInstanceOf(ConverterNotFoundException.class);
+	}
+
+	@Test
+	public void bindShouldValidateIfOtherHandlersInChainIgnoreError() {
+		TestHandler testHandler = new TestHandler();
+		this.handler = new ValidationBindHandler(testHandler, this.validator);
+		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
+		ExampleValidatedBean bean = new ExampleValidatedBean();
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(
+						() -> this.binder.bind("foo",
+								Bindable.of(ExampleValidatedBean.class)
+										.withExistingValue(bean),
+								this.handler))
+				.withCauseInstanceOf(BindValidationException.class);
 	}
 
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
@@ -261,6 +294,16 @@ public class ValidationBindHandlerTests {
 
 		public int getAge() {
 			throw new RuntimeException();
+		}
+
+	}
+
+	static class TestHandler extends AbstractBindHandler {
+
+		@Override
+		public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
+				BindContext context, Exception error) throws Exception {
+			return null;
 		}
 
 	}

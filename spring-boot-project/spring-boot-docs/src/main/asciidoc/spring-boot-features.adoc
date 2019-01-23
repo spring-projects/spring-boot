@@ -1,5 +1,6 @@
 [[boot-features]]
-= Spring Boot features
+= Spring Boot Features
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -1686,7 +1687,7 @@ The following colors and styles are supported:
 === File Output
 By default, Spring Boot logs only to the console and does not write log files. If you
 want to write log files in addition to the console output, you need to set a
-`logging.file` or `logging.path` property (for example, in your
+`logging.file.name` or `logging.file.path` property (for example, in your
 `application.properties`).
 
 The following table shows how the `logging.*` properties can be used together:
@@ -1694,7 +1695,7 @@ The following table shows how the `logging.*` properties can be used together:
 .Logging properties
 [cols="1,1,1,4"]
 |===
-|`logging.file` |`logging.path` |Example |Description
+|`logging.file.name` |`logging.file.path` |Example |Description
 
 |_(none)_
 |_(none)_
@@ -1835,7 +1836,7 @@ To help with the customization, some other properties are transferred from the S
 |`LOG_EXCEPTION_CONVERSION_WORD`
 |The conversion word used when logging exceptions.
 
-|`logging.file`
+|`logging.file.name`
 |`LOG_FILE`
 |If defined, it is used in the default log configuration.
 
@@ -1849,7 +1850,7 @@ setup.)
 |Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
 the default Logback setup.)
 
-|`logging.path`
+|`logging.file.path`
 |`LOG_PATH`
 |If defined, it is used in the default log configuration.
 
@@ -2961,11 +2962,12 @@ endpoints, as shown in the following example:
 	}
 ----
 
-WARNING: Jersey's support for scanning executable archives is rather limited. For
-example, it cannot scan for endpoints in a package found in `WEB-INF/classes` when
-running an executable war file. To avoid this limitation, the `packages` method should
-not be used, and endpoints should be registered individually by using the `register`
-method, as shown in the preceding example.
+WARNING: Jersey's support for scanning executable archives is rather limited. For example,
+it cannot scan for endpoints in a package found in a <<deployment.adoc#deployment-install,
+fully executable jar file>> or in `WEB-INF/classes` when running an executable war file.
+To avoid this limitation, the `packages` method should not be used, and endpoints should
+be registered individually by using the `register` method, as shown in the preceding
+example.
 
 For more advanced customizations, you can also register an arbitrary number of beans that
 implement `ResourceConfigCustomizer`.
@@ -3839,7 +3841,8 @@ Spring Data JPA repositories support three different modes of bootstrapping: def
 deferred, and lazy. To enable deferred or lazy bootstrapping, set the
 `spring.data.jpa.repositories.bootstrap-mode` to `deferred` or `lazy` respectively. When
 using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder`
-will use the context's async task executor, if any, as the bootstrap executor.
+will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor. If more
+than one exists, the one named `applicationTaskExecutor` will be used.
 
 TIP: We have barely scratched the surface of Spring Data JPA. For complete details, see
 the https://docs.spring.io/spring-data/jpa/docs/current/reference/html/[Spring Data JPA
@@ -4290,7 +4293,8 @@ If you have SLF4J on the classpath, the output produced by Mongo is automaticall
 to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
 
 You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of
-the Mongo instance's configuration and logging routing.
+the Mongo instance's configuration and logging routing. The download configuration can be
+customized by declaring a `DownloadConfigBuilderCustomizer` bean.
 
 
 
@@ -6305,9 +6309,10 @@ following example:
 	spring.quartz.jdbc.initialize-schema=always
 ----
 
-NOTE: By default, the database is detected and initialized by using the standard scripts
-provided with the Quartz library. It is also possible to provide a custom script by
-setting the `spring.quartz.jdbc.schema` property.
+WARNING: By default, the database is detected and initialized by using the standard scripts
+provided with the Quartz library. These scripts drop existing tables, deleting all triggers
+on every restart. It is also possible to provide a custom script by setting the
+`spring.quartz.jdbc.schema` property.
 
 To have Quartz use a `DataSource` other than the application's main `DataSource`, declare
 a `DataSource` bean, annotating its `@Bean` method with `@QuartzDataSource`. Doing so
@@ -6357,10 +6362,23 @@ in a similar manner, as shown in the following example:
 
 [[boot-features-task-execution-scheduling]]
 == Task Execution and Scheduling
-In the absence of a `TaskExecutor` bean in the context, Spring Boot auto-configures a
+In the absence of an `Executor` bean in the context, Spring Boot auto-configures a
 `ThreadPoolTaskExecutor` with sensible defaults that can be automatically associated to
 asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request
 processing.
+
+[TIP]
+====
+If you have defined a custom `Executor` in the context, regular task execution (i.e.
+`@EnableAsync`) will use it transparently but the Spring MVC support will not be
+configured as it requires an `AsyncTaskExecutor` implementation (named
+`applicationTaskExecutor`). Depending on your target arrangement, you could change your
+`Executor` into a `ThreadPoolTaskExecutor` or define both a `ThreadPoolTaskExecutor` and
+an `AsyncConfigurer` wrapping your custom `Executor`.
+
+The auto-configured `TaskExecutorBuilder` allows you to easily create instances that
+reproduces what the auto-configuration does by default.
+====
 
 The thread pool uses 8 core threads that can grow and shrink according to the load. Those
 default settings can be fine-tuned using the `spring.task.execution` namespace as shown in
@@ -6382,8 +6400,8 @@ A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated
 scheduled task execution (`@EnableScheduling`). The thread pool uses one thread by default
 and those settings can be fine-tuned using the `spring.task.scheduling` namespace.
 
-Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the
-context if a custom executor or scheduler needs to be created.
+Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in
+the context if a custom executor or scheduler needs to be created.
 
 
 
@@ -6461,9 +6479,13 @@ If that property is not set, the auto-configuration falls back to the value of
 [[boot-features-jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
-applications. By default, Spring Boot creates an `MBeanServer` bean with an ID of
-`mbeanServer` and exposes any of your beans that are annotated with Spring JMX
-annotations (`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`).
+applications. Spring Boot exposes the most suitable `MBeanServer` as a bean with an ID of
+`mbeanServer`. Any of your beans that are annotated with Spring JMX annotations (
+`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`) are exposed to it.
+
+If your platform provides a standard `MBeanServer`, Spring Boot will use that and default
+to the VM `MBeanServer` if necessary. If all that fails, a new `MBeanServer` will be
+created.
 
 See the
 {sc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{sc-ext}[`JmxAutoConfiguration`]
@@ -6543,7 +6565,7 @@ specific slices>> of an application.
 
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to
 your test, otherwise the annotations will be ignored. If you are using JUnit 5, there's no
-need to add the equivalent `@ExtendWith(SpringExtension)` as `@SpringBootTest` and the
+need to add the equivalent `@RunWith(SpringExtension)` as `@SpringBootTest` and the
 other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server. You can use the `webEnvironment`
@@ -6835,6 +6857,10 @@ NOTE: Each slice restricts component scan to appropriate components and loads a 
 restricted set of auto-configuration classes. If you need to exclude one of them,
 most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
 Alternatively, you can use `@ImportAutoConfiguration#exclude`.
+
+NOTE: Including multiple "`slices`" by using several `@...Test` annotations in one test is
+not supported. If you need multiple "`slices`", pick one of the `@...Test` annotations
+and include the `@AutoConfigure...` annotations of the other "`slices`" by hand.
 
 TIP: It is also possible to use the `@AutoConfigure...` annotations with the standard
 `@SpringBootTest` annotation. You can use this combination if you are not interested in
@@ -7534,8 +7560,8 @@ The specific beans that you want to test should be specified by using the `value
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
 ==== Auto-configured Spring REST Docs Tests
 You can use the `@AutoConfigureRestDocs` annotation to use {spring-rest-docs}[Spring REST
-Docs] in your tests with Mock MVC or REST Assured. It removes the need for the JUnit rule
-in Spring REST Docs.
+Docs] in your tests with Mock MVC, REST Assured, or WebTestClient. It removes the need for
+the JUnit rule in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory
 (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
@@ -7909,7 +7935,7 @@ following example:
 
 
 [[boot-features-webservices-template]]
-== Calling Web Services with `WebServiceTemplate`
+=== Calling Web Services with `WebServiceTemplate`
 If you need to call remote Web services from your application, you can use the
 {spring-webservices-reference}#client-web-service-template[`WebServiceTemplate`] class.
 Since `WebServiceTemplate` instances often need to be customized before being used, Spring
@@ -8041,12 +8067,41 @@ annotations include:
 
 [[boot-features-class-conditions]]
 ==== Class Conditions
-The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let configuration
-be included based on the presence or absence of specific classes. Due to the fact that
-annotation metadata is parsed by using http://asm.ow2.org/[ASM], you can use the `value`
-attribute to refer to the real class, even though that class might not actually appear on
-the running application classpath. You can also use the `name` attribute if you prefer to
-specify the class name by using a `String` value.
+The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let
+`@Configuration` classes be included based on the presence or absence of specific classes.
+Due to the fact that annotation metadata is parsed by using http://asm.ow2.org/[ASM], you
+can use the `value` attribute to refer to the real class, even though that class might not
+actually appear on the running application classpath. You can also use the `name`
+attribute if you prefer to specify the class name by using a `String` value.
+
+This mechanism does not apply the same way to `@Bean` methods where typically the return
+type is the target of the condition: before the condition on the method applies, the JVM
+will have loaded the class and potentially processed method references which will fail if
+the class is not present.
+
+To handle this scenario, a separate `@Configuration` class can be used to isolate the
+condition, as shown in the following example:
+
+[source,java,indent=0]
+----
+	@Configuration
+	// Some conditions
+	public class MyAutoConfiguration {
+
+		// Auto-configured beans
+
+		@Configuration
+		@ConditionalOnClass(EmbeddedAcmeService.class)
+		static class EmbeddedConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			public EmbeddedAcmeService embeddedAcmeService() { ... }
+
+		}
+
+	}
+----
 
 [TIP]
 ====
@@ -8497,7 +8552,7 @@ be configured] with the `spring-boot-configuration-processor` dependency.
 While it is possible to use JUnit 4 (the default provided by `spring-boot-starter-test`)
 to test Kotlin code, JUnit 5 is recommended. JUnit 5 enables a test class to be
 instantiated once and reused for all of the class's tests. This makes it possible to use
-`@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for
+`@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for
 Kotlin.
 
 To use JUnit 5, exclude `junit:junit` dependency from `spring-boot-starter-test`, add

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.springframework.boot.devtools.RemoteSpringApplication;
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,44 +33,63 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-abstract class RemoteApplicationLauncher implements ApplicationLauncher {
+abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
+
+	RemoteApplicationLauncher(Directories directories) {
+		super(directories);
+	}
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher javaLauncher)
-			throws Exception {
+	public LaunchedApplication launchApplication(JvmLauncher javaLauncher,
+			File serverPortFile) throws Exception {
 		LaunchedJvm applicationJvm = javaLauncher.launch("app",
 				createApplicationClassPath(), "com.example.DevToolsTestApplication",
-				"--server.port=12345", "--spring.devtools.remote.secret=secret");
-		awaitServerPort(applicationJvm.getStandardOut());
-		LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
-				"remote-spring-application", createRemoteSpringApplicationClassPath(),
-				RemoteSpringApplication.class.getName(),
-				"--spring.devtools.remote.secret=secret", "http://localhost:12345");
-		awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
-		return new LaunchedApplication(new File("target/remote"),
+				serverPortFile.getAbsolutePath(), "--server.port=0",
+				"--spring.devtools.remote.secret=secret");
+		int port = awaitServerPort(applicationJvm.getStandardOut(), serverPortFile);
+		BiFunction<Integer, File, Process> remoteRestarter = getRemoteRestarter(
+				javaLauncher);
+		return new LaunchedApplication(getDirectories().getRemoteAppDirectory(),
 				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
-				applicationJvm.getProcess(), remoteSpringApplicationJvm.getProcess());
+				applicationJvm.getProcess(), remoteRestarter.apply(port, null),
+				remoteRestarter);
+	}
+
+	private BiFunction<Integer, File, Process> getRemoteRestarter(
+			JvmLauncher javaLauncher) {
+		return (port, classesDirectory) -> {
+			try {
+				LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
+						"remote-spring-application",
+						createRemoteSpringApplicationClassPath(classesDirectory),
+						RemoteSpringApplication.class.getName(),
+						"--spring.devtools.remote.secret=secret",
+						"http://localhost:" + port);
+				awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
+				return remoteSpringApplicationJvm.getProcess();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
+		};
 	}
 
 	protected abstract String createApplicationClassPath() throws Exception;
 
-	private String createRemoteSpringApplicationClassPath() throws Exception {
-		File remoteDirectory = new File("target/remote");
-		FileSystemUtils.deleteRecursively(remoteDirectory);
-		remoteDirectory.mkdirs();
-		FileSystemUtils.copyRecursively(new File("target/test-classes/com"),
-				new File("target/remote/com"));
-		List<String> entries = new ArrayList<>();
-		entries.add("target/remote");
-		for (File jar : new File("target/dependencies").listFiles()) {
-			entries.add(jar.getAbsolutePath());
+	private String createRemoteSpringApplicationClassPath(File classesDirectory)
+			throws Exception {
+		File remoteAppDirectory = getDirectories().getRemoteAppDirectory();
+		if (classesDirectory == null) {
+			copyApplicationTo(remoteAppDirectory);
 		}
+		List<String> entries = new ArrayList<>();
+		entries.add(remoteAppDirectory.getAbsolutePath());
+		entries.addAll(getDependencyJarPaths());
 		return StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 	}
 
-	private int awaitServerPort(File standardOut) throws Exception {
+	private int awaitServerPort(File standardOut, File serverPortFile) throws Exception {
 		long end = System.currentTimeMillis() + 30000;
-		File serverPortFile = new File("target/server.port");
 		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(

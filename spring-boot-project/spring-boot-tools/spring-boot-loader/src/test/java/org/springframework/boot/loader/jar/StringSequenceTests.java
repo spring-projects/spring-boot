@@ -163,6 +163,13 @@ public class StringSequenceTests {
 	}
 
 	@Test
+	public void notEqualsWhenSequencesOfDifferentLength() {
+		StringSequence a = new StringSequence("abcd");
+		StringSequence b = new StringSequence("ef");
+		assertThat(a).isNotEqualTo(b);
+	}
+
+	@Test
 	public void startsWithWhenExactMatch() {
 		assertThat(new StringSequence("abc").startsWith("abc")).isTrue();
 	}

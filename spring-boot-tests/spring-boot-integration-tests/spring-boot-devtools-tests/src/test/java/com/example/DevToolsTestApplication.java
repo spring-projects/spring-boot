@@ -25,7 +25,7 @@ public class DevToolsTestApplication {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(DevToolsTestApplication.class)
-				.listeners(new WebServerPortFileWriter("target/server.port")).run(args);
+				.listeners(new WebServerPortFileWriter(args[0])).run(args);
 	}
 
 }

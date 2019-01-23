@@ -18,7 +18,6 @@ package org.springframework.boot.web.embedded.jetty;
 
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -50,54 +49,35 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 
 	@Override
 	public void configure(WebAppContext context) throws Exception {
-		context.addBean(new Initializer(context), true);
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(context.getClassLoader());
+		try {
+			callInitializers(context);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(classLoader);
+		}
 	}
 
-	/**
-	 * Jetty {@link AbstractLifeCycle} to call the {@link ServletContextInitializer
-	 * ServletContextInitializers}.
-	 */
-	private class Initializer extends AbstractLifeCycle {
-
-		private final WebAppContext context;
-
-		Initializer(WebAppContext context) {
-			this.context = context;
-		}
-
-		@Override
-		protected void doStart() throws Exception {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			Thread.currentThread().setContextClassLoader(this.context.getClassLoader());
-			try {
-				callInitializers();
-			}
-			finally {
-				Thread.currentThread().setContextClassLoader(classLoader);
+	private void callInitializers(WebAppContext context) throws ServletException {
+		try {
+			setExtendedListenerTypes(context, true);
+			for (ServletContextInitializer initializer : this.initializers) {
+				initializer.onStartup(context.getServletContext());
 			}
 		}
-
-		private void callInitializers() throws ServletException {
-			try {
-				setExtendedListenerTypes(true);
-				for (ServletContextInitializer initializer : ServletContextInitializerConfiguration.this.initializers) {
-					initializer.onStartup(this.context.getServletContext());
-				}
-			}
-			finally {
-				setExtendedListenerTypes(false);
-			}
+		finally {
+			setExtendedListenerTypes(context, false);
 		}
+	}
 
-		private void setExtendedListenerTypes(boolean extended) {
-			try {
-				this.context.getServletContext().setExtendedListenerTypes(extended);
-			}
-			catch (NoSuchMethodError ex) {
-				// Not available on Jetty 8
-			}
+	private void setExtendedListenerTypes(WebAppContext context, boolean extended) {
+		try {
+			context.getServletContext().setExtendedListenerTypes(extended);
 		}
-
+		catch (NoSuchMethodError ex) {
+			// Not available on Jetty 8
+		}
 	}
 
 }

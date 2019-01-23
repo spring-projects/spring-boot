@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
@@ -46,7 +47,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -80,6 +80,30 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context.getBean(JwtDecoder.class))
 							.isInstanceOf(NimbusJwtDecoderJwkSupport.class);
+					assertThat(getBearerTokenFilter(context)).isNotNull();
+				});
+	}
+
+	@Test
+	public void autoConfigurationShouldMatchDefaultJwsAlgorithm() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				.run((context) -> {
+					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+					assertThat(jwtDecoder).hasFieldOrPropertyWithValue("jwsAlgorithm",
+							JWSAlgorithm.RS256);
+				});
+	}
+
+	@Test
+	public void autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com",
+				"spring.security.oauth2.resourceserver.jwt.jws-algorithm=HS512")
+				.run((context) -> {
+					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+					assertThat(jwtDecoder).hasFieldOrPropertyWithValue("jwsAlgorithm",
+							JWSAlgorithm.HS512);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 				});
 	}
@@ -149,13 +173,20 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
 	}
 
-	@SuppressWarnings("unchecked")
+	@Test
+	public void autoConfigurationShouldBeConditionalOnJwtDecoderClass() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				.withUserConfiguration(JwtDecoderConfig.class)
+				.withClassLoader(new FilteredClassLoader(JwtDecoder.class))
+				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
+	}
+
 	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
-		List<Filter> filters = (List<Filter>) ReflectionTestUtils
-				.getField(filterChains.get(0), "filters");
+		List<Filter> filters = filterChains.get(0).getFilters();
 		return filters.stream()
 				.filter((f) -> f instanceof BearerTokenAuthenticationFilter).findFirst()
 				.orElse(null);

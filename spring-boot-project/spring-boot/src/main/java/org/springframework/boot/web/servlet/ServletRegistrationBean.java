@@ -26,9 +26,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -53,8 +50,6 @@ import org.springframework.util.StringUtils;
  */
 public class ServletRegistrationBean<T extends Servlet>
 		extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
-
-	private static final Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
@@ -183,7 +178,6 @@ public class ServletRegistrationBean<T extends Servlet>
 	protected ServletRegistration.Dynamic addRegistration(String description,
 			ServletContext servletContext) {
 		String name = getServletName();
-		logger.info("Servlet " + name + " mapped to " + this.urlMappings);
 		return servletContext.addServlet(name, this.servlet);
 	}
 
@@ -214,6 +208,11 @@ public class ServletRegistrationBean<T extends Servlet>
 	 */
 	public String getServletName() {
 		return getOrDeduceName(this.servlet);
+	}
+
+	@Override
+	public String toString() {
+		return getServletName() + " urls=" + getUrlMappings();
 	}
 
 }

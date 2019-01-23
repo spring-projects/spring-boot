@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,14 @@ import org.xnio.SslClientAuthMode;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ResourceUtils;
 
 /**
  * {@link UndertowBuilderCustomizer} that configures SSL on the given builder instance.
  *
  * @author Brian Clozel
+ * @author Raheela Aslam
  */
 class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
@@ -166,21 +168,40 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
+		return loadTrustStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
 				ssl.getTrustStore(), ssl.getTrustStorePassword());
 	}
 
 	private KeyStore loadKeyStore(String type, String provider, String resource,
 			String password) throws Exception {
-		type = (type != null) ? type : "JKS";
+		return loadStore(type, provider, resource, password);
+	}
+
+	private KeyStore loadTrustStore(String type, String provider, String resource,
+			String password) throws Exception {
 		if (resource == null) {
 			return null;
 		}
+		else {
+			return loadStore(type, provider, resource, password);
+		}
+	}
+
+	private KeyStore loadStore(String type, String provider, String resource,
+			String password) throws Exception {
+		type = (type != null) ? type : "JKS";
 		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider)
 				: KeyStore.getInstance(type);
-		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
-		return store;
+		try {
+			URL url = ResourceUtils.getURL(resource);
+			store.load(url.openStream(),
+					(password != null) ? password.toCharArray() : null);
+			return store;
+		}
+		catch (Exception ex) {
+			throw new WebServerException("Could not load key store '" + resource + "'",
+					ex);
+		}
 	}
 
 	/**

@@ -23,14 +23,13 @@ import java.util.function.Consumer;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -58,7 +57,7 @@ public class TaskExecutionAutoConfigurationTests {
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
 	@Rule
-	public final OutputCapture output = new OutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {
@@ -70,12 +69,12 @@ public class TaskExecutionAutoConfigurationTests {
 						"spring.task.execution.pool.keep-alive=5s",
 						"spring.task.execution.thread-name-prefix=mytest-")
 				.run(assertTaskExecutor((taskExecutor) -> {
-					DirectFieldAccessor dfa = new DirectFieldAccessor(taskExecutor);
-					assertThat(dfa.getPropertyValue("queueCapacity")).isEqualTo(10);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity",
+							10);
 					assertThat(taskExecutor.getCorePoolSize()).isEqualTo(2);
 					assertThat(taskExecutor.getMaxPoolSize()).isEqualTo(4);
-					assertThat(dfa.getPropertyValue("allowCoreThreadTimeOut"))
-							.isEqualTo(true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
 					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				}));
@@ -106,7 +105,6 @@ public class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	public void taskExecutorAutoConfigured() {
-		this.output.reset();
 		this.contextRunner.run((context) -> {
 			assertThat(this.output.toString())
 					.doesNotContain("Initializing ExecutorService");

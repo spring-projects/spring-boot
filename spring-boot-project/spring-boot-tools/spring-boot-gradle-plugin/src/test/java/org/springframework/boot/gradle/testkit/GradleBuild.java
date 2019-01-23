@@ -24,33 +24,28 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.cli.common.PropertiesKt;
 import org.jetbrains.kotlin.compilerRunner.KotlinCompilerRunner;
+import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * A {@link TestRule} for running a Gradle build using {@link GradleRunner}.
@@ -146,6 +141,7 @@ public class GradleBuild implements TestRule {
 				new File(pathOfJarContaining(PropertiesKt.class)),
 				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
 				new File(pathOfJarContaining(KotlinPlugin.class)),
+				new File(pathOfJarContaining(KotlinProject.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}
@@ -185,6 +181,8 @@ public class GradleBuild implements TestRule {
 						getDependencyManagementPluginVersion());
 		FileCopyUtils.copy(scriptContent, new FileWriter(
 				new File(this.projectDir, "build" + this.dsl.getExtension())));
+		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
+				new File(this.projectDir, "repository"));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN) {
@@ -222,43 +220,21 @@ public class GradleBuild implements TestRule {
 	}
 
 	private static String getBootVersion() {
-		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
-						+ "/text()");
+		return "TEST-SNAPSHOT";
 	}
 
 	private static String getDependencyManagementPluginVersion() {
-		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
-			Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(new InputSource(pomReader));
-			NodeList dependencyElements = pom.getElementsByTagName("dependency");
-			for (int i = 0; i < dependencyElements.getLength(); i++) {
-				Element dependency = (Element) dependencyElements.item(i);
-				if (dependency.getElementsByTagName("artifactId").item(0).getTextContent()
-						.equals("dependency-management-plugin")) {
-					return dependency.getElementsByTagName("version").item(0)
-							.getTextContent();
-				}
+		try {
+			URL location = DependencyManagementExtension.class.getProtectionDomain()
+					.getCodeSource().getLocation();
+			try (JarFile jar = new JarFile(new File(location.toURI()))) {
+				return jar.getManifest().getMainAttributes()
+						.getValue("Implementation-Version");
 			}
-			throw new IllegalStateException(
-					"dependency management plugin version not found");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(
 					"Failed to find dependency management plugin version", ex);
-		}
-	}
-
-	private static String evaluateExpression(String expression) {
-		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
-			XPathFactory xPathFactory = XPathFactory.newInstance();
-			XPath xpath = xPathFactory.newXPath();
-			XPathExpression expr = xpath.compile(expression);
-			String version = expr.evaluate(new InputSource(pomReader));
-			return version;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Failed to evaluate expression", ex);
 		}
 	}
 

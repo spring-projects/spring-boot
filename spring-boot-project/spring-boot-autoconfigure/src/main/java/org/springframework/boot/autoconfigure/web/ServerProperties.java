@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @author Olivier Lamy
  * @author Chentao Qu
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -370,6 +371,12 @@ public class ServerProperties {
 		private int acceptCount = 100;
 
 		/**
+		 * Maximum number of idle processors that will be retained in the cache and reused
+		 * with a subsequent request.
+		 */
+		private int processorCache = 200;
+
+		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
@@ -522,6 +529,14 @@ public class ServerProperties {
 
 		public void setAcceptCount(int acceptCount) {
 			this.acceptCount = acceptCount;
+		}
+
+		public int getProcessorCache() {
+			return this.processorCache;
+		}
+
+		public void setProcessorCache(int processorCache) {
+			this.processorCache = processorCache;
 		}
 
 		public List<String> getAdditionalTldSkipPatterns() {

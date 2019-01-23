@@ -24,10 +24,10 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
@@ -37,11 +37,13 @@ import static org.hamcrest.Matchers.containsString;
  */
 public class FreeMarkerAutoConfigurationTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
+
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void renderNonWebAppTemplate() {
@@ -63,25 +65,30 @@ public class FreeMarkerAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
-				.run((context) -> this.output
-						.expect(containsString("Cannot find template location")));
+				.run((context) -> assertThat(this.output.toString())
+						.contains("Cannot find template location"));
 	}
 
 	@Test
 	public void emptyTemplateLocation() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
-		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/templates/empty-directory/").run((context) -> {
-				});
+		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory");
+		emptyDirectory.mkdirs();
+		this.contextRunner
+				.withPropertyValues("spring.freemarker.templateLoaderPath:"
+						+ "classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(this.output.toString())
+						.doesNotContain("Cannot find template location"));
 	}
 
 	@Test
 	public void nonExistentLocationAndEmptyLocation() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/")
-				.run((context) -> {
-				});
+				+ "classpath:/does-not-exist/,classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(this.output.toString())
+						.doesNotContain("Cannot find template location"));
 	}
 
 }

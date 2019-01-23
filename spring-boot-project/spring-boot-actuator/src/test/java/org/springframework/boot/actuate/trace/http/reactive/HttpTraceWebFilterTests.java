@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.trace.http.reactive;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.EnumSet;
 
 import javax.servlet.ServletException;
@@ -32,9 +33,7 @@ import org.springframework.boot.actuate.trace.http.Include;
 import org.springframework.boot.actuate.web.trace.reactive.HttpTraceWebFilter;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebExchangeDecorator;
-import org.springframework.web.server.WebFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -61,14 +60,7 @@ public class HttpTraceWebFilterTests {
 		this.filter.filter(
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
-				new WebFilterChain() {
-
-					@Override
-					public Mono<Void> filter(ServerWebExchange exchange) {
-						return Mono.empty();
-					}
-
-				}).block();
+				(exchange) -> Mono.empty()).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
@@ -78,15 +70,11 @@ public class HttpTraceWebFilterTests {
 		this.filter.filter(
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
-				new WebFilterChain() {
-
-					@Override
-					public Mono<Void> filter(ServerWebExchange exchange) {
-						exchange.getSession().block().getAttributes().put("a", "alpha");
-						return Mono.empty();
-					}
-
-				}).block();
+				(exchange) -> {
+					exchange.getSession().block(Duration.ofSeconds(30)).getAttributes()
+							.put("a", "alpha");
+					return Mono.empty();
+				}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNotNull();
@@ -99,15 +87,10 @@ public class HttpTraceWebFilterTests {
 		this.filter.filter(
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
-				new WebFilterChain() {
-
-					@Override
-					public Mono<Void> filter(ServerWebExchange exchange) {
-						exchange.getSession().block();
-						return Mono.empty();
-					}
-
-				}).block();
+				(exchange) -> {
+					exchange.getSession().block(Duration.ofSeconds(30));
+					return Mono.empty();
+				}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNull();
@@ -125,15 +108,11 @@ public class HttpTraceWebFilterTests {
 				return Mono.just(principal);
 			}
 
-		}, new WebFilterChain() {
-
-			@Override
-			public Mono<Void> filter(ServerWebExchange exchange) {
-				exchange.getSession().block().getAttributes().put("a", "alpha");
-				return Mono.empty();
-			}
-
-		}).block();
+		}, (exchange) -> {
+			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a",
+					"alpha");
+			return Mono.empty();
+		}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository
 				.findAll().get(0).getPrincipal();
@@ -145,17 +124,11 @@ public class HttpTraceWebFilterTests {
 	public void statusIsAssumedToBe500WhenChainFails()
 			throws ServletException, IOException {
 		try {
-			this.filter.filter(
-					MockServerWebExchange
+			this.filter
+					.filter(MockServerWebExchange
 							.from(MockServerHttpRequest.get("https://api.example.com")),
-					new WebFilterChain() {
-
-						@Override
-						public Mono<Void> filter(ServerWebExchange exchange) {
-							return Mono.error(new RuntimeException());
-						}
-
-					}).block();
+							(exchange) -> Mono.error(new RuntimeException()))
+					.block(Duration.ofSeconds(30));
 			fail();
 		}
 		catch (Exception ex) {

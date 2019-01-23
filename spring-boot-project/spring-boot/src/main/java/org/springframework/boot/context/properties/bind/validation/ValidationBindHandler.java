@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,17 +70,27 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
 			BindContext context, Object result) throws Exception {
 		validate(name, target, context, result);
-		if (context.getDepth() == 0 && !this.exceptions.isEmpty()) {
-			throw this.exceptions.pop();
-		}
 		super.onFinish(name, target, context, result);
+	}
+
+	@Override
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
+			BindContext context, Exception error) throws Exception {
+		Object result = super.onFailure(name, target, context, error);
+		validate(name, target, context, null);
+		return result;
 	}
 
 	private void validate(ConfigurationPropertyName name, Bindable<?> target,
 			BindContext context, Object result) {
 		Object validationTarget = getValidationTarget(target, context, result);
 		Class<?> validationType = target.getBoxedType().resolve();
-		validate(name, validationTarget, validationType);
+		if (validationTarget != null) {
+			validateAndPush(name, validationTarget, validationType);
+		}
+		if (context.getDepth() == 0 && !this.exceptions.isEmpty()) {
+			throw this.exceptions.pop();
+		}
 	}
 
 	private Object getValidationTarget(Bindable<?> target, BindContext context,
@@ -94,14 +104,13 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		return null;
 	}
 
-	private void validate(ConfigurationPropertyName name, Object target, Class<?> type) {
-		if (target != null) {
-			BindingResult errors = new BeanPropertyBindingResult(target, name.toString());
-			Arrays.stream(this.validators).filter((validator) -> validator.supports(type))
-					.forEach((validator) -> validator.validate(target, errors));
-			if (errors.hasErrors()) {
-				this.exceptions.push(getBindValidationException(name, errors));
-			}
+	private void validateAndPush(ConfigurationPropertyName name, Object target,
+			Class<?> type) {
+		BindingResult errors = new BeanPropertyBindingResult(target, name.toString());
+		Arrays.stream(this.validators).filter((validator) -> validator.supports(type))
+				.forEach((validator) -> validator.validate(target, errors));
+		if (errors.hasErrors()) {
+			this.exceptions.push(getBindValidationException(name, errors));
 		}
 	}
 

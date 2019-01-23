@@ -104,7 +104,7 @@ public enum DatabaseDriver {
 	 * @since 2.1.0
 	 */
 	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
-			"SELECT 1 FROM DUMMY") {
+			"SELECT 1 FROM SYS.DUMMY") {
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("sap");

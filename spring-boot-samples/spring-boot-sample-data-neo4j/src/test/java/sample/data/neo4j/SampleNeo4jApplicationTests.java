@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SampleNeo4jApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() {
@@ -44,8 +44,8 @@ public class SampleNeo4jApplicationTests {
 				return;
 			}
 		}
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+		assertThat(this.output.toString())
+				.contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean neo4jServerRunning(Throwable ex) {
