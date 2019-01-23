@@ -91,17 +91,14 @@ public class CompositeHealthIndicator implements HealthIndicator {
 		return this.registry;
 	}
 
-	// TODO Guarantee preserved ordering
-	// TODO it doesn't seem important but don't make assumptions on other people's behalf
 	@Override
 	public Health health() {
 		/* Gather healths in parallel */
 		Map<String, Health> healths = this.registry.getAll().entrySet().parallelStream()
 				.map((e) -> new SimpleEntry<>(e.getKey(), e.getValue().health()))
-				/* Merge the streams together */
+				/* Merge the entries, preserving original order */
 				.collect(LinkedHashMap::new,
 						(map, e) -> map.put(e.getKey(), e.getValue()), Map::putAll);
-		// .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue,
 		return this.aggregator.aggregate(healths);
 	}
 
