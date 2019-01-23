@@ -798,7 +798,7 @@ public final class ConfigurationPropertyName
 			if ((end - start) < 1 || type == ElementType.EMPTY) {
 				return;
 			}
-			if (this.start.length <= end) {
+			if (this.start.length == this.size) {
 				this.start = expand(this.start);
 				this.end = expand(this.end);
 				this.type = expand(this.type);
