@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -90,13 +91,17 @@ public class CompositeHealthIndicator implements HealthIndicator {
 		return this.registry;
 	}
 
+	// TODO Guarantee preserved ordering
+	// TODO it doesn't seem important but don't make assumptions on other people's behalf
 	@Override
 	public Health health() {
-		Map<String, Health> healths = new LinkedHashMap<>();
-		for (Map.Entry<String, HealthIndicator> entry : this.registry.getAll()
-				.entrySet()) {
-			healths.put(entry.getKey(), entry.getValue().health());
-		}
+		/* Gather healths in parallel */
+		Map<String, Health> healths = this.registry.getAll().entrySet().parallelStream()
+				.map((e) -> new SimpleEntry<>(e.getKey(), e.getValue().health()))
+				/* Merge the streams together */
+				.collect(LinkedHashMap::new,
+						(map, e) -> map.put(e.getKey(), e.getValue()), Map::putAll);
+		// .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue,
 		return this.aggregator.aggregate(healths);
 	}
 
