@@ -373,8 +373,9 @@ public final class ConfigurationPropertyName
 				ElementType.DASHED)) {
 			return this.elements.getSource().toString();
 		}
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < getNumberOfElements(); i++) {
+		int elements = getNumberOfElements();
+		StringBuilder result = new StringBuilder(elements * 8);
+		for (int i = 0; i < elements; i++) {
 			boolean indexed = isIndexed(i);
 			if (result.length() > 0 && !indexed) {
 				result.append('.');
