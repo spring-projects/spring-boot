@@ -307,7 +307,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(name = "nz.net.ultraq.thymeleaf.LayoutDialect")
+	@ConditionalOnClass(LayoutDialect.class)
 	protected static class ThymeleafWebLayoutConfiguration {
 
 		@Bean

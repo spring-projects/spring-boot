@@ -20,6 +20,7 @@ import javax.servlet.Servlet;
 import javax.websocket.server.ServerContainer;
 
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.websocket.server.WsSci;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -58,7 +59,7 @@ import org.springframework.context.annotation.Configuration;
 public class WebSocketServletAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci", value = Tomcat.class)
+	@ConditionalOnClass({ Tomcat.class, WsSci.class })
 	static class TomcatWebSocketConfiguration {
 
 		@Bean

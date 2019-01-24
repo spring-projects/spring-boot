@@ -54,7 +54,7 @@ class BatchConfigurerConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
+	@ConditionalOnClass(EntityManagerFactory.class)
 	@ConditionalOnBean(name = "entityManagerFactory")
 	static class JpaBatchConfiguration {
 
