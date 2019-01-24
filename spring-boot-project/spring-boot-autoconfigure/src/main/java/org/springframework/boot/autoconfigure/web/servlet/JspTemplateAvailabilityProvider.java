@@ -41,15 +41,15 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
 
+			String resourceName = getResourceName(view, environment);
+			if (resourceLoader.getResource(resourceName).exists()) {
+				return true;
+			}
+
 			try {
-				String resourceName = getResourceName(view, environment);
-				if (resourceLoader.getResource(resourceName).exists()) {
-					return true;
-				}
 				return new File("src/main/webapp", resourceName).exists();
 			}
 			catch (AccessControlException ex) {
-				return false;
 			}
 		}
 		return false;
