@@ -44,12 +44,12 @@ abstract class BeanPropertyName {
 	 */
 	public static String toDashedForm(String name, int start) {
 		StringBuilder result = new StringBuilder();
-		char[] chars = name.replace("_", "-").toCharArray();
-		for (int i = start; i < chars.length; i++) {
-			char ch = chars[i];
+		String replaced = name.replace('_', '-');
+		for (int i = start; i < replaced.length(); i++) {
+			char ch = replaced.charAt(i);
 			if (Character.isUpperCase(ch) && result.length() > 0
 					&& result.charAt(result.length() - 1) != '-') {
-				result.append("-");
+				result.append('-');
 			}
 			result.append(Character.toLowerCase(ch));
 		}
