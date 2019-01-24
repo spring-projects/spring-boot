@@ -237,7 +237,7 @@ public final class ConfigurationPropertyName
 		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
-		for (int i = 0; i < this.elements.getSize(); i++) {
+		for (int i = this.elements.getSize() - 1; i >= 0; i--) {
 			if (!elementEquals(this.elements, name.elements, i)) {
 				return false;
 			}
@@ -309,7 +309,7 @@ public final class ConfigurationPropertyName
 				&& other.elements.canShortcutWithSource(ElementType.UNIFORM)) {
 			return toString().equals(other.toString());
 		}
-		for (int i = 0; i < this.elements.getSize(); i++) {
+		for (int i = this.elements.getSize() - 1; i >= 0; i--) {
 			if (!elementEquals(this.elements, other.elements, i)) {
 				return false;
 			}
