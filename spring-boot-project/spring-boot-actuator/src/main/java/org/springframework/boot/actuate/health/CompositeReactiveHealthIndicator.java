@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * {@link ReactiveHealthIndicator} that returns health indications from all registered
@@ -122,10 +122,13 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 
 	@Override
 	public Mono<Health> health() {
-		return Flux.fromIterable(this.registry.getAll().entrySet())
+		return Flux.fromIterable(this.registry.getAll().entrySet()).parallel()
+				.runOn(Schedulers.elastic())
 				.flatMap((entry) -> Mono.zip(Mono.just(entry.getKey()),
 						entry.getValue().health().compose(this.timeoutCompose)))
-				.collectMap(Tuple2::getT1, Tuple2::getT2)
+				.sequential()
+				.collect(LinkedHashMap<String, Health>::new,
+						(map, entry) -> map.put(entry.getT1(), entry.getT2()))
 				.map(this.healthAggregator::aggregate);
 	}
 
