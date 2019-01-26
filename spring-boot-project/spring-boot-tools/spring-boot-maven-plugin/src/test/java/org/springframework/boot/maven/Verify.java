@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import java.util.zip.ZipFile;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.
@@ -182,7 +182,7 @@ public final class Verify {
 			assertThat(this.file).exists().isFile();
 
 			if (scriptContents.length > 0 && executable) {
-				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				String contents = contentOf(this.file);
 				contents = contents.substring(0, contents
 						.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
 				for (String content : scriptContents) {
@@ -191,7 +191,7 @@ public final class Verify {
 			}
 
 			if (!executable) {
-				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				String contents = contentOf(this.file);
 				assertThat(contents).as("Is executable")
 						.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 }));
 			}
