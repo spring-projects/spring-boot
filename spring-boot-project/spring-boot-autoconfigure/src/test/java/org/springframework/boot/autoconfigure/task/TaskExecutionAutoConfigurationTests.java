@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link TaskExecutionAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Camille Vienot
  */
 public class TaskExecutionAutoConfigurationTests {
 
@@ -151,6 +153,21 @@ public class TaskExecutionAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void enableAsyncUsesAutoConfiguredOneByDefaultEvenThoughSchedulingIsConfigured() {
+		this.contextRunner
+				.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
+				.withConfiguration(
+						AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+				.withUserConfiguration(AsyncConfiguration.class,
+						SchedulingConfiguration.class, TestBean.class)
+				.run((context) -> {
+					TestBean bean = context.getBean(TestBean.class);
+					String text = bean.echo("something").get();
+					assertThat(text).contains("task-test-").contains("something");
+				});
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertTaskExecutor(
 			Consumer<ThreadPoolTaskExecutor> taskExecutor) {
 		return (context) -> {
@@ -205,6 +222,12 @@ public class TaskExecutionAutoConfigurationTests {
 	@Configuration
 	@EnableAsync
 	static class AsyncConfiguration {
+
+	}
+
+	@Configuration
+	@EnableScheduling
+	static class SchedulingConfiguration {
 
 	}
 
