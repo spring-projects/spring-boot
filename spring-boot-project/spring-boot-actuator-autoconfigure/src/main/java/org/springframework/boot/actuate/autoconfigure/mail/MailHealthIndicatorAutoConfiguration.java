@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.mail;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -53,8 +52,8 @@ public class MailHealthIndicatorAutoConfiguration extends
 	private final Map<String, JavaMailSenderImpl> mailSenders;
 
 	public MailHealthIndicatorAutoConfiguration(
-			ObjectProvider<Map<String, JavaMailSenderImpl>> mailSenders) {
-		this.mailSenders = mailSenders.getIfAvailable();
+			Map<String, JavaMailSenderImpl> mailSenders) {
+		this.mailSenders = mailSenders;
 	}
 
 	@Bean

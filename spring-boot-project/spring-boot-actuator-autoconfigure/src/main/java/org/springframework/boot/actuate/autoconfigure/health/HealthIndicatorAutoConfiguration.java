@@ -16,12 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Collections;
 import java.util.Map;
 
 import reactor.core.publisher.Flux;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -87,13 +85,11 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
-				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
-				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
+				Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+				Map<String, HealthIndicator> healthIndicators) {
 			return new ReactiveHealthIndicatorRegistryFactory()
-					.createReactiveHealthIndicatorRegistry(
-							reactiveHealthIndicators
-									.getIfAvailable(Collections::emptyMap),
-							healthIndicators.getIfAvailable(Collections::emptyMap));
+					.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators,
+							healthIndicators);
 		}
 
 	}

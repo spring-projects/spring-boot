@@ -20,7 +20,6 @@ import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -55,8 +54,8 @@ public class JmsHealthIndicatorAutoConfiguration extends
 	private final Map<String, ConnectionFactory> connectionFactories;
 
 	public JmsHealthIndicatorAutoConfiguration(
-			ObjectProvider<Map<String, ConnectionFactory>> connectionFactories) {
-		this.connectionFactories = connectionFactories.getIfAvailable();
+			Map<String, ConnectionFactory> connectionFactories) {
+		this.connectionFactories = connectionFactories;
 	}
 
 	@Bean
