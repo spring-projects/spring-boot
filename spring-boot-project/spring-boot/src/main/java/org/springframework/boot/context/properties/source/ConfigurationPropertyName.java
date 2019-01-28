@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,7 +195,7 @@ public final class ConfigurationPropertyName
 		if (elementValue == null) {
 			return this;
 		}
-		Elements additionalElements = of(elementValue).elements;
+		Elements additionalElements = probablySingleElementOf(elementValue);
 		return new ConfigurationPropertyName(this.elements.append(additionalElements));
 	}
 
@@ -373,8 +373,9 @@ public final class ConfigurationPropertyName
 				ElementType.DASHED)) {
 			return this.elements.getSource().toString();
 		}
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < getNumberOfElements(); i++) {
+		int elements = getNumberOfElements();
+		StringBuilder result = new StringBuilder(elements * 8);
+		for (int i = 0; i < elements; i++) {
 			boolean indexed = isIndexed(i);
 			if (result.length() > 0 && !indexed) {
 				result.append('.');
@@ -420,12 +421,26 @@ public final class ConfigurationPropertyName
 	 * {@code returnNullIfInvalid} is {@code false}
 	 */
 	static ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
+		Elements elements = elementsOf(name, returnNullIfInvalid);
+		return (elements != null) ? new ConfigurationPropertyName(elements) : null;
+	}
+
+	private static Elements probablySingleElementOf(CharSequence name) {
+		return elementsOf(name, false, 1);
+	}
+
+	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid) {
+		return elementsOf(name, returnNullIfInvalid, ElementsParser.DEFAULT_CAPACITY);
+	}
+
+	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid,
+			int parserCapacity) {
 		if (name == null) {
 			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
 			return null;
 		}
 		if (name.length() == 0) {
-			return EMPTY;
+			return Elements.EMPTY;
 		}
 		if (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.') {
 			if (returnNullIfInvalid) {
@@ -434,7 +449,7 @@ public final class ConfigurationPropertyName
 			throw new InvalidConfigurationPropertyNameException(name,
 					Collections.singletonList('.'));
 		}
-		Elements elements = new ElementsParser(name, '.').parse();
+		Elements elements = new ElementsParser(name, '.', parserCapacity).parse();
 		for (int i = 0; i < elements.getSize(); i++) {
 			if (elements.getType(i) == ElementType.NON_UNIFORM) {
 				if (returnNullIfInvalid) {
@@ -444,7 +459,7 @@ public final class ConfigurationPropertyName
 						getInvalidChars(elements, i));
 			}
 		}
-		return new ConfigurationPropertyName(elements);
+		return elements;
 	}
 
 	private static List<Character> getInvalidChars(Elements elements, int index) {
@@ -789,7 +804,7 @@ public final class ConfigurationPropertyName
 			if ((end - start) < 1 || type == ElementType.EMPTY) {
 				return;
 			}
-			if (this.start.length <= end) {
+			if (this.start.length == this.size) {
 				this.start = expand(this.start);
 				this.end = expand(this.end);
 				this.type = expand(this.type);
