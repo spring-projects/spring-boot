@@ -38,7 +38,6 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,7 +124,7 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void addClassLoaderFiles() throws Exception {
+	public void addClassLoaderFiles() {
 		ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 		classLoaderFiles.addFile("f", new ClassLoaderFile(Kind.ADDED, "abc".getBytes()));
 		Restarter restarter = Restarter.getInstance();
@@ -133,8 +132,7 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")))
-				.isEqualTo("abc".getBytes());
+		assertThat(classLoader.getResourceAsStream("f")).hasContent("abc");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.web.context;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -29,10 +28,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -59,7 +58,7 @@ public class WebServerPortFileWriterTest {
 		File file = this.temporaryFolder.newFile();
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
+		assertThat(contentOf(file)).isEqualTo("8080");
 	}
 
 	@Test
@@ -67,8 +66,8 @@ public class WebServerPortFileWriterTest {
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter();
 		listener.onApplicationEvent(mockEvent("", 8080));
-		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
+		String content = contentOf(new File(System.getProperty("PORTFILE")));
+		assertThat(content).isEqualTo("8080");
 	}
 
 	@Test
@@ -77,8 +76,8 @@ public class WebServerPortFileWriterTest {
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
+		String content = contentOf(new File(System.getProperty("PORTFILE")));
+		assertThat(content).isEqualTo("8080");
 	}
 
 	@Test
@@ -87,15 +86,14 @@ public class WebServerPortFileWriterTest {
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		listener.onApplicationEvent(mockEvent("management", 9090));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
+		assertThat(contentOf(file)).isEqualTo("8080");
 		String managementFile = file.getName();
 		managementFile = managementFile.substring(0, managementFile.length()
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-management."
 				+ StringUtils.getFilenameExtension(file.getName());
-		FileReader reader = new FileReader(
-				new File(file.getParentFile(), managementFile));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
+		String content = contentOf(new File(file.getParentFile(), managementFile));
+		assertThat(content).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
@@ -110,9 +108,8 @@ public class WebServerPortFileWriterTest {
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-MANAGEMENT."
 				+ StringUtils.getFilenameExtension(file.getName());
-		FileReader reader = new FileReader(
-				new File(file.getParentFile(), managementFile));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
+		String content = contentOf(new File(file.getParentFile(), managementFile));
+		assertThat(content).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
