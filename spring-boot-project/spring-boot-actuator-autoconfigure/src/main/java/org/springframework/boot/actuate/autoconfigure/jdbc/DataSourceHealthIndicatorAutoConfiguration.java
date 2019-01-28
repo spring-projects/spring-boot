@@ -72,10 +72,9 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthIndicatorAutoConfiguration(
-			ObjectProvider<Map<String, DataSource>> dataSources,
+	public DataSourceHealthIndicatorAutoConfiguration(Map<String, DataSource> dataSources,
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-		this.dataSources = filterDataSources(dataSources.getIfAvailable());
+		this.dataSources = filterDataSources(dataSources);
 		this.metadataProviders = metadataProviders.orderedStream()
 				.collect(Collectors.toList());
 	}

@@ -74,13 +74,12 @@ public class QuartzAutoConfiguration {
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
 			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
-			ObjectProvider<JobDetail[]> jobDetails,
-			ObjectProvider<Map<String, Calendar>> calendars,
+			ObjectProvider<JobDetail[]> jobDetails, Map<String, Calendar> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers;
 		this.jobDetails = jobDetails.getIfAvailable();
-		this.calendars = calendars.getIfAvailable();
+		this.calendars = calendars;
 		this.triggers = triggers.getIfAvailable();
 		this.applicationContext = applicationContext;
 	}
