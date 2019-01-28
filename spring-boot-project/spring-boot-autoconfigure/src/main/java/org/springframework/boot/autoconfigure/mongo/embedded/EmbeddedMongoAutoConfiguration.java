@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -153,14 +154,9 @@ public class EmbeddedMongoAutoConfiguration {
 
 	private IFeatureAwareVersion determineVersion() {
 		if (this.embeddedProperties.getFeatures() == null) {
-			for (Version version : Version.values()) {
-				if (version.asInDownloadPath()
-						.equals(this.embeddedProperties.getVersion())) {
-					return version;
-				}
-			}
+			EnumSet<Feature> features = Version.Main.PRODUCTION.getFeatures();
 			return Versions.withFeatures(
-					new GenericVersion(this.embeddedProperties.getVersion()));
+					new GenericVersion(this.embeddedProperties.getVersion()), features);
 		}
 		return Versions.withFeatures(
 				new GenericVersion(this.embeddedProperties.getVersion()),
