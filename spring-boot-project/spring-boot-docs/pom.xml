@@ -944,14 +944,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- Documentation generation -->
-		<dependency>
-			<groupId>io.spring.docresources</groupId>
-			<artifactId>spring-doc-resources</artifactId>
-			<version>0.1.0.BUILD-SNAPSHOT</version>
-			<type>zip</type>
-			<optional>true</optional>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -1162,15 +1154,19 @@
 							<execution>
 								<id>unpack-doc-resources</id>
 								<goals>
-									<goal>unpack-dependencies</goal>
+									<goal>unpack</goal>
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<includeGroupIds>io.spring.docresources</includeGroupIds>
-									<includeArtifactIds>spring-doc-resources</includeArtifactIds>
-									<includeTypes>zip</includeTypes>
-									<excludeTransitive>true</excludeTransitive>
-									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+									<artifactItems>
+										<artifactItem>
+											<groupId>io.spring.docresources</groupId>
+											<artifactId>spring-doc-resources</artifactId>
+											<version>${spring-doc-resources.version}</version>
+											<type>zip</type>
+											<outputDirectory>${refdocs.build.directory}</outputDirectory>
+										</artifactItem>
+									</artifactItems>
 								</configuration>
 							</execution>
 						</executions>
