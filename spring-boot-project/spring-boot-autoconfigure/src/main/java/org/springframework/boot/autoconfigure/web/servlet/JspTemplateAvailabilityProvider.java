@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
+import java.security.AccessControlException;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
@@ -42,7 +43,11 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 			if (resourceLoader.getResource(resourceName).exists()) {
 				return true;
 			}
-			return new File("src/main/webapp", resourceName).exists();
+			try {
+				return new File("src/main/webapp", resourceName).exists();
+			}
+			catch (AccessControlException ex) {
+			}
 		}
 		return false;
 	}
