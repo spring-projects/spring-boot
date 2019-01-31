@@ -47,6 +47,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 public class UndertowWebServerFactoryCustomizerTests {
 
@@ -141,6 +142,18 @@ public class UndertowWebServerFactoryCustomizerTests {
 		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
 				"serverOptions")).getMap();
 		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
+	}
+
+	@Test
+	public void customConnectionTimeout() {
+		bind("server.connection-timeout=100");
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
+				"serverOptions")).getMap();
+		assertThat(map.contains(UndertowOptions.NO_REQUEST_TIMEOUT)).isTrue();
+		assertThat(map.get(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
 	}
 
 	private ConfigurableUndertowWebServerFactory mockFactory(Builder builder) {
