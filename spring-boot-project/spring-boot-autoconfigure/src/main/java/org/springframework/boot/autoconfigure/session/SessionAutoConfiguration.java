@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -162,13 +161,10 @@ public class SessionAutoConfiguration {
 	abstract static class SessionConfigurationImportSelector implements ImportSelector {
 
 		protected final String[] selectImports(WebApplicationType webApplicationType) {
-			List<String> imports = new ArrayList<>();
-			StoreType[] types = StoreType.values();
-			for (StoreType type : types) {
-				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType,
-						type));
-			}
-			return StringUtils.toStringArray(imports);
+			return Arrays.stream(StoreType.values())
+					.map((type) -> SessionStoreMappings
+							.getConfigurationClass(webApplicationType, type))
+					.toArray(String[]::new);
 		}
 
 	}
