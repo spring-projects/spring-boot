@@ -31,7 +31,6 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @author Artsiom Yudovin
  * @since 1.1.0
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
@@ -40,12 +39,10 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
-
 			String resourceName = getResourceName(view, environment);
 			if (resourceLoader.getResource(resourceName).exists()) {
 				return true;
 			}
-
 			try {
 				return new File("src/main/webapp", resourceName).exists();
 			}
