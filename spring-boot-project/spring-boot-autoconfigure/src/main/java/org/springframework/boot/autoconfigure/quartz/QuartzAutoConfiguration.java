@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,13 +74,12 @@ public class QuartzAutoConfiguration {
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
 			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
-			ObjectProvider<JobDetail[]> jobDetails,
-			ObjectProvider<Map<String, Calendar>> calendars,
+			ObjectProvider<JobDetail[]> jobDetails, Map<String, Calendar> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers;
 		this.jobDetails = jobDetails.getIfAvailable();
-		this.calendars = calendars.getIfAvailable();
+		this.calendars = calendars;
 		this.triggers = triggers.getIfAvailable();
 		this.applicationContext = applicationContext;
 	}
