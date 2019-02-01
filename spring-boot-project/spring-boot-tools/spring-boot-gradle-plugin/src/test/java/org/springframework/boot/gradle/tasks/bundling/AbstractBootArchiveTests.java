@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,6 +130,30 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(
 					jarFile.getEntry(this.classesPath + "/com/example/Application.class"))
 							.isNotNull();
+		}
+	}
+
+	@Test
+	public void moduleInfoClassIsPackagedInTheRootOfTheArchive() throws IOException {
+		this.task.setMainClassName("com.example.Main");
+		File classpathFolder = this.temp.newFolder();
+		File moduleInfoClass = new File(classpathFolder, "module-info.class");
+		moduleInfoClass.getParentFile().mkdirs();
+		moduleInfoClass.createNewFile();
+		File applicationClass = new File(classpathFolder,
+				"com/example/Application.class");
+		applicationClass.getParentFile().mkdirs();
+		applicationClass.createNewFile();
+		this.task.classpath(classpathFolder);
+		this.task.execute();
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(
+					jarFile.getEntry(this.classesPath + "/com/example/Application.class"))
+							.isNotNull();
+			assertThat(jarFile.getEntry("com/example/Application.class")).isNull();
+			assertThat(jarFile.getEntry("module-info.class")).isNotNull();
+			assertThat(jarFile.getEntry(this.classesPath + "/module-info.class"))
+					.isNull();
 		}
 	}
 
