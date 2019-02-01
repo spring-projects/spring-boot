@@ -17,6 +17,9 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.util.Map;
+
+import org.apache.kafka.clients.CommonClientConfigs;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -47,6 +51,7 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Nakul Mishra
+ * @author Artem Bilan
  * @since 1.5.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -57,8 +62,10 @@ public class KafkaAutoConfiguration {
 
 	private final KafkaProperties properties;
 
-	public KafkaAutoConfiguration(KafkaProperties properties) {
+	public KafkaAutoConfiguration(KafkaProperties properties,
+			Environment environment) {
 		this.properties = properties;
+		this.environment = environment;
 	}
 
 	@Bean
@@ -82,14 +89,17 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public ConsumerFactory<?, ?> kafkaConsumerFactory() {
-		return new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties());
+		Map<String, Object> consumerConfig =
+				applyEmbeddedBrokersIfAny(this.properties.buildConsumerProperties());
+		return new DefaultKafkaConsumerFactory<>(consumerConfig);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public ProducerFactory<?, ?> kafkaProducerFactory() {
-		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
-				this.properties.buildProducerProperties());
+		Map<String, Object> producerConfig =
+				applyEmbeddedBrokersIfAny(this.properties.buildProducerProperties());
+		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(producerConfig);
 		String transactionIdPrefix = this.properties.getProducer().getTransactionIdPrefix();
 		if (transactionIdPrefix != null) {
 			factory.setTransactionIdPrefix(transactionIdPrefix);
@@ -123,9 +133,18 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public KafkaAdmin kafkaAdmin() {
-		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
+		Map<String, Object> adminConfig = applyEmbeddedBrokersIfAny(this.properties.buildAdminProperties());
+		KafkaAdmin kafkaAdmin = new KafkaAdmin(adminConfig);
 		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailFast());
 		return kafkaAdmin;
+	}
+
+	private Map<String, Object> applyEmbeddedBrokersIfAny(Map<String, Object> properties) {
+		String embeddedBrokerAddresses = this.environment.getProperty("spring.embedded.kafka.brokers");
+		if (embeddedBrokerAddresses != null) {
+			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, embeddedBrokerAddresses);
+		}
+		return properties;
 	}
 
 }
