@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeoutException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -122,8 +123,9 @@ public class ConcurrentCompositeHealthIndicatorTest {
 		Health result = composite.health();
 		assertThat(result.getDetails()).hasSize(1);
 		assertThat(result.getDetails()).containsEntry("db",
-				new Health.Builder().down().withException(
-						new IllegalStateException("Health check timed out after PT0S"))
+				Health.down()
+						.withDetail("error", TimeoutException.class.getName()
+								+ ": health check timed out after " + Duration.ZERO)
 						.build());
 
 	}
