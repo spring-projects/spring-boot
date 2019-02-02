@@ -90,6 +90,14 @@ public class CompositeHealthIndicator implements HealthIndicator {
 		return this.registry;
 	}
 
+	/**
+	 * Return the {@link HealthAggregator} of this instance.
+	 * @return the aggregator for {@link HealthIndicator health indicators}
+	 */
+	public HealthAggregator getAggregator() {
+		return this.aggregator;
+	}
+
 	@Override
 	public Health health() {
 		Map<String, Health> healths = new LinkedHashMap<>();
