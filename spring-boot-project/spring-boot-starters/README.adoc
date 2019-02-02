@@ -151,6 +151,9 @@ do as they were designed before this was clarified.
 | https://sentry.io[Sentry]
 | https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
 
+| SOAP Web Services support with Apache CXF
+| https://github.com/codecentric/cxf-spring-boot-starter
+
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
