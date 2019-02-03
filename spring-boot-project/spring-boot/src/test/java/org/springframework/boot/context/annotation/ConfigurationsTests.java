@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
@@ -59,7 +60,8 @@ public class ConfigurationsTests {
 	public void getClassesShouldMergeByClassAndSort() {
 		Configurations c1 = new TestSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
-		Configurations c2 = new TestConfigurations(Arrays.asList(Short.class));
+		Configurations c2 = new TestConfigurations(
+				Collections.singletonList(Short.class));
 		Configurations c3 = new TestSortedConfigurations(
 				Arrays.asList(String.class, Integer.class));
 		Configurations c4 = new TestConfigurations(Arrays.asList(Long.class, Byte.class));

@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -209,7 +210,7 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void wrappedHandlers() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setServerCustomizers(Arrays.asList((server) -> {
+		factory.setServerCustomizers(Collections.singletonList((server) -> {
 			Handler handler = server.getHandler();
 			HandlerWrapper wrapper = new HandlerWrapper();
 			wrapper.setHandler(handler);

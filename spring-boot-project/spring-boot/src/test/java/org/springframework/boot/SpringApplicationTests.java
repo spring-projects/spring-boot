@@ -16,7 +16,6 @@
 
 package org.springframework.boot;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -347,7 +346,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		final AtomicReference<ApplicationContext> reference = new AtomicReference<>();
-		application.setInitializers(Arrays.asList(
+		application.setInitializers(Collections.singletonList(
 				(ApplicationContextInitializer<ConfigurableApplicationContext>) reference::set));
 		this.context = application.run("--foo=bar");
 		assertThat(this.context).isSameAs(reference.get());
@@ -387,7 +386,7 @@ public class SpringApplicationTests {
 			}
 
 		}
-		application.setListeners(Arrays.asList(new InitializerListener()));
+		application.setListeners(Collections.singletonList(new InitializerListener()));
 		this.context = application.run("--foo=bar");
 		assertThat(this.context).isSameAs(reference.get());
 		// Custom initializers do not switch off the defaults
