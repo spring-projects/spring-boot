@@ -22,8 +22,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -33,9 +35,11 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Jon Schneider
  * @author Phillip Webb
+ * @author raheela.aslam
  */
 @Configuration
 @ConditionalOnClass(RestTemplate.class)
+@ConditionalOnBean(RestTemplateBuilder.class)
 class RestTemplateMetricsConfiguration {
 
 	private final MetricsProperties properties;
