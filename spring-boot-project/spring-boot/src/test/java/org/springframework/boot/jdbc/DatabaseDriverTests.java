@@ -129,6 +129,8 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:firebirdsql://localhost/sample"))
 				.isEqualTo(DatabaseDriver.FIREBIRD);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:firebird://localhost/sample"))
+				.isEqualTo(DatabaseDriver.FIREBIRD);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:db2://localhost:50000/sample "))
 				.isEqualTo(DatabaseDriver.DB2);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:as400://localhost"))
