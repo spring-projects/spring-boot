@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedR
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksReport;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -136,6 +137,15 @@ public class ScheduledTasksEndpointTests {
 		});
 	}
 
+	@Test
+	public void customTriggerIsReported() {
+		run(CustomTriggerTask.class, (tasks) -> {
+			assertThat(tasks.getCron()).isEmpty();
+			assertThat(tasks.getFixedDelay()).isEmpty();
+			assertThat(tasks.getFixedRate()).hasSize(0);
+		});
+	}
+
 	private void run(Class<?> configuration, Consumer<ScheduledTasksReport> consumer) {
 		this.contextRunner.withUserConfiguration(configuration).run((context) -> consumer
 				.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
@@ -208,6 +218,17 @@ public class ScheduledTasksEndpointTests {
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 			taskRegistrar.addTriggerTask(new CronTriggerRunnable(),
 					new CronTrigger("0 0 0/6 1/1 * ?"));
+		}
+
+	}
+
+	private static class CustomTriggerTask implements SchedulingConfigurer {
+
+		@Override
+		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+			Trigger trigger = (triggerContext) -> null;
+			taskRegistrar.addTriggerTask(() -> {
+			}, trigger);
 		}
 
 	}
