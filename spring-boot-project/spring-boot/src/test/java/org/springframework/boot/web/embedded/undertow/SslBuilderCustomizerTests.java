@@ -28,7 +28,7 @@ import org.springframework.boot.web.server.WebServerException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link SslBuilderCustomizer}
@@ -60,15 +60,11 @@ public class SslBuilderCustomizerTests {
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
 				InetAddress.getLocalHost(), ssl, null);
-		try {
-			ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
-			fail();
-		}
-		catch (IllegalStateException ex) {
-			Throwable cause = ex.getCause();
-			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
-			assertThat(cause).hasMessageContaining("com.example.KeyStoreProvider");
-		}
+		assertThatIllegalStateException()
+				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer,
+						"getKeyManagers", ssl, null))
+				.withCauseInstanceOf(NoSuchProviderException.class)
+				.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
@@ -79,15 +75,11 @@ public class SslBuilderCustomizerTests {
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
 				InetAddress.getLocalHost(), ssl, null);
-		try {
-			ReflectionTestUtils.invokeMethod(customizer, "getTrustManagers", ssl, null);
-			fail();
-		}
-		catch (IllegalStateException ex) {
-			Throwable cause = ex.getCause();
-			assertThat(cause).isInstanceOf(NoSuchProviderException.class);
-			assertThat(cause).hasMessageContaining("com.example.TrustStoreProvider");
-		}
+		assertThatIllegalStateException()
+				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer,
+						"getTrustManagers", ssl, null))
+				.withCauseInstanceOf(NoSuchProviderException.class)
+				.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
 	@Test
@@ -96,15 +88,11 @@ public class SslBuilderCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
 				InetAddress.getLocalHost(), ssl, null);
-		try {
-			ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
-			fail();
-		}
-		catch (IllegalStateException ex) {
-			Throwable cause = ex.getCause();
-			assertThat(cause).isInstanceOf(WebServerException.class);
-			assertThat(cause).hasMessageContaining("Could not load key store 'null'");
-		}
+		assertThatIllegalStateException()
+				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer,
+						"getKeyManagers", ssl, null))
+				.withCauseInstanceOf(WebServerException.class)
+				.withMessageContaining("Could not load key store 'null'");
 	}
 
 }

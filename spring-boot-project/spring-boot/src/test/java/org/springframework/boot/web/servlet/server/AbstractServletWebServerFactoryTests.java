@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -911,17 +911,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
 		doWithBlockedPort((port) -> {
-			try {
+			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 				AbstractServletWebServerFactory factory = getFactory();
 				factory.setPort(port);
 				AbstractServletWebServerFactoryTests.this.webServer = factory
 						.getWebServer();
 				AbstractServletWebServerFactoryTests.this.webServer.start();
-				fail();
-			}
-			catch (RuntimeException ex) {
-				handleExceptionCausedByBlockedPort(ex, port);
-			}
+			}).satisfies((ex) -> handleExceptionCausedByBlockedPort(ex, port));
 		});
 	}
 
@@ -929,17 +925,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void portClashOfSecondaryConnectorResultsInPortInUseException()
 			throws IOException {
 		doWithBlockedPort((port) -> {
-			try {
+			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 				AbstractServletWebServerFactory factory = getFactory();
 				addConnector(port, factory);
 				AbstractServletWebServerFactoryTests.this.webServer = factory
 						.getWebServer();
 				AbstractServletWebServerFactoryTests.this.webServer.start();
-				fail();
-			}
-			catch (RuntimeException ex) {
-				handleExceptionCausedByBlockedPort(ex, port);
-			}
+			}).satisfies((ex) -> handleExceptionCausedByBlockedPort(ex, port));
 		});
 	}
 

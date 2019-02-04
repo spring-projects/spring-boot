@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link WebMvcTest} with {@link WebDriver}.
@@ -62,13 +62,8 @@ public class WebMvcTestWebDriverIntegrationTests {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		try {
-			previousWebDriver.getWindowHandle();
-			fail("Did not call quit()");
-		}
-		catch (NoSuchWindowException ex) {
-			// Expected
-		}
+		assertThatExceptionOfType(NoSuchWindowException.class)
+				.isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
 	}
 

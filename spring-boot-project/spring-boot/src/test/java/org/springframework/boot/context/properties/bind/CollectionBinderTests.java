@@ -38,7 +38,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link CollectionBinder}.
@@ -121,18 +121,16 @@ public class CollectionBinderTests {
 		source.put("foo[1]", "1");
 		source.put("foo[3]", "3");
 		this.sources.add(source);
-		try {
-			this.binder.bind("foo", INTEGER_LIST);
-			fail("No exception thrown");
-		}
-		catch (BindException ex) {
-			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-					.getCause()).getUnboundProperties();
-			assertThat(unbound).hasSize(1);
-			ConfigurationProperty property = unbound.iterator().next();
-			assertThat(property.getName().toString()).isEqualTo("foo[3]");
-			assertThat(property.getValue()).isEqualTo("3");
-		}
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo", INTEGER_LIST))
+				.satisfies((ex) -> {
+					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
+							.getCause()).getUnboundProperties();
+					assertThat(unbound).hasSize(1);
+					ConfigurationProperty property = unbound.iterator().next();
+					assertThat(property.getName().toString()).isEqualTo("foo[3]");
+					assertThat(property.getValue()).isEqualTo("3");
+				});
 	}
 
 	@Test
@@ -142,19 +140,16 @@ public class CollectionBinderTests {
 		source.put("foo[1].value", "2");
 		source.put("foo[4].value", "4");
 		this.sources.add(source);
-		try {
-			Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
-			this.binder.bind("foo", target);
-			fail("No exception thrown");
-		}
-		catch (BindException ex) {
-			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-					.getCause()).getUnboundProperties();
-			assertThat(unbound).hasSize(1);
-			ConfigurationProperty property = unbound.iterator().next();
-			assertThat(property.getName().toString()).isEqualTo("foo[4].value");
-			assertThat(property.getValue()).isEqualTo("4");
-		}
+		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo", target)).satisfies((ex) -> {
+					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
+							.getCause()).getUnboundProperties();
+					assertThat(unbound).hasSize(1);
+					ConfigurationProperty property = unbound.iterator().next();
+					assertThat(property.getName().toString()).isEqualTo("foo[4].value");
+					assertThat(property.getValue()).isEqualTo("4");
+				});
 	}
 
 	@Test

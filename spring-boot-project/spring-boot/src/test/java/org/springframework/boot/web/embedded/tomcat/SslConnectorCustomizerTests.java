@@ -43,7 +43,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -193,15 +193,10 @@ public class SslConnectorCustomizerTests {
 
 	@Test
 	public void customizeWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
-		try {
-			new SslConnectorCustomizer(new Ssl(), null)
-					.customize(this.tomcat.getConnector());
-			fail();
-		}
-		catch (Exception ex) {
-			assertThat(ex).isInstanceOf(WebServerException.class);
-			assertThat(ex).hasMessageContaining("Could not load key store 'null'");
-		}
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null)
+						.customize(this.tomcat.getConnector()))
+				.withMessageContaining("Could not load key store 'null'");
 	}
 
 	private KeyStore loadStore() throws KeyStoreException, IOException,

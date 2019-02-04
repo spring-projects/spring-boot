@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchangeDecorator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -123,19 +123,14 @@ public class HttpTraceWebFilterTests {
 	@Test
 	public void statusIsAssumedToBe500WhenChainFails()
 			throws ServletException, IOException {
-		try {
-			this.filter
-					.filter(MockServerWebExchange
-							.from(MockServerHttpRequest.get("https://api.example.com")),
-							(exchange) -> Mono.error(new RuntimeException()))
-					.block(Duration.ofSeconds(30));
-			fail();
-		}
-		catch (Exception ex) {
-			assertThat(this.repository.findAll()).hasSize(1);
-			assertThat(this.repository.findAll().get(0).getResponse().getStatus())
-					.isEqualTo(500);
-		}
+		assertThatExceptionOfType(Exception.class).isThrownBy(() -> this.filter
+				.filter(MockServerWebExchange
+						.from(MockServerHttpRequest.get("https://api.example.com")),
+						(exchange) -> Mono.error(new RuntimeException()))
+				.block(Duration.ofSeconds(30)));
+		assertThat(this.repository.findAll()).hasSize(1);
+		assertThat(this.repository.findAll().get(0).getResponse().getStatus())
+				.isEqualTo(500);
 	}
 
 }

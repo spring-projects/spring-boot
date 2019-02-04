@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
-import static org.junit.Assert.fail;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -153,14 +153,11 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	public void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
-					try {
-						ClassUtils.forName(Gson.class.getName(),
-								context.getClassLoader());
-						fail("Should have thrown a ClassNotFoundException");
-					}
-					catch (ClassNotFoundException ex) {
-						// expected
-					}
+					assertThatExceptionOfType(ClassNotFoundException.class)
+							.isThrownBy(() -> {
+								ClassUtils.forName(Gson.class.getName(),
+										context.getClassLoader());
+							});
 				});
 	}
 
