@@ -140,7 +140,7 @@ public enum DatabaseDriver {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
-			return Collections.singleton("firebirdsql");
+			return Arrays.asList("firebirdsql", "firebird");
 		}
 
 		@Override
