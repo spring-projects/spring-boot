@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -702,15 +701,13 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
-		try {
-			load(WithCustomValidatorConfiguration.class);
-			fail("Did not throw");
-		}
-		catch (Exception ex) {
-			assertThat(ex).hasCauseInstanceOf(BindException.class);
-			assertThat(ex.getCause())
-					.hasCauseExactlyInstanceOf(BindValidationException.class);
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(WithCustomValidatorConfiguration.class))
+				.satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+					assertThat(ex.getCause())
+							.hasCauseExactlyInstanceOf(BindValidationException.class);
+				});
 	}
 
 	@Test
@@ -723,15 +720,12 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
-		try {
-			load(ValidatorProperties.class);
-			fail("Did not throw");
-		}
-		catch (Exception ex) {
-			assertThat(ex).hasCauseInstanceOf(BindException.class);
-			assertThat(ex.getCause())
-					.hasCauseExactlyInstanceOf(BindValidationException.class);
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ValidatorProperties.class)).satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+					assertThat(ex.getCause())
+							.hasCauseExactlyInstanceOf(BindValidationException.class);
+				});
 	}
 
 	@Test

@@ -65,7 +65,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -277,19 +276,14 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	public void primaryConnectorPortClashThrowsIllegalStateException()
-			throws IOException {
+	public void primaryConnectorPortClashThrowsWebServerException() throws IOException {
 		doWithBlockedPort((port) -> {
 			TomcatServletWebServerFactory factory = getFactory();
 			factory.setPort(port);
-			try {
+			assertThatExceptionOfType(WebServerException.class).isThrownBy(() -> {
 				this.webServer = factory.getWebServer();
 				this.webServer.start();
-				fail();
-			}
-			catch (WebServerException ex) {
-				// Ignore
-			}
+			});
 		});
 	}
 

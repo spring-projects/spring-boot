@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DataSourceInitializerInvoker}.
@@ -178,16 +178,13 @@ public class DataSourceInitializerInvokerTests {
 
 	private void assertDataSourceNotInitialized(DataSource dataSource) {
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		try {
-			template.queryForObject("SELECT COUNT(*) from BAR", Integer.class);
-			fail("Query should have failed as BAR table does not exist");
-		}
-		catch (BadSqlGrammarException ex) {
-			SQLException sqlException = ex.getSQLException();
-			int expectedCode = -5501; // user lacks privilege or object not
-			// found
-			assertThat(sqlException.getErrorCode()).isEqualTo(expectedCode);
-		}
+		assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
+				() -> template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
+				.satisfies((ex) -> {
+					SQLException sqlException = ex.getSQLException();
+					int expectedCode = -5501; // user lacks privilege or object not found
+					assertThat(sqlException.getErrorCode()).isEqualTo(expectedCode);
+				});
 	}
 
 	@Test
