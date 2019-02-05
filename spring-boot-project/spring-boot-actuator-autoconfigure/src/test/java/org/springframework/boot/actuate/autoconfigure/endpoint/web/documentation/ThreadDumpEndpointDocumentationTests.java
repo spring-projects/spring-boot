@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Test;
 
@@ -42,6 +45,22 @@ public class ThreadDumpEndpointDocumentationTests
 
 	@Test
 	public void threadDump() throws Exception {
+		ReentrantLock lock = new ReentrantLock();
+		CountDownLatch latch = new CountDownLatch(1);
+		new Thread(() -> {
+			try {
+				lock.lock();
+				try {
+					latch.await();
+				}
+				finally {
+					lock.unlock();
+				}
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}).start();
 		this.mockMvc.perform(get("/actuator/threaddump")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("threaddump",
 						preprocessResponse(limit("threads")),
@@ -111,7 +130,7 @@ public class ThreadDumpEndpointDocumentationTests
 														+ "synchronizer.")
 												.optional().type(JsonFieldType.STRING),
 								fieldWithPath(
-										"threads.[].lockedSynchronizers.[].identifyHashCode")
+										"threads.[].lockedSynchronizers.[].identityHashCode")
 												.description(
 														"Identity hash code of the locked "
 																+ "synchronizer.")
@@ -187,6 +206,7 @@ public class ThreadDumpEndpointDocumentationTests
 										"Time in milliseconds that the thread has spent "
 												+ "waiting. -1 if thread contention "
 												+ "monitoring is disabled"))));
+		latch.countDown();
 	}
 
 	@Configuration
