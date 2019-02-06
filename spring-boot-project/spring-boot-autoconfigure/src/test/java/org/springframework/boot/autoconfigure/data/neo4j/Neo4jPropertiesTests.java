@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Michael Simons
+ * @author Gerrit Meier
  */
 public class Neo4jPropertiesTests {
 
@@ -86,6 +87,17 @@ public class Neo4jPropertiesTests {
 				"spring.data.neo4j.uri=bolt://localhost:7687");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost:7687");
+	}
+
+	@Test
+	public void boltUrisGetPassedToBoltDriver() {
+		Neo4jProperties properties = load(true,
+				"spring.data.neo4j.uris=bolt+routing://localhost:7687, bolt+routing://localhost:7697");
+		Configuration configuration = properties.createConfiguration();
+
+		String[] expectedAdditionalUris = { "bolt+routing://localhost:7687",
+				"bolt+routing://localhost:7697" };
+		assertThat(configuration.getURIS()).isEqualTo(expectedAdditionalUris);
 	}
 
 	@Test

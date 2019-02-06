@@ -4611,6 +4611,15 @@ properties, as shown in the following example:
 	spring.data.neo4j.password=secret
 ----
 
+If you want to connect to a causal cluster you have the option to provide additional
+core instances by setting the `spring.data.neo4j.uris` property.
+
+[source,properties,indent=0]
+----
+	spring.data.neo4j.uri=bolt+routing://core-server-1:7687
+	spring.data.neo4j.uris=bolt+routing://core-server-2:7687,bolt+routing://core-server-3:7687
+----
+
 You can take full control over the session creation by adding a
 `org.neo4j.ogm.config.Configuration` `@Bean`. Also, adding a `@Bean` of type
 `SessionFactory` disables the auto-configuration and gives you full control.

@@ -34,6 +34,7 @@ import org.springframework.util.ClassUtils;
  * @author Vince Bickers
  * @author Aurélien Leboulanger
  * @author Michael Simons
+ * @author Gerrit Meier
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.data.neo4j")
@@ -51,6 +52,11 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 * URI used by the driver. Auto-detected by default.
 	 */
 	private String uri;
+
+	/**
+	 * (Optional) additional core URIs used for causal cluster.
+	 */
+	private String[] uris;
 
 	/**
 	 * Login user of the server.
@@ -88,6 +94,14 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String[] getUris() {
+		return this.uris;
+	}
+
+	public void setUris(String[] uris) {
+		this.uris = uris;
 	}
 
 	public String getUsername() {
@@ -153,7 +167,10 @@ public class Neo4jProperties implements ApplicationContextAware {
 		if (this.uri != null) {
 			builder.uri(this.uri);
 		}
-		else {
+		if (this.uris != null) {
+			builder.uris(this.uris);
+		}
+		if (this.uri == null && (this.uris == null || this.uris.length == 0)) {
 			configureUriWithDefaults(builder);
 		}
 		if (this.username != null && this.password != null) {
