@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class PropertyMapperTests {
 	@Test
 	public void fromValueAsIntShouldAdaptValue() {
 		Integer result = this.map.from("123").asInt(Long::valueOf)
-				.toInstance(Integer::new);
+				.toInstance(Integer::valueOf);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -84,7 +84,7 @@ public class PropertyMapperTests {
 	@Test
 	public void asIntShouldAdaptSupplier() {
 		Integer result = this.map.from(() -> "123").asInt(Long::valueOf)
-				.toInstance(Integer::new);
+				.toInstance(Integer::valueOf);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -116,7 +116,7 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenTrueWhenValueIsTrueShouldMap() {
-		Boolean result = this.map.from(true).whenTrue().toInstance(Boolean::new);
+		Boolean result = this.map.from(true).whenTrue().toInstance(Boolean::valueOf);
 		assertThat(result).isTrue();
 	}
 
@@ -127,7 +127,7 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenFalseWhenValueIsFalseShouldMap() {
-		Boolean result = this.map.from(false).whenFalse().toInstance(Boolean::new);
+		Boolean result = this.map.from(false).whenFalse().toInstance(Boolean::valueOf);
 		assertThat(result).isFalse();
 	}
 
@@ -148,7 +148,7 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenHasTextWhenValueHasTextShouldMap() {
-		Integer result = this.map.from(123).whenHasText().toInstance(Integer::new);
+		Integer result = this.map.from(123).whenHasText().toInstance(Integer::valueOf);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -191,7 +191,7 @@ public class PropertyMapperTests {
 	public void whenWhenCombinedWithAsUsesSourceValue() {
 		Count<String> source = new Count<>(() -> "123");
 		Long result = this.map.from(source).when("123"::equals).as(Integer::valueOf)
-				.when((v) -> v == 123).as(Integer::longValue).toInstance(Long::new);
+				.when((v) -> v == 123).as(Integer::longValue).toInstance(Long::valueOf);
 		assertThat(result).isEqualTo(123);
 		assertThat(source.getCount()).isOne();
 	}
