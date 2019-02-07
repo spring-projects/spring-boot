@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
@@ -1171,6 +1172,21 @@ public class SpringApplicationTests {
 						.getBean("someBean")).isEqualTo("override");
 	}
 
+	@Test
+	public void lazyInitializationIsDisabledByDefault() {
+		assertThat(new SpringApplication(LazyInitializationConfig.class)
+				.run("--spring.main.web-application-type=none")
+				.getBean(AtomicInteger.class)).hasValue(1);
+	}
+
+	@Test
+	public void lazyInitializationCanBeEnabled() {
+		assertThat(new SpringApplication(LazyInitializationConfig.class)
+				.run("--spring.main.web-application-type=none",
+						"--spring.main.lazy-initialization=true")
+				.getBean(AtomicInteger.class)).hasValue(0);
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final Class<?> propertySourceClass, final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
@@ -1433,6 +1449,29 @@ public class SpringApplicationTests {
 		@PostConstruct
 		public void fail() {
 			throw new RefreshFailureException();
+		}
+
+	}
+
+	@Configuration
+	static class LazyInitializationConfig {
+
+		@Bean
+		public AtomicInteger counter() {
+			return new AtomicInteger(0);
+		}
+
+		@Bean
+		public LazyBean lazyBean(AtomicInteger counter) {
+			return new LazyBean(counter);
+		}
+
+		static class LazyBean {
+
+			LazyBean(AtomicInteger counter) {
+				counter.incrementAndGet();
+			}
+
 		}
 
 	}

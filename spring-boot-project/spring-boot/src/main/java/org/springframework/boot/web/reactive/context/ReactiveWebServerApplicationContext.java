@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,18 +87,15 @@ public class ReactiveWebServerApplicationContext
 	private void createWebServer() {
 		ServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
-			this.serverManager = ServerManager.get(getWebServerFactory());
+			String webServerFactoryBeanName = getWebServerFactoryBeanName();
+			boolean lazyInit = getBeanFactory()
+					.getBeanDefinition(webServerFactoryBeanName).isLazyInit();
+			this.serverManager = ServerManager.get(getWebServerFactory(), lazyInit);
 		}
 		initPropertySources();
 	}
 
-	/**
-	 * Return the {@link ReactiveWebServerFactory} that should be used to create the
-	 * reactive web server. By default this method searches for a suitable bean in the
-	 * context itself.
-	 * @return a {@link ReactiveWebServerFactory} (never {@code null})
-	 */
-	protected ReactiveWebServerFactory getWebServerFactory() {
+	protected String getWebServerFactoryBeanName() {
 		// Use bean names so that we don't consider the hierarchy
 		String[] beanNames = getBeanFactory()
 				.getBeanNamesForType(ReactiveWebServerFactory.class);
@@ -113,7 +110,24 @@ public class ReactiveWebServerApplicationContext
 							+ "ReactiveWebServerFactory beans : "
 							+ StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
-		return getBeanFactory().getBean(beanNames[0], ReactiveWebServerFactory.class);
+		return beanNames[0];
+	}
+
+	protected ReactiveWebServerFactory getWebServerFactory(String factoryBeanName) {
+		return getBeanFactory().getBean(factoryBeanName, ReactiveWebServerFactory.class);
+	}
+
+	/**
+	 * Return the {@link ReactiveWebServerFactory} that should be used to create the
+	 * reactive web server. By default this method searches for a suitable bean in the
+	 * context itself.
+	 * @return a {@link ReactiveWebServerFactory} (never {@code null})
+	 * @deprecated since 2.2 in favor of {@link #getWebServerFactoryBeanName()} and
+	 * {@link #getWebServerFactory(String)}
+	 */
+	@Deprecated
+	protected ReactiveWebServerFactory getWebServerFactory() {
+		return getWebServerFactory(getWebServerFactoryBeanName());
 	}
 
 	@Override
@@ -188,6 +202,24 @@ public class ReactiveWebServerApplicationContext
 	}
 
 	/**
+	 * {@link HttpHandler} that initializes its delegate on first request.
+	 */
+	private static final class LazyHttpHandler implements HttpHandler {
+
+		private final Mono<HttpHandler> delegate;
+
+		private LazyHttpHandler(Mono<HttpHandler> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
+			return this.delegate.flatMap((handler) -> handler.handle(request, response));
+		}
+
+	}
+
+	/**
 	 * Internal class used to manage the server and the {@link HttpHandler}, taking care
 	 * not to initialize the handler too early.
 	 */
@@ -195,11 +227,14 @@ public class ReactiveWebServerApplicationContext
 
 		private final WebServer server;
 
+		private final boolean lazyInit;
+
 		private volatile HttpHandler handler;
 
-		private ServerManager(ReactiveWebServerFactory factory) {
+		private ServerManager(ReactiveWebServerFactory factory, boolean lazyInit) {
 			this.handler = this::handleUninitialized;
 			this.server = factory.getWebServer(this);
+			this.lazyInit = lazyInit;
 		}
 
 		private Mono<Void> handleUninitialized(ServerHttpRequest request,
@@ -217,8 +252,9 @@ public class ReactiveWebServerApplicationContext
 			return this.handler;
 		}
 
-		public static ServerManager get(ReactiveWebServerFactory factory) {
-			return new ServerManager(factory);
+		public static ServerManager get(ReactiveWebServerFactory factory,
+				boolean lazyInit) {
+			return new ServerManager(factory, lazyInit);
 		}
 
 		public static WebServer getWebServer(ServerManager manager) {
@@ -228,7 +264,9 @@ public class ReactiveWebServerApplicationContext
 		public static void start(ServerManager manager,
 				Supplier<HttpHandler> handlerSupplier) {
 			if (manager != null && manager.server != null) {
-				manager.handler = handlerSupplier.get();
+				manager.handler = manager.lazyInit
+						? new LazyHttpHandler(Mono.fromSupplier(handlerSupplier))
+						: handlerSupplier.get();
 				manager.server.start();
 			}
 		}

@@ -219,6 +219,13 @@
       "defaultValue": "console"
     },
     {
+      "name": "spring.main.lazy-initialization",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether initialization should be performed lazily.",
+      "defaultValue": false
+    },
+    {
       "name": "spring.main.show-banner",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",
