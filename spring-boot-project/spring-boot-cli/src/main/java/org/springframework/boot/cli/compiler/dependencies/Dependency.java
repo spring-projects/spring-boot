@@ -145,7 +145,7 @@ public final class Dependency {
 
 		Exclusion(String groupId, String artifactId) {
 			Assert.notNull(groupId, "GroupId must not be null");
-			Assert.notNull(groupId, "ArtifactId must not be null");
+			Assert.notNull(artifactId, "ArtifactId must not be null");
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 		}
