@@ -45,6 +45,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateM
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
+import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -165,7 +167,10 @@ public class MetricsIntegrationTests {
 
 		@Bean
 		public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-			return restTemplateBuilder.build();
+			MetricsRestTemplateCustomizer mockServerCustomizer = new MetricsRestTemplateCustomizer(
+					this.registry(), new DefaultRestTemplateExchangeTagsProvider(),
+					"http.client.requests");
+			return new RestTemplateBuilder(mockServerCustomizer).build();
 		}
 
 		@Bean
