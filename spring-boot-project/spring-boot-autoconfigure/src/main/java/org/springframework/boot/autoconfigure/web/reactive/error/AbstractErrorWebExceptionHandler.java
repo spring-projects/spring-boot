@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -29,11 +33,15 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpLogging;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -51,6 +59,15 @@ import org.springframework.web.util.HtmlUtils;
  */
 public abstract class AbstractErrorWebExceptionHandler
 		implements ErrorWebExceptionHandler, InitializingBean {
+
+	/**
+	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
+	 */
+	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
+			Arrays.asList("ClientAbortException", "EOFException", "EofException"));
+
+	private static final Log logger = HttpLogging
+			.forLogName(AbstractErrorWebExceptionHandler.class);
 
 	private final ApplicationContext applicationContext;
 
@@ -236,7 +253,8 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable throwable) {
-		if (exchange.getResponse().isCommitted()) {
+		if (exchange.getResponse().isCommitted()
+				|| isDisconnectedClientError(throwable)) {
 			return Mono.error(throwable);
 		}
 		this.errorAttributes.storeErrorInformation(throwable, exchange);
@@ -244,7 +262,40 @@ public abstract class AbstractErrorWebExceptionHandler
 		return getRoutingFunction(this.errorAttributes).route(request)
 				.switchIfEmpty(Mono.error(throwable))
 				.flatMap((handler) -> handler.handle(request))
+				.doOnNext((response) -> logError(request, response, throwable))
 				.flatMap((response) -> write(exchange, response));
+	}
+
+	private boolean isDisconnectedClientError(Throwable ex) {
+		String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
+		message = (message != null) ? message.toLowerCase() : "";
+		String className = ex.getClass().getSimpleName();
+		return (message.contains("broken pipe")
+				|| DISCONNECTED_CLIENT_EXCEPTIONS.contains(className));
+	}
+
+	private void logError(ServerRequest request, ServerResponse response,
+			Throwable throwable) {
+		if (logger.isDebugEnabled()) {
+			logger.debug(
+					request.exchange().getLogPrefix() + formatError(throwable, request));
+		}
+		if (response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+			logger.error(request.exchange().getLogPrefix() + "500 Server Error for "
+					+ formatRequest(request), throwable);
+		}
+	}
+
+	private String formatError(Throwable ex, ServerRequest request) {
+		String reason = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+		return "Resolved [" + reason + "] for HTTP " + request.methodName() + " "
+				+ request.path();
+	}
+
+	private String formatRequest(ServerRequest request) {
+		String rawQuery = request.uri().getRawQuery();
+		String query = StringUtils.hasText(rawQuery) ? "?" + rawQuery : "";
+		return "HTTP " + request.methodName() + " \"" + request.path() + query + "\"";
 	}
 
 	private Mono<? extends Void> write(ServerWebExchange exchange,
