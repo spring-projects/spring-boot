@@ -16,12 +16,9 @@
 
 package org.springframework.boot.actuate.trace.http.reactive;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.EnumSet;
-
-import javax.servlet.ServletException;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
@@ -33,10 +30,11 @@ import org.springframework.boot.actuate.trace.http.Include;
 import org.springframework.boot.actuate.web.trace.reactive.HttpTraceWebFilter;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebExchangeDecorator;
+import org.springframework.web.server.WebFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -56,8 +54,8 @@ public class HttpTraceWebFilterTests {
 			this.tracer, EnumSet.allOf(Include.class));
 
 	@Test
-	public void filterTracesExchange() throws ServletException, IOException {
-		this.filter.filter(
+	public void filterTracesExchange() {
+		executeFilter(
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> Mono.empty()).block(Duration.ofSeconds(30));
@@ -65,9 +63,8 @@ public class HttpTraceWebFilterTests {
 	}
 
 	@Test
-	public void filterCapturesSessionIdWhenSessionIsUsed()
-			throws ServletException, IOException {
-		this.filter.filter(
+	public void filterCapturesSessionIdWhenSessionIsUsed() {
+		executeFilter(
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> {
@@ -82,9 +79,8 @@ public class HttpTraceWebFilterTests {
 	}
 
 	@Test
-	public void filterDoesNotCaptureIdOfUnusedSession()
-			throws ServletException, IOException {
-		this.filter.filter(
+	public void filterDoesNotCaptureIdOfUnusedSession() {
+		executeFilter(
 				MockServerWebExchange
 						.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> {
@@ -97,10 +93,10 @@ public class HttpTraceWebFilterTests {
 	}
 
 	@Test
-	public void filterCapturesPrincipal() throws ServletException, IOException {
+	public void filterCapturesPrincipal() {
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
-		this.filter.filter(new ServerWebExchangeDecorator(MockServerWebExchange
+		executeFilter(new ServerWebExchangeDecorator(MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://api.example.com"))) {
 
 			@Override
@@ -120,17 +116,9 @@ public class HttpTraceWebFilterTests {
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
 
-	@Test
-	public void statusIsAssumedToBe500WhenChainFails()
-			throws ServletException, IOException {
-		assertThatExceptionOfType(Exception.class).isThrownBy(() -> this.filter
-				.filter(MockServerWebExchange
-						.from(MockServerHttpRequest.get("https://api.example.com")),
-						(exchange) -> Mono.error(new RuntimeException()))
-				.block(Duration.ofSeconds(30)));
-		assertThat(this.repository.findAll()).hasSize(1);
-		assertThat(this.repository.findAll().get(0).getResponse().getStatus())
-				.isEqualTo(500);
+	private Mono<Void> executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
+		return this.filter.filter(exchange, chain)
+				.then(Mono.defer(() -> exchange.getResponse().setComplete()));
 	}
 
 }
