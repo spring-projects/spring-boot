@@ -24,7 +24,6 @@ import java.util.Set;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.lang.Nullable;
 
 /**
  * {@link Converter} to convert from a {@link Duration} to a {@link String}.
@@ -41,8 +40,7 @@ final class DurationToStringConverter implements GenericConverter {
 	}
 
 	@Override
-	@Nullable
-	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (source == null) {
 			return null;

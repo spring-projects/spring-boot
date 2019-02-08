@@ -42,7 +42,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 /**
@@ -185,7 +184,7 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Override
-		public boolean supportsSourceType(@Nullable Class<?> sourceType) {
+		public boolean supportsSourceType(Class<?> sourceType) {
 			return true;
 		}
 

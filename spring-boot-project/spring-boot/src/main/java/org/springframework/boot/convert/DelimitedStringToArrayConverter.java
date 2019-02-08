@@ -23,7 +23,6 @@ import java.util.Set;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -53,8 +52,7 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 	}
 
 	@Override
-	@Nullable
-	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (source == null) {
 			return null;

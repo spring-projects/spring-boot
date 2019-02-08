@@ -24,7 +24,6 @@ import java.util.Set;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -43,8 +42,7 @@ final class StringToDurationConverter implements GenericConverter {
 	}
 
 	@Override
-	@Nullable
-	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;

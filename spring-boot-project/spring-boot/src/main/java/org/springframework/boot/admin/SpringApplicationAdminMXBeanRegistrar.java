@@ -40,7 +40,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -95,7 +94,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	}
 
 	@Override
-	public boolean supportsSourceType(@Nullable Class<?> sourceType) {
+	public boolean supportsSourceType(Class<?> sourceType) {
 		return true;
 	}
 
