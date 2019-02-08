@@ -42,6 +42,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
+ * @author raheela.aslam
  */
 public class RestTemplateMetricsConfigurationTests {
 
@@ -57,19 +58,12 @@ public class RestTemplateMetricsConfigurationTests {
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
-			validateRestTemplate(builder, registry);
-		});
-	}
+			MetricsRestTemplateCustomizer mockServerCustomizer = new MetricsRestTemplateCustomizer(
+					registry, new DefaultRestTemplateExchangeTagsProvider(),
+					"http.client.requests");
+			RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
 
-	@Test
-	public void restTemplateCanBeCustomizedManually() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
-			RestTemplateBuilder customBuilder = new RestTemplateBuilder()
-					.customizers(context.getBean(MetricsRestTemplateCustomizer.class));
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			validateRestTemplate(customBuilder, registry);
+			validateRestTemplate(builder, registry);
 		});
 	}
 
@@ -104,7 +98,11 @@ public class RestTemplateMetricsConfigurationTests {
 	private MeterRegistry getInitializedMeterRegistry(
 			AssertableApplicationContext context) {
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
-		RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+		MetricsRestTemplateCustomizer mockServerCustomizer = new MetricsRestTemplateCustomizer(
+				registry, new DefaultRestTemplateExchangeTagsProvider(),
+				"http.client.requests");
+		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
+		RestTemplate restTemplate = builder.build();
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 		for (int i = 0; i < 3; i++) {
 			server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
@@ -137,8 +135,6 @@ public class RestTemplateMetricsConfigurationTests {
 	@Test
 	public void backsOffWhenRestTemplateBuilderIsMissing() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(
-						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
 						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
