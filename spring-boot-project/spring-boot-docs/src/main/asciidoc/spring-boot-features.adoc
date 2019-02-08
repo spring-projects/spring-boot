@@ -836,6 +836,26 @@ negated profiles may match.
 YAML files cannot be loaded by using the `@PropertySource` annotation. So, in the case
 that you need to load values that way, you need to use a properties file.
 
+Using the multi YAML document syntax in profile-specific YAML files can lead to unexpected
+behavior. For example, consider the following config in a file called `application-dev.yml`,
+with the `dev` profile being active:
+
+[source,yaml,indent=0]
+----
+	server:
+	  port: 8000
+	---
+	spring:
+	  profiles: !test
+	  security:
+	    user:
+	      password: weak
+----
+
+In the example above, profile negation and profile expressions will not behave as expected.
+We recommend that you don't combine profile-specific YAML files and multiple YAML documents and stick
+to using only one of them.
+
 
 
 [[boot-features-external-config-typesafe-configuration-properties]]
