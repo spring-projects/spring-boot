@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public class ConditionalOnExpressionTests {
 		return metadata;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("false")
 	protected static class MissingConfiguration {
 
@@ -90,7 +90,7 @@ public class ConditionalOnExpressionTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true")
 	protected static class BasicConfiguration {
 
@@ -101,7 +101,7 @@ public class ConditionalOnExpressionTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true ? null : false")
 	protected static class NullConfiguration {
 

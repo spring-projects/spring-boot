@@ -62,7 +62,7 @@ public class SessionsEndpointAutoConfigurationTests {
 						.doesNotHaveBean(SessionsEndpoint.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SessionConfiguration {
 
 		@Bean

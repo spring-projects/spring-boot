@@ -113,7 +113,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 		return embeddedKafka.getEmbeddedKafka().getBrokersAsString();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class KafkaConfig {
 
 		@Bean
@@ -128,7 +128,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
 	static class KafkaStreamsConfig {
 

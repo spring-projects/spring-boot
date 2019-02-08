@@ -38,7 +38,7 @@ import org.springframework.integration.graph.IntegrationGraphServer;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(IntegrationGraphServer.class)
 @ConditionalOnBean(IntegrationConfigurationBeanFactoryPostProcessor.class)
 @ConditionalOnEnabledEndpoint(endpoint = IntegrationGraphEndpoint.class)

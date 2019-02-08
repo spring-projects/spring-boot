@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class JettyMetricsAutoConfigurationTests {
 						.hasBean("customJettyServerThreadPoolMetricsBinder"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MeterRegistryConfiguration {
 
 		@Bean
@@ -110,7 +110,7 @@ public class JettyMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletWebServerConfiguration {
 
 		@Bean
@@ -120,7 +120,7 @@ public class JettyMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ReactiveWebServerConfiguration {
 
 		@Bean
@@ -135,7 +135,7 @@ public class JettyMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJettyServerThreadPoolMetricsBinder {
 
 		@Bean

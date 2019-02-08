@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,14 @@ import org.springframework.core.io.Resource;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastClient.class)
 @ConditionalOnMissingBean(HazelcastInstance.class)
 class HazelcastClientConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.client.config";
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ClientConfig.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastClientConfigFileConfiguration {
@@ -60,7 +60,7 @@ class HazelcastClientConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(ClientConfig.class)
 	static class HazelcastClientConfigConfiguration {
 

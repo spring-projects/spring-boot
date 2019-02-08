@@ -93,7 +93,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	public static class Config {
 

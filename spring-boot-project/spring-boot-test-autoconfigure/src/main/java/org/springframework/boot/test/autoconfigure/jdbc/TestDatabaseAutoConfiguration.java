@@ -53,7 +53,7 @@ import org.springframework.util.ObjectUtils;
  * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public class TestDatabaseAutoConfiguration {
 

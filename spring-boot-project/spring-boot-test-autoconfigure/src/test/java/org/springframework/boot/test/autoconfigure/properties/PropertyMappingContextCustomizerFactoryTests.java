@@ -124,7 +124,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TypeMappingAnnotation
 	static class ConfigMapping {
 

@@ -44,7 +44,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(HttpMessageConvertersAutoConfiguration.class)
 @ConditionalOnClass(RestTemplate.class)
 @Conditional(NotReactiveWebApplicationCondition.class)

@@ -45,7 +45,7 @@ import org.springframework.security.web.server.WebFilterChainProxy;
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })
 @ConditionalOnMissingBean({ SecurityWebFilterChain.class, WebFilterChainProxy.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)

@@ -70,7 +70,7 @@ public class LoggersEndpointAutoConfigurationTests {
 						.doesNotHaveBean(LoggersEndpoint.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class LoggingConfiguration {
 
 		@Bean

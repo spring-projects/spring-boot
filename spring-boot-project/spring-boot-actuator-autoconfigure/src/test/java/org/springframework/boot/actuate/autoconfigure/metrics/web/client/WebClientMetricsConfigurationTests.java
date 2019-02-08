@@ -128,7 +128,7 @@ public class WebClientMetricsConfigurationTests {
 		return builder.clientConnector(connector).build();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTagsProviderConfig {
 
 		@Bean

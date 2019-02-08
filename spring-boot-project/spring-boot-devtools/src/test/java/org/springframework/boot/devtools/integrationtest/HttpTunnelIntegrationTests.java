@@ -94,7 +94,7 @@ public class HttpTunnelIntegrationTests {
 		tunnelContext.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class ServerConfiguration {
 
@@ -128,7 +128,7 @@ public class HttpTunnelIntegrationTests {
 
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	static class TunnelConfiguration {
 
 		@Bean

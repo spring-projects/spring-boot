@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class ConditionalOnNotWebApplicationTests {
 						.containsExactly(entry("none", "none")));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ReactiveApplicationConfig {
 
 		@Bean
@@ -77,7 +77,7 @@ public class ConditionalOnNotWebApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnNotWebApplication
 	protected static class NotWebApplicationConfiguration {
 

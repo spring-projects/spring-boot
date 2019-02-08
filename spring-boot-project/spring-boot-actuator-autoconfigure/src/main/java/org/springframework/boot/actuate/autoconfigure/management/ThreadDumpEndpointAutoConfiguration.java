@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnEnabledEndpoint(endpoint = ThreadDumpEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = ThreadDumpEndpoint.class)
 public class ThreadDumpEndpointAutoConfiguration {

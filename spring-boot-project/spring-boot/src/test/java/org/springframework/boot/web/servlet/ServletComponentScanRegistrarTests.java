@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,37 +133,37 @@ public class ServletComponentScanRegistrarTests {
 				"com.example.bar");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan({ "com.example.foo", "com.example.bar" })
 	static class ValuePackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackages = { "com.example.foo", "com.example.bar" })
 	static class BasePackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackages = "com.example.baz")
 	static class AdditionalPackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackageClasses = ServletComponentScanRegistrarTests.class)
 	static class BasePackageClasses {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(value = "com.example.foo", basePackages = "com.example.bar")
 	static class ValueAndBasePackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan
 	static class NoBasePackages {
 

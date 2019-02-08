@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Vladimir Tsanev
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnInitializedRestarter
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class LocalDevToolsAutoConfiguration {
@@ -60,7 +60,7 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local LiveReload configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
@@ -89,10 +89,9 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local Restart Configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
-	static class RestartConfiguration
-			implements ApplicationListener<ClassPathChangedEvent> {
+	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;
 
@@ -100,20 +99,25 @@ public class LocalDevToolsAutoConfiguration {
 			this.properties = properties;
 		}
 
-		@Override
-		public void onApplicationEvent(ClassPathChangedEvent event) {
-			if (event.isRestartRequired()) {
-				Restarter.getInstance().restart(
-						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
-			}
+		@Bean
+		public ApplicationListener<ClassPathChangedEvent> restartingClassPathChangedEventListener(
+				FileSystemWatcherFactory fileSystemWatcherFactory) {
+			return (event) -> {
+				if (event.isRestartRequired()) {
+					Restarter.getInstance().restart(
+							new FileWatchingFailureHandler(fileSystemWatcherFactory));
+				}
+			};
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
+		public ClassPathFileSystemWatcher classPathFileSystemWatcher(
+				FileSystemWatcherFactory fileSystemWatcherFactory,
+				ClassPathRestartStrategy classPathRestartStrategy) {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
-					fileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+					fileSystemWatcherFactory, classPathRestartStrategy, urls);
 			watcher.setStopWatcherOnRestart(true);
 			return watcher;
 		}

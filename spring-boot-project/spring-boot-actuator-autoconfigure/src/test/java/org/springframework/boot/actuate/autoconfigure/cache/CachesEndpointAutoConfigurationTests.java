@@ -71,7 +71,7 @@ public class CachesEndpointAutoConfigurationTests {
 						.doesNotHaveBean(CachesEndpoint.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CacheConfiguration {
 
 		@Bean

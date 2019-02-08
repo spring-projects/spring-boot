@@ -217,7 +217,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	public static class ServletContextAwareEmbeddedConfiguration
 			implements ServletContextAware {
@@ -245,7 +245,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerConfiguration {
 
 		@Bean
@@ -255,7 +255,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	public static class ServletContextAwareConfiguration implements ServletContextAware {
 

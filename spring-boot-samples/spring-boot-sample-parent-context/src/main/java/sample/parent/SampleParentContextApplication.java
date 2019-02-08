@@ -40,7 +40,7 @@ public class SampleParentContextApplication {
 				.child(SampleParentContextApplication.class).run(args);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@EnableConfigurationProperties(ServiceProperties.class)
 	protected static class Parent {

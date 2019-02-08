@@ -139,7 +139,7 @@ public class HypermediaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	static class EnableHypermediaSupportConfig {
 

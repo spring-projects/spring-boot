@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class ConditionalOnMissingClassTests {
 		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClassTests")
 	protected static class BasicConfiguration {
 
@@ -60,7 +60,7 @@ public class ConditionalOnMissingClassTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("FOO")
 	protected static class MissingConfiguration {
 
@@ -71,7 +71,7 @@ public class ConditionalOnMissingClassTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FooConfiguration {
 
 		@Bean

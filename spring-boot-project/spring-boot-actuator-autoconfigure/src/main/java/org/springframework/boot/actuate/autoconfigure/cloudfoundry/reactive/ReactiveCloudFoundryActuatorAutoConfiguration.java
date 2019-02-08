@@ -66,7 +66,7 @@ import org.springframework.web.server.WebFilter;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter(HealthEndpointAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -135,7 +135,7 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		return corsConfiguration;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MatcherSecurityWebFilterChain.class)
 	static class IgnoredPathsSecurityConfiguration {
 

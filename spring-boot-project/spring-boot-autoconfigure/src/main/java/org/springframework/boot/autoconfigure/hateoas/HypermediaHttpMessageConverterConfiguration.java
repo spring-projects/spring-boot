@@ -42,7 +42,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class HypermediaHttpMessageConverterConfiguration {
 
 	@Bean

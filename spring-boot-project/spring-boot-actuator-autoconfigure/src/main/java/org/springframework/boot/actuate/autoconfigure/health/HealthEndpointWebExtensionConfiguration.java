@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HealthIndicatorProperties.class)
 @ConditionalOnEnabledEndpoint(endpoint = HealthEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = HealthEndpoint.class)
@@ -68,7 +68,7 @@ class HealthEndpointWebExtensionConfiguration {
 				properties.getShowDetails(), properties.getRoles());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnSingleCandidate(ReactiveHealthIndicatorRegistry.class)
 	static class ReactiveWebHealthConfiguration {
@@ -89,7 +89,7 @@ class HealthEndpointWebExtensionConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class ServletWebHealthConfiguration {
 

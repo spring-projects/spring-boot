@@ -183,7 +183,7 @@ public class TaskExecutionAutoConfigurationTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorBuilderConfig {
 
 		private final TaskExecutorBuilder taskExecutorBuilder = new TaskExecutorBuilder();
@@ -195,7 +195,7 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskExecutorCustomizerConfig {
 
 		@Bean
@@ -205,7 +205,7 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskDecoratorConfig {
 
 		@Bean
@@ -215,7 +215,7 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorConfig {
 
 		@Bean
@@ -225,13 +225,13 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAsync
 	static class AsyncConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class SchedulingConfiguration {
 

@@ -71,7 +71,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
@@ -82,7 +82,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class,
 			SessionRepositoryFilterConfiguration.class })
@@ -105,7 +105,7 @@ public class SessionAutoConfiguration {
 			return cookieSerializer;
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
 		@Import({ ServletSessionRepositoryImplementationValidator.class,
 				ServletSessionConfigurationImportSelector.class })
@@ -115,12 +115,12 @@ public class SessionAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 		@Import({ ReactiveSessionRepositoryImplementationValidator.class,
 				ReactiveSessionConfigurationImportSelector.class })

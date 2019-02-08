@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,7 +156,7 @@ public class ConditionalOnSingleCandidateTests {
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
 
@@ -167,7 +167,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(value = String.class, search = SearchStrategy.ANCESTORS)
 	protected static class OnBeanSingleCandidateInAncestorsConfiguration {
 
@@ -178,19 +178,19 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(value = String.class, type = "java.lang.String")
 	protected static class OnBeanSingleCandidateTwoTypesConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate
 	protected static class OnBeanSingleCandidateNoTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FooConfiguration {
 
 		@Bean
@@ -200,7 +200,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FooPrimaryConfiguration {
 
 		@Bean
@@ -211,7 +211,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class BarConfiguration {
 
 		@Bean
@@ -221,7 +221,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class BarPrimaryConfiguration {
 
 		@Bean

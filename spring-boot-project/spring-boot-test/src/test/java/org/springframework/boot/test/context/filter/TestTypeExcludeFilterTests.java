@@ -110,7 +110,7 @@ public class TestTypeExcludeFilterTests {
 		return this.metadataReaderFactory.getMetadataReader(source.getName());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class NestedConfig {
 
 	}

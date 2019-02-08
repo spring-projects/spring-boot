@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -793,25 +793,25 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 				"defaultCacheConfig");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class DefaultCacheConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	@Import(CacheManagerCustomizersConfiguration.class)
 	static class DefaultCacheAndCustomizersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class GenericCacheConfiguration {
 
@@ -827,14 +827,14 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ GenericCacheConfiguration.class,
 			CacheManagerCustomizersConfiguration.class })
 	static class GenericCacheAndCustomizersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	@Import({ HazelcastAutoConfiguration.class,
 			CacheManagerCustomizersConfiguration.class })
@@ -842,7 +842,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CouchbaseCacheConfiguration {
 
@@ -856,14 +856,14 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ CouchbaseCacheConfiguration.class,
 			CacheManagerCustomizersConfiguration.class })
 	static class CouchbaseCacheAndCustomizersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class RedisConfiguration {
 
@@ -874,7 +874,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(RedisConfiguration.class)
 	static class RedisWithCacheConfigurationConfiguration {
 
@@ -887,13 +887,13 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ RedisConfiguration.class, CacheManagerCustomizersConfiguration.class })
 	static class RedisWithCustomizersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class JCacheCustomConfiguration {
 
@@ -904,7 +904,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class JCacheCustomCacheManager {
 
@@ -917,7 +917,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class JCacheWithCustomizerConfiguration {
 
@@ -935,7 +935,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class EhCacheCustomCacheManager {
 
@@ -950,7 +950,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class HazelcastCustomHazelcastInstance {
 
@@ -961,7 +961,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class InfinispanCustomConfiguration {
 
@@ -974,7 +974,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CustomCacheManagerConfiguration {
 
@@ -985,7 +985,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CustomCacheManagerFromSupportConfiguration
 			extends CachingConfigurerSupport {
@@ -999,7 +999,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CustomCacheResolverFromSupportConfiguration
 			extends CachingConfigurerSupport {
@@ -1014,7 +1014,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class SpecificCacheResolverConfiguration {
 
@@ -1025,7 +1025,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CaffeineCacheBuilderConfiguration {
 
@@ -1036,7 +1036,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CaffeineCacheSpecConfiguration {
 
@@ -1047,7 +1047,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CacheManagerPostProcessorConfiguration {
 

@@ -489,12 +489,12 @@ public class ArtemisAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class DestinationConfiguration {
 
 		@Bean
@@ -517,7 +517,7 @@ public class ArtemisAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomJmsConfiguration {
 
 		@Bean
@@ -532,7 +532,7 @@ public class ArtemisAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomArtemisConfiguration {
 
 		@Bean

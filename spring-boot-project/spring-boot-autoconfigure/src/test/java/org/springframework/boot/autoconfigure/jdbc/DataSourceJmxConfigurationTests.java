@@ -191,7 +191,7 @@ public class DataSourceJmxConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceProxyConfiguration {
 
 		@Bean
@@ -213,7 +213,7 @@ public class DataSourceJmxConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceDelegateConfiguration {
 
 		@Bean

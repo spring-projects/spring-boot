@@ -109,7 +109,7 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 				"management.metrics.export.dynatrace.device-id=test");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -119,7 +119,7 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
@@ -141,7 +141,7 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 

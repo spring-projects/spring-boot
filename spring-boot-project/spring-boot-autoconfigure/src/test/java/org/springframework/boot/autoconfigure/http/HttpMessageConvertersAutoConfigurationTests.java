@@ -306,7 +306,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		assertThat(converters.getConverters()).contains(converter);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonObjectMapperConfig {
 
 		@Bean
@@ -316,7 +316,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonObjectMapperBuilderConfig {
 
 		@Bean
@@ -331,7 +331,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonConverterConfig {
 
 		@Bean
@@ -344,7 +344,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class GsonConverterConfig {
 
 		@Bean
@@ -356,7 +356,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JsonbConverterConfig {
 
 		@Bean
@@ -368,7 +368,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class StringConverterConfig {
 
 		@Bean
@@ -378,7 +378,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TypeConstrainedConverterConfiguration {
 
 		@Bean

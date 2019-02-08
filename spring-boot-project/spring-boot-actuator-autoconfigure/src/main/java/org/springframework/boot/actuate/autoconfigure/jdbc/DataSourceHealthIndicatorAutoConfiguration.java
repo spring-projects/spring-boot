@@ -56,7 +56,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  * @author Arthur Kalimullin
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")

@@ -80,7 +80,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
@@ -100,7 +100,7 @@ public class FlywayAutoConfiguration {
 		return new FlywaySchemaManagementProvider(flyways);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })
 	public static class FlywayConfiguration {
@@ -274,7 +274,7 @@ public class FlywayAutoConfiguration {
 		 * Additional configuration to ensure that {@link EntityManagerFactory} beans
 		 * depend on the {@code flywayInitializer} bean.
 		 */
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 		@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 		protected static class FlywayInitializerJpaDependencyConfiguration
@@ -290,7 +290,7 @@ public class FlywayAutoConfiguration {
 		 * Additional configuration to ensure that {@link JdbcOperations} beans depend on
 		 * the {@code flywayInitializer} bean.
 		 */
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(JdbcOperations.class)
 		@ConditionalOnBean(JdbcOperations.class)
 		protected static class FlywayInitializerJdbcOperationsDependencyConfiguration
@@ -307,7 +307,7 @@ public class FlywayAutoConfiguration {
 		 * Additional configuration to ensure that {@link NamedParameterJdbcOperations}
 		 * beans depend on the {@code flywayInitializer} bean.
 		 */
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(NamedParameterJdbcOperations.class)
 		@ConditionalOnBean(NamedParameterJdbcOperations.class)
 		protected static class FlywayInitializerNamedParameterJdbcOperationsDependencyConfiguration
@@ -325,7 +325,7 @@ public class FlywayAutoConfiguration {
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans depend
 	 * on the {@code flyway} bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	protected static class FlywayJpaDependencyConfiguration
@@ -341,7 +341,7 @@ public class FlywayAutoConfiguration {
 	 * Additional configuration to ensure that {@link JdbcOperations} beans depend on the
 	 * {@code flyway} bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JdbcOperations.class)
 	@ConditionalOnBean(JdbcOperations.class)
 	protected static class FlywayJdbcOperationsDependencyConfiguration
@@ -357,7 +357,7 @@ public class FlywayAutoConfiguration {
 	 * Additional configuration to ensure that {@link NamedParameterJdbcOperations} beans
 	 * depend on the {@code flyway} bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(NamedParameterJdbcOperations.class)
 	@ConditionalOnBean(NamedParameterJdbcOperations.class)
 	protected static class FlywayNamedParameterJdbcOperationsDependencyConfiguration

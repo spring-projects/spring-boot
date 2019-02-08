@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Carriere-Tisseur
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
 

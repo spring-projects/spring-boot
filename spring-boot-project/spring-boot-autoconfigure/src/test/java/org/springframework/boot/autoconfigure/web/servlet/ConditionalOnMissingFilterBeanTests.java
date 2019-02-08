@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,7 +129,7 @@ public class ConditionalOnMissingFilterBeanTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WithTestFilterConfig {
 
 		@Bean
@@ -139,7 +139,7 @@ public class ConditionalOnMissingFilterBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WithoutTestFilterConfig {
 
 		@Bean
@@ -149,7 +149,7 @@ public class ConditionalOnMissingFilterBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WithoutTestFilterRegistrationConfig {
 
 		@Bean
@@ -159,7 +159,7 @@ public class ConditionalOnMissingFilterBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WithTestFilterRegistrationConfig {
 
 		@Bean
@@ -169,7 +169,7 @@ public class ConditionalOnMissingFilterBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OnMissingWithValueConfig {
 
 		@Bean
@@ -180,7 +180,7 @@ public class ConditionalOnMissingFilterBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OnMissingWithReturnTypeConfig {
 
 		@Bean
@@ -191,7 +191,7 @@ public class ConditionalOnMissingFilterBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OnMissingWithReturnRegistrationTypeConfig {
 
 		@Bean

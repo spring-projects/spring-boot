@@ -38,7 +38,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnEnabledEndpoint(endpoint = LoggersEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = LoggersEndpoint.class)
 public class LoggersEndpointAutoConfiguration {

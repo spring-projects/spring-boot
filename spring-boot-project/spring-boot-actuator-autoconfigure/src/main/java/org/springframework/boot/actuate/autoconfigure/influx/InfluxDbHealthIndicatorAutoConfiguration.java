@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Eddú Meléndez
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(InfluxDB.class)
 @ConditionalOnBean(InfluxDB.class)
 @ConditionalOnEnabledHealthIndicator("influxdb")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -432,12 +432,12 @@ public class JmsAutoConfigurationTests {
 								JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration2 {
 
 		@Bean
@@ -451,7 +451,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration3 {
 
 		@Bean
@@ -463,7 +463,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration4 implements BeanPostProcessor {
 
 		@Override
@@ -484,7 +484,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration5 {
 
 		@Bean
@@ -497,7 +497,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration6 {
 
 		@Bean
@@ -510,7 +510,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration7 {
 
 		@Bean
@@ -520,7 +520,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration8 {
 
 		@Bean
@@ -530,7 +530,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MessageConvertersConfiguration {
 
 		@Bean
@@ -546,7 +546,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class DestinationResolversConfiguration {
 
 		@Bean
@@ -562,7 +562,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration9 {
 
 		@Bean
@@ -578,7 +578,7 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration10 {
 
 		@Bean
@@ -593,13 +593,13 @@ public class JmsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJms
 	protected static class EnableJmsConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class NoEnableJmsConfiguration {
 
 	}

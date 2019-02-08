@@ -69,7 +69,7 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 						.doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WebEndpointsSupplierConfig {
 
 		@Bean

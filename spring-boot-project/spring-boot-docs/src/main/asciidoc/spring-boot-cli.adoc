@@ -428,7 +428,7 @@ features like middleware declarations, as shown in the following example:
 
 [source,groovy,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	class Application implements CommandLineRunner {
 
 		@Autowired

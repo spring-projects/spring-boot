@@ -43,7 +43,7 @@ import org.springframework.util.CollectionUtils;
  * @author Raja Kolli
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SpringEmbeddedCacheManager.class)
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)

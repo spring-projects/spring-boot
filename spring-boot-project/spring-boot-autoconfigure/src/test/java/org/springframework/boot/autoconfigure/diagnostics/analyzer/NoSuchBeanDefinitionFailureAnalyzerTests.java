@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -257,28 +257,28 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		return analysis;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(StringHandler.class)
 	protected static class StringPropertyTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(NumberHandler.class)
 	protected static class IntegerPropertyTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestTypeClassAutoConfiguration.class)
 	@Import(StringHandler.class)
 	protected static class MissingClassOnAutoConfigurationConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ TestPropertyAutoConfiguration.class,
 			TestTypeClassAutoConfiguration.class })
 	@Import(StringHandler.class)
@@ -286,21 +286,21 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestMissingBeanAutoConfiguration.class)
 	@Import(StringNameHandler.class)
 	protected static class StringMissingBeanNameConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestNullBeanConfiguration.class)
 	@Import(StringHandler.class)
 	protected static class StringNullBeanConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class TestPropertyAutoConfiguration {
 
 		@ConditionalOnProperty("spring.string.enabled")
@@ -317,7 +317,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.example.FooBar")
 	public static class TestTypeClassAutoConfiguration {
 
@@ -328,7 +328,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class TestMissingBeanAutoConfiguration {
 
 		@ConditionalOnBean(Integer.class)
@@ -339,7 +339,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class TestNullBeanConfiguration {
 
 		@Bean
@@ -349,7 +349,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class QualifiedBeanConfiguration {
 
 		@Bean

@@ -43,7 +43,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  * @author Mark Paluch
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisConnectionFactory.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("redis")

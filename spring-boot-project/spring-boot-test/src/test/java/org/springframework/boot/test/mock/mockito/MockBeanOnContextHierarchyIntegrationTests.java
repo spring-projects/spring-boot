@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,13 +60,13 @@ public class MockBeanOnContextHierarchyIntegrationTests {
 		assertThat(context.getBean(ExampleServiceCaller.class)).isNotNull();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MockBean(ExampleService.class)
 	static class ParentConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MockBean(ExampleServiceCaller.class)
 	static class ChildConfig implements ApplicationContextAware {
 

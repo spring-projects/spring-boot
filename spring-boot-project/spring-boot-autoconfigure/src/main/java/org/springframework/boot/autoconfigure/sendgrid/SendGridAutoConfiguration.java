@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SendGrid.class)
 @ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
 @EnableConfigurationProperties(SendGridProperties.class)

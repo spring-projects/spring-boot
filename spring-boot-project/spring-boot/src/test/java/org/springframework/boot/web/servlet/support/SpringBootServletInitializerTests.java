@@ -158,7 +158,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestApp {
 
 	}
@@ -191,7 +191,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
 
 	}
@@ -206,7 +206,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WithErrorPageFilterNotRegistered
 			extends SpringBootServletInitializer {
 
@@ -216,7 +216,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class ExecutableWar extends SpringBootServletInitializer {
 
 		@Bean
@@ -226,7 +226,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class Config {
 
 	}

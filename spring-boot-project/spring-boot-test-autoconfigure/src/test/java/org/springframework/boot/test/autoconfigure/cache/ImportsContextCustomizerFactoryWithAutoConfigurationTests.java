@@ -150,7 +150,7 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = ExampleEntity.class)
 	@AutoConfigurationPackage
 	static class EmptyConfig {

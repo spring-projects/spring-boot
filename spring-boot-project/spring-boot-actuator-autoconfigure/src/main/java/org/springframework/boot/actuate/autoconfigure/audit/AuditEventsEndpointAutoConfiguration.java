@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(AuditAutoConfiguration.class)
 @ConditionalOnEnabledEndpoint(endpoint = AuditEventsEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = AuditEventsEndpoint.class)

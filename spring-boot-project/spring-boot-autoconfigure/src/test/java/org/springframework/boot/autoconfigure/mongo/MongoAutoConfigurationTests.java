@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class MongoAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OptionsConfig {
 
 		@Bean
@@ -95,13 +95,13 @@ public class MongoAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SslOptionsConfig {
 
 		@Bean
-		public MongoClientOptions mongoClientOptions() {
+		public MongoClientOptions mongoClientOptions(SocketFactory socketFactory) {
 			return MongoClientOptions.builder().sslEnabled(true)
-					.socketFactory(mySocketFactory()).build();
+					.socketFactory(socketFactory).build();
 		}
 
 		@Bean
@@ -111,7 +111,7 @@ public class MongoAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FallbackMongoClientConfig {
 
 		@Bean

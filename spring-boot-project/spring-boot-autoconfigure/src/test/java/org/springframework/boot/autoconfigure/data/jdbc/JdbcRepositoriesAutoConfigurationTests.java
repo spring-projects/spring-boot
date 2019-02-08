@@ -123,7 +123,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	protected static class EmptyConfiguration {
 

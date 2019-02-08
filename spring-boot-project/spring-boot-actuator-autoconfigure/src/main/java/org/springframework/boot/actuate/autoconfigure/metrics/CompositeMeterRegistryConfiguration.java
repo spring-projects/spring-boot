@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Conditional(MultipleNonPrimaryMeterRegistriesCondition.class)
 class CompositeMeterRegistryConfiguration {
 

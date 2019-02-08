@@ -199,7 +199,7 @@ public class Neo4jPropertiesTests {
 		return this.context.getBean(Neo4jProperties.class);
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class TestConfiguration {
 

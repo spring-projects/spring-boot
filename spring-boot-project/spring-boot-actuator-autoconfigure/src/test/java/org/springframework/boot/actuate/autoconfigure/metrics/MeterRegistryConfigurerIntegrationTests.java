@@ -66,7 +66,7 @@ public class MeterRegistryConfigurerIntegrationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean

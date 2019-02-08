@@ -45,7 +45,7 @@ import org.springframework.data.cassandra.core.CassandraOperations;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, CassandraOperations.class })
 @ConditionalOnBean(CassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")

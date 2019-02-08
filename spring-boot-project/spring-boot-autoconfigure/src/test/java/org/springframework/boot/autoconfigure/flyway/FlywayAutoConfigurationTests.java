@@ -380,7 +380,7 @@ public class FlywayAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FlywayDataSourceConfiguration {
 
 		@Bean
@@ -399,7 +399,7 @@ public class FlywayAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomFlywayMigrationInitializer {
 
 		@Bean
@@ -412,7 +412,7 @@ public class FlywayAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomFlywayWithJpaConfiguration {
 
 		private final DataSource dataSource;
@@ -454,7 +454,7 @@ public class FlywayAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CallbackConfiguration {
 
 		@Bean
@@ -478,7 +478,7 @@ public class FlywayAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class LegacyCallbackConfiguration {
 
 		@Bean
@@ -495,7 +495,7 @@ public class FlywayAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConfigurationCustomizerConfiguration {
 
 		@Bean

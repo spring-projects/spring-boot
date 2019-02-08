@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class ReactiveManagementContextFactoryTests {
 		this.parent.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParentConfiguration {
 
 		@Bean
@@ -72,7 +72,7 @@ public class ReactiveManagementContextFactoryTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration1 {
 
 		@Bean
@@ -82,7 +82,7 @@ public class ReactiveManagementContextFactoryTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration2 {
 
 	}

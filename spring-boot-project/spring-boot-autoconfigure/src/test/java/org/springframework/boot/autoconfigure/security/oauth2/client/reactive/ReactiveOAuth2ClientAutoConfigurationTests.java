@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,7 +162,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 						.doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ReactiveClientRepositoryConfiguration {
 
 		@Bean
@@ -189,7 +189,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ReactiveClientRepositoryConfiguration.class)
 	static class ReactiveOAuth2AuthorizedClientServiceConfiguration {
 
@@ -202,7 +202,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
 	static class ReactiveOAuth2AuthorizedClientRepositoryConfiguration {
 

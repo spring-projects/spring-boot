@@ -61,7 +61,7 @@ public class FlywayEndpointAutoConfigurationTests {
 				(context) -> assertThat(context).doesNotHaveBean(FlywayEndpoint.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FlywayConfiguration {
 
 		@Bean

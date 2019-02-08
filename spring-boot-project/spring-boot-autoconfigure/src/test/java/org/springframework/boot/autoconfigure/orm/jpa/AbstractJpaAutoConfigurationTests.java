@@ -264,7 +264,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestTwoDataSourcesConfiguration {
 
 		@Bean
@@ -284,7 +284,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestTwoDataSourcesAndPrimaryConfiguration {
 
 		@Bean
@@ -305,13 +305,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestFilterConfiguration {
 
@@ -322,7 +322,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestFilterRegistrationConfiguration {
 
@@ -333,7 +333,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestInterceptorManualConfiguration {
 
@@ -349,7 +349,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean
 			extends TestConfiguration {
 
@@ -369,7 +369,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfigurationWithEntityManagerFactory
 			extends TestConfiguration {
 
@@ -397,7 +397,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfigurationWithTransactionManager {
 
@@ -408,7 +408,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
 	public static class TestConfigurationWithCustomPersistenceUnitManager {
 

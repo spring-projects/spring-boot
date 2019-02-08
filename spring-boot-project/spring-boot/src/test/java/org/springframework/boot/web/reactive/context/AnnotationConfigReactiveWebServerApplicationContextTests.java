@@ -161,7 +161,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		assertThat(actualHandler).isEqualTo(expectedHandler);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerConfiguration {
 
 		@Bean
@@ -171,7 +171,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class HttpHandlerConfiguration {
 
 		@Bean
@@ -181,7 +181,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class InitializationTestConfig {
 
 		private static boolean addedListener;

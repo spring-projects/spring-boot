@@ -472,7 +472,7 @@ as shown in the following example:
 	import org.springframework.boot.autoconfigure.jdbc.*;
 	import org.springframework.context.annotation.*;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 	public class MyConfiguration {
 	}
@@ -599,7 +599,7 @@ scan in your application:
 	import org.springframework.context.annotation.Configuration;
 	import org.springframework.context.annotation.Import;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@Import({ MyConfig.class, MyAnotherConfig.class })
 	public class Application {

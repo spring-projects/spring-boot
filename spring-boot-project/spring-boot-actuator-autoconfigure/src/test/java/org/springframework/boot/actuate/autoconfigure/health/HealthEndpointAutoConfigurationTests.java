@@ -102,7 +102,7 @@ public class HealthEndpointAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class HealthIndicatorConfiguration {
 
 		@Bean
@@ -114,7 +114,7 @@ public class HealthEndpointAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ReactiveHealthIndicatorConfiguration {
 
 		@Bean

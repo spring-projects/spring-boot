@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -390,7 +390,7 @@ public class ConditionalOnMissingBeanTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class OnBeanInAncestorsConfiguration {
 
 		@Bean
@@ -401,7 +401,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
 
@@ -412,7 +412,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo", value = Date.class)
 	@ConditionalOnBean(name = "foo", value = Date.class)
 	protected static class OnBeanNameAndTypeConfiguration {
@@ -424,7 +424,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FactoryBeanConfiguration {
 
 		@Bean
@@ -434,19 +434,19 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanConfiguration.class))
 	protected static class ComponentScannedFactoryBeanBeanMethodConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
 	protected static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FactoryBeanWithBeanMethodArgumentsConfiguration {
 
 		@Bean
@@ -457,7 +457,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ConcreteFactoryBeanConfiguration {
 
 		@Bean
@@ -467,7 +467,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class UnhelpfulFactoryBeanConfiguration {
 
 		@Bean
@@ -478,7 +478,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(NonspecificFactoryBeanClassAttributeRegistrar.class)
 	protected static class NonspecificFactoryBeanClassAttributeConfiguration {
 
@@ -501,7 +501,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(NonspecificFactoryBeanClassAttributeRegistrar.class)
 	protected static class NonspecificFactoryBeanStringAttributeConfiguration {
 
@@ -525,7 +525,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(FactoryBeanRegistrar.class)
 	protected static class RegisteredFactoryBeanConfiguration {
 
@@ -545,13 +545,13 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/factorybean.xml")
 	protected static class FactoryBeanXmlConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ConditionalOnFactoryBean {
 
 		@Bean
@@ -562,7 +562,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ConditionalOnIgnoredSubclass {
 
 		@Bean
@@ -573,7 +573,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ConditionalOnIgnoredSubclassByName {
 
 		@Bean
@@ -584,7 +584,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomExampleBeanConfiguration {
 
 		@Bean
@@ -594,7 +594,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(annotation = EnableScheduling.class)
 	protected static class OnAnnotationConfiguration {
 
@@ -605,7 +605,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(annotation = TestAnnotation.class)
 	protected static class OnAnnotationWithFactoryBeanConfiguration {
 
@@ -616,7 +616,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	protected static class FooConfiguration {
 
@@ -627,7 +627,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class HierarchyConsidered {
 
@@ -638,7 +638,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo", search = SearchStrategy.CURRENT)
 	protected static class HierarchyNotConsidered {
 
@@ -649,7 +649,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ExampleBeanConfiguration {
 
 		@Bean
@@ -659,7 +659,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ImpliedOnBeanMethod {
 
 		@Bean
@@ -716,7 +716,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithCustomConfig {
 
 		@Bean
@@ -726,7 +726,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithoutCustomConfig {
 
 		@Bean
@@ -736,7 +736,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithoutCustomContainerConfig {
 
 		@Bean
@@ -746,7 +746,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithCustomContainerConfig {
 
 		@Bean
@@ -756,7 +756,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
@@ -767,7 +767,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithReturnTypeConfig {
 
 		@Bean
@@ -778,7 +778,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithReturnRegistrationTypeConfig {
 
 		@Bean

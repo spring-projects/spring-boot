@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @author Raheela Aslam
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestTemplate.class)
 @ConditionalOnBean(RestTemplateBuilder.class)
 class RestTemplateMetricsConfiguration {

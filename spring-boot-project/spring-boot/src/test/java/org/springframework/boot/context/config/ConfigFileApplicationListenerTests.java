@@ -1043,50 +1043,50 @@ public class ConfigFileApplicationListenerTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class Config {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/specificlocation.properties")
 	protected static class WithPropertySource {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/${source.location}.properties")
 	protected static class WithPropertySourcePlaceholders {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource(value = "classpath:/specificlocation.properties", name = "foo")
 	protected static class WithPropertySourceAndName {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/enableprofile.properties")
 	protected static class WithPropertySourceInProfile {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/enableprofile-myprofile.properties")
 	@Profile("myprofile")
 	protected static class WithPropertySourceAndProfile {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource({ "classpath:/specificlocation.properties",
 			"classpath:/moreproperties.properties" })
 	protected static class WithPropertySourceMultipleLocations {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource(value = { "classpath:/specificlocation.properties",
 			"classpath:/moreproperties.properties" }, name = "foo")
 	protected static class WithPropertySourceMultipleLocationsAndName {

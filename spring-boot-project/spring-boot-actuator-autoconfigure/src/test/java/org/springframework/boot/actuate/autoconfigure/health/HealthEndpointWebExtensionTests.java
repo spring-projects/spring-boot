@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -421,7 +421,7 @@ public class HealthEndpointWebExtensionTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class HealthIndicatorsConfiguration {
 
 		@Bean
@@ -430,9 +430,9 @@ public class HealthEndpointWebExtensionTests {
 		}
 
 		@Bean
-		public HealthIndicator compositeHealthIndicator() {
+		public HealthIndicator compositeHealthIndicator(HealthIndicator healthIndicator) {
 			Map<String, HealthIndicator> nestedIndicators = new HashMap<>();
-			nestedIndicators.put("one", simpleHealthIndicator());
+			nestedIndicators.put("one", healthIndicator);
 			nestedIndicators.put("two", () -> Health.up().build());
 			return new CompositeHealthIndicator(new OrderedHealthAggregator(),
 					nestedIndicators);

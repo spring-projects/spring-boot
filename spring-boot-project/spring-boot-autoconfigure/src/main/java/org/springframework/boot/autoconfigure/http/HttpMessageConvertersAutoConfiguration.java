@@ -51,7 +51,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
@@ -71,7 +71,7 @@ public class HttpMessageConvertersAutoConfiguration {
 				converters.orderedStream().collect(Collectors.toList()));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(StringHttpMessageConverter.class)
 	@EnableConfigurationProperties(HttpProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {

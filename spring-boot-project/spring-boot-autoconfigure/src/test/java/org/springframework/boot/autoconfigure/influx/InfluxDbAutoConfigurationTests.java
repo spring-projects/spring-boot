@@ -94,7 +94,7 @@ public class InfluxDbAutoConfigurationTests {
 		return callFactory.readTimeoutMillis();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomOkHttpClientBuilderProviderConfig {
 
 		@Bean

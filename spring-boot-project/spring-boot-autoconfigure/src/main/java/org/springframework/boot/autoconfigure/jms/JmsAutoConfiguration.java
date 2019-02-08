@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ import org.springframework.jms.support.destination.DestinationResolver;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Message.class, JmsTemplate.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
 @Import(JmsAnnotationDrivenConfiguration.class)
 public class JmsAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JmsTemplateConfiguration {
 
 		private final JmsProperties properties;
@@ -102,7 +102,7 @@ public class JmsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JmsMessagingTemplate.class)
 	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {

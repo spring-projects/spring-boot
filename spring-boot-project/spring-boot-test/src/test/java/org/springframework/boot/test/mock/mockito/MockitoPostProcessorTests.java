@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,7 +154,7 @@ public class MockitoPostProcessorTests {
 				.isSpy()).isTrue();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MockBean(SomeInterface.class)
 	static class MockedFactoryBean {
 
@@ -165,7 +165,7 @@ public class MockitoPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MockBean(ExampleService.class)
 	static class MultipleBeans {
 
@@ -181,7 +181,7 @@ public class MockitoPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleQualifiedBeans {
 
 		@MockBean
@@ -207,7 +207,7 @@ public class MockitoPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MockPrimaryBean {
 
 		@MockBean
@@ -227,7 +227,7 @@ public class MockitoPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MockQualifiedBean {
 
 		@MockBean
@@ -248,7 +248,7 @@ public class MockitoPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SpyPrimaryBean {
 
 		@SpyBean
@@ -268,7 +268,7 @@ public class MockitoPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SpyQualifiedBean {
 
 		@SpyBean

@@ -42,7 +42,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HtmlUnitDriver.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)

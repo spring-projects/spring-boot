@@ -115,7 +115,7 @@ public class JerseySameManagementContextConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConfigWithJerseyApplicationPath {
 
 		@Bean
@@ -125,7 +125,7 @@ public class JerseySameManagementContextConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConfigWithResourceConfig {
 
 		@Bean
@@ -135,7 +135,7 @@ public class JerseySameManagementContextConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomizerConfiguration {
 
 		@Bean

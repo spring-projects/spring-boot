@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,7 +172,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 				}));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestAuthenticationManagerConfiguration {
 
 		private AuthenticationManager authenticationManager;
@@ -187,7 +187,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestUserDetailsServiceConfiguration {
 
 		@Bean
@@ -198,7 +198,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestAuthenticationProviderConfiguration {
 
 		@Bean
@@ -208,14 +208,14 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
 	protected static class TestSecurityConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
 	protected static class TestConfigWithPasswordEncoder {
 
@@ -226,7 +226,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
 	protected static class TestConfigWithClientRegistrationRepository {
 
@@ -237,7 +237,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
 	protected static class TestConfigWithAuthenticationManagerBuilder {
 

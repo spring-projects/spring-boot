@@ -45,7 +45,7 @@ import org.springframework.core.annotation.Order;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public @interface ManagementContextConfiguration {
 
 	/**

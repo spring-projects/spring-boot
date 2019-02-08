@@ -91,7 +91,7 @@ public class LiquibaseEndpointAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class LiquibaseConfiguration {
 
 		@Bean
@@ -101,7 +101,7 @@ public class LiquibaseEndpointAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceClosingLiquibaseConfiguration {
 
 		@Bean

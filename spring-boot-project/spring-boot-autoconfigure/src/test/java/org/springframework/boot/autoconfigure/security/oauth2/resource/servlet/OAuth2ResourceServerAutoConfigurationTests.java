@@ -228,13 +228,13 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 		return response;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	static class TestConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	static class JwtDecoderConfig {
 

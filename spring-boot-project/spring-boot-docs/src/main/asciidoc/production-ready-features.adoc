@@ -394,7 +394,7 @@ A typical Spring Security configuration might look something like the following 
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
@@ -430,7 +430,7 @@ following example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override

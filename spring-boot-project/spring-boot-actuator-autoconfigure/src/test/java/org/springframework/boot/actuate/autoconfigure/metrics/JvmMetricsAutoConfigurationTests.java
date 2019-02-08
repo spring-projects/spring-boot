@@ -93,7 +93,7 @@ public class JvmMetricsAutoConfigurationTests {
 						.hasBean("customClassLoaderMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmGcMetricsConfiguration {
 
 		@Bean
@@ -103,7 +103,7 @@ public class JvmMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmMemoryMetricsConfiguration {
 
 		@Bean
@@ -113,7 +113,7 @@ public class JvmMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmThreadMetricsConfiguration {
 
 		@Bean
@@ -123,7 +123,7 @@ public class JvmMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomClassLoaderMetricsConfiguration {
 
 		@Bean

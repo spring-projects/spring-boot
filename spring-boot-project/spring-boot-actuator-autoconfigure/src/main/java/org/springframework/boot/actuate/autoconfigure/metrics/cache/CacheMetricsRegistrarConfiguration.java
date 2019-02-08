@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
 class CacheMetricsRegistrarConfiguration {
 
@@ -47,7 +47,7 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final MeterRegistry registry;
 
-	private final Collection<CacheMeterBinderProvider<?>> binderProviders;
+	private final CacheMetricsRegistrar cacheMetricsRegistrar;
 
 	private final Map<String, CacheManager> cacheManagers;
 
@@ -55,13 +55,14 @@ class CacheMetricsRegistrarConfiguration {
 			Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
-		this.binderProviders = binderProviders;
 		this.cacheManagers = cacheManagers;
+		this.cacheMetricsRegistrar = new CacheMetricsRegistrar(this.registry,
+				binderProviders);
 	}
 
 	@Bean
 	public CacheMetricsRegistrar cacheMetricsRegistrar() {
-		return new CacheMetricsRegistrar(this.registry, this.binderProviders);
+		return this.cacheMetricsRegistrar;
 	}
 
 	@PostConstruct
@@ -76,7 +77,7 @@ class CacheMetricsRegistrarConfiguration {
 
 	private void bindCacheToRegistry(String beanName, Cache cache) {
 		Tag cacheManagerTag = Tag.of("cacheManager", getCacheManagerName(beanName));
-		cacheMetricsRegistrar().bindCacheToRegistry(cache, cacheManagerTag);
+		this.cacheMetricsRegistrar.bindCacheToRegistry(cache, cacheManagerTag);
 	}
 
 	/**

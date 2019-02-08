@@ -992,7 +992,7 @@ You also need to list the properties classes to register in the
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(AcmeProperties.class)
 	public class MyConfiguration {
 	}
@@ -1532,7 +1532,7 @@ example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Profile("production")
 	public class ProductionConfiguration {
 
@@ -2221,7 +2221,7 @@ If you need to add or customize converters, you can use Spring Boot's
 	import org.springframework.context.annotation.*;
 	import org.springframework.http.converter.*;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class MyConfiguration {
 
 		@Bean
@@ -2713,7 +2713,7 @@ defined by registering a `WebMvcConfigurer` bean with a customized
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class MyConfiguration {
 
 		@Bean
@@ -2771,7 +2771,7 @@ actual handling of the requests, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class RoutingConfiguration {
 
 		@Bean
@@ -2854,7 +2854,7 @@ component, as shown in the following example:
 ----
 	import org.springframework.boot.web.codec.CodecCustomizer;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class MyConfiguration {
 
 		@Bean
@@ -4871,7 +4871,7 @@ follows:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class SomeConfiguration {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
@@ -5276,7 +5276,7 @@ Then you can define a `@Configuration` class to configure the extra `Bucket` and
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class CouchbaseCacheConfiguration {
 
 		private final Cluster cluster;
@@ -5626,7 +5626,7 @@ For instance, the following example exposes another factory that uses a specific
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JmsConfiguration {
 
 		@Bean
@@ -5790,7 +5790,7 @@ specific `MessageConverter`:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RabbitConfiguration {
 
 		@Bean
@@ -7867,7 +7867,7 @@ at the same level as your application, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
 	public class BatchConfiguration { ... }
 ----
@@ -8232,13 +8232,13 @@ condition, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// Some conditions
 	public class MyAutoConfiguration {
 
 		// Auto-configured beans
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(EmbeddedAcmeService.class)
 		static class EmbeddedConfiguration {
 
@@ -8273,7 +8273,7 @@ method, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class MyAutoConfiguration {
 
 		@Bean

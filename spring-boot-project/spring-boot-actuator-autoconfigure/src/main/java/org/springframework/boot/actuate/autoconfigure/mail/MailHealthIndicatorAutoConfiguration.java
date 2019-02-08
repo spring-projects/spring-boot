@@ -40,7 +40,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Johannes Edmeier
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JavaMailSenderImpl.class)
 @ConditionalOnBean(JavaMailSenderImpl.class)
 @ConditionalOnEnabledHealthIndicator("mail")

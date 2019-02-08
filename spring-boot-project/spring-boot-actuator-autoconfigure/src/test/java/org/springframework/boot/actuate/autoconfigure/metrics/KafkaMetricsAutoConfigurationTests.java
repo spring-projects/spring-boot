@@ -64,7 +64,7 @@ public class KafkaMetricsAutoConfigurationTests {
 						.hasBean("customKafkaConsumerMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomKafkaConsumerMetricsConfiguration {
 
 		@Bean

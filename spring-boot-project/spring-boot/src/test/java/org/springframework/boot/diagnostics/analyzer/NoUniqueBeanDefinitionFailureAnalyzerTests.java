@@ -136,7 +136,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).contains("xmlTestBean");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ComponentScan(basePackageClasses = TestBean.class)
 	@ImportResource("/org/springframework/boot/diagnostics/analyzer/nounique/producer.xml")
 	static class DuplicateBeansProducer {
@@ -153,7 +153,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParentProducer {
 
 		@Bean
@@ -163,7 +163,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FieldConsumer {
 
 		@SuppressWarnings("unused")
@@ -172,7 +172,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ObjectProviderConstructorConsumer {
 
 		ObjectProviderConstructorConsumer(ObjectProvider<TestBean> objectProvider) {
@@ -181,7 +181,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConstructorConsumer {
 
 		ConstructorConsumer(TestBean testBean) {
@@ -190,7 +190,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MethodConsumer {
 
 		@Bean
@@ -200,7 +200,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ObjectProviderMethodConsumer {
 
 		@Bean
@@ -211,7 +211,7 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("/org/springframework/boot/diagnostics/analyzer/nounique/consumer.xml")
 	static class XmlConsumer {
 

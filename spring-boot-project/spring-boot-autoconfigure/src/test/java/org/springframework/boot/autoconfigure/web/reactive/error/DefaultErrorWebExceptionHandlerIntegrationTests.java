@@ -317,7 +317,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class Application {
 
 		@RestController

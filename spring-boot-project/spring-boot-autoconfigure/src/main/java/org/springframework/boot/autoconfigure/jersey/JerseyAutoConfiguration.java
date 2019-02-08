@@ -76,7 +76,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -203,7 +203,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JacksonResourceConfigCustomizer {
 
 		private static final String JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME = "com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,12 +53,13 @@ public class InfoEndpointWebIntegrationTests {
 				.jsonPath("beanName2.key22").isEqualTo("value22");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class TestConfiguration {
 
 		@Bean
-		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(Arrays.asList(beanName1(), beanName2()));
+		public InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
+			return new InfoEndpoint(
+					infoContributors.orderedStream().collect(Collectors.toList()));
 		}
 
 		@Bean

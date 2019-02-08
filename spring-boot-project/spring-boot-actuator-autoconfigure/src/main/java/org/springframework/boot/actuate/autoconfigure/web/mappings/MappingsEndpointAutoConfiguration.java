@@ -44,7 +44,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MappingsEndpointAutoConfiguration {
 
 	@Bean
@@ -57,7 +57,7 @@ public class MappingsEndpointAutoConfiguration {
 				applicationContext);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class ServletWebConfiguration {
 
@@ -71,7 +71,7 @@ public class MappingsEndpointAutoConfiguration {
 			return new FiltersMappingDescriptionProvider();
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(DispatcherServlet.class)
 		@ConditionalOnBean(DispatcherServlet.class)
 		static class SpringMvcConfiguration {
@@ -85,7 +85,7 @@ public class MappingsEndpointAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnClass(DispatcherHandler.class)
 	@ConditionalOnBean(DispatcherHandler.class)

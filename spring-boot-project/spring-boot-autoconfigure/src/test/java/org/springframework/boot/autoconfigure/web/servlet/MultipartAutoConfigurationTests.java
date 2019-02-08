@@ -255,12 +255,12 @@ public class MultipartAutoConfigurationTests {
 		assertThat(restTemplate.getForObject(url, String.class)).isEqualTo("Hello");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerWithNothing {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerWithNoMultipartJetty {
 
 		@Bean
@@ -275,7 +275,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerWithNoMultipartUndertow {
 
 		@Bean
@@ -290,7 +290,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class })
 	@EnableConfigurationProperties(MultipartProperties.class)
@@ -305,7 +305,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerWithNoMultipartTomcat {
 
 		@Bean
@@ -320,7 +320,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerWithEverythingJetty {
 
 		@Bean
@@ -340,7 +340,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	public static class WebServerWithEverythingTomcat {
 
@@ -361,7 +361,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	public static class WebServerWithEverythingUndertow {
 
@@ -382,7 +382,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WebServerWithCustomMultipartResolver {
 
 		@Bean
@@ -392,7 +392,7 @@ public class MultipartAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class ContainerWithCommonsMultipartResolver {
 
 		@Bean

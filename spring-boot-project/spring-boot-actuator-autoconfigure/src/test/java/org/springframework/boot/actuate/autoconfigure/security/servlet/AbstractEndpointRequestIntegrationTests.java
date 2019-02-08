@@ -96,7 +96,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -167,7 +167,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SecurityConfiguration {
 
 		@Bean

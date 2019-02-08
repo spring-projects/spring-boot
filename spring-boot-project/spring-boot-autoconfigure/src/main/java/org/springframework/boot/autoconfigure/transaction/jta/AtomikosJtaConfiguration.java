@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ AtomikosProperties.class, JtaProperties.class })
 @ConditionalOnClass({ JtaTransactionManager.class, UserTransactionManager.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
@@ -117,7 +117,7 @@ class AtomikosJtaConfiguration {
 		return jtaTransactionManager;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Message.class)
 	static class AtomikosJtaJmsConfiguration {
 

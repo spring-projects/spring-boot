@@ -167,7 +167,7 @@ public class ScheduledTasksEndpointTests {
 				.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class BaseConfiguration {
 

@@ -72,7 +72,7 @@ public class JerseyAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ResourceConfigConfiguration {
 
 		@Bean
@@ -82,7 +82,7 @@ public class JerseyAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RequestContextFilterConfiguration {
 
 		@Bean
@@ -92,7 +92,7 @@ public class JerseyAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RequestContextFilterRegistrationConfiguration {
 
 		@Bean

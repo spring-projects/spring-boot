@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestClient.class)
 @EnableConfigurationProperties(RestClientProperties.class)
 public class RestClientAutoConfiguration {
@@ -73,7 +73,7 @@ public class RestClientAutoConfiguration {
 		return builder;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RestHighLevelClient.class)
 	public static class RestHighLevelClientConfiguration {
 

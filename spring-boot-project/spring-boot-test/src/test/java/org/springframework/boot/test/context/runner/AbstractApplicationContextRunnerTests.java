@@ -178,7 +178,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		throw new IOException(message);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FailingConfig {
 
 		@Bean
@@ -188,7 +188,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooConfig {
 
 		@Bean
@@ -198,7 +198,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BarConfig {
 
 		@Bean
@@ -208,7 +208,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(FilteredClassLoaderCondition.class)
 	static class ConditionalConfig {
 

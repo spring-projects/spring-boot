@@ -71,13 +71,13 @@ public class OnBeanConditionTypeDeductionFailureTests {
 		return null;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(OnMissingBeanImportSelector.class)
 	static class ImportingConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OnMissingBeanConfiguration {
 
 		@Bean

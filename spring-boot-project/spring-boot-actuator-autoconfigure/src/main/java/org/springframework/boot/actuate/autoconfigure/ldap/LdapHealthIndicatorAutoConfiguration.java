@@ -41,7 +41,7 @@ import org.springframework.ldap.core.LdapOperations;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(LdapOperations.class)
 @ConditionalOnBean(LdapOperations.class)
 @ConditionalOnEnabledHealthIndicator("ldap")

@@ -144,7 +144,7 @@ public class RestTemplateAutoConfigurationTests {
 						.doesNotHaveBean(RestTemplateBuilder.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RestTemplateConfig {
 
 		@Bean
@@ -154,7 +154,7 @@ public class RestTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DirtyRestTemplateConfig {
 
 		@Bean
@@ -185,7 +185,7 @@ public class RestTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomRestTemplateBuilderConfig {
 
 		@Bean
@@ -196,7 +196,7 @@ public class RestTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RestTemplateCustomizerConfig {
 
 		@Bean

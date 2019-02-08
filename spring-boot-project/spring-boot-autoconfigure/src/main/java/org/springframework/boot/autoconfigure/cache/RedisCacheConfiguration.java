@@ -45,7 +45,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
  * @author Ryon Day
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisConnectionFactory.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @ConditionalOnBean(RedisConnectionFactory.class)

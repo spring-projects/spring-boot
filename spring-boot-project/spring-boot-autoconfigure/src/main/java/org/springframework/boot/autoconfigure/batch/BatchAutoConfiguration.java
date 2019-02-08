@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)

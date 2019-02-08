@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class ResourceConditionTests {
 		this.context = applicationContext;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(DefaultLocationResourceCondition.class)
 	static class DefaultLocationConfiguration {
 
@@ -82,7 +82,7 @@ public class ResourceConditionTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(UnknownDefaultLocationResourceCondition.class)
 	static class UnknownDefaultLocationConfiguration {
 

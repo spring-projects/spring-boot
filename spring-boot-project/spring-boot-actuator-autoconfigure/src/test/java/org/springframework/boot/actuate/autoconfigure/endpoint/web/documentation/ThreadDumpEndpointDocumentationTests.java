@@ -210,7 +210,7 @@ public class ThreadDumpEndpointDocumentationTests
 		latch.countDown();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 

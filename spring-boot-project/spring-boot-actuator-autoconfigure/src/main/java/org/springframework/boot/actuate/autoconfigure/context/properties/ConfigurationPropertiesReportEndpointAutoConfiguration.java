@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnEnabledEndpoint(endpoint = ConfigurationPropertiesReportEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = ConfigurationPropertiesReportEndpoint.class)
 @EnableConfigurationProperties(ConfigurationPropertiesReportEndpointProperties.class)

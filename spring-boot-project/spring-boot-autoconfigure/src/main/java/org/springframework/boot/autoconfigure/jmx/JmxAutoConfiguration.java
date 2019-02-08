@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MBeanExporter.class })
 @ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
 public class JmxAutoConfiguration {

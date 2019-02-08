@@ -1294,7 +1294,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExampleConfig {
 
 		@Bean
@@ -1304,7 +1304,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OverrideConfig {
 
 		@Bean
@@ -1314,7 +1314,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BrokenPostConstructConfig {
 
 		@Bean
@@ -1333,7 +1333,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ListenerConfig {
 
 		@Bean
@@ -1343,7 +1343,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Multicaster {
 
 		@Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)
@@ -1353,7 +1353,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExampleWebConfig {
 
 		@Bean
@@ -1363,7 +1363,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExampleReactiveWebConfig {
 
 		@Bean
@@ -1378,7 +1378,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FailingConfig {
 
 		@Bean
@@ -1388,7 +1388,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CommandLineRunConfig {
 
 		@Bean
@@ -1409,7 +1409,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExitCodeCommandLineRunConfig {
 
 		@Bean
@@ -1421,7 +1421,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MappedExitCodeCommandLineRunConfig {
 
 		@Bean
@@ -1443,7 +1443,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RefreshFailureConfig {
 
 		@PostConstruct
@@ -1453,7 +1453,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class LazyInitializationConfig {
 
 		@Bean

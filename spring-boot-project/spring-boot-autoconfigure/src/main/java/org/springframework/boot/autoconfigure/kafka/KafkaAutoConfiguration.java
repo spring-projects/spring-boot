@@ -49,7 +49,7 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
  * @author Nakul Mishra
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(KafkaTemplate.class)
 @EnableConfigurationProperties(KafkaProperties.class)
 @Import({ KafkaAnnotationDrivenConfiguration.class,

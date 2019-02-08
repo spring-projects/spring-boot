@@ -144,13 +144,13 @@ public class JmxAutoConfigurationTests {
 		assertThat(mbeanExporter).hasFieldOrPropertyWithValue("domain", "foo.my");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableIntegrationMBeanExport(defaultDomain = "foo.my")
 	public static class CustomJmxDomainConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class TestConfiguration {
 
 		@Bean

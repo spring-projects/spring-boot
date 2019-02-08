@@ -604,7 +604,7 @@ public class KafkaAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MessageConverterConfiguration {
 
 		@Bean
@@ -614,7 +614,7 @@ public class KafkaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class BatchMessageConverterConfiguration {
 
 		@Bean
@@ -624,7 +624,7 @@ public class KafkaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ErrorHandlerConfiguration {
 
 		@Bean
@@ -634,7 +634,7 @@ public class KafkaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TransactionManagerConfiguration {
 
 		@Bean
@@ -647,7 +647,7 @@ public class KafkaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class AfterRollbackProcessorConfiguration {
 
 		@Bean
@@ -659,13 +659,13 @@ public class KafkaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
 	protected static class EnableKafkaStreamsConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestKafkaStreamsConfiguration {
 
 		@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)

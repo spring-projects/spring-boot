@@ -37,7 +37,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
  * @author Vedran Pavic
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(ContextSource.class)
 @EnableConfigurationProperties(LdapProperties.class)
 public class LdapAutoConfiguration {

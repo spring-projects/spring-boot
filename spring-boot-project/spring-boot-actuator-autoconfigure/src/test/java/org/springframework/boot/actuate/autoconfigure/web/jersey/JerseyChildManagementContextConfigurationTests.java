@@ -102,7 +102,7 @@ public class JerseyChildManagementContextConfigurationTests {
 				(context) -> assertThat(context).hasSingleBean(ResourceConfig.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomizerConfiguration {
 
 		@Bean

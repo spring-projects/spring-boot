@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional({ CacheCondition.class })

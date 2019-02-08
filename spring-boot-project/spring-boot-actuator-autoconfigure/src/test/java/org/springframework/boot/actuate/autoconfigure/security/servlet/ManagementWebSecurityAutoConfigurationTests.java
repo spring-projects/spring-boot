@@ -132,7 +132,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		return HttpStatus.valueOf(response.getStatus());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		@Override

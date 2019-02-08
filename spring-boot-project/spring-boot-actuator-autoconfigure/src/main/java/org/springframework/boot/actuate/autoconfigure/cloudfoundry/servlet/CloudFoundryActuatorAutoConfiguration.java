@@ -67,7 +67,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ ServletManagementContextAutoConfiguration.class,
 		HealthEndpointAutoConfiguration.class })
@@ -146,7 +146,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	 */
 	@ConditionalOnClass(WebSecurity.class)
 	@Order(SecurityProperties.IGNORED_ORDER)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class IgnoredPathsWebSecurityConfigurer
 			implements WebSecurityConfigurer<WebSecurity> {
 

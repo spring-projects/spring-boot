@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class AuthenticationSecurity {
 
 		@SuppressWarnings("deprecation")
@@ -68,7 +68,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
@@ -88,7 +88,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Order(1)
 	protected static class ActuatorSecurity extends WebSecurityConfigurerAdapter {
 

@@ -47,7 +47,7 @@ public class SpringBootTestArgsTests {
 				.containsOnly("other.bar=other-bar-value");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class Config {
 
 	}

@@ -39,7 +39,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * @since 1.3.0
  * @see SpringApplicationAdminMXBean
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true", matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {

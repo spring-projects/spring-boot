@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 @Test
 public abstract class AbstractTestNgTestWithConfig {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 	}

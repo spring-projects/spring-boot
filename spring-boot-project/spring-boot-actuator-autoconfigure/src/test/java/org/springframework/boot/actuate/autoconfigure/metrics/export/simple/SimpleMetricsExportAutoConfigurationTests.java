@@ -74,7 +74,7 @@ public class SimpleMetricsExportAutoConfigurationTests {
 						.hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -84,7 +84,7 @@ public class SimpleMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
@@ -95,7 +95,7 @@ public class SimpleMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 

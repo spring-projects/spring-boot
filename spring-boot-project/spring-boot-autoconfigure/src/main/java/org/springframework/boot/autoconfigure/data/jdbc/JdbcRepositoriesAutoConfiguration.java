@@ -43,7 +43,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * @see EnableJdbcRepositories
  */
 @SuppressWarnings("deprecation")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(NamedParameterJdbcOperations.class)
 @ConditionalOnClass({ NamedParameterJdbcOperations.class,
 		AbstractJdbcConfiguration.class })
@@ -51,7 +51,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration.class)
 public class JdbcRepositoriesAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JdbcRepositoryConfigExtension.class)
 	@Import(JdbcRepositoriesAutoConfigureRegistrar.class)
 	static class JdbcRepositoriesConfiguration {

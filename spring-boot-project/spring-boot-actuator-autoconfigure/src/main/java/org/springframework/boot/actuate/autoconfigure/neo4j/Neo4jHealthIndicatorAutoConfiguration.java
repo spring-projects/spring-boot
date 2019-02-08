@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SessionFactory.class)
 @ConditionalOnBean(SessionFactory.class)
 @ConditionalOnEnabledHealthIndicator("neo4j")

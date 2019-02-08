@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public class ServletWebServerServletContextListenerTests {
 		context.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TomcatConfiguration {
 
 		@Bean
@@ -101,7 +101,7 @@ public class ServletWebServerServletContextListenerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JettyConfiguration {
 
 		@Bean
@@ -111,7 +111,7 @@ public class ServletWebServerServletContextListenerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class UndertowConfiguration {
 
 		@Bean
@@ -121,7 +121,7 @@ public class ServletWebServerServletContextListenerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletContextListenerBeanConfiguration {
 
 		@Bean
@@ -131,7 +131,7 @@ public class ServletWebServerServletContextListenerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletListenerRegistrationBeanConfiguration {
 
 		@Bean

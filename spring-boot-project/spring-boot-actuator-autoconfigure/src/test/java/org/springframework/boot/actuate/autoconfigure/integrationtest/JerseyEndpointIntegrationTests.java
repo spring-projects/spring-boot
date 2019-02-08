@@ -96,7 +96,7 @@ public class JerseyEndpointIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EndpointsConfiguration {
 
 		@Bean
@@ -111,7 +111,7 @@ public class JerseyEndpointIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ResourceConfigConfiguration {
 
 		@Bean

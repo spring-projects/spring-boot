@@ -148,7 +148,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		}
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	static class CyclicBeanMethodsConfiguration {
 
 		@Bean
@@ -156,7 +156,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 			return new BeanThree();
 		}
 
-		@org.springframework.context.annotation.Configuration
+		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 		static class InnerConfiguration {
 
 			@Bean
@@ -164,7 +164,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 				return new BeanTwo();
 			}
 
-			@Configuration
+			@Configuration(proxyBeanMethods = false)
 			static class InnerInnerConfiguration {
 
 				@Bean
@@ -178,7 +178,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CycleReferencedViaOtherBeansConfiguration {
 
 		@Bean
@@ -196,7 +196,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 			return new BeanThree();
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		static class InnerConfiguration {
 
 			@Bean
@@ -204,7 +204,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 				return new RefererTwo();
 			}
 
-			@Configuration
+			@Configuration(proxyBeanMethods = false)
 			static class InnerInnerConfiguration {
 
 				@Bean
@@ -218,7 +218,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	public static class CycleWithAutowiredFields {
 
 		@Bean
@@ -226,7 +226,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 			return new BeanOne();
 		}
 
-		@org.springframework.context.annotation.Configuration
+		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 		public static class BeanTwoConfiguration {
 
 			@SuppressWarnings("unused")
@@ -240,7 +240,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 		}
 
-		@org.springframework.context.annotation.Configuration
+		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 		public static class BeanThreeConfiguration {
 
 			@Bean

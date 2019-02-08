@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Cluster.class)
 @ConditionalOnBean(Cluster.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")

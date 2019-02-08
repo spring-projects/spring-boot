@@ -185,7 +185,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSecurityConfiguration {
 
 		@Bean
@@ -196,7 +196,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WebFilterChainProxyConfiguration {
 
 		@Bean

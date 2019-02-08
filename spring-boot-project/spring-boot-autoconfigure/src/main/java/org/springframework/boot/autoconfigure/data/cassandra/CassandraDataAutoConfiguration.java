@@ -57,7 +57,7 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, CassandraAdminOperations.class })
 @EnableConfigurationProperties(CassandraProperties.class)
 @AutoConfigureAfter(CassandraAutoConfiguration.class)

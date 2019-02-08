@@ -44,7 +44,7 @@ import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, ReactiveCassandraOperations.class, Flux.class })
 @ConditionalOnBean(ReactiveCassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")

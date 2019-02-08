@@ -42,7 +42,7 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
 @Import({ MustacheServletWebConfiguration.class, MustacheReactiveWebConfiguration.class })

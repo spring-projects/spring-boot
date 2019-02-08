@@ -237,7 +237,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		return File.separatorChar == '\\';
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MongoClientConfiguration {
 
 		@Bean
@@ -247,7 +247,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DownloadConfigBuilderCustomizerConfiguration {
 
 		@Bean

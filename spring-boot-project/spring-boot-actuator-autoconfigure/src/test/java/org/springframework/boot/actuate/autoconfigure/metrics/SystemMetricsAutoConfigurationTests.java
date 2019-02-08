@@ -84,7 +84,7 @@ public class SystemMetricsAutoConfigurationTests {
 						.hasBean("customFileDescriptorMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomUptimeMetricsConfiguration {
 
 		@Bean
@@ -94,7 +94,7 @@ public class SystemMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomProcessorMetricsConfiguration {
 
 		@Bean
@@ -104,7 +104,7 @@ public class SystemMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomFileDescriptorMetricsConfiguration {
 
 		@Bean

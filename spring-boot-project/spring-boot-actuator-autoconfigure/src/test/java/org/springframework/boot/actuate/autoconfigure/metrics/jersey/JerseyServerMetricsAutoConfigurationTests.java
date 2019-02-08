@@ -128,7 +128,7 @@ public class JerseyServerMetricsAutoConfigurationTests {
 				String.class);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ResourceConfiguration {
 
 		@Bean
@@ -149,7 +149,7 @@ public class JerseyServerMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJerseyTagsProviderConfiguration {
 
 		@Bean

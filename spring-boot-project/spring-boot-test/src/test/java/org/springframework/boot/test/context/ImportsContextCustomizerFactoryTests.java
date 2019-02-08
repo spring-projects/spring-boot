@@ -131,7 +131,7 @@ public class ImportsContextCustomizerFactoryTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ImportedBean.class)
 	static class TestWithImportAndBeanMethod {
 

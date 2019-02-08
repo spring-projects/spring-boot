@@ -51,7 +51,7 @@ import org.springframework.context.annotation.Bean;
  * @author Michael Simons
  * @author Madhura Bhave
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(ResourceConfig.class)
 @ConditionalOnBean(WebEndpointsSupplier.class)

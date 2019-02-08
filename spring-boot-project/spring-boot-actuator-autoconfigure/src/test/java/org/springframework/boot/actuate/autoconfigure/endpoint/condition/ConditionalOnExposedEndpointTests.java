@@ -183,7 +183,7 @@ public class ConditionalOnExposedEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AllEndpointsConfiguration {
 
 		@Bean
@@ -212,7 +212,7 @@ public class ConditionalOnExposedEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ComponentEnabledIfEndpointIsExposedConfiguration {
 
 		@Bean
@@ -229,7 +229,7 @@ public class ConditionalOnExposedEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ComponentWithNoEndpointReferenceConfiguration {
 
 		@Bean

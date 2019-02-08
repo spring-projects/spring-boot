@@ -35,7 +35,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class MongoDataConfiguration {
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -261,7 +261,7 @@ public class ConditionalOnPropertyTests {
 				.web(WebApplicationType.NONE).run();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = { "property1", "property2" })
 	protected static class MultiplePropertiesRequiredConfiguration {
 
@@ -272,7 +272,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.", name = "the-relaxed-property")
 	protected static class RelaxedPropertiesRequiredConfiguration {
 
@@ -283,7 +283,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring", name = "property")
 	protected static class RelaxedPropertiesRequiredConfigurationWithShortPrefix {
 
@@ -294,7 +294,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// i.e ${simple.myProperty:true}
 	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "true", matchIfMissing = true)
 	static class EnabledIfNotConfiguredOtherwiseConfig {
@@ -306,7 +306,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// i.e ${simple.myProperty:false}
 	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "true", matchIfMissing = false)
 	static class DisabledIfNotConfiguredOtherwiseConfig {
@@ -318,7 +318,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "bar")
 	static class SimpleValueConfig {
 
@@ -329,7 +329,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = "simple.myProperty", havingValue = "bar", matchIfMissing = true)
 	static class DefaultValueConfig {
 
@@ -340,7 +340,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "bar")
 	static class PrefixValueConfig {
 
@@ -351,7 +351,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "simple", name = { "my-property",
 			"my-another-property" }, havingValue = "bar")
 	static class MultiValuesConfig {
@@ -363,7 +363,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty("some.property")
 	protected static class ValueAttribute {
 
@@ -374,7 +374,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty
 	protected static class NoNameOrValueAttribute {
 
@@ -385,7 +385,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(value = "x", name = "y")
 	protected static class NameAndValueAttribute {
 
@@ -396,7 +396,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMyFeature
 	protected static class MetaAnnotation {
 
@@ -407,7 +407,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMyFeature
 	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
 	protected static class MetaAnnotationAndDirectAnnotation {

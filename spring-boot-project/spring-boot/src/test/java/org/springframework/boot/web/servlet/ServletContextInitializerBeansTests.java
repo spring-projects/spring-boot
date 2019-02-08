@@ -77,7 +77,7 @@ public class ServletContextInitializerBeansTests {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletConfiguration {
 
 		@Bean
@@ -87,7 +87,7 @@ public class ServletContextInitializerBeansTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FilterConfiguration {
 
 		@Bean
@@ -97,7 +97,7 @@ public class ServletContextInitializerBeansTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean

@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class AuditAutoConfiguration {
 
 	@Bean
@@ -63,7 +63,7 @@ public class AuditAutoConfiguration {
 		return new AuthorizationAuditListener();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(AuditEventRepository.class)
 	protected static class AuditEventRepositoryConfiguration {
 

@@ -36,7 +36,7 @@ import org.springframework.session.Session;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(FindByIndexNameSessionRepository.class)
 @ConditionalOnEnabledEndpoint(endpoint = SessionsEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = SessionsEndpoint.class)

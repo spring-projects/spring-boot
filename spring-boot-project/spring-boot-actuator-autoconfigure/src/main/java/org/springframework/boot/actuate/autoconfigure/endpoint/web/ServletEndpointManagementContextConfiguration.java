@@ -41,7 +41,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletEndpointManagementContextConfiguration {
 
@@ -53,7 +53,7 @@ public class ServletEndpointManagementContextConfiguration {
 				exposure.getInclude(), exposure.getExclude());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
 	public static class WebMvcServletEndpointManagementContextConfiguration {
 
@@ -69,7 +69,7 @@ public class ServletEndpointManagementContextConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	public static class JerseyServletEndpointManagementContextConfiguration {

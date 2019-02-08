@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,7 +235,7 @@ public class ConditionalOnBeanTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
 
@@ -246,7 +246,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = "foo", value = Date.class)
 	protected static class OnBeanNameAndTypeConfiguration {
 
@@ -257,7 +257,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(annotation = EnableScheduling.class)
 	protected static class OnAnnotationConfiguration {
 
@@ -268,7 +268,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
 	protected static class OnBeanClassConfiguration {
 
@@ -279,7 +279,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(type = "java.lang.String")
 	protected static class OnBeanClassNameConfiguration {
 
@@ -290,7 +290,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(type = "some.type.Missing")
 	protected static class OnBeanMissingClassConfiguration {
 
@@ -301,7 +301,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	protected static class FooConfiguration {
 
@@ -312,26 +312,26 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class XmlConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	@Import(OnBeanNameConfiguration.class)
 	protected static class CombinedXmlConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(WithPropertyPlaceholderClassNameRegistrar.class)
 	protected static class WithPropertyPlaceholderClassName {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FactoryBeanConfiguration {
 
 		@Bean
@@ -341,7 +341,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(annotation = TestAnnotation.class)
 	static class OnAnnotationWithFactoryBeanConfiguration {
 
@@ -384,7 +384,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class OriginalDefinition {
 
 		@Bean
@@ -394,7 +394,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
 	public static class OverridingDefinition {
 
@@ -405,7 +405,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
 	public static class ConsumingConfiguration {
 
@@ -414,7 +414,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithCustomConfig {
 
 		@Bean
@@ -424,7 +424,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithoutCustomConfig {
 
 		@Bean
@@ -434,7 +434,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithoutCustomContainerConfig {
 
 		@Bean
@@ -444,7 +444,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithCustomContainerConfig {
 
 		@Bean
@@ -454,7 +454,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
@@ -465,7 +465,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithReturnTypeConfig {
 
 		@Bean
@@ -476,7 +476,7 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithReturnRegistrationTypeConfig {
 
 		@Bean

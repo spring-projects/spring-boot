@@ -80,7 +80,7 @@ import org.springframework.web.util.HtmlUtils;
  * @author Stephane Nicoll
  * @author Brian Clozel
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 // Load before the main WebMvcAutoConfiguration so that the error View is available
@@ -121,7 +121,7 @@ public class ErrorMvcAutoConfiguration {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DefaultErrorViewResolverConfiguration {
 
 		private final ApplicationContext applicationContext;
@@ -144,7 +144,7 @@ public class ErrorMvcAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {

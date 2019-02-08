@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,31 +159,31 @@ public class EntityScanPackagesTests {
 		assertThat(packages.getPackageNames()).containsExactly("a", "b");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan("a")
 	static class EntityScanValueConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackages = "b")
 	static class EntityScanBasePackagesConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(value = "a", basePackages = "b")
 	static class EntityScanValueAndBasePackagesConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = EntityScanPackagesTests.class)
 	static class EntityScanBasePackageClassesConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan
 	static class EntityScanNoAttributesConfig {
 

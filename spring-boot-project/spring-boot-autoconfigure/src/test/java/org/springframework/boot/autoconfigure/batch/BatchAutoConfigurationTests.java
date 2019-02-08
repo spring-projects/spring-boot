@@ -257,7 +257,7 @@ public class BatchAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class EmptyConfiguration {
 
 	}
@@ -307,7 +307,7 @@ public class BatchAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
 	protected static class NamedJobConfigurationWithRegisteredJob {
 
@@ -349,7 +349,7 @@ public class BatchAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
 	protected static class NamedJobConfigurationWithLocalJob {
 
@@ -381,7 +381,7 @@ public class BatchAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
 	protected static class JobConfiguration {
 

@@ -806,12 +806,12 @@ public class RabbitAutoConfigurationTests {
 		return rabbitTemplate.isMandatoryFor(mock(Message.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration2 {
 
 		@Bean
@@ -821,13 +821,14 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration3 {
 
 		@Bean
-		RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+				MessageConverter messageConverter) {
 			RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-			rabbitTemplate.setMessageConverter(testMessageConverter());
+			rabbitTemplate.setMessageConverter(messageConverter);
 			return rabbitTemplate;
 		}
 
@@ -838,7 +839,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration4 {
 
 		@Bean
@@ -851,7 +852,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration5 {
 
 		@Bean
@@ -861,7 +862,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MessageConvertersConfiguration {
 
 		@Bean
@@ -877,7 +878,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MessageRecoverersConfiguration {
 
 		@Bean
@@ -893,7 +894,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ConnectionNameStrategyConfiguration {
 
 		private final AtomicInteger counter = new AtomicInteger();
@@ -905,7 +906,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class RabbitRetryTemplateCustomizerConfiguration {
 
 		private final BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
@@ -932,13 +933,13 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableRabbit
 	protected static class EnableRabbitConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class NoEnableRabbitConfiguration {
 
 	}

@@ -190,7 +190,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooEndpointEnabledByDefaultTrueConfiguration {
 
 		@Bean
@@ -201,7 +201,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnEnabledEndpoint(endpoint = FooEndpointEnabledByDefaultTrue.class)
 	static class FooEndpointEnabledByDefaultTrueOnConfigurationConfiguration {
 
@@ -212,7 +212,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooEndpointEnabledByDefaultFalseConfiguration {
 
 		@Bean
@@ -223,7 +223,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooBarEndpointEnabledByDefaultFalseConfiguration {
 
 		@Bean
@@ -234,7 +234,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooEndpointAndExtensionEnabledByDefaultTrueConfiguration {
 
 		@Bean
@@ -251,7 +251,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooEndpointAndExtensionEnabledByDefaultFalseConfiguration {
 
 		@Bean
@@ -268,7 +268,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ComponentEnabledIfEndpointIsEnabledConfiguration {
 
 		@Bean
@@ -279,7 +279,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ComponentWithNoEndpointReferenceConfiguration {
 
 		@Bean

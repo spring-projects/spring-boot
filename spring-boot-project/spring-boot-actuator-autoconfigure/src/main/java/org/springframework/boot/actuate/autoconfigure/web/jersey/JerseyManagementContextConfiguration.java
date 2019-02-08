@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class JerseyManagementContextConfiguration {
 
 	@Bean

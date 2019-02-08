@@ -73,7 +73,7 @@ public class WebMvcEndpointChildContextConfigurationTests {
 								.isEqualTo("/"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExistingConfig {
 
 		@Bean
@@ -83,7 +83,7 @@ public class WebMvcEndpointChildContextConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RequestContextListenerConfig {
 
 		@Bean

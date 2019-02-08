@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class ServletWebServerMvcIntegrationTests {
 				JettyServletWebServerFactory.class, Config.class);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Config.class)
 	public static class TomcatConfig {
 
@@ -126,7 +126,7 @@ public class ServletWebServerMvcIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Config.class)
 	public static class JettyConfig {
 
@@ -137,7 +137,7 @@ public class ServletWebServerMvcIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Config.class)
 	public static class UndertowConfig {
 
@@ -148,7 +148,7 @@ public class ServletWebServerMvcIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	public static class Config {
 
@@ -167,7 +167,7 @@ public class ServletWebServerMvcIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@PropertySource("classpath:/org/springframework/boot/web/servlet/context/conf.properties")
 	public static class AdvancedConfig {
@@ -186,9 +186,10 @@ public class ServletWebServerMvcIntegrationTests {
 		}
 
 		@Bean
-		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration() {
+		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(
+				DispatcherServlet dispatcherServlet) {
 			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
-					dispatcherServlet());
+					dispatcherServlet);
 			registration.addUrlMappings("/spring/*");
 			return registration;
 		}

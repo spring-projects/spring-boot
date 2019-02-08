@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,13 +67,15 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			WebFluxAutoConfiguration.class })
 	static class WebFluxEndpointConfiguration
 			implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
+
+		private final PortHolder portHolder = new PortHolder();
 
 		WebFluxEndpointConfiguration(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
@@ -86,12 +88,12 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 
 		@Bean
 		public PortHolder portHolder() {
-			return new PortHolder();
+			return this.portHolder;
 		}
 
 		@Override
 		public void onApplicationEvent(WebServerInitializedEvent event) {
-			portHolder().setPort(event.getWebServer().getPort());
+			this.portHolder.setPort(event.getWebServer().getPort());
 		}
 
 		@Bean

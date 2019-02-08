@@ -236,7 +236,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JwtDecoderConfig {
 
 		@Bean
@@ -246,7 +246,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SecurityWebFilterChainConfig {
 
 		@Bean

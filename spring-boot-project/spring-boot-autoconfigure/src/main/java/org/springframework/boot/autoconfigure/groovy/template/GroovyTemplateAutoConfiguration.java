@@ -57,7 +57,7 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
  * @author Brian Clozel
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MarkupTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
@@ -66,7 +66,7 @@ public class GroovyTemplateAutoConfiguration {
 	private static final Log logger = LogFactory
 			.getLog(GroovyTemplateAutoConfiguration.class);
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
 	public static class GroovyMarkupConfiguration {
 
@@ -132,7 +132,7 @@ public class GroovyTemplateAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
 			UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)

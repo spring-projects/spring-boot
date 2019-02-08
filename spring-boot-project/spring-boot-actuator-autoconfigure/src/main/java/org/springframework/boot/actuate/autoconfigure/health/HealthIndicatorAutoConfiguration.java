@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
@@ -73,7 +73,7 @@ public class HealthIndicatorAutoConfiguration {
 		return HealthIndicatorRegistryBeans.get(applicationContext);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Flux.class)
 	static class ReactiveHealthIndicatorConfiguration {
 

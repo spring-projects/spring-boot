@@ -143,14 +143,14 @@ public class JpaRepositoriesAutoConfigurationTests {
 								.getBootstrapExecutor()).isNull());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	@Import(TestConfiguration.class)
 	protected static class MultipleAsyncTaskExecutorConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestConfiguration.class)
 	protected static class SingleAsyncTaskExecutorConfiguration {
 
@@ -161,13 +161,13 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class, excludeFilters = {
 			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
 			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
@@ -176,7 +176,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// To not find any repositories
 	@EnableJpaRepositories("foo.bar")
 	@TestAutoConfigurationPackage(City.class)

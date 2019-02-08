@@ -75,7 +75,7 @@ public class WebSocketServletAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CommonConfiguration {
 
 		@Bean
@@ -85,7 +85,7 @@ public class WebSocketServletAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TomcatConfiguration extends CommonConfiguration {
 
 		@Bean
@@ -97,7 +97,7 @@ public class WebSocketServletAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JettyConfiguration extends CommonConfiguration {
 
 		@Bean

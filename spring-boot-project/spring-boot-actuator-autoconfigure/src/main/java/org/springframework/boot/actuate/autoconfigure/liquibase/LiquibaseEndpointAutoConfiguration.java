@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnEnabledEndpoint(endpoint = LiquibaseEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = LiquibaseEndpoint.class)

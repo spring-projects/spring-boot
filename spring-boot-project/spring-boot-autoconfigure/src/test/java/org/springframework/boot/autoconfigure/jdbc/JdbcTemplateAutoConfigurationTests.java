@@ -234,7 +234,7 @@ public class JdbcTemplateAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -250,7 +250,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestDataSourceConfiguration {
 
 		@Bean
@@ -260,7 +260,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultiJdbcTemplateConfiguration {
 
 		@Bean
@@ -275,7 +275,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultiJdbcTemplateUsingPrimaryConfiguration {
 
 		@Bean

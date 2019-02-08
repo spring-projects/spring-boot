@@ -57,7 +57,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Dmytro Nosan
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
@@ -85,7 +85,7 @@ public class JooqAutoConfiguration {
 		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(DSLContext.class)
 	@EnableConfigurationProperties(JooqProperties.class)
 	public static class DslContextConfiguration {

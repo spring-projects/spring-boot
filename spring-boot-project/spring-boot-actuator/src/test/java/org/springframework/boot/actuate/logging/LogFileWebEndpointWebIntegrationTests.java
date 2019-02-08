@@ -80,7 +80,7 @@ public class LogFileWebEndpointWebIntegrationTests {
 				.expectStatus().isOk().expectBody(String.class).isEqualTo("--TEST--");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean

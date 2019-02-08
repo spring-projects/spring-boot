@@ -59,7 +59,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * @author Josh Long
  * @see EnableJpaRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class,

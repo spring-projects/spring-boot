@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -435,7 +435,7 @@ public class HibernateJpaAutoConfigurationTests
 		return false;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class TestInitializedJpaConfiguration {
 
@@ -455,7 +455,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestImplicitNamingStrategyConfiguration {
 
 		@Bean
@@ -465,7 +465,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestPhysicalNamingStrategyConfiguration {
 
 		@Bean
@@ -475,7 +475,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestHibernatePropertiesCustomizerConfiguration {
 
 		private final PhysicalNamingStrategy physicalNamingStrategy = new SpringPhysicalNamingStrategy();
@@ -494,7 +494,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DisableBeanContainerConfiguration {
 
 		@Bean
@@ -558,7 +558,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	static class JpaUsingApplicationListenerConfiguration {
 
 		@Bean
@@ -581,7 +581,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AsyncBootstrappingConfiguration {
 
 		@Bean

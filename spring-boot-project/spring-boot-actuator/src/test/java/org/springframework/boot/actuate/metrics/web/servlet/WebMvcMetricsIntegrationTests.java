@@ -93,7 +93,7 @@ public class WebMvcMetricsIntegrationTests {
 						.isEqualTo(1L);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class TestConfiguration {
 
@@ -114,7 +114,7 @@ public class WebMvcMetricsIntegrationTests {
 					"http.server.requests", true);
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@RestController
 		@RequestMapping("/api")
 		@Timed

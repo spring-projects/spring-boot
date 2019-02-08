@@ -37,7 +37,7 @@ import org.springframework.core.env.Environment;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")

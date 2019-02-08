@@ -70,7 +70,7 @@ public class ScheduledTasksEndpointAutoConfigurationTests {
 						.hasBean("customEndpoint"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomEndpointConfiguration {
 
 		@Bean

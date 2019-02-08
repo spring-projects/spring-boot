@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(HealthIndicatorRegistry.class)
 @ConditionalOnEnabledEndpoint(endpoint = HealthEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = HealthEndpoint.class)

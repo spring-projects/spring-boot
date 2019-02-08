@@ -53,7 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JtaProperties.class)
 @ConditionalOnClass({ JtaTransactionManager.class, BitronixContext.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
@@ -113,7 +113,7 @@ class BitronixJtaConfiguration {
 		return jtaTransactionManager;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Message.class)
 	static class BitronixJtaJmsConfiguration {
 

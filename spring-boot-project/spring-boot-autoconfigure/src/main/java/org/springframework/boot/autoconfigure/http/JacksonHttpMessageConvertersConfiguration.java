@@ -35,10 +35,10 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
  * @author Andy Wilkinson
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class JacksonHttpMessageConvertersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
 	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jackson", matchIfMissing = true)
@@ -55,7 +55,7 @@ class JacksonHttpMessageConvertersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(XmlMapper.class)
 	@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 	protected static class MappingJackson2XmlHttpMessageConverterConfiguration {

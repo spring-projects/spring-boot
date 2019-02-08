@@ -245,13 +245,13 @@ public class Neo4jDataAutoConfigurationTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = Country.class)
 	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSessionFactory {
 
 		@Bean
@@ -261,7 +261,7 @@ public class Neo4jDataAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -272,13 +272,13 @@ public class Neo4jDataAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBookmarkManagement
 	static class BookmarkManagementEnabledConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EventListenerConfiguration {
 
 		@Bean

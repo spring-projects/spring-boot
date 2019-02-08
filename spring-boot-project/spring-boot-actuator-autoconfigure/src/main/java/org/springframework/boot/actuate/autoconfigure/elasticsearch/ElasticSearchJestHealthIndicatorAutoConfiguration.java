@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JestClient.class)
 @ConditionalOnBean(JestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")

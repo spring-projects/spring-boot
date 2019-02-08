@@ -116,7 +116,7 @@ public class LdapAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class PooledContextSourceConfig {
 
 		@Bean

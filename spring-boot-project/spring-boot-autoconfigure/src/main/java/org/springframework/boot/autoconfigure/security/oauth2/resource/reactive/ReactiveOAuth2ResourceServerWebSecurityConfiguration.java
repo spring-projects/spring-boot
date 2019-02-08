@@ -29,7 +29,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(ReactiveJwtDecoder.class)
 class ReactiveOAuth2ResourceServerWebSecurityConfiguration {
 

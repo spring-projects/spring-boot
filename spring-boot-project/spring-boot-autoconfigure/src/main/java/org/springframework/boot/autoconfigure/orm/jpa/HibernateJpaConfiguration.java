@@ -60,7 +60,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HibernateProperties.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {

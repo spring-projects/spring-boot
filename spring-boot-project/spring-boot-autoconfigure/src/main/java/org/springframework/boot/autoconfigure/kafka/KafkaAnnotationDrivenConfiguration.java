@@ -42,7 +42,7 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  * @author Eddú Meléndez
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableKafka.class)
 class KafkaAnnotationDrivenConfiguration {
 
@@ -102,7 +102,7 @@ class KafkaAnnotationDrivenConfiguration {
 		return factory;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableKafka
 	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableKafkaConfiguration {

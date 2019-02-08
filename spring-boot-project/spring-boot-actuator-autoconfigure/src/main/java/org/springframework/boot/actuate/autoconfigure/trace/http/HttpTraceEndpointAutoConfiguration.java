@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnEnabledEndpoint(endpoint = HttpTraceEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = HttpTraceEndpoint.class)
 @AutoConfigureAfter(HttpTraceAutoConfiguration.class)

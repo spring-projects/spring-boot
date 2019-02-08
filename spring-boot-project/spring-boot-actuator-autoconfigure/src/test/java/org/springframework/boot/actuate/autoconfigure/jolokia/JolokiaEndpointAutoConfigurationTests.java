@@ -108,7 +108,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 		return endpoints.iterator().next();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean

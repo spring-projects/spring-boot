@@ -34,7 +34,7 @@ import org.springframework.scheduling.config.ScheduledTaskHolder;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnEnabledEndpoint(endpoint = ScheduledTasksEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = ScheduledTasksEndpoint.class)
 public class ScheduledTasksEndpointAutoConfiguration {

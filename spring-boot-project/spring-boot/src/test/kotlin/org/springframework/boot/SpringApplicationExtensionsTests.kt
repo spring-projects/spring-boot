@@ -70,7 +70,7 @@ class SpringApplicationExtensionsTests {
 		assertEquals(environment, context.environment)
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	internal open class ExampleWebConfig {
 
 		@Bean

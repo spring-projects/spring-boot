@@ -61,7 +61,7 @@ public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(InvalidPrefixProperties.class)
 	static class InvalidPrefixConfiguration {
 

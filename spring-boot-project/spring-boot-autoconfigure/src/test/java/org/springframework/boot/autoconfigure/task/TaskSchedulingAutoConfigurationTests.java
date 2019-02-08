@@ -129,13 +129,13 @@ public class TaskSchedulingAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class SchedulingConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskSchedulerConfiguration {
 
 		@Bean
@@ -145,7 +145,7 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ScheduledExecutorServiceConfiguration {
 
 		@Bean
@@ -155,7 +155,7 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskSchedulerCustomizerConfiguration {
 
 		@Bean
@@ -166,7 +166,7 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SchedulingConfigurerConfiguration implements SchedulingConfigurer {
 
 		private final TaskScheduler taskScheduler = new TestTaskScheduler();
@@ -178,7 +178,7 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean

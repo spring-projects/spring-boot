@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Christian Dupuis
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RabbitTemplate.class)
 @ConditionalOnBean(RabbitTemplate.class)
 @ConditionalOnEnabledHealthIndicator("rabbit")

@@ -52,7 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Scheduler.class, SchedulerFactoryBean.class,
 		PlatformTransactionManager.class })
 @EnableConfigurationProperties(QuartzProperties.class)
@@ -100,7 +100,7 @@ public class QuartzAutoConfiguration {
 		return properties;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	protected static class JdbcStoreTypeConfiguration {
 

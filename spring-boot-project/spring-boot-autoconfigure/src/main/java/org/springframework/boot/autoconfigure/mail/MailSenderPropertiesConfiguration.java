@@ -33,7 +33,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.mail", name = "host")
 class MailSenderPropertiesConfiguration {
 

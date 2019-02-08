@@ -216,7 +216,7 @@ public class IntegrationAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
 		@Bean
@@ -227,7 +227,7 @@ public class IntegrationAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@IntegrationComponentScan
 	static class CustomIntegrationComponentScanConfiguration {
 
@@ -238,7 +238,7 @@ public class IntegrationAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MessageSourceConfiguration {
 
 		@Bean

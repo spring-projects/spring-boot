@@ -51,7 +51,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  * @author Mark Paluch
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
 @ConditionalOnBean(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)

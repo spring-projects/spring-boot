@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -258,7 +258,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	public static class Base {
 
@@ -269,7 +269,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class FooConfig {
 
@@ -281,7 +281,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class SelfReferentialConfig {
 
@@ -293,7 +293,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class MetadataCycleConfig {
 
@@ -305,7 +305,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class MapConfig {
 
@@ -317,7 +317,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class ListConfig {
 
@@ -329,7 +329,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class MetadataMapConfig {
 
@@ -341,7 +341,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class AddressedConfig {
 
@@ -353,7 +353,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class InitializedMapAndListPropertiesConfig {
 
@@ -508,7 +508,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	static class CycleConfig {
 
@@ -521,7 +521,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class HikariDataSourceConfig {
 

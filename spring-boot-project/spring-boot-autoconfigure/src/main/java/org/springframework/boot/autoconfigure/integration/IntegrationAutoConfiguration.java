@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties(IntegrationProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, JmxAutoConfiguration.class })
@@ -64,7 +64,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Basic Spring Integration configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
 
@@ -73,7 +73,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Spring Integration JMX configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
@@ -99,12 +99,12 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration management configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EnableIntegrationManagement.class)
 	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 	protected static class IntegrationManagementConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@EnableIntegrationManagement(defaultCountsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
 
@@ -115,7 +115,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration component scan configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanConfiguration {
@@ -125,7 +125,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration JDBC configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JdbcMessageStore.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	protected static class IntegrationJdbcConfiguration {

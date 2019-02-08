@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,7 +183,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		verify(factory.getServletContext()).addServlet("dispatcherServlet", servlet);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true")
 	public static class WebServerConfiguration {
 
@@ -194,7 +194,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class DispatcherServletConfiguration {
 
 		@Bean
@@ -204,7 +204,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class SpringServletConfiguration {
 
 		@Bean
@@ -214,7 +214,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class NonSpringServletConfiguration {
 
 		@Bean
@@ -229,7 +229,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class NonServletConfiguration {
 
 		@Bean
@@ -239,7 +239,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class DispatcherServletWithRegistrationConfiguration {
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
@@ -248,8 +248,9 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		}
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration() {
-			return new ServletRegistrationBean<>(dispatcherServlet(), "/app/*");
+		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(
+				DispatcherServlet dispatcherServlet) {
+			return new ServletRegistrationBean<>(dispatcherServlet, "/app/*");
 		}
 
 	}
@@ -285,7 +286,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TomcatConnectorCustomizerConfiguration {
 
 		@Bean
@@ -296,7 +297,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TomcatContextCustomizerConfiguration {
 
 		@Bean

@@ -43,7 +43,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveMongoTemplate.class, Flux.class })
 @ConditionalOnBean(ReactiveMongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")

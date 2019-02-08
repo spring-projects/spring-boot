@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ EntityModel.class, RequestMapping.class, Plugin.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
@@ -58,7 +58,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Import(HypermediaHttpMessageConverterConfiguration.class)
 public class HypermediaAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(LinkDiscoverers.class)
 	@ConditionalOnClass(ObjectMapper.class)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
@@ -66,7 +66,7 @@ public class HypermediaAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(EntityLinks.class)
 	@EnableEntityLinks
 	protected static class EntityLinksConfiguration {

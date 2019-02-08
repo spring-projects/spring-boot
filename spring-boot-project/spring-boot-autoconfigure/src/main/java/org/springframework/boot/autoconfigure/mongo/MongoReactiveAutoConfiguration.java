@@ -42,7 +42,7 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoClient.class, Flux.class })
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoReactiveAutoConfiguration {
@@ -59,7 +59,7 @@ public class MongoReactiveAutoConfiguration {
 		return factory.createMongoClient(settings.getIfAvailable());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(SocketChannel.class)
 	static class NettyDriverConfiguration {
 

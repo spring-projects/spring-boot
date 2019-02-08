@@ -97,7 +97,7 @@ public class ManagementPortSampleSecureWebFluxTests {
 		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SecurityConfiguration {
 
 		@Bean

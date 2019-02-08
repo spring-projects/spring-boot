@@ -42,7 +42,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(ProjectInfoAutoConfiguration.class)
 @EnableConfigurationProperties(InfoContributorProperties.class)
 public class InfoContributorAutoConfiguration {

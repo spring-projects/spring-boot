@@ -1902,7 +1902,7 @@ annotation, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@EntityScan(basePackageClasses=City.class)
 	public class Application {
@@ -2082,14 +2082,14 @@ as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = Customer.class,
 			entityManagerFactoryRef = "customerEntityManagerFactory")
 	public class CustomerConfiguration {
 		...
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = Order.class,
 			entityManagerFactoryRef = "orderEntityManagerFactory")
 	public class OrderConfiguration {
@@ -2600,7 +2600,7 @@ requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class SslWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override

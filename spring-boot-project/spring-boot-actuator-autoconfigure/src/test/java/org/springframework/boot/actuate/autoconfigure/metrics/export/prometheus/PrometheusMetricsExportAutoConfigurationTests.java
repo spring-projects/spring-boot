@@ -155,7 +155,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 						.hasSingleBean(PrometheusPushGatewayManager.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -165,7 +165,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
@@ -176,7 +176,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
@@ -188,7 +188,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomCollectorRegistryConfiguration {
 
@@ -199,7 +199,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomEndpointConfiguration {
 

@@ -47,7 +47,7 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
  */
 abstract class ReactiveWebServerFactoryConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ HttpServer.class })
 	static class EmbeddedNetty {
@@ -68,7 +68,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ org.apache.catalina.startup.Tomcat.class })
 	static class EmbeddedTomcat {
@@ -87,7 +87,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class })
 	static class EmbeddedJetty {
@@ -108,7 +108,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ Undertow.class })
 	static class EmbeddedUndertow {

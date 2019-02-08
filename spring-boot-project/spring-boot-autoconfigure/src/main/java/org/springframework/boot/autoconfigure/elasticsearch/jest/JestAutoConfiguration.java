@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JestClient.class)
 @EnableConfigurationProperties(JestProperties.class)
 @AutoConfigureAfter(GsonAutoConfiguration.class)

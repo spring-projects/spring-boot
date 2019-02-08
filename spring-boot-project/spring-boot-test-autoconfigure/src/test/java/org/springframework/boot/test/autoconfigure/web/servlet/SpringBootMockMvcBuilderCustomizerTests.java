@@ -66,7 +66,7 @@ public class SpringBootMockMvcBuilderCustomizerTests {
 		assertThat(filters).containsExactlyInAnyOrder(testFilter, otherTestFilter);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletConfiguration {
 
 		@Bean
@@ -76,7 +76,7 @@ public class SpringBootMockMvcBuilderCustomizerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FilterConfiguration {
 
 		@Bean

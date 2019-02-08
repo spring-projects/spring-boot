@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ public class ConditionalOnJavaTests {
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJava(JavaVersion.NINE)
 	static class Java9Required {
 
@@ -132,7 +132,7 @@ public class ConditionalOnJavaTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.EIGHT)
 	static class Java7Required {
 
@@ -143,7 +143,7 @@ public class ConditionalOnJavaTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJava(JavaVersion.EIGHT)
 	static class Java8Required {
 

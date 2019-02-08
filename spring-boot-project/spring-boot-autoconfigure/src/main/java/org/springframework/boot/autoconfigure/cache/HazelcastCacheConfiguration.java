@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)

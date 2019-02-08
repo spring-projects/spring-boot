@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnEnabledEndpoint(endpoint = ShutdownEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = ShutdownEndpoint.class)
 public class ShutdownEndpointAutoConfiguration {

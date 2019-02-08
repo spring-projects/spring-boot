@@ -48,7 +48,7 @@ public class FailureAnalyzersIntegrationTests {
 		assertThat(this.outputCapture.toString()).contains("APPLICATION FAILED TO START");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@PostConstruct

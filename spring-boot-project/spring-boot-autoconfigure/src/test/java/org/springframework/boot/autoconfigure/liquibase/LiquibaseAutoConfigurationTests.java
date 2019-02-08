@@ -319,7 +319,7 @@ public class LiquibaseAutoConfigurationTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class LiquibaseDataSourceConfiguration {
 
 		@Bean

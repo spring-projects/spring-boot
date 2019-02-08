@@ -42,13 +42,13 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class DataSourceTransactionManagerConfiguration {
 

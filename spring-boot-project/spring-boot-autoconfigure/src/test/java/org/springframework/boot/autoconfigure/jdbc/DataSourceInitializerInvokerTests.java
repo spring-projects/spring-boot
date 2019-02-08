@@ -282,7 +282,7 @@ public class DataSourceInitializerInvokerTests {
 		return ClassUtils.addResourcePathToPackagePath(getClass(), resource);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class OneDataSource {
 
 		@Bean
@@ -292,7 +292,7 @@ public class DataSourceInitializerInvokerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TwoDataSources extends OneDataSource {
 
 		@Bean

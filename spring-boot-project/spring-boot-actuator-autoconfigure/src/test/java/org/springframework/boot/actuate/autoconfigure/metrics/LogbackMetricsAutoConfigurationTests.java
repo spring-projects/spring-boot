@@ -52,7 +52,7 @@ public class LogbackMetricsAutoConfigurationTests {
 						.hasBean("customLogbackMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomLogbackMetricsConfiguration {
 
 		@Bean

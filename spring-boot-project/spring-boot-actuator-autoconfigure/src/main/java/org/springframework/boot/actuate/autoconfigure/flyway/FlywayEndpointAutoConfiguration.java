@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnEnabledEndpoint(endpoint = FlywayEndpoint.class)
 @ConditionalOnExposedEndpoint(endpoint = FlywayEndpoint.class)

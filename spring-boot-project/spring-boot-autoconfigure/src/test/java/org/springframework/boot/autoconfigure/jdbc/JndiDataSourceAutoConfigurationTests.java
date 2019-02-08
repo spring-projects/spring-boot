@@ -162,7 +162,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		TestableInitialContextFactory.bind(name, dataSource);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MBeanExporterConfiguration {
 
 		@Bean
@@ -172,7 +172,7 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AnotherMBeanExporterConfiguration {
 
 		@Bean

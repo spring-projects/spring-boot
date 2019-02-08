@@ -42,7 +42,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskScheduler.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
 @AutoConfigureAfter(TaskExecutionAutoConfiguration.class)
 public class TaskSchedulingAutoConfiguration {

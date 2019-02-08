@@ -95,7 +95,7 @@ public class ScheduledTasksEndpointDocumentationTests
 				.description("Delay, in milliseconds, before first execution.");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {

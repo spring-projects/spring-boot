@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(AgentServlet.class)
 @ConditionalOnEnabledEndpoint(endpoint = JolokiaEndpoint.class)

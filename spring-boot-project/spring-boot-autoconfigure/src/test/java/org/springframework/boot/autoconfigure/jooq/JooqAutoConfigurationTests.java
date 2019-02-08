@@ -207,7 +207,7 @@ public class JooqAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JooqDataSourceConfiguration {
 
 		@Bean
@@ -218,7 +218,7 @@ public class JooqAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TxManagerConfiguration {
 
 		@Bean

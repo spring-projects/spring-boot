@@ -32,7 +32,7 @@ import org.springframework.core.Ordered;
  * @author Andy Wilkinson
  * @since 2.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class EagerInitializationAutoConfiguration {
 
 	@Bean
