@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,6 @@ import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.actuate.trace.http.Include;
 import org.springframework.core.Ordered;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -95,38 +91,20 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 			Principal principal, WebSession session) {
 		ServerWebExchangeTraceableRequest request = new ServerWebExchangeTraceableRequest(
 				exchange);
-		HttpTrace trace = this.tracer.receivedRequest(request);
-		return chain.filter(exchange).doAfterSuccessOrError((aVoid, ex) -> {
+		final HttpTrace trace = this.tracer.receivedRequest(request);
+		exchange.getResponse().beforeCommit(() -> {
 			TraceableServerHttpResponse response = new TraceableServerHttpResponse(
-					(ex != null) ? new CustomStatusResponseDecorator(ex,
-							exchange.getResponse()) : exchange.getResponse());
+					exchange.getResponse());
 			this.tracer.sendingResponse(trace, response, () -> principal,
 					() -> getStartedSessionId(session));
 			this.repository.add(trace);
+			return Mono.empty();
 		});
+		return chain.filter(exchange);
 	}
 
 	private String getStartedSessionId(WebSession session) {
 		return (session != null && session.isStarted()) ? session.getId() : null;
-	}
-
-	private static final class CustomStatusResponseDecorator
-			extends ServerHttpResponseDecorator {
-
-		private final HttpStatus status;
-
-		private CustomStatusResponseDecorator(Throwable ex, ServerHttpResponse delegate) {
-			super(delegate);
-			this.status = (ex instanceof ResponseStatusException)
-					? ((ResponseStatusException) ex).getStatus()
-					: HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-
-		@Override
-		public HttpStatus getStatusCode() {
-			return this.status;
-		}
-
 	}
 
 }
