@@ -181,7 +181,7 @@ work with m2eclipse, we provide an additional Eclipse plugin that you can instal
 ===== Install the Spring Formatter plugin
 * Select "`Help`" -> "`Install New Software`".
 * Add `https://dl.bintray.com/spring/javaformat-eclipse/` as a site.
-* Install "Spring Java Format"
+* Install "Spring Java Format".
 
 NOTE: The plugin is optional. Projects can be imported without the plugins, your code
 changes just won't be automatically formatted.

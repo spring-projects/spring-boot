@@ -82,8 +82,7 @@ public class SslServerCustomizerTests {
 	}
 
 	@Test
-	public void configureSslWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException()
-			throws Exception {
+	public void configureSslWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
 		assertThatExceptionOfType(Exception.class)

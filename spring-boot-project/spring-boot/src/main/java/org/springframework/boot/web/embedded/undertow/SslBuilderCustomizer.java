@@ -182,9 +182,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		if (resource == null) {
 			return null;
 		}
-		else {
-			return loadStore(type, provider, resource, password);
-		}
+		return loadStore(type, provider, resource, password);
 	}
 
 	private KeyStore loadStore(String type, String provider, String resource,
