@@ -6397,7 +6397,7 @@ configured as it requires an `AsyncTaskExecutor` implementation (named
 an `AsyncConfigurer` wrapping your custom `Executor`.
 
 The auto-configured `TaskExecutorBuilder` allows you to easily create instances that
-reproduces what the auto-configuration does by default.
+reproduce what the auto-configuration does by default.
 ====
 
 The thread pool uses 8 core threads that can grow and shrink according to the load. Those

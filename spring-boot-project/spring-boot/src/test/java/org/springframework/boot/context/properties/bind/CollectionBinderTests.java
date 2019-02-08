@@ -450,8 +450,8 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values[0]", "foo-bar,bar-baz");
 		this.sources.add(source);
-		BeanWithEnumsetCollection result = this.binder
-				.bind("foo", Bindable.of(BeanWithEnumsetCollection.class)).get();
+		BeanWithEnumSetCollection result = this.binder
+				.bind("foo", Bindable.of(BeanWithEnumSetCollection.class)).get();
 		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -574,7 +574,7 @@ public class CollectionBinderTests {
 
 	}
 
-	public static class BeanWithEnumsetCollection {
+	public static class BeanWithEnumSetCollection {
 
 		private List<EnumSet<ExampleEnum>> values;
 
