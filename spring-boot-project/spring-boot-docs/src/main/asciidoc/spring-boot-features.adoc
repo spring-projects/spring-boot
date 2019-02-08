@@ -8387,6 +8387,32 @@ Boot's core features will be honoured by the presence of the core starter.
 
 
 
+[[boot-features-internationalization]]
+== Internationalization
+Spring Boot supports localized messages so that your application can cater to users
+of different language preferences. By default, Spring Boot looks for `messages.properties`
+or its language and locale specific equivalent in applications context path
+e.g. `messages_en_US.properties` for US English and so on.
+
+You can set `spring.messages.basename` property to configure custom locations for
+these files. `spring.messages` namespace provides additional options to be set according
+to application requirements as shown below -
+
+[source,properties,indent=0]
+----
+	spring.messages.basename = config.i18n.messages
+	spring.messages.fallback-to-system-locale = false
+	spring.messages.encoding = utf-8
+	spring.messages.cache-duration = 30m
+	spring.messages.always-use-message-format = false
+	spring.messages.use-code-as-default-message = true
+----
+
+TIP: `spring.messages.basename` supports comma-separated list of locations (essentially 
+a fully-qualified classpath location) for configuring multiple message sources.
+
+
+
 [[boot-features-kotlin]]
 == Kotlin support
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other
