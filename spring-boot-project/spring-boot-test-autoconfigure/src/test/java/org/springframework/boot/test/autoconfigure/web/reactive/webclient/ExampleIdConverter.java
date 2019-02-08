@@ -23,7 +23,6 @@ import java.util.UUID;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,9 +38,8 @@ public class ExampleIdConverter implements GenericConverter {
 		return Collections.singleton(new ConvertiblePair(String.class, ExampleId.class));
 	}
 
-	@Nullable
 	@Override
-	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (source == null) {
 			return null;

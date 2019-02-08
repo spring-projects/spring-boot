@@ -66,7 +66,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.lang.Nullable;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -1785,7 +1784,6 @@ public class ConfigurationPropertiesTests {
 
 	static class PersonConverter implements Converter<String, Person> {
 
-		@Nullable
 		@Override
 		public Person convert(String source) {
 			String[] content = StringUtils.split(source, " ");
@@ -1796,15 +1794,13 @@ public class ConfigurationPropertiesTests {
 
 	static class GenericPersonConverter implements GenericConverter {
 
-		@Nullable
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
 			return Collections.singleton(new ConvertiblePair(String.class, Person.class));
 		}
 
-		@Nullable
 		@Override
-		public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+		public Object convert(Object source, TypeDescriptor sourceType,
 				TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");
 			return new Person(content[0], content[1]);
