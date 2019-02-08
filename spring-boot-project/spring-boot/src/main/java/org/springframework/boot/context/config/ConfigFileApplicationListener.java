@@ -348,10 +348,16 @@ public class ConfigFileApplicationListener
 			// The default profile for these purposes is represented as null. We add it
 			// first so that it is processed first and has lowest priority.
 			this.profiles.add(null);
-			Set<Profile> activatedViaProperty = getProfilesActivatedViaProperty();
-			this.profiles.addAll(getOtherActiveProfiles(activatedViaProperty));
+			Set<Profile> activatedViaProperty = getProfilesFromProperty(
+					ACTIVE_PROFILES_PROPERTY);
+			Set<Profile> includedViaProperty = getProfilesFromProperty(
+					INCLUDE_PROFILES_PROPERTY);
+			List<Profile> otherActiveProfiles = getOtherActiveProfiles(
+					activatedViaProperty, includedViaProperty);
+			this.profiles.addAll(otherActiveProfiles);
 			// Any pre-existing active profiles set via property sources (e.g.
 			// System properties) take precedence over those added in config files.
+			this.profiles.addAll(includedViaProperty);
 			addActiveProfiles(activatedViaProperty);
 			if (this.profiles.size() == 1) { // only has null profile
 				for (String defaultProfileName : this.environment.getDefaultProfiles()) {
@@ -361,21 +367,20 @@ public class ConfigFileApplicationListener
 			}
 		}
 
-		private Set<Profile> getProfilesActivatedViaProperty() {
-			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)
-					&& !this.environment.containsProperty(INCLUDE_PROFILES_PROPERTY)) {
+		private Set<Profile> getProfilesFromProperty(String profilesProperty) {
+			if (!this.environment.containsProperty(profilesProperty)) {
 				return Collections.emptySet();
 			}
 			Binder binder = Binder.get(this.environment);
-			Set<Profile> activeProfiles = new LinkedHashSet<>();
-			activeProfiles.addAll(getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
-			activeProfiles.addAll(getProfiles(binder, ACTIVE_PROFILES_PROPERTY));
-			return activeProfiles;
+			Set<Profile> profiles = getProfiles(binder, profilesProperty);
+			return new LinkedHashSet<>(profiles);
 		}
 
-		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty) {
+		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty,
+				Set<Profile> includedViaProperty) {
 			return Arrays.stream(this.environment.getActiveProfiles()).map(Profile::new)
-					.filter((profile) -> !activatedViaProperty.contains(profile))
+					.filter((profile) -> !activatedViaProperty.contains(profile)
+							&& !includedViaProperty.contains(profile))
 					.collect(Collectors.toList());
 		}
 

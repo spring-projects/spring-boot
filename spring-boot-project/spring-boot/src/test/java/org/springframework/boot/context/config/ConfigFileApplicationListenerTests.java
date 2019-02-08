@@ -413,6 +413,16 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.profiles.include=dev,simple");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "simple",
+				"other");
+		validateProfilePrecedence("dev", "simple", "other");
+	}
+
+	@Test
 	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev,other");
