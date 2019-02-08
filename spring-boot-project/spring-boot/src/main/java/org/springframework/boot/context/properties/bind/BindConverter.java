@@ -38,6 +38,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -235,7 +236,8 @@ final class BindConverter {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType,
+		@Nullable
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType,
 				TypeDescriptor targetType) {
 			SimpleTypeConverter typeConverter = this.typeConverter;
 			return typeConverter.convertIfNecessary(source, targetType.getType());

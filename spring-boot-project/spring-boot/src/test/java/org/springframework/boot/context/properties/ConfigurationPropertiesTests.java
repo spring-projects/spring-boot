@@ -1796,14 +1796,14 @@ public class ConfigurationPropertiesTests {
 
 	static class GenericPersonConverter implements GenericConverter {
 
-		@Nullable
 		@Override
+		@Nullable
 		public Set<ConvertiblePair> getConvertibleTypes() {
 			return Collections.singleton(new ConvertiblePair(String.class, Person.class));
 		}
 
-		@Nullable
 		@Override
+		@Nullable
 		public Object convert(@Nullable Object source, TypeDescriptor sourceType,
 				TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");

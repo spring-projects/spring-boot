@@ -22,6 +22,7 @@ import java.util.Set;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
@@ -41,7 +42,8 @@ final class StringToDataSizeConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
+	@Nullable
+	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;

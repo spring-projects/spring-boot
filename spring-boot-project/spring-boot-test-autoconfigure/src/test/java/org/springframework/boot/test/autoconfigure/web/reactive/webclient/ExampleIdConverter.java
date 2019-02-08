@@ -39,8 +39,8 @@ public class ExampleIdConverter implements GenericConverter {
 		return Collections.singleton(new ConvertiblePair(String.class, ExampleId.class));
 	}
 
-	@Nullable
 	@Override
+	@Nullable
 	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (source == null) {
