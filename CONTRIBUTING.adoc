@@ -181,7 +181,7 @@ work with m2eclipse, we provide an additional Eclipse plugin that you can instal
 ===== Install the Spring Formatter plugin
 * Select "`Help`" -> "`Install New Software`".
 * Add `https://dl.bintray.com/spring/javaformat-eclipse/` as a site.
-* Install "Spring Java Format"
+* Install "Spring Java Format".
 
 NOTE: The plugin is optional. Projects can be imported without the plugins, your code
 changes just won't be automatically formatted.
@@ -202,11 +202,11 @@ root `pom.xml`.
 If you haven't done so, install the formatter plugin so that proper formatting rules are
 applied automatically when you reformat code in the IDE.
 
-* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-plugin[Intellij IDEA plugin]
+* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-plugin[IntelliJ IDEA plugin].
 * Select "`IntelliJ IDEA`" -> "`Preferences`".
-* Select "`Plugins`"
-* Select the wheel and "`Install Plugin from Disk...`"
-* Select the jar file you've downloaded
+* Select "`Plugins`".
+* Select the wheel and "`Install Plugin from Disk...`".
+* Select the jar file you've downloaded.
 
 
 
@@ -217,7 +217,7 @@ needs to be added.
 * Select "`IntelliJ IDEA`" -> "`Preferences`".
 * Select "`Editor`" -> "`Code Style`".
 * Select the wheel and "`Import Scheme`" -> "`IntelliJ IDEA code style XML`".
-* Select `idea/codeStyleConfig.xml` from this repository
+* Select `idea/codeStyleConfig.xml` from this repository.
 
 
 
