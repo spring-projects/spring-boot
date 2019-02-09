@@ -397,7 +397,7 @@ The following example shows a typical repackage implementation:
 If you are interested in how the build tool plugins work, you can
 look at the {github-code}/spring-boot-project/spring-boot-tools[`spring-boot-tools`]
 module on GitHub. More technical details of the executable jar format are covered in
-<<appendix-executable-jar-format.adoc#executable-jar,the appendix>>.
+<<appendix.adoc#executable-jar,the appendix>>.
 
 If you have specific build-related questions, you can check out the
 "`<<howto.adoc#howto, how-to>>`" guides.
