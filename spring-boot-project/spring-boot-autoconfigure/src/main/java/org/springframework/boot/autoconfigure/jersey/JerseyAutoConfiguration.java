@@ -24,7 +24,6 @@ import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.ext.ContextResolver;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
@@ -51,6 +50,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DefaultJerseyApplicationPath;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -60,10 +60,8 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ServletContextAware;
 
@@ -114,15 +112,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Bean
 	@ConditionalOnMissingBean
 	public JerseyApplicationPath jerseyApplicationPath() {
-		return this::resolveApplicationPath;
-	}
-
-	private String resolveApplicationPath() {
-		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
-			return this.jersey.getApplicationPath();
-		}
-		return findApplicationPath(AnnotationUtils.findAnnotation(
-				this.config.getApplication().getClass(), ApplicationPath.class));
+		return new DefaultJerseyApplicationPath(this.jersey.getApplicationPath(),
+				this.config);
 	}
 
 	@Bean
@@ -169,14 +160,6 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	private void addInitParameters(DynamicRegistrationBean<?> registration) {
 		this.jersey.getInit().forEach(registration::addInitParameter);
-	}
-
-	private static String findApplicationPath(ApplicationPath annotation) {
-		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
-		if (annotation == null) {
-			return "/*";
-		}
-		return annotation.value();
 	}
 
 	@Override

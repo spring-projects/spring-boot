@@ -41,11 +41,22 @@ import org.springframework.web.servlet.DispatcherServlet;
  * Integration tests for the Jersey actuator endpoints.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class JerseyEndpointIntegrationTests {
 
 	@Test
-	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+	public void linksAreProvidedToAllEndpointTypes() {
+		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class,
+				ResourceConfigConfiguration.class });
+	}
+
+	@Test
+	public void actuatorEndpointsWhenUserProvidedResourceConfigBeanNotAvailable() {
+		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class });
+	}
+
+	protected void testJerseyEndpoints(Class[] userConfigurations) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				DispatcherServlet.class);
 		new WebApplicationContextRunner(
@@ -59,7 +70,7 @@ public class JerseyEndpointIntegrationTests {
 										WebEndpointAutoConfiguration.class,
 										ManagementContextAutoConfiguration.class,
 										BeansEndpointAutoConfiguration.class))
-						.withUserConfiguration(EndpointsConfiguration.class)
+						.withUserConfiguration(userConfigurations)
 						.withPropertyValues("management.endpoints.web.exposure.include:*",
 								"server.port:0")
 						.run((context) -> {
@@ -89,11 +100,6 @@ public class JerseyEndpointIntegrationTests {
 	static class EndpointsConfiguration {
 
 		@Bean
-		ResourceConfig testResourceConfig() {
-			return new ResourceConfig();
-		}
-
-		@Bean
 		TestControllerEndpoint testControllerEndpoint() {
 			return new TestControllerEndpoint();
 		}
@@ -101,6 +107,16 @@ public class JerseyEndpointIntegrationTests {
 		@Bean
 		TestRestControllerEndpoint testRestControllerEndpoint() {
 			return new TestRestControllerEndpoint();
+		}
+
+	}
+
+	@Configuration
+	static class ResourceConfigConfiguration {
+
+		@Bean
+		ResourceConfig testResourceConfig() {
+			return new ResourceConfig();
 		}
 
 	}
