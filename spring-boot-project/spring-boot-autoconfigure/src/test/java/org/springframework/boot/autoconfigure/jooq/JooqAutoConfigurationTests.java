@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
+import java.util.concurrent.Executor;
+
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
+import org.jooq.ExecutorProvider;
 import org.jooq.Record;
 import org.jooq.RecordListener;
 import org.jooq.RecordListenerProvider;
@@ -35,21 +38,21 @@ import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionalRunnable;
 import org.jooq.VisitListener;
 import org.jooq.VisitListenerProvider;
-import org.junit.Rule;
+import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JooqAutoConfiguration}.
@@ -65,9 +68,6 @@ public class JooqAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.name:jooqtest");
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void noDataSource() {
@@ -90,15 +90,10 @@ public class JooqAutoConfigurationTests {
 							"insert into jooqtest (name) values ('foo');"));
 					dsl.transaction(new AssertFetch(dsl,
 							"select count(*) as total from jooqtest;", "1"));
-					try {
-						dsl.transaction(new ExecuteSql(dsl,
-								"insert into jooqtest (name) values ('bar');",
-								"insert into jooqtest (name) values ('foo');"));
-						fail("An DataIntegrityViolationException should have been thrown.");
-					}
-					catch (DataIntegrityViolationException ex) {
-						// Ignore
-					}
+					assertThatExceptionOfType(DataIntegrityViolationException.class)
+							.isThrownBy(() -> dsl.transaction(new ExecuteSql(dsl,
+									"insert into jooqtest (name) values ('bar');",
+									"insert into jooqtest (name) values ('foo');")));
 					dsl.transaction(new AssertFetch(dsl,
 							"select count(*) as total from jooqtest;", "2"));
 				});
@@ -120,19 +115,14 @@ public class JooqAutoConfigurationTests {
 							"insert into jooqtest_tx (name) values ('foo');"));
 					dsl.transaction(new AssertFetch(dsl,
 							"select count(*) as total from jooqtest_tx;", "1"));
-					try {
-						dsl.transaction(new ExecuteSql(dsl,
-								"insert into jooqtest (name) values ('bar');",
-								"insert into jooqtest (name) values ('foo');"));
-						fail("A DataIntegrityViolationException should have been thrown.");
-					}
-					catch (DataIntegrityViolationException ex) {
-						// Ignore
-					}
+					assertThatExceptionOfType(DataIntegrityViolationException.class)
+							.isThrownBy(() -> dsl.transaction(new ExecuteSql(dsl,
+									"insert into jooqtest (name) values ('bar');",
+									"insert into jooqtest (name) values ('foo');")));
 					dsl.transaction(new AssertFetch(dsl,
 							"select count(*) as total from jooqtest_tx;", "1"));
-
 				});
+
 	}
 
 	@Test
@@ -141,16 +131,24 @@ public class JooqAutoConfigurationTests {
 				TxManagerConfiguration.class, TestRecordMapperProvider.class,
 				TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
 				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
-				TestTransactionListenerProvider.class).run((context) -> {
+				TestTransactionListenerProvider.class, TestExecutorProvider.class)
+				.run((context) -> {
 					DSLContext dsl = context.getBean(DSLContext.class);
 					assertThat(dsl.configuration().recordMapperProvider().getClass())
 							.isEqualTo(TestRecordMapperProvider.class);
 					assertThat(dsl.configuration().recordUnmapperProvider().getClass())
 							.isEqualTo(TestRecordUnmapperProvider.class);
+					assertThat(dsl.configuration().executorProvider().getClass())
+							.isEqualTo(TestExecutorProvider.class);
 					assertThat(dsl.configuration().recordListenerProviders().length)
 							.isEqualTo(1);
-					assertThat(dsl.configuration().executeListenerProviders().length)
-							.isEqualTo(2);
+					ExecuteListenerProvider[] executeListenerProviders = dsl
+							.configuration().executeListenerProviders();
+					assertThat(executeListenerProviders.length).isEqualTo(2);
+					assertThat(executeListenerProviders[0])
+							.isInstanceOf(DefaultExecuteListenerProvider.class);
+					assertThat(executeListenerProviders[1])
+							.isInstanceOf(TestExecuteListenerProvider.class);
 					assertThat(dsl.configuration().visitListenerProviders().length)
 							.isEqualTo(1);
 					assertThat(dsl.configuration().transactionListenerProviders().length)
@@ -259,6 +257,7 @@ public class JooqAutoConfigurationTests {
 
 	}
 
+	@Order(100)
 	protected static class TestExecuteListenerProvider
 			implements ExecuteListenerProvider {
 
@@ -283,6 +282,15 @@ public class JooqAutoConfigurationTests {
 
 		@Override
 		public TransactionListener provide() {
+			return null;
+		}
+
+	}
+
+	protected static class TestExecutorProvider implements ExecutorProvider {
+
+		@Override
+		public Executor provide() {
 			return null;
 		}
 

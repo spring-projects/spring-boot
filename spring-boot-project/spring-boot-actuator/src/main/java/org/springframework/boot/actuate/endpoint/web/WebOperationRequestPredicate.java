@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Pattern;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -29,6 +30,8 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 public final class WebOperationRequestPredicate {
+
+	private static final Pattern PATH_VAR_PATTERN = Pattern.compile("\\{.*?}");
 
 	private final String path;
 
@@ -50,7 +53,7 @@ public final class WebOperationRequestPredicate {
 	public WebOperationRequestPredicate(String path, WebEndpointHttpMethod httpMethod,
 			Collection<String> consumes, Collection<String> produces) {
 		this.path = path;
-		this.canonicalPath = path.replaceAll("\\{.*?}", "{*}");
+		this.canonicalPath = PATH_VAR_PATTERN.matcher(path).replaceAll("{*}");
 		this.httpMethod = httpMethod;
 		this.consumes = consumes;
 		this.produces = produces;
@@ -121,12 +124,12 @@ public final class WebOperationRequestPredicate {
 		StringBuilder result = new StringBuilder(
 				this.httpMethod + " to path '" + this.path + "'");
 		if (!CollectionUtils.isEmpty(this.consumes)) {
-			result.append(" consumes: "
-					+ StringUtils.collectionToCommaDelimitedString(this.consumes));
+			result.append(" consumes: ")
+					.append(StringUtils.collectionToCommaDelimitedString(this.consumes));
 		}
 		if (!CollectionUtils.isEmpty(this.produces)) {
-			result.append(" produces: "
-					+ StringUtils.collectionToCommaDelimitedString(this.produces));
+			result.append(" produces: ")
+					.append(StringUtils.collectionToCommaDelimitedString(this.produces));
 		}
 		return result.toString();
 	}

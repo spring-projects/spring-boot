@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,11 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.DispatcherType;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
@@ -27,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
@@ -37,6 +42,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +52,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.ViewResolver;
@@ -61,8 +72,11 @@ import static org.hamcrest.Matchers.containsString;
  * @author Eddú Meléndez
  * @author Brian Clozel
  * @author Kazuki Shimizu
+ * @author Artsiom Yudovin
  */
 public class ThymeleafServletAutoConfigurationTests {
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -99,6 +113,21 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideDisableProducePartialOutputWhileProcessing() {
+		load(BaseConfiguration.class,
+				"spring.thymeleaf.servlet.produce-partial-output-while-processing:false");
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)
+				.getProducePartialOutputWhileProcessing()).isFalse();
+	}
+
+	@Test
+	public void disableProducePartialOutputWhileProcessingIsEnabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)
+				.getProducePartialOutputWhileProcessing()).isTrue();
+	}
+
+	@Test
 	public void overrideTemplateResolverOrder() {
 		load(BaseConfiguration.class, "spring.thymeleaf.templateResolverOrder:25");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
@@ -127,6 +156,21 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideRenderHiddenMarkersBeforeCheckboxes() {
+		load(BaseConfiguration.class,
+				"spring.thymeleaf.render-hidden-markers-before-checkboxes:true");
+		assertThat(this.context.getBean(SpringTemplateEngine.class)
+				.getRenderHiddenMarkersBeforeCheckboxes()).isTrue();
+	}
+
+	@Test
+	public void enableRenderHiddenMarkersBeforeCheckboxesIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringTemplateEngine.class)
+				.getRenderHiddenMarkersBeforeCheckboxes()).isFalse();
+	}
+
+	@Test
 	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
@@ -135,9 +179,10 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	public void templateLocationEmpty() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		load(BaseConfiguration.class,
-				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
+				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/");
 	}
 
 	@Test
@@ -179,6 +224,24 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	public void useSecurityDialect() {
+		load(BaseConfiguration.class);
+		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		WebContext attrs = new WebContext(new MockHttpServletRequest(),
+				new MockHttpServletResponse(), new MockServletContext());
+		try {
+			SecurityContextHolder.setContext(new SecurityContextImpl(
+					new TestingAuthenticationToken("alice", "admin")));
+			String result = engine.process("security-dialect", attrs);
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>"
+					+ System.lineSeparator());
+		}
+		finally {
+			SecurityContextHolder.clearContext();
+		}
+	}
+
+	@Test
 	public void renderTemplate() {
 		load(BaseConfiguration.class);
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
@@ -205,14 +268,50 @@ public class ThymeleafServletAutoConfigurationTests {
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() {
 		load(BaseConfiguration.class);
-		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
-				.isEmpty();
+		assertThat(this.context.getBeansOfType(FilterRegistrationBean.class)).isEmpty();
 	}
 
 	@Test
 	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
 		load(BaseConfiguration.class, "spring.resources.chain.enabled:true");
-		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
+		FilterRegistrationBean<?> registration = this.context
+				.getBean(FilterRegistrationBean.class);
+		assertThat(registration.getFilter())
+				.isInstanceOf(ResourceUrlEncodingFilter.class);
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithOtherRegistrationBean() {
+		// gh-14897
+		load(FilterRegistrationOtherConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(2);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void registerResourceHandlingFilterWithResourceRegistrationBean() {
+		// gh-14926
+		load(FilterRegistrationResourceConfiguration.class,
+				"spring.resources.chain.enabled:true");
+		Map<String, FilterRegistrationBean> beans = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(beans).hasSize(1);
+		FilterRegistrationBean registration = beans.values().stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst().get();
+		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+				EnumSet.of(DispatcherType.INCLUDE));
 	}
 
 	@Test
@@ -235,9 +334,6 @@ public class ThymeleafServletAutoConfigurationTests {
 	private void load(Class<?> config, String... envVariables) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		TestPropertyValues.of(envVariables).applyTo(this.context);
-		if (config != null) {
-			this.context.register(config);
-		}
 		this.context.register(config);
 		this.context.refresh();
 	}
@@ -256,6 +352,31 @@ public class ThymeleafServletAutoConfigurationTests {
 		@Bean
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect(new GroupingStrategy());
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationResourceConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegistration() {
+			FilterRegistrationBean<ResourceUrlEncodingFilter> bean = new FilterRegistrationBean<>(
+					new ResourceUrlEncodingFilter());
+			bean.setDispatcherTypes(EnumSet.of(DispatcherType.INCLUDE));
+			return bean;
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class FilterRegistrationOtherConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
+			return new FilterRegistrationBean<>(new OrderedCharacterEncodingFilter());
 		}
 
 	}

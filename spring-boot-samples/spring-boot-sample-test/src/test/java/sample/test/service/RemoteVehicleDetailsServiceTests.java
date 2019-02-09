@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package sample.test.service;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import sample.test.domain.VehicleIdentificationNumber;
 
@@ -32,6 +30,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -48,9 +48,6 @@ public class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private RemoteVehicleDetailsService service;
 
@@ -59,9 +56,9 @@ public class RemoteVehicleDetailsServiceTests {
 
 	@Test
 	public void getVehicleDetailsWhenVinIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must not be null");
-		this.service.getVehicleDetails(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.service.getVehicleDetails(null))
+				.withMessage("VIN must not be null");
 	}
 
 	@Test
@@ -79,16 +76,18 @@ public class RemoteVehicleDetailsServiceTests {
 	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
-		this.thrown.expect(VehicleIdentificationNumberNotFoundException.class);
-		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
+		assertThatExceptionOfType(VehicleIdentificationNumberNotFoundException.class)
+				.isThrownBy(() -> this.service
+						.getVehicleDetails(new VehicleIdentificationNumber(VIN)));
 	}
 
 	@Test
 	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withServerError());
-		this.thrown.expect(HttpServerErrorException.class);
-		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
+		assertThatExceptionOfType(HttpServerErrorException.class)
+				.isThrownBy(() -> this.service
+						.getVehicleDetails(new VehicleIdentificationNumber(VIN)));
 	}
 
 	private ClassPathResource getClassPathResource(String path) {

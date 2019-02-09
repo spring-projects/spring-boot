@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.config.name=custom-config-name")
+@RunWith(SpringRunner.class)
 public class SpringBootTestCustomConfigNameTests {
 
 	@Value("${test.foo}")

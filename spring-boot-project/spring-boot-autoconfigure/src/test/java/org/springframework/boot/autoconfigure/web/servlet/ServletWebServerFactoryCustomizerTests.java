@@ -24,8 +24,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -33,7 +31,6 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
@@ -56,12 +53,8 @@ public class ServletWebServerFactoryCustomizerTests {
 
 	private ServletWebServerFactoryCustomizer customizer;
 
-	@Captor
-	private ArgumentCaptor<ServletContextInitializer[]> initializersCaptor;
-
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
 	}
 

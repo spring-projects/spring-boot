@@ -25,9 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -35,6 +33,8 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -44,9 +44,6 @@ import static org.mockito.Mockito.mock;
  */
 public class OperationMethodParametersTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example",
 			String.class);
 
@@ -55,24 +52,25 @@ public class OperationMethodParametersTests {
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Method must not be null");
-		new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OperationMethodParameters(null,
+						mock(ParameterNameDiscoverer.class)))
+				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ParameterNameDiscoverer must not be null");
-		new OperationMethodParameters(this.exampleMethod, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
+				.withMessageContaining("ParameterNameDiscoverer must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Failed to extract parameter names");
-		new OperationMethodParameters(this.exampleMethod,
-				mock(ParameterNameDiscoverer.class));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod,
+						mock(ParameterNameDiscoverer.class)))
+				.withMessageContaining("Failed to extract parameter names");
 	}
 
 	@Test

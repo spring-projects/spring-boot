@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
@@ -40,6 +39,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -50,18 +50,15 @@ import static org.mockito.Mockito.mock;
 public class ClassPathFileSystemWatcherTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void urlsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Urls must not be null");
-		URL[] urls = null;
-		new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
-				mock(ClassPathRestartStrategy.class), urls);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathFileSystemWatcher(
+						mock(FileSystemWatcherFactory.class),
+						mock(ClassPathRestartStrategy.class), (URL[]) null))
+				.withMessageContaining("Urls must not be null");
 	}
 
 	@Test

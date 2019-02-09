@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,15 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 					.containsDescendantOf(alias);
 			if (aliasResult != ConfigurationPropertyState.ABSENT) {
 				return aliasResult;
+			}
+		}
+		for (ConfigurationPropertyName from : getAliases()) {
+			for (ConfigurationPropertyName alias : getAliases().getAliases(from)) {
+				if (name.isAncestorOf(alias)) {
+					if (this.source.getConfigurationProperty(from) != null) {
+						return ConfigurationPropertyState.PRESENT;
+					}
+				}
 			}
 		}
 		return ConfigurationPropertyState.ABSENT;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package sample.simple.service;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +27,11 @@ public class HelloWorldService {
 	@Value("${name:World}")
 	private String name;
 
+	@Value("${duration:10s}")
+	private Duration duration;
+
 	public String getHelloMessage() {
-		return "Hello " + this.name;
+		return "Hello " + this.name + " for " + this.duration.getSeconds() + " seconds";
 	}
 
 }

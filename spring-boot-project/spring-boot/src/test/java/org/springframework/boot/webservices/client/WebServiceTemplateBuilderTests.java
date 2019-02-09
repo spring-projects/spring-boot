@@ -24,9 +24,7 @@ import java.util.Set;
 import javax.xml.transform.sax.SAXTransformerFactory;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -45,6 +43,7 @@ import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -60,9 +59,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class WebServiceTemplateBuilderTests {
 
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private WebServiceMessageSender messageSender;
@@ -102,16 +98,17 @@ public class WebServiceTemplateBuilderTests {
 
 	@Test
 	public void messageSendersWhenSendersAreAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MessageSenders must not be null");
-		this.builder.messageSenders((WebServiceMessageSender[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.builder.messageSenders((WebServiceMessageSender[]) null))
+				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
 	public void messageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MessageSenders must not be null");
-		this.builder.messageSenders((Collection<? extends WebServiceMessageSender>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder.messageSenders(
+						(Collection<? extends WebServiceMessageSender>) null))
+				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
@@ -131,17 +128,18 @@ public class WebServiceTemplateBuilderTests {
 
 	@Test
 	public void additionalMessageSendersWhenSendersAreAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MessageSenders must not be null");
-		this.builder.additionalMessageSenders((WebServiceMessageSender[]) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder
+						.additionalMessageSenders((WebServiceMessageSender[]) null))
+				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
 	public void additionalMessageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MessageSenders must not be null");
-		this.builder.additionalMessageSenders(
-				(Collection<? extends WebServiceMessageSender>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder.additionalMessageSenders(
+						(Collection<? extends WebServiceMessageSender>) null))
+				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
@@ -163,16 +161,17 @@ public class WebServiceTemplateBuilderTests {
 
 	@Test
 	public void interceptorsWhenInterceptorsAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Interceptors must not be null");
-		this.builder.interceptors((ClientInterceptor[]) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder.interceptors((ClientInterceptor[]) null))
+				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
 	public void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Interceptors must not be null");
-		this.builder.interceptors((Collection<? extends ClientInterceptor>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder
+						.interceptors((Collection<? extends ClientInterceptor>) null))
+				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
@@ -191,16 +190,16 @@ public class WebServiceTemplateBuilderTests {
 
 	@Test
 	public void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Interceptors must not be null");
-		this.builder.additionalInterceptors((ClientInterceptor[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.builder.additionalInterceptors((ClientInterceptor[]) null))
+				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
 	public void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Interceptors must not be null");
-		this.builder.additionalInterceptors((Set<ClientInterceptor>) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.builder.additionalInterceptors((Set<ClientInterceptor>) null))
+				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
@@ -225,17 +224,17 @@ public class WebServiceTemplateBuilderTests {
 
 	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.customizers((WebServiceTemplateCustomizer[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.builder.customizers((WebServiceTemplateCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder
-				.customizers((Collection<? extends WebServiceTemplateCustomizer>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder.customizers(
+						(Collection<? extends WebServiceTemplateCustomizer>) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -269,17 +268,18 @@ public class WebServiceTemplateBuilderTests {
 
 	@Test
 	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.additionalCustomizers((WebServiceTemplateCustomizer[]) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder
+						.additionalCustomizers((WebServiceTemplateCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		this.builder.additionalCustomizers(
-				(Collection<? extends WebServiceTemplateCustomizer>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder.additionalCustomizers(
+						(Collection<? extends WebServiceTemplateCustomizer>) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

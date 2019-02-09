@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,27 +21,26 @@ import org.junit.Test;
 
 import org.springframework.boot.test.rule.OutputCapture;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleLogbackApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testLoadedCustomLogbackConfig() throws Exception {
 		SampleLogbackApplication.main(new String[0]);
-		this.outputCapture.expect(containsString("Sample Debug Message"));
-		this.outputCapture.expect(not(containsString("Sample Trace Message")));
+		assertThat(this.output.toString()).contains("Sample Debug Message");
+		assertThat(this.output.toString()).doesNotContain("Sample Trace Message");
 	}
 
 	@Test
 	public void testProfile() throws Exception {
 		SampleLogbackApplication
 				.main(new String[] { "--spring.profiles.active=staging" });
-		this.outputCapture.expect(containsString("Sample Debug Message"));
-		this.outputCapture.expect(containsString("Sample Trace Message"));
+		assertThat(this.output.toString()).contains("Sample Debug Message");
+		assertThat(this.output.toString()).contains("Sample Trace Message");
 	}
 
 }

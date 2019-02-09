@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.webservices.client;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -27,7 +27,6 @@ import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.CollectionUtils;
@@ -43,10 +42,10 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
-	private final ObjectProvider<List<WebServiceTemplateCustomizer>> webServiceTemplateCustomizers;
+	private final ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers;
 
 	public WebServiceTemplateAutoConfiguration(
-			ObjectProvider<List<WebServiceTemplateCustomizer>> webServiceTemplateCustomizers) {
+			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		this.webServiceTemplateCustomizers = webServiceTemplateCustomizers;
 	}
 
@@ -55,10 +54,8 @@ public class WebServiceTemplateAutoConfiguration {
 	public WebServiceTemplateBuilder webServiceTemplateBuilder() {
 		WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
 		List<WebServiceTemplateCustomizer> customizers = this.webServiceTemplateCustomizers
-				.getIfAvailable();
+				.orderedStream().collect(Collectors.toList());
 		if (!CollectionUtils.isEmpty(customizers)) {
-			customizers = new ArrayList<>(customizers);
-			AnnotationAwareOrderComparator.sort(customizers);
 			builder = builder.customizers(customizers);
 		}
 		return builder;

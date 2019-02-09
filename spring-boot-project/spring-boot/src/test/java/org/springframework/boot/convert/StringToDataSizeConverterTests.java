@@ -16,9 +16,7 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -30,6 +28,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link StringToDataSizeConverter}.
@@ -38,9 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(Parameterized.class)
 public class StringToDataSizeConverterTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final ConversionService conversionService;
 
@@ -57,31 +53,31 @@ public class StringToDataSizeConverterTests {
 	}
 
 	@Test
-	public void convertWhenSimpleKiloBytesShouldReturnDataSize() {
-		assertThat(convert("10KB")).isEqualTo(DataSize.ofKiloBytes(10));
-		assertThat(convert("+10KB")).isEqualTo(DataSize.ofKiloBytes(10));
-		assertThat(convert("-10KB")).isEqualTo(DataSize.ofKiloBytes(-10));
+	public void convertWhenSimpleKilobytesShouldReturnDataSize() {
+		assertThat(convert("10KB")).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert("+10KB")).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert("-10KB")).isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleMegaBytesShouldReturnDataSize() {
-		assertThat(convert("10MB")).isEqualTo(DataSize.ofMegaBytes(10));
-		assertThat(convert("+10MB")).isEqualTo(DataSize.ofMegaBytes(10));
-		assertThat(convert("-10MB")).isEqualTo(DataSize.ofMegaBytes(-10));
+	public void convertWhenSimpleMegabytesShouldReturnDataSize() {
+		assertThat(convert("10MB")).isEqualTo(DataSize.ofMegabytes(10));
+		assertThat(convert("+10MB")).isEqualTo(DataSize.ofMegabytes(10));
+		assertThat(convert("-10MB")).isEqualTo(DataSize.ofMegabytes(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleGigaBytesShouldReturnDataSize() {
-		assertThat(convert("10GB")).isEqualTo(DataSize.ofGigaBytes(10));
-		assertThat(convert("+10GB")).isEqualTo(DataSize.ofGigaBytes(10));
-		assertThat(convert("-10GB")).isEqualTo(DataSize.ofGigaBytes(-10));
+	public void convertWhenSimpleGigabytesShouldReturnDataSize() {
+		assertThat(convert("10GB")).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(convert("+10GB")).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(convert("-10GB")).isEqualTo(DataSize.ofGigabytes(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleTeraBytesShouldReturnDataSize() {
-		assertThat(convert("10TB")).isEqualTo(DataSize.ofTeraBytes(10));
-		assertThat(convert("+10TB")).isEqualTo(DataSize.ofTeraBytes(10));
-		assertThat(convert("-10TB")).isEqualTo(DataSize.ofTeraBytes(-10));
+	public void convertWhenSimpleTerabytesShouldReturnDataSize() {
+		assertThat(convert("10TB")).isEqualTo(DataSize.ofTerabytes(10));
+		assertThat(convert("+10TB")).isEqualTo(DataSize.ofTerabytes(10));
+		assertThat(convert("-10TB")).isEqualTo(DataSize.ofTerabytes(-10));
 	}
 
 	@Test
@@ -93,18 +89,18 @@ public class StringToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDataSize() {
-		assertThat(convert("10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKiloBytes(10));
+		assertThat(convert("10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
 		assertThat(convert("+10", DataUnit.KILOBYTES))
-				.isEqualTo(DataSize.ofKiloBytes(10));
+				.isEqualTo(DataSize.ofKilobytes(10));
 		assertThat(convert("-10", DataUnit.KILOBYTES))
-				.isEqualTo(DataSize.ofKiloBytes(-10));
+				.isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class);
-		this.thrown.expectMessage("'10WB' is not a valid data size");
-		convert("10WB");
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> convert("10WB"))
+				.withMessageContaining("'10WB' is not a valid data size");
 	}
 
 	@Test

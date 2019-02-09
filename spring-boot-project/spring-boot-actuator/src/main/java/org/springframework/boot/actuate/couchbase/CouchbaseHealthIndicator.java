@@ -16,19 +16,13 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import com.couchbase.client.java.bucket.BucketInfo;
-import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.core.message.internal.DiagnosticsReport;
+import com.couchbase.client.java.Cluster;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for Couchbase.
@@ -39,46 +33,23 @@ import org.springframework.util.StringUtils;
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private final CouchbaseOperations operations;
-
-	private final long timeout;
+	private final Cluster cluster;
 
 	/**
-	 * Create an indicator with the specified {@link CouchbaseOperations} and
-	 * {@code timeout}.
-	 * @param couchbaseOperations the couchbase operations
-	 * @param timeout the request timeout
+	 * Create an indicator with the specified {@link Cluster}.
+	 * @param cluster the Couchbase Cluster
+	 * @since 2.0.6
 	 */
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations,
-			Duration timeout) {
+	public CouchbaseHealthIndicator(Cluster cluster) {
 		super("Couchbase health check failed");
-		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
-		Assert.notNull(timeout, "Timeout must not be null");
-		this.operations = couchbaseOperations;
-		this.timeout = timeout.toMillis();
+		Assert.notNull(cluster, "Cluster must not be null");
+		this.cluster = cluster;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
-		BucketInfo bucket = getBucketInfo();
-		String versions = StringUtils
-				.collectionToCommaDelimitedString(cluster.getAllVersions());
-		String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
-		builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
-	}
-
-	private BucketInfo getBucketInfo() throws Exception {
-		try {
-			return this.operations.getCouchbaseBucket().bucketManager().info(this.timeout,
-					TimeUnit.MILLISECONDS);
-		}
-		catch (RuntimeException ex) {
-			if (ex.getCause() instanceof TimeoutException) {
-				throw (TimeoutException) ex.getCause();
-			}
-			throw ex;
-		}
+		DiagnosticsReport diagnostics = this.cluster.diagnostics();
+		new CouchbaseHealth(diagnostics).applyTo(builder);
 	}
 
 }

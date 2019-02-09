@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.influx;
 
 import okhttp3.OkHttpClient;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.InfluxDBImpl;
 
@@ -42,14 +44,35 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(InfluxDbProperties.class)
 public class InfluxDbAutoConfiguration {
 
+	private static final Log logger = LogFactory.getLog(InfluxDbAutoConfiguration.class);
+
 	private final InfluxDbProperties properties;
 
 	private final OkHttpClient.Builder builder;
 
 	public InfluxDbAutoConfiguration(InfluxDbProperties properties,
-			ObjectProvider<OkHttpClient.Builder> builder) {
+			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
+			ObjectProvider<OkHttpClient.Builder> deprecatedBuilder) {
 		this.properties = properties;
-		this.builder = builder.getIfAvailable(OkHttpClient.Builder::new);
+		this.builder = determineBuilder(builder.getIfAvailable(),
+				deprecatedBuilder.getIfAvailable());
+	}
+
+	@Deprecated
+	private static OkHttpClient.Builder determineBuilder(
+			InfluxDbOkHttpClientBuilderProvider builder,
+			OkHttpClient.Builder deprecatedBuilder) {
+		if (builder != null) {
+			return builder.get();
+		}
+		else if (deprecatedBuilder != null) {
+			logger.warn(
+					"InfluxDB client customizations using a OkHttpClient.Builder is deprecated, register a "
+							+ InfluxDbOkHttpClientBuilderProvider.class.getSimpleName()
+							+ " bean instead");
+			return deprecatedBuilder;
+		}
+		return new OkHttpClient.Builder();
 	}
 
 	@Bean

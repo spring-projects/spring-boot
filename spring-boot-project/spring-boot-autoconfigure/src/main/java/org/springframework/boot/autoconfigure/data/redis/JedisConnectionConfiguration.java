@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
@@ -51,16 +49,15 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
-	private final List<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
 
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-			ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> builderCustomizers) {
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		super(properties, sentinelConfiguration, clusterConfiguration);
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers
-				.getIfAvailable(Collections::emptyList);
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean
@@ -133,9 +130,8 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private void customize(
 			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		for (JedisClientConfigurationBuilderCustomizer customizer : this.builderCustomizers) {
-			customizer.customize(builder);
-		}
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 }

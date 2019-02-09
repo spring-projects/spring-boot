@@ -1,11 +1,7 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
 
 if (project.hasProperty('applyDependencyManagementPlugin')) {
 	apply plugin: 'io.spring.dependency-management'
@@ -21,7 +17,7 @@ if (project.hasProperty('applyDependencyManagementPlugin')) {
 }
 
 repositories {
-	mavenLocal()
+	maven { url 'file:repository' }
 }
 
 task doesNotHaveDependencyManagement {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
@@ -35,9 +36,11 @@ import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
+import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
@@ -47,6 +50,7 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -125,16 +129,14 @@ public class EmbeddedMongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public IMongodConfig embeddedMongoConfiguration() throws IOException {
-		IFeatureAwareVersion featureAwareVersion = Versions.withFeatures(
-				new GenericVersion(this.embeddedProperties.getVersion()),
-				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
 		MongodConfigBuilder builder = new MongodConfigBuilder()
-				.version(featureAwareVersion);
+				.version(determineVersion());
 		EmbeddedMongoProperties.Storage storage = this.embeddedProperties.getStorage();
 		if (storage != null) {
 			String databaseDir = storage.getDatabaseDir();
 			String replSetName = storage.getReplSetName();
-			int oplogSize = (storage.getOplogSize() != null) ? storage.getOplogSize() : 0;
+			int oplogSize = (storage.getOplogSize() != null)
+					? (int) storage.getOplogSize().toMegabytes() : 0;
 			builder.replication(new Storage(databaseDir, replSetName, oplogSize));
 		}
 		Integer configuredPort = this.properties.getPort();
@@ -147,6 +149,22 @@ public class EmbeddedMongoAutoConfiguration {
 					Network.getFreeServerPort(getHost()), Network.localhostIsIPv6()));
 		}
 		return builder.build();
+	}
+
+	private IFeatureAwareVersion determineVersion() {
+		if (this.embeddedProperties.getFeatures() == null) {
+			for (Version version : Version.values()) {
+				if (version.asInDownloadPath()
+						.equals(this.embeddedProperties.getVersion())) {
+					return version;
+				}
+			}
+			return Versions.withFeatures(
+					new GenericVersion(this.embeddedProperties.getVersion()));
+		}
+		return Versions.withFeatures(
+				new GenericVersion(this.embeddedProperties.getVersion()),
+				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -188,7 +206,8 @@ public class EmbeddedMongoAutoConfiguration {
 	static class RuntimeConfigConfiguration {
 
 		@Bean
-		public IRuntimeConfig embeddedMongoRuntimeConfig() {
+		public IRuntimeConfig embeddedMongoRuntimeConfig(
+				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory
 					.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
 			ProcessOutput processOutput = new ProcessOutput(
@@ -196,15 +215,21 @@ public class EmbeddedMongoAutoConfiguration {
 					Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named(
 							"[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
 			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
-					.processOutput(processOutput).artifactStore(getArtifactStore(logger))
+					.processOutput(processOutput).artifactStore(getArtifactStore(logger,
+							downloadConfigBuilderCustomizers.orderedStream()))
 					.build();
 		}
 
-		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
+		private ArtifactStoreBuilder getArtifactStore(Logger logger,
+				Stream<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
+			DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
+					.defaultsForCommand(Command.MongoD);
+			downloadConfigBuilder.progressListener(new Slf4jProgressListener(logger));
+			downloadConfigBuilderCustomizers
+					.forEach((customizer) -> customizer.customize(downloadConfigBuilder));
+			IDownloadConfig downloadConfig = downloadConfigBuilder.build();
 			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
-					.download(new DownloadConfigBuilder()
-							.defaultsForCommand(Command.MongoD)
-							.progressListener(new Slf4jProgressListener(logger)).build());
+					.download(downloadConfig);
 		}
 
 	}

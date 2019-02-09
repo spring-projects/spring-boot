@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -31,8 +31,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,6 +45,7 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jndi.JndiLocatorDelegate;
+import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -85,39 +88,47 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
+			ConfigurableListableBeanFactory beanFactory,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
-			ObjectProvider<List<SchemaManagementProvider>> providers,
+			ObjectProvider<SchemaManagementProvider> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
 			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy,
-			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
+			ObjectProvider<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.hibernateProperties = hibernateProperties;
-		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
-				providers.getIfAvailable(Collections::emptyList));
+		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(providers);
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
 				metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
 				physicalNamingStrategy.getIfAvailable(),
-				implicitNamingStrategy.getIfAvailable(),
-				hibernatePropertiesCustomizers.getIfAvailable(Collections::emptyList));
+				implicitNamingStrategy.getIfAvailable(), beanFactory,
+				hibernatePropertiesCustomizers.orderedStream()
+						.collect(Collectors.toList()));
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
 			PhysicalNamingStrategy physicalNamingStrategy,
 			ImplicitNamingStrategy implicitNamingStrategy,
+			ConfigurableListableBeanFactory beanFactory,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
-		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
-			LinkedList<HibernatePropertiesCustomizer> customizers = new LinkedList<>(
-					hibernatePropertiesCustomizers);
-			customizers.addFirst(new NamingStrategiesHibernatePropertiesCustomizer(
-					physicalNamingStrategy, implicitNamingStrategy));
-			return customizers;
+		List<HibernatePropertiesCustomizer> customizers = new ArrayList<>();
+		if (ClassUtils.isPresent(
+				"org.hibernate.resource.beans.container.spi.BeanContainer",
+				getClass().getClassLoader())) {
+			customizers
+					.add((properties) -> properties.put(AvailableSettings.BEAN_CONTAINER,
+							new SpringBeanContainer(beanFactory)));
 		}
-		return hibernatePropertiesCustomizers;
+		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
+			customizers.add(new NamingStrategiesHibernatePropertiesCustomizer(
+					physicalNamingStrategy, implicitNamingStrategy));
+		}
+		customizers.addAll(hibernatePropertiesCustomizers);
+		return customizers;
 	}
 
 	@Override
@@ -220,7 +231,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				// Continue searching
 			}
 		}
-		throw new IllegalStateException("No available JtaPlatform candidates amongst"
+		throw new IllegalStateException("No available JtaPlatform candidates amongst "
 				+ Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.context.logging;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -49,6 +51,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,7 +59,8 @@ import org.springframework.util.StringUtils;
  * An {@link ApplicationListener} that configures the {@link LoggingSystem}. If the
  * environment contains a {@code logging.config} property it will be used to bootstrap the
  * logging system, otherwise a default configuration is used. Regardless, logging levels
- * will be customized if the environment contains {@code logging.level.*} entries.
+ * will be customized if the environment contains {@code logging.level.*} entries and
+ * logging groups can be defined with {@code logging.group}.
  * <p>
  * Debug and trace logging for Spring, Tomcat, Jetty and Hibernate will be enabled when
  * the environment contains {@code debug} or {@code trace} properties that aren't set to
@@ -64,8 +68,8 @@ import org.springframework.util.StringUtils;
  * {@literal java -jar myapp.jar [--debug | --trace]}). If you prefer to ignore these
  * properties you can set {@link #setParseArgs(boolean) parseArgs} to {@code false}.
  * <p>
- * By default, log output is only written to the console. If a log file is required the
- * {@code logging.path} and {@code logging.file} properties can be used.
+ * By default, log output is only written to the console. If a log file is required, the
+ * {@code logging.file.path} and {@code logging.file.name} properties can be used.
  * <p>
  * Some system properties may be set as side effects, and these can be useful if the
  * logging configuration supports placeholders (i.e. log4j or logback):
@@ -85,8 +89,17 @@ import org.springframework.util.StringUtils;
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
 
+	private static final ConfigurationPropertyName LOGGING_LEVEL = ConfigurationPropertyName
+			.of("logging.level");
+
+	private static final ConfigurationPropertyName LOGGING_GROUP = ConfigurationPropertyName
+			.of("logging.group");
+
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
 			.mapOf(String.class, String.class);
+
+	private static final Bindable<Map<String, String[]>> STRING_STRINGS_MAP = Bindable
+			.mapOf(String.class, String[].class);
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -111,19 +124,33 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public static final String LOGGING_SYSTEM_BEAN_NAME = "springBootLoggingSystem";
 
-	private static final MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
+	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
+	static {
+		MultiValueMap<String, String> loggers = new LinkedMultiValueMap<>();
+		loggers.add("web", "org.springframework.core.codec");
+		loggers.add("web", "org.springframework.http");
+		loggers.add("web", "org.springframework.web");
+		loggers.add("web", "org.springframework.boot.actuate.endpoint.web");
+		loggers.add("web",
+				"org.springframework.boot.web.servlet.ServletContextInitializerBeans");
+		loggers.add("sql", "org.springframework.jdbc.core");
+		loggers.add("sql", "org.hibernate.SQL");
+		DEFAULT_GROUP_LOGGERS = Collections.unmodifiableMap(loggers);
+	}
 
-	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
+	private static final Map<LogLevel, List<String>> LOG_LEVEL_LOGGERS;
 
 	static {
-		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<>();
-		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.springframework");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.tomcat");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.catalina");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.eclipse.jetty");
-		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
-		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.hibernate.SQL");
+		MultiValueMap<LogLevel, String> loggers = new LinkedMultiValueMap<>();
+		loggers.add(LogLevel.DEBUG, "sql");
+		loggers.add(LogLevel.DEBUG, "web");
+		loggers.add(LogLevel.DEBUG, "org.springframework.boot");
+		loggers.add(LogLevel.TRACE, "org.springframework");
+		loggers.add(LogLevel.TRACE, "org.apache.tomcat");
+		loggers.add(LogLevel.TRACE, "org.apache.catalina");
+		loggers.add(LogLevel.TRACE, "org.eclipse.jetty");
+		loggers.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
+		LOG_LEVEL_LOGGERS = Collections.unmodifiableMap(loggers);
 	}
 
 	private static final Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
@@ -132,6 +159,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class,
 			ApplicationContext.class };
+
+	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -304,8 +333,32 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			return;
 		}
 		Binder binder = Binder.get(environment);
-		binder.bind("logging.level", STRING_STRING_MAP).orElseGet(Collections::emptyMap)
-				.forEach((name, level) -> setLogLevel(system, name, level));
+		Map<String, String[]> groups = getGroups();
+		binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP.withExistingValue(groups));
+		Map<String, String> levels = binder.bind(LOGGING_LEVEL, STRING_STRING_MAP)
+				.orElseGet(Collections::emptyMap);
+		levels.forEach((name, level) -> {
+			String[] groupedNames = groups.get(name);
+			if (ObjectUtils.isEmpty(groupedNames)) {
+				setLogLevel(system, name, level);
+			}
+			else {
+				setLogLevel(system, groupedNames, level);
+			}
+		});
+	}
+
+	private Map<String, String[]> getGroups() {
+		Map<String, String[]> groups = new LinkedHashMap<>();
+		DEFAULT_GROUP_LOGGERS.forEach(
+				(name, loggers) -> groups.put(name, StringUtils.toStringArray(loggers)));
+		return groups;
+	}
+
+	private void setLogLevel(LoggingSystem system, String[] names, String level) {
+		for (String name : names) {
+			setLogLevel(system, name, level);
+		}
 	}
 
 	private void setLogLevel(LoggingSystem system, String name, String level) {
@@ -314,15 +367,16 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {
-			this.logger.error("Cannot set level: " + level + " for '" + name + "'");
+			this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
 		}
 	}
 
 	private LogLevel coerceLogLevel(String level) {
-		if ("false".equalsIgnoreCase(level)) {
+		String trimmedLevel = level.trim();
+		if ("false".equalsIgnoreCase(trimmedLevel)) {
 			return LogLevel.OFF;
 		}
-		return LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH));
+		return LogLevel.valueOf(trimmedLevel.toUpperCase(Locale.ENGLISH));
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment,
@@ -360,8 +414,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	/**
-	 * Sets if initialization arguments should be parsed for {@literal --debug} and
-	 * {@literal --trace} options. Defaults to {@code true}.
+	 * Sets if initialization arguments should be parsed for {@literal debug} and
+	 * {@literal trace} properties (usually defined from {@literal --debug} or
+	 * {@literal --trace} command line args). Defaults to {@code true}.
 	 * @param parseArgs if arguments should be parsed
 	 */
 	public void setParseArgs(boolean parseArgs) {

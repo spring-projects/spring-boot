@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.Properties;
 
@@ -33,7 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
@@ -45,7 +43,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -54,7 +54,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -69,6 +68,8 @@ import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.filter.GenericFilterBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -86,10 +87,10 @@ import static org.mockito.Mockito.withSettings;
  */
 public class ServletWebServerApplicationContextTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private ServletWebServerApplicationContext context;
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Captor
 	private ArgumentCaptor<Filter> filterCaptor;
@@ -126,17 +127,13 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void doesNotRegistersShutdownHook() throws Exception {
+	public void doesNotRegistersShutdownHook() {
 		// See gh-314 for background. We no longer register the shutdown hook
 		// since it is really the callers responsibility. The shutdown hook could
 		// also be problematic in a classic WAR deployment.
 		addWebServerFactoryBean();
 		this.context.refresh();
-		Field shutdownHookField = AbstractApplicationContext.class
-				.getDeclaredField("shutdownHook");
-		shutdownHookField.setAccessible(true);
-		Object shutdownHook = shutdownHookField.get(this.context);
-		assertThat(shutdownHook).isNull();
+		assertThat(this.context).hasFieldOrPropertyWithValue("shutdownHook", null);
 	}
 
 	@Test
@@ -175,8 +172,7 @@ public class ServletWebServerApplicationContextTests {
 	public void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
-		this.thrown.expect(IllegalStateException.class);
-		this.context.refresh();
+		assertThatIllegalStateException().isThrownBy(() -> this.context.refresh());
 	}
 
 	@Test
@@ -190,11 +186,10 @@ public class ServletWebServerApplicationContextTests {
 
 	@Test
 	public void missingServletWebServerFactory() {
-		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage(
-				"Unable to start ServletWebServerApplicationContext due to missing "
-						+ "ServletWebServerFactory bean");
-		this.context.refresh();
+		assertThatExceptionOfType(ApplicationContextException.class)
+				.isThrownBy(() -> this.context.refresh()).withMessageContaining(
+						"Unable to start ServletWebServerApplicationContext due to missing "
+								+ "ServletWebServerFactory bean");
 	}
 
 	@Test
@@ -202,11 +197,10 @@ public class ServletWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
-		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage(
-				"Unable to start ServletWebServerApplicationContext due to "
-						+ "multiple ServletWebServerFactory beans");
-		this.context.refresh();
+		assertThatExceptionOfType(ApplicationContextException.class)
+				.isThrownBy(() -> this.context.refresh()).withMessageContaining(
+						"Unable to start ServletWebServerApplicationContext due to "
+								+ "multiple ServletWebServerFactory beans");
 
 	}
 
@@ -423,11 +417,11 @@ public class ServletWebServerApplicationContextTests {
 				this.filterCaptor.capture());
 		// Up to this point the filterBean should not have been created, calling
 		// the delegate proxy will trigger creation and an exception
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Create FilterBean Failure");
-		this.filterCaptor.getValue().init(new MockFilterConfig());
-		this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
-				new MockHttpServletResponse(), new MockFilterChain());
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> {
+			this.filterCaptor.getValue().init(new MockFilterConfig());
+			this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
+					new MockHttpServletResponse(), new MockFilterChain());
+		}).withMessageContaining("Create FilterBean Failure");
 	}
 
 	@Test
@@ -449,7 +443,8 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void doesNotReplaceExistingScopes() { // gh-2082
+	public void doesNotReplaceExistingScopes() {
+		// gh-2082
 		Scope scope = mock(Scope.class);
 		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
 		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
@@ -460,6 +455,34 @@ public class ServletWebServerApplicationContextTests {
 				.isSameAs(scope);
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
 				.isSameAs(scope);
+	}
+
+	@Test
+	public void servletRequestCanBeInjectedEarly() throws Exception {
+		// gh-14990
+		int initialOutputLength = this.output.toString().length();
+		addWebServerFactoryBean();
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(
+				WithAutowiredServletRequest.class);
+		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
+		this.context.registerBeanDefinition("withAutowiredServletRequest",
+				beanDefinition);
+		this.context.addBeanFactoryPostProcessor((beanFactory) -> {
+			WithAutowiredServletRequest bean = beanFactory
+					.getBean(WithAutowiredServletRequest.class);
+			assertThat(bean.getRequest()).isNotNull();
+		});
+		this.context.refresh();
+		String output = this.output.toString().substring(initialOutputLength);
+		assertThat(output).doesNotContain("Replacing scope");
+	}
+
+	@Test
+	public void webApplicationScopeIsRegistered() throws Exception {
+		addWebServerFactoryBean();
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory()
+				.getRegisteredScope(WebApplicationContext.SCOPE_APPLICATION)).isNotNull();
 	}
 
 	private void addWebServerFactoryBean() {
@@ -510,6 +533,20 @@ public class ServletWebServerApplicationContextTests {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) {
+		}
+
+	}
+
+	protected static class WithAutowiredServletRequest {
+
+		private final ServletRequest request;
+
+		public WithAutowiredServletRequest(ServletRequest request) {
+			this.request = request;
+		}
+
+		public ServletRequest getRequest() {
+			return this.request;
 		}
 
 	}

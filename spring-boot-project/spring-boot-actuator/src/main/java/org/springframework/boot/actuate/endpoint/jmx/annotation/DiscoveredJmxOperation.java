@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -59,8 +60,8 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 	private final List<JmxOperationParameter> parameters;
 
-	DiscoveredJmxOperation(String endpointId, DiscoveredOperationMethod operationMethod,
-			OperationInvoker invoker) {
+	DiscoveredJmxOperation(EndpointId endpointId,
+			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		super(operationMethod, invoker);
 		Method method = operationMethod.getMethod();
 		this.name = method.getName();
@@ -179,9 +180,9 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		public String toString() {
 			StringBuilder result = new StringBuilder(this.name);
 			if (this.description != null) {
-				result.append(" (" + this.description + ")");
+				result.append(" (").append(this.description).append(")");
 			}
-			result.append(":" + this.type);
+			result.append(":").append(this.type);
 			return result.toString();
 		}
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -40,6 +41,20 @@
 			<artifactId>groovy</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.sonatype.plexus</groupId>
+			<artifactId>plexus-sec-dispatcher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.sonatype.sisu</groupId>
+			<artifactId>sisu-inject-plexus</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.sonatype.sisu</groupId>
+					<artifactId>sisu-inject-bean</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
@@ -48,62 +63,48 @@
 			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-aether-provider</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.eclipse.sisu.plexus</artifactId>
-					<groupId>org.eclipse.sisu</groupId>
-				</exclusion>
-			</exclusions>
+			<artifactId>maven-model</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-settings-builder</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-component-api</artifactId>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-resolver-provider</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-api</artifactId>
+			<groupId>org.apache.maven.resolver</groupId>
+			<artifactId>maven-resolver-connector-basic</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-connector-basic</artifactId>
+			<groupId>org.apache.maven.resolver</groupId>
+			<artifactId>maven-resolver-impl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-impl</artifactId>
+			<groupId>org.apache.maven.resolver</groupId>
+			<artifactId>maven-resolver-transport-file</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-spi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-transport-file</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-transport-http</artifactId>
+			<groupId>org.apache.maven.resolver</groupId>
+			<artifactId>maven-resolver-transport-http</artifactId>
 			<exclusions>
 				<exclusion>
 					<artifactId>jcl-over-slf4j</artifactId>
 					<groupId>org.slf4j</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.aether</groupId>
-			<artifactId>aether-util</artifactId>
 		</dependency>
 		<!-- Provided -->
 		<dependency>
@@ -308,17 +309,23 @@
 						<inherited>false</inherited>
 						<configuration>
 							<target>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-								<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+								<taskdef
+									resource="net/sf/antcontrib/antcontrib.properties" />
+								<taskdef name="stringutil"
+									classname="ise.antelope.tasks.StringUtilTask" />
 								<var name="version-type" value="${project.version}" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp=".*\.(.*)"
+									replace="\1" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp="(M)\d+"
+									replace="MILESTONE" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp="(RC)\d+"
+									replace="MILESTONE" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp="BUILD-(.*)"
+									replace="SNAPSHOT" />
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
@@ -328,12 +335,14 @@
 								<echo
 									message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo" />
 								<copy file="${basedir}/src/main/homebrew/springboot.rb"
-									tofile="${project.build.directory}/homebrew/springboot.rb" overwrite="true">
+									tofile="${project.build.directory}/homebrew/springboot.rb"
+									overwrite="true">
 									<filterchain>
 										<expandproperties />
 									</filterchain>
 								</copy>
-								<attachartifact file="${project.build.directory}/homebrew/springboot.rb"
+								<attachartifact
+									file="${project.build.directory}/homebrew/springboot.rb"
 									classifier="homebrew" type="rb" />
 							</target>
 						</configuration>
@@ -347,20 +356,27 @@
 						<inherited>false</inherited>
 						<configuration>
 							<target>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-								<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+								<taskdef
+									resource="net/sf/antcontrib/antcontrib.properties" />
+								<taskdef name="stringutil"
+									classname="ise.antelope.tasks.StringUtilTask" />
 								<var name="scoop-version" value="${project.version}" />
-								<propertyregex property="scoop-version" override="true"
-									input="${scoop-version}" regexp="(.*)\..*" replace="\1" />
+								<propertyregex property="scoop-version"
+									override="true" input="${scoop-version}" regexp="(.*)\..*"
+									replace="\1" />
 								<var name="version-type" value="${project.version}" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp=".*\.(.*)"
+									replace="\1" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp="(M)\d+"
+									replace="MILESTONE" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp="(RC)\d+"
+									replace="MILESTONE" />
+								<propertyregex property="version-type"
+									override="true" input="${version-type}" regexp="BUILD-(.*)"
+									replace="SNAPSHOT" />
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
@@ -370,7 +386,8 @@
 								<echo
 									message="Customizing scoop for ${project.version} with hash ${hash} in ${repo} repo" />
 								<copy file="${basedir}/src/main/scoop/springboot.json"
-									  tofile="${project.build.directory}/scoop/springboot.json" overwrite="true">
+									tofile="${project.build.directory}/scoop/springboot.json"
+									overwrite="true">
 									<filterchain>
 										<expandproperties>
 											<propertyset>
@@ -382,8 +399,9 @@
 										</expandproperties>
 									</filterchain>
 								</copy>
-								<attachartifact file="${project.build.directory}/scoop/springboot.json"
-												classifier="scoop" type="json" />
+								<attachartifact
+									file="${project.build.directory}/scoop/springboot.json"
+									classifier="scoop" type="json" />
 							</target>
 						</configuration>
 					</execution>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package org.springframework.boot.devtools.restart;
 import java.lang.reflect.Method;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link MainMethod}.
@@ -33,9 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class MainMethodTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
@@ -48,9 +45,8 @@ public class MainMethodTests {
 
 	@Test
 	public void threadMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Thread must not be null");
-		new MainMethod(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
+				.withMessageContaining("Thread must not be null");
 	}
 
 	@Test
@@ -63,16 +59,16 @@ public class MainMethodTests {
 
 	@Test
 	public void missingArgsMainMethod() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to find main method");
-		new TestThread(MissingArgs::main).test();
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new TestThread(MissingArgs::main).test())
+				.withMessageContaining("Unable to find main method");
 	}
 
 	@Test
 	public void nonStatic() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to find main method");
-		new TestThread(() -> new NonStaticMain().main()).test();
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
+				.withMessageContaining("Unable to find main method");
 	}
 
 	private static class TestThread extends Thread {

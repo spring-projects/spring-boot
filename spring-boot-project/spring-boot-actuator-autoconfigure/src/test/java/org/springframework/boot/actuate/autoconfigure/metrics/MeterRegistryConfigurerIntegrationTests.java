@@ -17,13 +17,21 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Integration tests for {@link MeterRegistryConfigurer}.
@@ -34,7 +42,8 @@ public class MeterRegistryConfigurerIntegrationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
-					PrometheusMetricsExportAutoConfiguration.class));
+					PrometheusMetricsExportAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
 
 	@Test
 	public void binderMetricsAreSearchableFromTheComposite() {
@@ -45,6 +54,76 @@ public class MeterRegistryConfigurerIntegrationTests {
 			context.getBeansOfType(MeterRegistry.class)
 					.forEach((name, registry) -> registry.get("jvm.memory.used").gauge());
 		});
+	}
+
+	@Test
+	public void customizersAreAppliedBeforeBindersAreCreated() {
+		new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						SimpleMetricsExportAutoConfiguration.class))
+				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+
+				});
+	}
+
+	@Configuration
+	static class TestConfiguration {
+
+		@Bean
+		MeterBinder testBinder(Alpha thing) {
+			return (registry) -> {
+			};
+		}
+
+		@Bean
+		MeterRegistryCustomizer<?> testCustomizer() {
+			return (registry) -> {
+				registry.config().commonTags("testTag", "testValue");
+			};
+		}
+
+		@Bean
+		Alpha alpha() {
+			return new Alpha();
+		}
+
+		@Bean
+		Bravo bravo(Alpha alpha) {
+			return new Bravo(alpha);
+		}
+
+		@Bean
+		static BeanPostProcessor testPostProcessor(ApplicationContext context) {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName)
+						throws BeansException {
+					if (bean instanceof Bravo) {
+						MeterRegistry meterRegistry = context
+								.getBean(MeterRegistry.class);
+						meterRegistry.gauge("test", 1);
+						System.out.println(
+								meterRegistry.find("test").gauge().getId().getTags());
+					}
+					return bean;
+				}
+
+			};
+		}
+
+	}
+
+	static class Alpha {
+
+	}
+
+	static class Bravo {
+
+		Bravo(Alpha alpha) {
+
+		}
+
 	}
 
 }

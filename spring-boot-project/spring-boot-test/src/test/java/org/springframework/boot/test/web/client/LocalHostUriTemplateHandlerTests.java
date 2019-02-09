@@ -20,14 +20,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,28 +40,26 @@ import static org.mockito.Mockito.verify;
  */
 public class LocalHostUriTemplateHandlerTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
-		new LocalHostUriTemplateHandler(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new LocalHostUriTemplateHandler(null))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWhenSchemeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Scheme must not be null");
-		new LocalHostUriTemplateHandler(new MockEnvironment(), null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new LocalHostUriTemplateHandler(new MockEnvironment(), null))
+				.withMessageContaining("Scheme must not be null");
 	}
 
 	@Test
 	public void createWhenHandlerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Handler must not be null");
-		new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(),
+						"http", null))
+				.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

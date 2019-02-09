@@ -67,7 +67,7 @@ public class CassandraContainer extends Container {
 
 		private Callable<Boolean> checkConnection() {
 			return () -> {
-				try (Cluster cluster = Cluster.builder()
+				try (Cluster cluster = Cluster.builder().withoutJMXReporting()
 						.withPort(this.container.getMappedPort(CassandraContainer.PORT))
 						.addContactPoint("localhost").build()) {
 					cluster.connect();

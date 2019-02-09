@@ -70,8 +70,9 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 		if (this.context == null) {
 			synchronized (this.contextLock) {
 				if (this.context == null) {
-					this.context = createContext(exchange);
-					initialized(this.context);
+					Supplier<C> createdContext = createContext(exchange);
+					initialized(createdContext);
+					this.context = createdContext;
 				}
 			}
 		}

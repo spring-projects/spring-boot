@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
+import java.time.Duration;
 import java.util.Arrays;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint;
@@ -36,6 +36,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.MethodNotAllowedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -46,9 +47,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 public class ControllerEndpointHandlerMappingTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
@@ -92,13 +90,14 @@ public class ControllerEndpointHandlerMappingTests {
 	public void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
-		this.thrown.expect(MethodNotAllowedException.class);
-		getHandler(mapping, HttpMethod.POST, "/actuator/first");
+		assertThatExceptionOfType(MethodNotAllowedException.class).isThrownBy(
+				() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
 	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method,
 			String requestURI) {
-		return mapping.getHandler(exchange(method, requestURI)).block();
+		return mapping.getHandler(exchange(method, requestURI))
+				.block(Duration.ofSeconds(30));
 	}
 
 	private ControllerEndpointHandlerMapping createMapping(String prefix,
@@ -121,22 +120,22 @@ public class ControllerEndpointHandlerMappingTests {
 	}
 
 	private ExposableControllerEndpoint firstEndpoint() {
-		return mockEndpoint("first", new FirstTestMvcEndpoint());
+		return mockEndpoint(EndpointId.of("first"), new FirstTestMvcEndpoint());
 	}
 
 	private ExposableControllerEndpoint secondEndpoint() {
-		return mockEndpoint("second", new SecondTestMvcEndpoint());
+		return mockEndpoint(EndpointId.of("second"), new SecondTestMvcEndpoint());
 	}
 
 	private ExposableControllerEndpoint pathlessEndpoint() {
-		return mockEndpoint("pathless", new PathlessControllerEndpoint());
+		return mockEndpoint(EndpointId.of("pathless"), new PathlessControllerEndpoint());
 	}
 
-	private ExposableControllerEndpoint mockEndpoint(String id, Object controller) {
+	private ExposableControllerEndpoint mockEndpoint(EndpointId id, Object controller) {
 		ExposableControllerEndpoint endpoint = mock(ExposableControllerEndpoint.class);
-		given(endpoint.getId()).willReturn(id);
+		given(endpoint.getEndpointId()).willReturn(id);
 		given(endpoint.getController()).willReturn(controller);
-		given(endpoint.getRootPath()).willReturn(id);
+		given(endpoint.getRootPath()).willReturn(id.toString());
 		return endpoint;
 	}
 

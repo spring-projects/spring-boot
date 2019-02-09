@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link Configuration Auto-configuration} for {@link CacheMeterBinderProvider} beans.
+ * Configure {@link CacheMeterBinderProvider} beans.
  *
  * @author Stephane Nicoll
  */

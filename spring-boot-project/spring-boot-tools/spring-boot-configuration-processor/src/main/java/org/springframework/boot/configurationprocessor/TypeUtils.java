@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -60,6 +61,8 @@ class TypeUtils {
 	}
 
 	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
+
+	private static final Pattern NEW_LINE_PATTERN = Pattern.compile("[\r\n]+");
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
@@ -131,7 +134,7 @@ class TypeUtils {
 		String javadoc = (element != null)
 				? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
-			javadoc = javadoc.replaceAll("[\r\n]+", "").trim();
+			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
 		return "".equals(javadoc) ? null : javadoc;
 	}

@@ -17,15 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.Meter.Type;
-
-import org.springframework.boot.convert.DurationStyle;
 
 /**
- * A service level agreement boundary for use when configuring micrometer. Can be
+ * A service level agreement boundary for use when configuring Micrometer. Can be
  * specified as either a {@link Long} (applicable to timers and distribution summaries) or
  * a {@link Duration} (applicable to only timers).
  *
@@ -34,13 +30,9 @@ import org.springframework.boot.convert.DurationStyle;
  */
 public final class ServiceLevelAgreementBoundary {
 
-	private final Object value;
+	private final MeterValue value;
 
-	ServiceLevelAgreementBoundary(long value) {
-		this.value = value;
-	}
-
-	ServiceLevelAgreementBoundary(Duration value) {
+	ServiceLevelAgreementBoundary(MeterValue value) {
 		this.value = value;
 	}
 
@@ -51,37 +43,7 @@ public final class ServiceLevelAgreementBoundary {
 	 * @return the value or {@code null} if the value cannot be applied
 	 */
 	public Long getValue(Meter.Type meterType) {
-		if (meterType == Type.DISTRIBUTION_SUMMARY) {
-			return getDistributionSummaryValue();
-		}
-		if (meterType == Type.TIMER) {
-			return getTimerValue();
-		}
-		return null;
-	}
-
-	private Long getDistributionSummaryValue() {
-		if (this.value instanceof Long) {
-			return (Long) this.value;
-		}
-		return null;
-	}
-
-	private Long getTimerValue() {
-		if (this.value instanceof Long) {
-			return TimeUnit.MILLISECONDS.toNanos((long) this.value);
-		}
-		if (this.value instanceof Duration) {
-			return ((Duration) this.value).toNanos();
-		}
-		return null;
-	}
-
-	public static ServiceLevelAgreementBoundary valueOf(String value) {
-		if (isNumber(value)) {
-			return new ServiceLevelAgreementBoundary(Long.parseLong(value));
-		}
-		return new ServiceLevelAgreementBoundary(DurationStyle.detectAndParse(value));
+		return this.value.getValue(meterType);
 	}
 
 	/**
@@ -91,18 +53,17 @@ public final class ServiceLevelAgreementBoundary {
 	 * @return a {@link ServiceLevelAgreementBoundary} instance
 	 */
 	public static ServiceLevelAgreementBoundary valueOf(long value) {
-		return new ServiceLevelAgreementBoundary(value);
+		return new ServiceLevelAgreementBoundary(MeterValue.valueOf(value));
 	}
 
 	/**
 	 * Return a new {@link ServiceLevelAgreementBoundary} instance for the given String
-	 * value. The value may contain a simple number, or a {@link DurationStyle duration
-	 * style string}.
+	 * value.
 	 * @param value the source value
 	 * @return a {@link ServiceLevelAgreementBoundary} instance
 	 */
-	private static boolean isNumber(String value) {
-		return value.chars().allMatch(Character::isDigit);
+	public static ServiceLevelAgreementBoundary valueOf(String value) {
+		return new ServiceLevelAgreementBoundary(MeterValue.valueOf(value));
 	}
 
 }

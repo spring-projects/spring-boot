@@ -59,7 +59,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -478,8 +477,8 @@ public class JacksonAutoConfigurationTests {
 					.getBean(ObjectMapper.class).getDeserializationConfig();
 			AnnotationIntrospector annotationIntrospector = deserializationConfig
 					.getAnnotationIntrospector().allIntrospectors().iterator().next();
-			assertThat(ReflectionTestUtils.getField(annotationIntrospector,
-					"creatorBinding")).isEqualTo(expectedMode);
+			assertThat(annotationIntrospector)
+					.hasFieldOrPropertyWithValue("creatorBinding", expectedMode);
 		});
 	}
 

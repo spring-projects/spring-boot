@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -81,9 +79,9 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -107,9 +105,6 @@ import static org.mockito.Mockito.verify;
 public class ConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -170,8 +165,10 @@ public class ConfigurationPropertiesTests {
 	@Test
 	public void loadWhenHasIgnoreUnknownFieldsFalseAndUnknownFieldsShouldFail() {
 		removeSystemProperties();
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class,
+						"name=foo", "bar=baz"))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -225,9 +222,10 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenBindingWithoutAndAnnotationShouldFail() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("No ConfigurationProperties annotation found");
-		load(WithoutAndAnnotationConfiguration.class, "name:foo");
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
+				.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
 	@Test
@@ -501,26 +499,32 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedJsr303Configuration.class, "description=");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(
+						() -> load(ValidatedJsr303Configuration.class, "description="))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadValidatedOnBeanMethodAndJsr303ConstraintDoesNotMatchShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedOnBeanJsr303Configuration.class, "description=");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
+				() -> load(ValidatedOnBeanJsr303Configuration.class, "description="))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedNestedJsr303Properties.class, "properties.description=");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class,
+						"properties.description="))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedButIsValidShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedValidNestedJsr303Properties.class);
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(ValidatedValidNestedJsr303Properties.class))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -659,10 +663,10 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectCause(instanceOf(BindException.class));
-		prepareConverterContext(NonQualifiedConverterConfiguration.class,
-				PersonProperties.class);
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> prepareConverterContext(
+						NonQualifiedConverterConfiguration.class, PersonProperties.class))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -676,10 +680,11 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenGenericConfigurationConverterIsNotQualifiedShouldNotConvert() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectCause(instanceOf(BindException.class));
-		prepareConverterContext(NonQualifiedGenericConverterConfiguration.class,
-				PersonProperties.class);
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> prepareConverterContext(
+						NonQualifiedGenericConverterConfiguration.class,
+						PersonProperties.class))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -696,15 +701,13 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
-		try {
-			load(WithCustomValidatorConfiguration.class);
-			fail("Did not throw");
-		}
-		catch (Exception ex) {
-			assertThat(ex).hasCauseInstanceOf(BindException.class);
-			assertThat(ex.getCause())
-					.hasCauseExactlyInstanceOf(BindValidationException.class);
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(WithCustomValidatorConfiguration.class))
+				.satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+					assertThat(ex.getCause())
+							.hasCauseExactlyInstanceOf(BindValidationException.class);
+				});
 	}
 
 	@Test
@@ -717,31 +720,31 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
-		try {
-			load(ValidatorProperties.class);
-			fail("Did not throw");
-		}
-		catch (Exception ex) {
-			assertThat(ex).hasCauseInstanceOf(BindException.class);
-			assertThat(ex.getCause())
-					.hasCauseExactlyInstanceOf(BindValidationException.class);
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ValidatorProperties.class)).satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+					assertThat(ex.getCause())
+							.hasCauseExactlyInstanceOf(BindValidationException.class);
+				});
 	}
 
 	@Test
 	public void loadWhenSetterThrowsValidationExceptionShouldFail() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectCause(instanceOf(BindException.class));
-		load(WithSetterThatThrowsValidationExceptionProperties.class, "test.foo=spam");
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
+				() -> load(WithSetterThatThrowsValidationExceptionProperties.class,
+						"test.foo=spam"))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadWhenFailsShouldIncludeAnnotationDetails() {
 		removeSystemProperties();
-		this.thrown.expectMessage("Could not bind properties to "
-				+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
-				+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
-		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class,
+						"name=foo", "bar=baz"))
+				.withMessageContaining("Could not bind properties to "
+						+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
+						+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
 	}
 
 	@Test
@@ -774,8 +777,8 @@ public class ConfigurationPropertiesTests {
 	public void loadWhenBindingToDataSizeShouldBind() {
 		load(DataSizeProperties.class, "test.size=10GB", "test.another-size=5");
 		DataSizeProperties bean = this.context.getBean(DataSizeProperties.class);
-		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigaBytes(10));
-		assertThat(bean.getAnotherSize()).isEqualTo(DataSize.ofKiloBytes(5));
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(bean.getAnotherSize()).isEqualTo(DataSize.ofKilobytes(5));
 	}
 
 	@Test
@@ -1075,7 +1078,7 @@ public class ConfigurationPropertiesTests {
 		@Override
 		public Resource resolve(String location, ResourceLoader resourceLoader) {
 			if (location.startsWith(PREFIX)) {
-				String path = location.substring(PREFIX.length(), location.length());
+				String path = location.substring(PREFIX.length());
 				return new ClassPathResource(path);
 			}
 			return null;

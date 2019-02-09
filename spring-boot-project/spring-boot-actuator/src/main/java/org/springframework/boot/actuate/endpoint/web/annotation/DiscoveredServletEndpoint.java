@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.annotation;
 import java.util.Collections;
 import java.util.function.Supplier;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
@@ -39,7 +40,7 @@ class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation>
 	private final EndpointServlet endpointServlet;
 
 	DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
-			String id, String rootPath, boolean enabledByDefault) {
+			EndpointId id, String rootPath, boolean enabledByDefault) {
 		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
 		String beanType = endpointBean.getClass().getName();
 		Assert.state(endpointBean instanceof Supplier,

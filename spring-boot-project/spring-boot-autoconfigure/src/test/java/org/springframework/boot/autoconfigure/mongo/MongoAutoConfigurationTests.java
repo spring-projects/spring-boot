@@ -50,26 +50,22 @@ public class MongoAutoConfigurationTests {
 
 	@Test
 	public void optionsAdded() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
-				.withUserConfiguration(OptionsConfig.class)
+		this.contextRunner.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(context.getBean(MongoClient.class)
 						.getMongoClientOptions().getSocketTimeout()).isEqualTo(300));
 	}
 
 	@Test
 	public void optionsAddedButNoHost() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(OptionsConfig.class)
+		this.contextRunner.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(context.getBean(MongoClient.class)
 						.getMongoClientOptions().getSocketTimeout()).isEqualTo(300));
 	}
 
 	@Test
 	public void optionsSslConfig() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(SslOptionsConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClient mongo = context.getBean(MongoClient.class);
 					MongoClientOptions options = mongo.getMongoClientOptions();
@@ -81,9 +77,8 @@ public class MongoAutoConfigurationTests {
 
 	@Test
 	public void doesNotCreateMongoClientWhenAlreadyDefined() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(FallbackMongoClientConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(FallbackMongoClientConfig.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(MongoClient.class);
 					assertThat(context)
 							.hasSingleBean(com.mongodb.client.MongoClient.class);

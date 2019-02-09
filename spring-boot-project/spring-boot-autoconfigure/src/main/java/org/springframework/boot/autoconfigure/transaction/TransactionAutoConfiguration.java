@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -55,8 +55,9 @@ public class TransactionAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TransactionManagerCustomizers platformTransactionManagerCustomizers(
-			ObjectProvider<List<PlatformTransactionManagerCustomizer<?>>> customizers) {
-		return new TransactionManagerCustomizers(customizers.getIfAvailable());
+			ObjectProvider<PlatformTransactionManagerCustomizer<?>> customizers) {
+		return new TransactionManagerCustomizers(
+				customizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Configuration

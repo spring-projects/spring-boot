@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import org.junit.Test;
 
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -25,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class RabbitPropertiesTests {
 
@@ -224,6 +230,28 @@ public class RabbitPropertiesTests {
 		this.properties.setPort(1234);
 		assertThat(this.properties.determineAddresses())
 				.isEqualTo("rabbit.example.com:1234");
+	}
+
+	@Test
+	public void simpleContainerUseConsistentDefaultValues() {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		SimpleMessageListenerContainer container = factory.createListenerContainer();
+		RabbitProperties.SimpleContainer simple = this.properties.getListener()
+				.getSimple();
+		assertThat(simple.isAutoStartup()).isEqualTo(container.isAutoStartup());
+		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
+				simple.isMissingQueuesFatal());
+	}
+
+	@Test
+	public void directContainerUseConsistentDefaultValues() {
+		DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
+		DirectMessageListenerContainer container = factory.createListenerContainer();
+		RabbitProperties.DirectContainer direct = this.properties.getListener()
+				.getDirect();
+		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
+		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
+				direct.isMissingQueuesFatal());
 	}
 
 }

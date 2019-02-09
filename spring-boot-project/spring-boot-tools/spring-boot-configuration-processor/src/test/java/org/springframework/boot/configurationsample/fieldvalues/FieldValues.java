@@ -128,12 +128,12 @@ public class FieldValues {
 
 	private DataSize dataSizeBytes = DataSize.ofBytes(5);
 
-	private DataSize dataSizeKiloBytes = DataSize.ofKiloBytes(10);
+	private DataSize dataSizeKilobytes = DataSize.ofKilobytes(10);
 
-	private DataSize dataSizeMegaBytes = DataSize.ofMegaBytes(20);
+	private DataSize dataSizeMegabytes = DataSize.ofMegabytes(20);
 
-	private DataSize dataSizeGigaBytes = DataSize.ofGigaBytes(30);
+	private DataSize dataSizeGigabytes = DataSize.ofGigabytes(30);
 
-	private DataSize dataSizeTeraBytes = DataSize.ofTeraBytes(40);
+	private DataSize dataSizeTerabytes = DataSize.ofTerabytes(40);
 
 }

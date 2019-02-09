@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -106,25 +106,24 @@ public class HttpTraceFilterTests {
 	@Test
 	public void statusIsAssumedToBe500WhenChainFails()
 			throws ServletException, IOException {
-		try {
-			this.filter.doFilter(new MockHttpServletRequest(),
-					new MockHttpServletResponse(), new MockFilterChain(new HttpServlet() {
+		assertThatIOException()
+				.isThrownBy(() -> this.filter.doFilter(new MockHttpServletRequest(),
+						new MockHttpServletResponse(),
+						new MockFilterChain(new HttpServlet() {
 
-						@Override
-						protected void service(HttpServletRequest req,
-								HttpServletResponse resp)
-								throws ServletException, IOException {
-							throw new IOException();
-						}
+							@Override
+							protected void service(HttpServletRequest req,
+									HttpServletResponse resp)
+									throws ServletException, IOException {
+								throw new IOException();
+							}
 
-					}));
-			fail("Filter swallowed IOException");
-		}
-		catch (IOException ex) {
-			assertThat(this.repository.findAll()).hasSize(1);
-			assertThat(this.repository.findAll().get(0).getResponse().getStatus())
-					.isEqualTo(500);
-		}
+						})))
+				.satisfies((ex) -> {
+					assertThat(this.repository.findAll()).hasSize(1);
+					assertThat(this.repository.findAll().get(0).getResponse().getStatus())
+							.isEqualTo(500);
+				});
 	}
 
 	@Test

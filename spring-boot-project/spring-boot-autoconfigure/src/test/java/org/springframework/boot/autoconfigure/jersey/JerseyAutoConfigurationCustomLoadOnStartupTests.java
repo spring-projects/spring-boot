@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
@@ -45,9 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Autowired
@@ -55,9 +55,8 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Test
 	public void contextLoads() {
-		assertThat(
-				new DirectFieldAccessor(this.context.getBean("jerseyServletRegistration"))
-						.getPropertyValue("loadOnStartup")).isEqualTo(5);
+		assertThat(this.context.getBean("jerseyServletRegistration"))
+				.hasFieldOrPropertyWithValue("loadOnStartup", 5);
 	}
 
 	@MinimalWebConfiguration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import io.prometheus.client.CollectorRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -128,6 +129,18 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 						.hasSingleBean(PrometheusScrapeEndpoint.class));
 	}
 
+	@Test
+	public void withPushGatewayEnabled() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+				.withPropertyValues(
+						"management.metrics.export.prometheus.pushgateway.enabled=true")
+				.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(PrometheusPushGatewayManager.class));
+	}
+
 	@Configuration
 	static class BaseConfiguration {
 
@@ -144,14 +157,7 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public PrometheusConfig customConfig() {
-			return new PrometheusConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return (key) -> null;
 		}
 
 	}

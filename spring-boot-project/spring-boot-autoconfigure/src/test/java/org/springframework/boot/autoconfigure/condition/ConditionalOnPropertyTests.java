@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Consumer;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -36,8 +35,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConditionalOnProperty}.
@@ -48,9 +46,6 @@ import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
  * @author Andy Wilkinson
  */
 public class ConditionalOnPropertyTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ConfigurableApplicationContext context;
 
@@ -205,18 +200,22 @@ public class ConditionalOnPropertyTests {
 
 	@Test
 	public void nameOrValueMustBeSpecified() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectCause(hasMessage(containsString("The name or "
-				+ "value attribute of @ConditionalOnProperty must be specified")));
-		load(NoNameOrValueAttribute.class, "some.property");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> load(NoNameOrValueAttribute.class, "some.property"))
+				.satisfies(causeMessageContaining(
+						"The name or value attribute of @ConditionalOnProperty must be specified"));
 	}
 
 	@Test
 	public void nameAndValueMustNotBeSpecified() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectCause(hasMessage(containsString("The name and "
-				+ "value attributes of @ConditionalOnProperty are exclusive")));
-		load(NameAndValueAttribute.class, "some.property");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> load(NameAndValueAttribute.class, "some.property"))
+				.satisfies(causeMessageContaining(
+						"The name and value attributes of @ConditionalOnProperty are exclusive"));
+	}
+
+	private <T extends Exception> Consumer<T> causeMessageContaining(String message) {
+		return (ex) -> assertThat(ex.getCause()).hasMessageContaining(message);
 	}
 
 	@Test

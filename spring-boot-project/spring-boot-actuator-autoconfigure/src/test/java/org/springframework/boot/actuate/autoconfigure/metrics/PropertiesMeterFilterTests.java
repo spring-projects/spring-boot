@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.time.Duration;
 import java.util.Collections;
 
 import io.micrometer.core.instrument.Meter;
@@ -24,12 +25,7 @@ import io.micrometer.core.instrument.Meter.Type;
 import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -37,36 +33,35 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PropertiesMeterFilter}.
  *
  * @author Phillip Webb
  * @author Jon Schneider
+ * @author Artsiom Yudovin
  */
 public class PropertiesMeterFilterTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Mock
-	private DistributionStatisticConfig config;
-
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
 	public void createWhenPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Properties must not be null");
-		new PropertiesMeterFilter(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PropertiesMeterFilter(null))
+				.withMessageContaining("Properties must not be null");
 	}
 
 	@Test
 	public void acceptWhenHasNoEnabledPropertiesShouldReturnNeutral() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties());
+		assertThat(filter.accept(createMeterId("spring.boot")))
+				.isEqualTo(MeterFilterReply.NEUTRAL);
+	}
+
+	@Test
+	public void acceptWhenHasNoMatchingEnabledPropertyShouldReturnNeutral() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("enable.something.else=false"));
 		assertThat(filter.accept(createMeterId("spring.boot")))
 				.isEqualTo(MeterFilterReply.NEUTRAL);
 	}
@@ -258,42 +253,59 @@ public class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	public void configureWhenAllSlaSetShouldSetSlaToValue() {
+	public void configureWhenHasMinimumExpectedValueShouldSetMinimumExpectedToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.all=1,2,3"));
+				createProperties("distribution.minimum-expected-value.spring.boot=10"));
 		assertThat(filter.configure(createMeterId("spring.boot"),
-				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
-						.containsExactly(1000000, 2000000, 3000000);
+				DistributionStatisticConfig.DEFAULT).getMinimumExpectedValue())
+						.isEqualTo(Duration.ofMillis(10).toNanos());
 	}
 
 	@Test
-	public void configureWhenSlaDurationShouldOnlyApplyToTimer() {
+	public void configureWhenHasHigherMinimumExpectedValueShouldSetMinimumExpectedValueToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.all=1ms,2ms,3ms"));
-		Meter.Id timer = createMeterId("spring.boot", Meter.Type.TIMER);
-		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
-		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
-		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
-		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isNullOrEmpty();
-		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isNullOrEmpty();
+				createProperties("distribution.minimum-expected-value.spring=10"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getMinimumExpectedValue())
+						.isEqualTo(Duration.ofMillis(10).toNanos());
 	}
 
 	@Test
-	public void configureWhenSlaLongShouldOnlyApplyToTimerAndDistributionSummary() {
+	public void configureWhenHasHigherMinimumExpectedValueAndLowerShouldSetMinimumExpectedValueToHigher() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.all=1,2,3"));
-		Meter.Id timer = createMeterId("spring.boot", Meter.Type.TIMER);
-		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
-		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
-		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
-		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1, 2, 3);
-		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isNullOrEmpty();
+				createProperties("distribution.minimum-expected-value.spring=10",
+						"distribution.minimum-expected-value.spring.boot=50"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getMinimumExpectedValue())
+						.isEqualTo(Duration.ofMillis(50).toNanos());
+	}
+
+	@Test
+	public void configureWhenHasMaximumExpectedValueShouldSetMaximumExpectedToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.maximum-expected-value.spring.boot=5000"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getMaximumExpectedValue())
+						.isEqualTo(Duration.ofMillis(5000).toNanos());
+	}
+
+	@Test
+	public void configureWhenHasHigherMaximumExpectedValueShouldSetMaximumExpectedValueToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.maximum-expected-value.spring=5000"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getMaximumExpectedValue())
+						.isEqualTo(Duration.ofMillis(5000).toNanos());
+	}
+
+	@Test
+	public void configureWhenHasHigherMaximumExpectedValueAndLowerShouldSetMaximumExpectedValueToHigher() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.maximum-expected-value.spring=5000",
+						"distribution.maximum-expected-value.spring.boot=10000"));
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getMaximumExpectedValue())
+						.isEqualTo(Duration.ofMillis(10000).toNanos());
 	}
 
 	private Id createMeterId(String name) {

@@ -152,6 +152,19 @@ public class PropertiesMigrationReporterTests {
 						+ "'test.inconvertible' uses an incompatible target type");
 	}
 
+	@Test
+	public void invalidReplacementHandled() throws IOException {
+		this.environment.getPropertySources().addFirst(loadPropertySource("first",
+				"config/config-error-invalid-replacement.properties"));
+		String report = createErrorReport(
+				loadRepository("metadata/sample-metadata-invalid-replacement.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).containsSubsequence("Property source 'first'",
+				"deprecated.six.test", "Line: 1", "Reason",
+				"No metadata found for replacement key 'does.not.exist'");
+		assertThat(report).doesNotContain("null");
+	}
+
 	private List<String> mapToNames(PropertySources sources) {
 		List<String> names = new ArrayList<>();
 		for (PropertySource<?> source : sources) {

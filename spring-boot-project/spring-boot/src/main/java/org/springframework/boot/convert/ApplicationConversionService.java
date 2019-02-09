@@ -53,9 +53,14 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-	 * Return a shared default {@code ApplicationConversionService} instance, lazily
+	 * Return a shared default application {@code ConversionService} instance, lazily
 	 * building it once needed.
-	 * @return the shared {@code ConversionService} instance (never {@code null})
+	 * <p>
+	 * Note: This method actually returns an {@link ApplicationConversionService}
+	 * instance. However, the {@code ConversionService} signature has been preserved for
+	 * binary compatibility.
+	 * @return the shared {@code ApplicationConversionService} instance (never
+	 * {@code null})
 	 */
 	public static ConversionService getSharedInstance() {
 		ApplicationConversionService sharedInstance = ApplicationConversionService.sharedInstance;
@@ -100,6 +105,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new NumberToDurationConverter());
 		registry.addConverter(new DurationToNumberConverter());
 		registry.addConverter(new StringToDataSizeConverter());
+		registry.addConverter(new NumberToDataSizeConverter());
 		registry.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
 	}
 

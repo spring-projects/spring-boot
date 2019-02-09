@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 
 /**
  * Tests for {@link ConnectionInputStream}.
@@ -36,9 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConnectionInputStreamTests {
 
 	private static final byte[] NO_BYTES = {};
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void readHeader() throws Exception {
@@ -68,19 +64,18 @@ public class ConnectionInputStreamTests {
 	public void checkedRead() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class);
-		this.thrown.expectMessage("End of stream");
-		inputStream.checkedRead();
+		assertThatIOException().isThrownBy(inputStream::checkedRead)
+				.withMessageContaining("End of stream");
 	}
 
 	@Test
 	public void checkedReadArray() throws Exception {
+		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class);
-		this.thrown.expectMessage("End of stream");
-		byte[] buffer = new byte[100];
-		inputStream.checkedRead(buffer, 0, buffer.length);
+		assertThatIOException()
+				.isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
+				.withMessageContaining("End of stream");
 	}
 
 	private static class LimitedInputStream extends FilterInputStream {

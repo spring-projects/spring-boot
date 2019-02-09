@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
  *
  * @author Jon Schneider
+ * @author Alexander Abramov
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -125,10 +126,10 @@ public class MetricsProperties {
 		public static class Server {
 
 			/**
-			 * Whether requests handled by Spring MVC or WebFlux should be automatically
-			 * timed. If the number of time series emitted grows too large on account of
-			 * request mapping timings, disable this and use 'Timed' on a per request
-			 * mapping basis as needed.
+			 * Whether requests handled by Spring MVC, WebFlux or Jersey should be
+			 * automatically timed. If the number of time series emitted grows too large
+			 * on account of request mapping timings, disable this and use 'Timed' on a
+			 * per request mapping basis as needed.
 			 */
 			private boolean autoTimeRequests = true;
 
@@ -136,6 +137,13 @@ public class MetricsProperties {
 			 * Name of the metric for received requests.
 			 */
 			private String requestsMetricName = "http.server.requests";
+
+			/**
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
+			 */
+			private int maxUriTags = 100;
 
 			public boolean isAutoTimeRequests() {
 				return this.autoTimeRequests;
@@ -151,6 +159,14 @@ public class MetricsProperties {
 
 			public void setRequestsMetricName(String requestsMetricName) {
 				this.requestsMetricName = requestsMetricName;
+			}
+
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
 			}
 
 		}
@@ -177,12 +193,25 @@ public class MetricsProperties {
 
 		/**
 		 * Specific SLA boundaries for meter IDs starting-with the specified name. The
-		 * longest match wins, the key `all` can also be used to configure all meters.
-		 * Counters will be published for each specified boundary. Values can be specified
-		 * as a long or as a Duration value (for timer meters, defaulting to ms if no unit
-		 * specified).
+		 * longest match wins. Counters will be published for each specified boundary.
+		 * Values can be specified as a long or as a Duration value (for timer meters,
+		 * defaulting to ms if no unit specified).
 		 */
 		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
+
+		/**
+		 * Minimum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
+
+		/**
+		 * Maximum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
@@ -194,6 +223,14 @@ public class MetricsProperties {
 
 		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
 			return this.sla;
+		}
+
+		public Map<String, String> getMinimumExpectedValue() {
+			return this.minimumExpectedValue;
+		}
+
+		public Map<String, String> getMaximumExpectedValue() {
+			return this.maximumExpectedValue;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,16 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import com.hazelcast.util.Base64;
 import org.junit.After;
 import org.junit.Test;
 import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Credentials;
+import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -142,10 +141,10 @@ public class Neo4jPropertiesTests {
 	@Test
 	public void embeddedModeWithRelativeLocation() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=file:target/neo4j/my.db");
+				"spring.data.neo4j.uri=file:relative/path/to/my.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
-				"file:target/neo4j/my.db");
+				"file:relative/path/to/my.db");
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {
@@ -174,23 +173,9 @@ public class Neo4jPropertiesTests {
 
 	public Neo4jProperties load(boolean embeddedAvailable, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.setClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()) {
-
-			@Override
-			protected Class<?> loadClass(String name, boolean resolve)
-					throws ClassNotFoundException {
-				if (name.equals(Neo4jProperties.EMBEDDED_DRIVER)) {
-					if (embeddedAvailable) {
-						return TestEmbeddedDriver.class;
-					}
-					else {
-						throw new ClassNotFoundException();
-					}
-				}
-				return super.loadClass(name, resolve);
-			}
-
-		});
+		if (!embeddedAvailable) {
+			ctx.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
+		}
 		TestPropertyValues.of(environment).applyTo(ctx);
 		ctx.register(TestConfiguration.class);
 		ctx.refresh();
@@ -201,10 +186,6 @@ public class Neo4jPropertiesTests {
 	@org.springframework.context.annotation.Configuration
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class TestConfiguration {
-
-	}
-
-	private static class TestEmbeddedDriver {
 
 	}
 

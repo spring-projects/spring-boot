@@ -18,10 +18,9 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.concurrent.TimeUnit;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadPreference;
-import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.connection.AsynchronousSocketChannelStreamFactoryFactory;
-import com.mongodb.connection.SocketSettings;
 import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
@@ -30,8 +29,10 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,10 +61,8 @@ public class MongoReactiveAutoConfigurationTests {
 	public void optionsAdded() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
 				.withUserConfiguration(OptionsConfig.class)
-				.run((context) -> assertThat(
-						context.getBean(MongoClient.class).getSettings()
-								.getSocketSettings().getReadTimeout(TimeUnit.SECONDS))
-										.isEqualTo(300));
+				.run((context) -> assertThat(getSettings(context).getSocketSettings()
+						.getReadTimeout(TimeUnit.SECONDS)).isEqualTo(300));
 	}
 
 	@Test
@@ -71,9 +70,8 @@ public class MongoReactiveAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
 				.withUserConfiguration(OptionsConfig.class)
-				.run((context) -> assertThat(context.getBean(MongoClient.class)
-						.getSettings().getReadPreference())
-								.isEqualTo(ReadPreference.nearest()));
+				.run((context) -> assertThat(getSettings(context).getReadPreference())
+						.isEqualTo(ReadPreference.nearest()));
 	}
 
 	@Test
@@ -82,8 +80,7 @@ public class MongoReactiveAutoConfigurationTests {
 				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
 				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
-					MongoClient mongo = context.getBean(MongoClient.class);
-					MongoClientSettings settings = mongo.getSettings();
+					MongoClientSettings settings = getSettings(context);
 					assertThat(settings.getApplicationName()).isEqualTo("test-config");
 					assertThat(settings.getStreamFactoryFactory())
 							.isSameAs(context.getBean("myStreamFactoryFactory"));
@@ -94,9 +91,8 @@ public class MongoReactiveAutoConfigurationTests {
 	public void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MongoClient.class);
-			assertThat(context.getBean(MongoClient.class).getSettings()
-					.getStreamFactoryFactory())
-							.isInstanceOf(NettyStreamFactoryFactory.class);
+			assertThat(getSettings(context).getStreamFactoryFactory())
+					.isInstanceOf(NettyStreamFactoryFactory.class);
 		});
 	}
 
@@ -106,12 +102,19 @@ public class MongoReactiveAutoConfigurationTests {
 				"spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
 				.withUserConfiguration(SimpleCustomizerConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
-					MongoClient client = context.getBean(MongoClient.class);
-					assertThat(client.getSettings().getApplicationName())
+					MongoClientSettings settings = getSettings(context);
+					assertThat(settings.getApplicationName())
 							.isEqualTo("overridden-name");
-					assertThat(client.getSettings().getStreamFactoryFactory())
+					assertThat(settings.getStreamFactoryFactory())
 							.isEqualTo(SimpleCustomizerConfig.streamFactoryFactory);
 				});
+	}
+
+	@SuppressWarnings("deprecation")
+	private MongoClientSettings getSettings(ApplicationContext context) {
+		MongoClient client = context.getBean(MongoClient.class);
+		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(),
+				"wrapped");
 	}
 
 	@Configuration
@@ -120,8 +123,8 @@ public class MongoReactiveAutoConfigurationTests {
 		@Bean
 		public MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder().readPreference(ReadPreference.nearest())
-					.socketSettings(SocketSettings.builder()
-							.readTimeout(300, TimeUnit.SECONDS).build())
+					.applyToSocketSettings(
+							(socket) -> socket.readTimeout(300, TimeUnit.SECONDS))
 					.build();
 		}
 

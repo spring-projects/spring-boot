@@ -90,6 +90,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
@@ -511,13 +512,11 @@ public class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
 				.withConfiguration(
 						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(ReflectionTestUtils.getField(
-							context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor"))
-									.isSameAs(context.getBean(
-											CustomAsyncTaskExecutorConfigurer.class).taskExecutor);
-				});
+				.run((context) -> assertThat(ReflectionTestUtils.getField(
+						context.getBean(RequestMappingHandlerAdapter.class),
+						"taskExecutor"))
+								.isSameAs(context.getBean(
+										CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
 	}
 
 	@Test
@@ -646,7 +645,8 @@ public class WebMvcAutoConfigurationTests {
 			List<HandlerExceptionResolver> delegates = ((HandlerExceptionResolverComposite) resolver)
 					.getExceptionResolvers();
 			for (HandlerExceptionResolver delegate : delegates) {
-				if (delegate instanceof AbstractHandlerExceptionResolver) {
+				if (delegate instanceof AbstractHandlerExceptionResolver
+						&& !(delegate instanceof DefaultHandlerExceptionResolver)) {
 					consumer.accept(ReflectionTestUtils.getField(delegate, "warnLogger"));
 				}
 			}
@@ -794,7 +794,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void cachePeriod() {
 		this.contextRunner.withPropertyValues("spring.resources.cache.period:5")
-				.run((context) -> assertCachePeriod(context));
+				.run(this::assertCachePeriod);
 	}
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
@@ -817,7 +817,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
-				.run((context) -> assertCacheControl(context));
+				.run(this::assertCacheControl);
 	}
 
 	@Test

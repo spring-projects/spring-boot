@@ -20,7 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.repository.query.spi.EvaluationContextExtensionSupport;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
 /**
@@ -30,8 +29,7 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
  * @since 1.3
  */
 @Configuration
-@ConditionalOnClass({ SecurityEvaluationContextExtension.class,
-		EvaluationContextExtensionSupport.class })
+@ConditionalOnClass(SecurityEvaluationContextExtension.class)
 public class SecurityDataConfiguration {
 
 	@Bean

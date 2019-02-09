@@ -111,9 +111,8 @@ public class ReactiveTokenValidatorTests {
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
-				"cachedTokenKeys");
-		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
+				VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
@@ -133,9 +132,8 @@ public class ReactiveTokenValidatorTests {
 				.create(this.tokenValidator.validate(
 						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
-				"cachedTokenKeys");
-		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
+				VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
@@ -152,9 +150,8 @@ public class ReactiveTokenValidatorTests {
 				.create(this.tokenValidator.validate(
 						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
-				"cachedTokenKeys");
-		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
+				VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
@@ -177,9 +174,8 @@ public class ReactiveTokenValidatorTests {
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
-		Object cachedTokenKeys = ReflectionTestUtils.getField(this.tokenValidator,
-				"cachedTokenKeys");
-		assertThat(cachedTokenKeys).isEqualTo(VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
+				VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 

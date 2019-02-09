@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -236,7 +237,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping
 							.getEndpoints();
 					assertThat(endpoints.stream()
-							.filter((candidate) -> "test".equals(candidate.getId()))
+							.filter((candidate) -> EndpointId.of("test")
+									.equals(candidate.getEndpointId()))
 							.findFirst()).isNotEmpty();
 				});
 	}
@@ -254,7 +256,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping
 							.getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.stream()
-							.filter((candidate) -> "test".equals(candidate.getId()))
+							.filter((candidate) -> EndpointId.of("test")
+									.equals(candidate.getEndpointId()))
 							.findFirst().get();
 					Collection<WebOperation> operations = endpoint.getOperations();
 					assertThat(operations).hasSize(1);

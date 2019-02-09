@@ -22,13 +22,13 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link FolderSnapshot}.
@@ -36,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class FolderSnapshotTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -55,17 +52,15 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void folderMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Folder must not be null");
-		new FolderSnapshot(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new FolderSnapshot(null))
+				.withMessageContaining("Folder must not be null");
 	}
 
 	@Test
 	public void folderMustNotBeFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Folder '" + file + "' must not be a file");
-		new FolderSnapshot(file);
+		assertThatIllegalArgumentException().isThrownBy(() -> new FolderSnapshot(file))
+				.withMessageContaining("Folder '" + file + "' must not be a file");
 	}
 
 	@Test
@@ -106,17 +101,18 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void getChangedFilesSnapshotMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Snapshot must not be null");
-		this.initialSnapshot.getChangedFiles(null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
+				.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
 	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Snapshot source folder must be '" + this.folder + "'");
-		this.initialSnapshot
-				.getChangedFiles(new FolderSnapshot(createTestFolderStructure()), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.initialSnapshot.getChangedFiles(
+						new FolderSnapshot(createTestFolderStructure()), null))
+				.withMessageContaining(
+						"Snapshot source folder must be '" + this.folder + "'");
 	}
 
 	@Test

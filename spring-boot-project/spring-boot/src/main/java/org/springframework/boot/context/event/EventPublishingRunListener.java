@@ -40,6 +40,7 @@ import org.springframework.util.ErrorHandler;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
@@ -77,7 +78,8 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	@Override
 	public void contextPrepared(ConfigurableApplicationContext context) {
-
+		this.initialMulticaster.multicastEvent(new ApplicationContextInitializedEvent(
+				this.application, this.args, context));
 	}
 
 	@Override

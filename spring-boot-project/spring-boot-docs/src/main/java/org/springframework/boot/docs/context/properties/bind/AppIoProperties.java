@@ -31,7 +31,7 @@ import org.springframework.util.unit.DataUnit;
 public class AppIoProperties {
 
 	@DataSizeUnit(DataUnit.MEGABYTES)
-	private DataSize bufferSize = DataSize.ofMegaBytes(2);
+	private DataSize bufferSize = DataSize.ofMegabytes(2);
 
 	private DataSize sizeThreshold = DataSize.ofBytes(512);
 

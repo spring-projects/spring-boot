@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,11 +34,11 @@ import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
@@ -80,18 +80,16 @@ public class MetricsEndpoint {
 	@ReadOperation
 	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
-		Assert.isTrue(tag == null || tag.stream().allMatch((t) -> t.contains(":")),
-				"Each tag parameter must be in the form key:value");
 		List<Tag> tags = parseTags(tag);
-		List<Meter> meters = new ArrayList<>();
-		collectMeters(meters, this.registry, requiredMetricName, tags);
+		Collection<Meter> meters = findFirstMatchingMeters(this.registry,
+				requiredMetricName, tags);
 		if (meters.isEmpty()) {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
-		Meter.Id meterId = meters.get(0).getId();
+		Meter.Id meterId = meters.iterator().next().getId();
 		return new MetricResponse(requiredMetricName, meterId.getDescription(),
 				meterId.getBaseUnit(), asList(samples, Sample::new),
 				asList(availableTags, AvailableTag::new));
@@ -106,21 +104,31 @@ public class MetricsEndpoint {
 
 	private Tag parseTag(String tag) {
 		String[] parts = tag.split(":", 2);
+		if (parts.length != 2) {
+			throw new InvalidEndpointRequestException(
+					"Each tag parameter must be in the form 'key:value' but was: " + tag,
+					"Each tag parameter must be in the form 'key:value'");
+		}
 		return Tag.of(parts[0], parts[1]);
 	}
 
-	private void collectMeters(List<Meter> meters, MeterRegistry registry, String name,
+	private Collection<Meter> findFirstMatchingMeters(MeterRegistry registry, String name,
 			Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
-			((CompositeMeterRegistry) registry).getRegistries()
-					.forEach((member) -> collectMeters(meters, member, name, tags));
+			return findFirstMatchingMeters((CompositeMeterRegistry) registry, name, tags);
 		}
-		else {
-			meters.addAll(registry.find(name).tags(tags).meters());
-		}
+		return registry.find(name).tags(tags).meters();
 	}
 
-	private Map<Statistic, Double> getSamples(List<Meter> meters) {
+	private Collection<Meter> findFirstMatchingMeters(CompositeMeterRegistry composite,
+			String name, Iterable<Tag> tags) {
+		return composite.getRegistries().stream()
+				.map((registry) -> findFirstMatchingMeters(registry, name, tags))
+				.filter((matching) -> !matching.isEmpty()).findFirst()
+				.orElse(Collections.emptyList());
+	}
+
+	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
 		Map<Statistic, Double> samples = new LinkedHashMap<>();
 		meters.forEach((meter) -> mergeMeasurements(samples, meter));
 		return samples;
@@ -135,7 +143,7 @@ public class MetricsEndpoint {
 		return Statistic.MAX.equals(statistic) ? Double::max : Double::sum;
 	}
 
-	private Map<String, Set<String>> getAvailableTags(List<Meter> meters) {
+	private Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
 		Map<String, Set<String>> availableTags = new HashMap<>();
 		meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
 		return availableTags;

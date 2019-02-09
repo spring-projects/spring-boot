@@ -39,19 +39,19 @@ public class SpringBootPluginIntegrationTests {
 
 	@Test
 	public void failFastWithVersionOfGradleLowerThanRequired() {
-		BuildResult result = this.gradleBuild.gradleVersion("3.5.1").buildAndFail();
-		assertThat(result.getOutput()).contains("Spring Boot plugin requires Gradle 4.0"
-				+ " or later. The current version is Gradle 3.5.1");
+		BuildResult result = this.gradleBuild.gradleVersion("4.3").buildAndFail();
+		assertThat(result.getOutput()).contains("Spring Boot plugin requires Gradle 4.4"
+				+ " or later. The current version is Gradle 4.3");
 	}
 
 	@Test
 	public void succeedWithVersionOfGradleHigherThanRequired() {
-		this.gradleBuild.gradleVersion("4.0.1").build();
+		this.gradleBuild.gradleVersion("4.4.1").build();
 	}
 
 	@Test
 	public void succeedWithVersionOfGradleMatchingWhatIsRequired() {
-		this.gradleBuild.gradleVersion("4.0").build();
+		this.gradleBuild.gradleVersion("4.4").build();
 	}
 
 	@Test

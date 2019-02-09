@@ -16,17 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
-import org.apache.catalina.mapper.Mapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Before;
@@ -40,7 +37,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,12 +69,10 @@ public class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	public void defaultsAreConsistent() {
-		customizeAndRunServer((server) -> {
-			assertThat(((AbstractHttp11Protocol<?>) server.getTomcat().getConnector()
-					.getProtocolHandler()).getMaxSwallowSize())
-							.isEqualTo(this.serverProperties.getTomcat()
-									.getMaxSwallowSize().toBytes());
-		});
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
+						.isEqualTo(this.serverProperties.getTomcat().getMaxSwallowSize()
+								.toBytes()));
 	}
 
 	@Test
@@ -87,6 +81,12 @@ public class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(((AbstractProtocol<?>) server
 				.getTomcat().getConnector().getProtocolHandler()).getAcceptCount())
 						.isEqualTo(10));
+	}
+
+	@Test
+	public void customProcessorCache() {
+		bind("server.tomcat.processor-cache=100");
+		assertThat(this.serverProperties.getTomcat().getProcessorCache()).isEqualTo(100);
 	}
 
 	@Test
@@ -122,11 +122,45 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customMaxHttpHeaderSize() {
+		bind("server.max-http-header-size=1KB");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(1).toBytes()));
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	@Deprecated
+	public void customMaxHttpHeaderSizeWithDeprecatedProperty() {
+		bind("server.max-http-header-size=4KB",
+				"server.tomcat.max-http-header-size=1024");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
+						.isEqualTo(DataSize.ofKilobytes(1).toBytes()));
+	}
+
+	@Test
 	public void customMaxSwallowSize() {
 		bind("server.tomcat.max-swallow-size=10MB");
 		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
 				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
-						.isEqualTo(DataSize.ofMegaBytes(10).toBytes()));
+						.isEqualTo(DataSize.ofMegabytes(10).toBytes()));
 	}
 
 	@Test
@@ -152,13 +186,9 @@ public class TomcatWebServerFactoryCustomizerTests {
 	public void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");
 		customizeAndRunServer((server) -> {
-			Mapper mapper = server.getTomcat().getService().getMapper();
-			Object contextObjectToContextVersionMap = ReflectionTestUtils.getField(mapper,
-					"contextObjectToContextVersionMap");
-			Object tomcatEmbeddedContext = ((Map<Context, Object>) contextObjectToContextVersionMap)
-					.values().toArray()[0];
-			assertThat(((StandardRoot) ReflectionTestUtils.getField(tomcatEmbeddedContext,
-					"resources")).isCachingAllowed()).isFalse();
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(context.getResources().isCachingAllowed()).isFalse();
 		});
 	}
 
@@ -208,7 +238,8 @@ public class TomcatWebServerFactoryCustomizerTests {
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
 				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
+				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "0:0:0:0:0:0:0:1|::1";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
@@ -216,7 +247,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	public void defaultBackgroundProcessorDelay() {
 		TomcatWebServer server = customizeAndGetServer();
 		assertThat(server.getTomcat().getEngine().getBackgroundProcessorDelay())
-				.isEqualTo(30);
+				.isEqualTo(10);
 	}
 
 	@Test

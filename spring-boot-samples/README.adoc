@@ -50,6 +50,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-elasticsearch[spring-boot-sample-data-elasticsearch]
 | Stores data using Spring Data Elasticsearch
 
+| link:spring-boot-sample-data-jdbc[spring-boot-sample-data-jdbc]
+| Stores data using Spring Data JDBC
+
 | link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
 | Stores data using Spring Data JPA with Hibernate
 

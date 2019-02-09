@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
+ * @author Mahmoud Ben Hassine
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -88,9 +89,10 @@ public class BatchAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
-			JobLauncher jobLauncher, JobExplorer jobExplorer) {
+			JobLauncher jobLauncher, JobExplorer jobExplorer,
+			JobRepository jobRepository) {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
-				jobLauncher, jobExplorer);
+				jobLauncher, jobExplorer, jobRepository);
 		String jobNames = this.properties.getJob().getNames();
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -51,13 +48,12 @@ public class RestClientAutoConfiguration {
 
 	private final RestClientProperties properties;
 
-	private final List<RestClientBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<RestClientBuilderCustomizer> builderCustomizers;
 
 	public RestClientAutoConfiguration(RestClientProperties properties,
-			ObjectProvider<List<RestClientBuilderCustomizer>> builderCustomizers) {
+			ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers
-				.getIfAvailable(Collections::emptyList);
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean
@@ -81,7 +77,8 @@ public class RestClientAutoConfiguration {
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> httpClientBuilder
 					.setDefaultCredentialsProvider(credentialsProvider));
 		});
-		this.builderCustomizers.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 

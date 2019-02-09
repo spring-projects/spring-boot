@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import java.util.Collections;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -62,6 +60,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -72,9 +71,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kazuki Shimizu
  */
 public class BatchAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class,
@@ -176,9 +172,9 @@ public class BatchAutoConfigurationTests {
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
 									.isEqualTo(DataSourceInitializationMode.NEVER);
-					this.expected.expect(BadSqlGrammarException.class);
-					new JdbcTemplate(context.getBean(DataSource.class))
-							.queryForList("select * from BATCH_JOB_EXECUTION");
+					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
+							() -> new JdbcTemplate(context.getBean(DataSource.class))
+									.queryForList("select * from BATCH_JOB_EXECUTION"));
 				});
 	}
 

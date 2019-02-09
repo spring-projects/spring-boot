@@ -263,6 +263,7 @@ public class AutoConfigurationImportSelector
 			for (int i = 0; i < match.length; i++) {
 				if (!match[i]) {
 					skip[i] = true;
+					candidates[i] = null;
 					skipped = true;
 				}
 			}

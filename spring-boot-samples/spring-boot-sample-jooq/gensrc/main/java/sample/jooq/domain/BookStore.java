@@ -98,4 +98,5 @@ public class BookStore extends TableImpl<Record> {
 	public BookStore rename(String name) {
 		return new BookStore(name, null);
 	}
+
 }

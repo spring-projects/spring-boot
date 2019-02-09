@@ -21,11 +21,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,12 +38,17 @@ import org.springframework.util.StringUtils;
  */
 class JvmLauncher implements TestRule {
 
+	private static final Pattern NON_ALPHABET_PATTERN = Pattern.compile("[^A-Za-z]+");
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
+
 	private File outputDirectory;
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		this.outputDirectory = new File("target/output/"
-				+ description.getMethodName().replaceAll("[^A-Za-z]+", ""));
+		this.outputDirectory = new File(this.buildOutput.getRootLocation(),
+				"output/" + NON_ALPHABET_PATTERN.matcher(description.getMethodName())
+						.replaceAll(""));
 		this.outputDirectory.mkdirs();
 		return base;
 	}

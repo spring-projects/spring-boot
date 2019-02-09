@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -41,6 +40,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,9 +57,6 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -86,8 +83,8 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void disabledIfRemoteSecretIsMissing() {
 		loadContext("a:b");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(DispatcherFilter.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(DispatcherFilter.class));
 	}
 
 	@Test
@@ -144,8 +141,8 @@ public class RemoteDevToolsAutoConfigurationTests {
 	public void disableRestart() {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean("remoteRestartHandlerMapper");
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
 	}
 
 	@Test

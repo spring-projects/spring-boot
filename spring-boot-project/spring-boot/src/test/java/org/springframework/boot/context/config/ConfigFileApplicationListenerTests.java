@@ -37,13 +37,13 @@ import org.assertj.core.api.Condition;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -74,14 +74,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConfigFileApplicationListenerTests {
 
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
+
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	private final SpringApplication application = new SpringApplication();
 
 	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
-
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 
 	@Rule
 	public OutputCapture out = new OutputCapture();
@@ -414,6 +413,16 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.profiles.include=dev,simple");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "simple",
+				"other");
+		validateProfilePrecedence("dev", "simple", "other");
+	}
+
+	@Test
 	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev,other");
@@ -490,8 +499,9 @@ public class ConfigFileApplicationListenerTests {
 		String suffix = (profile != null) ? "-" + profile : "";
 		String string = ".properties)";
 		return "Loaded config file '"
-				+ new File("target/test-classes/application" + suffix + ".properties")
-						.getAbsoluteFile().toURI().toString()
+				+ new File(this.buildOutput.getTestResourcesLocation(),
+						"application" + suffix + ".properties").getAbsoluteFile().toURI()
+								.toString()
 				+ "' (classpath:/application" + suffix + string;
 	}
 

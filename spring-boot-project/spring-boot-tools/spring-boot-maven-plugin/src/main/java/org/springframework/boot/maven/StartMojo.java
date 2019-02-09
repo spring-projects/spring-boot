@@ -135,6 +135,7 @@ public class StartMojo extends AbstractRunMojo {
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.port=" + this.jmxPort);
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.authenticate=false");
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.ssl=false");
+			remoteJmxArguments.add("-Djava.rmi.server.hostname=127.0.0.1");
 			jvmArguments.getArgs().addAll(remoteJmxArguments);
 		}
 		return jvmArguments;

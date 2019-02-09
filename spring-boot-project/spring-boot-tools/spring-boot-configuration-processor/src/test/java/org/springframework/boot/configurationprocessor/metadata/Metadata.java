@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public final class Metadata {
 
 		private String createDescription() {
 			StringBuilder description = new StringBuilder();
-			description.append("an item named '" + this.name + "'");
+			description.append("an item named '").append(this.name).append("'");
 			if (this.type != null) {
 				description.append(" with dataType:").append(this.type);
 			}
@@ -258,7 +258,7 @@ public final class Metadata {
 
 		private String createDescription() {
 			StringBuilder description = new StringBuilder();
-			description.append("a hints name '" + this.name + "'");
+			description.append("a hints name '").append(this.name).append("'");
 			if (!this.valueConditions.isEmpty()) {
 				description.append(" with values:").append(this.valueConditions);
 			}
@@ -348,7 +348,7 @@ public final class Metadata {
 
 		private String createDescription() {
 			StringBuilder description = new StringBuilder();
-			description.append("value hint at index '" + this.index + "'");
+			description.append("value hint at index '").append(this.index).append("'");
 			if (this.value != null) {
 				description.append(" with value:").append(this.value);
 			}

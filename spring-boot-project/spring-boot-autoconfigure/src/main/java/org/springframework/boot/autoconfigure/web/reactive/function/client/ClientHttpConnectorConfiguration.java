@@ -46,10 +46,8 @@ class ClientHttpConnectorConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactorResourceFactory reactorResourceFactory() {
-			ReactorResourceFactory factory = new ReactorResourceFactory();
-			factory.setGlobalResources(false);
-			return factory;
+		public ReactorResourceFactory reactorClientResourceFactory() {
+			return new ReactorResourceFactory();
 		}
 
 		@Bean
@@ -68,7 +66,7 @@ class ClientHttpConnectorConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public JettyResourceFactory jettyResourceFactory() {
+		public JettyResourceFactory jettyClientResourceFactory() {
 			return new JettyResourceFactory();
 		}
 

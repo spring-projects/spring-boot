@@ -192,37 +192,49 @@
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.binders.integration.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Spring Integration metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "management.metrics.enable.process.files",
+        "reason": "Instead, filter 'process.files' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.jvm.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JVM metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "management.metrics.enable.jvm",
+        "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.logback.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Logback metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "management.metrics.enable.logback",
+        "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.processor.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable processor metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Instead, filter 'system.cpu' and 'process.cpu' metrics."
+      }
     },
     {
       "name": "management.metrics.binders.uptime.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable uptime metrics.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics."
+      }
     },
     {
       "name": "management.metrics.export.jmx.enabled",
@@ -284,6 +296,68 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "management.server.ssl.ciphers",
+      "description": "Supported SSL ciphers."
+    },
+    {
+      "name": "management.server.ssl.client-auth",
+      "description": "Client authentication mode. Requires a trust store."
+    },
+    {
+      "name": "management.server.ssl.enabled",
+      "description": "Whether to enable SSL support.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.server.ssl.enabled-protocols",
+      "description": "Enabled SSL protocols."
+    },
+    {
+      "name": "management.server.ssl.key-alias",
+      "description": "Alias that identifies the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-password",
+      "description": "Password used to access the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store",
+      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
+    },
+    {
+      "name": "management.server.ssl.key-store-password",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-provider",
+      "description": "Provider for the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-type",
+      "description": "Type of the key store."
+    },
+    {
+      "name": "management.server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue":  "TLS"
+    },
+    {
+      "name": "management.server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "management.server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-type",
+      "description": "Type of the trust store."
     },
     {
       "name": "management.trace.http.enabled",
@@ -1192,6 +1266,15 @@
       "defaultValue": "",
       "deprecation": {
         "replacement": "management.server.servlet.context-path",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.health.couchbase.timeout",
+      "type": "java.time.Duration",
+      "description": "Timeout for getting the Bucket information from the server.",
+      "defaultValue": "1000ms",
+      "deprecation": {
         "level": "error"
       }
     },

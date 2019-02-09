@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package org.springframework.boot.convert;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DurationStyle}.
@@ -33,14 +31,11 @@ import static org.junit.Assert.fail;
  */
 public class DurationStyleTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void detectAndParseWhenValueIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Value must not be null");
-		DurationStyle.detectAndParse(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DurationStyle.detectAndParse(null))
+				.withMessageContaining("Value must not be null");
 	}
 
 	@Test
@@ -148,9 +143,9 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectAndParseWhenBadFormatShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("'10foo' is not a valid duration");
-		DurationStyle.detectAndParse("10foo");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DurationStyle.detectAndParse("10foo"))
+				.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@Test
@@ -183,9 +178,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectWhenUnknownShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("'bad' is not a valid duration");
-		DurationStyle.detect("bad");
+		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detect("bad"))
+				.withMessageContaining("'bad' is not a valid duration");
 	}
 
 	@Test
@@ -228,9 +222,9 @@ public class DurationStyleTests {
 
 	@Test
 	public void parseIso8601WhenSimpleShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("'10d' is not a valid ISO-8601 duration");
-		DurationStyle.ISO8601.parse("10d");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DurationStyle.ISO8601.parse("10d"))
+				.withMessageContaining("'10d' is not a valid ISO-8601 duration");
 	}
 
 	@Test
@@ -248,20 +242,17 @@ public class DurationStyleTests {
 
 	@Test
 	public void parseSimpleWhenUnknownUnitShouldThrowException() {
-		try {
-			DurationStyle.SIMPLE.parse("10mb");
-			fail("Did not throw");
-		}
-		catch (IllegalArgumentException ex) {
-			assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit 'mb'");
-		}
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DurationStyle.SIMPLE.parse("10mb"))
+				.satisfies((ex) -> assertThat(ex.getCause().getMessage())
+						.isEqualTo("Unknown unit 'mb'"));
 	}
 
 	@Test
 	public void parseSimpleWhenIso8601ShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("'PT10H' is not a valid simple duration");
-		DurationStyle.SIMPLE.parse("PT10H");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DurationStyle.SIMPLE.parse("PT10H"))
+				.withMessageContaining("'PT10H' is not a valid simple duration");
 	}
 
 	@Test

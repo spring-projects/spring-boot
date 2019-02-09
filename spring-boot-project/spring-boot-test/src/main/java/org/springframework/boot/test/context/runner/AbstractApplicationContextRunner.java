@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
 
 /**
- * Utility design to run and an {@link ApplicationContext} and provide AssertJ style
+ * Utility design to run an {@link ApplicationContext} and provide AssertJ style
  * assertions. The test is best used as a field of a test class, describing the shared
  * configuration required for the test:
  *
@@ -100,7 +100,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 	private final Supplier<C> contextFactory;
 
-	private final List<ApplicationContextInitializer<C>> initializers;
+	private final List<ApplicationContextInitializer<? super C>> initializers;
 
 	private final TestPropertyValues environmentProperties;
 
@@ -132,7 +132,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param configurations the configuration
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
-			List<ApplicationContextInitializer<C>> initializers,
+			List<ApplicationContextInitializer<? super C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
@@ -156,7 +156,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param initializer the initializer to add
 	 * @return a new instance with the updated initializers
 	 */
-	public SELF withInitializer(ApplicationContextInitializer<C> initializer) {
+	public SELF withInitializer(
+			ApplicationContextInitializer<? super ConfigurableApplicationContext> initializer) {
 		Assert.notNull(initializer, "Initializer must not be null");
 		return newInstance(this.contextFactory, add(this.initializers, initializer),
 				this.environmentProperties, this.systemProperties, this.classLoader,
@@ -259,7 +260,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	protected abstract SELF newInstance(Supplier<C> contextFactory,
-			List<ApplicationContextInitializer<C>> initializers,
+			List<ApplicationContextInitializer<? super C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations);

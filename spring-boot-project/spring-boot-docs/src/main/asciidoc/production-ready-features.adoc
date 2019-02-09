@@ -1,5 +1,6 @@
 [[production-ready]]
-= Spring Boot Actuator: Production-ready features
+= Spring Boot Actuator: Production-ready Features
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -156,7 +157,7 @@ use the following additional endpoints:
 | ID | Description | Enabled by default
 
 |`heapdump`
-|Returns a GZip compressed `hprof` heap dump file.
+|Returns an `hprof` heap dump file.
 |Yes
 
 |`jolokia`
@@ -164,9 +165,9 @@ use the following additional endpoints:
 |Yes
 
 |`logfile`
-|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
-been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
-content.
+|Returns the contents of the logfile (if `logging.file.name` or `logging.file.path`
+properties have been set). Supports the use of the HTTP `Range` header to retrieve part of
+the log file's content.
 |Yes
 
 |`prometheus`
@@ -228,6 +229,10 @@ endpoints:
 |Yes
 |No
 
+|`caches`
+|Yes
+|No
+
 |`conditions`
 |Yes
 |No
@@ -262,7 +267,7 @@ endpoints:
 
 |`integrationgraph`
 |Yes
-|Yes
+|No
 
 |`jolokia`
 |N/A
@@ -361,10 +366,10 @@ exclude) all endpoints, as shown in the following example:
 [source,yaml,indent=0]
 ----
 	management:
-		endpoints:
-			web:
-				exposure:
-					include: "*"
+	  endpoints:
+	    web:
+	      exposure:
+	        include: "*"
 ----
 ====
 
@@ -473,25 +478,6 @@ disabled to prevent the possibility of a clash with other mappings.
 
 
 
-[[production-ready-endpoints-custom-mapping]]
-=== Actuator Web Endpoint Paths
-By default, endpoints are exposed over HTTP under the `/actuator` path by using the ID of
-the endpoint. For example, the `beans` endpoint is exposed under `/actuator/beans`. If you
-want to map endpoints to a different path, you can use the
-`management.endpoints.web.path-mapping` property. Also, if you want change the base path,
-you can use `management.endpoints.web.base-path`.
-
-The following example remaps `/actuator/health` to `/healthcheck`:
-
-.application.properties
-[source,properties,indent=0]
-----
-	management.endpoints.web.base-path=/
-	management.endpoints.web.path-mapping.health=healthcheck
-----
-
-
-
 [[production-ready-endpoints-cors]]
 === CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
@@ -555,7 +541,7 @@ Consider the following JSON request body:
 	}
 ----
 
-This can be used to invoke a write operation that takes a `String test` and `int counter`
+This can be used to invoke a write operation that takes `String name` and `int counter`
 parameters.
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the
@@ -769,6 +755,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/cassandra/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
 |Checks that a Cassandra database is up.
 
+|{sc-spring-boot-actuator}/couchbase/CouchbaseHealthIndicator.{sc-ext}[`CouchbaseHealthIndicator`]
+|Checks that a Couchbase cluster is up.
+
 |{sc-spring-boot-actuator}/system/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
 |Checks for low disk space.
 
@@ -942,6 +931,9 @@ appropriate:
 |{sc-spring-boot-actuator}/cassandra/CassandraReactiveHealthIndicator.{sc-ext}[`CassandraReactiveHealthIndicator`]
 |Checks that a Cassandra database is up.
 
+|{sc-spring-boot-actuator}/couchbase/CouchbaseReactiveHealthIndicator.{sc-ext}[`CouchbaseReactiveHealthIndicator`]
+|Checks that a Couchbase cluster is up.
+
 |{sc-spring-boot-actuator}/mongo/MongoReactiveHealthIndicator.{sc-ext}[`MongoReactiveHealthIndicator`]
 |Checks that a Mongo database is up.
 
@@ -1085,14 +1077,12 @@ additional entry:
 ----
 
 
-
 [[production-ready-monitoring]]
 == Monitoring and Management over HTTP
 If you are developing a web application, Spring Boot Actuator auto-configures all
 enabled endpoints to be exposed over HTTP. The default convention is to use the `id` of
 the endpoint with a prefix of `/actuator` as the URL path. For example, `health` is
 exposed as `/actuator/health`.
-
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 
 
@@ -1118,6 +1108,18 @@ different HTTP port>>, `management.endpoints.web.base-path` is relative to
 `server.servlet.context-path`. If `management.server.port` is configured,
 `management.endpoints.web.base-path` is relative to
 `management.server.servlet.context-path`.
+
+If you want to map endpoints to a different path, you can use the
+`management.endpoints.web.path-mapping` property.
+
+The following example remaps `/actuator/health` to `/healthcheck`:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/
+	management.endpoints.web.path-mapping.health=healthcheck
+----
 
 
 
@@ -1202,6 +1204,14 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 	management.server.port=-1
 ----
 
+This can be achieved using the `management.endpoints.web.exposure.exclude` property as well, as shown in
+following example:
+
+[source,properties,indent=0]
+----
+	management.endpoints.web.exposure.exclude=*
+----
+
 
 
 [[production-ready-jmx]]
@@ -1256,7 +1266,7 @@ Maven, you would add the following dependency:
 	<dependency>
 		<groupId>org.jolokia</groupId>
 		<artifactId>jolokia-core</artifactId>
- 	</dependency>
+	</dependency>
 ----
 
 The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the
@@ -1335,12 +1345,17 @@ Spring Boot Actuator provides dependency management and auto-configuration for
 https://micrometer.io[Micrometer], an application metrics facade that supports numerous
 monitoring systems, including:
 
+- <<production-ready-metrics-export-appoptics,AppOptics>>
 - <<production-ready-metrics-export-atlas,Atlas>>
 - <<production-ready-metrics-export-datadog,Datadog>>
+- <<production-ready-metrics-export-dynatrace,Dynatrace>>
+- <<production-ready-metrics-export-elastic,Elastic>>
 - <<production-ready-metrics-export-ganglia,Ganglia>>
 - <<production-ready-metrics-export-graphite,Graphite>>
+- <<production-ready-metrics-export-humio,Humio>>
 - <<production-ready-metrics-export-influx,Influx>>
 - <<production-ready-metrics-export-jmx,JMX>>
+- <<production-ready-metrics-export-kairos,KairosDB>>
 - <<production-ready-metrics-export-newrelic,New Relic>>
 - <<production-ready-metrics-export-prometheus,Prometheus>>
 - <<production-ready-metrics-export-signalfx,SignalFx>>
@@ -1420,6 +1435,19 @@ annotation markers.
 
 
 
+[[production-ready-metrics-export-appoptics]]
+==== AppOptics
+By default, the AppOptics registry pushes metrics to
+https://api.appoptics.com/v1/measurements periodically. To export metrics to SaaS
+{micrometer-registry-documentation}/appoptics[AppOptics], your API token must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.appoptics.api-token=YOUR_TOKEN
+----
+
+
+
 [[production-ready-metrics-export-atlas]]
 ==== Atlas
 By default, metrics are exported to {micrometer-registry-documentation}/atlas[Atlas]
@@ -1449,6 +1477,41 @@ You can also change the interval at which metrics are sent to Datadog:
 [source,properties,indent=0]
 ----
 	management.metrics.export.datadog.step=30s
+----
+
+
+
+[[production-ready-metrics-export-dynatrace]]
+==== Dynatrace
+Dynatrace registry pushes metrics to the configured URI periodically. To export metrics to
+{micrometer-registry-documentation}/dynatrace[Dynatrace], your API token, device ID, and
+URI must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.dynatrace.api-token=YOUR_TOKEN
+	management.metrics.export.dynatrace.device-id=YOUR_DEVICE_ID
+	management.metrics.export.dynatrace.uri=YOUR_URI
+----
+
+You can also change the interval at which metrics are sent to Dynatrace:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.dynatrace.step=30s
+----
+
+
+
+[[production-ready-metrics-export-elastic]]
+==== Elastic
+By default, metrics are exported to {micrometer-registry-documentation}/elastic[Elastic]
+running on your local machine. The location of the Elastic server to use can be provided
+using the following property:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.elastic.host=http://elastic.example.com:8086
 ----
 
 
@@ -1497,6 +1560,28 @@ public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock 
 
 
 
+[[production-ready-metrics-export-humio]]
+==== Humio
+By default, the Humio registry pushes metrics to https://cloud.humio.com periodically. To
+export metrics to SaaS {micrometer-registry-documentation}/humio[Humio], your API token
+must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.humio.api-token=YOUR_TOKEN
+----
+
+You should also configure one or more tags to identify the data source to which metrics
+will be pushed:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.humio.tags.alpha=a
+	management.metrics.export.humio.tags.bravo=b
+----
+
+
+
 [[production-ready-metrics-export-influx]]
 ==== Influx
 By default, metrics are exported to {micrometer-registry-documentation}/influx[Influx]
@@ -1536,6 +1621,19 @@ provided unless you define your own:
 public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
 }
+----
+
+
+
+[[production-ready-metrics-export-kairos]]
+==== KairosDB
+By default, metrics are exported to {micrometer-registry-documentation}/kairos[KairosDB]
+running on your local machine. The location of the https://kairosdb.github.io/[KairosDB
+server] to use can be provided using:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.kairos.uri=http://kairosdb.example.com:8080/api/v1/datapoints
 ----
 
 
@@ -1685,6 +1783,8 @@ Spring Boot registers the following core metrics when applicable:
 ** Number of classes loaded/unloaded
 * CPU metrics
 * File descriptor metrics
+* Kafka consumer metrics
+* Log4j2 metrics: record the number of events logged to Log4j2 at each level
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the
 application's absolute start time
@@ -1724,12 +1824,28 @@ customized by setting the `management.metrics.web.server.requests-metric-name` p
 
 By default, Spring MVC-related metrics are tagged with the following information:
 
-* `method`, the request's method (for example, `GET` or `POST`).
-* `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
-* `status`, the response's HTTP status code (for example, `200` or `500`).
-* `exception`, the simple class name of any exception that was thrown while handling the
-request.
+|===
+|Tag |Description
+
+|`exception`
+|Simple class name of any exception that was thrown while handling the request.
+
+|`method`
+|Request's method (for example, `GET` or `POST`)
+
+|`outcome`
+|Request's outcome based on the status code of the response. 1xx is
+`INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
+`SERVER_ERROR`
+
+|`status`
+|Response's HTTP status code (for example, `200` or `500`)
+
+|`uri`
+|Request's URI template prior to variable substitution, if possible (for example,
+`/api/person/{id}`)
+
+|===
 
 To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
@@ -1745,14 +1861,87 @@ the name by setting the `management.metrics.web.server.requests-metric-name` pro
 
 By default, WebFlux-related metrics are tagged with the following information:
 
-* `method`, the request's method (for example, `GET` or `POST`).
-* `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
-* `status`, the response's HTTP status code (for example, `200` or `500`).
-* `exception`, the simple class name of any exception that was thrown while handling the
-request.
+|===
+|Tag |Description
+
+|`exception`
+|Simple class name of any exception that was thrown while handling the request.
+
+|`method`
+|Request's method (for example, `GET` or `POST`)
+
+|`outcome`
+|Request's outcome based on the status code of the response. 1xx is
+`INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
+`SERVER_ERROR`
+
+|`status`
+|Response's HTTP status code (for example, `200` or `500`)
+
+|`uri`
+|Request's URI template prior to variable substitution, if possible (for example,
+`/api/person/{id}`)
+
+|===
 
 To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
+
+
+
+[[production-ready-metrics-jersey-server]]
+==== Jersey Server Metrics
+Auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS
+implementation. When `management.metrics.web.server.auto-time-requests` is `true`, this
+instrumentation occurs for all requests. Alternatively, when set to `false`, you can
+enable instrumentation by adding `@Timed` to a request-handling method:
+
+[source,java,indent=0]
+----
+	@Component
+	@Path("/api/people")
+	@Timed <1>
+	public class Endpoint {
+		@GET
+		@Timed(extraTags = { "region", "us-east-1" }) <2>
+		@Timed(value = "all.people", longTask = true) <3>
+		public List<Person> listPeople() { ... }
+	}
+----
+<1> On a resource class to enable timings on every request handler in the resource.
+<2> On a method to enable for an individual endpoint. This is not necessary if you have it on
+the class, but can be used to further customize the timer for this particular endpoint.
+<3> On a method with `longTask = true` to enable a long task timer for the method. Long task
+timers require a separate metric name, and can be stacked with a short task timer.
+
+By default, metrics are generated with the name, `http.server.requests`. The name can be
+customized by setting the `management.metrics.web.server.requests-metric-name` property.
+
+By default, Jersey server metrics are tagged with the following information:
+
+|===
+|Tag |Description
+
+|`exception`
+|Simple class name of any exception that was thrown while handling the request.
+
+|`method`
+|Request's method (for example, `GET` or `POST`)
+
+|`outcome`
+|Request's outcome based on the status code of the response. 1xx is
+`INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
+`SERVER_ERROR`
+
+|`status`
+|Response's HTTP status code (for example, `200` or `500`)
+
+|`uri`
+|Request's URI template prior to variable substitution, if possible (for example,
+`/api/person/{id}`)
+
+|===
+
+To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
 
 
 
@@ -1774,11 +1963,28 @@ customized by setting the `management.metrics.web.client.requests-metric-name` p
 By default, metrics generated by an instrumented client are tagged with the
 following information:
 
-* `method`, the request's method (for example, `GET` or `POST`).
-* `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
-* `status`, the response's HTTP status code (for example, `200` or `500`).
-* `clientName`, the host portion of the URI.
+|===
+|Tag |Description
+
+|`clientName`
+|Host portion of the URI
+
+|`method`
+|Request's method (for example, `GET` or `POST`)
+
+|`outcome`
+|Request's outcome based on the status code of the response. 1xx is
+`INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
+`SERVER_ERROR`
+
+|`status`
+|Response's HTTP status code (for example, `200` or `500`)
+
+|`uri`
+|Request's URI template prior to variable substitution, if possible (for example,
+`/api/person/{id}`)
+
+|===
 
 To customize the tags, and depending on your choice of client, you can provide
 a `@Bean` that implements `RestTemplateExchangeTagsProvider` or
@@ -1929,6 +2135,10 @@ The following properties allow per-meter customization:
 | `management.metrics.distribution.percentiles-histogram`
 | Whether to publish a histogram suitable for computing aggregable (across dimension)
 percentile approximations.
+
+| `management.metrics.distribution.minimum-expected-value`,
+  `management.metrics.distribution.maximum-expected-value`
+| Publish less histogram buckets by clamping the range of expected values.
 
 | `management.metrics.distribution.percentiles`
 | Publish percentile values computed in your application

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class LogFileWebEndpoint {
 		}
 		LogFile logFile = LogFile.get(this.environment);
 		if (logFile == null) {
-			logger.debug("Missing 'logging.file' or 'logging.path' properties");
+			logger.debug("Missing 'logging.file.name' or 'logging.file.path' properties");
 			return null;
 		}
 		return new FileSystemResource(logFile.toString());

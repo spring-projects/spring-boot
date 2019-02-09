@@ -24,13 +24,13 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JarURLConnection}.
@@ -43,9 +43,6 @@ public class JarURLConnectionTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder(new File("target"));
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private File rootJarFile;
 
@@ -160,8 +157,8 @@ public class JarURLConnectionTests {
 		URL url = new URL("jar:file:" + getAbsolutePath() + "!/w.jar!/3.dat");
 		JarFile nested = this.jarFile
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
-		this.thrown.expect(FileNotFoundException.class);
-		JarURLConnection.get(url, nested).getInputStream();
+		assertThatExceptionOfType(FileNotFoundException.class)
+				.isThrownBy(JarURLConnection.get(url, nested)::getInputStream);
 	}
 
 	@Test

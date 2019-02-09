@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DefaultApplicationArguments}.
@@ -36,14 +35,11 @@ public class DefaultApplicationArgumentsTests {
 	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz",
 			"--debug", "spring", "boot" };
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void argumentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Args must not be null");
-		new DefaultApplicationArguments(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DefaultApplicationArguments(null))
+				.withMessageContaining("Args must not be null");
 	}
 
 	@Test
@@ -84,8 +80,7 @@ public class DefaultApplicationArgumentsTests {
 
 	@Test
 	public void getNoNonOptionArgs() {
-		ApplicationArguments arguments = new DefaultApplicationArguments(
-				new String[] { "--debug" });
+		ApplicationArguments arguments = new DefaultApplicationArguments("--debug");
 		assertThat(arguments.getNonOptionArgs()).isEmpty();
 	}
 

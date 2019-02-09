@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@
 package org.springframework.boot.system;
 
 import java.io.File;
-import java.io.FileReader;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.util.FileCopyUtils;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Tests for {@link ApplicationPid}.
@@ -34,9 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class ApplicationPidTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -52,11 +47,11 @@ public class ApplicationPidTests {
 	}
 
 	@Test
-	public void throwIllegalStateWritingMissingPid() throws Exception {
+	public void throwIllegalStateWritingMissingPid() {
 		ApplicationPid pid = new ApplicationPid(null);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No PID available");
-		pid.write(this.temporaryFolder.newFile());
+		assertThatIllegalStateException()
+				.isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
+				.withMessageContaining("No PID available");
 	}
 
 	@Test
@@ -64,8 +59,7 @@ public class ApplicationPidTests {
 		ApplicationPid pid = new ApplicationPid("123");
 		File file = this.temporaryFolder.newFile();
 		pid.write(file);
-		String actual = FileCopyUtils.copyToString(new FileReader(file));
-		assertThat(actual).isEqualTo("123");
+		assertThat(contentOf(file)).isEqualTo("123");
 	}
 
 	@Test
@@ -75,8 +69,7 @@ public class ApplicationPidTests {
 		File file = this.temporaryFolder.newFile();
 		file.delete();
 		pid.write(file);
-		String actual = FileCopyUtils.copyToString(new FileReader(file));
-		assertThat(actual).isEqualTo("123");
+		assertThat(contentOf(file)).isEqualTo("123");
 	}
 
 	@Test

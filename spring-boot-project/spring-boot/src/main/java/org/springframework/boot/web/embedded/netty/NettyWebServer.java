@@ -74,7 +74,7 @@ public class NettyWebServer implements WebServer {
 				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}
-			NettyWebServer.logger.info("Netty started on port(s): " + getPort());
+			logger.info("Netty started on port(s): " + getPort());
 			startDaemonAwaitThread(this.disposableServer);
 		}
 	}

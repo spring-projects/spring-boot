@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.Test;
 
@@ -64,14 +63,7 @@ public class MissingRequiredConfigurationFailureAnalyzerTests {
 
 		@Bean
 		public NewRelicMeterRegistry meterRegistry() {
-			return new NewRelicMeterRegistry(new NewRelicConfig() {
-
-				@Override
-				public String get(String key) {
-					return null;
-				}
-
-			}, Clock.SYSTEM);
+			return new NewRelicMeterRegistry((key) -> null, Clock.SYSTEM);
 		}
 
 	}

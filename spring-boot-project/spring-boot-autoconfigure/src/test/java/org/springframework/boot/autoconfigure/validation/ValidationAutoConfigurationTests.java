@@ -25,11 +25,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigurationTests.CustomValidatorConfiguration.TestBeanPostProcessor;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -37,6 +34,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.CustomValidatorBean;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -44,6 +42,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -53,9 +52,6 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 public class ValidationAutoConfigurationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -161,8 +157,8 @@ public class ValidationAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething("KO");
+		assertThatExceptionOfType(ConstraintViolationException.class)
+				.isThrownBy(() -> service.doSomething("KO"));
 	}
 
 	@Test
@@ -172,8 +168,8 @@ public class ValidationAutoConfigurationTests {
 		DefaultAnotherSampleService service = this.context
 				.getBean(DefaultAnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething(2);
+		assertThatExceptionOfType(ConstraintViolationException.class)
+				.isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test
@@ -185,8 +181,8 @@ public class ValidationAutoConfigurationTests {
 				.isEmpty();
 		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething(2);
+		assertThatExceptionOfType(ConstraintViolationException.class)
+				.isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test
@@ -199,9 +195,8 @@ public class ValidationAutoConfigurationTests {
 				.isSameAs(userMethodValidationPostProcessor);
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
 				.hasSize(1);
-		assertThat(this.context.getBean(Validator.class))
-				.isNotSameAs(new DirectFieldAccessor(userMethodValidationPostProcessor)
-						.getPropertyValue("validator"));
+		assertThat(this.context.getBean(Validator.class)).isNotSameAs(ReflectionTestUtils
+				.getField(userMethodValidationPostProcessor, "validator"));
 	}
 
 	@Test

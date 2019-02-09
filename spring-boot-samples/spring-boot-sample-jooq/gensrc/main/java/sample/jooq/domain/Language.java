@@ -118,4 +118,5 @@ public class Language extends TableImpl<Record> {
 	public Language rename(String name) {
 		return new Language(name, null);
 	}
+
 }

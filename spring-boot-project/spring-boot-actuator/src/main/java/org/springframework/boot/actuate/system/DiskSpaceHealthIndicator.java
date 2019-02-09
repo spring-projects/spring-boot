@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.util.unit.DataSize;
 
 /**
  * A {@link HealthIndicator} that checks available disk space and reports a status of
@@ -32,6 +33,7 @@ import org.springframework.boot.actuate.health.Status;
  *
  * @author Mattias Severson
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
@@ -40,35 +42,47 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
 	private final File path;
 
-	private final long threshold;
+	private final DataSize threshold;
 
 	/**
 	 * Create a new {@code DiskSpaceHealthIndicator} instance.
 	 * @param path the Path used to compute the available disk space
-	 * @param threshold the minimum disk space that should be available (in bytes)
+	 * @param threshold the minimum disk space that should be available
 	 */
-	public DiskSpaceHealthIndicator(File path, long threshold) {
+	public DiskSpaceHealthIndicator(File path, DataSize threshold) {
 		super("DiskSpace health check failed");
 		this.path = path;
 		this.threshold = threshold;
 	}
 
+	/**
+	 * Create a new {@code DiskSpaceHealthIndicator} instance.
+	 * @param path the Path used to compute the available disk space
+	 * @param threshold the minimum disk space that should be available (in bytes)
+	 * @deprecated since 2.1.0 in favor of
+	 * {@link #DiskSpaceHealthIndicator(File, DataSize)}
+	 */
+	@Deprecated
+	public DiskSpaceHealthIndicator(File path, long threshold) {
+		this(path, DataSize.ofBytes(threshold));
+	}
+
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		long diskFreeInBytes = this.path.getUsableSpace();
-		if (diskFreeInBytes >= this.threshold) {
+		if (diskFreeInBytes >= this.threshold.toBytes()) {
 			builder.up();
 		}
 		else {
 			logger.warn(String.format(
 					"Free disk space below threshold. "
-							+ "Available: %d bytes (threshold: %d bytes)",
+							+ "Available: %d bytes (threshold: %s)",
 					diskFreeInBytes, this.threshold));
 			builder.down();
 		}
 		builder.withDetail("total", this.path.getTotalSpace())
 				.withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.threshold);
+				.withDetail("threshold", this.threshold.toBytes());
 	}
 
 }

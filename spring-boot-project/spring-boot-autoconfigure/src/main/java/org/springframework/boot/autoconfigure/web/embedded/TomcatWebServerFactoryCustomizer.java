@@ -48,6 +48,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Chentao Qu
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -84,13 +85,14 @@ public class TomcatWebServerFactoryCustomizer implements
 						tomcatProperties.getMaxThreads()));
 		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper.from(this::determineMaxHttpHeaderSize).when(this::isPositive)
+		propertyMapper.from(this::determineMaxHttpHeaderSize).whenNonNull()
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull()
 				.asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
-		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
+		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).asInt(DataSize::toBytes)
 				.when((maxHttpPostSize) -> maxHttpPostSize != 0)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
@@ -106,6 +108,8 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
+		propertyMapper.from(tomcatProperties::getProcessorCache).when(this::isPositive)
+				.to((processorCache) -> customizeProcessorCache(factory, processorCache));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
 	}
@@ -114,10 +118,11 @@ public class TomcatWebServerFactoryCustomizer implements
 		return value > 0;
 	}
 
-	private int determineMaxHttpHeaderSize() {
-		return (this.serverProperties.getMaxHttpHeaderSize() > 0)
-				? this.serverProperties.getMaxHttpHeaderSize()
-				: this.serverProperties.getTomcat().getMaxHttpHeaderSize();
+	@SuppressWarnings("deprecation")
+	private DataSize determineMaxHttpHeaderSize() {
+		return (this.serverProperties.getTomcat().getMaxHttpHeaderSize().toBytes() > 0)
+				? this.serverProperties.getTomcat().getMaxHttpHeaderSize()
+				: this.serverProperties.getMaxHttpHeaderSize();
 	}
 
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory,
@@ -129,6 +134,13 @@ public class TomcatWebServerFactoryCustomizer implements
 				protocol.setAcceptCount(acceptCount);
 			}
 		});
+	}
+
+	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory,
+			int processorCache) {
+		factory.addConnectorCustomizers((
+				connector) -> ((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
+						.setProcessorCache(processorCache));
 	}
 
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,

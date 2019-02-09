@@ -17,7 +17,6 @@
 package org.springframework.boot.task;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -45,22 +44,19 @@ public class TaskSchedulerBuilder {
 
 	private final String threadNamePrefix;
 
-	private final Set<TaskSchedulerCustomizer> taskSchedulerCustomizers;
+	private final Set<TaskSchedulerCustomizer> customizers;
 
-	public TaskSchedulerBuilder(TaskSchedulerCustomizer... taskSchedulerCustomizers) {
-		Assert.notNull(taskSchedulerCustomizers,
-				"TaskSchedulerCustomizers must not be null");
+	public TaskSchedulerBuilder() {
 		this.poolSize = null;
 		this.threadNamePrefix = null;
-		this.taskSchedulerCustomizers = Collections.unmodifiableSet(
-				new LinkedHashSet<>(Arrays.asList(taskSchedulerCustomizers)));
+		this.customizers = null;
 	}
 
 	public TaskSchedulerBuilder(Integer poolSize, String threadNamePrefix,
 			Set<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
 		this.threadNamePrefix = threadNamePrefix;
-		this.taskSchedulerCustomizers = taskSchedulerCustomizers;
+		this.customizers = taskSchedulerCustomizers;
 	}
 
 	/**
@@ -70,7 +66,7 @@ public class TaskSchedulerBuilder {
 	 */
 	public TaskSchedulerBuilder poolSize(int poolSize) {
 		return new TaskSchedulerBuilder(poolSize, this.threadNamePrefix,
-				this.taskSchedulerCustomizers);
+				this.customizers);
 	}
 
 	/**
@@ -80,7 +76,7 @@ public class TaskSchedulerBuilder {
 	 */
 	public TaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
 		return new TaskSchedulerBuilder(this.poolSize, threadNamePrefix,
-				this.taskSchedulerCustomizers);
+				this.customizers);
 	}
 
 	/**
@@ -88,15 +84,13 @@ public class TaskSchedulerBuilder {
 	 * applied to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the
 	 * order that they were added after builder configuration has been applied. Setting
 	 * this value will replace any previously configured customizers.
-	 * @param taskSchedulerCustomizers the customizers to set
+	 * @param customizers the customizers to set
 	 * @return a new builder instance
 	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder customizers(
-			TaskSchedulerCustomizer... taskSchedulerCustomizers) {
-		Assert.notNull(taskSchedulerCustomizers,
-				"TaskSchedulerCustomizers must not be null");
-		return customizers(Arrays.asList(taskSchedulerCustomizers));
+	public TaskSchedulerBuilder customizers(TaskSchedulerCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		return customizers(Arrays.asList(customizers));
 	}
 
 	/**
@@ -104,48 +98,44 @@ public class TaskSchedulerBuilder {
 	 * applied to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the
 	 * order that they were added after builder configuration has been applied. Setting
 	 * this value will replace any previously configured customizers.
-	 * @param taskSchedulerCustomizers the customizers to set
+	 * @param customizers the customizers to set
 	 * @return a new builder instance
 	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
 	 */
 	public TaskSchedulerBuilder customizers(
-			Collection<? extends TaskSchedulerCustomizer> taskSchedulerCustomizers) {
-		Assert.notNull(taskSchedulerCustomizers,
-				"TaskSchedulerCustomizers must not be null");
+			Iterable<TaskSchedulerCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
 		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix,
-				Collections.unmodifiableSet(new LinkedHashSet<TaskSchedulerCustomizer>(
-						taskSchedulerCustomizers)));
+				append(null, customizers));
 	}
 
 	/**
 	 * Add {@link TaskSchedulerCustomizer taskSchedulerCustomizers} that should be applied
 	 * to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the order that
 	 * they were added after builder configuration has been applied.
-	 * @param taskSchedulerCustomizers the customizers to add
+	 * @param customizers the customizers to add
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
 	public TaskSchedulerBuilder additionalCustomizers(
-			TaskSchedulerCustomizer... taskSchedulerCustomizers) {
-		Assert.notNull(taskSchedulerCustomizers,
-				"TaskSchedulerCustomizers must not be null");
-		return additionalCustomizers(Arrays.asList(taskSchedulerCustomizers));
+			TaskSchedulerCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		return additionalCustomizers(Arrays.asList(customizers));
 	}
 
 	/**
 	 * Add {@link TaskSchedulerCustomizer taskSchedulerCustomizers} that should be applied
 	 * to the {@link ThreadPoolTaskScheduler}. Customizers are applied in the order that
 	 * they were added after builder configuration has been applied.
-	 * @param taskSchedulerCustomizers the customizers to add
+	 * @param customizers the customizers to add
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
 	public TaskSchedulerBuilder additionalCustomizers(
-			Collection<? extends TaskSchedulerCustomizer> taskSchedulerCustomizers) {
-		Assert.notNull(taskSchedulerCustomizers,
-				"TaskSchedulerCustomizers must not be null");
+			Iterable<TaskSchedulerCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
 		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix,
-				append(this.taskSchedulerCustomizers, taskSchedulerCustomizers));
+				append(this.customizers, customizers));
 	}
 
 	/**
@@ -169,18 +159,15 @@ public class TaskSchedulerBuilder {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.poolSize).to(taskScheduler::setPoolSize);
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
-
-		if (!CollectionUtils.isEmpty(this.taskSchedulerCustomizers)) {
-			for (TaskSchedulerCustomizer customizer : this.taskSchedulerCustomizers) {
-				customizer.customize(taskScheduler);
-			}
+		if (!CollectionUtils.isEmpty(this.customizers)) {
+			this.customizers.forEach((customizer) -> customizer.customize(taskScheduler));
 		}
 		return taskScheduler;
 	}
 
-	private static <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
+	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
-		result.addAll(additions);
+		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);
 	}
 

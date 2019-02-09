@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Collections;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DispatcherServletRegistrationBean}.
@@ -33,14 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DispatcherServletRegistrationBeanTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenPathIsNullThrowsException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Path must not be null");
-		new DispatcherServletRegistrationBean(new DispatcherServlet(), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DispatcherServletRegistrationBean(
+						new DispatcherServlet(), null))
+				.withMessageContaining("Path must not be null");
 	}
 
 	@Test
@@ -61,16 +59,16 @@ public class DispatcherServletRegistrationBeanTests {
 	public void setUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		this.thrown.expect(UnsupportedOperationException.class);
-		bean.setUrlMappings(Collections.emptyList());
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(() -> bean.setUrlMappings(Collections.emptyList()));
 	}
 
 	@Test
 	public void addUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		this.thrown.expect(UnsupportedOperationException.class);
-		bean.addUrlMappings("/test");
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(() -> bean.addUrlMappings("/test"));
 	}
 
 }

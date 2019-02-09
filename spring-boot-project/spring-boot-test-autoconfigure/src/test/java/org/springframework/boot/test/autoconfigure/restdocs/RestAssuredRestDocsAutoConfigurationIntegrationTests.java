@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 import java.io.File;
 
 import io.restassured.specification.RequestSpecification;
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,12 +26,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileSystemUtils;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -51,13 +52,17 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 	@LocalServerPort
 	private int port;
 
-	@Before
-	public void deleteSnippets() {
-		FileSystemUtils.deleteRecursively(new File("target/generated-snippets"));
-	}
-
 	@Autowired
 	private RequestSpecification documentationSpec;
+
+	private File generatedSnippets;
+
+	@Before
+	public void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
+				"generated-snippets");
+		FileSystemUtils.deleteRecursively(this.generatedSnippets);
+	}
 
 	@Test
 	public void defaultSnippetsAreWritten() {
@@ -66,17 +71,13 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 						preprocessRequest(modifyUris().scheme("https")
 								.host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
-		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
+		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.adoc"))
-				.has(contentContaining("api.example.com"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc")))
+				.contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc")))
+				.contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
 	}
 
 }

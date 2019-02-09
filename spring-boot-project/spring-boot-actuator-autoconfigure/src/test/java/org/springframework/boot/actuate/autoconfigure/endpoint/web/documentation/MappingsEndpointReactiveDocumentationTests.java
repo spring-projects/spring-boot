@@ -61,13 +61,13 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
+@RunWith(SpringRunner.class)
 public class MappingsEndpointReactiveDocumentationTests
 		extends AbstractEndpointDocumentationTests {
 
 	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
 	@LocalServerPort
 	private int port;

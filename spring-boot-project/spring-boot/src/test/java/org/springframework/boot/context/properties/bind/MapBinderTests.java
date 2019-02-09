@@ -26,9 +26,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -47,13 +45,13 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link MapBinder}.
@@ -77,9 +75,6 @@ public class MapBinderTests {
 
 	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable
 			.mapOf(String.class, String[].class);
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -353,8 +348,7 @@ public class MapBinderTests {
 	@Test
 	public void bindToMapShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP;
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
@@ -368,8 +362,7 @@ public class MapBinderTests {
 	public void bindToMapStringArrayShouldTriggerOnSuccess() {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.bar", "a,b,c", "line1"));
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Bindable<Map<String, String[]>> target = STRING_ARRAY_MAP;
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
@@ -566,8 +559,8 @@ public class MapBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.binder.bind("foo", STRING_STRING_MAP);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo", STRING_STRING_MAP));
 	}
 
 	@Test
@@ -627,7 +620,7 @@ public class MapBinderTests {
 								.withExistingValue(Collections.singletonMap("a", "b")))
 				.get();
 		assertThat(result).hasSize(3);
-		assertThat(result.entrySet()).containsExactly(entry("a", "b"), entry("c", "d"),
+		assertThat(result).containsExactly(entry("a", "b"), entry("c", "d"),
 				entry("e", "f"));
 	}
 

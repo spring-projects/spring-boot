@@ -37,7 +37,7 @@ public class JacksonJsonParser extends AbstractJsonParser {
 	private ObjectMapper objectMapper; // Late binding
 
 	/**
-	 * Creates a instance with the specified {@link ObjectMapper}.
+	 * Creates an instance with the specified {@link ObjectMapper}.
 	 * @param objectMapper the object mapper to use
 	 */
 	public JacksonJsonParser(ObjectMapper objectMapper) {

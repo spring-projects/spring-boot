@@ -16,15 +16,14 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.example.ExampleConfig;
 import org.springframework.boot.test.context.example.scan.Example;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link AnnotatedClassFinder}.
@@ -33,24 +32,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AnnotatedClassFinderTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private AnnotatedClassFinder finder = new AnnotatedClassFinder(
 			SpringBootConfiguration.class);
 
 	@Test
 	public void findFromClassWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		this.finder.findFromClass((Class<?>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void findFromPackageWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		this.finder.findFromPackage((String) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.finder.findFromPackage((String) null))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test

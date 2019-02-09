@@ -58,7 +58,7 @@ public class OptionHandler {
 		return getParser().accepts(name, description);
 	}
 
-	public OptionSpecBuilder option(Collection<String> aliases, String description) {
+	public OptionSpecBuilder option(List<String> aliases, String description) {
 		return getParser().acceptsAll(aliases, description);
 	}
 

@@ -19,11 +19,10 @@ package org.springframework.boot;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -34,22 +33,19 @@ import static org.mockito.Mockito.mock;
  */
 public class ExitCodeGeneratorsTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void addAllWhenGeneratorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Generators must not be null");
-		List<ExitCodeGenerator> generators = null;
-		new ExitCodeGenerators().addAll(generators);
+		assertThatIllegalArgumentException().isThrownBy(() -> {
+			List<ExitCodeGenerator> generators = null;
+			new ExitCodeGenerators().addAll(generators);
+		}).withMessageContaining("Generators must not be null");
 	}
 
 	@Test
 	public void addWhenGeneratorIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Generator must not be null");
-		new ExitCodeGenerators().add(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ExitCodeGenerators().add(null))
+				.withMessageContaining("Generator must not be null");
 	}
 
 	@Test

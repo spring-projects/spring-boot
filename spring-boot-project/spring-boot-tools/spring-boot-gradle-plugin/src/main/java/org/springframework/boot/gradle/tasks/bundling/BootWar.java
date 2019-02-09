@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 
@@ -53,6 +54,9 @@ public class BootWar extends War implements BootArchive {
 				(copySpec) -> copySpec.from(
 						(Callable<Iterable<File>>) () -> (this.providedClasspath != null)
 								? this.providedClasspath : Collections.emptyList()));
+		getRootSpec().filesMatching("module-info.class", (details) -> {
+			details.setRelativePath(details.getRelativeSourcePath());
+		});
 	}
 
 	@Override
@@ -114,13 +118,14 @@ public class BootWar extends War implements BootArchive {
 	 * @return the provided classpath
 	 */
 	@Optional
+	@Classpath
 	public FileCollection getProvidedClasspath() {
 		return this.providedClasspath;
 	}
 
 	/**
 	 * Adds files to the provided classpath to include in the {@code WEB-INF/lib-provided}
-	 * directory of the war. The given {@code classpath} are evaluated as per
+	 * directory of the war. The given {@code classpath} is evaluated as per
 	 * {@link Project#files(Object...)}.
 	 * @param classpath the additions to the classpath
 	 */
@@ -129,6 +134,27 @@ public class BootWar extends War implements BootArchive {
 		this.providedClasspath = getProject().files(
 				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
+	}
+
+	/**
+	 * Sets the provided classpath to include in the {@code WEB-INF/lib-provided}
+	 * directory of the war.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	public void setProvidedClasspath(FileCollection classpath) {
+		this.providedClasspath = getProject().files(classpath);
+	}
+
+	/**
+	 * Sets the provided classpath to include in the {@code WEB-INF/lib-provided}
+	 * directory of the war. The given {@code classpath} is evaluated as per
+	 * {@link Project#files(Object...)}.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	public void setProvidedClasspath(Object classpath) {
+		this.providedClasspath = getProject().files(classpath);
 	}
 
 	@Override

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -35,6 +36,7 @@ import javax.transaction.UserTransaction;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -45,9 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
 import org.springframework.boot.autoconfigure.orm.jpa.mapping.NonAnnotatedEntity;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
@@ -56,10 +60,13 @@ import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -361,6 +368,73 @@ public class HibernateJpaAutoConfigurationTests
 				});
 	}
 
+	@Test
+	public void eventListenerCanBeRegisteredAsBeans() {
+		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
+				.withClassLoader(new HideDataScriptClassLoader())
+				.withPropertyValues("spring.jpa.show-sql=true",
+						"spring.jpa.hibernate.ddl-auto:create-drop",
+						"spring.datasource.data:classpath:/city.sql")
+				.run((context) -> {
+					// See CityListener
+					assertThat(context).hasSingleBean(City.class);
+					assertThat(context.getBean(City.class).getName())
+							.isEqualTo("Washington");
+				});
+	}
+
+	@Test
+	public void hibernatePropertiesCustomizerCanDisableBeanContainer() {
+		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(City.class));
+	}
+
+	@Test
+	public void withSyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
+		contextRunner()
+				.withUserConfiguration(JpaUsingApplicationListenerConfiguration.class)
+				.withPropertyValues("spring.datasource.initialization-mode=never")
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context
+							.getBean(EventCapturingApplicationListener.class).events
+									.stream()
+									.filter(DataSourceSchemaCreatedEvent.class::isInstance))
+											.hasSize(1);
+				});
+	}
+
+	@Test
+	public void withAsyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
+		contextRunner()
+				.withUserConfiguration(AsyncBootstrappingConfiguration.class,
+						JpaUsingApplicationListenerConfiguration.class)
+				.withPropertyValues("spring.datasource.initialization-mode=never")
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					EventCapturingApplicationListener listener = context
+							.getBean(EventCapturingApplicationListener.class);
+					long end = System.currentTimeMillis() + 30000;
+					while ((System.currentTimeMillis() < end)
+							&& !dataSourceSchemaCreatedEventReceived(listener)) {
+						Thread.sleep(100);
+					}
+					assertThat(listener.events.stream()
+							.filter(DataSourceSchemaCreatedEvent.class::isInstance))
+									.hasSize(1);
+				});
+	}
+
+	private boolean dataSourceSchemaCreatedEventReceived(
+			EventCapturingApplicationListener listener) {
+		for (ApplicationEvent event : listener.events) {
+			if (event instanceof DataSourceSchemaCreatedEvent) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
 	static class TestInitializedJpaConfiguration {
@@ -420,6 +494,17 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
+	@Configuration
+	static class DisableBeanContainerConfiguration {
+
+		@Bean
+		public HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
+			return (hibernateProperties) -> hibernateProperties
+					.remove(AvailableSettings.BEAN_CONTAINER);
+		}
+
+	}
+
 	public static class TestJtaPlatform implements JtaPlatform {
 
 		@Override
@@ -469,6 +554,45 @@ public class HibernateJpaAutoConfigurationTests
 				return Collections.emptyEnumeration();
 			}
 			return super.getResources(name);
+		}
+
+	}
+
+	@org.springframework.context.annotation.Configuration
+	static class JpaUsingApplicationListenerConfiguration {
+
+		@Bean
+		public EventCapturingApplicationListener jpaUsingApplicationListener(
+				EntityManagerFactory emf) {
+			return new EventCapturingApplicationListener();
+		}
+
+		static class EventCapturingApplicationListener
+				implements ApplicationListener<ApplicationEvent> {
+
+			private final List<ApplicationEvent> events = new ArrayList<>();
+
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				this.events.add(event);
+			}
+
+		}
+
+	}
+
+	@Configuration
+	static class AsyncBootstrappingConfiguration {
+
+		@Bean
+		public ThreadPoolTaskExecutor ThreadPoolTaskExecutor() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+		@Bean
+		public EntityManagerFactoryBuilderCustomizer asyncBootstrappingCustomizer(
+				ThreadPoolTaskExecutor executor) {
+			return (builder) -> builder.setBootstrapExecutor(executor);
 		}
 
 	}

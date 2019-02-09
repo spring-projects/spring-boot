@@ -21,15 +21,12 @@ import java.util.List;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
-import com.mongodb.connection.Cluster;
-import com.mongodb.connection.ClusterSettings;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -120,7 +117,7 @@ public class MongoPropertiesTests {
 		properties.setUri("mongodb://mongo1.example.com:12345");
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 	}
@@ -132,7 +129,7 @@ public class MongoPropertiesTests {
 		properties.setPort(27017);
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
 	}
@@ -143,7 +140,7 @@ public class MongoPropertiesTests {
 		properties.setUri("mongodb://mongo1.example.com:12345");
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 	}
@@ -153,17 +150,9 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
-	}
-
-	private List<ServerAddress> extractServerAddresses(MongoClient client) {
-		Cluster cluster = (Cluster) ReflectionTestUtils
-				.getField(ReflectionTestUtils.getField(client, "delegate"), "cluster");
-		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
-				.getField(cluster, "settings");
-		return clusterSettings.getHosts();
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

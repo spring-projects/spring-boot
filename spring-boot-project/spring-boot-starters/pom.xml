@@ -30,6 +30,7 @@
 		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-couchbase-reactive</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
+		<module>spring-boot-starter-data-jdbc</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-ldap</module>
 		<module>spring-boot-starter-data-mongodb</module>
@@ -55,7 +56,8 @@
 		<module>spring-boot-starter-mail</module>
 		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
-		<module>spring-boot-starter-oauth2-oidc-client</module>
+		<module>spring-boot-starter-oauth2-client</module>
+		<module>spring-boot-starter-oauth2-resource-server</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-quartz</module>
 		<module>spring-boot-starter-reactor-netty</module>
@@ -143,6 +145,9 @@
 						</goals>
 						<configuration>
 							<failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
+							<ignoredClassPatterns>
+ 								<ignoredClassPattern>.*module-info</ignoredClassPattern>
+ 							</ignoredClassPatterns>
 							<ignoredResourcePatterns>
 								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
 							</ignoredResourcePatterns>

@@ -18,15 +18,14 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DiscoveredOperationMethod}.
@@ -35,15 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DiscoveredOperationMethodTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("AnnotationAttributes must not be null");
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
-		new DiscoveredOperationMethod(method, OperationType.READ, null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
+				.withMessageContaining("AnnotationAttributes must not be null");
 	}
 
 	@Test

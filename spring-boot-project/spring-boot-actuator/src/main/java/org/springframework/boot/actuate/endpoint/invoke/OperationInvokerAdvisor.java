@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
 
 /**
@@ -35,7 +36,7 @@ public interface OperationInvokerAdvisor {
 	 * @param invoker the invoker to advise
 	 * @return an potentially new operation invoker with support for additional features
 	 */
-	OperationInvoker apply(String endpointId, OperationType operationType,
+	OperationInvoker apply(EndpointId endpointId, OperationType operationType,
 			OperationParameters parameters, OperationInvoker invoker);
 
 }

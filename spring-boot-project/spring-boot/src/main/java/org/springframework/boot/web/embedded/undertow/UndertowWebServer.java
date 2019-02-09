@@ -101,8 +101,7 @@ public class UndertowWebServer implements WebServer {
 				}
 				this.undertow.start();
 				this.started = true;
-				UndertowWebServer.logger
-						.info("Undertow started on port(s) " + getPortsDescription());
+				logger.info("Undertow started on port(s) " + getPortsDescription());
 			}
 			catch (Exception ex) {
 				try {

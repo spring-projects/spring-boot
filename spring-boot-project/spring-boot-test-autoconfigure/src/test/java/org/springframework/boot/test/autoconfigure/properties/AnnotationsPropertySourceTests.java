@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,12 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link AnnotationsPropertySource}.
@@ -35,14 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AnnotationsPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Property source must not be null");
-		new AnnotationsPropertySource(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new AnnotationsPropertySource(null))
+				.withMessageContaining("Property source must not be null");
 	}
 
 	@Test
@@ -203,7 +199,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface TypeLevelAnnotation {
+	@interface TypeLevelAnnotation {
 
 		String value();
 
@@ -216,7 +212,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("test")
-	static @interface TypeLevelWithPrefixAnnotation {
+	@interface TypeLevelWithPrefixAnnotation {
 
 		String value();
 
@@ -228,7 +224,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface AttributeLevelWithPrefixAnnotation {
+	@interface AttributeLevelWithPrefixAnnotation {
 
 		@PropertyMapping("test")
 		String value();
@@ -242,7 +238,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("test")
-	static @interface TypeAndAttributeLevelWithPrefixAnnotation {
+	@interface TypeAndAttributeLevelWithPrefixAnnotation {
 
 		@PropertyMapping("example")
 		String value();
@@ -256,7 +252,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping(skip = SkipPropertyMapping.YES)
-	static @interface NotMappedAtTypeLevelAnnotation {
+	@interface NotMappedAtTypeLevelAnnotation {
 
 		@PropertyMapping
 		String value();
@@ -272,7 +268,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface NotMappedAtAttributeLevelAnnotation {
+	@interface NotMappedAtAttributeLevelAnnotation {
 
 		String value();
 
@@ -290,7 +286,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface ArraysAnnotation {
+	@interface ArraysAnnotation {
 
 		String[] strings();
 
@@ -315,7 +311,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface CamelCaseToKebabCaseAnnotation {
+	@interface CamelCaseToKebabCaseAnnotation {
 
 		String camelCaseToKebabCase() default "abc";
 
@@ -328,7 +324,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@TypeLevelAnnotation("foo")
-	static @interface PropertiesFromSingleMetaAnnotationAnnotation {
+	@interface PropertiesFromSingleMetaAnnotationAnnotation {
 
 	}
 
@@ -341,7 +337,7 @@ public class AnnotationsPropertySourceTests {
 	@TypeLevelAnnotation("alpha")
 	@TypeLevelWithPrefixAnnotation("bravo")
 	@TypeAndAttributeLevelWithPrefixAnnotation("charlie")
-	static @interface PropertiesFromMultipleMetaAnnotationsAnnotation {
+	@interface PropertiesFromMultipleMetaAnnotationsAnnotation {
 
 	}
 
@@ -352,7 +348,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@AliasedAttributeAnnotation
-	static @interface AttributeWithAliasAnnotation {
+	@interface AttributeWithAliasAnnotation {
 
 		@AliasFor(annotation = AliasedAttributeAnnotation.class)
 		String value() default "foo";
@@ -363,7 +359,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("aliasing")
-	static @interface AliasedAttributeAnnotation {
+	@interface AliasedAttributeAnnotation {
 
 		String value() default "bar";
 
@@ -371,7 +367,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@SelfAnnotating
-	static @interface SelfAnnotating {
+	@interface SelfAnnotating {
 
 	}
 
@@ -401,7 +397,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("testenum")
-	static @interface EnumAnnotation {
+	@interface EnumAnnotation {
 
 		@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 		EnumItem value() default EnumItem.DEFAULT;

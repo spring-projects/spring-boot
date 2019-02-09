@@ -17,10 +17,8 @@
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -95,7 +93,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 			ExposableControllerEndpoint endpoint, RequestMappingInfo mapping) {
 		Set<PathPattern> patterns = mapping.getPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
-			patterns = new HashSet<>(Arrays.asList(getPathPatternParser().parse("")));
+			patterns = Collections.singleton(getPathPatternParser().parse(""));
 		}
 		PathPattern[] endpointMappedPatterns = patterns.stream()
 				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))

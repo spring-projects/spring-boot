@@ -51,8 +51,9 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 
 	@Override
 	public HttpServer apply(HttpServer server) {
-		if (this.compression.getMinResponseSize() >= 0) {
-			server = server.compress(this.compression.getMinResponseSize());
+		if (!this.compression.getMinResponseSize().isNegative()) {
+			server = server
+					.compress((int) this.compression.getMinResponseSize().toBytes());
 		}
 		CompressionPredicate mimeTypes = getMimeTypesPredicate(
 				this.compression.getMimeTypes());

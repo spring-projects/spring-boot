@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,8 +50,8 @@ public class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
 
 	@Test
 	public void resourcePath() {
-		assertThat(ReflectionTestUtils.getField(this.servletContext, "resourceBasePath"))
-				.isEqualTo("src/mymain/mywebapp");
+		assertThat(this.servletContext).hasFieldOrPropertyWithValue("resourceBasePath",
+				"src/mymain/mywebapp");
 	}
 
 	@Configuration

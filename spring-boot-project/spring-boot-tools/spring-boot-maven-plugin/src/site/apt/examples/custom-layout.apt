@@ -22,6 +22,7 @@
         <version>${project.version}</version>
         <executions>
           <execution>
+            <id>repackage</id>
             <goals>
               <goal>repackage</goal>
             </goals>
@@ -34,7 +35,7 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>com.example</groupid>
+            <groupId>com.example</groupId>
             <artifactId>custom-layout</artifactId>
             <version>0.0.1.BUILD-SNAPSHOT</version>
           </dependency>

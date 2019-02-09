@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.source;
 import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
-import org.springframework.core.env.PropertySource;
 
 /**
  * A source of {@link ConfigurationProperty ConfigurationProperties}.
@@ -31,6 +30,7 @@ import org.springframework.core.env.PropertySource;
  * @see OriginTrackedValue
  * @see #getConfigurationProperty(ConfigurationPropertyName)
  */
+@FunctionalInterface
 public interface ConfigurationPropertySource {
 
 	/**
@@ -77,9 +77,11 @@ public interface ConfigurationPropertySource {
 	}
 
 	/**
-	 * Return the underlying {@link PropertySource}.
-	 * @return the underlying property source.
+	 * Return the underlying source that is actually providing the properties.
+	 * @return the underlying property source or {@code null}.
 	 */
-	Object getUnderlyingSource();
+	default Object getUnderlyingSource() {
+		return null;
+	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the specified bean classes and/or names are
- * not already contained in the {@link BeanFactory}.
+ * {@link Conditional} that only matches when no beans meeting the specified requirements
+ * are already contained in the {@link BeanFactory}. None of the requirements must be met
+ * for the condition to match and the requirements do not have to be met by the same bean.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of
  * the factory method:
@@ -64,21 +64,21 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnMissingBean {
 
 	/**
-	 * The class type of bean that should be checked. The condition matches when each
-	 * class specified is missing in the {@link ApplicationContext}.
+	 * The class types of beans that should be checked. The condition matches when no bean
+	 * of each class specified is contained in the {@link BeanFactory}.
 	 * @return the class types of beans to check
 	 */
 	Class<?>[] value() default {};
 
 	/**
-	 * The class type names of bean that should be checked. The condition matches when
-	 * each class specified is missing in the {@link ApplicationContext}.
+	 * The class type names of beans that should be checked. The condition matches when no
+	 * bean of each class specified is contained in the {@link BeanFactory}.
 	 * @return the class type names of beans to check
 	 */
 	String[] type() default {};
 
 	/**
-	 * The class type of beans that should be ignored when identifying matching beans.
+	 * The class types of beans that should be ignored when identifying matching beans.
 	 * @return the class types of beans to ignore
 	 * @since 1.2.5
 	 */
@@ -95,15 +95,15 @@ public @interface ConditionalOnMissingBean {
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
 	 * when each annotation specified is missing from all beans in the
-	 * {@link ApplicationContext}.
+	 * {@link BeanFactory}.
 	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
 	/**
 	 * The names of beans to check. The condition matches when each bean name specified is
-	 * missing in the {@link ApplicationContext}.
-	 * @return the name of beans to check
+	 * missing in the {@link BeanFactory}.
+	 * @return the names of beans to check
 	 */
 	String[] name() default {};
 
@@ -113,5 +113,15 @@ public @interface ConditionalOnMissingBean {
 	 * @return the search strategy
 	 */
 	SearchStrategy search() default SearchStrategy.ALL;
+
+	/**
+	 * Additional classes that may contain the specified bean types within their generic
+	 * parameters. For example, an annotation declaring {@code value=Name.class} and
+	 * {@code parameterizedContainer=NameRegistration.class} would detect both
+	 * {@code Name} and {@code NameRegistration<Name>}.
+	 * @return the container types
+	 * @since 2.1.0
+	 */
+	Class<?>[] parameterizedContainer() default {};
 
 }

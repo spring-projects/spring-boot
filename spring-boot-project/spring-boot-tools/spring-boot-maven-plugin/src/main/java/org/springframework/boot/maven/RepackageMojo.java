@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
@@ -61,6 +62,8 @@ import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningL
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
+
+	private static final Pattern WHITE_SPACE_PATTERN = Pattern.compile("\\s+");
 
 	/**
 	 * The Maven project.
@@ -242,7 +245,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Artifact getArtifact(String classifier) {
 		if (classifier != null) {
 			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-				if (classifier.equals(attachedArtifact.getClassifier())) {
+				if (classifier.equals(attachedArtifact.getClassifier())
+						&& attachedArtifact.getFile() != null
+						&& attachedArtifact.getFile().isFile()) {
 					return attachedArtifact;
 				}
 			}
@@ -312,7 +317,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private String removeLineBreaks(String description) {
-		return (description != null) ? description.replaceAll("\\s+", " ") : null;
+		return (description != null)
+				? WHITE_SPACE_PATTERN.matcher(description).replaceAll(" ") : null;
 	}
 
 	private void putIfMissing(Properties properties, String key,
@@ -331,15 +337,22 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (this.attach) {
 			attachArtifact(source, target);
 		}
-		else if (source.getFile().equals(target)) {
-			getLog().info("Updating artifact " + source.getFile() + " to " + original);
-			this.project.getArtifact().setFile(original);
+		else if (source.getFile().equals(target) && original.exists()) {
+			String artifactId = (this.classifier != null)
+					? "artifact with classifier " + this.classifier : "main artifact";
+			getLog().info(String.format("Updating %s %s to %s", artifactId,
+					source.getFile(), original));
+			source.setFile(original);
+		}
+		else if (this.classifier != null) {
+			getLog().info("Creating repackaged archive " + target + " with classifier "
+					+ this.classifier);
 		}
 	}
 
 	private void attachArtifact(Artifact source, File target) {
 		if (this.classifier != null && !source.getFile().equals(target)) {
-			getLog().info("Attaching archive " + target + " with classifier "
+			getLog().info("Attaching repackaged archive " + target + " with classifier "
 					+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
 					this.classifier, target);
@@ -347,7 +360,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		else {
 			String artifactId = (this.classifier != null)
 					? "artifact with classifier " + this.classifier : "main artifact";
-			getLog().info(String.format("Replacing %s %s", artifactId, source.getFile()));
+			getLog().info("Replacing " + artifactId + " with repackaged archive");
 			source.setFile(target);
 		}
 	}

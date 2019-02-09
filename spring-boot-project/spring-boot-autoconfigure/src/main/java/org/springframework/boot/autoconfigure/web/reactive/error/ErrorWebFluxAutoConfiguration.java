@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -67,14 +67,14 @@ public class ErrorWebFluxAutoConfiguration {
 
 	public ErrorWebFluxAutoConfiguration(ServerProperties serverProperties,
 			ResourceProperties resourceProperties,
-			ObjectProvider<List<ViewResolver>> viewResolversProvider,
+			ObjectProvider<ViewResolver> viewResolversProvider,
 			ServerCodecConfigurer serverCodecConfigurer,
 			ApplicationContext applicationContext) {
 		this.serverProperties = serverProperties;
 		this.applicationContext = applicationContext;
 		this.resourceProperties = resourceProperties;
-		this.viewResolvers = viewResolversProvider
-				.getIfAvailable(() -> Collections.emptyList());
+		this.viewResolvers = viewResolversProvider.orderedStream()
+				.collect(Collectors.toList());
 		this.serverCodecConfigurer = serverCodecConfigurer;
 	}
 

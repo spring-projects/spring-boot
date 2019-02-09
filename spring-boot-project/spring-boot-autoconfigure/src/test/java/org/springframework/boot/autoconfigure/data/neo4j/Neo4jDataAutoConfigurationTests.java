@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,34 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.Test;
+import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
 import org.neo4j.ogm.session.event.EventListener;
 import org.neo4j.ogm.session.event.PersistenceEvent;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.neo4j.annotation.EnableBookmarkManagement;
+import org.springframework.data.neo4j.bookmark.BookmarkManager;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,10 +59,12 @@ import static org.mockito.Mockito.verify;
  * @author Vince Bickers
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @author Michael Simons
  */
 public class Neo4jDataAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
 			.withUserConfiguration(TestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
 					TransactionAutoConfiguration.class));
@@ -69,6 +79,7 @@ public class Neo4jDataAutoConfigurationTests {
 					assertThat(context).hasSingleBean(SessionFactory.class);
 					assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
 					assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
+					assertThat(context).doesNotHaveBean(BookmarkManager.class);
 				});
 	}
 
@@ -111,6 +122,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void usesAutoConfigurationPackageToPickUpDomainTypes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(context, cityPackage);
 		context.register(Neo4jDataAutoConfiguration.class,
@@ -146,6 +158,43 @@ public class Neo4jDataAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void providesARequestScopedBookmarkManagerIfNecessaryAndPossible() {
+		this.contextRunner
+				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
+				.run((context) -> {
+					BeanDefinition bookmarkManagerBean = context.getBeanFactory()
+							.getBeanDefinition("scopedTarget.bookmarkManager");
+					assertThat(bookmarkManagerBean.getScope())
+							.isEqualTo(WebApplicationContext.SCOPE_REQUEST);
+				});
+	}
+
+	@Test
+	public void providesASingletonScopedBookmarkManagerIfNecessaryAndPossible() {
+		new ApplicationContextRunner()
+				.withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
+				.withUserConfiguration(TestConfiguration.class,
+						BookmarkManagementEnabledConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(BookmarkManager.class);
+					assertThat(context.getBeanDefinitionNames())
+							.doesNotContain("scopedTarget.bookmarkManager");
+				});
+	}
+
+	@Test
+	public void doesNotProvideABookmarkManagerIfNotPossible() {
+		this.contextRunner
+				.withClassLoader(
+						new FilteredClassLoader(Caffeine.class, EmbeddedDriver.class))
+				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(BookmarkManager.class));
+	}
+
 	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext,
 			Class<?>... types) {
 		for (Class<?> type : types) {
@@ -177,6 +226,12 @@ public class Neo4jDataAutoConfigurationTests {
 			return new org.neo4j.ogm.config.Configuration.Builder()
 					.uri("http://localhost:12345").build();
 		}
+
+	}
+
+	@Configuration
+	@EnableBookmarkManagement
+	static class BookmarkManagementEnabledConfiguration {
 
 	}
 

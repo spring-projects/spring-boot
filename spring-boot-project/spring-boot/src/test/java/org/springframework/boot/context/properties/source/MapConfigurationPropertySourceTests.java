@@ -19,11 +19,10 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link MapConfigurationPropertySource}.
@@ -33,14 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MapConfigurationPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenMapIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Map must not be null");
-		new MapConfigurationPropertySource(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new MapConfigurationPropertySource(null))
+				.withMessageContaining("Map must not be null");
 	}
 
 	@Test
@@ -55,10 +51,9 @@ public class MapConfigurationPropertySourceTests {
 
 	@Test
 	public void putAllWhenMapIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Map must not be null");
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		source.putAll(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> source.putAll(null))
+				.withMessageContaining("Map must not be null");
 	}
 
 	@Test

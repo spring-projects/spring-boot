@@ -14,6 +14,7 @@
 	<description>Parent pom providing dependency and plugin management for applications
 		built with Maven</description>
 	<properties>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<java.version>1.8</java.version>
 		<resource.delimiter>@</resource.delimiter> <!-- delimiter that doesn't clash with Spring ${} placeholders -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

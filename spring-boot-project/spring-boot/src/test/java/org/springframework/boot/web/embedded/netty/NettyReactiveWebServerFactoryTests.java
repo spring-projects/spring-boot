@@ -18,7 +18,6 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.util.Arrays;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.InOrder;
 import reactor.netty.http.server.HttpServer;
@@ -27,6 +26,8 @@ import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFac
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -52,10 +53,13 @@ public class NettyReactiveWebServerFactoryTests
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
-		this.thrown.expect(PortInUseException.class);
-		this.thrown.expect(
-				Matchers.hasProperty("port", Matchers.equalTo(this.webServer.getPort())));
-		factory.getWebServer(new EchoHandler()).start();
+		assertThatExceptionOfType(PortInUseException.class)
+				.isThrownBy(factory.getWebServer(new EchoHandler())::start)
+				.satisfies(this::portMatchesRequirement);
+	}
+
+	private void portMatchesRequirement(PortInUseException exception) {
+		assertThat(exception.getPort()).isEqualTo(this.webServer.getPort());
 	}
 
 	@Test

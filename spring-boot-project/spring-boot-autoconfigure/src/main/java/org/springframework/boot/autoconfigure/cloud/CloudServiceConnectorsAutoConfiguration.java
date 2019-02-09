@@ -41,7 +41,7 @@ import org.springframework.core.Ordered;
  * {@link ApplicationInstanceInfo}.
  *
  * @author Ramnivas Laddad
- * @since 1.2.0
+ * @since 2.1.0
  */
 @Configuration
 @Profile("cloud")

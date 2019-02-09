@@ -16,37 +16,32 @@
 
 package org.springframework.boot.web.server;
 
+import org.springframework.util.unit.DataSize;
+
 /**
  * Simple server-independent abstraction for compression configuration.
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class Compression {
 
-	/**
-	 * Whether response compression is enabled.
-	 */
 	private boolean enabled = false;
 
-	/**
-	 * Comma-separated list of MIME types that should be compressed.
-	 */
 	private String[] mimeTypes = new String[] { "text/html", "text/xml", "text/plain",
 			"text/css", "text/javascript", "application/javascript", "application/json",
 			"application/xml" };
 
-	/**
-	 * Comma-separated list of user agents for which responses should not be compressed.
-	 */
 	private String[] excludedUserAgents = null;
 
-	/**
-	 * Minimum "Content-Length" value that is required for compression to be performed.
-	 */
-	private int minResponseSize = 2048;
+	private DataSize minResponseSize = DataSize.ofKilobytes(2);
 
+	/**
+	 * Return whether response compression is enabled.
+	 * @return {@code true} if response compression is enabled
+	 */
 	public boolean getEnabled() {
 		return this.enabled;
 	}
@@ -55,6 +50,10 @@ public class Compression {
 		this.enabled = enabled;
 	}
 
+	/**
+	 * Return the MIME types that should be compressed.
+	 * @return the MIME types that should be compressed
+	 */
 	public String[] getMimeTypes() {
 		return this.mimeTypes;
 	}
@@ -63,20 +62,25 @@ public class Compression {
 		this.mimeTypes = mimeTypes;
 	}
 
-	public int getMinResponseSize() {
-		return this.minResponseSize;
-	}
-
-	public void setMinResponseSize(int minSize) {
-		this.minResponseSize = minSize;
-	}
-
 	public String[] getExcludedUserAgents() {
 		return this.excludedUserAgents;
 	}
 
 	public void setExcludedUserAgents(String[] excludedUserAgents) {
 		this.excludedUserAgents = excludedUserAgents;
+	}
+
+	/**
+	 * Return the minimum "Content-Length" value that is required for compression to be
+	 * performed.
+	 * @return the minimum content size in bytes that is required for compression
+	 */
+	public DataSize getMinResponseSize() {
+		return this.minResponseSize;
+	}
+
+	public void setMinResponseSize(DataSize minSize) {
+		this.minResponseSize = minSize;
 	}
 
 }

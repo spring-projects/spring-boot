@@ -152,13 +152,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @param prefix the prefix
 	 * @return the serialized instance
 	 */
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean,
 			String prefix) {
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<>(
-					mapper.convertValue(bean, Map.class));
-			return result;
+			return new HashMap<>(mapper.convertValue(bean, Map.class));
 		}
 		catch (Exception ex) {
 			return new HashMap<>(Collections.singletonMap("error",
@@ -408,9 +406,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					&& Character.isUpperCase(propertyName.charAt(1))) {
 				return propertyName;
 			}
-			else {
-				return StringUtils.capitalize(propertyName);
-			}
+			return StringUtils.capitalize(propertyName);
 		}
 
 	}

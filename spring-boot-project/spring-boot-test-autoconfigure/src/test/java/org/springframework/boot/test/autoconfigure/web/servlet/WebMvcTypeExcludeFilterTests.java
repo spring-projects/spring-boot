@@ -26,6 +26,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 	}
 
 	@Test
@@ -67,6 +69,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 	}
 
 	@Test
@@ -80,6 +83,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
 	}
 
 	@Test
@@ -106,6 +110,21 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
+	}
+
+	@Test
+	public void matchWhenSecureFalse() throws Exception {
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
+				WithSecureFalse.class);
+		assertThat(excludes(filter, Controller1.class)).isFalse();
+		assertThat(excludes(filter, Controller2.class)).isFalse();
+		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
+		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
+		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
+		assertThat(excludes(filter, ExampleService.class)).isTrue();
+		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
 	}
 
 	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type)
@@ -140,6 +159,11 @@ public class WebMvcTypeExcludeFilterTests {
 
 	}
 
+	@WebMvcTest(secure = false)
+	static class WithSecureFalse {
+
+	}
+
 	@Controller
 	static class Controller1 {
 
@@ -170,6 +194,10 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Repository
 	static class ExampleRepository {
+
+	}
+
+	static class ExampleWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	}
 

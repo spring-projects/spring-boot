@@ -39,7 +39,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
@@ -371,11 +371,9 @@ public class TestRestTemplateTests {
 						"interceptors");
 		assertThat(requestFactoryInterceptors).hasSize(1);
 		ClientHttpRequestInterceptor interceptor = requestFactoryInterceptors.get(0);
-		assertThat(interceptor).isInstanceOf(BasicAuthorizationInterceptor.class);
-		assertThat(ReflectionTestUtils.getField(interceptor, "username"))
-				.isEqualTo(username);
-		assertThat(ReflectionTestUtils.getField(interceptor, "password"))
-				.isEqualTo(password);
+		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
+		assertThat(interceptor).hasFieldOrPropertyWithValue("username", username);
+		assertThat(interceptor).hasFieldOrPropertyWithValue("password", password);
 
 	}
 

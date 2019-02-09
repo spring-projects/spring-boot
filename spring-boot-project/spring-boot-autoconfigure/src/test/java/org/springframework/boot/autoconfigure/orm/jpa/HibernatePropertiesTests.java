@@ -43,6 +43,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link HibernateProperties}.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 public class HibernatePropertiesTests {
 
@@ -121,6 +122,23 @@ public class HibernatePropertiesTests {
 								.containsEntry(
 										AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS,
 										"false")));
+	}
+
+	@Test
+	public void scannerUsesDisabledScannerByDefault() {
+		this.contextRunner.run(assertHibernateProperties(
+				(hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
+						AvailableSettings.SCANNER,
+						"org.hibernate.boot.archive.scan.internal.DisabledScanner")));
+	}
+
+	@Test
+	public void scannerCanBeCustomized() {
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.properties.hibernate.archive.scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
+				.run(assertHibernateProperties((hibernateProperties) -> assertThat(
+						hibernateProperties).containsEntry(AvailableSettings.SCANNER,
+								"org.hibernate.boot.archive.scan.internal.StandardScanner")));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.Gson;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -39,7 +37,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -51,9 +50,6 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  */
 public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void runWithInitializerShouldInitialize() {
@@ -157,14 +153,11 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	public void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
-					try {
-						ClassUtils.forName(Gson.class.getName(),
-								context.getClassLoader());
-						fail("Should have thrown a ClassNotFoundException");
-					}
-					catch (ClassNotFoundException ex) {
-						// expected
-					}
+					assertThatExceptionOfType(ClassNotFoundException.class)
+							.isThrownBy(() -> {
+								ClassUtils.forName(Gson.class.getName(),
+										context.getClassLoader());
+							});
 				});
 	}
 
@@ -178,11 +171,9 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void thrownRuleWorksWithCheckedException() {
-		get().run((context) -> {
-			this.thrown.expect(IOException.class);
-			this.thrown.expectMessage("Expected message");
-			throwCheckedException("Expected message");
-		});
+		get().run((context) -> assertThatIOException()
+				.isThrownBy(() -> throwCheckedException("Expected message"))
+				.withMessageContaining("Expected message"));
 	}
 
 	protected abstract T get();

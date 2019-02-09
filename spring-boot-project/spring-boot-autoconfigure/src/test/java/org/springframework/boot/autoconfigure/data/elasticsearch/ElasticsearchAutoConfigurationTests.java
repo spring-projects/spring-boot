@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.util.List;
@@ -22,10 +21,12 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,9 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 public class ElasticsearchAutoConfigurationTests {
+
+	@ClassRule
+	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -65,19 +69,17 @@ public class ElasticsearchAutoConfigurationTests {
 	@Test
 	public void createTransportClient() {
 		this.context = new AnnotationConfigApplicationContext();
-		new ElasticsearchNodeTemplate().doWithNode((node) -> {
-			TestPropertyValues.of(
-					"spring.data.elasticsearch.cluster-nodes:localhost:"
-							+ node.getTcpPort(),
-					"spring.data.elasticsearch.properties.path.home:target/es/client")
-					.applyTo(this.context);
-			this.context.register(PropertyPlaceholderAutoConfiguration.class,
-					ElasticsearchAutoConfiguration.class);
-			this.context.refresh();
-			List<DiscoveryNode> connectedNodes = this.context
-					.getBean(TransportClient.class).connectedNodes();
-			assertThat(connectedNodes).hasSize(1);
-		});
+		TestPropertyValues
+				.of("spring.data.elasticsearch.cluster-nodes:localhost:"
+						+ elasticsearch.getMappedTransportPort(),
+						"spring.data.elasticsearch.cluster-name:docker-cluster")
+				.applyTo(this.context);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class);
+		this.context.refresh();
+		List<DiscoveryNode> connectedNodes = this.context.getBean(TransportClient.class)
+				.connectedNodes();
+		assertThat(connectedNodes).hasSize(1);
 	}
 
 	@Configuration

@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -34,9 +34,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 public class DefaultHealthIndicatorRegistryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private HealthIndicator one = mock(HealthIndicator.class);
 
@@ -65,9 +62,10 @@ public class DefaultHealthIndicatorRegistryTests {
 	@Test
 	public void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("HealthIndicator with name 'one' already registered");
-		this.registry.register("one", this.two);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.registry.register("one", this.two))
+				.withMessageContaining(
+						"HealthIndicator with name 'one' already registered");
 	}
 
 	@Test
@@ -102,9 +100,8 @@ public class DefaultHealthIndicatorRegistryTests {
 	public void getAllIsImmutable() {
 		this.registry.register("one", this.one);
 		Map<String, HealthIndicator> snapshot = this.registry.getAll();
-
-		this.thrown.expect(UnsupportedOperationException.class);
-		snapshot.clear();
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(snapshot::clear);
 	}
 
 }

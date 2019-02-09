@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for {@link FailureAnalyzers}.
@@ -42,15 +42,10 @@ public class FailureAnalyzersIntegrationTests {
 
 	@Test
 	public void analysisIsPerformed() {
-		try {
-			new SpringApplicationBuilder(TestConfiguration.class)
-					.web(WebApplicationType.NONE).run();
-			fail("Application started successfully");
-		}
-		catch (Exception ex) {
-			assertThat(this.outputCapture.toString())
-					.contains("APPLICATION FAILED TO START");
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> new SpringApplicationBuilder(TestConfiguration.class)
+						.web(WebApplicationType.NONE).run());
+		assertThat(this.outputCapture.toString()).contains("APPLICATION FAILED TO START");
 	}
 
 	@Configuration

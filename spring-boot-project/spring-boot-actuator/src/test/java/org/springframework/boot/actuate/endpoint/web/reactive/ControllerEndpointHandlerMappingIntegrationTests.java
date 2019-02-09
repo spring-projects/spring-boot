@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
@@ -128,8 +127,8 @@ public class ControllerEndpointHandlerMappingIntegrationTests {
 		@Bean
 		public ControllerEndpointDiscoverer webEndpointDiscoverer(
 				ApplicationContext applicationContext) {
-			return new ControllerEndpointDiscoverer(applicationContext,
-					PathMapper.useEndpointId(), Collections.emptyList());
+			return new ControllerEndpointDiscoverer(applicationContext, null,
+					Collections.emptyList());
 		}
 
 		@Bean

@@ -1,10 +1,6 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'org.springframework.boot'
 
 task kotlinVersion {
 	doLast {

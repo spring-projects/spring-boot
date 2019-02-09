@@ -27,11 +27,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -42,21 +41,18 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class EndpointServletTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenServletClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
-		new EndpointServlet((Class<Servlet>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new EndpointServlet((Class<Servlet>) null))
+				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	public void createWhenServletIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
-		new EndpointServlet((Servlet) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new EndpointServlet((Servlet) null))
+				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
@@ -75,15 +71,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameter(null, "value");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> endpointServlet.withInitParameter(null, "value"));
 	}
 
 	@Test
 	public void withInitParameterEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameter(" ", "value");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> endpointServlet.withInitParameter(" ", "value"));
 	}
 
 	@Test
@@ -105,15 +101,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParametersNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(null, "value"));
+		assertThatIllegalArgumentException().isThrownBy(() -> endpointServlet
+				.withInitParameters(Collections.singletonMap(null, "value")));
 	}
 
 	@Test
 	public void withInitParametersEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(" ", "value"));
+		assertThatIllegalArgumentException().isThrownBy(() -> endpointServlet
+				.withInitParameters(Collections.singletonMap(" ", "value")));
 	}
 
 	@Test

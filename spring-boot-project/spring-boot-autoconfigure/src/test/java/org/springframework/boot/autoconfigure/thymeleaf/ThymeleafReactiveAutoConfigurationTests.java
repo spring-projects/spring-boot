@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,26 +27,32 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxContext;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration} in Reactive applications.
@@ -56,8 +62,10 @@ import static org.hamcrest.Matchers.not;
  */
 public class ThymeleafReactiveAutoConfigurationTests {
 
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
+
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
@@ -116,7 +124,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	public void overrideMaxChunkSize() {
-		load(BaseConfiguration.class, "spring.thymeleaf.reactive.maxChunkSize:8192");
+		load(BaseConfiguration.class, "spring.thymeleaf.reactive.maxChunkSize:8KB");
 		ThymeleafReactiveViewResolver views = this.context
 				.getBean(ThymeleafReactiveViewResolver.class);
 		assertThat(views.getResponseMaxChunkSizeBytes()).isEqualTo(Integer.valueOf(8192));
@@ -156,18 +164,35 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideRenderHiddenMarkersBeforeCheckboxes() {
+		load(BaseConfiguration.class,
+				"spring.thymeleaf.render-hidden-markers-before-checkboxes:true");
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getRenderHiddenMarkersBeforeCheckboxes()).isTrue();
+	}
+
+	@Test
+	public void enableRenderHiddenMarkersBeforeCheckboxesIsDisabledByDefault() {
+		load(BaseConfiguration.class);
+		assertThat(this.context.getBean(SpringWebFluxTemplateEngine.class)
+				.getRenderHiddenMarkersBeforeCheckboxes()).isFalse();
+	}
+
+	@Test
 	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
-		this.output.expect(containsString("Cannot find template location"));
+		assertThat(this.output.toString()).contains("Cannot find template location");
 	}
 
 	@Test
 	public void templateLocationEmpty() {
-		new File("target/test-classes/templates/empty-directory").mkdir();
+		new File(this.buildOutput.getTestResourcesLocation(),
+				"empty-templates/empty-directory").mkdirs();
 		load(BaseConfiguration.class,
-				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
-		this.output.expect(not(containsString("Cannot find template location")));
+				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/");
+		assertThat(this.output.toString())
+				.doesNotContain("Cannot find template location");
 	}
 
 	@Test
@@ -188,6 +213,23 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		Context attrs = new Context(Locale.UK);
 		String result = engine.process("java8time-dialect", attrs);
 		assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
+	}
+
+	@Test
+	public void useSecurityDialect() {
+		load(BaseConfiguration.class);
+		ISpringWebFluxTemplateEngine engine = this.context
+				.getBean(ISpringWebFluxTemplateEngine.class);
+		MockServerWebExchange exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
+		exchange.getAttributes().put(
+				SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
+				new SecurityContextImpl(
+						new TestingAuthenticationToken("alice", "admin")));
+		IContext attrs = new SpringWebFluxContext(exchange);
+		String result = engine.process("security-dialect", attrs);
+		assertThat(result).isEqualTo(
+				"<html><body><div>alice</div></body></html>" + System.lineSeparator());
 	}
 
 	@Test

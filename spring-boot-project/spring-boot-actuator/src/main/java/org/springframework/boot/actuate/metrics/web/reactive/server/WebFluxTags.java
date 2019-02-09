@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.web.util.pattern.PathPattern;
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
+ * @author Michael McFadyen
  * @since 2.0.0
  */
 public final class WebFluxTags {
@@ -43,6 +44,18 @@ public final class WebFluxTags {
 	private static final Tag URI_UNKNOWN = Tag.of("uri", "UNKNOWN");
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
+
+	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+
+	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
+
+	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
+
+	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
+
+	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
 
 	private WebFluxTags() {
 	}
@@ -60,10 +73,10 @@ public final class WebFluxTags {
 	}
 
 	/**
-	 * Creates a {@code method} tag based on the response status of the given
+	 * Creates a {@code status} tag based on the response status of the given
 	 * {@code exchange}.
 	 * @param exchange the exchange
-	 * @return the "status" tag derived from the response status
+	 * @return the status tag derived from the response status
 	 */
 	public static Tag status(ServerWebExchange exchange) {
 		HttpStatus status = exchange.getResponse().getStatusCode();
@@ -75,31 +88,39 @@ public final class WebFluxTags {
 
 	/**
 	 * Creates a {@code uri} tag based on the URI of the given {@code exchange}. Uses the
-	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern.
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
 	 * @param exchange the exchange
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
-		if (exchange != null) {
-			PathPattern pathPattern = exchange
-					.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-			if (pathPattern != null) {
-				return Tag.of("uri", pathPattern.getPatternString());
-			}
-			HttpStatus status = exchange.getResponse().getStatusCode();
-			if (status != null && status.is3xxRedirection()) {
+		PathPattern pathPattern = exchange
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		if (pathPattern != null) {
+			return Tag.of("uri", pathPattern.getPatternString());
+		}
+		HttpStatus status = exchange.getResponse().getStatusCode();
+		if (status != null) {
+			if (status.is3xxRedirection()) {
 				return URI_REDIRECTION;
 			}
-			if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
+			if (status == HttpStatus.NOT_FOUND) {
 				return URI_NOT_FOUND;
 			}
-			String path = exchange.getRequest().getPath().value();
-			if (path.isEmpty()) {
-				return URI_ROOT;
-			}
-			return Tag.of("uri", path);
+		}
+		String path = getPathInfo(exchange);
+		if (path.isEmpty()) {
+			return URI_ROOT;
 		}
 		return URI_UNKNOWN;
+	}
+
+	private static String getPathInfo(ServerWebExchange exchange) {
+		String path = exchange.getRequest().getPath().value();
+		String uri = StringUtils.hasText(path) ? path : "/";
+		return uri.replaceAll("//+", "/").replaceAll("/$", "");
 	}
 
 	/**
@@ -115,6 +136,33 @@ public final class WebFluxTags {
 					: exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
+	}
+
+	/**
+	 * Creates an {@code outcome} tag based on the response status of the given
+	 * {@code exchange}.
+	 * @param exchange the exchange
+	 * @return the outcome tag derived from the response status
+	 * @since 2.1.0
+	 */
+	public static Tag outcome(ServerWebExchange exchange) {
+		HttpStatus status = exchange.getResponse().getStatusCode();
+		if (status != null) {
+			if (status.is1xxInformational()) {
+				return OUTCOME_INFORMATIONAL;
+			}
+			if (status.is2xxSuccessful()) {
+				return OUTCOME_SUCCESS;
+			}
+			if (status.is3xxRedirection()) {
+				return OUTCOME_REDIRECTION;
+			}
+			if (status.is4xxClientError()) {
+				return OUTCOME_CLIENT_ERROR;
+			}
+			return OUTCOME_SERVER_ERROR;
+		}
+		return OUTCOME_UNKNOWN;
 	}
 
 }

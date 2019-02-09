@@ -1,5 +1,6 @@
 [[getting-started]]
 = Getting Started
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -38,8 +39,9 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8 or 9] and
-{spring-reference}[Spring Framework {spring-version}] or above.
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible
+up to Java 11 (included). {spring-reference}[Spring Framework {spring-framework-version}]
+or above is also required.
 
 Explicit build support is provided for the following build tools:
 
@@ -47,10 +49,10 @@ Explicit build support is provided for the following build tools:
 |Build Tool |Version
 
 |Maven
-|3.2+
+|3.3+
 
 |Gradle
-|4.x
+|4.4+
 |===
 
 
@@ -108,7 +110,7 @@ tool that supports dependency management (such as Maven or Gradle).
 
 [[getting-started-maven-installation]]
 ==== Maven Installation
-Spring Boot is compatible with Apache Maven 3.2 or above. If you do not already have
+Spring Boot is compatible with Apache Maven 3.3 or above. If you do not already have
 Maven installed, you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager. If you use
@@ -199,8 +201,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4. If you do not already have Gradle installed, you
-can follow the instructions at https://gradle.org.
+Spring Boot is compatible with Gradle 4.4 and later. If you do not already have Gradle
+installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
@@ -216,51 +218,9 @@ project. It is a small script and library that you commit alongside your code to
 bootstrap the build process. See {gradle-user-guide}/gradle_wrapper.html for details.
 ****
 
-The following example shows a typical `build.gradle` file:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-ifeval::["{spring-boot-repo}" == "release"]
-	plugins {
-		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'java'
-	}
-endif::[]
-ifeval::["{spring-boot-repo}" != "release"]
-	buildscript {
-		repositories {
-			jcenter()
-			maven { url 'https://repo.spring.io/snapshot' }
-			maven { url 'https://repo.spring.io/milestone' }
-		}
-		dependencies {
-			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
-		}
-	}
-
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-	apply plugin: 'io.spring.dependency-management'
-
-endif::[]
-	jar {
-		baseName = 'myproject'
-		version =  '0.0.1-SNAPSHOT'
-	}
-
-	repositories {
-		jcenter()
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "https://repo.spring.io/snapshot" }
-		maven { url "https://repo.spring.io/milestone" }
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
-	}
-----
+More details on getting started with Spring Boot and Gradle can be found in the
+{spring-boot-gradle-plugin-reference}/#getting-started[Getting Started section] of the
+Gradle plugin's reference guide.
 
 
 
@@ -522,7 +482,7 @@ valid versions of Java and Maven installed:
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
 	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
 	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
@@ -655,7 +615,7 @@ then add a file named `src/main/java/Example.java` to contain the following code
 			return "Hello World!";
 		}
 
-		public static void main(String[] args) throws Exception {
+		public static void main(String[] args) {
 			SpringApplication.run(Example.class, args);
 		}
 
@@ -668,7 +628,7 @@ important parts in the next few sections.
 
 
 [[getting-started-first-application-annotations]]
-==== The @RestController and @RequestMapping Annotations
+==== The `@RestController` and `@RequestMapping` Annotations
 The first annotation on our `Example` class is `@RestController`. This is known as a
 _stereotype_ annotation. It provides hints for people reading the code and for Spring
 that the class plays a specific role. In this case, our class is a web `@Controller`, so

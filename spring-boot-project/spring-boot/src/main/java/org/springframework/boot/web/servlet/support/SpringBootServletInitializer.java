@@ -196,7 +196,6 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				((ConfigurableWebEnvironment) environment)
 						.initPropertySources(this.servletContext, null);
 			}
-
 		}
 
 		@Override

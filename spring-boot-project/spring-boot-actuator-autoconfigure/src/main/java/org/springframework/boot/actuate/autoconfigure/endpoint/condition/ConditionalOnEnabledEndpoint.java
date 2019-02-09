@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ import org.springframework.core.env.Environment;
  * @see Endpoint
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Documented
 @Conditional(OnEnabledEndpointCondition.class)
 public @interface ConditionalOnEnabledEndpoint {
@@ -101,7 +101,7 @@ public @interface ConditionalOnEnabledEndpoint {
 	 * The endpoint type that should be checked. Inferred when the return type of the
 	 * {@code @Bean} method is either an {@link Endpoint} or an {@link EndpointExtension}.
 	 * @return the endpoint type to check
-	 * @since 2.1.0
+	 * @since 2.0.6
 	 */
 	Class<?> endpoint() default Void.class;
 

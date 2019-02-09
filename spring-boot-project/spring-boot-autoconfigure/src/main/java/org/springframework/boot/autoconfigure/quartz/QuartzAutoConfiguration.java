@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,8 +39,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -61,7 +62,7 @@ public class QuartzAutoConfiguration {
 
 	private final QuartzProperties properties;
 
-	private final List<SchedulerFactoryBeanCustomizer> customizers;
+	private final ObjectProvider<SchedulerFactoryBeanCustomizer> customizers;
 
 	private final JobDetail[] jobDetails;
 
@@ -72,14 +73,13 @@ public class QuartzAutoConfiguration {
 	private final ApplicationContext applicationContext;
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
-			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
-			ObjectProvider<JobDetail[]> jobDetails,
-			ObjectProvider<Map<String, Calendar>> calendars,
+			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
+			ObjectProvider<JobDetail[]> jobDetails, Map<String, Calendar> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
-		this.customizers = customizers.getIfAvailable();
+		this.customizers = customizers;
 		this.jobDetails = jobDetails.getIfAvailable();
-		this.calendars = calendars.getIfAvailable();
+		this.calendars = calendars;
 		this.triggers = triggers.getIfAvailable();
 		this.applicationContext = applicationContext;
 	}
@@ -88,9 +88,12 @@ public class QuartzAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SchedulerFactoryBean quartzScheduler() {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-		schedulerFactoryBean.setJobFactory(new AutowireCapableBeanJobFactory(
-				this.applicationContext.getAutowireCapableBeanFactory()));
-		schedulerFactoryBean.setBeanName(this.properties.getSchedulerName());
+		SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
+		jobFactory.setApplicationContext(this.applicationContext);
+		schedulerFactoryBean.setJobFactory(jobFactory);
+		if (this.properties.getSchedulerName() != null) {
+			schedulerFactoryBean.setSchedulerName(this.properties.getSchedulerName());
+		}
 		schedulerFactoryBean.setAutoStartup(this.properties.isAutoStartup());
 		schedulerFactoryBean
 				.setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
@@ -122,11 +125,8 @@ public class QuartzAutoConfiguration {
 	}
 
 	private void customize(SchedulerFactoryBean schedulerFactoryBean) {
-		if (this.customizers != null) {
-			for (SchedulerFactoryBeanCustomizer customizer : this.customizers) {
-				customizer.customize(schedulerFactoryBean);
-			}
-		}
+		this.customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(schedulerFactoryBean));
 	}
 
 	@Configuration
@@ -134,6 +134,7 @@ public class QuartzAutoConfiguration {
 	protected static class JdbcStoreTypeConfiguration {
 
 		@Bean
+		@Order(0)
 		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
 				QuartzProperties properties, DataSource dataSource,
 				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,

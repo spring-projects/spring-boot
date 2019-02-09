@@ -1,5 +1,6 @@
 [[build-tool-plugins]]
-= Build tool plugins
+= Build Tool Plugins
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -168,7 +169,7 @@ Advanced configuration options and examples are available in the
 == Spring Boot Gradle Plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you package
 executable jar or war archives, run Spring Boot applications, and use the dependency
-management provided by `spring-boot-dependencies`. It requires Gradle 4.0 or later. Please
+management provided by `spring-boot-dependencies`. It requires Gradle 4.4 or later. Please
 refer to the plugin's documentation to learn more:
 
 * Reference ({spring-boot-gradle-plugin}/reference/html[HTML] and
@@ -396,7 +397,7 @@ The following example shows a typical repackage implementation:
 If you are interested in how the build tool plugins work, you can
 look at the {github-code}/spring-boot-project/spring-boot-tools[`spring-boot-tools`]
 module on GitHub. More technical details of the executable jar format are covered in
-<<appendix-executable-jar-format.adoc#executable-jar,the appendix>>.
+<<appendix.adoc#executable-jar,the appendix>>.
 
 If you have specific build-related questions, you can check out the
 "`<<howto.adoc#howto, how-to>>`" guides.

@@ -19,9 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -29,6 +27,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -39,21 +38,20 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringConfigurationPropertySourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySource must not be null");
-		new SpringConfigurationPropertySource(null, mock(PropertyMapper.class), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new SpringConfigurationPropertySource(null,
+						mock(PropertyMapper.class), null))
+				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Mapper must not be null");
-		new SpringConfigurationPropertySource(mock(PropertySource.class), null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new SpringConfigurationPropertySource(
+						mock(PropertySource.class), null, null))
+				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test
@@ -113,9 +111,9 @@ public class SpringConfigurationPropertySourceTests {
 
 	@Test
 	public void fromWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		SpringConfigurationPropertySource.from(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> SpringConfigurationPropertySource.from(null))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test

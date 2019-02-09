@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import com.rabbitmq.client.Channel;
 
@@ -140,6 +140,10 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
+				map.from(ssl::isValidateServerCertificate).to((validate) -> factory
+						.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::getVerifyHostname)
+						.to(factory::setEnableHostnameVerification);
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull()
 					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);
@@ -157,11 +161,11 @@ public class RabbitAutoConfiguration {
 
 		private final ObjectProvider<MessageConverter> messageConverter;
 
-		private final ObjectProvider<List<RabbitRetryTemplateCustomizer>> retryTemplateCustomizers;
+		private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 		public RabbitTemplateConfiguration(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<List<RabbitRetryTemplateCustomizer>> retryTemplateCustomizers) {
+				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 			this.properties = properties;
 			this.messageConverter = messageConverter;
 			this.retryTemplateCustomizers = retryTemplateCustomizers;
@@ -181,8 +185,9 @@ public class RabbitAutoConfiguration {
 			RabbitProperties.Template properties = this.properties.getTemplate();
 			if (properties.getRetry().isEnabled()) {
 				template.setRetryTemplate(new RetryTemplateFactory(
-						this.retryTemplateCustomizers.getIfAvailable())
-								.createRetryTemplate(properties.getRetry(),
+						this.retryTemplateCustomizers.orderedStream()
+								.collect(Collectors.toList())).createRetryTemplate(
+										properties.getRetry(),
 										RabbitRetryTemplateCustomizer.Target.SENDER));
 			}
 			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
@@ -191,7 +196,8 @@ public class RabbitAutoConfiguration {
 					.to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
-			map.from(properties::getQueue).whenNonNull().to(template::setQueue);
+			map.from(properties::getDefaultReceiveQueue).whenNonNull()
+					.to(template::setDefaultReceiveQueue);
 			return template;
 		}
 

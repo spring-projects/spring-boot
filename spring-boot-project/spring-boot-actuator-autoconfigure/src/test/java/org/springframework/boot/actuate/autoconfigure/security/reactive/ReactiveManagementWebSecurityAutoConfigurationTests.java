@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.security.reactive;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
@@ -118,6 +120,17 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
+	public void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations
+						.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
+				.run((context) -> assertThat(context).doesNotHaveBean(
+						ReactiveManagementWebSecurityAutoConfiguration.class));
+	}
+
+	@Test
 	public void backsOffWhenWebFilterChainProxyBeanPresent() {
 		this.contextRunner.withUserConfiguration(WebFilterChainProxyConfiguration.class)
 				.run((context) -> {
@@ -139,7 +152,8 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 		ServerWebExchange exchange = webHandler(context).createExchange(
 				MockServerHttpRequest.get(path).build(), new MockServerHttpResponse());
 		WebFilterChainProxy proxy = context.getBean(WebFilterChainProxy.class);
-		proxy.filter(exchange, (serverWebExchange) -> Mono.empty()).block();
+		proxy.filter(exchange, (serverWebExchange) -> Mono.empty())
+				.block(Duration.ofSeconds(30));
 		return exchange;
 	}
 

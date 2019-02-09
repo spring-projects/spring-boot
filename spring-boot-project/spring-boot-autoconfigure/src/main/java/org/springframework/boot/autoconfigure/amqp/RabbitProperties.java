@@ -24,6 +24,7 @@ import java.util.List;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -350,6 +351,16 @@ public class RabbitProperties {
 		 */
 		private String algorithm;
 
+		/**
+		 * Whether to enable server side certificate validation.
+		 */
+		private boolean validateServerCertificate = true;
+
+		/**
+		 * Whether to enable hostname verification.
+		 */
+		private boolean verifyHostname = true;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -412,6 +423,22 @@ public class RabbitProperties {
 
 		public void setAlgorithm(String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
+		}
+
+		public boolean isValidateServerCertificate() {
+			return this.validateServerCertificate;
+		}
+
+		public void setValidateServerCertificate(boolean validateServerCertificate) {
+			this.validateServerCertificate = validateServerCertificate;
+		}
+
+		public boolean getVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 	}
@@ -551,8 +578,8 @@ public class RabbitProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Number of messages to be handled in a single request. It should be greater than
-		 * or equal to the transaction size (if used).
+		 * Maximum number of unacknowledged messages that can be outstanding at each
+		 * consumer.
 		 */
 		private Integer prefetch;
 
@@ -611,6 +638,8 @@ public class RabbitProperties {
 			this.idleEventInterval = idleEventInterval;
 		}
 
+		public abstract boolean isMissingQueuesFatal();
+
 		public ListenerRetry getRetry() {
 			return this.retry;
 		}
@@ -633,11 +662,17 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Number of messages to be processed in a transaction. That is, the number of
-		 * messages between acks. For best results, it should be less than or equal to the
-		 * prefetch count.
+		 * Number of messages to be processed between acks when the acknowledge mode is
+		 * AUTO. If larger than prefetch, prefetch will be increased to this value.
 		 */
 		private Integer transactionSize;
+
+		/**
+		 * Whether to fail if the queues declared by the container are not available on
+		 * the broker and/or whether to stop the container if one or more queues are
+		 * deleted at runtime.
+		 */
+		private boolean missingQueuesFatal = true;
 
 		public Integer getConcurrency() {
 			return this.concurrency;
@@ -663,6 +698,15 @@ public class RabbitProperties {
 			this.transactionSize = transactionSize;
 		}
 
+		@Override
+		public boolean isMissingQueuesFatal() {
+			return this.missingQueuesFatal;
+		}
+
+		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
+			this.missingQueuesFatal = missingQueuesFatal;
+		}
+
 	}
 
 	/**
@@ -675,12 +719,27 @@ public class RabbitProperties {
 		 */
 		private Integer consumersPerQueue;
 
+		/**
+		 * Whether to fail if the queues declared by the container are not available on
+		 * the broker.
+		 */
+		private boolean missingQueuesFatal = false;
+
 		public Integer getConsumersPerQueue() {
 			return this.consumersPerQueue;
 		}
 
 		public void setConsumersPerQueue(Integer consumersPerQueue) {
 			this.consumersPerQueue = consumersPerQueue;
+		}
+
+		@Override
+		public boolean isMissingQueuesFatal() {
+			return this.missingQueuesFatal;
+		}
+
+		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
+			this.missingQueuesFatal = missingQueuesFatal;
 		}
 
 	}
@@ -718,7 +777,7 @@ public class RabbitProperties {
 		 * Name of the default queue to receive messages from when none is specified
 		 * explicitly.
 		 */
-		private String queue;
+		private String defaultReceiveQueue;
 
 		public Retry getRetry() {
 			return this.retry;
@@ -764,12 +823,23 @@ public class RabbitProperties {
 			this.routingKey = routingKey;
 		}
 
-		public String getQueue() {
-			return this.queue;
+		public String getDefaultReceiveQueue() {
+			return this.defaultReceiveQueue;
 		}
 
+		public void setDefaultReceiveQueue(String defaultReceiveQueue) {
+			this.defaultReceiveQueue = defaultReceiveQueue;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.template.default-receive-queue")
+		public String getQueue() {
+			return getDefaultReceiveQueue();
+		}
+
+		@Deprecated
 		public void setQueue(String queue) {
-			this.queue = queue;
+			setDefaultReceiveQueue(queue);
 		}
 
 	}

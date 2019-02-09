@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.jdbc;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DatabaseDriver}.
@@ -30,9 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class DatabaseDriverTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void classNameForKnownDatabase() {
@@ -56,9 +52,9 @@ public class DatabaseDriverTests {
 
 	@Test
 	public void failureOnMalformedJdbcUrl() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must start with");
-		DatabaseDriver.fromJdbcUrl("malformed:url");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DatabaseDriver.fromJdbcUrl("malformed:url"))
+				.withMessageContaining("URL must start with");
 	}
 
 	@Test
@@ -74,6 +70,7 @@ public class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("Apache Derby"))
 				.isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromProductName("H2")).isEqualTo(DatabaseDriver.H2);
+		assertThat(DatabaseDriver.fromProductName("HDB")).isEqualTo(DatabaseDriver.HANA);
 		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine"))
 				.isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromProductName("SQLite"))
@@ -126,6 +123,8 @@ public class DatabaseDriverTests {
 		assertThat(
 				DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))
 						.isEqualTo(DatabaseDriver.JTDS);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sap:localhost"))
+				.isEqualTo(DatabaseDriver.HANA);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sqlserver://127.0.0.1:1433"))
 				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:firebirdsql://localhost/sample"))

@@ -21,11 +21,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JsonReader}.
@@ -47,8 +47,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void invalidMetadata() throws IOException {
-		this.thrown.expectCause(CoreMatchers.instanceOf(JSONException.class));
-		readFor("invalid");
+		assertThatIllegalStateException().isThrownBy(() -> readFor("invalid"))
+				.withCauseInstanceOf(JSONException.class);
 	}
 
 	@Test

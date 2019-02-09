@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,14 +27,17 @@ import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TaskExecutor}.
  *
  * @author Stephane Nicoll
+ * @author Camille Vienot
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
@@ -66,17 +68,21 @@ public class TaskExecutionAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TaskExecutorBuilder taskExecutorBuilder() {
 		TaskExecutionProperties.Pool pool = this.properties.getPool();
-		return new TaskExecutorBuilder().queueCapacity(pool.getQueueCapacity())
-				.corePoolSize(pool.getCoreSize()).maxPoolSize(pool.getMaxSize())
-				.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout())
-				.keepAlive(pool.getKeepAlive())
-				.threadNamePrefix(this.properties.getThreadNamePrefix())
-				.customizers(this.taskExecutorCustomizers.stream()
-						.collect(Collectors.toList()))
-				.taskDecorator(this.taskDecorator.getIfUnique());
+		TaskExecutorBuilder builder = new TaskExecutorBuilder();
+		builder = builder.queueCapacity(pool.getQueueCapacity());
+		builder = builder.corePoolSize(pool.getCoreSize());
+		builder = builder.maxPoolSize(pool.getMaxSize());
+		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
+		builder = builder.keepAlive(pool.getKeepAlive());
+		builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+		builder = builder.customizers(this.taskExecutorCustomizers);
+		builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
+		return builder;
 	}
 
-	@Bean(name = APPLICATION_TASK_EXECUTOR_BEAN_NAME)
+	@Lazy
+	@Bean(name = { APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+			AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
 	@ConditionalOnMissingBean(Executor.class)
 	public ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder builder) {
 		return builder.build();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DiskSpaceHealthIndicatorAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class DiskSpaceHealthIndicatorAutoConfigurationTests {
 
@@ -43,6 +45,27 @@ public class DiskSpaceHealthIndicatorAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(DiskSpaceHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
+	}
+
+	@Test
+	public void thresholdMustBePositive() {
+		this.contextRunner
+				.withPropertyValues("management.health.diskspace.threshold=-10MB")
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasMessageContaining(
+								"Failed to bind properties under 'management.health.diskspace'"));
+	}
+
+	@Test
+	public void thresholdCanBeCustomized() {
+		this.contextRunner
+				.withPropertyValues("management.health.diskspace.threshold=20MB")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class);
+					assertThat(context.getBean(DiskSpaceHealthIndicator.class))
+							.hasFieldOrPropertyWithValue("threshold",
+									DataSize.ofMegabytes(20));
+				});
 	}
 
 	@Test

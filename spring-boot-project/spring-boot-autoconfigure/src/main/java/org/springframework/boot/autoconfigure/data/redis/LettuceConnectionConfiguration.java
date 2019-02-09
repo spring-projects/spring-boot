@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.List;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.resource.ClientResources;
@@ -52,16 +50,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
-	private final List<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
 
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<List<LettuceClientConfigurationBuilderCustomizer>> builderCustomizers) {
+			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers) {
 		super(properties, sentinelConfigurationProvider, clusterConfigurationProvider);
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers
-				.getIfAvailable(Collections::emptyList);
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -139,9 +136,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private void customize(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		for (LettuceClientConfigurationBuilderCustomizer customizer : this.builderCustomizers) {
-			customizer.customize(builder);
-		}
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 	/**

@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
+import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -31,7 +32,6 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,21 +54,19 @@ public class ServletEndpointManagementContextConfigurationTests {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
-			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
-			assertThat(basePath).isEqualTo("/test/actuator");
+			assertThat(bean).hasFieldOrPropertyWithValue("basePath", "/test/actuator");
 		});
 	}
 
 	@Test
-	public void servletPathShouldNotAffectJerseyConfiguration() {
+	public void contextWhenJerseyShouldContainServletEndpointRegistrar() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				DispatcherServlet.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
-			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
-			assertThat(basePath).isEqualTo("/actuator");
+			assertThat(bean).hasFieldOrPropertyWithValue("basePath", "/jersey/actuator");
 		});
 	}
 
@@ -86,12 +84,17 @@ public class ServletEndpointManagementContextConfigurationTests {
 
 		@Bean
 		public ServletEndpointsSupplier servletEndpointsSupplier() {
-			return () -> Collections.emptyList();
+			return Collections::emptyList;
 		}
 
 		@Bean
 		public DispatcherServletPath dispatcherServletPath() {
 			return () -> "/test";
+		}
+
+		@Bean
+		public JerseyApplicationPath jerseyApplicationPath() {
+			return () -> "/jersey";
 		}
 
 	}

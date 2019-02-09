@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.servlet.filter;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.FormContentFilter;
 
@@ -27,13 +26,12 @@ import org.springframework.web.filter.FormContentFilter;
  * @author Brian Clozel
  * @since 2.1.0
  */
-public class OrderedFormContentFilter extends FormContentFilter implements Ordered {
+public class OrderedFormContentFilter extends FormContentFilter implements OrderedFilter {
 
 	/**
 	 * Higher order to ensure the filter is applied before Spring Security.
 	 */
-	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
-			- 9900;
+	public static final int DEFAULT_ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 9900;
 
 	private int order = DEFAULT_ORDER;
 
