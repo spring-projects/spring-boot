@@ -187,4 +187,10 @@ do as they were designed before this was clarified.
 | http://alexo.github.io/wro4j/[Wro4j]
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
+| https://github.com/nosan/embedded-cassandra[Embedded Cassandra]
+| https://github.com/nosan/embedded-cassandra-spring-boot
+
+| `@DataCassandraTest` annotation to test `Cassandra` components
+| https://github.com/nosan/cassandra-data-test-spring-boot
+
 |===
