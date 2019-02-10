@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -34,7 +35,8 @@ public class SampleWebFluxApplication {
 
 	@Bean
 	public RouterFunction<ServerResponse> monoRouterFunction(EchoHandler echoHandler) {
-		return route(POST("/echo"), echoHandler::echo);
+		return route(POST("/echo"), echoHandler::echo).andRoute(GET("/echo"),
+				echoHandler::getEcho);
 	}
 
 }

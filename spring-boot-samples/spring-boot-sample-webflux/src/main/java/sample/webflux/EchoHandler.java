@@ -16,8 +16,13 @@
 
 package sample.webflux;
 
+import java.time.Duration;
+import java.util.stream.Stream;
+
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -25,8 +30,23 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Component
 public class EchoHandler {
 
+	private String echo = "test";
+
 	public Mono<ServerResponse> echo(ServerRequest request) {
-		return ServerResponse.ok().body(request.bodyToMono(String.class), String.class);
+
+		return request.bodyToMono(String.class).flatMap((echo) -> {
+			this.echo = echo;
+			return ServerResponse.ok().body(Mono.just(echo), String.class);
+		}).switchIfEmpty(ServerResponse.badRequest().build());
+	}
+
+	public Mono<ServerResponse> getEcho(ServerRequest request) {
+
+		Stream<Integer> stream = Stream.iterate(0, (i) -> i + 1);
+		Flux<String> mapFlux = Flux.fromStream(stream)
+				.zipWith(Flux.interval(Duration.ofSeconds(1))).map((i) -> this.echo);
+		return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM).body(mapFlux,
+				String.class);
 	}
 
 }
