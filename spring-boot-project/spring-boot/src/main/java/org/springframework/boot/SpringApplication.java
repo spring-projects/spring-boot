@@ -1185,8 +1185,7 @@ public class SpringApplication {
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new ArrayList<>();
-		this.initializers.addAll(initializers);
+		this.initializers = new ArrayList<>(initializers);
 	}
 
 	/**
@@ -1213,8 +1212,7 @@ public class SpringApplication {
 	 * @param listeners the listeners to set
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
-		this.listeners = new ArrayList<>();
-		this.listeners.addAll(listeners);
+		this.listeners = new ArrayList<>(listeners);
 	}
 
 	/**
