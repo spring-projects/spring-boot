@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -157,6 +158,32 @@ public abstract class AbstractJpaAutoConfigurationTests {
 						TransactionAutoConfiguration.class, this.autoConfiguredClass))
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
+	}
+
+	@Test
+	public void openEntityManagerInViewInterceptorIsNotRegisteredWhenFilterRegistrationPresent() {
+		new WebApplicationContextRunner()
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.withUserConfiguration(TestFilterRegistrationConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(
+						DataSourceAutoConfiguration.class,
+						TransactionAutoConfiguration.class, this.autoConfiguredClass))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
+	}
+
+	@Test
+	public void openEntityManagerInViewInterceptorAutoConfigurationBacksOffWhenManuallyRegistered() {
+		new WebApplicationContextRunner()
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.withUserConfiguration(TestInterceptorManualConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(
+						DataSourceAutoConfiguration.class,
+						TransactionAutoConfiguration.class, this.autoConfiguredClass))
+				.run((context) -> assertThat(context)
+						.getBean(OpenEntityManagerInViewInterceptor.class)
+						.isExactlyInstanceOf(
+								TestInterceptorManualConfiguration.ManualOpenEntityManagerInViewInterceptor.class));
 	}
 
 	@Test
@@ -294,6 +321,33 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		@Bean
 		public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
 			return new OpenEntityManagerInViewFilter();
+		}
+
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(City.class)
+	protected static class TestFilterRegistrationConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<OpenEntityManagerInViewFilter> OpenEntityManagerInViewFilterFilterRegistrationBean() {
+			return new FilterRegistrationBean<>();
+		}
+
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(City.class)
+	protected static class TestInterceptorManualConfiguration {
+
+		@Bean
+		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+			return new ManualOpenEntityManagerInViewInterceptor();
+		}
+
+		protected static class ManualOpenEntityManagerInViewInterceptor
+				extends OpenEntityManagerInViewInterceptor {
+
 		}
 
 	}
