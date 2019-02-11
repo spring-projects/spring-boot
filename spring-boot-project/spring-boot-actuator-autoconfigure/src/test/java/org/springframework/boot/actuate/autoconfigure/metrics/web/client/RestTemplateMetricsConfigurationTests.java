@@ -58,11 +58,7 @@ public class RestTemplateMetricsConfigurationTests {
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			MetricsRestTemplateCustomizer mockServerCustomizer = new MetricsRestTemplateCustomizer(
-					registry, new DefaultRestTemplateExchangeTagsProvider(),
-					"http.client.requests");
-			RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
-
+			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
 			validateRestTemplate(builder, registry);
 		});
 	}
@@ -98,11 +94,7 @@ public class RestTemplateMetricsConfigurationTests {
 	private MeterRegistry getInitializedMeterRegistry(
 			AssertableApplicationContext context) {
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
-		MetricsRestTemplateCustomizer mockServerCustomizer = new MetricsRestTemplateCustomizer(
-				registry, new DefaultRestTemplateExchangeTagsProvider(),
-				"http.client.requests");
-		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
-		RestTemplate restTemplate = builder.build();
+		RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 		for (int i = 0; i < 3; i++) {
 			server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
@@ -130,6 +122,16 @@ public class RestTemplateMetricsConfigurationTests {
 		server.expect(requestTo("/projects/spring-boot"))
 				.andRespond(withStatus(HttpStatus.OK));
 		return restTemplate;
+	}
+
+	@Test
+	public void restTemplateCanBeCustomizedManually() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
+			validateRestTemplate(builder, registry);
+		});
 	}
 
 	@Test
