@@ -64,6 +64,17 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
+	public void restTemplateCanBeCustomizedManually() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
+			RestTemplateBuilder customBuilder = new RestTemplateBuilder()
+					.customizers(context.getBean(MetricsRestTemplateCustomizer.class));
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			validateRestTemplate(customBuilder, registry);
+		});
+	}
+
+	@Test
 	public void afterMaxUrisReachedFurtherUrisAreDenied() {
 		this.contextRunner
 				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
@@ -125,18 +136,10 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateCanBeCustomizedManually() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
-			validateRestTemplate(builder, registry);
-		});
-	}
-
-	@Test
 	public void backsOffWhenRestTemplateBuilderIsMissing() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
+				.withConfiguration(
+						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
 						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
