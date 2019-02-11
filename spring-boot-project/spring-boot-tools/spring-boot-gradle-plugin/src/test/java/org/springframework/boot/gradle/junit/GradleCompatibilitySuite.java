@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
 public final class GradleCompatibilitySuite extends Suite {
 
 	private static final List<String> GRADLE_VERSIONS = Arrays.asList("default", "4.5.1",
-			"4.6", "4.7", "4.8.1", "4.9", "4.10.2", "5.0");
+			"4.6", "4.7", "4.8.1", "4.9", "4.10.3", "5.0", "5.1.1", "5.2.1");
 
 	public GradleCompatibilitySuite(Class<?> clazz) throws InitializationError {
 		super(clazz, createRunners(clazz));
