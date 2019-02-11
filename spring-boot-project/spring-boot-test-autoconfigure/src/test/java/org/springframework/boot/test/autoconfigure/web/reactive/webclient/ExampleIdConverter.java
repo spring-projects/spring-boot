@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.UUID;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,9 +38,8 @@ public class ExampleIdConverter implements GenericConverter {
 		return Collections.singleton(new ConvertiblePair(String.class, ExampleId.class));
 	}
 
-	@Nullable
 	@Override
-	public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
