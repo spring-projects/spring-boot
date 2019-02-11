@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
@@ -172,6 +173,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 		assertThat(
 				this.context.getBean(IMongodConfig.class).replication().getReplSetName())
 						.isEqualTo("testing");
+	}
+
+	@Test
+	public void shutdownHookIsNotRegistered() {
+		load();
+		assertThat(this.context.getBean(MongodExecutable.class).isRegisteredJobKiller())
+				.isFalse();
 	}
 
 	private void assertVersionConfiguration(String configuredVersion,
