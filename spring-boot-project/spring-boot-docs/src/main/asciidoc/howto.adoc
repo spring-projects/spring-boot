@@ -2186,7 +2186,7 @@ reused to provide similar features to what the auto-configuration does with a si
 == Database Initialization
 An SQL database can be initialized in different ways depending on what your stack is.
 Of course, you can also do it manually, provided the database is a separate process.
-It is recommended to follow a single schema generation approach.
+It is recommended to use a single mechanism for schema generation.
 
 
 
@@ -2196,8 +2196,7 @@ JPA has features for DDL generation, and these can be set up to run on startup a
 database. This is controlled through two external properties:
 
 * `spring.jpa.generate-ddl` (boolean) switches the feature on and off and is vendor
-independent. An appropriate configuration is passed to the available JPA implementation
-(e.g. Hibernate).
+independent.
 * `spring.jpa.hibernate.ddl-auto` (enum) is a Hibernate feature that controls the
 behavior in a more fine-grained way. This feature is described in more detail later in
 this guide.
