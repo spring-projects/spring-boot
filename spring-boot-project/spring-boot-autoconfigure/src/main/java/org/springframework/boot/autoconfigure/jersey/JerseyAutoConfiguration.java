@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
@@ -76,8 +77,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
-		"javax.servlet.ServletRegistration" })
+@ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
