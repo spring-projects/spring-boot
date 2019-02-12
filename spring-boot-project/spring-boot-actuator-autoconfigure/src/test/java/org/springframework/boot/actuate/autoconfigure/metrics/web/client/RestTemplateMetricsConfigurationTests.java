@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
@@ -41,6 +42,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
+ * @author Raheela Aslam
  */
 public class RestTemplateMetricsConfigurationTests {
 
@@ -96,6 +98,16 @@ public class RestTemplateMetricsConfigurationTests {
 							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
+	}
+
+	@Test
+	public void backsOffWhenRestTemplateBuilderIsMissing() {
+		new ApplicationContextRunner().with(MetricsRun.simple())
+				.withConfiguration(
+						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
+						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(
