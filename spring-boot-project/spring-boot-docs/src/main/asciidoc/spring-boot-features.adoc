@@ -1738,7 +1738,10 @@ relative to the current directory.
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level,
 `WARN`-level, and `INFO`-level messages are logged by default. Size limits can be changed
 using the `logging.file.max-size` property. Previously rotated files are archived
-indefinitely unless the `logging.file.max-history` property has been set.
+indefinitely unless the `logging.file.max-history` property has been set. The total size
+of log archives can be capped using `logging.file.total-size-cap`. When the total size of
+log archives exceeds that threshold, backups will be deleted. To force log archive cleanup
+on application startup, use the `logging.file.clean-history-on-start` property.
 
 NOTE: The logging system is initialized early in the application lifecycle. Consequently,
 logging properties are not found in property files loaded through `@PropertySource`
@@ -1856,6 +1859,11 @@ To help with the customization, some other properties are transferred from the S
 |`LOG_EXCEPTION_CONVERSION_WORD`
 |The conversion word used when logging exceptions.
 
+|`logging.file.clean-history-on-start`
+|`LOG_FILE_CLEAN_HISTORY_ON_START`
+|Whether to clean the archive log files on startup (if LOG_FILE enabled). (Only supported
+with the default Logback setup.)
+
 |`logging.file.name`
 |`LOG_FILE`
 |If defined, it is used in the default log configuration.
@@ -1873,6 +1881,11 @@ the default Logback setup.)
 |`logging.file.path`
 |`LOG_PATH`
 |If defined, it is used in the default log configuration.
+
+|`logging.file.total-size-cap`
+|`LOG_FILE_TOTAL_SIZE_CAP`
+|Total size of log backups to be kept (if LOG_FILE enabled). (Only supported with the
+default Logback setup.)
 
 |`logging.pattern.console`
 |`CONSOLE_LOG_PATTERN`

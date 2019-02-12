@@ -73,6 +73,7 @@ import static org.mockito.Mockito.verify;
  * @author Ben Hale
  * @author Madhura Bhave
  * @author Vedran Pavic
+ * @author Robert Thornton
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("log4j-*.jar")
@@ -352,6 +353,35 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void testCleanHistoryOnStartProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.clean-history-on-start", "true");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
+	}
+
+	@Test
+	public void testCleanHistoryOnStartPropertyWithXmlConfiguration() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.clean-history-on-start", "true");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
+	}
+
+	@Test
 	public void testMaxFileSizeProperty() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-size", "100MB");
@@ -409,6 +439,39 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(30);
+	}
+
+	@Test
+	public void testTotalSizeCapProperty() {
+		String expectedSize = "101 MB";
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.total-size-cap", expectedSize);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
+				.toString()).isEqualTo(expectedSize);
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyWithXmlConfiguration() {
+		String expectedSize = "101 MB";
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.total-size-cap", expectedSize);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
+				.toString()).isEqualTo(expectedSize);
 	}
 
 	@Test
