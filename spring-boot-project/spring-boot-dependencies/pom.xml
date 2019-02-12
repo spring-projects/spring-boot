@@ -187,7 +187,7 @@
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.3.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>9.0.14</tomcat.version>
+		<tomcat.version>9.0.16</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.9</unboundid-ldapsdk.version>
 		<undertow.version>2.0.17.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
@@ -1711,11 +1711,6 @@
 				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-velocity</artifactId>
 				<version>${solr.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>tomcat-catalina-jmx-remote</artifactId>
-				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
