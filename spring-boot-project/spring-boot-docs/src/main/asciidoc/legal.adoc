@@ -1,4 +1,4 @@
-[colophon]
+[legal]
 = Legal
 
 {spring-boot-version}
