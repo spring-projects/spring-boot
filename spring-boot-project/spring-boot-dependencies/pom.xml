@@ -142,7 +142,7 @@
 		<netty.version>4.1.33.Final</netty.version>
 		<netty-tcnative.version>2.0.20.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
-		<pooled-jms-version>1.0.3</pooled-jms-version>
+		<pooled-jms-version>1.0.4</pooled-jms-version>
 		<postgresql.version>42.2.5</postgresql.version>
 		<prometheus-pushgateway.version>0.5.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.0</quartz.version>
