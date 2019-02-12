@@ -489,7 +489,7 @@ can come from additional jar files on your classpath.
 A running application with the Actuator features has a `configprops` endpoint that shows
 all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<appendix-application-properties#common-application-properties,
+The appendix includes an <<appendix.adoc#common-application-properties,
 `application.properties`>> example with a list of the most common properties supported by
 Spring Boot. The definitive list comes from searching the source code for
 `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of
@@ -2187,6 +2187,7 @@ reused to provide similar features to what the auto-configuration does with a si
 == Database Initialization
 An SQL database can be initialized in different ways depending on what your stack is.
 Of course, you can also do it manually, provided the database is a separate process.
+It is recommended to use a single mechanism for schema generation.
 
 
 
@@ -2865,7 +2866,7 @@ then be depended upon by your application and other projects.
 If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle
 plugins must be configured to produce a separate artifact that is suitable for use as a
 dependency. The executable archive cannot be used as a dependency as the
-<<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,executable jar
+<<appendix.adoc#executable-jar-jar-file-structure,executable jar
 format>> packages application classes in `BOOT-INF/classes`. This means
 that they cannot be found when the executable jar is used as a dependency.
 

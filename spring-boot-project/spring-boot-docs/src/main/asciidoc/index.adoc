@@ -5,7 +5,7 @@ Phillip Webb, Dave Syer, Josh Long, Stéphane Nicoll, Rob Winch, Andy Wilkinson,
 The reference documentation consists of the following sections:
 
 [horizontal]
-<<colophon.adoc#colophon,Legal>> :: Legal information.
+<<legal.adoc#legal,Legal>> :: Legal information.
 <<documentation-overview.adoc#boot-documentation,Documentation Overview>> :: About the Documentation, Getting Help, First Steps, and more.
 <<getting-started.adoc#getting-started,Getting Started>> :: Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, Developing Your First Spring Boot Application
 <<using-spring-boot.adoc#using-boot,Using Spring Boot>> :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, and more.

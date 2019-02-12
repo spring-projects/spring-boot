@@ -215,9 +215,10 @@ public class EmbeddedMongoAutoConfiguration {
 					Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named(
 							"[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
 			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
-					.processOutput(processOutput).artifactStore(getArtifactStore(logger,
+					.processOutput(processOutput)
+					.artifactStore(getArtifactStore(logger,
 							downloadConfigBuilderCustomizers.orderedStream()))
-					.build();
+					.daemonProcess(false).build();
 		}
 
 		private ArtifactStoreBuilder getArtifactStore(Logger logger,

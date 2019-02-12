@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
@@ -190,6 +191,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 		IDownloadConfig downloadConfig = (IDownloadConfig) new DirectFieldAccessor(
 				runtimeConfig.getArtifactStore()).getPropertyValue("downloadConfig");
 		assertThat(downloadConfig.getUserAgent()).isEqualTo("Test User Agent");
+	}
+
+	@Test
+	public void shutdownHookIsNotRegistered() {
+		load();
+		assertThat(this.context.getBean(MongodExecutable.class).isRegisteredJobKiller())
+				.isFalse();
 	}
 
 	private void assertVersionConfiguration(String configuredVersion,

@@ -131,43 +131,36 @@ public final class RestTemplateExchangeTags {
 	}
 
 	/**
-	 * Creates a {@code outcome} {@code Tag} derived from the
+	 * Creates an {@code outcome} {@code Tag} derived from the
 	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the outcome tag
 	 * @since 2.2.0
 	 */
 	public static Tag outcome(ClientHttpResponse response) {
-		HttpStatus status = extractStatus(response);
-		if (status != null) {
-			if (status.is1xxInformational()) {
-				return OUTCOME_INFORMATIONAL;
-			}
-			if (status.is2xxSuccessful()) {
-				return OUTCOME_SUCCESS;
-			}
-			if (status.is3xxRedirection()) {
-				return OUTCOME_REDIRECTION;
-			}
-			if (status.is4xxClientError()) {
-				return OUTCOME_CLIENT_ERROR;
-			}
-			if (status.is5xxServerError()) {
-				return OUTCOME_SERVER_ERROR;
-			}
-		}
-		return OUTCOME_UNKNOWN;
-	}
-
-	private static HttpStatus extractStatus(ClientHttpResponse response) {
 		try {
 			if (response != null) {
-				return response.getStatusCode();
+				HttpStatus statusCode = response.getStatusCode();
+				if (statusCode.is1xxInformational()) {
+					return OUTCOME_INFORMATIONAL;
+				}
+				if (statusCode.is2xxSuccessful()) {
+					return OUTCOME_SUCCESS;
+				}
+				if (statusCode.is3xxRedirection()) {
+					return OUTCOME_REDIRECTION;
+				}
+				if (statusCode.is4xxClientError()) {
+					return OUTCOME_CLIENT_ERROR;
+				}
+				if (statusCode.is5xxServerError()) {
+					return OUTCOME_SERVER_ERROR;
+				}
 			}
-			return null;
+			return OUTCOME_UNKNOWN;
 		}
-		catch (IOException | IllegalArgumentException exc) {
-			return null;
+		catch (IOException | IllegalArgumentException ex) {
+			return OUTCOME_UNKNOWN;
 		}
 	}
 

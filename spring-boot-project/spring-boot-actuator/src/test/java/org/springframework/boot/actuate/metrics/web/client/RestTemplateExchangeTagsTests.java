@@ -34,12 +34,11 @@ import static org.mockito.Mockito.mock;
  *
  * @author Nishant Raut
  * @author Brian Clozel
- * @author Brian Clozel
  */
 public class RestTemplateExchangeTagsTests {
 
 	@Test
-	public void outcomeTagIsUnknownWhenResponseStatusIsNull() {
+	public void outcomeTagIsUnknownWhenResponseIsNull() {
 		Tag tag = RestTemplateExchangeTags.outcome(null);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}

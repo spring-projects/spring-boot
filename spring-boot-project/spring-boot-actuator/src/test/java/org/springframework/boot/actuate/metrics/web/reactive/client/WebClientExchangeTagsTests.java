@@ -34,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebClientExchangeTags}
+ * Tests for {@link WebClientExchangeTags}.
  *
  * @author Brian Clozel
  * @author Nishant Raut
@@ -115,7 +115,7 @@ public class WebClientExchangeTagsTests {
 	}
 
 	@Test
-	public void outcomeTagIsUnknownWhenResponseStatusIsNull() {
+	public void outcomeTagIsUnknownWhenResponseIsNull() {
 		Tag tag = WebClientExchangeTags.outcome(null);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
@@ -156,7 +156,7 @@ public class WebClientExchangeTagsTests {
 	}
 
 	@Test
-	public void outcomeTagIsUknownWhenResponseStatusIsUknown() {
+	public void outcomeTagIsUnknownWhenResponseStatusIsUnknown() {
 		given(this.response.statusCode()).willThrow(IllegalArgumentException.class);
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");

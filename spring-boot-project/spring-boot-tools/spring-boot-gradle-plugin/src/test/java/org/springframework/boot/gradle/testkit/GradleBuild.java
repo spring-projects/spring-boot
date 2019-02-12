@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,7 +193,7 @@ public class GradleBuild implements TestRule {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
 		else if (this.dsl == Dsl.KOTLIN) {
-			gradleRunner.withGradleVersion("4.10.2");
+			gradleRunner.withGradleVersion("4.10.3");
 		}
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());

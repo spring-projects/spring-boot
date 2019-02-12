@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Vedran Pavic
+ * @author Robert Thornton
  * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
@@ -140,11 +141,16 @@ class DefaultLogbackConfiguration {
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config, String logFile) {
 		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
+		rollingPolicy.setCleanHistoryOnStart(this.patterns.getProperty(
+				"logging.file.clean-history-on-start", Boolean.class, false));
 		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
 		setMaxFileSize(rollingPolicy,
 				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE));
 		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
 				Integer.class, CoreConstants.UNBOUND_HISTORY));
+		rollingPolicy.setTotalSizeCap(
+				FileSize.valueOf(this.patterns.getProperty("logging.file.total-size-cap",
+						String.valueOf(CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP))));
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);

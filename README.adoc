@@ -151,7 +151,7 @@ Once this is done, you can build the reference documentation with the command be
 	$ ./mvnw clean prepare-package -pl spring-boot-project/spring-boot-docs -Pdefault,full
 ----
 
-TIP: The generated documentation is available from `spring-boot-project/spring-boot-docs/target/contents/reference`
+TIP: The generated documentation is available from `spring-boot-project/spring-boot-docs/target/generated-docs/reference/html`
 
 
 == Modules
