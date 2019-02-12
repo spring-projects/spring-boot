@@ -2187,6 +2187,7 @@ reused to provide similar features to what the auto-configuration does with a si
 == Database Initialization
 An SQL database can be initialized in different ways depending on what your stack is.
 Of course, you can also do it manually, provided the database is a separate process.
+It is recommended to use a single mechanism for schema generation.
 
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testcontainers.containers.Neo4jContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.Neo4jContainer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration test with custom include filter for {@link DataNeo4jTest}.
  *
  * @author Eddú Meléndez
+ * @author Michael Simons
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
@@ -43,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static Neo4jContainer neo4j = new Neo4jContainer();
+	public static Neo4jContainer<?> neo4j = new Neo4jContainer<>()
+			.withAdminPassword(null);
 
 	@Autowired
 	private ExampleService service;
@@ -59,8 +61,7 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort())
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

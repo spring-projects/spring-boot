@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
@@ -50,6 +51,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.web.servlet.DefaultJerseyApplicationPath;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
@@ -64,6 +66,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.filter.RequestContextFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Jersey.
@@ -74,8 +77,7 @@ import org.springframework.web.context.ServletContextAware;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
-		"javax.servlet.ServletRegistration" })
+@ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
@@ -107,6 +109,16 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private void customize() {
 		this.customizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(this.config));
+	}
+
+	@Bean
+	@ConditionalOnMissingFilterBean(RequestContextFilter.class)
+	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
+		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(new RequestContextFilter());
+		registration.setOrder(this.jersey.getFilter().getOrder() - 1);
+		registration.setName("requestContextFilter");
+		return registration;
 	}
 
 	@Bean
