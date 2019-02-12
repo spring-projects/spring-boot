@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,16 @@ public class AuthenticationAuditListenerTests {
 						new UsernamePasswordAuthenticationToken("user", "password"),
 						new User("user", "password", AuthorityUtils
 								.commaSeparatedStringToAuthorityList("USER"))));
+		assertThat(event.getAuditEvent().getType())
+				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
+	}
+
+	@Test
+	public void testAuthenticationSwitchBackToAnonymous() {
+		AuditApplicationEvent event = handleAuthenticationEvent(
+				new AuthenticationSwitchUserEvent(
+						new UsernamePasswordAuthenticationToken("user", "password"),
+						null));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
 	}
