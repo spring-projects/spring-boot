@@ -50,6 +50,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.web.servlet.DefaultJerseyApplicationPath;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
@@ -64,6 +65,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.filter.RequestContextFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Jersey.
@@ -107,6 +109,16 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private void customize() {
 		this.customizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(this.config));
+	}
+
+	@Bean
+	@ConditionalOnMissingFilterBean(RequestContextFilter.class)
+	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
+		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(new RequestContextFilter());
+		registration.setOrder(this.jersey.getFilter().getOrder() - 1);
+		registration.setName("requestContextFilter");
+		return registration;
 	}
 
 	@Bean
