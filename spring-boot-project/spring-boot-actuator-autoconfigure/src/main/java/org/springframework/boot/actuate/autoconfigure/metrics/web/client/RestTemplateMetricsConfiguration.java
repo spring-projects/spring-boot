@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Jon Schneider
  * @author Phillip Webb
- * @author raheela.aslam
+ * @author Raheela Aslam
  */
 @Configuration
 @ConditionalOnClass(RestTemplate.class)

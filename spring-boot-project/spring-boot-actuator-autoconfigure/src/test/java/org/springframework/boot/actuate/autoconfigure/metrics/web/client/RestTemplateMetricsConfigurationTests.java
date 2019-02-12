@@ -42,7 +42,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
- * @author raheela.aslam
+ * @author Raheela Aslam
  */
 public class RestTemplateMetricsConfigurationTests {
 
@@ -100,6 +100,16 @@ public class RestTemplateMetricsConfigurationTests {
 				});
 	}
 
+	@Test
+	public void backsOffWhenRestTemplateBuilderIsMissing() {
+		new ApplicationContextRunner().with(MetricsRun.simple())
+				.withConfiguration(
+						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
+						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
+	}
+
 	private MeterRegistry getInitializedMeterRegistry(
 			AssertableApplicationContext context) {
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -131,16 +141,6 @@ public class RestTemplateMetricsConfigurationTests {
 		server.expect(requestTo("/projects/spring-boot"))
 				.andRespond(withStatus(HttpStatus.OK));
 		return restTemplate;
-	}
-
-	@Test
-	public void backsOffWhenRestTemplateBuilderIsMissing() {
-		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(
-						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
-						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
 	}
 
 }
