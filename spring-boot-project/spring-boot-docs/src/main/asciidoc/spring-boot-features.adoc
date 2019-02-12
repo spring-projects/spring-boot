@@ -8087,6 +8087,14 @@ published jar. The file should list your configuration classes under the
 	com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 ----
 
+[NOTE]
+====
+Auto-configurations must be loaded that way _only_. Make sure that they are defined in
+a specific package space and that they are never the target of component scanning.
+Futhermore, auto-configuration classes should not enable component scanning to find
+additional components. Specific `@Import`s should be used instead.
+====
+
 You can use the
 {sc-spring-boot-autoconfigure}/AutoConfigureAfter.{sc-ext}[`@AutoConfigureAfter`] or
 {sc-spring-boot-autoconfigure}/AutoConfigureBefore.{sc-ext}[`@AutoConfigureBefore`]
@@ -8098,13 +8106,6 @@ If you want to order certain auto-configurations that should not have any direct
 knowledge of each other, you can also use `@AutoConfigureOrder`. That annotation has the
 same semantic as the regular `@Order` annotation but provides a dedicated order for
 auto-configuration classes.
-
-[NOTE]
-====
-Auto-configurations must be loaded that way _only_. Make sure that they are defined in
-a specific package space and that, in particular, they are never the target of component
-scanning.
-====
 
 
 
