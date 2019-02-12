@@ -37,12 +37,12 @@
 		<activemq.version>5.15.8</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.71</appengine-sdk.version>
-		<artemis.version>2.6.3</artemis.version>
+		<artemis.version>2.6.4</artemis.version>
 		<aspectj.version>1.9.2</aspectj.version>
 		<assertj.version>3.11.1</assertj.version>
 		<atomikos.version>4.0.6</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
-		<byte-buddy.version>1.9.7</byte-buddy.version>
+		<byte-buddy.version>1.9.10</byte-buddy.version>
 		<caffeine.version>2.6.2</caffeine.version>
 		<cassandra-driver.version>3.6.0</cassandra-driver.version>
 		<classmate.version>1.4.0</classmate.version>
@@ -51,7 +51,7 @@
 		<commons-lang3.version>3.8.1</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.6.0</commons-pool2.version>
-		<couchbase-client.version>2.7.2</couchbase-client.version>
+		<couchbase-client.version>2.7.3</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -64,7 +64,7 @@
 		<elasticsearch.version>6.4.3</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<glassfish-jaxb.version>2.3.1</glassfish-jaxb.version>
-		<groovy.version>2.5.5</groovy.version>
+		<groovy.version>2.5.6</groovy.version>
 		<gson.version>2.8.5</gson.version>
 		<h2.version>1.4.197</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
@@ -76,12 +76,12 @@
 		<hsqldb.version>2.4.1</hsqldb.version>
 		<htmlunit.version>2.33</htmlunit.version>
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
-		<httpclient.version>4.5.6</httpclient.version>
-		<httpcore.version>4.4.10</httpcore.version>
-		<infinispan.version>9.4.5.Final</infinispan.version>
+		<httpclient.version>4.5.7</httpclient.version>
+		<httpcore.version>4.4.11</httpcore.version>
+		<infinispan.version>9.4.6.Final</infinispan.version>
 		<influxdb-java.version>2.14</influxdb-java.version>
 		<jackson.version>2.9.8</jackson.version>
-		<janino.version>3.0.11</janino.version>
+		<janino.version>3.0.12</janino.version>
 		<javax-activation.version>1.2.0</javax-activation.version>
 		<javax-annotation.version>1.3.2</javax-annotation.version>
 		<javax-cache.version>1.1.0</javax-cache.version>
@@ -125,24 +125,24 @@
 		<kafka.version>2.1.0</kafka.version>
 		<kotlin.version>1.2.71</kotlin.version>
 		<lettuce.version>5.1.3.RELEASE</lettuce.version>
-		<liquibase.version>3.6.2</liquibase.version>
-		<log4j2.version>2.11.1</log4j2.version>
+		<liquibase.version>3.6.3</liquibase.version>
+		<log4j2.version>2.11.2</log4j2.version>
 		<logback.version>1.2.3</logback.version>
-		<lombok.version>1.18.4</lombok.version>
+		<lombok.version>1.18.6</lombok.version>
 		<mariadb.version>2.3.0</mariadb.version>
 		<micrometer.version>1.1.3-SNAPSHOT</micrometer.version>
-		<mimepull.version>1.9.10</mimepull.version>
+		<mimepull.version>1.9.11</mimepull.version>
 		<mockito.version>2.23.4</mockito.version>
 		<mongo-driver-reactivestreams.version>1.9.2</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.8.2</mongodb.version>
 		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
-		<mysql.version>8.0.13</mysql.version>
+		<mysql.version>8.0.15</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>3.1.6</neo4j-ogm.version>
-		<netty.version>4.1.31.Final</netty.version>
+		<neo4j-ogm.version>3.1.7</neo4j-ogm.version>
+		<netty.version>4.1.33.Final</netty.version>
 		<netty-tcnative.version>2.0.20.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
-		<pooled-jms-version>1.0.3</pooled-jms-version>
+		<pooled-jms-version>1.0.4</pooled-jms-version>
 		<postgresql.version>42.2.5</postgresql.version>
 		<prometheus-pushgateway.version>0.6.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.0</quartz.version>
@@ -153,7 +153,7 @@
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.2.5</rxjava2.version>
+		<rxjava2.version>2.2.6</rxjava2.version>
 		<selenium.version>3.141.59</selenium.version>
 		<selenium-htmlunit.version>2.33.3</selenium-htmlunit.version>
 		<sendgrid.version>4.3.0</sendgrid.version>
@@ -174,22 +174,22 @@
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.3.RELEASE</spring-retry.version>
+		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
 		<spring-security.version>5.1.4.BUILD-SNAPSHOT</spring-security.version>
 		<spring-session-bom.version>Bean-BUILD-SNAPSHOT</spring-session-bom.version>
 		<spring-ws.version>3.0.6.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
-		<saaj-impl.version>1.5.0</saaj-impl.version>
+		<saaj-impl.version>1.5.1</saaj-impl.version>
 		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
-		<thymeleaf-extras-java8time.version>3.0.2.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>9.0.14</tomcat.version>
+		<thymeleaf-extras-java8time.version>3.0.3.RELEASE</thymeleaf-extras-java8time.version>
+		<tomcat.version>9.0.16</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.9</unboundid-ldapsdk.version>
-		<undertow.version>2.0.16.Final</undertow.version>
+		<undertow.version>2.0.17.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.36</webjars-locator-core.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
@@ -1721,11 +1721,6 @@
 				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-velocity</artifactId>
 				<version>${solr.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>tomcat-catalina-jmx-remote</artifactId>
-				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
