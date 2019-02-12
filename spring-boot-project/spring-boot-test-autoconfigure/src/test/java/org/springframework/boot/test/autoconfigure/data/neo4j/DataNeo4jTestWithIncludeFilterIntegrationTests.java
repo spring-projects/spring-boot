@@ -44,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static Neo4jContainer neo4j = new Neo4jContainer().withAdminPassword(null);
+	public static Neo4jContainer<?> neo4j = new Neo4jContainer<>()
+			.withAdminPassword(null);
 
 	@Autowired
 	private ExampleService service;

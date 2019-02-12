@@ -47,7 +47,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class DataNeo4jTestIntegrationTests {
 
 	@ClassRule
-	public static Neo4jContainer neo4j = new Neo4jContainer().withAdminPassword(null);
+	public static Neo4jContainer<?> neo4j = new Neo4jContainer<>()
+			.withAdminPassword(null);
 
 	@Autowired
 	private Session session;
