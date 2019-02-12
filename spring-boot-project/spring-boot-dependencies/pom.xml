@@ -75,8 +75,8 @@
 		<hsqldb.version>2.4.1</hsqldb.version>
 		<htmlunit.version>2.29</htmlunit.version>
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
-		<httpclient.version>4.5.6</httpclient.version>
-		<httpcore.version>4.4.10</httpcore.version>
+		<httpclient.version>4.5.7</httpclient.version>
+		<httpcore.version>4.4.11</httpcore.version>
 		<infinispan.version>9.1.7.Final</infinispan.version>
 		<influxdb-java.version>2.9</influxdb-java.version>
 		<jackson.version>2.9.8</jackson.version>
@@ -164,7 +164,7 @@
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.3.RELEASE</spring-retry.version>
+		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.11.RELEASE</spring-security.version>
 		<spring-session-bom.version>Apple-SR8</spring-session-bom.version>
 		<spring-ws.version>3.0.6.RELEASE</spring-ws.version>
@@ -178,9 +178,9 @@
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.2.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.37</tomcat.version>
+		<tomcat.version>8.5.38</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.9</unboundid-ldapsdk.version>
-		<undertow.version>1.4.26.Final</undertow.version>
+		<undertow.version>1.4.27.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.35</webjars-locator-core.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
