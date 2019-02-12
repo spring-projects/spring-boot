@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,11 @@ public class LoggingSystemProperties {
 	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
 
 	/**
+	 * The name of the System property that contains the clean history on start flag.
+	 */
+	public static final String FILE_CLEAN_HISTORY_ON_START = "LOG_FILE_CLEAN_HISTORY_ON_START";
+
+	/**
 	 * The name of the System property that contains the file log pattern.
 	 */
 	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
@@ -79,11 +84,6 @@ public class LoggingSystemProperties {
 	 * The name of the System property that contains the file total size cap.
 	 */
 	public static final String FILE_TOTAL_SIZE_CAP = "LOG_FILE_TOTAL_SIZE_CAP";
-
-	/**
-	 * The name of the System property that contains the clean history on start flag.
-	 */
-	public static final String FILE_CLEAN_HISTORY_ON_START = "LOG_FILE_CLEAN_HISTORY_ON_START";
 
 	/**
 	 * The name of the System property that contains the log level pattern.
@@ -117,11 +117,11 @@ public class LoggingSystemProperties {
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "pattern.console");
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "pattern.file");
+		setSystemProperty(resolver, FILE_CLEAN_HISTORY_ON_START,
+				"file.clean-history-on-start");
 		setSystemProperty(resolver, FILE_MAX_HISTORY, "file.max-history");
 		setSystemProperty(resolver, FILE_MAX_SIZE, "file.max-size");
 		setSystemProperty(resolver, FILE_TOTAL_SIZE_CAP, "file.total-size-cap");
-		setSystemProperty(resolver, FILE_CLEAN_HISTORY_ON_START,
-				"file.clean-history-on-start");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
 		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "pattern.dateformat");
 		if (logFile != null) {

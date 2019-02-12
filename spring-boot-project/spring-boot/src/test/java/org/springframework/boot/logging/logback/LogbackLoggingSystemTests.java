@@ -353,6 +353,35 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void testCleanHistoryOnStartProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.clean-history-on-start", "true");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
+	}
+
+	@Test
+	public void testCleanHistoryOnStartPropertyWithXmlConfiguration() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.clean-history-on-start", "true");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
+	}
+
+	@Test
 	public void testMaxFileSizeProperty() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-size", "100MB");
@@ -413,7 +442,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testTotalSizeCapProperty() throws Exception {
+	public void testTotalSizeCapProperty() {
 		String expectedSize = "101 MB";
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.total-size-cap", expectedSize);
@@ -429,7 +458,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testTotalSizeCapPropertyWithXmlConfiguration() throws Exception {
+	public void testTotalSizeCapPropertyWithXmlConfiguration() {
 		String expectedSize = "101 MB";
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.total-size-cap", expectedSize);
@@ -443,35 +472,6 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
 				.toString()).isEqualTo(expectedSize);
-	}
-
-	@Test
-	public void testCleanHistoryOnStartProperty() throws Exception {
-		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.file.clean-history-on-start", "true");
-		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
-				environment);
-		File file = new File(tmpDir(), "logback-test.log");
-		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
-		this.logger.info("Hello world");
-		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
-	}
-
-	@Test
-	public void testCleanHistoryOnStartPropertyWithXmlConfiguration() throws Exception {
-		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.file.clean-history-on-start", "true");
-		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
-				environment);
-		File file = new File(tmpDir(), "logback-test.log");
-		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.initialize(loggingInitializationContext,
-				"classpath:logback-include-base.xml", logFile);
-		this.logger.info("Hello world");
-		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
 	}
 
 	@Test

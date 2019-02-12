@@ -1859,6 +1859,11 @@ To help with the customization, some other properties are transferred from the S
 |`LOG_EXCEPTION_CONVERSION_WORD`
 |The conversion word used when logging exceptions.
 
+|`logging.file.clean-history-on-start`
+|`LOG_FILE_CLEAN_HISTORY_ON_START`
+|Whether to clean the archive log files on startup (if LOG_FILE enabled). (Only supported
+with the default Logback setup.)
+
 |`logging.file.name`
 |`LOG_FILE`
 |If defined, it is used in the default log configuration.
@@ -1873,19 +1878,14 @@ setup.)
 |Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
 the default Logback setup.)
 
-|`logging.file.total-size-cap`
-|`LOG_FILE_TOTAL_SIZE_CAP`
-|The total size of log backups to be kept (if LOG_FILE enabled). (Only supported with
-the default Logback setup.)
-
-|`logging.file.clean-history-on-start`
-|`LOG_FILE_CLEAN_HISTORY_ON_START`
-|Whether to clean the archive log files on startup (if LOG_FILE enabled). (Only supported with
-the default Logback setup.)
-
 |`logging.file.path`
 |`LOG_PATH`
 |If defined, it is used in the default log configuration.
+
+|`logging.file.total-size-cap`
+|`LOG_FILE_TOTAL_SIZE_CAP`
+|Total size of log backups to be kept (if LOG_FILE enabled). (Only supported with the
+default Logback setup.)
 
 |`logging.pattern.console`
 |`CONSOLE_LOG_PATTERN`
