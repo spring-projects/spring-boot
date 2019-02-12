@@ -2005,6 +2005,35 @@ However, properties can be added to the `Environment` by using the relaxed rules
 
 
 
+[[boot-features-internationalization]]
+== Internationalization
+Spring Boot supports localized messages so that your application can cater to users
+of different language preferences. By default, Spring Boot looks for the presence of
+a `messages` resource bundle at the root of the classpath.
+
+NOTE: The auto-configuration applies when the default properties file for the configured
+resource bundle is available (i.e. `messages.properties` by default). If your resource
+bundle contains only language-specific properties files, you are required to add the
+default.
+
+The basename of the resource bundle as well as several other attributes can be configured
+using the `spring.messages` namespace, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.messages.basename=messages,config.i18n.messages
+	spring.messages.fallback-to-system-locale=false
+----
+
+TIP: `spring.messages.basename` supports comma-separated list of locations, either a
+package qualifier or a resource resolved from the classpath root.
+
+See {sc-spring-boot-autoconfigure}/context/MessageSourceProperties.{sc-ext}[
+`MessageSourceProperties`] for more supported options.
+
+
+
+
 [[boot-features-json]]
 == JSON
 Spring Boot provides integration with three JSON mapping libraries:
@@ -8384,32 +8413,6 @@ NOTE: Either way, your starter must reference the core Spring Boot starter
 (`spring-boot-starter`) directly or indirectly (i.e. no need to add it if your starter
 relies on another starter). If a project is created with only your custom starter, Spring
 Boot's core features will be honoured by the presence of the core starter.
-
-
-
-[[boot-features-internationalization]]
-== Internationalization
-Spring Boot supports localized messages so that your application can cater to users
-of different language preferences. By default, Spring Boot looks for `messages.properties`
-or its language and locale specific equivalent in applications context path
-e.g. `messages_en_US.properties` for US English and so on.
-
-You can set `spring.messages.basename` property to configure custom locations for
-these files. `spring.messages` namespace provides additional options to be set according
-to application requirements as shown below -
-
-[source,properties,indent=0]
-----
-	spring.messages.basename = config.i18n.messages
-	spring.messages.fallback-to-system-locale = false
-	spring.messages.encoding = utf-8
-	spring.messages.cache-duration = 30m
-	spring.messages.always-use-message-format = false
-	spring.messages.use-code-as-default-message = true
-----
-
-TIP: `spring.messages.basename` supports comma-separated list of locations (essentially 
-a fully-qualified classpath location) for configuring multiple message sources.
 
 
 
