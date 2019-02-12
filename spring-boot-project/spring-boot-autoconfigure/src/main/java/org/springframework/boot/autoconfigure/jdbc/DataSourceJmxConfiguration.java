@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class DataSourceJmxConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled")
-	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
+	@ConditionalOnClass(DataSourceProxy.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class TomcatDataSourceJmxConfiguration {
 
