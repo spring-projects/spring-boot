@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,11 +146,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * Get the {@link SpringBootTest#args()} (if present) specified in the annotated test
-	 * class. If no args given, returns empty array.
+	 * Return the application arguments to use. If no arguments are available, return an
+	 * empty array.
 	 * @param config the source context configuration
-	 * @return the {@link SpringBootTest#args()} (if present) specified in the annotated
-	 * test class, or empty array
+	 * @return the application arguments to use
+	 * @see SpringApplication#run(String...)
 	 */
 	protected String[] getArgs(MergedContextConfiguration config) {
 		SpringBootTest annotation = AnnotatedElementUtils

@@ -6752,17 +6752,19 @@ NOTE: If you directly use `@ComponentScan` (that is, not through
 `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it. See
 {dc-spring-boot}/context/TypeExcludeFilter.{dc-ext}[the Javadoc] for details.
 
-[[boot-features-testing-spring-boot-applications-arguments]]
-==== Testing with Application Arguments
 
+
+[[boot-features-testing-spring-boot-application-arguments]]
+==== Using Application Arguments
 If your application expects <<boot-features-application-arguments,arguments>>, you can
-have `@SpringBootTest` inject them using the `args` field.
+have `@SpringBootTest` inject them using the `args` attribute.
 
 [source,java,indent=0]
 ----
-include::{test-examples}/context/ApplicationArgumentsExampleTests.java[tag=args]
-}
+include::{code-examples}/test/context/ApplicationArgumentsExampleTests.java[tag=example]
 ----
+
+
 
 [[boot-features-testing-spring-boot-applications-testing-with-mock-environment]]
 ==== Testing with a mock environment

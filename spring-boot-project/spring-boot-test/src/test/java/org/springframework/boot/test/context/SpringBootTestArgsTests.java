@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Assert that tests annotated with {@link SpringBootTest} can specify
- * {@link SpringBootTest#args()} to be passed to their application under test.
+ * Tests for {@link SpringBootTest} with application arguments.
  *
  * @author Justin Griffin
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(args = { "--option.foo=option-foo-value", "other.bar=other-bar-value" })
+@SpringBootTest(args = { "--option.foo=foo-value", "other.bar=other-bar-value" })
 public class SpringBootTestArgsTests {
 
 	@Autowired
@@ -41,8 +41,10 @@ public class SpringBootTestArgsTests {
 
 	@Test
 	public void applicationArgumentsPopulated() {
-		assertThat(this.args.getOptionNames()).contains("option.foo");
-		assertThat(this.args.getNonOptionArgs()).contains("other.bar=other-bar-value");
+		assertThat(this.args.getOptionNames()).containsOnly("option.foo");
+		assertThat(this.args.getOptionValues("option.foo")).containsOnly("foo-value");
+		assertThat(this.args.getNonOptionArgs())
+				.containsOnly("other.bar=other-bar-value");
 	}
 
 	@Configuration

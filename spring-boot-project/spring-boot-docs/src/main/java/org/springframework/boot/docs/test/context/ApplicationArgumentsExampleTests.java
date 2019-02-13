@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.context;
+package org.springframework.boot.docs.test.context;
 
-// tag::args[]
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// tag::example[]
 @RunWith(SpringRunner.class)
-@SpringBootTest(args = { "--foo=bar" })
+@SpringBootTest(args = "--app.test=one")
 public class ApplicationArgumentsExampleTests {
 
 	@Autowired
@@ -37,14 +36,9 @@ public class ApplicationArgumentsExampleTests {
 
 	@Test
 	public void applicationArgumentsPopulated() {
-		assertThat(this.args.getOptionNames()).contains("foo");
-		assertThat(this.args.getOptionValues("foo")).contains("bar");
-	}
-
-	// end::args[]
-	@Configuration
-	protected static class Config {
-
+		assertThat(this.args.getOptionNames()).containsOnly("app.test");
+		assertThat(this.args.getOptionValues("app.test")).containsOnly("one");
 	}
 
 }
+// end::example[]
