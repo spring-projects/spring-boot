@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.SkippableContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -43,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@ClassRule
-	public static CassandraContainer<?> cassandra = new CassandraContainer<>();
+	public static SkippableContainer<CassandraContainer<?>> cassandra = new SkippableContainer<>(
+			CassandraContainer::new);
 
 	private AnnotationConfigApplicationContext context;
 
@@ -51,7 +53,8 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	public void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.data.cassandra.port=" + cassandra.getFirstMappedPort(),
+				.of("spring.data.cassandra.port="
+						+ cassandra.getContainer().getFirstMappedPort(),
 						"spring.data.cassandra.read-timeout=24000",
 						"spring.data.cassandra.connect-timeout=10000")
 				.applyTo(this.context.getEnvironment());
@@ -96,7 +99,8 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 
 	private void createTestKeyspaceIfNotExists() {
 		Cluster cluster = Cluster.builder().withoutJMXReporting()
-				.withPort(cassandra.getFirstMappedPort()).addContactPoint("localhost")
+				.withPort(cassandra.getContainer().getFirstMappedPort())
+				.addContactPoint(cassandra.getContainer().getContainerIpAddress())
 				.build();
 		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
