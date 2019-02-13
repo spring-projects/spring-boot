@@ -168,7 +168,7 @@
 		<spring-cloud-connectors.version>2.0.4.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Moore-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
-		<spring-hateoas.version>0.25.0.RELEASE</spring-hateoas.version>
+		<spring-hateoas.version>1.0.0.BUILD-SNAPSHOT</spring-hateoas.version>
 		<spring-integration.version>5.1.3.BUILD-SNAPSHOT</spring-integration.version>
 		<spring-kafka.version>2.2.4.BUILD-SNAPSHOT</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
