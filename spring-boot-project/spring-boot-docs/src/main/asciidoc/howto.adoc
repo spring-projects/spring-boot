@@ -2866,9 +2866,9 @@ then be depended upon by your application and other projects.
 If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle
 plugins must be configured to produce a separate artifact that is suitable for use as a
 dependency. The executable archive cannot be used as a dependency as the
-<<appendix.adoc#executable-jar-jar-file-structure,executable jar
-format>> packages application classes in `BOOT-INF/classes`. This means
-that they cannot be found when the executable jar is used as a dependency.
+<<appendix.adoc#executable-jar-jar-file-structure,executable jar format>> packages
+application classes in `BOOT-INF/classes`. This means that they cannot be found when the
+executable jar is used as a dependency.
 
 To produce the two artifacts, one that can be used as a dependency and one that is
 executable, a classifier must be specified. This classifier is applied to the name of the

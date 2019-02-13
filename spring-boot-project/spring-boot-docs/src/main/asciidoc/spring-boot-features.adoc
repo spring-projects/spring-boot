@@ -1044,7 +1044,7 @@ as any other bean, as shown in the following example:
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be
 used by IDEs to offer auto-completion for your own keys. See the
-<<configuration-metadata>> appendix for details.
+<<appendix.adoc#configuration-metadata,appendix>> for details.
 
 
 
@@ -8357,10 +8357,10 @@ particular, do not include your keys in the namespaces that Spring Boot uses (su
 these namespaces in the future in ways that break your modules.
 
 Make sure to
-<<appendix.adoc#configuration-metadata-annotation-processor,trigger
-meta-data generation>> so that IDE assistance is available for your keys as well. You may
-want to review the generated meta-data (`META-INF/spring-configuration-metadata.json`) to
-make sure your keys are properly documented.
+<<appendix.adoc#configuration-metadata-annotation-processor,trigger meta-data
+generation>> so that IDE assistance is available for your keys as well. You may want to
+review the generated meta-data (`META-INF/spring-configuration-metadata.json`) to make
+sure your keys are properly documented.
 
 
 
@@ -8604,8 +8604,7 @@ class KotlinExampleProperties {
 }
 ----
 
-TIP: To generate
-<<appendix.adoc#configuration-metadata-annotation-processor,your own
+TIP: To generate <<appendix.adoc#configuration-metadata-annotation-processor,your own
 metadata>> using the annotation processor, {kotlin-documentation}kapt.html[`kapt` should
 be configured] with the `spring-boot-configuration-processor` dependency.
 
