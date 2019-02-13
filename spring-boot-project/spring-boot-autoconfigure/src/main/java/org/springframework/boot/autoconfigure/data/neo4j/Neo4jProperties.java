@@ -36,10 +36,8 @@ import org.springframework.util.ClassUtils;
  * @author Michael Simons
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = Neo4jProperties.CONFIGURATION_PREFIX)
+@ConfigurationProperties(prefix = "spring.data.neo4j")
 public class Neo4jProperties implements ApplicationContextAware {
-
-	static final String CONFIGURATION_PREFIX = "spring.data.neo4j";
 
 	static final String EMBEDDED_DRIVER = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
 
@@ -76,8 +74,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 	private Boolean openInView;
 
 	/**
-	 * Disables the conversion of java.time.* and spatial types in Neo4j-OGM entities and
-	 * uses Neo4j native types wherever possible.
+	 * Whether to use Neo4j native types wherever possible.
 	 */
 	private boolean useNativeTypes = false;
 

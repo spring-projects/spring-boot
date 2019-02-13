@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.Test;
+import org.neo4j.ogm.driver.NativeTypesNotAvailableException;
+import org.neo4j.ogm.driver.NativeTypesNotSupportedException;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -32,7 +34,6 @@ import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -47,7 +48,6 @@ import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -158,35 +158,33 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldDealWithNativeTypesNotAvailableException() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			this.contextRunner
-					.withClassLoader(
-							new FilteredClassLoader("org.neo4j.ogm.drivers.bolt.types"))
-					.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
-							"spring.data.neo4j.use-native-types:true")
-					.withConfiguration(
-							AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
-									TransactionAutoConfiguration.class))
-					.run((context) -> context.getBean(SessionFactory.class));
-		}).withRootCauseInstanceOf(InvalidConfigurationPropertyValueException.class)
-				.withStackTraceContaining(
-						"The native type module for your Neo4j-OGM driver is not available. Please add the following dependency to your build:");
+	public void shouldFailWhenNativeTypesAreNotAvailable() {
+		this.contextRunner
+				.withClassLoader(
+						new FilteredClassLoader("org.neo4j.ogm.drivers.bolt.types"))
+				.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(
+							NativeTypesNotAvailableException.class);
+				});
 	}
 
 	@Test
-	public void shouldDealWithNativeTypesNotSupportedException() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			this.contextRunner
-					.withPropertyValues("spring.data.neo4j.uri=http://localhost:7474",
-							"spring.data.neo4j.use-native-types:true")
-					.withConfiguration(
-							AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
-									TransactionAutoConfiguration.class))
-					.run((context) -> context.getBean(SessionFactory.class));
-		}).withRootCauseInstanceOf(InvalidConfigurationPropertyValueException.class)
-				.withStackTraceContaining(
-						" The configured Neo4j-OGM driver org.neo4j.ogm.drivers.http.driver.HttpDriver does not support Neo4j native types.");
+	public void shouldFailWhenNativeTypesAreNotSupported() {
+		this.contextRunner
+				.withPropertyValues("spring.data.neo4j.uri=http://localhost:7474",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(
+							NativeTypesNotSupportedException.class);
+				});
 	}
 
 	@Test

@@ -4441,21 +4441,18 @@ in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
 
 
 [[boot-features-neo4j-ogm-native-types]]
-==== Using native types
-Neo4j-OGM can map some types, like `java.time.*` to `String` based properties or
-use one of the various native types that Neo4j provides.
-For backwards compatibility reasons the default for Neo4j-OGM is using a `String` based representation.
-To change that behaviour, please add one of `org.neo4j:neo4j-ogm-bolt-native-types` or `org.neo4j:neo4j-ogm-embedded-native-types`
-to the dependencies of your application
-and use the following property in your Spring Boot configuration:
+==== Using Native Types
+Neo4j-OGM can map some types, like those in `java.time.*`, to `String`-based properties
+or to one of the native types that Neo4j provides. For backwards compatibility reasons
+the default for Neo4j-OGM is to use a `String`-based representation. To use native types,
+add a dependency on either `org.neo4j:neo4j-ogm-bolt-native-types` or
+`org.neo4j:neo4j-ogm-embedded-native-types`, and configure the
+`spring.data.neo4j.use-native-types` property as shown in the following example:
 
 [source,properties,indent=0]
 ----
 	spring.data.neo4j.use-native-types=true
 ----
-
-Please refer to the Neo4j-OGM reference for more information about
-https://neo4j.com/docs/ogm-manual/current/reference/#reference:native-property-types[native property types].
 
 
 
