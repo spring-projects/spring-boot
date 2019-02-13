@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,8 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
+import org.springframework.kafka.support.converter.BatchMessageConverter;
+import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -503,13 +505,58 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverters() {
+	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverter() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue(
 							"messageConverter", context.getBean("myMessageConverter"));
+				});
+	}
+
+	@Test
+	public void testConcurrentKafkaListenerContainerFactoryInBatchModeWithCustomMessageConverter() {
+		this.contextRunner
+				.withUserConfiguration(BatchMessageConverterConfiguration.class,
+						MessageConverterConfiguration.class)
+				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue(
+							"messageConverter",
+							context.getBean("myBatchMessageConverter"));
+				});
+	}
+
+	@Test
+	public void testConcurrentKafkaListenerContainerFactoryInBatchModeWrapsCustomMessageConverter() {
+		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
+				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					Object messageConverter = ReflectionTestUtils
+							.getField(kafkaListenerContainerFactory, "messageConverter");
+					assertThat(messageConverter)
+							.isInstanceOf(BatchMessagingMessageConverter.class);
+					assertThat(((BatchMessageConverter) messageConverter)
+							.getRecordMessageConverter())
+									.isSameAs(context.getBean("myMessageConverter"));
+				});
+	}
+
+	@Test
+	public void testConcurrentKafkaListenerContainerFactoryInBatchModeWithNoMessageConverter() {
+		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch")
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					Object messageConverter = ReflectionTestUtils
+							.getField(kafkaListenerContainerFactory, "messageConverter");
+					assertThat(messageConverter)
+							.isInstanceOf(BatchMessagingMessageConverter.class);
+					assertThat(((BatchMessageConverter) messageConverter)
+							.getRecordMessageConverter()).isNull();
 				});
 	}
 
@@ -579,6 +626,16 @@ public class KafkaAutoConfigurationTests {
 		@Bean
 		public RecordMessageConverter myMessageConverter() {
 			return mock(RecordMessageConverter.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class BatchMessageConverterConfiguration {
+
+		@Bean
+		public BatchMessageConverter myBatchMessageConverter() {
+			return mock(BatchMessageConverter.class);
 		}
 
 	}

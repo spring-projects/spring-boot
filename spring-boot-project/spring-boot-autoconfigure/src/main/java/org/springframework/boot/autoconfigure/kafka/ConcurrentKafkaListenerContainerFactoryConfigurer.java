@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
-import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.support.converter.MessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
 /**
@@ -40,7 +40,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private KafkaProperties properties;
 
-	private RecordMessageConverter messageConverter;
+	private MessageConverter messageConverter;
 
 	private KafkaTemplate<Object, Object> replyTemplate;
 
@@ -59,10 +59,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Set the {@link RecordMessageConverter} to use.
+	 * Set the {@link MessageConverter} to use.
 	 * @param messageConverter the message converter
 	 */
-	void setMessageConverter(RecordMessageConverter messageConverter) {
+	void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
