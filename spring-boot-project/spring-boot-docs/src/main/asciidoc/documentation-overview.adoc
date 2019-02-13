@@ -142,9 +142,7 @@ Finally, we have a few topics for more advanced users:
 <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> |
 <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>
 * *Appendix:*
-<<appendix-application-properties.adoc#common-application-properties, Application
-Properties>> |
-<<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration
-classes>> |
-<<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
+<<appendix.adoc#common-application-properties, Application Properties>> |
+<<appendix.adoc#auto-configuration-classes, Auto-configuration classes>> |
+<<appendix.adoc#executable-jar, Executable Jars>>
 

@@ -728,8 +728,8 @@ this approach is that it becomes hard to see which libraries are in your applica
 can also be problematic if the same filename is used (but with different content) in
 multiple jars.
 
-Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
-approach>> and lets you actually nest jars directly.
+Spring Boot takes a <<appendix.adoc#executable-jar, different approach>> and lets you
+actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our

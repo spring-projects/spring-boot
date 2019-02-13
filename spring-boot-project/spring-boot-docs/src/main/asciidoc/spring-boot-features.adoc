@@ -1044,7 +1044,7 @@ as any other bean, as shown in the following example:
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be
 used by IDEs to offer auto-completion for your own keys. See the
-<<configuration-metadata>> appendix for details.
+<<appendix.adoc#configuration-metadata,appendix>> for details.
 
 
 
@@ -1472,7 +1472,7 @@ features that are supported by `@ConfigurationProperties` and `@Value`:
 | Yes
 | No
 
-| <<appendix-configuration-metadata.adoc#configuration-metadata,Meta-data support>>
+| <<appendix.adoc#configuration-metadata,Meta-data support>>
 | Yes
 | No
 
@@ -6941,7 +6941,7 @@ mapper, which can be one of the following libraries:
 * `Jsonb`
 
 TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 If you need to configure elements of the auto-configuration, you can use the
 `@AutoConfigureJsonTesters` annotation.
@@ -7008,7 +7008,7 @@ scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converte
 Regular `@Component` beans are not scanned when using this annotation.
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as the Jackson `Module`, you can
 import additional configuration classes by using `@Import` on your test.
@@ -7128,7 +7128,7 @@ auto-configures the Spring WebFlux infrastructure and limits scanned beans to
 annotation is used.
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import
 additional configuration classes using `@Import` on your test.
@@ -7200,7 +7200,7 @@ Spring Data JPA repositories. Regular `@Component` beans are not loaded into the
 `ApplicationContext`.
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 By default, data JPA tests are transactional and roll back at the end of each test. See
 the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section]
@@ -7289,7 +7289,7 @@ embedded database and a `JdbcTemplate`. Regular `@Component` beans are not loade
 the `ApplicationContext`.
 
 TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 By default, JDBC tests are transactional and roll back at the end of each test. See the
 {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section] in
@@ -7328,7 +7328,7 @@ and Spring Data JDBC repositories. Regular `@Component` beans are not loaded int
 the `ApplicationContext`.
 
 TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 By default, Data JDBC tests are transactional and roll back at the end of each test. See
 the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section]
@@ -7353,7 +7353,7 @@ jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.) R
 `@Component` beans are not loaded into the `ApplicationContext`.
 
 TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`. Regular `@Component` beans are not loaded into the
 `ApplicationContext`. The following example shows the `@JooqTest` annotation in use:
@@ -7393,7 +7393,7 @@ in-memory embedded MongoDB (if available), configures a `MongoTemplate`, scans f
 MongoDB with Spring Boot, see "<<boot-features-mongodb>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 The following class shows the `@DataMongoTest` annotation in use:
 
@@ -7447,7 +7447,7 @@ the `ApplicationContext`. (For more about using Neo4J with Spring Boot, see
 "<<boot-features-neo4j>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
@@ -7503,7 +7503,7 @@ beans are not loaded into the `ApplicationContext`. (For more about using Redis 
 Spring Boot, see "<<boot-features-redis>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataRedisTest` annotation in use:
 
@@ -7536,7 +7536,7 @@ loaded into the `ApplicationContext`. (For more about using LDAP with
 Spring Boot, see "<<boot-features-ldap>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+<<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataLdapTest` annotation in use:
 
@@ -7588,7 +7588,7 @@ adds support for `MockRestServiceServer`. Regular `@Component` beans are not loa
 the `ApplicationContext`.
 
 TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can
-be <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+be <<appendix.adoc#test-auto-configuration,found in the appendix>>.
 
 The specific beans that you want to test should be specified by using the `value` or
 `components` attribute of `@RestClientTest`, as shown in the following example:
@@ -8357,10 +8357,10 @@ particular, do not include your keys in the namespaces that Spring Boot uses (su
 these namespaces in the future in ways that break your modules.
 
 Make sure to
-<<appendix-configuration-metadata#configuration-metadata-annotation-processor,trigger
-meta-data generation>> so that IDE assistance is available for your keys as well. You may
-want to review the generated meta-data (`META-INF/spring-configuration-metadata.json`) to
-make sure your keys are properly documented.
+<<appendix.adoc#configuration-metadata-annotation-processor,trigger meta-data
+generation>> so that IDE assistance is available for your keys as well. You may want to
+review the generated meta-data (`META-INF/spring-configuration-metadata.json`) to make
+sure your keys are properly documented.
 
 
 
@@ -8604,8 +8604,7 @@ class KotlinExampleProperties {
 }
 ----
 
-TIP: To generate
-<<appendix-configuration-metadata#configuration-metadata-annotation-processor,your own
+TIP: To generate <<appendix.adoc#configuration-metadata-annotation-processor,your own
 metadata>> using the annotation processor, {kotlin-documentation}kapt.html[`kapt` should
 be configured] with the `spring-boot-configuration-processor` dependency.
 
