@@ -32,6 +32,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.boot.loader.tools.JarWriter.JarEntryFilter;
 import org.springframework.boot.loader.tools.JarWriter.UnpackHandler;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
@@ -236,10 +237,10 @@ public class Repackager {
 			if (this.layout instanceof RepackagingLayout) {
 				writer.writeEntries(sourceJar,
 						new RenamingEntryTransformer(((RepackagingLayout) this.layout).getRepackagedClassesLocation()),
-						writeableLibraries);
+						writeableLibraries, skipLibraries(this.layout));
 			}
 			else {
-				writer.writeEntries(sourceJar, writeableLibraries);
+				writer.writeEntries(sourceJar, writeableLibraries, skipLibraries(this.layout));
 			}
 			writeableLibraries.write(writer);
 		}
@@ -337,6 +338,14 @@ public class Repackager {
 		if (!file.delete()) {
 			throw new IllegalStateException("Unable to delete '" + file + "'");
 		}
+	}
+
+	private JarEntryFilter skipLibraries(Layout layout) {
+		String location = layout.getLibrariesLocation();
+		if (StringUtils.hasText(location)) {
+			return (jarEntry) -> !jarEntry.getName().startsWith(location);
+		}
+		return (jarEntry) -> true;
 	}
 
 	/**

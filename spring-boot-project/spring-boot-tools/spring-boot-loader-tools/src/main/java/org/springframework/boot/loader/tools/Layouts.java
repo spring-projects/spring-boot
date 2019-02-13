@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,11 @@ public final class Layouts {
 		}
 
 		@Override
+		public String getLibrariesLocation() {
+			return "";
+		}
+
+		@Override
 		public String getRepackagedClassesLocation() {
 			return "BOOT-INF/classes/";
 		}
@@ -146,6 +151,11 @@ public final class Layouts {
 		@Override
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
+		}
+
+		@Override
+		public String getLibrariesLocation() {
+			return "WEB-INF/lib/";
 		}
 
 		@Override

@@ -57,6 +57,8 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 	private static final UnpackHandler NEVER_UNPACK = new NeverUnpackHandler();
 
+	private static final JarEntryFilter ALWAYS_INCLUDE = new AlwaysIncludeJarEntryFilter();
+
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
@@ -120,18 +122,22 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer(), NEVER_UNPACK);
+		this.writeEntries(jarFile, new IdentityEntryTransformer(), NEVER_UNPACK, ALWAYS_INCLUDE);
 	}
 
-	void writeEntries(JarFile jarFile, UnpackHandler unpackHandler) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer(), unpackHandler);
+	void writeEntries(JarFile jarFile, UnpackHandler unpackHandler, JarEntryFilter jarEntryFilter) throws IOException {
+		this.writeEntries(jarFile, new IdentityEntryTransformer(), unpackHandler, jarEntryFilter);
 	}
 
-	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
-			throws IOException {
+	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+			JarEntryFilter jarEntryFilter) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
-			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
+			JarEntry jarEntry = entries.nextElement();
+			if (!jarEntryFilter.test(jarEntry)) {
+				continue;
+			}
+			JarArchiveEntry entry = new JarArchiveEntry(jarEntry);
 			setUpEntry(jarFile, entry);
 			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
@@ -435,6 +441,29 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
+		}
+
+	}
+
+	/**
+	 * A Filter to check whether {@code JarEntry} should be included or not.
+	 */
+	interface JarEntryFilter {
+
+		/**
+		 * Evaluates this filter on the given entry.
+		 * @param jarEntry the jar entry
+		 * @return {@code true} if the entry matches the filter, otherwise {@code false}
+		 */
+		boolean test(JarEntry jarEntry);
+
+	}
+
+	private static final class AlwaysIncludeJarEntryFilter implements JarEntryFilter {
+
+		@Override
+		public boolean test(JarEntry jarEntry) {
+			return true;
 		}
 
 	}
