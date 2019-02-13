@@ -695,6 +695,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.neo4j.password= # Login password of the server.
 	spring.data.neo4j.repositories.enabled=true # Whether to enable Neo4j repositories.
 	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
+	spring.data.neo4j.use-native-types=false # Whether to use Neo4j native types wherever possible.
 	spring.data.neo4j.username= # Login user of the server.
 
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])

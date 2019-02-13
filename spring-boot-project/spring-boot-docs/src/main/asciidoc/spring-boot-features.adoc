@@ -4440,6 +4440,22 @@ in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
 
 
 
+[[boot-features-neo4j-ogm-native-types]]
+==== Using Native Types
+Neo4j-OGM can map some types, like those in `java.time.*`, to `String`-based properties
+or to one of the native types that Neo4j provides. For backwards compatibility reasons
+the default for Neo4j-OGM is to use a `String`-based representation. To use native types,
+add a dependency on either `org.neo4j:neo4j-ogm-bolt-native-types` or
+`org.neo4j:neo4j-ogm-embedded-native-types`, and configure the
+`spring.data.neo4j.use-native-types` property as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.data.neo4j.use-native-types=true
+----
+
+
+
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
 By default, if you are running a web application, the session is bound to the thread for
