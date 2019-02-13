@@ -23,6 +23,7 @@ import org.testcontainers.containers.Neo4jContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.SkippableContainer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -44,8 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static Neo4jContainer<?> neo4j = new Neo4jContainer<>()
-			.withAdminPassword(null);
+	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
+			() -> new Neo4jContainer<>().withAdminPassword(null));
 
 	@Autowired
 	private ExampleService service;
@@ -61,7 +62,8 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getBoltUrl())
+			TestPropertyValues
+					.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 
