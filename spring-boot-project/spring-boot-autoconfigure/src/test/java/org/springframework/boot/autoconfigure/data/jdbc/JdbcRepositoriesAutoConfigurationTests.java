@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
 import org.springframework.data.repository.Repository;
 
@@ -78,7 +78,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 						"spring.datasource.data=classpath:city.sql",
 						"spring.datasource.generate-unique-name:true")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(JdbcConfiguration.class);
+					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);
 					assertThat(context.getBean(CityRepository.class).findById(2000L))
 							.isPresent();
@@ -93,7 +93,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 						EmptyConfiguration.class)
 				.run((context) -> {
-					assertThat(context).hasSingleBean(JdbcConfiguration.class);
+					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).doesNotHaveBean(Repository.class);
 				});
 	}
@@ -111,7 +111,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 						"spring.datasource.data=classpath:city.sql",
 						"spring.datasource.generate-unique-name:true")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(JdbcConfiguration.class);
+					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);
 					assertThat(context.getBean(CityRepository.class).findById(2000L))
 							.isPresent();
