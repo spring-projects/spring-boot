@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -292,6 +293,16 @@ public class ArrayBinderTests {
 		this.sources.add(source);
 		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get())
 				.containsExactly(RuntimeException.class, IllegalStateException.class);
+	}
+
+	@Test
+	public void bindToResourceArrayShouldUsePropertyEditorAndPatternResolution() {
+		// gh-15835
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "classpath*:/**/*.class");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.of(Resource[].class)).get().length)
+				.isGreaterThan(1);
 	}
 
 }

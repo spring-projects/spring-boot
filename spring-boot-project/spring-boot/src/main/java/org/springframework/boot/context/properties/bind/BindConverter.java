@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ package org.springframework.boot.context.properties.bind;
 import java.beans.PropertyEditor;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +40,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
@@ -50,6 +53,7 @@ import org.springframework.util.Assert;
 final class BindConverter {
 
 	private static final Set<Class<?>> EXCLUDED_EDITORS;
+
 	static {
 		Set<Class<?>> excluded = new HashSet<>();
 		excluded.add(FileEditor.class); // gh-12163
@@ -226,7 +230,9 @@ final class BindConverter {
 
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
-			return Collections.singleton(new ConvertiblePair(String.class, Object.class));
+			return new LinkedHashSet<>(
+					Arrays.asList(new ConvertiblePair(String.class, Object.class),
+							new ConvertiblePair(String.class, Resource[].class)));
 		}
 
 		@Override
