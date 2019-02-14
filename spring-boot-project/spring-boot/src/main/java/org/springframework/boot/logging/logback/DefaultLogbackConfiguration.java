@@ -17,6 +17,9 @@
 package org.springframework.boot.logging.logback;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -35,7 +38,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -57,6 +63,9 @@ class DefaultLogbackConfiguration {
 
 	private static final String FILE_LOG_PATTERN = "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} "
 			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
+
+	private static final Pattern SIZE_PATTERN = Pattern
+			.compile("^([+\\-]?\\d+)\\s*([A-Z]{0,2})S?$", Pattern.CASE_INSENSITIVE);
 
 	private static final String MAX_FILE_SIZE = "10MB";
 
@@ -144,30 +153,51 @@ class DefaultLogbackConfiguration {
 		rollingPolicy.setCleanHistoryOnStart(this.patterns.getProperty(
 				"logging.file.clean-history-on-start", Boolean.class, false));
 		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
-		setMaxFileSize(rollingPolicy,
-				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE));
+		setMaxFileSize(rollingPolicy, getDataSize(
+				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE)));
+		setTotalSizeCap(rollingPolicy,
+				getDataSize(this.patterns.getProperty("logging.file.total-size-cap",
+						String.valueOf(CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP))));
 		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
 				Integer.class, CoreConstants.UNBOUND_HISTORY));
-		rollingPolicy.setTotalSizeCap(
-				FileSize.valueOf(this.patterns.getProperty("logging.file.total-size-cap",
-						String.valueOf(CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP))));
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
 	}
 
+	private void setTotalSizeCap(
+			SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy,
+			DataSize totalSizeCap) {
+		Assert.isTrue(!totalSizeCap.isNegative(), "TotalSizeCap must not be a negative");
+		rollingPolicy.setTotalSizeCap(new FileSize(totalSizeCap.toBytes()));
+	}
+
 	private void setMaxFileSize(
 			SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy,
-			String maxFileSize) {
+			DataSize maxFileSize) {
+		Assert.isTrue(!maxFileSize.isNegative(), "MaxFileSize must not be a negative");
 		try {
-			rollingPolicy.setMaxFileSize(FileSize.valueOf(maxFileSize));
+			rollingPolicy.setMaxFileSize(new FileSize(maxFileSize.toBytes()));
 		}
 		catch (NoSuchMethodError ex) {
 			// Logback < 1.1.8 used String configuration
 			Method method = ReflectionUtils.findMethod(
 					SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize", String.class);
-			ReflectionUtils.invokeMethod(method, rollingPolicy, maxFileSize);
+			ReflectionUtils.invokeMethod(method, rollingPolicy,
+					Objects.toString(maxFileSize.toBytes()));
 		}
+	}
+
+	private static DataSize getDataSize(String value) {
+		Matcher matcher = SIZE_PATTERN.matcher(value);
+		if (matcher.matches()) {
+			String size = matcher.group(1);
+			String unit = matcher.group(2);
+			return StringUtils.hasText(unit) ? DataSize.parse(size + unit.toUpperCase())
+					: DataSize.parse(size);
+		}
+		throw new IllegalArgumentException(
+				"'" + value + "' does not match data size pattern");
 	}
 
 }

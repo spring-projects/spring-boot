@@ -97,7 +97,7 @@
     },
     {
       "name": "logging.file.max-size",
-      "type": "java.lang.String",
+      "type": "org.springframework.util.unit.DataSize",
       "description": "Maximum log file size. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "10MB"
@@ -111,7 +111,7 @@
     },
     {
       "name": "logging.file.total-size-cap",
-      "type": "java.lang.String",
+      "type": "org.springframework.util.unit.DataSize",
       "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "0"

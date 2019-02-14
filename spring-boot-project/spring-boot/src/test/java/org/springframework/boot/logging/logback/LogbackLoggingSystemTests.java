@@ -57,6 +57,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -382,9 +383,37 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testMaxFileSizeProperty() {
+	public void testMaxFileSizePropertyNegativeValue() {
+		assertThatThrownBy(() -> {
+			MockEnvironment environment = new MockEnvironment();
+			environment.setProperty("logging.file.max-size", "-100MB");
+			LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+					environment);
+			File file = new File(tmpDir(), "logback-test.log");
+			LogFile logFile = getLogFile(file.getPath(), null);
+			this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		}).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("MaxFileSize must not be a negative");
+	}
+
+	@Test
+	public void testMaxFileSizePropertyInvalidFormat() {
+		assertThatThrownBy(() -> {
+			MockEnvironment environment = new MockEnvironment();
+			environment.setProperty("logging.file.max-size", "100 :)");
+			LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+					environment);
+			File file = new File(tmpDir(), "logback-test.log");
+			LogFile logFile = getLogFile(file.getPath(), null);
+			this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		}).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("does not match data size pattern");
+	}
+
+	@Test
+	public void testMaxFileSizePropertyLogbackFormat() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.file.max-size", "100MB");
+		environment.setProperty("logging.file.max-size", "100   kbs");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
 				environment);
 		File file = new File(tmpDir(), "logback-test.log");
@@ -393,7 +422,37 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
-				.toString()).isEqualTo("100 MB");
+				.toString()).isEqualTo("100 KB");
+	}
+
+	@Test
+	public void testMaxFileSizeProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-size", "+10TB");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
+				.toString()).isEqualTo("10240 GB");
+	}
+
+	@Test
+	public void testMaxFileSizePropertyRawBytes() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-size", "1024");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
+				.toString()).isEqualTo("1 KB");
 	}
 
 	@Test
@@ -427,7 +486,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testMaxHistoryPropertyWithXmlConfiguration() throws Exception {
+	public void testMaxHistoryPropertyWithXmlConfiguration() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-history", "30");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
@@ -442,10 +501,37 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testTotalSizeCapProperty() {
-		String expectedSize = "101 MB";
+	public void testTotalSizeCapPropertyNegativeValue() {
+		assertThatThrownBy(() -> {
+			MockEnvironment environment = new MockEnvironment();
+			environment.setProperty("logging.file.total-size-cap", "-101 Mb");
+			LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+					environment);
+			File file = new File(tmpDir(), "logback-test.log");
+			LogFile logFile = getLogFile(file.getPath(), null);
+			this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		}).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("TotalSizeCap must not be a negative");
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyInvalidFormat() {
+		assertThatThrownBy(() -> {
+			MockEnvironment environment = new MockEnvironment();
+			environment.setProperty("logging.file.total-size-cap", "101 :)");
+			LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+					environment);
+			File file = new File(tmpDir(), "logback-test.log");
+			LogFile logFile = getLogFile(file.getPath(), null);
+			this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		}).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("does not match data size pattern");
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyLogbackFormat() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.file.total-size-cap", expectedSize);
+		environment.setProperty("logging.file.total-size-cap", "101 mbs");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
 				environment);
 		File file = new File(tmpDir(), "logback-test.log");
@@ -454,14 +540,43 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
-				.toString()).isEqualTo(expectedSize);
+				.toString()).isEqualTo("101 MB");
+	}
+
+	@Test
+	public void testTotalSizeCapProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.total-size-cap", "101MB");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
+				.toString()).isEqualTo("101 MB");
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyRawBytes() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.total-size-cap", "10485760");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
+				.toString()).isEqualTo("10 MB");
 	}
 
 	@Test
 	public void testTotalSizeCapPropertyWithXmlConfiguration() {
-		String expectedSize = "101 MB";
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.file.total-size-cap", expectedSize);
+		environment.setProperty("logging.file.total-size-cap", "101MB");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
 				environment);
 		File file = new File(tmpDir(), "logback-test.log");
@@ -471,7 +586,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
-				.toString()).isEqualTo(expectedSize);
+				.toString()).isEqualTo("101 MB");
 	}
 
 	@Test
