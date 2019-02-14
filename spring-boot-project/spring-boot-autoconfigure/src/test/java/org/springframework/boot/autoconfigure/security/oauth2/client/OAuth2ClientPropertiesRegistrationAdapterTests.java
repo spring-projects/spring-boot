@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
 import org.junit.Test;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
@@ -337,7 +338,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
 	}
 
-	private void setupMockResponse(String issuer) throws Exception {
+	private void setupMockResponse(String issuer) throws JsonProcessingException {
 		MockResponse mockResponse = new MockResponse()
 				.setResponseCode(HttpStatus.OK.value())
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
