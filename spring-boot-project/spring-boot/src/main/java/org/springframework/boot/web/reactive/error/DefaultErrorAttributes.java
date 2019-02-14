@@ -86,6 +86,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
 		errorAttributes.put("message", determineMessage(error));
+		errorAttributes.put("logPrefix", request.exchange().getLogPrefix());
 		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}

@@ -207,6 +207,16 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
+	public void includeLogPrefix() {
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, NOT_FOUND);
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(serverRequest, false);
+		assertThat(attributes.get("logPrefix"))
+				.isEqualTo(serverRequest.exchange().getLogPrefix());
+	}
+
+	@Test
 	public void extractBindingResultErrors() throws Exception {
 		Method method = getClass().getMethod("method", String.class);
 		MethodParameter stringParam = new MethodParameter(method, 0);
