@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link TaskExecutorBuilder}.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  */
 public class TaskExecutorBuilderTests {
 
@@ -58,6 +59,21 @@ public class TaskExecutorBuilderTests {
 	public void threadNamePrefixShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.threadNamePrefix("test-").build();
 		assertThat(executor.getThreadNamePrefix()).isEqualTo("test-");
+	}
+
+	@Test
+	public void awaitTerminationShouldApply() {
+		ThreadPoolTaskExecutor executor = this.builder
+				.awaitTermination(Duration.ofMinutes(1)).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
+	}
+
+	@Test
+	public void waitForTasksToCompleteOnShutdownShouldApply() {
+		ThreadPoolTaskExecutor executor = this.builder
+				.waitForTasksToCompleteOnShutdown(true).build();
+		assertThat(executor)
+				.hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
 	}
 
 	@Test
@@ -97,7 +113,8 @@ public class TaskExecutorBuilderTests {
 		ThreadPoolTaskExecutor executor = spy(new ThreadPoolTaskExecutor());
 		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
 				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1))
-				.threadNamePrefix("test-").taskDecorator(taskDecorator)
+				.threadNamePrefix("test-").awaitTermination(Duration.ofSeconds(30))
+				.waitForTasksToCompleteOnShutdown(true).taskDecorator(taskDecorator)
 				.additionalCustomizers((taskExecutor) -> {
 					verify(taskExecutor).setQueueCapacity(10);
 					verify(taskExecutor).setCorePoolSize(4);
@@ -105,6 +122,8 @@ public class TaskExecutorBuilderTests {
 					verify(taskExecutor).setAllowCoreThreadTimeOut(true);
 					verify(taskExecutor).setKeepAliveSeconds(60);
 					verify(taskExecutor).setThreadNamePrefix("test-");
+					verify(taskExecutor).setAwaitTerminationSeconds(30);
+					verify(taskExecutor).setWaitForTasksToCompleteOnShutdown(true);
 					verify(taskExecutor).setTaskDecorator(taskDecorator);
 				});
 		this.builder.configure(executor);

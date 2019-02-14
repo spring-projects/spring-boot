@@ -17,13 +17,16 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for task execution.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  * @since 2.1.0
  */
 @ConfigurationProperties("spring.task.execution")
@@ -36,6 +39,20 @@ public class TaskExecutionProperties {
 	 */
 	private String threadNamePrefix = "task-";
 
+	/**
+	 * Maximum number of time that the executor is supposed to block on shutdown waiting
+	 * for remaining tasks to complete. This is particularly useful if your remaining
+	 * tasks are likely to need access to other resources that are also managed by the
+	 * container. If a duration suffix is not specified, seconds will be used.
+	 */
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration awaitTermination;
+
+	/**
+	 * Whether the executor should wait for scheduled tasks to complete on shutdown.
+	 */
+	private boolean waitForTasksToCompleteOnShutdown = false;
+
 	public Pool getPool() {
 		return this.pool;
 	}
@@ -46,6 +63,23 @@ public class TaskExecutionProperties {
 
 	public void setThreadNamePrefix(String threadNamePrefix) {
 		this.threadNamePrefix = threadNamePrefix;
+	}
+
+	public Duration getAwaitTermination() {
+		return this.awaitTermination;
+	}
+
+	public void setAwaitTermination(Duration awaitTermination) {
+		this.awaitTermination = awaitTermination;
+	}
+
+	public boolean isWaitForTasksToCompleteOnShutdown() {
+		return this.waitForTasksToCompleteOnShutdown;
+	}
+
+	public void setWaitForTasksToCompleteOnShutdown(
+			boolean waitForTasksToCompleteOnShutdown) {
+		this.waitForTasksToCompleteOnShutdown = waitForTasksToCompleteOnShutdown;
 	}
 
 	public static class Pool {

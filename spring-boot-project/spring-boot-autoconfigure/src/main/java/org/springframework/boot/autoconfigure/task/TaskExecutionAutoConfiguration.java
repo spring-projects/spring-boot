@@ -75,6 +75,9 @@ public class TaskExecutionAutoConfiguration {
 		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 		builder = builder.keepAlive(pool.getKeepAlive());
 		builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+		builder = builder.awaitTermination(this.properties.getAwaitTermination());
+		builder = builder.waitForTasksToCompleteOnShutdown(
+				this.properties.isWaitForTasksToCompleteOnShutdown());
 		builder = builder.customizers(this.taskExecutorCustomizers);
 		builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 		return builder;
