@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -258,12 +258,12 @@ public class TomcatWebServerFactoryCustomizer implements
 		valve.setPrefix(tomcatProperties.getAccesslog().getPrefix());
 		valve.setSuffix(tomcatProperties.getAccesslog().getSuffix());
 		valve.setRenameOnRotate(tomcatProperties.getAccesslog().isRenameOnRotate());
+		valve.setMaxDays(tomcatProperties.getAccesslog().getMaxDays());
 		valve.setFileDateFormat(tomcatProperties.getAccesslog().getFileDateFormat());
 		valve.setRequestAttributesEnabled(
 				tomcatProperties.getAccesslog().isRequestAttributesEnabled());
 		valve.setRotatable(tomcatProperties.getAccesslog().isRotate());
 		valve.setBuffered(tomcatProperties.getAccesslog().isBuffered());
-		valve.setMaxDays(tomcatProperties.getAccesslog().getMaxDays());
 		factory.addEngineValves(valve);
 	}
 
