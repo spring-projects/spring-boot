@@ -7,7 +7,7 @@
 			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
 			<property name="regexp" value="true" />
 			<property name="illegalPkgs"
-				value="^sun.*, ^org\.apache\.commons\.(?!compress|dbcp2|lang|lang3|logging|pool2).*, ^com\.google\.common.*, ^org\.flywaydb\.core\.internal.*" />
+				value="^sun.*, ^org\.apache\.commons\.(?!compress|dbcp2|lang|lang3|logging|pool2).*, ^com\.google\.common.*, ^org\.flywaydb\.core\.internal.*, ^org\.testcontainers\.shaded.*" />
 			<property name="illegalClasses"
 				value="^reactor\.core\.support\.Assert, ^org\.junit\.rules\.ExpectedException, ^org\.slf4j\.LoggerFactory" />
 		</module>
