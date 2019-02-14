@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -594,6 +594,11 @@ public class ServerProperties {
 			private boolean renameOnRotate = false;
 
 			/**
+			 * Number of days to retain the access log files before they are removed.
+			 */
+			private int maxDays = -1;
+
+			/**
 			 * Date format to place in the log file name.
 			 */
 			private String fileDateFormat = ".yyyy-MM-dd";
@@ -663,6 +668,14 @@ public class ServerProperties {
 
 			public void setRenameOnRotate(boolean renameOnRotate) {
 				this.renameOnRotate = renameOnRotate;
+			}
+
+			public int getMaxDays() {
+				return this.maxDays;
+			}
+
+			public void setMaxDays(int maxDays) {
+				this.maxDays = maxDays;
 			}
 
 			public String getFileDateFormat() {
