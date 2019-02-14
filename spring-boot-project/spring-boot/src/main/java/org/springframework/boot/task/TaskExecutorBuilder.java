@@ -181,11 +181,11 @@ public class TaskExecutorBuilder {
 	}
 
 	/**
-	 * /** Set the maximum number of time that the executor is supposed to block on
-	 * shutdown in order to wait for remaining tasks to complete their execution before
-	 * the rest of the container continues to shut down. This is particularly useful if
-	 * your remaining tasks are likely to need access to other resources that are also
-	 * managed by the container.
+	 * Set the maximum number of time that the executor is supposed to block on shutdown
+	 * in order to wait for remaining tasks to complete their execution before the rest of
+	 * the container continues to shut down. This is particularly useful if your remaining
+	 * tasks are likely to need access to other resources that are also managed by the
+	 * container.
 	 * @param awaitTermination the await termination to set
 	 * @return a new builder instance
 	 */

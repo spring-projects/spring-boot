@@ -169,14 +169,14 @@ content into your application. Rather, pick only the properties that you need.
 	spring.sendgrid.proxy.port= # SendGrid proxy port.
 
 	# TASK EXECUTION  ({sc-spring-boot-autoconfigure}/task/TaskExecutionProperties.{sc-ext}[TaskExecutionProperties])
+	spring.task.execution.await-termination= # Maximum number of time that the executor is supposed to block on shutdown waiting for remaining tasks to complete. This is particularly useful if your remaining tasks are likely to need access to other resources that are also managed by the container. If a duration suffix is not specified, seconds will be used.
 	spring.task.execution.pool.allow-core-thread-timeout=true # Whether core threads are allowed to time out. This enables dynamic growing and shrinking of the pool.
 	spring.task.execution.pool.core-size=8 # Core number of threads.
 	spring.task.execution.pool.keep-alive=60s # Time limit for which threads may remain idle before being terminated.
 	spring.task.execution.pool.max-size= # Maximum allowed number of threads. If tasks are filling up the queue, the pool can expand up to that size to accommodate the load. Ignored if the queue is unbounded.
 	spring.task.execution.pool.queue-capacity= # Queue capacity. An unbounded capacity does not increase the pool and therefore ignores the "max-size" property.
 	spring.task.execution.thread-name-prefix=task- # Prefix to use for the names of newly created threads.
-	spring.task.execution.await-termination= # The maximum number of time that the executor is supposed to block on shutdown in order to wait for remaining tasks to complete their execution before the rest of the container continues to shut down. This is particularly useful if your remaining tasks are likely to need access to other resources that are also managed by the container. If a duration suffix is not specified, seconds will be used.
-	spring.task.execution.wait-for-tasks-to-complete-on-shutdown=false # Whether the executor should wait for scheduled tasks to complete on shutdown, not interrupting running tasks and executing all tasks in the queue.
+	spring.task.execution.wait-for-tasks-to-complete-on-shutdown=false # Whether the executor should wait for scheduled tasks to complete on shutdown.
 
 	# TASK SCHEDULING  ({sc-spring-boot-autoconfigure}/task/TaskSchedulingProperties.{sc-ext}[TaskSchedulingProperties])
 	spring.task.scheduling.pool.size=1 # Maximum allowed number of threads.

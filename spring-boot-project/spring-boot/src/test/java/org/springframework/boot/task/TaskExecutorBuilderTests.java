@@ -65,16 +65,15 @@ public class TaskExecutorBuilderTests {
 	public void awaitTerminationShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder
 				.awaitTermination(Duration.ofMinutes(1)).build();
-		assertThat(ReflectionTestUtils.getField(executor, "awaitTerminationSeconds"))
-				.isEqualTo(60);
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
 	}
 
 	@Test
 	public void waitForTasksToCompleteOnShutdownShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder
 				.waitForTasksToCompleteOnShutdown(true).build();
-		assertThat(ReflectionTestUtils.getField(executor,
-				"waitForTasksToCompleteOnShutdown")).isEqualTo(true);
+		assertThat(executor)
+				.hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
 	}
 
 	@Test

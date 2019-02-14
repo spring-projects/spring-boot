@@ -69,9 +69,9 @@ public class TaskExecutionAutoConfigurationTests {
 				"spring.task.execution.pool.max-size=4",
 				"spring.task.execution.pool.allow-core-thread-timeout=true",
 				"spring.task.execution.pool.keep-alive=5s",
+				"spring.task.execution.thread-name-prefix=mytest-",
 				"spring.task.execution.await-termination=30s",
-				"spring.task.execution.wait-for-tasks-to-complete-on-shutdown=true",
-				"spring.task.execution.thread-name-prefix=mytest-")
+				"spring.task.execution.wait-for-tasks-to-complete-on-shutdown=true")
 				.run(assertTaskExecutor((taskExecutor) -> {
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity",
 							10);
@@ -81,10 +81,10 @@ public class TaskExecutionAutoConfigurationTests {
 							.hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
 					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
-					assertThat(ReflectionTestUtils.getField(taskExecutor,
-							"awaitTerminationSeconds")).isEqualTo(30);
-					assertThat(ReflectionTestUtils.getField(taskExecutor,
-							"waitForTasksToCompleteOnShutdown")).isEqualTo(true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue(
+							"waitForTasksToCompleteOnShutdown", true);
 				}));
 	}
 

@@ -40,9 +40,8 @@ public class TaskExecutionProperties {
 	private String threadNamePrefix = "task-";
 
 	/**
-	 * The maximum number of time that the executor is supposed to block on shutdown in
-	 * order to wait for remaining tasks to complete their execution before the rest of
-	 * the container continues to shut down. This is particularly useful if your remaining
+	 * Maximum number of time that the executor is supposed to block on shutdown waiting
+	 * for remaining tasks to complete. This is particularly useful if your remaining
 	 * tasks are likely to need access to other resources that are also managed by the
 	 * container. If a duration suffix is not specified, seconds will be used.
 	 */
@@ -50,8 +49,7 @@ public class TaskExecutionProperties {
 	private Duration awaitTermination;
 
 	/**
-	 * Whether the executor should wait for scheduled tasks to complete on shutdown, not
-	 * interrupting running tasks and executing all tasks in the queue.
+	 * Whether the executor should wait for scheduled tasks to complete on shutdown.
 	 */
 	private boolean waitForTasksToCompleteOnShutdown = false;
 
