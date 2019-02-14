@@ -325,6 +325,23 @@ public class TomcatWebServerFactoryCustomizerTests {
 		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
+	@Test
+	public void accessLogSetMaxDays() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.max-days=20");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getMaxDays()).isEqualTo(20);
+	}
+
+	@Test
+	public void accessLogDefaultMaxDays() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getMaxDays()).isEqualTo(-1);
+	}
+
 	private void bind(String... inlinedProperties) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				inlinedProperties);

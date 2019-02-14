@@ -263,6 +263,7 @@ public class TomcatWebServerFactoryCustomizer implements
 				tomcatProperties.getAccesslog().isRequestAttributesEnabled());
 		valve.setRotatable(tomcatProperties.getAccesslog().isRotate());
 		valve.setBuffered(tomcatProperties.getAccesslog().isBuffered());
+		valve.setMaxDays(tomcatProperties.getAccesslog().getMaxDays());
 		factory.addEngineValves(valve);
 	}
 

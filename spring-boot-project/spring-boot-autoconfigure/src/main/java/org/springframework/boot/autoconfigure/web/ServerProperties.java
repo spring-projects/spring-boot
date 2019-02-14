@@ -609,6 +609,19 @@ public class ServerProperties {
 			 */
 			private boolean buffered = true;
 
+			/**
+			 * The number of days to retain the access log files before they are removed.
+			 */
+			private int maxDays = -1;
+
+			public int getMaxDays() {
+				return this.maxDays;
+			}
+
+			public void setMaxDays(int maxDays) {
+				this.maxDays = maxDays;
+			}
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
