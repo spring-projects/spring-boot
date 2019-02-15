@@ -62,7 +62,7 @@ Usage
 
   Devtools is automatically excluded by default (you can control that using the
   <<<excludeDevtools>>> property). In order to make that work with <<<war>>> packaging,
-  the `spring-boot-devtools` dependency must be set as <<<optional>>> or with the
+  the <<<spring-boot-devtools>>> dependency must be set as <<<optional>>> or with the
   <<<provided>>> scope.
 
   The original (i.e. non executable) artifact is renamed to <<<.original>>> by default but it is also
@@ -219,7 +219,7 @@ spring.devtools.remote.restart.enabled=false
 * Working with integration tests
 
   While you may start your Spring Boot application very easily from your test (or test suite) itself,
-  it may be desirable to handle that in the build itself. To make sure that the lifecycle of you Spring
+  it may be desirable to handle that in the build itself. To make sure that the lifecycle of your Spring
   Boot application is properly managed <around> your integration tests, you can use the <<<start>>> and
   <<<stop>>> goals as described below:
 
