@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -46,7 +47,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -140,7 +143,7 @@ public class DataSourceAutoConfigurationTests {
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
 					assertThat(dataSource.getTestOnBorrow()).isTrue();
 					assertThat(dataSource.getValidationQuery()).isNull(); // Use
-																			// Connection#isValid()
+					// Connection#isValid()
 				});
 	}
 
@@ -222,6 +225,64 @@ public class DataSourceAutoConfigurationTests {
 				.run((context) -> assertThat(context
 						.getBean(TestInitializedDataSourceConfiguration.class).called)
 								.isTrue());
+	}
+
+	@Test
+	public void ignoreLazyConnectionOverriddenDataSource() {
+		this.contextRunner.withPropertyValues("spring.datasource.lazy-connection=true")
+				.withUserConfiguration(TestDataSourceConfiguration.class)
+				.run((context) -> assertThat(context).getBean(DataSource.class)
+						.isInstanceOf(BasicDataSource.class));
+	}
+
+	@Test
+	public void lazyConnectionEmbeddedDataSource() {
+		assertLazyDataSource(EmbeddedDatabase.class,
+				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat",
+						"org.apache.commons.dbcp2"),
+				(dataSource) -> assertThat(DataSourceUnwrapper.unwrap(dataSource,
+						SimpleDriverDataSource.class)).isNotNull()
+								.extracting(SimpleDriverDataSource::getUrl).asString()
+								.startsWith("jdbc:h2:mem:testdb"));
+	}
+
+	@Test
+	public void lazyConnectionDefaultDataSource() {
+		assertLazyDataSource(HikariDataSource.class, Collections.emptyList(),
+				(dataSource) -> assertThat(dataSource.getJdbcUrl())
+						.startsWith("jdbc:hsqldb:mem:testdb"));
+	}
+
+	@Test
+	public void lazyConnectionTomcatIsFallback() {
+		assertLazyDataSource(org.apache.tomcat.jdbc.pool.DataSource.class,
+				Collections.singletonList("com.zaxxer.hikari"),
+				(dataSource) -> assertThat(dataSource.getUrl())
+						.startsWith("jdbc:hsqldb:mem:testdb"));
+	}
+
+	@Test
+	public void lazyConnectionCommonsDbcp2IsFallback() {
+		assertLazyDataSource(BasicDataSource.class,
+				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"),
+				(dataSource) -> assertThat(dataSource.getUrl())
+						.startsWith("jdbc:hsqldb:mem:testdb"));
+	}
+
+	private <T extends DataSource> void assertLazyDataSource(Class<T> expectedType,
+			List<String> hiddenPackages, Consumer<T> consumer) {
+		FilteredClassLoader classLoader = new FilteredClassLoader(
+				StringUtils.toStringArray(hiddenPackages));
+		this.contextRunner.withPropertyValues("spring.datasource.lazy-connection=true")
+				.withClassLoader(classLoader).run((context) -> {
+					DataSource dataSource = context.getBean(DataSource.class);
+					assertThat(dataSource)
+							.isInstanceOf(LazyConnectionDataSourceProxy.class);
+					DataSource targetDataSource = ((LazyConnectionDataSourceProxy) dataSource)
+							.getTargetDataSource();
+					assertThat(targetDataSource).isInstanceOf(expectedType);
+					consumer.accept(expectedType.cast(targetDataSource));
+				});
 	}
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType,

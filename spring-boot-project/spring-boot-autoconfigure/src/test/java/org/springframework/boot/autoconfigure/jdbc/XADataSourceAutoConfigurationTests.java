@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Connection;
+
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
@@ -28,8 +30,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -38,6 +42,17 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 public class XADataSourceAutoConfigurationTests {
+
+	@Test
+	public void lazyXaDataSource() {
+		ApplicationContext context = createContext(WrapExisting.class,
+				"spring.datasource.lazy-connection=true");
+		assertThat(context.getBean(DataSource.class))
+				.isInstanceOf(LazyConnectionDataSourceProxy.class);
+		XADataSource source = context.getBean(XADataSource.class);
+		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
+		assertThat(wrapper.getXaDataSource()).isEqualTo(source);
+	}
 
 	@Test
 	public void wrapExistingXaDataSource() {
@@ -111,9 +126,11 @@ public class XADataSourceAutoConfigurationTests {
 		private XADataSource dataSource;
 
 		@Override
-		public DataSource wrapDataSource(XADataSource dataSource) {
+		public DataSource wrapDataSource(XADataSource dataSource) throws Exception {
 			this.dataSource = dataSource;
-			return mock(DataSource.class);
+			DataSource mockDataSource = mock(DataSource.class);
+			doReturn(mock(Connection.class)).when(mockDataSource).getConnection();
+			return mockDataSource;
 		}
 
 		public XADataSource getXaDataSource() {

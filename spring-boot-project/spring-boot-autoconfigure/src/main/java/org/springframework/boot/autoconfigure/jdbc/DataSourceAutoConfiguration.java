@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ public class DataSourceAutoConfiguration {
 	@Configuration
 	@Conditional(EmbeddedDatabaseCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
-	@Import(EmbeddedDataSourceConfiguration.class)
+	@Import({ EmbeddedDataSourceConfiguration.class,
+			LazyConnectionDataSourceConfiguration.class })
 	protected static class EmbeddedDatabaseConfiguration {
 
 	}
@@ -67,7 +68,8 @@ public class DataSourceAutoConfiguration {
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
 			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class,
-			DataSourceJmxConfiguration.class })
+			DataSourceJmxConfiguration.class,
+			LazyConnectionDataSourceConfiguration.class })
 	protected static class PooledDataSourceConfiguration {
 
 	}

@@ -39,6 +39,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -59,6 +60,7 @@ import org.springframework.util.StringUtils;
 		EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)
 @ConditionalOnMissingBean(DataSource.class)
+@Import(LazyConnectionDataSourceConfiguration.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader classLoader;

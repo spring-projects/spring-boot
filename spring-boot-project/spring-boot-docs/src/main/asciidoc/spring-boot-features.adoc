@@ -3631,7 +3631,22 @@ TIP: See <<howto.adoc#howto-configure-a-datasource,the "`How-to`" section>> for 
 advanced examples, typically to take full control over the configuration of the
 DataSource.
 
+[[boot-features-configure-lazy-datasource]]
+=== Configure a lazy DataSource
+Lazy `javax.sql.DataSource` (`org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy`) allows delaying the obtaining of a `javax.sql.Connection` until a `javax.sql.Connection` is really required.
+JDBC transaction control can happen without fetching a `javax.sql.Connection` from the pool or communicating with the database.
 
+`Connection` initialization properties like `auto-commit`, `transaction-isolation` and `read-only`
+will be kept and applied to the actual JDBC `javax.sql.Connection` as soon as an actual `Connection` is fetched.
+Consequently, _commit_ and _rollback_ calls will be *ignored* if no Statements have been created.
+
+To *enable* this feature `spring.datasource.lazy-connection=true` must be set, by default this feature is disabled.
+
+[NOTE]
+====
+Lazy `javax.sql.DataSource` proxy needs to return wrapped Connections in order to handle lazy fetching of an actual JDBC `Connection`.
+Use `javax.sql.Connection#unwrap` or `static org.springframework.boot.jdbc.DataSourceUnwrapper#unwrap` to retrieve the native JDBC `Connection`.
+====
 
 [[boot-features-embedded-database-support]]
 ==== Embedded Database Support
@@ -3754,8 +3769,6 @@ example:
 	# Validate the connection before borrowing it from the pool.
 	spring.datasource.tomcat.test-on-borrow=true
 ----
-
-
 
 [[boot-features-connecting-to-a-jndi-datasource]]
 ==== Connection to a JNDI DataSource
