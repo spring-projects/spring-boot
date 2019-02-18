@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private final AsciiBytes name;
 
+	private final AsciiBytes headerName;
+
 	private Certificate[] certificates;
 
 	private CodeSigner[] codeSigners;
@@ -45,6 +47,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 	JarEntry(JarFile jarFile, CentralDirectoryFileHeader header, AsciiBytes nameAlias) {
 		super((nameAlias != null) ? nameAlias.toString() : header.getName().toString());
 		this.name = (nameAlias != null) ? nameAlias : header.getName();
+		this.headerName = header.getName();
 		this.jarFile = jarFile;
 		this.localHeaderOffset = header.getLocalHeaderOffset();
 		setCompressedSize(header.getCompressedSize());
@@ -62,7 +65,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	@Override
 	public boolean hasName(CharSequence name, char suffix) {
-		return this.name.matches(name, suffix);
+		return this.headerName.matches(name, suffix);
 	}
 
 	/**
