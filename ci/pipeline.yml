@@ -192,6 +192,7 @@ jobs:
       disable_checksum_uploads: true
       exclude:
       - "**/spring-boot-test-support/**"
+      - "**/spring-boot-configuration-docs/**"
       - "**/*.effective-pom"
       artifact_set:
       - include:
