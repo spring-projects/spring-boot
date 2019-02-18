@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
+import java.util.Optional;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -69,8 +71,9 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		LinkDiscoverers discoverers = this.context.getBean(LinkDiscoverers.class);
 		assertThat(discoverers).isNotNull();
-		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
-		assertThat(discoverer).isInstanceOf(HalLinkDiscoverer.class);
+		Optional<LinkDiscoverer> discoverer = discoverers
+				.getLinkDiscovererFor(MediaTypes.HAL_JSON);
+		assertThat(discoverer).containsInstanceOf(HalLinkDiscoverer.class);
 	}
 
 	@Test
