@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.task;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -43,6 +44,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 @ConditionalOnClass(ThreadPoolTaskScheduler.class)
 @Configuration
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
+@AutoConfigureAfter(TaskExecutionAutoConfiguration.class)
 public class TaskSchedulingAutoConfiguration {
 
 	@Bean
