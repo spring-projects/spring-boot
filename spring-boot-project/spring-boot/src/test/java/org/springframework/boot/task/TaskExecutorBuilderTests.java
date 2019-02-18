@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link TaskExecutorBuilder}.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  */
 public class TaskExecutorBuilderTests {
 
@@ -52,6 +53,20 @@ public class TaskExecutorBuilderTests {
 		assertThat(executor.getMaxPoolSize()).isEqualTo(8);
 		assertThat(executor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 		assertThat(executor.getKeepAliveSeconds()).isEqualTo(60);
+	}
+
+	@Test
+	public void awaitTerminationShouldApply() {
+		ThreadPoolTaskExecutor executor = this.builder.awaitTermination(true).build();
+		assertThat(executor)
+				.hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
+	}
+
+	@Test
+	public void awaitTerminationPeriodShouldApply() {
+		ThreadPoolTaskExecutor executor = this.builder
+				.awaitTerminationPeriod(Duration.ofMinutes(1)).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
 	}
 
 	@Test
@@ -97,6 +112,7 @@ public class TaskExecutorBuilderTests {
 		ThreadPoolTaskExecutor executor = spy(new ThreadPoolTaskExecutor());
 		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
 				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1))
+				.awaitTermination(true).awaitTerminationPeriod(Duration.ofSeconds(30))
 				.threadNamePrefix("test-").taskDecorator(taskDecorator)
 				.additionalCustomizers((taskExecutor) -> {
 					verify(taskExecutor).setQueueCapacity(10);
@@ -104,6 +120,8 @@ public class TaskExecutorBuilderTests {
 					verify(taskExecutor).setMaxPoolSize(8);
 					verify(taskExecutor).setAllowCoreThreadTimeOut(true);
 					verify(taskExecutor).setKeepAliveSeconds(60);
+					verify(taskExecutor).setWaitForTasksToCompleteOnShutdown(true);
+					verify(taskExecutor).setAwaitTerminationSeconds(30);
 					verify(taskExecutor).setThreadNamePrefix("test-");
 					verify(taskExecutor).setTaskDecorator(taskDecorator);
 				});

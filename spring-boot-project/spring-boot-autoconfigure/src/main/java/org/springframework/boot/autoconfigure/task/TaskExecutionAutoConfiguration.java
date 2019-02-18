@@ -22,6 +22,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
@@ -74,6 +75,9 @@ public class TaskExecutionAutoConfiguration {
 		builder = builder.maxPoolSize(pool.getMaxSize());
 		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 		builder = builder.keepAlive(pool.getKeepAlive());
+		Shutdown shutdown = this.properties.getShutdown();
+		builder = builder.awaitTermination(shutdown.isAwaitTermination());
+		builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 		builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
 		builder = builder.customizers(this.taskExecutorCustomizers);
 		builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
