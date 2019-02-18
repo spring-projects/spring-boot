@@ -63,15 +63,15 @@ public class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {
-		this.contextRunner.withPropertyValues(
-				"spring.task.execution.pool.queue-capacity=10",
-				"spring.task.execution.pool.core-size=2",
-				"spring.task.execution.pool.max-size=4",
-				"spring.task.execution.pool.allow-core-thread-timeout=true",
-				"spring.task.execution.pool.keep-alive=5s",
-				"spring.task.execution.thread-name-prefix=mytest-",
-				"spring.task.execution.await-termination=30s",
-				"spring.task.execution.wait-for-tasks-to-complete-on-shutdown=true")
+		this.contextRunner
+				.withPropertyValues("spring.task.execution.pool.queue-capacity=10",
+						"spring.task.execution.pool.core-size=2",
+						"spring.task.execution.pool.max-size=4",
+						"spring.task.execution.pool.allow-core-thread-timeout=true",
+						"spring.task.execution.pool.keep-alive=5s",
+						"spring.task.execution.shutdown.await-termination=true",
+						"spring.task.execution.shutdown.await-termination-period=30s",
+						"spring.task.execution.thread-name-prefix=mytest-")
 				.run(assertTaskExecutor((taskExecutor) -> {
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity",
 							10);
@@ -80,11 +80,11 @@ public class TaskExecutionAutoConfigurationTests {
 					assertThat(taskExecutor)
 							.hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
-					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
-					assertThat(taskExecutor)
-							.hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue(
 							"waitForTasksToCompleteOnShutdown", true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
+					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				}));
 	}
 

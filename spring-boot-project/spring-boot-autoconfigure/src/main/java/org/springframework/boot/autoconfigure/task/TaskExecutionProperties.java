@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for task execution.
@@ -34,27 +32,19 @@ public class TaskExecutionProperties {
 
 	private final Pool pool = new Pool();
 
+	private final Shutdown shutdown = new Shutdown();
+
 	/**
 	 * Prefix to use for the names of newly created threads.
 	 */
 	private String threadNamePrefix = "task-";
 
-	/**
-	 * Maximum number of time that the executor is supposed to block on shutdown waiting
-	 * for remaining tasks to complete. This is particularly useful if your remaining
-	 * tasks are likely to need access to other resources that are also managed by the
-	 * container. If a duration suffix is not specified, seconds will be used.
-	 */
-	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration awaitTermination;
-
-	/**
-	 * Whether the executor should wait for scheduled tasks to complete on shutdown.
-	 */
-	private boolean waitForTasksToCompleteOnShutdown = false;
-
 	public Pool getPool() {
 		return this.pool;
+	}
+
+	public Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
 	public String getThreadNamePrefix() {
@@ -63,23 +53,6 @@ public class TaskExecutionProperties {
 
 	public void setThreadNamePrefix(String threadNamePrefix) {
 		this.threadNamePrefix = threadNamePrefix;
-	}
-
-	public Duration getAwaitTermination() {
-		return this.awaitTermination;
-	}
-
-	public void setAwaitTermination(Duration awaitTermination) {
-		this.awaitTermination = awaitTermination;
-	}
-
-	public boolean isWaitForTasksToCompleteOnShutdown() {
-		return this.waitForTasksToCompleteOnShutdown;
-	}
-
-	public void setWaitForTasksToCompleteOnShutdown(
-			boolean waitForTasksToCompleteOnShutdown) {
-		this.waitForTasksToCompleteOnShutdown = waitForTasksToCompleteOnShutdown;
 	}
 
 	public static class Pool {
@@ -151,6 +124,36 @@ public class TaskExecutionProperties {
 
 		public void setKeepAlive(Duration keepAlive) {
 			this.keepAlive = keepAlive;
+		}
+
+	}
+
+	public static class Shutdown {
+
+		/**
+		 * Whether the executor should wait for scheduled tasks to complete on shutdown.
+		 */
+		private boolean awaitTermination;
+
+		/**
+		 * Maximum time the executor should wait for remaining tasks to complete.
+		 */
+		private Duration awaitTerminationPeriod;
+
+		public boolean isAwaitTermination() {
+			return this.awaitTermination;
+		}
+
+		public void setAwaitTermination(boolean awaitTermination) {
+			this.awaitTermination = awaitTermination;
+		}
+
+		public Duration getAwaitTerminationPeriod() {
+			return this.awaitTerminationPeriod;
+		}
+
+		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
 
 	}
