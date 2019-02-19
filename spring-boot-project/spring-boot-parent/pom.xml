@@ -61,23 +61,9 @@
 				<version>1.3.3</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhaarman</groupId>
-				<artifactId>mockito-kotlin</artifactId>
-				<version>1.6.0</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-stdlib</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-reflect</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>io.mockk</groupId>
+				<artifactId>mockk</artifactId>
+				<version>1.9.1.kotlin12</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
