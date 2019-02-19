@@ -269,7 +269,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenReactiveWebApplicationHttpMessageConvertersRestTemplateIsNotConfigured() {
+	public void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations
 						.of(HttpMessageConvertersAutoConfiguration.class))

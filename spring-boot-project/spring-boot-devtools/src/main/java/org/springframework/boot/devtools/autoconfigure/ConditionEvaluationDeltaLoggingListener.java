@@ -58,16 +58,14 @@ class ConditionEvaluationDeltaLoggingListener
 			if (!delta.getConditionAndOutcomesBySource().isEmpty()
 					|| !delta.getExclusions().isEmpty()
 					|| !delta.getUnconditionalClasses().isEmpty()) {
-				if (ConditionEvaluationDeltaLoggingListener.logger.isInfoEnabled()) {
-					ConditionEvaluationDeltaLoggingListener.logger
-							.info("Condition evaluation delta:"
-									+ new ConditionEvaluationReportMessage(delta,
-											"CONDITION EVALUATION DELTA"));
+				if (logger.isInfoEnabled()) {
+					logger.info("Condition evaluation delta:"
+							+ new ConditionEvaluationReportMessage(delta,
+									"CONDITION EVALUATION DELTA"));
 				}
 			}
 			else {
-				ConditionEvaluationDeltaLoggingListener.logger
-						.info("Condition evaluation unchanged");
+				logger.info("Condition evaluation unchanged");
 			}
 		}
 		previousReports.put(event.getApplicationContext().getId(), report);
