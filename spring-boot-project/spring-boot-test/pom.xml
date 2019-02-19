@@ -188,8 +188,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.nhaarman</groupId>
-			<artifactId>mockito-kotlin</artifactId>
+			<groupId>io.mockk</groupId>
+			<artifactId>mockk</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
