@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka.embedded;
+package org.springframework.boot.test.autoconfigure.kafka;
 
 
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class EmbeddedKafkaAutoConfiguration {
 		if (currentContext instanceof ConfigurableApplicationContext) {
 			MutablePropertySources sources = ((ConfigurableApplicationContext) currentContext)
 					.getEnvironment().getPropertySources();
-			getKafkaBrokers(sources).put(EmbeddedKafkaBroker.SPRING_EMBEDDED_KAFKA_BROKERS, brokers);
+			getKafkaBrokers(sources).put("spring.kafka.embedded.brokers", brokers);
 		}
 		if (currentContext.getParent() != null) {
 			setBrokersProperty(currentContext.getParent(), brokers);
@@ -64,9 +64,9 @@ public class EmbeddedKafkaAutoConfiguration {
 
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> getKafkaBrokers(MutablePropertySources sources) {
-		PropertySource<?> propertySource = sources.get("embedded.kafka");
+		PropertySource<?> propertySource = sources.get("kafka.embedded");
 		if (propertySource == null) {
-			propertySource = new MapPropertySource("embedded.kafka", new HashMap<>());
+			propertySource = new MapPropertySource("kafka.embedded", new HashMap<>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();

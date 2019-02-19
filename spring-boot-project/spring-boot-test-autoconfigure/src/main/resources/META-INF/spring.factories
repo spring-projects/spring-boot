@@ -170,3 +170,6 @@ org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListen
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.test.autoconfigure.kafka.EmbeddedKafkaAutoConfiguration

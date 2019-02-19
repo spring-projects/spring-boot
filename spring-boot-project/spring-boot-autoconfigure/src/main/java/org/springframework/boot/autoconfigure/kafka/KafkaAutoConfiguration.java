@@ -140,7 +140,7 @@ public class KafkaAutoConfiguration {
 	}
 
 	private Map<String, Object> applyEmbeddedBrokersIfAny(Map<String, Object> properties) {
-		String embeddedBrokerAddresses = this.environment.getProperty("spring.embedded.kafka.brokers");
+		String embeddedBrokerAddresses = this.environment.getProperty("spring.kafka.embedded.brokers");
 		if (embeddedBrokerAddresses != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, embeddedBrokerAddresses);
 		}
