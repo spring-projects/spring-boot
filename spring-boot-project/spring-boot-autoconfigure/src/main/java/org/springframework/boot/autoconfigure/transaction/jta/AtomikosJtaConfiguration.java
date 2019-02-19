@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,34 +61,24 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class AtomikosJtaConfiguration {
 
-	private final JtaProperties jtaProperties;
-
-	private final TransactionManagerCustomizers transactionManagerCustomizers;
-
-	AtomikosJtaConfiguration(JtaProperties jtaProperties,
-			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-		this.jtaProperties = jtaProperties;
-		this.transactionManagerCustomizers = transactionManagerCustomizers
-				.getIfAvailable();
-	}
-
 	@Bean(initMethod = "init", destroyMethod = "shutdownWait")
 	@ConditionalOnMissingBean(UserTransactionService.class)
 	public UserTransactionServiceImp userTransactionService(
-			AtomikosProperties atomikosProperties) {
+			AtomikosProperties atomikosProperties, JtaProperties jtaProperties) {
 		Properties properties = new Properties();
-		if (StringUtils.hasText(this.jtaProperties.getTransactionManagerId())) {
+		if (StringUtils.hasText(jtaProperties.getTransactionManagerId())) {
 			properties.setProperty("com.atomikos.icatch.tm_unique_name",
-					this.jtaProperties.getTransactionManagerId());
+					jtaProperties.getTransactionManagerId());
 		}
-		properties.setProperty("com.atomikos.icatch.log_base_dir", getLogBaseDir());
+		properties.setProperty("com.atomikos.icatch.log_base_dir",
+				getLogBaseDir(jtaProperties));
 		properties.putAll(atomikosProperties.asProperties());
 		return new UserTransactionServiceImp(properties);
 	}
 
-	private String getLogBaseDir() {
-		if (StringUtils.hasLength(this.jtaProperties.getLogDir())) {
-			return this.jtaProperties.getLogDir();
+	private String getLogBaseDir(JtaProperties jtaProperties) {
+		if (StringUtils.hasLength(jtaProperties.getLogDir())) {
+			return jtaProperties.getLogDir();
 		}
 		File home = new ApplicationHome().getDir();
 		return new File(home, "transaction-logs").getAbsolutePath();
@@ -118,12 +108,12 @@ class AtomikosJtaConfiguration {
 
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
-			TransactionManager transactionManager) {
+			TransactionManager transactionManager,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
 				userTransaction, transactionManager);
-		if (this.transactionManagerCustomizers != null) {
-			this.transactionManagerCustomizers.customize(jtaTransactionManager);
-		}
+		transactionManagerCustomizers.ifAvailable(
+				(customizers) -> customizers.customize(jtaTransactionManager));
 		return jtaTransactionManager;
 	}
 

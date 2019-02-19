@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,12 @@ import org.springframework.context.annotation.Configuration;
 @Conditional(CacheCondition.class)
 class GenericCacheConfiguration {
 
-	private final CacheManagerCustomizers customizers;
-
-	GenericCacheConfiguration(CacheManagerCustomizers customizers) {
-		this.customizers = customizers;
-	}
-
 	@Bean
-	public SimpleCacheManager cacheManager(Collection<Cache> caches) {
+	public SimpleCacheManager cacheManager(CacheManagerCustomizers customizers,
+			Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);
-		return this.customizers.customize(cacheManager);
+		return customizers.customize(cacheManager);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,28 +61,14 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(DataSource.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
-	private final XADataSourceWrapper wrapper;
-
-	private final DataSourceProperties properties;
-
-	private final XADataSource xaDataSource;
-
 	private ClassLoader classLoader;
 
-	public XADataSourceAutoConfiguration(XADataSourceWrapper wrapper,
-			DataSourceProperties properties, ObjectProvider<XADataSource> xaDataSource) {
-		this.wrapper = wrapper;
-		this.properties = properties;
-		this.xaDataSource = xaDataSource.getIfAvailable();
-	}
-
 	@Bean
-	public DataSource dataSource() throws Exception {
-		XADataSource xaDataSource = this.xaDataSource;
-		if (xaDataSource == null) {
-			xaDataSource = createXaDataSource();
-		}
-		return this.wrapper.wrapDataSource(xaDataSource);
+	public DataSource dataSource(XADataSourceWrapper wrapper,
+			DataSourceProperties properties, ObjectProvider<XADataSource> xaDataSource)
+			throws Exception {
+		return wrapper.wrapDataSource(
+				xaDataSource.getIfAvailable(() -> createXaDataSource(properties)));
 	}
 
 	@Override
@@ -90,16 +76,16 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	private XADataSource createXaDataSource() {
-		String className = this.properties.getXa().getDataSourceClassName();
+	private XADataSource createXaDataSource(DataSourceProperties properties) {
+		String className = properties.getXa().getDataSourceClassName();
 		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(this.properties.determineUrl())
+			className = DatabaseDriver.fromJdbcUrl(properties.determineUrl())
 					.getXaDataSourceClassName();
 		}
 		Assert.state(StringUtils.hasLength(className),
 				"No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
-		bindXaProperties(dataSource, this.properties);
+		bindXaProperties(dataSource, properties);
 		return dataSource;
 	}
 
@@ -125,9 +111,9 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private ConfigurationPropertySource getBinderSource(
 			DataSourceProperties dataSourceProperties) {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		source.put("user", this.properties.determineUsername());
-		source.put("password", this.properties.determinePassword());
-		source.put("url", this.properties.determineUrl());
+		source.put("user", dataSourceProperties.determineUsername());
+		source.put("password", dataSourceProperties.determinePassword());
+		source.put("url", dataSourceProperties.determineUrl());
 		source.putAll(dataSourceProperties.getXa().getProperties());
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("user", "username");

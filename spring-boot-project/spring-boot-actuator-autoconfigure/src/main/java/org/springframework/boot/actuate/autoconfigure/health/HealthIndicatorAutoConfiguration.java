@@ -49,12 +49,6 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
-	private final HealthIndicatorProperties properties;
-
-	public HealthIndicatorAutoConfiguration(HealthIndicatorProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean({ HealthIndicator.class, ReactiveHealthIndicator.class })
 	public ApplicationHealthIndicator applicationHealthIndicator() {
@@ -63,10 +57,11 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HealthAggregator.class)
-	public OrderedHealthAggregator healthAggregator() {
+	public OrderedHealthAggregator healthAggregator(
+			HealthIndicatorProperties properties) {
 		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
-		if (this.properties.getOrder() != null) {
-			healthAggregator.setStatusOrder(this.properties.getOrder());
+		if (properties.getOrder() != null) {
+			healthAggregator.setStatusOrder(properties.getOrder());
 		}
 		return healthAggregator;
 	}

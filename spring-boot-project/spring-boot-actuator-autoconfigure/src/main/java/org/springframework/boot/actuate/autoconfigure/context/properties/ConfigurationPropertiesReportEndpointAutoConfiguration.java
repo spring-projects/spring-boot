@@ -37,18 +37,12 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ConfigurationPropertiesReportEndpointProperties.class)
 public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 
-	private final ConfigurationPropertiesReportEndpointProperties properties;
-
-	public ConfigurationPropertiesReportEndpointAutoConfiguration(
-			ConfigurationPropertiesReportEndpointProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
+	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
+			ConfigurationPropertiesReportEndpointProperties properties) {
 		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-		String[] keysToSanitize = this.properties.getKeysToSanitize();
+		String[] keysToSanitize = properties.getKeysToSanitize();
 		if (keysToSanitize != null) {
 			endpoint.setKeysToSanitize(keysToSanitize);
 		}

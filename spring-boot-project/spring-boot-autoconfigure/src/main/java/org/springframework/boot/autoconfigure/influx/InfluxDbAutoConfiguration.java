@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,16 +46,15 @@ public class InfluxDbAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(InfluxDbAutoConfiguration.class);
 
-	private final InfluxDbProperties properties;
-
-	private final OkHttpClient.Builder builder;
-
-	public InfluxDbAutoConfiguration(InfluxDbProperties properties,
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty("spring.influx.url")
+	public InfluxDB influxDb(InfluxDbProperties properties,
 			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<OkHttpClient.Builder> deprecatedBuilder) {
-		this.properties = properties;
-		this.builder = determineBuilder(builder.getIfAvailable(),
-				deprecatedBuilder.getIfAvailable());
+		return new InfluxDBImpl(properties.getUrl(), properties.getUser(),
+				properties.getPassword(), determineBuilder(builder.getIfAvailable(),
+						deprecatedBuilder.getIfAvailable()));
 	}
 
 	@Deprecated
@@ -73,14 +72,6 @@ public class InfluxDbAutoConfiguration {
 			return deprecatedBuilder;
 		}
 		return new OkHttpClient.Builder();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty("spring.influx.url")
-	public InfluxDB influxDb() {
-		return new InfluxDBImpl(this.properties.getUrl(), this.properties.getUser(),
-				this.properties.getPassword(), this.builder);
 	}
 
 }

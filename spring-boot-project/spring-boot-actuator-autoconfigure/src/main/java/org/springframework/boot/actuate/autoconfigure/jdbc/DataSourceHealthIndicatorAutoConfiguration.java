@@ -66,17 +66,26 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
 		implements InitializingBean {
 
-	private final Map<String, DataSource> dataSources;
-
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	public DataSourceHealthIndicatorAutoConfiguration(Map<String, DataSource> dataSources,
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-		this.dataSources = filterDataSources(dataSources);
 		this.metadataProviders = metadataProviders.orderedStream()
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
+				this.metadataProviders);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "dbHealthIndicator")
+	public HealthIndicator dbHealthIndicator(Map<String, DataSource> dataSources) {
+		return createHealthIndicator(filterDataSources(dataSources));
 	}
 
 	private Map<String, DataSource> filterDataSources(
@@ -91,18 +100,6 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 			}
 		});
 		return dataSources;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
-				this.metadataProviders);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(name = "dbHealthIndicator")
-	public HealthIndicator dbHealthIndicator() {
-		return createHealthIndicator(this.dataSources);
 	}
 
 	@Override

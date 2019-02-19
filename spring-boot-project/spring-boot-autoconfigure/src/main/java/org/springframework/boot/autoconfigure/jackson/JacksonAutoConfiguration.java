@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,16 +116,12 @@ public class JacksonAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(JodaDateTimeJacksonConfiguration.class);
 
-		private final JacksonProperties jacksonProperties;
-
-		JodaDateTimeJacksonConfiguration(JacksonProperties jacksonProperties) {
-			this.jacksonProperties = jacksonProperties;
-		}
-
 		@Bean
-		public SimpleModule jodaDateTimeSerializationModule() {
+		public SimpleModule jodaDateTimeSerializationModule(
+				JacksonProperties jacksonProperties) {
 			SimpleModule module = new SimpleModule();
-			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
+			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat(
+					jacksonProperties);
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class,
 						new DateTimeSerializer(jacksonJodaFormat, 0));
@@ -133,17 +129,17 @@ public class JacksonAutoConfiguration {
 			return module;
 		}
 
-		private JacksonJodaDateFormat getJacksonJodaDateFormat() {
-			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
+		private JacksonJodaDateFormat getJacksonJodaDateFormat(
+				JacksonProperties jacksonProperties) {
+			if (jacksonProperties.getJodaDateTimeFormat() != null) {
 				return new JacksonJodaDateFormat(DateTimeFormat
-						.forPattern(this.jacksonProperties.getJodaDateTimeFormat())
+						.forPattern(jacksonProperties.getJodaDateTimeFormat())
 						.withZoneUTC());
 			}
-			if (this.jacksonProperties.getDateFormat() != null) {
+			if (jacksonProperties.getDateFormat() != null) {
 				try {
 					return new JacksonJodaDateFormat(DateTimeFormat
-							.forPattern(this.jacksonProperties.getDateFormat())
-							.withZoneUTC());
+							.forPattern(jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
 					if (logger.isWarnEnabled()) {
@@ -175,18 +171,13 @@ public class JacksonAutoConfiguration {
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperBuilderConfiguration {
 
-		private final ApplicationContext applicationContext;
-
-		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
-
 		@Bean
 		@ConditionalOnMissingBean
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(
+				ApplicationContext applicationContext,
 				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-			builder.applicationContext(this.applicationContext);
+			builder.applicationContext(applicationContext);
 			customize(builder, customizers);
 			return builder;
 		}

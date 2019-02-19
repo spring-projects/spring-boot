@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,12 +68,8 @@ public class BatchAutoConfiguration {
 
 	private final BatchProperties properties;
 
-	private final JobParametersConverter jobParametersConverter;
-
-	public BatchAutoConfiguration(BatchProperties properties,
-			ObjectProvider<JobParametersConverter> jobParametersConverter) {
+	public BatchAutoConfiguration(BatchProperties properties) {
 		this.properties = properties;
-		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 	}
 
 	@Bean
@@ -108,7 +104,9 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
-	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+	public SimpleJobOperator jobOperator(
+			ObjectProvider<JobParametersConverter> jobParametersConverter,
+			JobExplorer jobExplorer, JobLauncher jobLauncher,
 			ListableJobLocator jobRegistry, JobRepository jobRepository)
 			throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
@@ -116,9 +114,7 @@ public class BatchAutoConfiguration {
 		factory.setJobLauncher(jobLauncher);
 		factory.setJobRegistry(jobRegistry);
 		factory.setJobRepository(jobRepository);
-		if (this.jobParametersConverter != null) {
-			factory.setJobParametersConverter(this.jobParametersConverter);
-		}
+		jobParametersConverter.ifAvailable(factory::setJobParametersConverter);
 		return factory;
 	}
 

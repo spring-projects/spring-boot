@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import javax.servlet.Filter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -66,12 +65,8 @@ public class RemoteDevToolsAutoConfiguration {
 
 	private final DevToolsProperties properties;
 
-	private final ServerProperties serverProperties;
-
-	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties,
-			ServerProperties serverProperties) {
+	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties) {
 		this.properties = properties;
-		this.serverProperties = serverProperties;
 	}
 
 	@Bean
@@ -83,9 +78,10 @@ public class RemoteDevToolsAutoConfiguration {
 	}
 
 	@Bean
-	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
+	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper(
+			ServerProperties serverProperties) {
 		Handler handler = new HttpStatusHandler();
-		Servlet servlet = this.serverProperties.getServlet();
+		Servlet servlet = serverProperties.getServlet();
 		String servletContextPath = (servlet.getContextPath() != null)
 				? servlet.getContextPath() : "";
 		return new UrlHandlerMapper(
@@ -108,12 +104,6 @@ public class RemoteDevToolsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 
-		@Autowired
-		private DevToolsProperties properties;
-
-		@Autowired
-		private ServerProperties serverProperties;
-
 		@Bean
 		@ConditionalOnMissingBean
 		public SourceFolderUrlFilter remoteRestartSourceFolderUrlFilter() {
@@ -129,9 +119,10 @@ public class RemoteDevToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteRestartHandlerMapper")
-		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server) {
-			Servlet servlet = this.serverProperties.getServlet();
-			RemoteDevToolsProperties remote = this.properties.getRemote();
+		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server,
+				ServerProperties serverProperties, DevToolsProperties properties) {
+			Servlet servlet = serverProperties.getServlet();
+			RemoteDevToolsProperties remote = properties.getRemote();
 			String servletContextPath = (servlet.getContextPath() != null)
 					? servlet.getContextPath() : "";
 			String url = servletContextPath + remote.getContextPath() + "/restart";

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -64,17 +63,12 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
-	private final List<HttpMessageConverter<?>> converters;
-
-	public HttpMessageConvertersAutoConfiguration(
-			ObjectProvider<HttpMessageConverter<?>> convertersProvider) {
-		this.converters = convertersProvider.orderedStream().collect(Collectors.toList());
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public HttpMessageConverters messageConverters() {
-		return new HttpMessageConverters(this.converters);
+	public HttpMessageConverters messageConverters(
+			ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new HttpMessageConverters(
+				converters.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Configuration
@@ -82,17 +76,12 @@ public class HttpMessageConvertersAutoConfiguration {
 	@EnableConfigurationProperties(HttpProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
-		private final HttpProperties.Encoding properties;
-
-		protected StringHttpMessageConverterConfiguration(HttpProperties httpProperties) {
-			this.properties = httpProperties.getEncoding();
-		}
-
 		@Bean
 		@ConditionalOnMissingBean
-		public StringHttpMessageConverter stringHttpMessageConverter() {
+		public StringHttpMessageConverter stringHttpMessageConverter(
+				HttpProperties httpProperties) {
 			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					this.properties.getCharset());
+					httpProperties.getEncoding().getCharset());
 			converter.setWriteAcceptCharset(false);
 			return converter;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,11 @@ public class MustacheAutoConfiguration {
 
 	private final MustacheProperties mustache;
 
-	private final Environment environment;
-
 	private final ApplicationContext applicationContext;
 
-	public MustacheAutoConfiguration(MustacheProperties mustache, Environment environment,
+	public MustacheAutoConfiguration(MustacheProperties mustache,
 			ApplicationContext applicationContext) {
 		this.mustache = mustache;
-		this.environment = environment;
 		this.applicationContext = applicationContext;
 	}
 
@@ -78,14 +75,15 @@ public class MustacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
+	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader,
+			Environment environment) {
 		return Mustache.compiler().withLoader(mustacheTemplateLoader)
-				.withCollector(collector());
+				.withCollector(collector(environment));
 	}
 
-	private Collector collector() {
+	private Collector collector(Environment environment) {
 		MustacheEnvironmentCollector collector = new MustacheEnvironmentCollector();
-		collector.setEnvironment(this.environment);
+		collector.setEnvironment(environment);
 		return collector;
 	}
 

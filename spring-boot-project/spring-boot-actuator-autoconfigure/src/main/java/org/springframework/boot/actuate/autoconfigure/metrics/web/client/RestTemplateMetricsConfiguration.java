@@ -42,12 +42,6 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnBean(RestTemplateBuilder.class)
 class RestTemplateMetricsConfiguration {
 
-	private final MetricsProperties properties;
-
-	RestTemplateMetricsConfiguration(MetricsProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(RestTemplateExchangeTagsProvider.class)
 	public DefaultRestTemplateExchangeTagsProvider restTemplateExchangeTagsProvider() {
@@ -57,10 +51,11 @@ class RestTemplateMetricsConfiguration {
 	@Bean
 	public MetricsRestTemplateCustomizer metricsRestTemplateCustomizer(
 			MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider restTemplateExchangeTagsProvider) {
+			RestTemplateExchangeTagsProvider restTemplateExchangeTagsProvider,
+			MetricsProperties properties) {
 		return new MetricsRestTemplateCustomizer(meterRegistry,
 				restTemplateExchangeTagsProvider,
-				this.properties.getWeb().getClient().getRequestsMetricName());
+				properties.getWeb().getClient().getRequestsMetricName());
 	}
 
 }

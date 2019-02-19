@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Solr 4.x.
+ * {@link EnableAutoConfiguration Auto-configuration} for Solr.
  *
  * @author Christoph Strobl
  * @since 1.1.0
@@ -42,27 +42,14 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
-	private final SolrProperties properties;
-
-	private SolrClient solrClient;
-
-	public SolrAutoConfiguration(SolrProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public SolrClient solrClient() {
-		this.solrClient = createSolrClient();
-		return this.solrClient;
-	}
-
-	private SolrClient createSolrClient() {
-		if (StringUtils.hasText(this.properties.getZkHost())) {
-			return new CloudSolrClient.Builder(Arrays.asList(this.properties.getZkHost()),
+	public SolrClient solrClient(SolrProperties properties) {
+		if (StringUtils.hasText(properties.getZkHost())) {
+			return new CloudSolrClient.Builder(Arrays.asList(properties.getZkHost()),
 					Optional.empty()).build();
 		}
-		return new HttpSolrClient.Builder(this.properties.getHost()).build();
+		return new HttpSolrClient.Builder(properties.getHost()).build();
 	}
 
 }

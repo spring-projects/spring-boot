@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,26 +42,18 @@ import org.springframework.ldap.core.support.LdapContextSource;
 @EnableConfigurationProperties(LdapProperties.class)
 public class LdapAutoConfiguration {
 
-	private final LdapProperties properties;
-
-	private final Environment environment;
-
-	public LdapAutoConfiguration(LdapProperties properties, Environment environment) {
-		this.properties = properties;
-		this.environment = environment;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource(LdapProperties properties,
+			Environment environment) {
 		LdapContextSource source = new LdapContextSource();
-		source.setUserDn(this.properties.getUsername());
-		source.setPassword(this.properties.getPassword());
-		source.setAnonymousReadOnly(this.properties.getAnonymousReadOnly());
-		source.setBase(this.properties.getBase());
-		source.setUrls(this.properties.determineUrls(this.environment));
+		source.setUserDn(properties.getUsername());
+		source.setPassword(properties.getPassword());
+		source.setAnonymousReadOnly(properties.getAnonymousReadOnly());
+		source.setBase(properties.getBase());
+		source.setUrls(properties.determineUrls(environment));
 		source.setBaseEnvironmentProperties(
-				Collections.unmodifiableMap(this.properties.getBaseEnvironment()));
+				Collections.unmodifiableMap(properties.getBaseEnvironment()));
 		return source;
 	}
 

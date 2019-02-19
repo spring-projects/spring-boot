@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,16 +50,10 @@ import org.springframework.context.annotation.Configuration;
 public class InfluxDbHealthIndicatorAutoConfiguration
 		extends CompositeHealthIndicatorConfiguration<InfluxDbHealthIndicator, InfluxDB> {
 
-	private final Map<String, InfluxDB> influxDbs;
-
-	public InfluxDbHealthIndicatorAutoConfiguration(Map<String, InfluxDB> influxDbs) {
-		this.influxDbs = influxDbs;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(name = "influxDbHealthIndicator")
-	public HealthIndicator influxDbHealthIndicator() {
-		return createHealthIndicator(this.influxDbs);
+	public HealthIndicator influxDbHealthIndicator(Map<String, InfluxDB> influxDbs) {
+		return createHealthIndicator(influxDbs);
 	}
 
 }

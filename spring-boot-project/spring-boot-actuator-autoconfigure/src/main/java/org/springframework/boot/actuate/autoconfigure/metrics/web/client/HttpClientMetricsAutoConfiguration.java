@@ -50,21 +50,15 @@ import org.springframework.core.annotation.Order;
 @Import({ RestTemplateMetricsConfiguration.class, WebClientMetricsConfiguration.class })
 public class HttpClientMetricsAutoConfiguration {
 
-	private final MetricsProperties properties;
-
-	public HttpClientMetricsAutoConfiguration(MetricsProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@Order(0)
-	public MeterFilter metricsHttpClientUriTagFilter() {
-		String metricName = this.properties.getWeb().getClient().getRequestsMetricName();
+	public MeterFilter metricsHttpClientUriTagFilter(MetricsProperties properties) {
+		String metricName = properties.getWeb().getClient().getRequestsMetricName();
 		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String
 				.format("Reached the maximum number of URI tags for '%s'. Are you using "
 						+ "'uriVariables'?", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				this.properties.getWeb().getClient().getMaxUriTags(), denyFilter);
+				properties.getWeb().getClient().getMaxUriTags(), denyFilter);
 	}
 
 }

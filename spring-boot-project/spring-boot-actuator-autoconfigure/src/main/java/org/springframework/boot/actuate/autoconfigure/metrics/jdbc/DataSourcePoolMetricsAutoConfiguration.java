@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -28,6 +30,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -62,25 +65,22 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 		private static final String DATASOURCE_SUFFIX = "dataSource";
 
-		private final MeterRegistry registry;
-
-		private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
-
-		DataSourcePoolMetadataMetricsConfiguration(MeterRegistry registry,
-				Collection<DataSourcePoolMetadataProvider> metadataProviders) {
-			this.registry = registry;
-			this.metadataProviders = metadataProviders;
-		}
-
 		@Autowired
-		public void bindDataSourcesToRegistry(Map<String, DataSource> dataSources) {
-			dataSources.forEach(this::bindDataSourceToRegistry);
+		public void bindDataSourcesToRegistry(Map<String, DataSource> dataSources,
+				MeterRegistry registry,
+				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
+			List<DataSourcePoolMetadataProvider> metadataProvidersList = metadataProviders
+					.stream().collect(Collectors.toList());
+			dataSources.forEach((name, dataSource) -> bindDataSourceToRegistry(name,
+					dataSource, metadataProvidersList, registry));
 		}
 
-		private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
+		private void bindDataSourceToRegistry(String beanName, DataSource dataSource,
+				Collection<DataSourcePoolMetadataProvider> metadataProviders,
+				MeterRegistry registry) {
 			String dataSourceName = getDataSourceName(beanName);
-			new DataSourcePoolMetrics(dataSource, this.metadataProviders, dataSourceName,
-					Collections.emptyList()).bindTo(this.registry);
+			new DataSourcePoolMetrics(dataSource, metadataProviders, dataSourceName,
+					Collections.emptyList()).bindTo(registry);
 		}
 
 		/**

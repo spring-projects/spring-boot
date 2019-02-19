@@ -54,23 +54,19 @@ public class HibernateMetricsAutoConfiguration {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
-	private final MeterRegistry registry;
-
-	public HibernateMetricsAutoConfiguration(MeterRegistry registry) {
-		this.registry = registry;
-	}
-
 	@Autowired
 	public void bindEntityManagerFactoriesToRegistry(
-			Map<String, EntityManagerFactory> entityManagerFactories) {
-		entityManagerFactories.forEach(this::bindEntityManagerFactoryToRegistry);
+			Map<String, EntityManagerFactory> entityManagerFactories,
+			MeterRegistry registry) {
+		entityManagerFactories.forEach((name,
+				factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
 	}
 
 	private void bindEntityManagerFactoryToRegistry(String beanName,
-			EntityManagerFactory entityManagerFactory) {
+			EntityManagerFactory entityManagerFactory, MeterRegistry registry) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		new HibernateMetrics(entityManagerFactory, entityManagerFactoryName,
-				Collections.emptyList()).bindTo(this.registry);
+				Collections.emptyList()).bindTo(registry);
 	}
 
 	/**

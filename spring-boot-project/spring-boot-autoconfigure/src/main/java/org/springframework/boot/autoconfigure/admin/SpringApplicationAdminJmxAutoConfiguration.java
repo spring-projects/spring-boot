@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,24 +55,14 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	 */
 	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
-	private final Iterable<MBeanExporter> mbeanExporters;
-
-	private final Environment environment;
-
-	public SpringApplicationAdminJmxAutoConfiguration(
-			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) {
-		this.mbeanExporters = mbeanExporters;
-		this.environment = environment;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar()
+	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar(
+			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment)
 			throws MalformedObjectNameException {
-		String jmxName = this.environment.getProperty(JMX_NAME_PROPERTY,
-				DEFAULT_JMX_NAME);
-		if (this.mbeanExporters != null) { // Make sure to not register that MBean twice
-			for (MBeanExporter mbeanExporter : this.mbeanExporters) {
+		String jmxName = environment.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
+		if (mbeanExporters != null) { // Make sure to not register that MBean twice
+			for (MBeanExporter mbeanExporter : mbeanExporters) {
 				mbeanExporter.addExcludedBean(jmxName);
 			}
 		}

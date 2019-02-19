@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,17 +48,10 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(RedisClient.class)
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
-	private final RedisProperties properties;
-
-	private final ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
-
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
 		super(properties, sentinelConfigurationProvider, clusterConfigurationProvider);
-		this.properties = properties;
-		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -70,9 +63,11 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	public LettuceConnectionFactory redisConnectionFactory(
+			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
 			ClientResources clientResources) throws UnknownHostException {
 		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(
-				clientResources, this.properties.getLettuce().getPool());
+				builderCustomizers, clientResources,
+				getProperties().getLettuce().getPool());
 		return createLettuceConnectionFactory(clientConfig);
 	}
 
@@ -89,14 +84,16 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
+			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
 			ClientResources clientResources, Pool pool) {
 		LettuceClientConfigurationBuilder builder = createBuilder(pool);
 		applyProperties(builder);
-		if (StringUtils.hasText(this.properties.getUrl())) {
+		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
 		builder.clientResources(clientResources);
-		customize(builder);
+		builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
@@ -109,18 +106,18 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceClientConfigurationBuilder applyProperties(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		if (this.properties.isSsl()) {
+		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
-		if (this.properties.getTimeout() != null) {
-			builder.commandTimeout(this.properties.getTimeout());
+		if (getProperties().getTimeout() != null) {
+			builder.commandTimeout(getProperties().getTimeout());
 		}
-		if (this.properties.getLettuce() != null) {
-			RedisProperties.Lettuce lettuce = this.properties.getLettuce();
+		if (getProperties().getLettuce() != null) {
+			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
 			if (lettuce.getShutdownTimeout() != null
 					&& !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(
-						this.properties.getLettuce().getShutdownTimeout());
+						getProperties().getLettuce().getShutdownTimeout());
 			}
 		}
 		return builder;
@@ -128,16 +125,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private void customizeConfigurationFromUrl(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
+		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
 		if (connectionInfo.isUseSsl()) {
 			builder.useSsl();
 		}
-	}
-
-	private void customize(
-			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		this.builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 	/**

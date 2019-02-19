@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,21 +54,17 @@ import org.springframework.context.annotation.Configuration;
 public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 
-	private final Map<String, Client> clients;
-
 	private final ElasticsearchHealthIndicatorProperties properties;
 
 	public ElasticSearchClientHealthIndicatorAutoConfiguration(
-			Map<String, Client> clients,
 			ElasticsearchHealthIndicatorProperties properties) {
-		this.clients = clients;
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "elasticsearchHealthIndicator")
-	public HealthIndicator elasticsearchHealthIndicator() {
-		return createHealthIndicator(this.clients);
+	public HealthIndicator elasticsearchHealthIndicator(Map<String, Client> clients) {
+		return createHealthIndicator(clients);
 	}
 
 	@Override

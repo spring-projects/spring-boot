@@ -64,17 +64,11 @@ public class LocalDevToolsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
-		private final DevToolsProperties properties;
-
-		LiveReloadConfiguration(DevToolsProperties properties) {
-			this.properties = properties;
-		}
-
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
-		public LiveReloadServer liveReloadServer() {
-			return new LiveReloadServer(this.properties.getLivereload().getPort(),
+		public LiveReloadServer liveReloadServer(DevToolsProperties properties) {
+			return new LiveReloadServer(properties.getLivereload().getPort(),
 					Restarter.getInstance().getThreadFactory());
 		}
 

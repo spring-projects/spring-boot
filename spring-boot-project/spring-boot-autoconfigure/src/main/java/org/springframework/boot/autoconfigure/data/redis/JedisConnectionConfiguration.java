@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,27 +47,24 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
 class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
-	private final RedisProperties properties;
-
-	private final ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
-
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
 		super(properties, sentinelConfiguration, clusterConfiguration);
-		this.properties = properties;
-		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
-	public JedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-		return createJedisConnectionFactory();
+	public JedisConnectionFactory redisConnectionFactory(
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers)
+			throws UnknownHostException {
+		return createJedisConnectionFactory(builderCustomizers);
 	}
 
-	private JedisConnectionFactory createJedisConnectionFactory() {
-		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration();
+	private JedisConnectionFactory createJedisConnectionFactory(
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
+		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(
+				builderCustomizers);
 		if (getSentinelConfig() != null) {
 			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
@@ -78,27 +75,29 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
 	}
 
-	private JedisClientConfiguration getJedisClientConfiguration() {
+	private JedisClientConfiguration getJedisClientConfiguration(
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(
 				JedisClientConfiguration.builder());
-		RedisProperties.Pool pool = this.properties.getJedis().getPool();
+		RedisProperties.Pool pool = getProperties().getJedis().getPool();
 		if (pool != null) {
 			applyPooling(pool, builder);
 		}
-		if (StringUtils.hasText(this.properties.getUrl())) {
+		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		customize(builder);
+		builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
 	private JedisClientConfigurationBuilder applyProperties(
 			JedisClientConfigurationBuilder builder) {
-		if (this.properties.isSsl()) {
+		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
-		if (this.properties.getTimeout() != null) {
-			Duration timeout = this.properties.getTimeout();
+		if (getProperties().getTimeout() != null) {
+			Duration timeout = getProperties().getTimeout();
 			builder.readTimeout(timeout).connectTimeout(timeout);
 		}
 		return builder;
@@ -122,16 +121,10 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private void customizeConfigurationFromUrl(
 			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
+		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
 		if (connectionInfo.isUseSsl()) {
 			builder.useSsl();
 		}
-	}
-
-	private void customize(
-			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		this.builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 }

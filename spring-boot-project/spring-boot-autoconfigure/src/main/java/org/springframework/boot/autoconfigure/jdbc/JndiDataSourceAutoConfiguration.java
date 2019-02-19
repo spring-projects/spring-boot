@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,24 +48,20 @@ import org.springframework.jmx.support.JmxUtils;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
-	private final ApplicationContext context;
-
-	public JndiDataSourceAutoConfiguration(ApplicationContext context) {
-		this.context = context;
-	}
-
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public DataSource dataSource(DataSourceProperties properties) {
+	public DataSource dataSource(DataSourceProperties properties,
+			ApplicationContext context) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
 		DataSource dataSource = dataSourceLookup.getDataSource(properties.getJndiName());
-		excludeMBeanIfNecessary(dataSource, "dataSource");
+		excludeMBeanIfNecessary(dataSource, "dataSource", context);
 		return dataSource;
 	}
 
-	private void excludeMBeanIfNecessary(Object candidate, String beanName) {
-		for (MBeanExporter mbeanExporter : this.context
-				.getBeansOfType(MBeanExporter.class).values()) {
+	private void excludeMBeanIfNecessary(Object candidate, String beanName,
+			ApplicationContext context) {
+		for (MBeanExporter mbeanExporter : context.getBeansOfType(MBeanExporter.class)
+				.values()) {
 			if (JmxUtils.isMBean(candidate.getClass())) {
 				mbeanExporter.addExcludedBean(beanName);
 			}

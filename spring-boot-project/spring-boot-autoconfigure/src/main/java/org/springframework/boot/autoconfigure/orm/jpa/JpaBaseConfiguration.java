@@ -81,27 +81,22 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private final JtaTransactionManager jtaTransactionManager;
 
-	private final TransactionManagerCustomizers transactionManagerCustomizers;
-
 	private ConfigurableListableBeanFactory beanFactory;
 
 	protected JpaBaseConfiguration(DataSource dataSource, JpaProperties properties,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
-			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
 		this.dataSource = dataSource;
 		this.properties = properties;
 		this.jtaTransactionManager = jtaTransactionManager.getIfAvailable();
-		this.transactionManagerCustomizers = transactionManagerCustomizers
-				.getIfAvailable();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PlatformTransactionManager transactionManager() {
+	public PlatformTransactionManager transactionManager(
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		if (this.transactionManagerCustomizers != null) {
-			this.transactionManagerCustomizers.customize(transactionManager);
-		}
+		transactionManagerCustomizers
+				.ifAvailable((customizers) -> customizers.customize(transactionManager));
 		return transactionManager;
 	}
 

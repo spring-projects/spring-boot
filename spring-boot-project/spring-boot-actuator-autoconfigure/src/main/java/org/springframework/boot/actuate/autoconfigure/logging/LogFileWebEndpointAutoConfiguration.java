@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,17 +43,12 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
 
-	private final LogFileWebEndpointProperties properties;
-
-	public LogFileWebEndpointAutoConfiguration(LogFileWebEndpointProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(LogFileCondition.class)
-	public LogFileWebEndpoint logFileWebEndpoint(Environment environment) {
-		return new LogFileWebEndpoint(environment, this.properties.getExternalFile());
+	public LogFileWebEndpoint logFileWebEndpoint(Environment environment,
+			LogFileWebEndpointProperties properties) {
+		return new LogFileWebEndpoint(environment, properties.getExternalFile());
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {

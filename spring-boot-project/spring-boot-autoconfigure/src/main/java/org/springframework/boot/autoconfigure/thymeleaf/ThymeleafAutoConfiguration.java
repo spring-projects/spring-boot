@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.thymeleaf;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import javax.annotation.PostConstruct;
@@ -136,29 +135,17 @@ public class ThymeleafAutoConfiguration {
 	@Configuration
 	protected static class ThymeleafDefaultConfiguration {
 
-		private final ThymeleafProperties properties;
-
-		private final Collection<ITemplateResolver> templateResolvers;
-
-		private final ObjectProvider<IDialect> dialects;
-
-		public ThymeleafDefaultConfiguration(ThymeleafProperties properties,
-				Collection<ITemplateResolver> templateResolvers,
-				ObjectProvider<IDialect> dialectsProvider) {
-			this.properties = properties;
-			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider;
-		}
-
 		@Bean
 		@ConditionalOnMissingBean
-		public SpringTemplateEngine templateEngine() {
+		public SpringTemplateEngine templateEngine(ThymeleafProperties properties,
+				ObjectProvider<ITemplateResolver> templateResolvers,
+				ObjectProvider<IDialect> dialects) {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
-			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
+			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
 			engine.setRenderHiddenMarkersBeforeCheckboxes(
-					this.properties.isRenderHiddenMarkersBeforeCheckboxes());
-			this.templateResolvers.forEach(engine::addTemplateResolver);
-			this.dialects.orderedStream().forEach(engine::addDialect);
+					properties.isRenderHiddenMarkersBeforeCheckboxes());
+			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
+			dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
 		}
 
@@ -182,33 +169,24 @@ public class ThymeleafAutoConfiguration {
 		@Configuration
 		static class ThymeleafViewResolverConfiguration {
 
-			private final ThymeleafProperties properties;
-
-			private final SpringTemplateEngine templateEngine;
-
-			ThymeleafViewResolverConfiguration(ThymeleafProperties properties,
-					SpringTemplateEngine templateEngine) {
-				this.properties = properties;
-				this.templateEngine = templateEngine;
-			}
-
 			@Bean
 			@ConditionalOnMissingBean(name = "thymeleafViewResolver")
-			public ThymeleafViewResolver thymeleafViewResolver() {
+			public ThymeleafViewResolver thymeleafViewResolver(
+					ThymeleafProperties properties, SpringTemplateEngine templateEngine) {
 				ThymeleafViewResolver resolver = new ThymeleafViewResolver();
-				resolver.setTemplateEngine(this.templateEngine);
-				resolver.setCharacterEncoding(this.properties.getEncoding().name());
+				resolver.setTemplateEngine(templateEngine);
+				resolver.setCharacterEncoding(properties.getEncoding().name());
 				resolver.setContentType(
-						appendCharset(this.properties.getServlet().getContentType(),
+						appendCharset(properties.getServlet().getContentType(),
 								resolver.getCharacterEncoding()));
-				resolver.setProducePartialOutputWhileProcessing(this.properties
-						.getServlet().isProducePartialOutputWhileProcessing());
-				resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
-				resolver.setViewNames(this.properties.getViewNames());
+				resolver.setProducePartialOutputWhileProcessing(
+						properties.getServlet().isProducePartialOutputWhileProcessing());
+				resolver.setExcludedViewNames(properties.getExcludedViewNames());
+				resolver.setViewNames(properties.getViewNames());
 				// This resolver acts as a fallback resolver (e.g. like a
 				// InternalResourceViewResolver) so it needs to have low precedence
 				resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
-				resolver.setCache(this.properties.isCache());
+				resolver.setCache(properties.isCache());
 				return resolver;
 			}
 
@@ -231,29 +209,17 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafReactiveConfiguration {
 
-		private final ThymeleafProperties properties;
-
-		private final Collection<ITemplateResolver> templateResolvers;
-
-		private final ObjectProvider<IDialect> dialects;
-
-		ThymeleafReactiveConfiguration(ThymeleafProperties properties,
-				Collection<ITemplateResolver> templateResolvers,
-				ObjectProvider<IDialect> dialectsProvider) {
-			this.properties = properties;
-			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider;
-		}
-
 		@Bean
 		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
-		public SpringWebFluxTemplateEngine templateEngine() {
+		public SpringWebFluxTemplateEngine templateEngine(ThymeleafProperties properties,
+				ObjectProvider<ITemplateResolver> templateResolvers,
+				ObjectProvider<IDialect> dialects) {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
-			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
+			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
 			engine.setRenderHiddenMarkersBeforeCheckboxes(
-					this.properties.isRenderHiddenMarkersBeforeCheckboxes());
-			this.templateResolvers.forEach(engine::addTemplateResolver);
-			this.dialects.orderedStream().forEach(engine::addDialect);
+					properties.isRenderHiddenMarkersBeforeCheckboxes());
+			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
+			dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
 		}
 
@@ -264,20 +230,15 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebFluxConfiguration {
 
-		private final ThymeleafProperties properties;
-
-		ThymeleafWebFluxConfiguration(ThymeleafProperties properties) {
-			this.properties = properties;
-		}
-
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafReactiveViewResolver")
 		public ThymeleafReactiveViewResolver thymeleafViewResolver(
-				ISpringWebFluxTemplateEngine templateEngine) {
+				ISpringWebFluxTemplateEngine templateEngine,
+				ThymeleafProperties properties) {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
-			mapProperties(this.properties, resolver);
-			mapReactiveProperties(this.properties.getReactive(), resolver);
+			mapProperties(properties, resolver);
+			mapReactiveProperties(properties.getReactive(), resolver);
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);

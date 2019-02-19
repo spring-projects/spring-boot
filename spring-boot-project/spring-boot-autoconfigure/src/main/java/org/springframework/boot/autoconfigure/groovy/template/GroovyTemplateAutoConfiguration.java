@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,14 +74,11 @@ public class GroovyTemplateAutoConfiguration {
 
 		private final GroovyTemplateProperties properties;
 
-		private final MarkupTemplateEngine templateEngine;
-
 		public GroovyMarkupConfiguration(ApplicationContext applicationContext,
 				GroovyTemplateProperties properties,
 				ObjectProvider<MarkupTemplateEngine> templateEngine) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
-			this.templateEngine = templateEngine.getIfAvailable();
 		}
 
 		@PostConstruct
@@ -124,13 +121,12 @@ public class GroovyTemplateAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
 		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
-		public GroovyMarkupConfigurer groovyMarkupConfigurer() {
+		public GroovyMarkupConfigurer groovyMarkupConfigurer(
+				ObjectProvider<MarkupTemplateEngine> templateEngine) {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
 			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());
 			configurer.setCacheTemplates(this.properties.isCache());
-			if (this.templateEngine != null) {
-				configurer.setTemplateEngine(this.templateEngine);
-			}
+			templateEngine.ifAvailable(configurer::setTemplateEngine);
 			return configurer;
 		}
 
@@ -143,17 +139,12 @@ public class GroovyTemplateAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
-		private final GroovyTemplateProperties properties;
-
-		public GroovyWebConfiguration(GroovyTemplateProperties properties) {
-			this.properties = properties;
-		}
-
 		@Bean
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
-		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
+		public GroovyMarkupViewResolver groovyMarkupViewResolver(
+				GroovyTemplateProperties properties) {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
-			this.properties.applyToMvcViewResolver(resolver);
+			properties.applyToMvcViewResolver(resolver);
 			return resolver;
 		}
 

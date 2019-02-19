@@ -48,20 +48,15 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)
 public class MockMvcWebDriverAutoConfiguration {
 
-	private final Environment environment;
-
 	private static final String SECURITY_CONTEXT_EXECUTOR = "org.springframework.security.concurrent.DelegatingSecurityContextExecutor";
-
-	MockMvcWebDriverAutoConfiguration(Environment environment) {
-		this.environment = environment;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc) {
+	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc,
+			Environment environment) {
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(this.environment,
+				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment,
 						BrowserVersion.CHROME));
 	}
 

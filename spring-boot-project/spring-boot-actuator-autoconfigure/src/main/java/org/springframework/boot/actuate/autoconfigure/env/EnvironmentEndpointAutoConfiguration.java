@@ -39,18 +39,12 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(EnvironmentEndpointProperties.class)
 public class EnvironmentEndpointAutoConfiguration {
 
-	private final EnvironmentEndpointProperties properties;
-
-	public EnvironmentEndpointAutoConfiguration(
-			EnvironmentEndpointProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public EnvironmentEndpoint environmentEndpoint(Environment environment) {
+	public EnvironmentEndpoint environmentEndpoint(Environment environment,
+			EnvironmentEndpointProperties properties) {
 		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment);
-		String[] keysToSanitize = this.properties.getKeysToSanitize();
+		String[] keysToSanitize = properties.getKeysToSanitize();
 		if (keysToSanitize != null) {
 			endpoint.setKeysToSanitize(keysToSanitize);
 		}

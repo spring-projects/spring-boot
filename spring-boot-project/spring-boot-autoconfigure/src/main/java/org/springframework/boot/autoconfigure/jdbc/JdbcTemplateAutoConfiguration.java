@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,21 +53,13 @@ public class JdbcTemplateAutoConfiguration {
 	@Configuration
 	static class JdbcTemplateConfiguration {
 
-		private final DataSource dataSource;
-
-		private final JdbcProperties properties;
-
-		JdbcTemplateConfiguration(DataSource dataSource, JdbcProperties properties) {
-			this.dataSource = dataSource;
-			this.properties = properties;
-		}
-
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean(JdbcOperations.class)
-		public JdbcTemplate jdbcTemplate() {
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
-			JdbcProperties.Template template = this.properties.getTemplate();
+		public JdbcTemplate jdbcTemplate(DataSource dataSource,
+				JdbcProperties properties) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			JdbcProperties.Template template = properties.getTemplate();
 			jdbcTemplate.setFetchSize(template.getFetchSize());
 			jdbcTemplate.setMaxRows(template.getMaxRows());
 			if (template.getQueryTimeout() != null) {

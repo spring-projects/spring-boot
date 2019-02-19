@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,16 +51,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
-	private final Map<String, MongoTemplate> mongoTemplates;
-
-	MongoHealthIndicatorAutoConfiguration(Map<String, MongoTemplate> mongoTemplates) {
-		this.mongoTemplates = mongoTemplates;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(name = "mongoHealthIndicator")
-	public HealthIndicator mongoHealthIndicator() {
-		return createHealthIndicator(this.mongoTemplates);
+	public HealthIndicator mongoHealthIndicator(
+			Map<String, MongoTemplate> mongoTemplates) {
+		return createHealthIndicator(mongoTemplates);
 	}
 
 }

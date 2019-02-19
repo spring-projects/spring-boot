@@ -54,16 +54,12 @@ class ActiveMQConnectionFactoryConfiguration {
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
-		private final JmsProperties jmsProperties;
-
 		private final ActiveMQProperties properties;
 
 		private final List<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers;
 
-		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties,
-				ActiveMQProperties properties,
+		SimpleConnectionFactoryConfiguration(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers) {
-			this.jmsProperties = jmsProperties;
 			this.properties = properties;
 			this.connectionFactoryCustomizers = connectionFactoryCustomizers
 					.orderedStream().collect(Collectors.toList());
@@ -71,8 +67,9 @@ class ActiveMQConnectionFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true", matchIfMissing = true)
-		public CachingConnectionFactory cachingJmsConnectionFactory() {
-			JmsProperties.Cache cacheProperties = this.jmsProperties.getCache();
+		public CachingConnectionFactory cachingJmsConnectionFactory(
+				JmsProperties jmsProperties) {
+			JmsProperties.Cache cacheProperties = jmsProperties.getCache();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					createConnectionFactory());
 			connectionFactory.setCacheConsumers(cacheProperties.isConsumers());

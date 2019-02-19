@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,24 +38,15 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Configuration
 class MongoDataConfiguration {
 
-	private final ApplicationContext applicationContext;
-
-	private final MongoProperties properties;
-
-	MongoDataConfiguration(ApplicationContext applicationContext,
-			MongoProperties properties) {
-		this.applicationContext = applicationContext;
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions)
+	public MongoMappingContext mongoMappingContext(ApplicationContext applicationContext,
+			MongoProperties properties, MongoCustomConversions conversions)
 			throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
-		context.setInitialEntitySet(new EntityScanner(this.applicationContext)
+		context.setInitialEntitySet(new EntityScanner(applicationContext)
 				.scan(Document.class, Persistent.class));
-		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
+		Class<?> strategyClass = properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
 			context.setFieldNamingStrategy(
 					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));

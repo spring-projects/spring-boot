@@ -48,23 +48,21 @@ class ArtemisConnectionFactoryConfiguration {
 	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
-		private final JmsProperties jmsProperties;
-
 		private final ArtemisProperties properties;
 
 		private final ListableBeanFactory beanFactory;
 
-		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties,
-				ArtemisProperties properties, ListableBeanFactory beanFactory) {
-			this.jmsProperties = jmsProperties;
+		SimpleConnectionFactoryConfiguration(ArtemisProperties properties,
+				ListableBeanFactory beanFactory) {
 			this.properties = properties;
 			this.beanFactory = beanFactory;
 		}
 
 		@Bean
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true", matchIfMissing = true)
-		public CachingConnectionFactory cachingJmsConnectionFactory() {
-			JmsProperties.Cache cacheProperties = this.jmsProperties.getCache();
+		public CachingConnectionFactory cachingJmsConnectionFactory(
+				JmsProperties jmsProperties) {
+			JmsProperties.Cache cacheProperties = jmsProperties.getCache();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					createConnectionFactory());
 			connectionFactory.setCacheConsumers(cacheProperties.isConsumers());

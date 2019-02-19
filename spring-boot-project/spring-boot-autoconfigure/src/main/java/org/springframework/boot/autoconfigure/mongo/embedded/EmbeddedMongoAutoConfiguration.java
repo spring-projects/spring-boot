@@ -92,30 +92,20 @@ public class EmbeddedMongoAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	private final EmbeddedMongoProperties embeddedProperties;
-
-	private final ApplicationContext context;
-
-	private final IRuntimeConfig runtimeConfig;
-
 	public EmbeddedMongoAutoConfiguration(MongoProperties properties,
-			EmbeddedMongoProperties embeddedProperties, ApplicationContext context,
-			IRuntimeConfig runtimeConfig) {
+			EmbeddedMongoProperties embeddedProperties) {
 		this.properties = properties;
-		this.embeddedProperties = embeddedProperties;
-		this.context = context;
-		this.runtimeConfig = runtimeConfig;
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
-			throws IOException {
+	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig,
+			IRuntimeConfig runtimeConfig, ApplicationContext context) throws IOException {
 		Integer configuredPort = this.properties.getPort();
 		if (configuredPort == null || configuredPort == 0) {
-			setEmbeddedPort(mongodConfig.net().getPort());
+			setEmbeddedPort(context, mongodConfig.net().getPort());
 		}
-		MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
+		MongodStarter mongodStarter = getMongodStarter(runtimeConfig);
 		return mongodStarter.prepare(mongodConfig);
 	}
 
@@ -128,10 +118,11 @@ public class EmbeddedMongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public IMongodConfig embeddedMongoConfiguration() throws IOException {
+	public IMongodConfig embeddedMongoConfiguration(
+			EmbeddedMongoProperties embeddedProperties) throws IOException {
 		MongodConfigBuilder builder = new MongodConfigBuilder()
-				.version(determineVersion());
-		EmbeddedMongoProperties.Storage storage = this.embeddedProperties.getStorage();
+				.version(determineVersion(embeddedProperties));
+		EmbeddedMongoProperties.Storage storage = embeddedProperties.getStorage();
 		if (storage != null) {
 			String databaseDir = storage.getDatabaseDir();
 			String replSetName = storage.getReplSetName();
@@ -151,20 +142,19 @@ public class EmbeddedMongoAutoConfiguration {
 		return builder.build();
 	}
 
-	private IFeatureAwareVersion determineVersion() {
-		if (this.embeddedProperties.getFeatures() == null) {
+	private IFeatureAwareVersion determineVersion(
+			EmbeddedMongoProperties embeddedProperties) {
+		if (embeddedProperties.getFeatures() == null) {
 			for (Version version : Version.values()) {
-				if (version.asInDownloadPath()
-						.equals(this.embeddedProperties.getVersion())) {
+				if (version.asInDownloadPath().equals(embeddedProperties.getVersion())) {
 					return version;
 				}
 			}
-			return Versions.withFeatures(
-					new GenericVersion(this.embeddedProperties.getVersion()));
+			return Versions
+					.withFeatures(new GenericVersion(embeddedProperties.getVersion()));
 		}
-		return Versions.withFeatures(
-				new GenericVersion(this.embeddedProperties.getVersion()),
-				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
+		return Versions.withFeatures(new GenericVersion(embeddedProperties.getVersion()),
+				embeddedProperties.getFeatures().toArray(new Feature[0]));
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -175,8 +165,8 @@ public class EmbeddedMongoAutoConfiguration {
 		return InetAddress.getByName(this.properties.getHost());
 	}
 
-	private void setEmbeddedPort(int port) {
-		setPortProperty(this.context, port);
+	private void setEmbeddedPort(ApplicationContext context, int port) {
+		setPortProperty(context, port);
 	}
 
 	private void setPortProperty(ApplicationContext currentContext, int port) {

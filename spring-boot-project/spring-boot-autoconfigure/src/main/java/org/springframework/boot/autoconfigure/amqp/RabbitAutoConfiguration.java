@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,53 +157,39 @@ public class RabbitAutoConfiguration {
 	@Import(RabbitConnectionFactoryCreator.class)
 	protected static class RabbitTemplateConfiguration {
 
-		private final RabbitProperties properties;
-
-		private final ObjectProvider<MessageConverter> messageConverter;
-
-		private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
-
-		public RabbitTemplateConfiguration(RabbitProperties properties,
-				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
-			this.properties = properties;
-			this.messageConverter = messageConverter;
-			this.retryTemplateCustomizers = retryTemplateCustomizers;
-		}
-
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean
-		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		public RabbitTemplate rabbitTemplate(RabbitProperties properties,
+				ObjectProvider<MessageConverter> messageConverter,
+				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
+				ConnectionFactory connectionFactory) {
 			PropertyMapper map = PropertyMapper.get();
 			RabbitTemplate template = new RabbitTemplate(connectionFactory);
-			MessageConverter messageConverter = this.messageConverter.getIfUnique();
-			if (messageConverter != null) {
-				template.setMessageConverter(messageConverter);
-			}
-			template.setMandatory(determineMandatoryFlag());
-			RabbitProperties.Template properties = this.properties.getTemplate();
-			if (properties.getRetry().isEnabled()) {
-				template.setRetryTemplate(new RetryTemplateFactory(
-						this.retryTemplateCustomizers.orderedStream()
+			messageConverter.ifUnique(template::setMessageConverter);
+			template.setMandatory(determineMandatoryFlag(properties));
+			RabbitProperties.Template templateProperties = properties.getTemplate();
+			if (templateProperties.getRetry().isEnabled()) {
+				template.setRetryTemplate(
+						new RetryTemplateFactory(retryTemplateCustomizers.orderedStream()
 								.collect(Collectors.toList())).createRetryTemplate(
-										properties.getRetry(),
+										templateProperties.getRetry(),
 										RabbitRetryTemplateCustomizer.Target.SENDER));
 			}
-			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReceiveTimeout);
-			map.from(properties::getReplyTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReplyTimeout);
-			map.from(properties::getExchange).to(template::setExchange);
-			map.from(properties::getRoutingKey).to(template::setRoutingKey);
-			map.from(properties::getDefaultReceiveQueue).whenNonNull()
+			map.from(templateProperties::getReceiveTimeout).whenNonNull()
+					.as(Duration::toMillis).to(template::setReceiveTimeout);
+			map.from(templateProperties::getReplyTimeout).whenNonNull()
+					.as(Duration::toMillis).to(template::setReplyTimeout);
+			map.from(templateProperties::getExchange).to(template::setExchange);
+			map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
+			map.from(templateProperties::getDefaultReceiveQueue).whenNonNull()
 					.to(template::setDefaultReceiveQueue);
 			return template;
 		}
 
-		private boolean determineMandatoryFlag() {
-			Boolean mandatory = this.properties.getTemplate().getMandatory();
-			return (mandatory != null) ? mandatory : this.properties.isPublisherReturns();
+		private boolean determineMandatoryFlag(RabbitProperties properties) {
+			Boolean mandatory = properties.getTemplate().getMandatory();
+			return (mandatory != null) ? mandatory : properties.isPublisherReturns();
 		}
 
 		@Bean

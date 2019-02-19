@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 /**
@@ -42,20 +41,14 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
-	private final ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers;
-
-	public WebServiceTemplateAutoConfiguration(
-			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
-		this.webServiceTemplateCustomizers = webServiceTemplateCustomizers;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public WebServiceTemplateBuilder webServiceTemplateBuilder() {
+	public WebServiceTemplateBuilder webServiceTemplateBuilder(
+			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
-		List<WebServiceTemplateCustomizer> customizers = this.webServiceTemplateCustomizers
+		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers
 				.orderedStream().collect(Collectors.toList());
-		if (!CollectionUtils.isEmpty(customizers)) {
+		if (!customizers.isEmpty()) {
 			builder = builder.customizers(customizers);
 		}
 		return builder;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,25 +104,8 @@ public class FlywayAutoConfiguration {
 	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })
 	public static class FlywayConfiguration {
 
-		private final FlywayProperties properties;
-
-		private final DataSourceProperties dataSourceProperties;
-
-		private final ResourceLoader resourceLoader;
-
-		private final DataSource dataSource;
-
-		private final DataSource flywayDataSource;
-
-		private final FlywayMigrationStrategy migrationStrategy;
-
-		private final List<FlywayConfigurationCustomizer> configurationCustomizers;
-
-		private final List<Callback> callbacks;
-
-		private final List<FlywayCallback> flywayCallbacks;
-
-		public FlywayConfiguration(FlywayProperties properties,
+		@Bean
+		public Flyway flyway(FlywayProperties properties,
 				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
@@ -130,141 +113,135 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<Callback> callbacks,
 				ObjectProvider<FlywayCallback> flywayCallbacks) {
-			this.properties = properties;
-			this.dataSourceProperties = dataSourceProperties;
-			this.resourceLoader = resourceLoader;
-			this.dataSource = dataSource.getIfUnique();
-			this.flywayDataSource = flywayDataSource.getIfAvailable();
-			this.migrationStrategy = migrationStrategy.getIfAvailable();
-			this.configurationCustomizers = fluentConfigurationCustomizers.orderedStream()
-					.collect(Collectors.toList());
-			this.callbacks = callbacks.orderedStream().collect(Collectors.toList());
-			this.flywayCallbacks = flywayCallbacks.orderedStream()
-					.collect(Collectors.toList());
-		}
-
-		@Bean
-		public Flyway flyway() {
 			FluentConfiguration configuration = new FluentConfiguration();
-			DataSource dataSource = configureDataSource(configuration);
-			checkLocationExists(dataSource);
-			configureProperties(configuration);
-			configureCallbacks(configuration);
-			this.configurationCustomizers
+			DataSource dataSourceToMigrate = configureDataSource(configuration,
+					properties, dataSourceProperties, flywayDataSource.getIfAvailable(),
+					dataSource.getIfAvailable());
+			checkLocationExists(dataSourceToMigrate, properties, resourceLoader);
+			configureProperties(configuration, properties);
+			List<Callback> orderedCallbacks = callbacks.orderedStream()
+					.collect(Collectors.toList());
+			configureCallbacks(configuration, orderedCallbacks);
+			fluentConfigurationCustomizers.orderedStream()
 					.forEach((customizer) -> customizer.customize(configuration));
 			Flyway flyway = configuration.load();
-			configureFlywayCallbacks(flyway);
+			List<FlywayCallback> orderedFlywayCallbacks = flywayCallbacks.orderedStream()
+					.collect(Collectors.toList());
+			configureFlywayCallbacks(flyway, orderedCallbacks, orderedFlywayCallbacks);
 			return flyway;
 		}
 
-		private DataSource configureDataSource(FluentConfiguration configuration) {
-			if (this.properties.isCreateDataSource()) {
-				String url = getProperty(this.properties::getUrl,
-						this.dataSourceProperties::getUrl);
-				String user = getProperty(this.properties::getUser,
-						this.dataSourceProperties::getUsername);
-				String password = getProperty(this.properties::getPassword,
-						this.dataSourceProperties::getPassword);
+		private DataSource configureDataSource(FluentConfiguration configuration,
+				FlywayProperties properties, DataSourceProperties dataSourceProperties,
+				DataSource flywayDataSource, DataSource dataSource) {
+			if (properties.isCreateDataSource()) {
+				String url = getProperty(properties::getUrl,
+						dataSourceProperties::getUrl);
+				String user = getProperty(properties::getUser,
+						dataSourceProperties::getUsername);
+				String password = getProperty(properties::getPassword,
+						dataSourceProperties::getPassword);
 				configuration.dataSource(url, user, password);
-				if (!CollectionUtils.isEmpty(this.properties.getInitSqls())) {
-					String initSql = StringUtils.collectionToDelimitedString(
-							this.properties.getInitSqls(), "\n");
+				if (!CollectionUtils.isEmpty(properties.getInitSqls())) {
+					String initSql = StringUtils
+							.collectionToDelimitedString(properties.getInitSqls(), "\n");
 					configuration.initSql(initSql);
 				}
 			}
-			else if (this.flywayDataSource != null) {
-				configuration.dataSource(this.flywayDataSource);
+			else if (flywayDataSource != null) {
+				configuration.dataSource(flywayDataSource);
 			}
 			else {
-				configuration.dataSource(this.dataSource);
+				configuration.dataSource(dataSource);
 			}
 			return configuration.getDataSource();
 		}
 
-		private void checkLocationExists(DataSource dataSource) {
-			if (this.properties.isCheckLocation()) {
+		private void checkLocationExists(DataSource dataSource,
+				FlywayProperties properties, ResourceLoader resourceLoader) {
+			if (properties.isCheckLocation()) {
 				String[] locations = new LocationResolver(dataSource)
-						.resolveLocations(this.properties.getLocations());
+						.resolveLocations(properties.getLocations());
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
-				boolean exists = hasAtLeastOneLocation(locations);
+				boolean exists = hasAtLeastOneLocation(resourceLoader, locations);
 				Assert.state(exists, () -> "Cannot find migrations location in: "
 						+ Arrays.asList(locations)
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
 
-		private void configureProperties(FluentConfiguration configuration) {
+		private void configureProperties(FluentConfiguration configuration,
+				FlywayProperties properties) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
-					.resolveLocations(this.properties.getLocations());
+					.resolveLocations(properties.getLocations());
 			map.from(locations).to(configuration::locations);
-			map.from(this.properties.getEncoding()).to(configuration::encoding);
-			map.from(this.properties.getConnectRetries())
-					.to(configuration::connectRetries);
-			map.from(this.properties.getSchemas()).as(StringUtils::toStringArray)
+			map.from(properties.getEncoding()).to(configuration::encoding);
+			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
+			map.from(properties.getSchemas()).as(StringUtils::toStringArray)
 					.to(configuration::schemas);
-			map.from(this.properties.getTable()).to(configuration::table);
-			map.from(this.properties.getBaselineDescription())
+			map.from(properties.getTable()).to(configuration::table);
+			map.from(properties.getBaselineDescription())
 					.to(configuration::baselineDescription);
-			map.from(this.properties.getBaselineVersion())
-					.to(configuration::baselineVersion);
-			map.from(this.properties.getInstalledBy()).to(configuration::installedBy);
-			map.from(this.properties.getPlaceholders()).to(configuration::placeholders);
-			map.from(this.properties.getPlaceholderPrefix())
+			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
+			map.from(properties.getInstalledBy()).to(configuration::installedBy);
+			map.from(properties.getPlaceholders()).to(configuration::placeholders);
+			map.from(properties.getPlaceholderPrefix())
 					.to(configuration::placeholderPrefix);
-			map.from(this.properties.getPlaceholderSuffix())
+			map.from(properties.getPlaceholderSuffix())
 					.to(configuration::placeholderSuffix);
-			map.from(this.properties.isPlaceholderReplacement())
+			map.from(properties.isPlaceholderReplacement())
 					.to(configuration::placeholderReplacement);
-			map.from(this.properties.getSqlMigrationPrefix())
+			map.from(properties.getSqlMigrationPrefix())
 					.to(configuration::sqlMigrationPrefix);
-			map.from(this.properties.getSqlMigrationSuffixes())
-					.as(StringUtils::toStringArray)
+			map.from(properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
 					.to(configuration::sqlMigrationSuffixes);
-			map.from(this.properties.getSqlMigrationSeparator())
+			map.from(properties.getSqlMigrationSeparator())
 					.to(configuration::sqlMigrationSeparator);
-			map.from(this.properties.getRepeatableSqlMigrationPrefix())
+			map.from(properties.getRepeatableSqlMigrationPrefix())
 					.to(configuration::repeatableSqlMigrationPrefix);
-			map.from(this.properties.getTarget()).to(configuration::target);
-			map.from(this.properties.isBaselineOnMigrate())
+			map.from(properties.getTarget()).to(configuration::target);
+			map.from(properties.isBaselineOnMigrate())
 					.to(configuration::baselineOnMigrate);
-			map.from(this.properties.isCleanDisabled()).to(configuration::cleanDisabled);
-			map.from(this.properties.isCleanOnValidationError())
+			map.from(properties.isCleanDisabled()).to(configuration::cleanDisabled);
+			map.from(properties.isCleanOnValidationError())
 					.to(configuration::cleanOnValidationError);
-			map.from(this.properties.isGroup()).to(configuration::group);
-			map.from(this.properties.isIgnoreMissingMigrations())
+			map.from(properties.isGroup()).to(configuration::group);
+			map.from(properties.isIgnoreMissingMigrations())
 					.to(configuration::ignoreMissingMigrations);
-			map.from(this.properties.isIgnoreIgnoredMigrations())
+			map.from(properties.isIgnoreIgnoredMigrations())
 					.to(configuration::ignoreIgnoredMigrations);
-			map.from(this.properties.isIgnorePendingMigrations())
+			map.from(properties.isIgnorePendingMigrations())
 					.to(configuration::ignorePendingMigrations);
-			map.from(this.properties.isIgnoreFutureMigrations())
+			map.from(properties.isIgnoreFutureMigrations())
 					.to(configuration::ignoreFutureMigrations);
-			map.from(this.properties.isMixed()).to(configuration::mixed);
-			map.from(this.properties.isOutOfOrder()).to(configuration::outOfOrder);
-			map.from(this.properties.isSkipDefaultCallbacks())
+			map.from(properties.isMixed()).to(configuration::mixed);
+			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
+			map.from(properties.isSkipDefaultCallbacks())
 					.to(configuration::skipDefaultCallbacks);
-			map.from(this.properties.isSkipDefaultResolvers())
+			map.from(properties.isSkipDefaultResolvers())
 					.to(configuration::skipDefaultResolvers);
-			map.from(this.properties.isValidateOnMigrate())
+			map.from(properties.isValidateOnMigrate())
 					.to(configuration::validateOnMigrate);
 		}
 
-		private void configureCallbacks(FluentConfiguration configuration) {
-			if (!this.callbacks.isEmpty()) {
-				configuration.callbacks(this.callbacks.toArray(new Callback[0]));
+		private void configureCallbacks(FluentConfiguration configuration,
+				List<Callback> callbacks) {
+			if (!callbacks.isEmpty()) {
+				configuration.callbacks(callbacks.toArray(new Callback[0]));
 			}
 		}
 
-		private void configureFlywayCallbacks(Flyway flyway) {
-			if (!this.flywayCallbacks.isEmpty()) {
-				if (!this.callbacks.isEmpty()) {
+		private void configureFlywayCallbacks(Flyway flyway, List<Callback> callbacks,
+				List<FlywayCallback> flywayCallbacks) {
+			if (!flywayCallbacks.isEmpty()) {
+				if (!callbacks.isEmpty()) {
 					throw new IllegalStateException(
 							"Found a mixture of Callback and FlywayCallback beans."
 									+ " One type must be used exclusively.");
 				}
-				flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
+				flyway.setCallbacks(flywayCallbacks.toArray(new FlywayCallback[0]));
 			}
 		}
 
@@ -274,9 +251,10 @@ public class FlywayAutoConfiguration {
 			return (value != null) ? value : defaultValue.get();
 		}
 
-		private boolean hasAtLeastOneLocation(String... locations) {
+		private boolean hasAtLeastOneLocation(ResourceLoader resourceLoader,
+				String... locations) {
 			for (String location : locations) {
-				if (this.resourceLoader.getResource(normalizePrefix(location)).exists()) {
+				if (resourceLoader.getResource(normalizePrefix(location)).exists()) {
 					return true;
 				}
 			}
@@ -289,8 +267,10 @@ public class FlywayAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
-			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
+		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
+			return new FlywayMigrationInitializer(flyway,
+					migrationStrategy.getIfAvailable());
 		}
 
 		/**

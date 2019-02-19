@@ -51,17 +51,11 @@ import org.springframework.context.annotation.Configuration;
 public class JmsHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
-	private final Map<String, ConnectionFactory> connectionFactories;
-
-	public JmsHealthIndicatorAutoConfiguration(
-			Map<String, ConnectionFactory> connectionFactories) {
-		this.connectionFactories = connectionFactories;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(name = "jmsHealthIndicator")
-	public HealthIndicator jmsHealthIndicator() {
-		return createHealthIndicator(this.connectionFactories);
+	public HealthIndicator jmsHealthIndicator(
+			Map<String, ConnectionFactory> connectionFactories) {
+		return createHealthIndicator(connectionFactories);
 	}
 
 }
