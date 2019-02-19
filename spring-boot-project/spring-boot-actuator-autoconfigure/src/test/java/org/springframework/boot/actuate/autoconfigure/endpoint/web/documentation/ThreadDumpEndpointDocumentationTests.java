@@ -84,20 +84,21 @@ public class ThreadDumpEndpointDocumentationTests
 										.description(
 												"Description of the object on which the "
 														+ "thread is blocked, if any.")
-										.optional(),
-								fieldWithPath("threads.[].lockInfo").description(
-										"Object for which the thread is blocked "
-												+ "waiting.")
-										.optional(),
+										.optional().type(JsonFieldType.STRING),
+								fieldWithPath("threads.[].lockInfo")
+										.description(
+												"Object for which the thread is blocked "
+														+ "waiting.")
+										.optional().type(JsonFieldType.OBJECT),
 								fieldWithPath("threads.[].lockInfo.className")
 										.description(
 												"Fully qualified class name of the lock"
 														+ " object.")
-										.optional(),
+										.optional().type(JsonFieldType.STRING),
 								fieldWithPath("threads.[].lockInfo.identityHashCode")
 										.description(
 												"Identity hash code of the lock object.")
-										.optional(),
+										.optional().type(JsonFieldType.NUMBER),
 								fieldWithPath("threads.[].lockedMonitors").description(
 										"Monitors locked by this thread, if any"),
 								fieldWithPath("threads.[].lockedMonitors.[].className")
