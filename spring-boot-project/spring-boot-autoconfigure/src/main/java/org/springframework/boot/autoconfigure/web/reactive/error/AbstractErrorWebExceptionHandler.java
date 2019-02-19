@@ -268,10 +268,10 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	private boolean isDisconnectedClientError(Throwable ex) {
 		String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
-		message = (message != null) ? message.toLowerCase() : "";
-		String className = ex.getClass().getSimpleName();
-		return (message.contains("broken pipe")
-				|| DISCONNECTED_CLIENT_EXCEPTIONS.contains(className));
+		if (message != null && message.toLowerCase().contains("broken pipe")) {
+			return true;
+		}
+		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName());
 	}
 
 	private void logError(ServerRequest request, ServerResponse response,

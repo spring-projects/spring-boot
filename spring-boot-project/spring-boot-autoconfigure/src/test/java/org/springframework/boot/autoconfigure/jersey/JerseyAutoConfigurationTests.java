@@ -40,7 +40,7 @@ public class JerseyAutoConfigurationTests {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class))
 			.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
-			.withUserConfiguration(ResourceConfig.class);
+			.withUserConfiguration(ResourceConfigConfiguration.class);
 
 	@Test
 	public void requestContextFilterRegistrationIsAutoConfigured() {

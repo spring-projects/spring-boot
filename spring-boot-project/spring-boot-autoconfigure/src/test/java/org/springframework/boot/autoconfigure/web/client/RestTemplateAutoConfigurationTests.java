@@ -136,7 +136,7 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenReactiveWebApplicationRestTemplateIsNotConfigured() {
+	public void whenReactiveWebApplicationRestTemplateBuilderIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(
 						AutoConfigurations.of(RestTemplateAutoConfiguration.class))
