@@ -147,6 +147,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.mockk</groupId>
+			<artifactId>mockk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<scope>test</scope>
@@ -185,11 +190,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.nhaarman</groupId>
-			<artifactId>mockito-kotlin</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
