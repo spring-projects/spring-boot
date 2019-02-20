@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("one.jar"),
-				this.temp.newFile("two.jar"));
+		getTask().providedClasspath(jarFile("one.jar"), jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNotNull();
@@ -51,9 +50,8 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("one.jar"));
-		getTask().setProvidedClasspath(
-				getTask().getProject().files(this.temp.newFile("two.jar")));
+		getTask().providedClasspath(jarFile("one.jar"));
+		getTask().setProvidedClasspath(getTask().getProject().files(jarFile("two.jar")));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
@@ -64,8 +62,8 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void providedClasspathCanBeSetUsingAnObject() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("one.jar"));
-		getTask().setProvidedClasspath(this.temp.newFile("two.jar"));
+		getTask().providedClasspath(jarFile("one.jar"));
+		getTask().setProvidedClasspath(jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
@@ -91,7 +89,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	public void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath()
 			throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().setExcludeDevtools(false);
 		executeTask();
 		assertThat(getTask().getArchivePath()).exists();
@@ -122,8 +120,8 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().classpath(this.temp.newFile("library.jar"));
-		getTask().providedClasspath(this.temp.newFile("provided-library.jar"));
+		getTask().classpath(jarFile("library.jar"));
+		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();
 		assertThat(getEntryNames(getTask().getArchivePath())).containsSubsequence(
 				"WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
