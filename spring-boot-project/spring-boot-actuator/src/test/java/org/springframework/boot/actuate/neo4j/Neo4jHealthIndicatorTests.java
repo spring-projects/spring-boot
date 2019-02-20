@@ -77,7 +77,7 @@ public class Neo4jHealthIndicatorTests {
 
 	@Test
 	public void neo4jDown() {
-		CypherException cypherException = new CypherException("Error executing Cypher",
+		CypherException cypherException = new CypherException(
 				"Neo.ClientError.Statement.SyntaxError",
 				"Unable to execute invalid Cypher");
 		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap()))

@@ -152,13 +152,9 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	@Test
 	public void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
-				.run((context) -> {
-					assertThatExceptionOfType(ClassNotFoundException.class)
-							.isThrownBy(() -> {
-								ClassUtils.forName(Gson.class.getName(),
-										context.getClassLoader());
-							});
-				});
+				.run((context) -> assertThatExceptionOfType(ClassNotFoundException.class)
+						.isThrownBy(() -> ClassUtils.forName(Gson.class.getName(),
+								context.getClassLoader())));
 	}
 
 	@Test
