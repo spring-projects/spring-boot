@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,9 @@ import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SpecificEndpoint;
 import org.springframework.boot.configurationsample.endpoint.incremental.IncrementalEndpoint;
+import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
+import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
+import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
@@ -292,7 +295,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("collection.doubles",
 				"java.util.List<java.lang.Double>"));
 		assertThat(metadata).has(Metadata.withProperty("collection.names-to-holders",
-				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties.Holder<java.lang.String>>"));
+				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties$Holder<java.lang.String>>"));
 	}
 
 	@Test
@@ -505,6 +508,40 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void simpleGenericProperties() {
+		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class,
+				SimpleGenericProperties.class);
+		assertThat(metadata).has(
+				Metadata.withGroup("generic").fromSource(SimpleGenericProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.name", String.class)
+				.fromSource(SimpleGenericProperties.class)
+				.withDescription("Generic name.").withDefaultValue(null));
+		assertThat(metadata).has(Metadata
+				.withProperty("generic.mappings",
+						"java.util.Map<java.lang.Integer,java.time.Duration>")
+				.fromSource(SimpleGenericProperties.class)
+				.withDescription("Generic mappings.").withDefaultValue(null));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	public void unresolvedGenericProperties() {
+		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class,
+				UnresolvedGenericProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("generic")
+				.fromSource(UnresolvedGenericProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.name", String.class)
+				.fromSource(UnresolvedGenericProperties.class)
+				.withDescription("Generic name.").withDefaultValue(null));
+		assertThat(metadata).has(Metadata
+				.withProperty("generic.mappings",
+						"java.util.Map<java.lang.Number,java.lang.Object>")
+				.fromSource(UnresolvedGenericProperties.class)
+				.withDescription("Generic mappings.").withDefaultValue(null));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
 	public void genericTypes() {
 		ConfigurationMetadata metadata = compile(GenericConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("generic").ofType(
@@ -518,7 +555,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.name")
 				.ofType(String.class).fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar")
-				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig.Bar<java.lang.Integer>>")
+				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig$Bar<java.lang.Integer>>")
 				.fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-integer")
 				.ofType("java.util.Map<java.lang.String,java.lang.Integer>")
