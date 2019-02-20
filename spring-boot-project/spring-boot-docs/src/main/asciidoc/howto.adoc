@@ -1154,9 +1154,15 @@ tend to send accept headers that prefer XML.
 
 [[howto-write-an-xml-rest-service]]
 === Write an XML REST Service
-If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpath, you
+If you have the Jackson XML extension (`jackson-dataformat-xml`) or JAXB on the classpath, you
 can use it to render XML responses. The previous example that we used for JSON would
-work. To use the Jackson XML renderer, add the following dependency to your project:
+work.
+
+NOTE: To get the server to render XML instead of JSON, you might have to send an
+`Accept: text/xml` header (or use a browser).
+
+==== Jackson XML
+To use the Jackson XML renderer, add the following dependency to your project:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1166,8 +1172,9 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
-used, with the additional requirement of having `MyThing` annotated as
+==== JAXB
+If Jackson's XML extension is not available, JAXB is tried next,
+with the additional requirement of having `MyThing` annotated as
 `@XmlRootElement`, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -1179,9 +1186,15 @@ used, with the additional requirement of having `MyThing` annotated as
 	}
 ----
 
-To get the server to render XML instead of JSON, you might have to send an
-`Accept: text/xml` header (or use a browser).
+To use JAXB as XML renderer, add the following dependency to your project:
 
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.glassfish.jaxb</groupId>
+		<artifactId>jaxb-runtime</artifactId>
+	</dependency>
+----
 
 
 [[howto-customize-the-jackson-objectmapper]]
