@@ -679,15 +679,15 @@ public class RepackagerTests {
 	public void kotlinModuleMetadataMovesBeneathBootInfClassesWhenRepackaged()
 			throws Exception {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
-		this.testJarFile.addFile("META-INF/test.kotlin-module",
-				this.temporaryFolder.newFile("test.kotlin-module"));
+		this.testJarFile.addFile("META-INF/test.kotlin_module",
+				this.temporaryFolder.newFile("test.kotlin_module"));
 		File source = this.testJarFile.getFile();
 		File dest = this.temporaryFolder.newFile("dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		try (JarFile jarFile = new JarFile(dest)) {
-			assertThat(jarFile.getEntry("META-INF/test.kotlin-module")).isNull();
-			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/test.kotlin-module"))
+			assertThat(jarFile.getEntry("META-INF/test.kotlin_module")).isNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/test.kotlin_module"))
 					.isNotNull();
 		}
 	}
