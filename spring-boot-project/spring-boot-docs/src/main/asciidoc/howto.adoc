@@ -1167,7 +1167,7 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
+If Jackson's XML extension is not available, JAXB (provided by default in the JDK 8) is
 used, with the additional requirement of having `MyThing` annotated as
 `@XmlRootElement`, as shown in the following example:
 
