@@ -381,7 +381,7 @@ public class Repackager {
 			}
 			if ((entry.getName().startsWith("META-INF/")
 					&& !entry.getName().equals("META-INF/aop.xml")
-					&& !entry.getName().endsWith(".kotlin-module"))
+					&& !entry.getName().endsWith(".kotlin_module"))
 					|| entry.getName().startsWith("BOOT-INF/")
 					|| entry.getName().equals("module-info.class")) {
 				return entry;
