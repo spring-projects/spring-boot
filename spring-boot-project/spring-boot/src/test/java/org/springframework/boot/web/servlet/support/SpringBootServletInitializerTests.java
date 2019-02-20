@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.servlet.support;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.ServletContext;
@@ -25,7 +24,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -100,13 +98,11 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void mainClassHasSensibleDefault() {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
-				.getPropertyValue("mainApplicationClass");
-		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
+		assertThat(this.application).hasFieldOrPropertyWithValue("mainApplicationClass",
+				WithConfigurationAnnotation.class);
 	}
 
 	@Test
@@ -138,8 +134,8 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void servletContextPropertySourceIsAvailablePriorToRefresh() {
 		ServletContext servletContext = mock(ServletContext.class);
-		given(servletContext.getInitParameterNames()).willReturn(
-				Collections.enumeration(Arrays.asList("spring.profiles.active")));
+		given(servletContext.getInitParameterNames()).willReturn(Collections
+				.enumeration(Collections.singletonList("spring.profiles.active")));
 		given(servletContext.getInitParameter("spring.profiles.active"))
 				.willReturn("from-servlet-context");
 		given(servletContext.getAttributeNames())

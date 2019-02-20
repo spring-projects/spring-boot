@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -178,9 +177,8 @@ public class DispatcherServletAutoConfigurationTests {
 					.containsExactly(false);
 			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails")
 					.containsExactly(false);
-			assertThat(new DirectFieldAccessor(
-					context.getBean("dispatcherServletRegistration"))
-							.getPropertyValue("loadOnStartup")).isEqualTo(-1);
+			assertThat(context.getBean("dispatcherServletRegistration"))
+					.hasFieldOrPropertyWithValue("loadOnStartup", -1);
 		});
 	}
 
@@ -201,9 +199,8 @@ public class DispatcherServletAutoConfigurationTests {
 							.containsExactly(false);
 					assertThat(dispatcherServlet).extracting("dispatchTraceRequest")
 							.containsExactly(true);
-					assertThat(new DirectFieldAccessor(
-							context.getBean("dispatcherServletRegistration"))
-									.getPropertyValue("loadOnStartup")).isEqualTo(5);
+					assertThat(context.getBean("dispatcherServletRegistration"))
+							.hasFieldOrPropertyWithValue("loadOnStartup", 5);
 				});
 	}
 

@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -93,7 +94,8 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void createDataSourceWithUser() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
+				.withPropertyValues(
+						"spring.datasource.url:jdbc:hsqldb:mem:" + UUID.randomUUID(),
 						"spring.flyway.user:sa")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);

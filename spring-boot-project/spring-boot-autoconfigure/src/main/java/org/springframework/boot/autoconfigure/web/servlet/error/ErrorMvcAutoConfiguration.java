@@ -234,7 +234,8 @@ public class ErrorMvcAutoConfiguration {
 				builder.append("<div>").append(htmlEscape(message)).append("</div>");
 			}
 			if (trace != null) {
-				builder.append("<div>").append(htmlEscape(trace)).append("</div>");
+				builder.append("<div style='white-space:pre-wrap;'>")
+						.append(htmlEscape(trace)).append("</div>");
 			}
 			builder.append("</body></html>");
 			response.getWriter().append(builder.toString());

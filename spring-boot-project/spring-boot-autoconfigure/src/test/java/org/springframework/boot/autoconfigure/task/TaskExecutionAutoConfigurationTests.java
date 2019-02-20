@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,13 @@ import java.util.function.Consumer;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -39,6 +38,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -50,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link TaskExecutionAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Camille Vienot
  */
 public class TaskExecutionAutoConfigurationTests {
 
@@ -58,7 +59,7 @@ public class TaskExecutionAutoConfigurationTests {
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
 	@Rule
-	public final OutputCapture output = new OutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {
@@ -68,15 +69,21 @@ public class TaskExecutionAutoConfigurationTests {
 						"spring.task.execution.pool.max-size=4",
 						"spring.task.execution.pool.allow-core-thread-timeout=true",
 						"spring.task.execution.pool.keep-alive=5s",
+						"spring.task.execution.shutdown.await-termination=true",
+						"spring.task.execution.shutdown.await-termination-period=30s",
 						"spring.task.execution.thread-name-prefix=mytest-")
 				.run(assertTaskExecutor((taskExecutor) -> {
-					DirectFieldAccessor dfa = new DirectFieldAccessor(taskExecutor);
-					assertThat(dfa.getPropertyValue("queueCapacity")).isEqualTo(10);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity",
+							10);
 					assertThat(taskExecutor.getCorePoolSize()).isEqualTo(2);
 					assertThat(taskExecutor.getMaxPoolSize()).isEqualTo(4);
-					assertThat(dfa.getPropertyValue("allowCoreThreadTimeOut"))
-							.isEqualTo(true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue(
+							"waitForTasksToCompleteOnShutdown", true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
 					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				}));
 	}
@@ -106,7 +113,6 @@ public class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	public void taskExecutorAutoConfigured() {
-		this.output.reset();
 		this.contextRunner.run((context) -> {
 			assertThat(this.output.toString())
 					.doesNotContain("Initializing ExecutorService");
@@ -147,6 +153,21 @@ public class TaskExecutionAutoConfigurationTests {
 				.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
+					TestBean bean = context.getBean(TestBean.class);
+					String text = bean.echo("something").get();
+					assertThat(text).contains("task-test-").contains("something");
+				});
+	}
+
+	@Test
+	public void enableAsyncUsesAutoConfiguredOneByDefaultEvenThoughSchedulingIsConfigured() {
+		this.contextRunner
+				.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
+				.withConfiguration(
+						AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+				.withUserConfiguration(AsyncConfiguration.class,
+						SchedulingConfiguration.class, TestBean.class)
+				.run((context) -> {
 					TestBean bean = context.getBean(TestBean.class);
 					String text = bean.echo("something").get();
 					assertThat(text).contains("task-test-").contains("something");
@@ -207,6 +228,12 @@ public class TaskExecutionAutoConfigurationTests {
 	@Configuration
 	@EnableAsync
 	static class AsyncConfiguration {
+
+	}
+
+	@Configuration
+	@EnableScheduling
+	static class SchedulingConfiguration {
 
 	}
 

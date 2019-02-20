@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.boot.testsupport.BuildOutput;
+
 /**
  * {@link AbstractApplicationLauncher} that launches a packaged Spring Boot application
  * using {@code java -jar}.
@@ -28,8 +30,9 @@ import java.util.List;
  */
 class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 
-	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder) {
-		super(applicationBuilder);
+	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder,
+			BuildOutput buildOutput) {
+		super(applicationBuilder, buildOutput);
 	}
 
 	@Override
@@ -43,8 +46,9 @@ class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
-	protected List<String> getArguments(File archive) {
-		return Arrays.asList("-jar", archive.getAbsolutePath());
+	protected List<String> getArguments(File archive, File serverPortFile) {
+		return Arrays.asList("-jar", archive.getAbsolutePath(),
+				serverPortFile.getAbsolutePath());
 	}
 
 }

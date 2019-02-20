@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -58,6 +61,7 @@ import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
@@ -106,7 +110,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  *   // ... Bean definitions
  *
- *   public static void main(String[] args) throws Exception {
+ *   public static void main(String[] args) {
  *     SpringApplication.run(MyApplication.class, args);
  *   }
  * }
@@ -117,7 +121,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * customized before being run:
  *
  * <pre class="code">
- * public static void main(String[] args) throws Exception {
+ * public static void main(String[] args) {
  *   SpringApplication application = new SpringApplication(MyApplication.class);
  *   // ... customize application settings here
  *   application.run(args)
@@ -234,6 +238,8 @@ public class SpringApplication {
 	private boolean allowBeanDefinitionOverriding;
 
 	private boolean isCustomEnvironment = false;
+
+	private boolean lazyInitialization = false;
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -385,6 +391,10 @@ public class SpringApplication {
 		if (beanFactory instanceof DefaultListableBeanFactory) {
 			((DefaultListableBeanFactory) beanFactory)
 					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+		}
+		if (this.lazyInitialization) {
+			context.addBeanFactoryPostProcessor(
+					new LazyInitializationBeanFactoryPostProcessor());
 		}
 		// Load the sources
 		Set<Object> sources = getAllSources();
@@ -980,6 +990,16 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Sets if beans should be initialized lazily. Defaults to {@code false}.
+	 * @param lazyInitialization if initialization should be lazy
+	 * @since 2.2
+	 * @see BeanDefinition#setLazyInit(boolean)
+	 */
+	public void setLazyInitialization(boolean lazyInitialization) {
+		this.lazyInitialization = lazyInitialization;
+	}
+
+	/**
 	 * Sets if the application is headless and should not instantiate AWT. Defaults to
 	 * {@code true} to prevent java icons appearing.
 	 * @param headless if the application is headless
@@ -1185,8 +1205,7 @@ public class SpringApplication {
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new ArrayList<>();
-		this.initializers.addAll(initializers);
+		this.initializers = new ArrayList<>(initializers);
 	}
 
 	/**
@@ -1213,8 +1232,7 @@ public class SpringApplication {
 	 * @param listeners the listeners to set
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
-		this.listeners = new ArrayList<>();
-		this.listeners.addAll(listeners);
+		this.listeners = new ArrayList<>(listeners);
 	}
 
 	/**
@@ -1322,10 +1340,27 @@ public class SpringApplication {
 	}
 
 	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
-		List<E> list = new ArrayList<>();
-		list.addAll(elements);
+		List<E> list = new ArrayList<>(elements);
 		list.sort(AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<>(list);
+	}
+
+	private static final class LazyInitializationBeanFactoryPostProcessor
+			implements BeanFactoryPostProcessor, Ordered {
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+			for (String name : beanFactory.getBeanDefinitionNames()) {
+				beanFactory.getBeanDefinition(name).setLazyInit(true);
+			}
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
 	}
 
 }

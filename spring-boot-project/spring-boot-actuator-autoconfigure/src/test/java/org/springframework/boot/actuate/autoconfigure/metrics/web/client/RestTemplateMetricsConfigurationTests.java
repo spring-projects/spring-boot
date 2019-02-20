@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -41,6 +42,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
+ * @author Raheela Aslam
  */
 public class RestTemplateMetricsConfigurationTests {
 
@@ -50,7 +52,7 @@ public class RestTemplateMetricsConfigurationTests {
 					HttpClientMetricsAutoConfiguration.class));
 
 	@Rule
-	public OutputCapture out = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -79,9 +81,8 @@ public class RestTemplateMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.out.toString()).contains(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString())
+					assertThat(this.output.toString()).contains(
+							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.contains("Are you using 'uriVariables'?");
 				});
 	}
@@ -93,11 +94,20 @@ public class RestTemplateMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.out.toString()).doesNotContain(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString())
+					assertThat(this.output.toString()).doesNotContain(
+							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
+	}
+
+	@Test
+	public void backsOffWhenRestTemplateBuilderIsMissing() {
+		new ApplicationContextRunner().with(MetricsRun.simple())
+				.withConfiguration(
+						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
+						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(

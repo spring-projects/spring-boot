@@ -85,11 +85,9 @@ public class ServletComponentScanRegistrarTests {
 	@Test
 	public void packagesConfiguredWithBothValueAndBasePackages() {
 		assertThatExceptionOfType(AnnotationConfigurationException.class)
-				.isThrownBy(() -> {
-					this.context = new AnnotationConfigApplicationContext(
-							ValueAndBasePackages.class);
-				}).withMessageContaining("'value'")
-				.withMessageContaining("'basePackages'")
+				.isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(
+						ValueAndBasePackages.class))
+				.withMessageContaining("'value'").withMessageContaining("'basePackages'")
 				.withMessageContaining("com.example.foo")
 				.withMessageContaining("com.example.bar");
 	}

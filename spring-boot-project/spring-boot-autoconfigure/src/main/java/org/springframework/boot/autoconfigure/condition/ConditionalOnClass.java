@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,12 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that only matches when the specified classes are on the classpath.
+ * <p>
+ * A {@link #value()} can be safely specified on {@code @Configuration} classes as the
+ * annotation metadata is parsed by using ASM before the class is loaded. Extra care is
+ * required when placed on {@code @Bean} methods, consider isolating the condition in a
+ * separate {@code Configuration} class, in particular if the return type of the method
+ * matches the {@link #value target of the condition}.
  *
  * @author Phillip Webb
  */

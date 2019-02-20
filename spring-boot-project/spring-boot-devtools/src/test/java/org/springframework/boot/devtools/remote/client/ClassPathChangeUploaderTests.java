@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.ConnectException;
+import java.net.SocketException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -111,10 +111,10 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	@Test
-	public void retriesOnConnectException() throws Exception {
+	public void retriesOnSocketException() throws Exception {
 		File sourceFolder = this.temp.newFolder();
 		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
-		this.requestFactory.willRespond(new ConnectException());
+		this.requestFactory.willRespond(new SocketException());
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
 		assertThat(this.requestFactory.getExecutedRequests()).hasSize(2);

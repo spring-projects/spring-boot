@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,15 +90,11 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		Assert.state(
-				metadata instanceof MethodMetadata
-						&& metadata.isAnnotated(Bean.class.getName()),
-				"OnEnabledEndpointCondition may only be used on @Bean methods");
-		Class<?> endpointType = getEndpointType(context, (MethodMetadata) metadata);
-		return getEndpointAttributes(endpointType);
+		return getEndpointAttributes(getEndpointType(context, metadata));
 	}
 
-	private Class<?> getEndpointType(ConditionContext context, MethodMetadata metadata) {
+	private Class<?> getEndpointType(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata
 				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName());
 		if (attributes != null && attributes.containsKey("endpoint")) {
@@ -107,15 +103,19 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 				return target;
 			}
 		}
-		// We should be safe to load at this point since we are in the REGISTER_BEAN phase
+		Assert.state(
+				metadata instanceof MethodMetadata
+						&& metadata.isAnnotated(Bean.class.getName()),
+				"OnEnabledEndpointCondition must be used on @Bean methods when the endpoint is not specified");
+		MethodMetadata methodMetadata = (MethodMetadata) metadata;
 		try {
-			return ClassUtils.forName(metadata.getReturnTypeName(),
+			return ClassUtils.forName(methodMetadata.getReturnTypeName(),
 					context.getClassLoader());
 		}
 		catch (Throwable ex) {
 			throw new IllegalStateException("Failed to extract endpoint id for "
-					+ metadata.getDeclaringClassName() + "." + metadata.getMethodName(),
-					ex);
+					+ methodMetadata.getDeclaringClassName() + "."
+					+ methodMetadata.getMethodName(), ex);
 		}
 	}
 

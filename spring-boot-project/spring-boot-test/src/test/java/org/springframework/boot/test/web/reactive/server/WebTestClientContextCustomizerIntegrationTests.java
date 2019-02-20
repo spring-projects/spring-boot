@@ -41,9 +41,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class WebTestClientContextCustomizerIntegrationTests {
 
 	@Autowired

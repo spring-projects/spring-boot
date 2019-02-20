@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -234,11 +235,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<optional>true</optional>
@@ -259,13 +255,18 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -476,8 +477,13 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
+			<artifactId>log4j-to-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -546,6 +552,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-resource-server</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-jose</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<scope>test</scope>
@@ -602,20 +618,27 @@
 								<configuration>
 									<exportAntProperties>true</exportAntProperties>
 									<target>
-										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<taskdef
+											resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil"
+											classname="ise.antelope.tasks.StringUtilTask" />
 										<var name="version-type" value="${project.version}" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp=".*\.(.*)"
+											replace="\1" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp="(M)\d+"
+											replace="MILESTONE" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp="(RC)\d+"
+											replace="MILESTONE" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp="BUILD-(.*)"
+											replace="SNAPSHOT" />
 										<var name="github-tag" value="v${project.version}" />
-										<propertyregex property="github-tag" override="true"
-											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+										<propertyregex property="github-tag"
+											override="true" input="${github-tag}" regexp=".*SNAPSHOT"
+											replace="master" />
 									</target>
 								</configuration>
 							</execution>
@@ -629,10 +652,12 @@
 									<target>
 										<zip
 											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
-											<zipfileset dir="${project.build.directory}/generated-docs"
+											<zipfileset
+												dir="${project.build.directory}/generated-docs"
 												includes="index.html" prefix="html" />
 											<mappedresources>
-												<fileset dir="${project.build.directory}/generated-docs"
+												<fileset
+													dir="${project.build.directory}/generated-docs"
 													includes="index.pdf" />
 												<globmapper from="index.pdf"
 													to="pdf/spring-boot-actuator-web-api.pdf" />

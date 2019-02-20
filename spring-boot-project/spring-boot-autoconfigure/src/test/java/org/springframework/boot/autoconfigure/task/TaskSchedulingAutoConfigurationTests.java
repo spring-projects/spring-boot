@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.task;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.Test;
 
@@ -57,11 +59,18 @@ public class TaskSchedulingAutoConfigurationTests {
 	public void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
 		this.contextRunner
 				.withPropertyValues(
+						"spring.task.scheduling.shutdown.await-termination=true",
+						"spring.task.scheduling.shutdown.await-termination-period=30s",
 						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
 				.withUserConfiguration(SchedulingConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
+					TaskExecutor taskExecutor = context.getBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
 					Thread.sleep(15);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue(
+							"waitForTasksToCompleteOnShutdown", true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
 					assertThat(bean.threadNames)
 							.allMatch((name) -> name.contains("scheduling-test-"));
 				});
@@ -97,6 +106,19 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
+	public void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
+				ScheduledExecutorServiceConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(TaskScheduler.class);
+					assertThat(context).hasSingleBean(ScheduledExecutorService.class);
+					TestBean bean = context.getBean(TestBean.class);
+					Thread.sleep(15);
+					assertThat(bean.threadNames)
+							.allMatch((name) -> name.contains("pool-"));
+				});
+	}
+
+	@Test
 	public void enableSchedulingWithConfigurerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
 				SchedulingConfigurerConfiguration.class).run((context) -> {
@@ -119,6 +141,16 @@ public class TaskSchedulingAutoConfigurationTests {
 		@Bean
 		public TaskScheduler customTaskScheduler() {
 			return new TestTaskScheduler();
+		}
+
+	}
+
+	@Configuration
+	static class ScheduledExecutorServiceConfiguration {
+
+		@Bean
+		public ScheduledExecutorService customScheduledExecutorService() {
+			return Executors.newScheduledThreadPool(2);
 		}
 
 	}

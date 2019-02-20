@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.junit.rules.ExternalResource;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -40,12 +41,16 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 
 	private final ApplicationBuilder applicationBuilder;
 
+	private final BuildOutput buildOutput;
+
 	private Process process;
 
 	private int httpPort;
 
-	protected AbstractApplicationLauncher(ApplicationBuilder applicationBuilder) {
+	protected AbstractApplicationLauncher(ApplicationBuilder applicationBuilder,
+			BuildOutput buildOutput) {
 		this.applicationBuilder = applicationBuilder;
+		this.buildOutput = buildOutput;
 	}
 
 	@Override
@@ -62,7 +67,7 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		return this.httpPort;
 	}
 
-	protected abstract List<String> getArguments(File archive);
+	protected abstract List<String> getArguments(File archive, File serverPortFile);
 
 	protected abstract File getWorkingDirectory();
 
@@ -70,14 +75,12 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 
 	private Process startApplication() throws Exception {
 		File workingDirectory = getWorkingDirectory();
-		File serverPortFile = (workingDirectory != null)
-				? new File(workingDirectory, "target/server.port")
-				: new File("target/server.port");
+		File serverPortFile = new File(this.buildOutput.getRootLocation(), "server.port");
 		serverPortFile.delete();
 		File archive = this.applicationBuilder.buildApplication();
 		List<String> arguments = new ArrayList<>();
 		arguments.add(System.getProperty("java.home") + "/bin/java");
-		arguments.addAll(getArguments(archive));
+		arguments.addAll(getArguments(archive, serverPortFile));
 		ProcessBuilder processBuilder = new ProcessBuilder(
 				StringUtils.toStringArray(arguments));
 		if (workingDirectory != null) {

@@ -18,7 +18,9 @@ package org.springframework.boot.cli;
 
 import java.io.IOException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
@@ -36,7 +38,10 @@ import static org.junit.Assert.assertThat;
  */
 public class CommandLineIT {
 
-	private final CommandLineInvoker cli = new CommandLineInvoker();
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
+	private final CommandLineInvoker cli = new CommandLineInvoker(this.temp);
 
 	@Test
 	public void hintProducesListOfValidCommands()

@@ -61,13 +61,13 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
 public class MappingsEndpointServletDocumentationTests
 		extends AbstractEndpointDocumentationTests {
 
 	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
 	@LocalServerPort
 	private int port;
@@ -150,12 +150,10 @@ public class MappingsEndpointServletDocumentationTests
 						.description("Details of the method, if any, "
 								+ "that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className")
-						.type(JsonFieldType.STRING)
 						.description("Fully qualified name of the class of the method."),
 				fieldWithPath("*.[].details.handlerMethod.name")
-						.type(JsonFieldType.STRING).description("Name of the method."),
+						.description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor")
-						.type(JsonFieldType.STRING)
 						.description("Descriptor of the method as specified in the Java "
 								+ "Language Specification."));
 		dispatcherServletFields.addAll(handlerMethod);

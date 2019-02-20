@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
@@ -30,12 +31,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TaskExecutor}.
  *
  * @author Stephane Nicoll
+ * @author Camille Vienot
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
@@ -72,6 +75,9 @@ public class TaskExecutionAutoConfiguration {
 		builder = builder.maxPoolSize(pool.getMaxSize());
 		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 		builder = builder.keepAlive(pool.getKeepAlive());
+		Shutdown shutdown = this.properties.getShutdown();
+		builder = builder.awaitTermination(shutdown.isAwaitTermination());
+		builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 		builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
 		builder = builder.customizers(this.taskExecutorCustomizers);
 		builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
@@ -79,7 +85,8 @@ public class TaskExecutionAutoConfiguration {
 	}
 
 	@Lazy
-	@Bean(name = APPLICATION_TASK_EXECUTOR_BEAN_NAME)
+	@Bean(name = { APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+			AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
 	@ConditionalOnMissingBean(Executor.class)
 	public ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder builder) {
 		return builder.build();

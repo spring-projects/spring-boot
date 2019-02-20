@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
@@ -62,19 +63,11 @@ class DataSourceJmxConfiguration {
 
 		@PostConstruct
 		public void validateMBeans() {
-			HikariDataSource hikariDataSource = unwrapHikariDataSource();
+			HikariDataSource hikariDataSource = DataSourceUnwrapper
+					.unwrap(this.dataSource, HikariDataSource.class);
 			if (hikariDataSource != null && hikariDataSource.isRegisterMbeans()) {
 				this.mBeanExporter
 						.ifUnique((exporter) -> exporter.addExcludedBean("dataSource"));
-			}
-		}
-
-		private HikariDataSource unwrapHikariDataSource() {
-			try {
-				return this.dataSource.unwrap(HikariDataSource.class);
-			}
-			catch (SQLException ex) {
-				return null;
 			}
 		}
 
@@ -82,16 +75,18 @@ class DataSourceJmxConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled")
-	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
+	@ConditionalOnClass(DataSourceProxy.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class TomcatDataSourceJmxConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "dataSourceMBean")
 		public Object dataSourceMBean(DataSource dataSource) {
-			if (dataSource instanceof DataSourceProxy) {
+			DataSourceProxy dataSourceProxy = DataSourceUnwrapper.unwrap(dataSource,
+					DataSourceProxy.class);
+			if (dataSourceProxy != null) {
 				try {
-					return ((DataSourceProxy) dataSource).createPool().getJmxPool();
+					return dataSourceProxy.createPool().getJmxPool();
 				}
 				catch (SQLException ex) {
 					logger.warn("Cannot expose DataSource to JMX (could not connect)");

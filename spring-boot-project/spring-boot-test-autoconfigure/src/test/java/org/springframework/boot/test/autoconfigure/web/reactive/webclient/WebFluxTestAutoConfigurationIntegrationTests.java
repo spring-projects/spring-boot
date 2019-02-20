@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
@@ -51,6 +52,13 @@ public class WebFluxTestAutoConfigurationIntegrationTests {
 	public void validationAutoConfigurationIsImported() {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(ValidationAutoConfiguration.class));
+	}
+
+	@Test
+	public void whatever() {
+		WebTestClient client = this.applicationContext.getBean(WebTestClient.class);
+
+		System.out.println(client);
 	}
 
 }

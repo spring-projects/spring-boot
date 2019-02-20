@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(Timed.class)
+@ConditionalOnEnabledEndpoint(endpoint = MetricsEndpoint.class)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class,
 		CompositeMeterRegistryAutoConfiguration.class })
 public class MetricsEndpointAutoConfiguration {
@@ -44,7 +45,6 @@ public class MetricsEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	public MetricsEndpoint metricsEndpoint(MeterRegistry registry) {
 		return new MetricsEndpoint(registry);
 	}

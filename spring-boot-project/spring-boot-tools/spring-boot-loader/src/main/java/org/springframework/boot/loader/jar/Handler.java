@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.loader.jar;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -57,20 +56,6 @@ public class Handler extends URLStreamHandler {
 
 	private static final String[] FALLBACK_HANDLERS = {
 			"sun.net.www.protocol.jar.Handler" };
-
-	private static final Method OPEN_CONNECTION_METHOD;
-
-	static {
-		Method method = null;
-		try {
-			method = URLStreamHandler.class.getDeclaredMethod("openConnection",
-					URL.class);
-		}
-		catch (Exception ex) {
-			// Swallow and ignore
-		}
-		OPEN_CONNECTION_METHOD = method;
-	}
 
 	private static SoftReference<Map<File, JarFile>> rootFileCache;
 
@@ -159,12 +144,7 @@ public class Handler extends URLStreamHandler {
 
 	private URLConnection openConnection(URLStreamHandler handler, URL url)
 			throws Exception {
-		if (OPEN_CONNECTION_METHOD == null) {
-			throw new IllegalStateException(
-					"Unable to invoke fallback open connection method");
-		}
-		OPEN_CONNECTION_METHOD.setAccessible(true);
-		return (URLConnection) OPEN_CONNECTION_METHOD.invoke(handler, url);
+		return new URL(null, url.toExternalForm(), handler).openConnection();
 	}
 
 	@Override

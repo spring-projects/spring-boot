@@ -16,7 +16,6 @@
 		<gradle.executable>./gradlew</gradle.executable>
 		<gradle.task>build</gradle.task>
 		<skip.gradle.build>false</skip.gradle.build>
-		<kotlin.version>1.2.20</kotlin.version>
 	</properties>
 	<dependencies>
 		<dependency>

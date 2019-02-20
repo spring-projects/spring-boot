@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.devtools.remote.client;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -117,9 +117,10 @@ public class ClassPathChangeUploader
 					logUpload(classLoaderFiles);
 					return;
 				}
-				catch (ConnectException ex) {
-					logger.warn("Failed to connect when uploading to " + this.uri
+				catch (SocketException ex) {
+					logger.warn("A failure occurred when uploading to " + this.uri
 							+ ". Upload will be retried in 2 seconds");
+					logger.debug("Upload failure", ex);
 					Thread.sleep(2000);
 				}
 			}

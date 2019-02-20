@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -49,6 +49,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
+import org.apache.tomcat.JarScanType;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +65,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -276,19 +276,14 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	public void primaryConnectorPortClashThrowsIllegalStateException()
-			throws IOException {
+	public void primaryConnectorPortClashThrowsWebServerException() throws IOException {
 		doWithBlockedPort((port) -> {
 			TomcatServletWebServerFactory factory = getFactory();
 			factory.setPort(port);
-			try {
+			assertThatExceptionOfType(WebServerException.class).isThrownBy(() -> {
 				this.webServer = factory.getWebServer();
 				this.webServer.start();
-				fail();
-			}
-			catch (WebServerException ex) {
-				// Ignore
-			}
+			});
 		});
 	}
 
@@ -399,7 +394,6 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void tldSkipPatternsShouldBeAppliedToContextJarScanner() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.addTldSkipPatterns("foo.jar", "bar.jar");
@@ -408,9 +402,9 @@ public class TomcatServletWebServerFactoryTests
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
-		Set<String> tldSkipSet = (Set<String>) ReflectionTestUtils.getField(jarScanFilter,
-				"tldSkipSet");
-		assertThat(tldSkipSet).contains("foo.jar", "bar.jar");
+		assertThat(jarScanFilter.check(JarScanType.TLD, "foo.jar")).isFalse();
+		assertThat(jarScanFilter.check(JarScanType.TLD, "bar.jar")).isFalse();
+		assertThat(jarScanFilter.check(JarScanType.TLD, "test.jar")).isTrue();
 	}
 
 	@Test
@@ -432,9 +426,8 @@ public class TomcatServletWebServerFactoryTests
 				((StandardContext) context).setFailCtxIfServletStartFails(true);
 			}
 		});
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(this.webServer::start);
 	}
@@ -447,10 +440,21 @@ public class TomcatServletWebServerFactoryTests
 				((StandardContext) context).setFailCtxIfServletStartFails(false);
 			}
 		});
-		this.webServer = factory.getWebServer((context) -> {
-			context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0);
-		});
+		this.webServer = factory.getWebServer((context) -> context
+				.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		this.webServer.start();
+	}
+
+	@Test
+	public void referenceClearingIsDisabled() {
+		TomcatServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
+		StandardContext context = (StandardContext) tomcat.getHost().findChildren()[0];
+		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
+		assertThat(context.getClearReferencesRmiTargets()).isFalse();
+		assertThat(context.getClearReferencesThreadLocals()).isFalse();
 	}
 
 	@Override
@@ -465,13 +469,15 @@ public class TomcatServletWebServerFactoryTests
 		return (JspServlet) standardWrapper.getServlet();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
 		Context context = (Context) ((TomcatWebServer) this.webServer).getTomcat()
 				.getHost().findChildren()[0];
-		return (Map<String, String>) ReflectionTestUtils.getField(context,
-				"mimeMappings");
+		Map<String, String> mimeMappings = new HashMap<>();
+		for (String extension : context.findMimeMappings()) {
+			mimeMappings.put(extension, context.findMimeMapping(extension));
+		}
+		return mimeMappings;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.springframework.core.env.Environment;
@@ -25,11 +26,12 @@ import org.springframework.util.StringUtils;
 
 /**
  * A reference to a log output file. Log output files are specified using
- * {@code logging.file} or {@code logging.path} {@link Environment} properties. If the
- * {@code logging.file} property is not specified {@code "spring.log"} will be written in
- * the {@code logging.path} directory.
+ * {@code logging.file.name} or {@code logging.file.path} {@link Environment} properties.
+ * If the {@code logging.file.name} property is not specified {@code "spring.log"} will be
+ * written in the {@code logging.file.path} directory.
  *
  * @author Phillip Webb
+ * @author Christian Carriere-Tisseur
  * @since 1.2.1
  * @see #get(PropertyResolver)
  */
@@ -38,14 +40,32 @@ public class LogFile {
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
+	 * @deprecated since 2.2.0 in favor of {@link #FILE_NAME_PROPERTY}
 	 */
+	@Deprecated
 	public static final String FILE_PROPERTY = "logging.file";
 
 	/**
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
+	 * @deprecated since 2.2.0 in favor of {@link #FILE_PATH_PROPERTY}
 	 */
+	@Deprecated
 	public static final String PATH_PROPERTY = "logging.path";
+
+	/**
+	 * The name of the Spring property that contains the name of the log file. Names can
+	 * be an exact location or relative to the current directory.
+	 * @since 2.2.0
+	 */
+	public static final String FILE_NAME_PROPERTY = "logging.file.name";
+
+	/**
+	 * The name of the Spring property that contains the directory where log files are
+	 * written.
+	 * @since 2.2.0
+	 */
+	public static final String FILE_PATH_PROPERTY = "logging.file.path";
 
 	private final String file;
 
@@ -98,11 +118,7 @@ public class LogFile {
 		if (StringUtils.hasLength(this.file)) {
 			return this.file;
 		}
-		String path = this.path;
-		if (!path.endsWith("/")) {
-			path = path + "/";
-		}
-		return StringUtils.applyRelativePath(path, "spring.log");
+		return new File(this.path, "spring.log").getPath();
 	}
 
 	/**
@@ -112,13 +128,25 @@ public class LogFile {
 	 * @return a {@link LogFile} or {@code null} if the environment didn't contain any
 	 * suitable properties
 	 */
+	@SuppressWarnings("deprecation")
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = propertyResolver.getProperty(FILE_PROPERTY);
-		String path = propertyResolver.getProperty(PATH_PROPERTY);
+		String file = getLogFileProperty(propertyResolver, FILE_NAME_PROPERTY,
+				FILE_PROPERTY);
+		String path = getLogFileProperty(propertyResolver, FILE_PATH_PROPERTY,
+				PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}
 		return null;
+	}
+
+	private static String getLogFileProperty(PropertyResolver propertyResolver,
+			String propertyName, String deprecatedPropertyName) {
+		String property = propertyResolver.getProperty(propertyName);
+		if (property != null) {
+			return property;
+		}
+		return propertyResolver.getProperty(deprecatedPropertyName);
 	}
 
 }

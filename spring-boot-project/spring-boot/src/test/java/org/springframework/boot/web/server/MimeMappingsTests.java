@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,7 @@ public class MimeMappingsTests {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
-		List<MimeMappings.Mapping> mappingList = new ArrayList<>();
-		mappingList.addAll(mappings.getAll());
+		List<MimeMappings.Mapping> mappingList = new ArrayList<>(mappings.getAll());
 		assertThat(mappingList.get(0).getExtension()).isEqualTo("foo");
 		assertThat(mappingList.get(0).getMimeType()).isEqualTo("bar");
 		assertThat(mappingList.get(1).getExtension()).isEqualTo("baz");

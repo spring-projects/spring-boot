@@ -66,6 +66,9 @@ final class StringSequence implements CharSequence {
 		if (subSequenceEnd > this.end) {
 			throw new StringIndexOutOfBoundsException(end);
 		}
+		if (start == 0 && subSequenceEnd == this.end) {
+			return this;
+		}
 		return new StringSequence(this.source, subSequenceStart, subSequenceEnd);
 	}
 
@@ -100,10 +103,18 @@ final class StringSequence implements CharSequence {
 	}
 
 	public boolean startsWith(CharSequence prefix, int offset) {
-		if (length() - prefix.length() - offset < 0) {
+		int prefixLength = prefix.length();
+		if (length() - prefixLength - offset < 0) {
 			return false;
 		}
-		return subSequence(offset, offset + prefix.length()).equals(prefix);
+		int prefixOffset = 0;
+		int sourceOffset = offset;
+		while (prefixLength-- != 0) {
+			if (charAt(sourceOffset++) != prefix.charAt(prefixOffset++)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -111,20 +122,20 @@ final class StringSequence implements CharSequence {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null || !CharSequence.class.isInstance(obj)) {
+		if (!(obj instanceof CharSequence)) {
 			return false;
 		}
 		CharSequence other = (CharSequence) obj;
 		int n = length();
-		if (n == other.length()) {
-			int i = 0;
-			while (n-- != 0) {
-				if (charAt(i) != other.charAt(i)) {
-					return false;
-				}
-				i++;
+		if (n != other.length()) {
+			return false;
+		}
+		int i = 0;
+		while (n-- != 0) {
+			if (charAt(i) != other.charAt(i)) {
+				return false;
 			}
-			return true;
+			i++;
 		}
 		return true;
 	}

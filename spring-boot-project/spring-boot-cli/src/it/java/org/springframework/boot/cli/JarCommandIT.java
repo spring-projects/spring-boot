@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.springframework.boot.cli;
 
 import java.io.File;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
@@ -43,8 +45,11 @@ public class JarCommandIT {
 	private static final boolean JAVA_9_OR_LATER = isClassPresent(
 			"java.security.cert.URICertStoreParameters");
 
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
 	private final CommandLineInvoker cli = new CommandLineInvoker(
-			new File("src/it/resources/jar-command"));
+			new File("src/it/resources/jar-command"), this.temp);
 
 	@Test
 	public void noArguments() throws Exception {
@@ -66,7 +71,7 @@ public class JarCommandIT {
 
 	@Test
 	public void jarCreationWithGrabResolver() throws Exception {
-		File jar = new File("target/test-app.jar");
+		File jar = new File(this.temp.getRoot(), "test-app.jar");
 		Invocation invocation = this.cli.invoke("run", jar.getAbsolutePath(),
 				"bad.groovy");
 		invocation.await();
@@ -93,7 +98,7 @@ public class JarCommandIT {
 
 	@Test
 	public void jarCreation() throws Exception {
-		File jar = new File("target/test-app.jar");
+		File jar = new File(this.temp.getRoot(), "test-app.jar");
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
 				"jar.groovy");
 		invocation.await();
@@ -127,7 +132,7 @@ public class JarCommandIT {
 
 	@Test
 	public void jarCreationWithIncludes() throws Exception {
-		File jar = new File("target/test-app.jar");
+		File jar = new File(this.temp.getRoot(), "test-app.jar");
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "--include",
 				"-public/**,-resources/**", "jar.groovy");
 		invocation.await();

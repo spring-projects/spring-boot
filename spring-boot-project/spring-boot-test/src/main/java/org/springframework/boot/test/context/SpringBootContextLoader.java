@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		return application.run();
+		return application.run(getArgs(config));
 	}
 
 	/**
@@ -143,6 +143,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
 		return new StandardEnvironment();
+	}
+
+	/**
+	 * Return the application arguments to use. If no arguments are available, return an
+	 * empty array.
+	 * @param config the source context configuration
+	 * @return the application arguments to use
+	 * @see SpringApplication#run(String...)
+	 */
+	protected String[] getArgs(MergedContextConfiguration config) {
+		SpringBootTest annotation = AnnotatedElementUtils
+				.findMergedAnnotation(config.getTestClass(), SpringBootTest.class);
+		return (annotation != null) ? annotation.args() : new String[0];
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment,

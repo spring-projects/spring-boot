@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @author Olivier Lamy
  * @author Chentao Qu
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -370,6 +371,12 @@ public class ServerProperties {
 		private int acceptCount = 100;
 
 		/**
+		 * Maximum number of idle processors that will be retained in the cache and reused
+		 * with a subsequent request.
+		 */
+		private int processorCache = 200;
+
+		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
@@ -524,6 +531,14 @@ public class ServerProperties {
 			this.acceptCount = acceptCount;
 		}
 
+		public int getProcessorCache() {
+			return this.processorCache;
+		}
+
+		public void setProcessorCache(int processorCache) {
+			this.processorCache = processorCache;
+		}
+
 		public List<String> getAdditionalTldSkipPatterns() {
 			return this.additionalTldSkipPatterns;
 		}
@@ -577,6 +592,11 @@ public class ServerProperties {
 			 * time.
 			 */
 			private boolean renameOnRotate = false;
+
+			/**
+			 * Number of days to retain the access log files before they are removed.
+			 */
+			private int maxDays = -1;
 
 			/**
 			 * Date format to place in the log file name.
@@ -648,6 +668,14 @@ public class ServerProperties {
 
 			public void setRenameOnRotate(boolean renameOnRotate) {
 				this.renameOnRotate = renameOnRotate;
+			}
+
+			public int getMaxDays() {
+				return this.maxDays;
+			}
+
+			public void setMaxDays(int maxDays) {
+				this.maxDays = maxDays;
 			}
 
 			public String getFileDateFormat() {

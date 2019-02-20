@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -26,9 +27,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -56,12 +61,12 @@ public class ScheduledTasksEndpointDocumentationTests
 								"com.example.Processor")),
 						responseFields(
 								fieldWithPath("cron").description("Cron tasks, if any."),
-								targetFieldWithPrefix("cron.[]"),
+								targetFieldWithPrefix("cron.[]."),
 								fieldWithPath("cron.[].expression")
 										.description("Cron expression."),
 								fieldWithPath("fixedDelay")
 										.description("Fixed delay tasks, if any."),
-								targetFieldWithPrefix("fixedDelay.[]"),
+								targetFieldWithPrefix("fixedDelay.[]."),
 								initialDelayWithPrefix("fixedDelay.[]."),
 								fieldWithPath("fixedDelay.[].interval").description(
 										"Interval, in milliseconds, between the end of the last"
@@ -71,7 +76,13 @@ public class ScheduledTasksEndpointDocumentationTests
 								targetFieldWithPrefix("fixedRate.[]."),
 								fieldWithPath("fixedRate.[].interval").description(
 										"Interval, in milliseconds, between the start of each execution."),
-								initialDelayWithPrefix("fixedRate.[]."))));
+								initialDelayWithPrefix("fixedRate.[]."),
+								fieldWithPath("custom").description(
+										"Tasks with custom triggers, if any."),
+								targetFieldWithPrefix("custom.[]."),
+								fieldWithPath("custom.[].trigger")
+										.description("Trigger for the task."))))
+				.andDo(MockMvcResultHandlers.print());
 	}
 
 	private FieldDescriptor targetFieldWithPrefix(String prefix) {
@@ -106,6 +117,30 @@ public class ScheduledTasksEndpointDocumentationTests
 
 		@Scheduled(fixedRate = 3000, initialDelay = 10000)
 		public void retrieveIssues() {
+
+		}
+
+		@Bean
+		public SchedulingConfigurer schedulingConfigurer() {
+			return (registrar) -> registrar.addTriggerTask(new CustomTriggeredRunnable(),
+					new CustomTrigger());
+		}
+
+		static class CustomTrigger implements Trigger {
+
+			@Override
+			public Date nextExecutionTime(TriggerContext triggerContext) {
+				return new Date();
+			}
+
+		}
+
+		static class CustomTriggeredRunnable implements Runnable {
+
+			@Override
+			public void run() {
+
+			}
 
 		}
 

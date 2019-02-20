@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -95,7 +96,8 @@ public class ControllerEndpointHandlerMappingTests {
 
 	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method,
 			String requestURI) {
-		return mapping.getHandler(exchange(method, requestURI)).block();
+		return mapping.getHandler(exchange(method, requestURI))
+				.block(Duration.ofSeconds(30));
 	}
 
 	private ControllerEndpointHandlerMapping createMapping(String prefix,

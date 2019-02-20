@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link ConfigurationPropertyName}.
@@ -78,13 +77,9 @@ public class ConfigurationPropertyNameTests {
 	public void ofNameShouldNotContainInvalidChars() {
 		String invalid = "_@$%*+=':;";
 		for (char c : invalid.toCharArray()) {
-			try {
-				ConfigurationPropertyName.of("foo" + c);
-				fail("Did not throw for invalid char " + c);
-			}
-			catch (InvalidConfigurationPropertyNameException ex) {
-				assertThat(ex.getMessage()).contains("is not valid");
-			}
+			assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+					.isThrownBy(() -> ConfigurationPropertyName.of("foo" + c)).satisfies(
+							(ex) -> assertThat(ex.getMessage()).contains("is not valid"));
 		}
 	}
 
@@ -606,6 +601,26 @@ public class ConfigurationPropertyNameTests {
 		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("my.sources[0].xame");
 		ConfigurationPropertyName n2 = ConfigurationPropertyName
 				.of("my.sources[0].xamespace");
+		assertThat(n1).isNotEqualTo(n2);
+	}
+
+	@Test
+	public void equalsWhenStartsWithOfAdaptedName() {
+		// gh-15152
+		ConfigurationPropertyName n1 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPHA", '.');
+		ConfigurationPropertyName n2 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPHA_BRAVO", '.');
+		assertThat(n1).isNotEqualTo(n2);
+	}
+
+	@Test
+	public void equalsWhenStartsWithOfAdaptedNameOfIllegalChars() {
+		// gh-15152
+		ConfigurationPropertyName n1 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPH!", '.');
+		ConfigurationPropertyName n2 = ConfigurationPropertyName
+				.adapt("example.mymap.ALPHA!BRAVO", '.');
 		assertThat(n1).isNotEqualTo(n2);
 	}
 

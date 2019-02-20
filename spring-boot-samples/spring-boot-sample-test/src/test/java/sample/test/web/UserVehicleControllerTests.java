@@ -16,6 +16,7 @@
 
 package sample.test.web;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sample.test.WelcomeCommandLineRunner;
@@ -99,10 +100,12 @@ public class UserVehicleControllerTests {
 		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
-		this.applicationContext.getBean(WelcomeCommandLineRunner.class);
+		Assertions.assertThatThrownBy(
+				() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class))
+				.isInstanceOf(NoSuchBeanDefinitionException.class);
 	}
 
 }

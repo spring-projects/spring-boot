@@ -3,10 +3,6 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-repositories {
-	mavenLocal()
-}
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 }

@@ -620,7 +620,7 @@ public class MapBinderTests {
 								.withExistingValue(Collections.singletonMap("a", "b")))
 				.get();
 		assertThat(result).hasSize(3);
-		assertThat(result.entrySet()).containsExactly(entry("a", "b"), entry("c", "d"),
+		assertThat(result).containsExactly(entry("a", "b"), entry("c", "d"),
 				entry("e", "f"));
 	}
 

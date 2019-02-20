@@ -147,6 +147,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.mockk</groupId>
+			<artifactId>mockk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<scope>test</scope>
@@ -174,11 +179,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -193,8 +193,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.nhaarman</groupId>
-			<artifactId>mockito-kotlin</artifactId>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

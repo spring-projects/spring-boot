@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +61,7 @@ public class RestarterTests {
 
 	@Before
 	public void setup() {
-		Restarter.setInstance(new TestableRestarter());
+		RestarterInitializer.setRestarterInstance();
 	}
 
 	@After
@@ -125,7 +124,7 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void addClassLoaderFiles() throws Exception {
+	public void addClassLoaderFiles() {
 		ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 		classLoaderFiles.addFile("f", new ClassLoaderFile(Kind.ADDED, "abc".getBytes()));
 		Restarter restarter = Restarter.getInstance();
@@ -133,8 +132,7 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")))
-				.isEqualTo("abc".getBytes());
+		assertThat(classLoader.getResourceAsStream("f")).hasContent("abc");
 	}
 
 	@Test
@@ -268,6 +266,18 @@ public class RestarterTests {
 
 		public ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
+		}
+
+	}
+
+	static class RestarterInitializer {
+
+		static void setRestarterInstance() {
+			main(new String[0]);
+		}
+
+		static void main(String[] args) {
+			Restarter.setInstance(new TestableRestarter());
 		}
 
 	}

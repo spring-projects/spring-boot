@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
+import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,11 +83,21 @@ public class ServletEndpointManagementContextConfiguration {
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	public static class JerseyServletEndpointManagementContextConfiguration {
 
+		private final ApplicationContext context;
+
+		public JerseyServletEndpointManagementContextConfiguration(
+				ApplicationContext context) {
+			this.context = context;
+		}
+
 		@Bean
 		public ServletEndpointRegistrar servletEndpointRegistrar(
 				WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
-			return new ServletEndpointRegistrar(properties.getBasePath(),
+			JerseyApplicationPath jerseyApplicationPath = this.context
+					.getBean(JerseyApplicationPath.class);
+			return new ServletEndpointRegistrar(
+					jerseyApplicationPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 

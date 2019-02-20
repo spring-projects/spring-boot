@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.trace.http.TraceableResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 
 /**
@@ -30,21 +31,24 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
  */
 class TraceableServerHttpResponse implements TraceableResponse {
 
-	private final ServerHttpResponse response;
+	private final int status;
 
-	TraceableServerHttpResponse(ServerHttpResponse exchange) {
-		this.response = exchange;
+	private final Map<String, List<String>> headers;
+
+	TraceableServerHttpResponse(ServerHttpResponse response) {
+		this.status = (response.getStatusCode() != null)
+				? response.getStatusCode().value() : HttpStatus.OK.value();
+		this.headers = new LinkedHashMap<>(response.getHeaders());
 	}
 
 	@Override
 	public int getStatus() {
-		return (this.response.getStatusCode() != null)
-				? this.response.getStatusCode().value() : 200;
+		return this.status;
 	}
 
 	@Override
 	public Map<String, List<String>> getHeaders() {
-		return new LinkedHashMap<>(this.response.getHeaders());
+		return this.headers;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public final class EndpointId {
 
 	private static final Log logger = LogFactory.getLog(EndpointId.class);
 
-	private static Set<String> loggedWarnings = new HashSet<>();
+	private static final Set<String> loggedWarnings = new HashSet<>();
 
 	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
 
@@ -117,8 +117,8 @@ public final class EndpointId {
 	}
 
 	/**
-	 * Factory method to create a new {@link EndpointId} from a property value. Is more
-	 * lenient that {@link #of(String)} to allow for common "relaxed" property variants.
+	 * Factory method to create a new {@link EndpointId} from a property value. More
+	 * lenient than {@link #of(String)} to allow for common "relaxed" property variants.
 	 * @param value the property value to convert
 	 * @return an {@link EndpointId} instance
 	 */

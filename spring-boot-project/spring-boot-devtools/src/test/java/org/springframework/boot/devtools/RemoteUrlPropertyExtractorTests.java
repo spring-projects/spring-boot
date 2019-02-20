@@ -44,7 +44,7 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Test
 	public void missingUrl() {
-		assertThatIllegalStateException().isThrownBy(() -> doTest())
+		assertThatIllegalStateException().isThrownBy(this::doTest)
 				.withMessageContaining("No remote URL specified");
 	}
 

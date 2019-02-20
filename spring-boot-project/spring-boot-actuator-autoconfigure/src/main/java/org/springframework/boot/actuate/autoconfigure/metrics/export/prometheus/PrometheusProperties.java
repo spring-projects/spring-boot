@@ -43,7 +43,7 @@ public class PrometheusProperties {
 	 * Configuration options for using Prometheus Pushgateway, allowing metrics to be
 	 * pushed when they cannot be scraped.
 	 */
-	private Pushgateway pushgateway = new Pushgateway();
+	private final Pushgateway pushgateway = new Pushgateway();
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -68,10 +68,6 @@ public class PrometheusProperties {
 
 	public Pushgateway getPushgateway() {
 		return this.pushgateway;
-	}
-
-	public void setPushgateway(Pushgateway pushgateway) {
-		this.pushgateway = pushgateway;
 	}
 
 	/**

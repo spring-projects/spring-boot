@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -179,11 +179,11 @@ public class Repackager {
 		if (this.layout == null) {
 			this.layout = getLayoutFactory().getLayout(this.source);
 		}
-		if (alreadyRepackaged()) {
-			return;
-		}
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
+		if (alreadyRepackaged() && this.source.equals(destination)) {
+			return;
+		}
 		if (this.source.equals(destination)) {
 			workingSource = getBackupFile();
 			workingSource.delete();
@@ -270,8 +270,8 @@ public class Repackager {
 	}
 
 	private boolean isZip(InputStream inputStream) throws IOException {
-		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
-			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+		for (byte magicByte : ZIP_FILE_HEADER) {
+			if (inputStream.read() != magicByte) {
 				return false;
 			}
 		}
@@ -380,8 +380,10 @@ public class Repackager {
 				return null;
 			}
 			if ((entry.getName().startsWith("META-INF/")
-					&& !entry.getName().equals("META-INF/aop.xml"))
-					|| entry.getName().startsWith("BOOT-INF/")) {
+					&& !entry.getName().equals("META-INF/aop.xml")
+					&& !entry.getName().endsWith(".kotlin-module"))
+					|| entry.getName().startsWith("BOOT-INF/")
+					|| entry.getName().equals("module-info.class")) {
 				return entry;
 			}
 			JarArchiveEntry renamedEntry = new JarArchiveEntry(

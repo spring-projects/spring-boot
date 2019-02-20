@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.time.Duration;
+
+import io.netty.channel.ChannelOption;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -31,6 +35,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Chentao Qu
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 public class NettyWebServerFactoryCustomizer
@@ -60,6 +65,9 @@ public class NettyWebServerFactoryCustomizer
 				.asInt(DataSize::toBytes)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpRequestHeaderSize));
+		propertyMapper.from(this.serverProperties::getConnectionTimeout).whenNonNull()
+				.asInt(Duration::toMillis).to((duration) -> factory
+						.addServerCustomizers(getConnectionTimeOutCustomizer(duration)));
 	}
 
 	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
@@ -76,6 +84,11 @@ public class NettyWebServerFactoryCustomizer
 		factory.addServerCustomizers((NettyServerCustomizer) (httpServer) -> httpServer
 				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxHeaderSize(maxHttpHeaderSize)));
+	}
+
+	private NettyServerCustomizer getConnectionTimeOutCustomizer(int duration) {
+		return (httpServer) -> httpServer.tcpConfiguration((tcpServer) -> tcpServer
+				.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, duration));
 	}
 
 }

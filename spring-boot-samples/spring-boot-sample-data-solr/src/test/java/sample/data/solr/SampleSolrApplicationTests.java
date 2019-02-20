@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SampleSolrApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
@@ -39,8 +39,7 @@ public class SampleSolrApplicationTests {
 				return;
 			}
 		}
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("name=Sony Playstation");
+		assertThat(this.output.toString()).contains("name=Sony Playstation");
 	}
 
 	@SuppressWarnings("serial")

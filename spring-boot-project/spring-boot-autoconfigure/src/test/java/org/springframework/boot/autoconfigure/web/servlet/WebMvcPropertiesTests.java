@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.Collections;
 import java.util.Map;
 
+import org.assertj.core.util.Throwables;
 import org.junit.Test;
-import org.testcontainers.shaded.com.google.common.base.Throwables;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;

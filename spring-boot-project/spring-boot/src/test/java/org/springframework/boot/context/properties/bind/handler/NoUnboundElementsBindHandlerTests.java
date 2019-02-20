@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link NoUnboundElementsBindHandler}.
@@ -75,15 +75,11 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		try {
-			this.binder.bind("example", Bindable.of(Example.class),
-					new NoUnboundElementsBindHandler());
-			fail("did not throw");
-		}
-		catch (BindException ex) {
-			assertThat(ex.getCause().getMessage())
-					.contains("The elements [example.baz] were left unbound");
-		}
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
+						new NoUnboundElementsBindHandler()))
+				.satisfies((ex) -> assertThat(ex.getCause().getMessage())
+						.contains("The elements [example.baz] were left unbound"));
 	}
 
 	@Test

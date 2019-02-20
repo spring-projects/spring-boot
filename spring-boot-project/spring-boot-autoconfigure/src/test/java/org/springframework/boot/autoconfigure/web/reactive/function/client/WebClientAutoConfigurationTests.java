@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.net.URI;
+import java.time.Duration;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
@@ -109,8 +110,10 @@ public class WebClientAutoConfigurationTests {
 					secondBuilder.clientConnector(secondConnector)
 							.baseUrl("http://second.example.org");
 					assertThat(firstBuilder).isNotEqualTo(secondBuilder);
-					firstBuilder.build().get().uri("/foo").exchange().block();
-					secondBuilder.build().get().uri("/foo").exchange().block();
+					firstBuilder.build().get().uri("/foo").exchange()
+							.block(Duration.ofSeconds(30));
+					secondBuilder.build().get().uri("/foo").exchange()
+							.block(Duration.ofSeconds(30));
 					verify(firstConnector).connect(eq(HttpMethod.GET),
 							eq(URI.create("http://first.example.org/foo")), any());
 					verify(secondConnector).connect(eq(HttpMethod.GET),

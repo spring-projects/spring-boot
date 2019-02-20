@@ -16,14 +16,16 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import java.util.Map;
+
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
 
 /**
  * {@link HealthIndicator} for Elasticsearch using a {@link JestClient}.
@@ -37,7 +39,7 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 
 	private final JestClient jestClient;
 
-	private final JsonParser jsonParser = new JsonParser();
+	private final JsonParser jsonParser = JsonParserFactory.getJsonParser();
 
 	public ElasticsearchJestHealthIndicator(JestClient jestClient) {
 		super("Elasticsearch health check failed");
@@ -50,17 +52,19 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 				.execute(new io.searchbox.cluster.Health.Builder().build());
 		if (healthResult.getResponseCode() != 200 || !healthResult.isSucceeded()) {
 			builder.down();
+			builder.withDetail("statusCode", healthResult.getResponseCode());
 		}
 		else {
-			JsonElement root = this.jsonParser.parse(healthResult.getJsonString());
-			JsonElement status = root.getAsJsonObject().get("status");
-			if (status.getAsString()
-					.equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
+			Map<String, Object> response = this.jsonParser
+					.parseMap(healthResult.getJsonString());
+			String status = (String) response.get("status");
+			if (status.equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
 				builder.outOfService();
 			}
 			else {
 				builder.up();
 			}
+			builder.withDetails(response);
 		}
 	}
 

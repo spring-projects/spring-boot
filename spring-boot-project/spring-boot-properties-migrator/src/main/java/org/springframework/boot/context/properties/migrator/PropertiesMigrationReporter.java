@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.migrator;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,11 +81,9 @@ class PropertiesMigrationReporter {
 	private PropertySource<?> mapPropertiesWithReplacement(
 			PropertiesMigrationReport report, String name,
 			List<PropertyMigration> properties) {
-		List<PropertyMigration> renamed = new ArrayList<>();
-		List<PropertyMigration> unsupported = new ArrayList<>();
-		properties.forEach((property) -> (isRenamed(property) ? renamed : unsupported)
-				.add(property));
-		report.add(name, renamed, unsupported);
+		report.add(name, properties);
+		List<PropertyMigration> renamed = properties.stream()
+				.filter(PropertyMigration::isCompatibleType).collect(Collectors.toList());
 		if (renamed.isEmpty()) {
 			return null;
 		}
@@ -102,52 +98,6 @@ class PropertiesMigrationReporter {
 		return new OriginTrackedMapPropertySource(target, content);
 	}
 
-	private boolean isRenamed(PropertyMigration property) {
-		ConfigurationMetadataProperty metadata = property.getMetadata();
-		String replacementId = metadata.getDeprecation().getReplacement();
-		if (StringUtils.hasText(replacementId)) {
-			ConfigurationMetadataProperty replacement = this.allProperties
-					.get(replacementId);
-			if (replacement != null) {
-				return isCompatibleType(metadata.getType(), replacement.getType());
-			}
-			return isCompatibleType(metadata.getType(),
-					detectMapValueReplacementType(replacementId));
-		}
-		return false;
-	}
-
-	private boolean isCompatibleType(String currentType, String replacementType) {
-		if (replacementType == null || currentType == null) {
-			return false;
-		}
-		if (replacementType.equals(currentType)) {
-			return true;
-		}
-		if (replacementType.equals(Duration.class.getName())
-				&& (currentType.equals(Long.class.getName())
-						|| currentType.equals(Integer.class.getName()))) {
-			return true;
-		}
-		return false;
-	}
-
-	private String detectMapValueReplacementType(String fullId) {
-		int lastDot = fullId.lastIndexOf('.');
-		if (lastDot != -1) {
-			ConfigurationMetadataProperty property = this.allProperties
-					.get(fullId.substring(0, lastDot));
-			String type = property.getType();
-			if (type != null && type.startsWith(Map.class.getName())) {
-				int lastComma = type.lastIndexOf(',');
-				if (lastComma != -1) {
-					return type.substring(lastComma + 1, type.length() - 1).trim();
-				}
-			}
-		}
-		return null;
-	}
-
 	private Map<String, List<PropertyMigration>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
@@ -159,12 +109,34 @@ class PropertiesMigrationReporter {
 						.getConfigurationProperty(
 								ConfigurationPropertyName.of(metadata.getId()));
 				if (configurationProperty != null) {
-					result.add(name,
-							new PropertyMigration(metadata, configurationProperty));
+					result.add(name, new PropertyMigration(configurationProperty,
+							metadata, determineReplacementMetadata(metadata)));
 				}
 			});
 		});
 		return result;
+	}
+
+	private ConfigurationMetadataProperty determineReplacementMetadata(
+			ConfigurationMetadataProperty metadata) {
+		String replacementId = metadata.getDeprecation().getReplacement();
+		if (StringUtils.hasText(replacementId)) {
+			ConfigurationMetadataProperty replacement = this.allProperties
+					.get(replacementId);
+			if (replacement != null) {
+				return replacement;
+			}
+			return detectMapValueReplacement(replacementId);
+		}
+		return null;
+	}
+
+	private ConfigurationMetadataProperty detectMapValueReplacement(String fullId) {
+		int lastDot = fullId.lastIndexOf('.');
+		if (lastDot != -1) {
+			return this.allProperties.get(fullId.substring(0, lastDot));
+		}
+		return null;
 	}
 
 	private Predicate<ConfigurationMetadataProperty> deprecatedFilter() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.lang.Nullable;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -82,7 +81,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -702,15 +700,13 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
-		try {
-			load(WithCustomValidatorConfiguration.class);
-			fail("Did not throw");
-		}
-		catch (Exception ex) {
-			assertThat(ex).hasCauseInstanceOf(BindException.class);
-			assertThat(ex.getCause())
-					.hasCauseExactlyInstanceOf(BindValidationException.class);
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(WithCustomValidatorConfiguration.class))
+				.satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+					assertThat(ex.getCause())
+							.hasCauseExactlyInstanceOf(BindValidationException.class);
+				});
 	}
 
 	@Test
@@ -723,15 +719,12 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
-		try {
-			load(ValidatorProperties.class);
-			fail("Did not throw");
-		}
-		catch (Exception ex) {
-			assertThat(ex).hasCauseInstanceOf(BindException.class);
-			assertThat(ex.getCause())
-					.hasCauseExactlyInstanceOf(BindValidationException.class);
-		}
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ValidatorProperties.class)).satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+					assertThat(ex.getCause())
+							.hasCauseExactlyInstanceOf(BindValidationException.class);
+				});
 	}
 
 	@Test
@@ -1791,7 +1784,6 @@ public class ConfigurationPropertiesTests {
 
 	static class PersonConverter implements Converter<String, Person> {
 
-		@Nullable
 		@Override
 		public Person convert(String source) {
 			String[] content = StringUtils.split(source, " ");
@@ -1802,15 +1794,13 @@ public class ConfigurationPropertiesTests {
 
 	static class GenericPersonConverter implements GenericConverter {
 
-		@Nullable
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
 			return Collections.singleton(new ConvertiblePair(String.class, Person.class));
 		}
 
-		@Nullable
 		@Override
-		public Object convert(@Nullable Object source, TypeDescriptor sourceType,
+		public Object convert(Object source, TypeDescriptor sourceType,
 				TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");
 			return new Person(content[0], content[1]);

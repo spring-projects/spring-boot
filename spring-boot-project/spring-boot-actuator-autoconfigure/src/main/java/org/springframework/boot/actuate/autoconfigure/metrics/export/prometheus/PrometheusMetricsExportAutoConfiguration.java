@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,10 +82,10 @@ public class PrometheusMetricsExportAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnEnabledEndpoint(endpoint = PrometheusScrapeEndpoint.class)
 	public static class PrometheusScrapeEndpointConfiguration {
 
 		@Bean
-		@ConditionalOnEnabledEndpoint
 		@ConditionalOnMissingBean
 		public PrometheusScrapeEndpoint prometheusEndpoint(
 				CollectorRegistry collectorRegistry) {
@@ -131,8 +131,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 			String job = properties.getJob();
 			job = (job != null) ? job
 					: environment.getProperty("spring.application.name");
-			job = (job != null) ? job : FALLBACK_JOB;
-			return job;
+			return (job != null) ? job : FALLBACK_JOB;
 		}
 
 	}

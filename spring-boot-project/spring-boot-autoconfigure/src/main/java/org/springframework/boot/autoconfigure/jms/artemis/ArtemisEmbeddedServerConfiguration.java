@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass(name = ArtemisConnectionFactoryFactory.EMBEDDED_JMS_CLASS)
+@ConditionalOnClass(EmbeddedJMS.class)
 @ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled", havingValue = "true", matchIfMissing = true)
 class ArtemisEmbeddedServerConfiguration {
 

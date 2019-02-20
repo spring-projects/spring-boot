@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -36,23 +37,44 @@ public class SecurityRequestMatcherProviderAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations
-					.of(SecurityRequestMatcherProviderAutoConfiguration.class))
-			.withUserConfiguration(TestConfiguration.class);
+					.of(SecurityRequestMatcherProviderAutoConfiguration.class));
 
 	@Test
-	public void registersMvcRequestMatcherProviderIfMvcPresent() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(MvcRequestMatcherProvider.class));
-	}
-
-	@Test
-	public void mvcRequestMatcherProviderConditionalOnWebApplication() {
+	public void configurationConditionalOnWebApplication() {
 		new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations
 						.of(SecurityRequestMatcherProviderAutoConfiguration.class))
-				.withUserConfiguration(TestConfiguration.class)
+				.withUserConfiguration(TestMvcConfiguration.class)
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(MvcRequestMatcherProvider.class));
+						.doesNotHaveBean(RequestMatcherProvider.class));
+	}
+
+	@Test
+	public void configurationConditionalOnRequestMatcherClass() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader(
+						"org.springframework.security.web.util.matcher.RequestMatcher"))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(RequestMatcherProvider.class));
+	}
+
+	@Test
+	public void registersMvcRequestMatcherProviderIfMvcPresent() {
+		this.contextRunner.withUserConfiguration(TestMvcConfiguration.class)
+				.run((context) -> assertThat(context)
+						.getBean(RequestMatcherProvider.class)
+						.isInstanceOf(MvcRequestMatcherProvider.class));
+	}
+
+	@Test
+	public void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader(
+						"org.springframework.web.servlet.DispatcherServlet"))
+				.withUserConfiguration(TestJerseyConfiguration.class)
+				.run((context) -> assertThat(context)
+						.getBean(RequestMatcherProvider.class)
+						.isInstanceOf(JerseyRequestMatcherProvider.class));
 	}
 
 	@Test
@@ -65,12 +87,12 @@ public class SecurityRequestMatcherProviderAutoConfigurationTests {
 	}
 
 	@Test
-	public void mvcRequestMatcherProviderConditionalOnRequestMatcherClass() {
+	public void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(
-						"org.springframework.security.web.util.matcher.RequestMatcher"))
+						"org.glassfish.jersey.server.ResourceConfig"))
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(MvcRequestMatcherProvider.class));
+						.doesNotHaveBean(JerseyRequestMatcherProvider.class));
 	}
 
 	@Test
@@ -82,12 +104,33 @@ public class SecurityRequestMatcherProviderAutoConfigurationTests {
 						.doesNotHaveBean(MvcRequestMatcherProvider.class));
 	}
 
+	@Test
+	public void jerseyRequestMatcherProviderConditionalOnJerseyApplicationPathBean() {
+		new WebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations
+						.of(SecurityRequestMatcherProviderAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader(
+						"org.springframework.web.servlet.DispatcherServlet"))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(JerseyRequestMatcherProvider.class));
+	}
+
 	@Configuration
-	static class TestConfiguration {
+	static class TestMvcConfiguration {
 
 		@Bean
 		public HandlerMappingIntrospector introspector() {
 			return new HandlerMappingIntrospector();
+		}
+
+	}
+
+	@Configuration
+	static class TestJerseyConfiguration {
+
+		@Bean
+		public JerseyApplicationPath jerseyApplicationPath() {
+			return () -> "/admin";
 		}
 
 	}

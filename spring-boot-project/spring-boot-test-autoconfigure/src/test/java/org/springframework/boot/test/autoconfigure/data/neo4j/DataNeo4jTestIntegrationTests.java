@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,17 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 import org.neo4j.ogm.session.Session;
+import org.testcontainers.containers.Neo4jContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.Neo4jContainer;
+import org.springframework.boot.testsupport.testcontainers.SkippableContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,14 +43,25 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Michael Simons
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(initializers = DataNeo4jTestIntegrationTests.Initializer.class)
 @DataNeo4jTest
 public class DataNeo4jTestIntegrationTests {
 
+	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
+			() -> new Neo4jContainer<>().withAdminPassword(null));
+
 	@ClassRule
-	public static Neo4jContainer neo4j = new Neo4jContainer();
+	public static TestRule skippableContainer = new TestRule() {
+
+		@Override
+		public Statement apply(Statement base, Description description) {
+			return neo4j.apply(base, description);
+		}
+
+	};
 
 	@Autowired
 	private Session session;
@@ -80,7 +95,7 @@ public class DataNeo4jTestIntegrationTests {
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort())
+					.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

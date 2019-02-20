@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
-import org.apache.catalina.mapper.Mapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Before;
@@ -40,7 +37,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,6 +81,12 @@ public class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(((AbstractProtocol<?>) server
 				.getTomcat().getConnector().getProtocolHandler()).getAcceptCount())
 						.isEqualTo(10));
+	}
+
+	@Test
+	public void customProcessorCache() {
+		bind("server.tomcat.processor-cache=100");
+		assertThat(this.serverProperties.getTomcat().getProcessorCache()).isEqualTo(100);
 	}
 
 	@Test
@@ -180,18 +182,13 @@ public class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");
 		customizeAndRunServer((server) -> {
-			Mapper mapper = server.getTomcat().getService().getMapper();
-			Object contextObjectToContextVersionMap = ReflectionTestUtils.getField(mapper,
-					"contextObjectToContextVersionMap");
-			Object tomcatEmbeddedContext = ((Map<Context, Object>) contextObjectToContextVersionMap)
-					.values().toArray()[0];
-			assertThat(((StandardRoot) ReflectionTestUtils.getField(tomcatEmbeddedContext,
-					"resources")).isCachingAllowed()).isFalse();
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(context.getResources().isCachingAllowed()).isFalse();
 		});
 	}
 
@@ -326,6 +323,24 @@ public class TomcatWebServerFactoryCustomizerTests {
 	public void accessLogIsDisabledByDefault() {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).isEmpty();
+	}
+
+	@Test
+	public void accessLogMaxDaysDefault() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getMaxDays()).isEqualTo(
+						this.serverProperties.getTomcat().getAccesslog().getMaxDays());
+	}
+
+	@Test
+	public void accessLoMaxDaysCanBeRedefined() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.max-days=20");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getMaxDays()).isEqualTo(20);
 	}
 
 	private void bind(String... inlinedProperties) {

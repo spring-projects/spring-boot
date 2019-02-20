@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -72,6 +72,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  */
 public class ConfigFileApplicationListenerTests {
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
@@ -410,6 +412,16 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.profiles.include=dev,simple");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "simple",
+				"other");
+		validateProfilePrecedence("dev", "simple", "other");
+	}
+
+	@Test
 	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev,other");
@@ -486,8 +498,9 @@ public class ConfigFileApplicationListenerTests {
 		String suffix = (profile != null) ? "-" + profile : "";
 		String string = ".properties)";
 		return "Loaded config file '"
-				+ new File("target/test-classes/application" + suffix + ".properties")
-						.getAbsoluteFile().toURI().toString()
+				+ new File(this.buildOutput.getTestResourcesLocation(),
+						"application" + suffix + ".properties").getAbsoluteFile().toURI()
+								.toString()
 				+ "' (classpath:/application" + suffix + string;
 	}
 
@@ -1040,8 +1053,8 @@ public class ConfigFileApplicationListenerTests {
 
 		@Override
 		List<EnvironmentPostProcessor> loadPostProcessors() {
-			return new ArrayList<>(
-					Arrays.asList(new LowestPrecedenceEnvironmentPostProcessor()));
+			return new ArrayList<>(Collections
+					.singletonList(new LowestPrecedenceEnvironmentPostProcessor()));
 		}
 
 	}

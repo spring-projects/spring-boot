@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
@@ -34,16 +35,18 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JDBC Repositories.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JDBC repositories
- * using the {@link EnableJdbcRepositories} annotation and providing a
- * {@link JdbcConfiguration} subclass.
+ * using the {@link EnableJdbcRepositories} annotation and providing an
+ * {@link AbstractJdbcConfiguration} subclass.
  *
  * @author Andy Wilkinson
  * @since 2.1.0
  * @see EnableJdbcRepositories
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnBean(NamedParameterJdbcOperations.class)
-@ConditionalOnClass({ NamedParameterJdbcOperations.class, JdbcConfiguration.class })
+@ConditionalOnClass({ NamedParameterJdbcOperations.class,
+		AbstractJdbcConfiguration.class })
 @ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration.class)
 public class JdbcRepositoriesAutoConfiguration {
@@ -56,8 +59,9 @@ public class JdbcRepositoriesAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean(JdbcConfiguration.class)
-	static class SpringBootJdbcConfiguration extends JdbcConfiguration {
+	@ConditionalOnMissingBean({ AbstractJdbcConfiguration.class,
+			JdbcConfiguration.class })
+	static class SpringBootJdbcConfiguration extends AbstractJdbcConfiguration {
 
 	}
 

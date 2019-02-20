@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -65,7 +65,7 @@ public class SecurityAutoConfigurationTests {
 					PropertyPlaceholderAutoConfiguration.class));
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testWebConfiguration() {

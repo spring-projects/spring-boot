@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -186,6 +188,25 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	public void hikariProxiedDataSourceCanBeInstrumented() {
+		this.contextRunner
+				.withUserConfiguration(ProxiedHikariDataSourcesConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.run((context) -> {
+					context.getBean("proxiedDataSource", DataSource.class)
+							.getConnection();
+					context.getBean("delegateDataSource", DataSource.class)
+							.getConnection();
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.get("hikaricp.connections").tags("pool", "firstDataSource")
+							.meter();
+					registry.get("hikaricp.connections").tags("pool", "secondOne")
+							.meter();
+				});
+	}
+
+	@Test
 	public void hikariDataSourceIsInstrumentedWithoutMetadataProvider() {
 		this.contextRunner.withUserConfiguration(OneHikariDataSourceConfiguration.class)
 				.run((context) -> {
@@ -197,6 +218,14 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 							.getTags())
 									.containsExactly(Tag.of("pool", "hikariDataSource"));
 				});
+	}
+
+	private static HikariDataSource createHikariDataSource(String poolName) {
+		String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
+		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url)
+				.type(HikariDataSource.class).build();
+		hikariDataSource.setPoolName(poolName);
+		return hikariDataSource;
 	}
 
 	@Configuration
@@ -242,12 +271,20 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 			return createHikariDataSource("secondOne");
 		}
 
-		private HikariDataSource createHikariDataSource(String poolName) {
-			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
-			HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url)
-					.type(HikariDataSource.class).build();
-			hikariDataSource.setPoolName(poolName);
-			return hikariDataSource;
+	}
+
+	@Configuration
+	static class ProxiedHikariDataSourcesConfiguration {
+
+		@Bean
+		public DataSource proxiedDataSource() {
+			return (DataSource) new ProxyFactory(
+					createHikariDataSource("firstDataSource")).getProxy();
+		}
+
+		@Bean
+		public DataSource delegateDataSource() {
+			return new DelegatingDataSource(createHikariDataSource("secondOne"));
 		}
 
 	}
@@ -257,11 +294,7 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 
 		@Bean
 		public DataSource hikariDataSource() {
-			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
-			HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url)
-					.type(HikariDataSource.class).build();
-			hikariDataSource.setPoolName("hikariDataSource");
-			return hikariDataSource;
+			return createHikariDataSource("hikariDataSource");
 		}
 
 	}

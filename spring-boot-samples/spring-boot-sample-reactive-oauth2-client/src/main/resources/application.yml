@@ -22,4 +22,4 @@ spring:
             client-secret: ${YAHOO-CLIENT-SECRET}
         provider:
           yahoo-oidc:
-            issuer-uri: https://api.login.yahoo.com/
+            issuer-uri: https://api.login.yahoo.com
