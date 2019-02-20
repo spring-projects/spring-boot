@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -30,6 +31,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -108,7 +112,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void classpathJarsArePackagedBeneathLibPath() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("one.jar"), this.temp.newFile("two.jar"));
+		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry(this.libPath + "/one.jar")).isNotNull();
@@ -160,9 +164,8 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void classpathCanBeSetUsingAFileCollection() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("one.jar"));
-		this.task
-				.setClasspath(this.task.getProject().files(this.temp.newFile("two.jar")));
+		this.task.classpath(jarFile("one.jar"));
+		this.task.setClasspath(this.task.getProject().files(jarFile("two.jar")));
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry(this.libPath + "/one.jar")).isNull();
@@ -173,12 +176,22 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void classpathCanBeSetUsingAnObject() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("one.jar"));
-		this.task.setClasspath(this.temp.newFile("two.jar"));
+		this.task.classpath(jarFile("one.jar"));
+		this.task.setClasspath(jarFile("two.jar"));
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry(this.libPath + "/one.jar")).isNull();
 			assertThat(jarFile.getEntry(this.libPath + "/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
+	public void filesOnTheClasspathThatAreNotZipFilesAreSkipped() throws IOException {
+		this.task.setMainClassName("com.example.Main");
+		this.task.classpath(this.temp.newFile("test.pom"));
+		this.task.execute();
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(jarFile.getEntry(this.libPath + "/test.pom")).isNull();
 		}
 	}
 
@@ -212,7 +225,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void unpackCommentIsAddedToEntryIdentifiedByAPattern() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("one.jar"), this.temp.newFile("two.jar"));
+		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		this.task.requiresUnpack("**/one.jar");
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
@@ -225,7 +238,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void unpackCommentIsAddedToEntryIdentifiedByASpec() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("one.jar"), this.temp.newFile("two.jar"));
+		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		this.task.requiresUnpack((element) -> element.getName().endsWith("two.jar"));
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
@@ -370,7 +383,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void devtoolsJarCanBeIncluded() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		this.task.classpath(jarFile("spring-boot-devtools-0.1.2.jar"));
 		this.task.setExcludeDevtools(false);
 		this.task.execute();
 		assertThat(this.task.getArchivePath()).exists();
@@ -410,9 +423,8 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				"com/example/Application.class");
 		applicationClass.getParentFile().mkdirs();
 		applicationClass.createNewFile();
-		this.task.classpath(classpathFolder, this.temp.newFile("first-library.jar"),
-				this.temp.newFile("second-library.jar"),
-				this.temp.newFile("third-library.jar"));
+		this.task.classpath(classpathFolder, jarFile("first-library.jar"),
+				jarFile("second-library.jar"), jarFile("third-library.jar"));
 		this.task.requiresUnpack("second-library.jar");
 		this.task.execute();
 		assertThat(getEntryNames(this.task.getArchivePath())).containsSubsequence(
@@ -420,6 +432,16 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				this.classesPath + "/com/example/Application.class",
 				this.libPath + "/first-library.jar", this.libPath + "/second-library.jar",
 				this.libPath + "/third-library.jar");
+	}
+
+	protected File jarFile(String name) throws IOException {
+		File file = this.temp.newFile(name);
+		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
+			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			new Manifest().write(jar);
+			jar.closeEntry();
+		}
+		return file;
 	}
 
 	private T configure(T task) throws IOException {

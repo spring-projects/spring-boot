@@ -58,6 +58,13 @@ public class BootJar extends Jar implements BootArchive {
 		this.bootInf.filesMatching("module-info.class", (details) -> {
 			details.setRelativePath(details.getRelativeSourcePath());
 		});
+		getRootSpec().eachFile((details) -> {
+			String pathString = details.getRelativePath().getPathString();
+			if (pathString.startsWith("BOOT-INF/lib/")
+					&& !this.support.isZip(details.getFile())) {
+				details.exclude();
+			}
+		});
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
