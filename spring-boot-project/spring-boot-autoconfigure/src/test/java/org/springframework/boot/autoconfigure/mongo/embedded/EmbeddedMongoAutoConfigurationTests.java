@@ -252,9 +252,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 		@Bean
 		public DownloadConfigBuilderCustomizer testDownloadConfigBuilderCustomizer() {
-			return (downloadConfigBuilder) -> {
-				downloadConfigBuilder.userAgent("Test User Agent");
-			};
+			return (downloadConfigBuilder) -> downloadConfigBuilder
+					.userAgent("Test User Agent");
 		}
 
 	}

@@ -22,6 +22,9 @@ import java.util.Map;
 /**
  * A base properties class with generics.
  *
+ * @param <A> name type
+ * @param <B> mapping key type
+ * @param <C> mapping value type
  * @author Stephane Nicoll
  */
 public class AbstractGenericProperties<A, B, C> {

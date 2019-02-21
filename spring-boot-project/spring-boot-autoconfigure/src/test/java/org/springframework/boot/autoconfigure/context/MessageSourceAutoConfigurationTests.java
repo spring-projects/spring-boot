@@ -202,10 +202,8 @@ public class MessageSourceAutoConfigurationTests {
 	public void messageSourceWithNonStandardBeanNameIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 				.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getMessage("foo", null, Locale.US))
-							.isEqualTo("bar");
-				});
+				.run((context) -> assertThat(context.getMessage("foo", null, Locale.US))
+						.isEqualTo("bar"));
 	}
 
 	@Configuration

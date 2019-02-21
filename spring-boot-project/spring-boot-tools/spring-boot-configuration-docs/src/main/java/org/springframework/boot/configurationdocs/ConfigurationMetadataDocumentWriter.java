@@ -92,9 +92,8 @@ public class ConfigurationMetadataDocumentWriter {
 				List<String> matchingOverrides = overrides.keySet().stream()
 						.filter((overrideKey) -> overrideKey.startsWith(keyPrefix))
 						.collect(Collectors.toList());
-				matchingOverrides.forEach((match) -> {
-					table.addEntry(overrides.remove(match));
-				});
+				matchingOverrides.forEach((match) ->
+					table.addEntry(overrides.remove(match)));
 			}
 			List<String> matchingKeys = unmappedKeys.stream()
 					.filter((key) -> keyPrefixes.stream().anyMatch(key::startsWith))

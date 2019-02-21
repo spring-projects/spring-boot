@@ -56,7 +56,7 @@ public class JerseyEndpointIntegrationTests {
 		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class });
 	}
 
-	protected void testJerseyEndpoints(Class[] userConfigurations) {
+	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				DispatcherServlet.class);
 		new WebApplicationContextRunner(

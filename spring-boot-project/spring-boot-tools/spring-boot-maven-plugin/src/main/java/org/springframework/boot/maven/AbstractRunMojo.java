@@ -80,6 +80,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 * @deprecated since version 2.2. Use agents instead.
 	 */
+	@Deprecated
 	@Parameter(property = "spring-boot.run.agent")
 	private File[] agent;
 
@@ -384,7 +385,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private File[] determineAgents() {
 		return (this.agents != null) ? this.agents : this.agent;
 	}
