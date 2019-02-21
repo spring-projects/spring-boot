@@ -34,17 +34,6 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	private final HealthAggregator aggregator;
 
 	/**
-	 * Create a new {@link CompositeHealthIndicator}.
-	 * @param healthAggregator the health aggregator
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link #CompositeHealthIndicator(HealthAggregator, HealthIndicatorRegistry)}
-	 */
-	@Deprecated
-	public CompositeHealthIndicator(HealthAggregator healthAggregator) {
-		this(healthAggregator, new DefaultHealthIndicatorRegistry());
-	}
-
-	/**
 	 * Create a new {@link CompositeHealthIndicator} from the specified indicators.
 	 * @param healthAggregator the health aggregator
 	 * @param indicators a map of {@link HealthIndicator HealthIndicators} with the key
@@ -65,20 +54,6 @@ public class CompositeHealthIndicator implements HealthIndicator {
 			HealthIndicatorRegistry registry) {
 		this.aggregator = healthAggregator;
 		this.registry = registry;
-	}
-
-	/**
-	 * Adds the given {@code healthIndicator}, associating it with the given {@code name}.
-	 * @param name the name of the indicator
-	 * @param indicator the indicator
-	 * @throws IllegalStateException if an indicator with the given {@code name} is
-	 * already registered.
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link HealthIndicatorRegistry#register(String, HealthIndicator)}
-	 */
-	@Deprecated
-	public void addHealthIndicator(String name, HealthIndicator indicator) {
-		this.registry.register(name, indicator);
 	}
 
 	/**
