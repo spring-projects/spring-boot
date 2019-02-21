@@ -34,7 +34,6 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;

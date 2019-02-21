@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.health;
 
 import java.time.Duration;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import reactor.core.publisher.Flux;
@@ -44,7 +42,6 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	private Health timeoutHealth;
 
 	private final Function<Mono<Health>, Mono<Health>> timeoutCompose;
-
 
 	/**
 	 * Create a new {@link CompositeReactiveHealthIndicator} from the indicators in the
