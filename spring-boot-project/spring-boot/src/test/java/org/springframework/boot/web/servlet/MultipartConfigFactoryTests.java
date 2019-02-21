@@ -43,34 +43,6 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
-	@Deprecated
-	public void create() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setLocation("loc");
-		factory.setMaxFileSize(1);
-		factory.setMaxRequestSize(2);
-		factory.setFileSizeThreshold(3);
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation()).isEqualTo("loc");
-		assertThat(config.getMaxFileSize()).isEqualTo(1L);
-		assertThat(config.getMaxRequestSize()).isEqualTo(2L);
-		assertThat(config.getFileSizeThreshold()).isEqualTo(3);
-	}
-
-	@Test
-	@Deprecated
-	public void createWithStringSizes() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize("1");
-		factory.setMaxRequestSize("2KB");
-		factory.setFileSizeThreshold("3MB");
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getMaxFileSize()).isEqualTo(1L);
-		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
-		assertThat(config.getFileSizeThreshold()).isEqualTo(3 * 1024 * 1024);
-	}
-
-	@Test
 	public void createWithDataSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize(DataSize.ofBytes(1));
