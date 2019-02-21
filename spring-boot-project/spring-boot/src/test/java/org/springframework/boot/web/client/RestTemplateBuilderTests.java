@@ -333,16 +333,6 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	@Deprecated
-	public void basicAuthorizationShouldApply() {
-		RestTemplate template = this.builder.basicAuthorization("spring", "boot").build();
-		ClientHttpRequestInterceptor interceptor = template.getInterceptors().get(0);
-		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
-		assertThat(interceptor).extracting("username").containsExactly("spring");
-		assertThat(interceptor).extracting("password").containsExactly("boot");
-	}
-
-	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
@@ -559,7 +549,7 @@ public class RestTemplateBuilderTests {
 	public void connectTimeoutCanBeSetWithInteger() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
+				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
 	}
 
@@ -567,7 +557,7 @@ public class RestTemplateBuilderTests {
 	@SuppressWarnings("deprecation")
 	public void readTimeoutCanBeSetWithInteger() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
+				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(Duration.ofMillis(1234))
 				.build().getRequestFactory();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
