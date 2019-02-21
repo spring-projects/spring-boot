@@ -68,8 +68,7 @@ public class HibernateMetricsAutoConfiguration {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		try {
 			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class),
-					entityManagerFactoryName, Collections.emptyList())
-							.bindTo(registry);
+					entityManagerFactoryName, Collections.emptyList()).bindTo(registry);
 		}
 		catch (PersistenceException ex) {
 			// Continue
