@@ -41,15 +41,15 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 public class TestConfigurationMetadataAnnotationProcessor
 		extends ConfigurationMetadataAnnotationProcessor {
 
-	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
+	public static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
 
-	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
+	public static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
 
-	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
+	public static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
 
-	static final String ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.Endpoint";
+	public static final String ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.Endpoint";
 
-	static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.configurationsample.ReadOperation";
+	public static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.configurationsample.ReadOperation";
 
 	private ConfigurationMetadata metadata;
 

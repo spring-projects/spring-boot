@@ -24,6 +24,8 @@ import org.springframework.boot.configurationsample.simple.ClassWithNestedProper
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.DescriptionProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
+import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
+import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
@@ -141,16 +143,18 @@ public class ConfigurationMetadataAnnotationProcessorTests
 
 	@Test
 	public void hierarchicalProperties() {
-		ConfigurationMetadata metadata = compile(HierarchicalProperties.class);
+		ConfigurationMetadata metadata = compile(HierarchicalProperties.class,
+				HierarchicalPropertiesParent.class,
+				HierarchicalPropertiesGrandparent.class);
 		assertThat(metadata).has(Metadata.withGroup("hierarchical")
 				.fromSource(HierarchicalProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("hierarchical.first", String.class)
+				.withDefaultValue("one").fromSource(HierarchicalProperties.class));
+		assertThat(metadata).has(Metadata
+				.withProperty("hierarchical.second", String.class).withDefaultValue("two")
 				.fromSource(HierarchicalProperties.class));
-		assertThat(metadata)
-				.has(Metadata.withProperty("hierarchical.second", String.class)
-						.fromSource(HierarchicalProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("hierarchical.third", String.class)
-				.fromSource(HierarchicalProperties.class));
+				.withDefaultValue("three").fromSource(HierarchicalProperties.class));
 	}
 
 	@Test

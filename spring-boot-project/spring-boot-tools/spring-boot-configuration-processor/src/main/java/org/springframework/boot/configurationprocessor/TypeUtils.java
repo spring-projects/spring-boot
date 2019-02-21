@@ -110,6 +110,14 @@ class TypeUtils {
 		}
 	}
 
+	public boolean isSameType(TypeMirror t1, TypeMirror t2) {
+		return this.types.isSameType(t1, t2);
+	}
+
+	public Element asElement(TypeMirror type) {
+		return this.types.asElement(type);
+	}
+
 	/**
 	 * Return the qualified name of the specified element.
 	 * @param element the element to handle
@@ -294,7 +302,7 @@ class TypeUtils {
 			if (type instanceof DeclaredType) {
 				DeclaredType declaredType = (DeclaredType) type;
 				Element enclosingElement = declaredType.asElement().getEnclosingElement();
-				if (enclosingElement != null && enclosingElement instanceof TypeElement) {
+				if (enclosingElement instanceof TypeElement) {
 					return (TypeElement) enclosingElement;
 				}
 			}
