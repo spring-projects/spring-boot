@@ -16,7 +16,11 @@
 
 package org.springframework.boot.cloud;
 
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.StringUtils;
 
 /**
  * Simple detection for well known cloud platforms. For more advanced cloud provider
@@ -63,6 +67,33 @@ public enum CloudPlatform {
 			return environment.containsProperty("HC_LANDSCAPE");
 		}
 
+	},
+
+	/**
+	 * Kubernetes platform.
+	 */
+	KUBERNETES {
+		@Override
+		public boolean isActive(Environment environment) {
+			if (environment instanceof ConfigurableEnvironment) {
+				MapPropertySource propertySource = (MapPropertySource) ((ConfigurableEnvironment) environment)
+						.getPropertySources()
+						.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+				if (propertySource != null) {
+					for (String name : propertySource.getPropertyNames()) {
+						if (name.endsWith("_SERVICE_HOST")) {
+							String serviceName = StringUtils.split(name,
+									"_SERVICE_HOST")[0];
+							if (propertySource
+									.getProperty(serviceName + "_SERVICE_PORT") != null) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
 	};
 
 	/**
