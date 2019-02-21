@@ -45,7 +45,6 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 
 	private final Function<Mono<Health>, Mono<Health>> timeoutCompose;
 
-
 	/**
 	 * Create a new {@link CompositeReactiveHealthIndicator} from the indicators in the
 	 * given {@code registry}.

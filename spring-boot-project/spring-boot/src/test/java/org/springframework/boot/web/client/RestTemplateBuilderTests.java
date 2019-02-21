@@ -84,7 +84,7 @@ public class RestTemplateBuilderTests {
 		RestTemplateCustomizer[] customizers = null;
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new RestTemplateBuilder(customizers))
-				.withMessageContaining("Customizers must not be null");
+				.withMessageContaining("Customizers must not b	e null");
 	}
 
 	@Test
@@ -557,8 +557,8 @@ public class RestTemplateBuilderTests {
 	@SuppressWarnings("deprecation")
 	public void readTimeoutCanBeSetWithInteger() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(Duration.ofMillis(1234))
-				.build().getRequestFactory();
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
 
