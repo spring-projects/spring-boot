@@ -84,7 +84,7 @@ public class RestTemplateBuilderTests {
 		RestTemplateCustomizer[] customizers = null;
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new RestTemplateBuilder(customizers))
-				.withMessageContaining("Customizers must not be null");
+				.withMessageContaining("Customizers must not b	e null");
 	}
 
 	@Test
