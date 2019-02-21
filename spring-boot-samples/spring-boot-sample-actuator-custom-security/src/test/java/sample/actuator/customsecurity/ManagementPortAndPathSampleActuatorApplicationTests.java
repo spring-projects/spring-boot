@@ -57,6 +57,14 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
+	public void actuatorPathOnMainPortShouldNotMatch() {
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/actuator/health",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	@Test
 	public void testSecureActuator() {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/management/actuator/env",
