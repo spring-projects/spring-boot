@@ -18,15 +18,9 @@ package org.springframework.boot.configurationprocessor;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
@@ -35,6 +29,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.configurationprocessor.TypeUtils.TypeDescriptor;
+import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
 import org.springframework.boot.configurationsample.generic.AbstractIntermediateGenericProperties;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
@@ -102,35 +97,10 @@ public class TypeUtilsTests {
 
 	private void process(Class<?> target,
 			BiConsumer<RoundEnvironment, TypeUtils> consumer) throws IOException {
-		TestProcessor processor = new TestProcessor(consumer);
+		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(
+				consumer, TypeUtils::new);
 		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
 		compiler.getTask(target).call(processor);
-	}
-
-	@SupportedAnnotationTypes("*")
-	@SupportedSourceVersion(SourceVersion.RELEASE_8)
-	private final class TestProcessor extends AbstractProcessor {
-
-		private final BiConsumer<RoundEnvironment, TypeUtils> typeUtilsConsumer;
-
-		private TypeUtils typeUtils;
-
-		private TestProcessor(BiConsumer<RoundEnvironment, TypeUtils> typeUtils) {
-			this.typeUtilsConsumer = typeUtils;
-		}
-
-		@Override
-		public synchronized void init(ProcessingEnvironment env) {
-			this.typeUtils = new TypeUtils(env);
-		}
-
-		@Override
-		public boolean process(Set<? extends TypeElement> annotations,
-				RoundEnvironment roundEnv) {
-			this.typeUtilsConsumer.accept(roundEnv, this.typeUtils);
-			return false;
-		}
-
 	}
 
 }
