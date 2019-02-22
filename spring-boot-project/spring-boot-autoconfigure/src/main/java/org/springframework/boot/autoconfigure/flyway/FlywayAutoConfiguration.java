@@ -168,9 +168,11 @@ public class FlywayAutoConfiguration {
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(resourceLoader, locations);
-				Assert.state(exists, () -> "Cannot find migrations location in: "
-						+ Arrays.asList(locations)
-						+ " (please add migrations or check your Flyway configuration)");
+				if (!exists) {
+					throw new FlywayMigrationScriptNotFoundException(
+							"Cannot find migrations in the specified location",
+							Arrays.asList(locations));
+				}
 			}
 		}
 
