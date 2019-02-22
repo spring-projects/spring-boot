@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -32,6 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -156,8 +158,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param initializer the initializer to add
 	 * @return a new instance with the updated initializers
 	 */
-	public SELF withInitializer(
-			ApplicationContextInitializer<? super ConfigurableApplicationContext> initializer) {
+	public SELF withInitializer(ApplicationContextInitializer<? super C> initializer) {
 		Assert.notNull(initializer, "Initializer must not be null");
 		return newInstance(this.contextFactory, add(this.initializers, initializer),
 				this.environmentProperties, this.systemProperties, this.classLoader,
@@ -219,6 +220,84 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return newInstance(this.contextFactory, this.initializers,
 				this.environmentProperties, this.systemProperties, this.classLoader,
 				parent, this.configurations);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. The bean name
+	 * is generated from the configured {@link BeanNameGenerator} on the underlying
+	 * context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param beanType the type of the bean
+	 * @param beanDefinition a supplier for the bean
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(Class<T> beanType, Supplier<T> beanDefinition) {
+		return withBean(null, beanType, beanDefinition);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. The bean name
+	 * is generated from the configured {@link BeanNameGenerator} on the underlying
+	 * context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param beanType the type of the bean
+	 * @param beanDefinition a function that accepts the context and return the bean
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(Class<T> beanType, Function<? super C, T> beanDefinition) {
+		return withBean(null, beanType, beanDefinition);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. If no bean
+	 * name is provided, a default one is generated from the configured
+	 * {@link BeanNameGenerator} on the underlying context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param beanName the name of the bean (may be {@code null})
+	 * @param beanType the type of the bean
+	 * @param beanDefinition a supplier for the bean
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(String beanName, Class<T> beanType,
+			Supplier<T> beanDefinition) {
+		return withBean(beanName, beanType, (context) -> beanDefinition.get());
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. If no bean
+	 * name is provided, a default one is generated from the configured
+	 * {@link BeanNameGenerator} on the underlying context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param beanName the name of the bean (may be {@code null})
+	 * @param beanType the type of the bean
+	 * @param beanDefinition a function that accepts the context and return the bean
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(String beanName, Class<T> beanType,
+			Function<? super C, T> beanDefinition) {
+		return withInitializer(
+				beanDefinitionRegistrar(beanName, beanType, beanDefinition));
+	}
+
+	private <T> ApplicationContextInitializer<? super C> beanDefinitionRegistrar(
+			String beanName, Class<T> beanType, Function<? super C, T> beanDefinition) {
+		return (context) -> {
+			Assert.isInstanceOf(GenericApplicationContext.class, context);
+			((GenericApplicationContext) context).registerBean(beanName, beanType,
+					() -> beanDefinition.apply(context));
+		};
 	}
 
 	/**
