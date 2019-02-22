@@ -17,6 +17,7 @@
 package org.springframework.boot.diagnostics.analyzer;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
@@ -32,8 +33,7 @@ public class FlywayMigrationScriptMissingFailureAnalyzer
 	private static final String MISSING_SCRIPT_MESSAGE = "Cannot find migrations location in";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-									  IllegalStateException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, IllegalStateException cause) {
 		if (cause.getMessage().startsWith(MISSING_SCRIPT_MESSAGE)) {
 			String location = StringUtils.substringBetween(cause.getMessage(), "[", "]");
 			return new FailureAnalysis("Cannot find migrations location in " + location,

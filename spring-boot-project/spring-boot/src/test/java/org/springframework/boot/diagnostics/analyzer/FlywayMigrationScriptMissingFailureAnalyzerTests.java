@@ -17,6 +17,7 @@
 package org.springframework.boot.diagnostics.analyzer;
 
 import org.junit.Test;
+
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +33,7 @@ public class FlywayMigrationScriptMissingFailureAnalyzerTests {
 
 	@Test
 	public void analysisForFlywayScriptMissingFailureWhenIllegalStateExceptionIsForFlyway() {
-		FailureAnalysis failureAnalysis = analyzer.analyze(new IllegalStateException(
+		FailureAnalysis failureAnalysis = this.analyzer.analyze(new IllegalStateException(
 				"Cannot find " + "migrations location in: [classpath:db/migration] "
 						+ "(please add migrations or check your Flyway configuration)"));
 
@@ -44,7 +45,7 @@ public class FlywayMigrationScriptMissingFailureAnalyzerTests {
 
 	@Test
 	public void analysisForFlywayScriptMissingFailureWhenIllegalStateExceptionIsNotForFlyway() {
-		FailureAnalysis failureAnalysis = analyzer
+		FailureAnalysis failureAnalysis = this.analyzer
 				.analyze(new IllegalStateException("Some other exception"));
 
 		assertThat(failureAnalysis).isNull();
