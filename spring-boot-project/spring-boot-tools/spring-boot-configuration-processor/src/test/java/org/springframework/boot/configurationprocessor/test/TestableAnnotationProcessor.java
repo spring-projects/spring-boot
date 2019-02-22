@@ -39,13 +39,13 @@ import javax.lang.model.element.TypeElement;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class TestableAnnotationProcessor<T> extends AbstractProcessor {
 
-	private final BiConsumer<RoundEnvironment, T> consumer;
+	private final BiConsumer<RoundEnvironmentTester, T> consumer;
 
 	private final Function<ProcessingEnvironment, T> factory;
 
 	private T target;
 
-	public TestableAnnotationProcessor(BiConsumer<RoundEnvironment, T> consumer,
+	public TestableAnnotationProcessor(BiConsumer<RoundEnvironmentTester, T> consumer,
 			Function<ProcessingEnvironment, T> factory) {
 		this.consumer = consumer;
 		this.factory = factory;
@@ -59,7 +59,11 @@ public class TestableAnnotationProcessor<T> extends AbstractProcessor {
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
-		this.consumer.accept(roundEnv, this.target);
+		RoundEnvironmentTester tester = new RoundEnvironmentTester(roundEnv);
+		if (!roundEnv.getRootElements().isEmpty()) {
+			this.consumer.accept(tester, this.target);
+			return true;
+		}
 		return false;
 	}
 
