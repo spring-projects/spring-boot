@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -260,6 +260,21 @@ public class LoggingApplicationListenerTests {
 		this.logger.trace("testattrace");
 		assertThat(this.outputCapture.toString()).contains("testatdebug");
 		assertThat(this.outputCapture.toString()).doesNotContain("testattrace");
+	}
+
+	@Test
+	public void parseDebugArgExpandGroups() {
+		addPropertiesToEnvironment(this.context, "debug");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		ch.qos.logback.classic.Logger sqlGroup = this.loggerContext
+				.getLogger("org.hibernate.SQL");
+		ch.qos.logback.classic.Logger webGroup = this.loggerContext
+				.getLogger("org.springframework.boot.actuate.endpoint.web");
+		webGroup.debug("testdebugwebgroup");
+		sqlGroup.debug("testdebugsqlgroup");
+		assertThat(this.outputCapture.toString()).contains("testdebugwebgroup");
+		assertThat(this.outputCapture.toString()).contains("testdebugsqlgroup");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
@@ -320,12 +321,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
-		List<String> loggers = LOG_LEVEL_LOGGERS.get(level);
-		if (loggers != null) {
-			for (String logger : loggers) {
-				system.setLogLevel(logger, level);
-			}
-		}
+		Optional.ofNullable(LOG_LEVEL_LOGGERS.get(level)).orElse(Collections.emptyList())
+				.stream()
+				.flatMap((logger) -> DEFAULT_GROUP_LOGGERS
+						.getOrDefault(logger, Collections.singletonList(logger)).stream())
+				.forEach((logger) -> system.setLogLevel(logger, level));
 	}
 
 	protected void setLogLevels(LoggingSystem system, Environment environment) {
