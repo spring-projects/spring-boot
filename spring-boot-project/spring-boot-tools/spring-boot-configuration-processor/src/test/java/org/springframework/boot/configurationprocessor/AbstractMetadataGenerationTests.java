@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 /**
