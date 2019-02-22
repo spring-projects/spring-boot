@@ -130,6 +130,10 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			record(timingContext, response, request, ex.getCause());
 			throw ex;
 		}
+		catch (ServletException | IOException | RuntimeException ex) {
+			record(timingContext, response, request, ex);
+			throw ex;
+		}
 	}
 
 	private TimingContext startAndAttachTimingContext(HttpServletRequest request) {
