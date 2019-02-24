@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 public class RabbitPropertiesTests {
 
@@ -252,6 +253,17 @@ public class RabbitPropertiesTests {
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
 				direct.isMissingQueuesFatal());
+	}
+
+	@Test
+	public void saslConfigDefaultsToNull() {
+		assertThat(this.properties.getSaslConfig()).isNull();
+	}
+
+	@Test
+	public void customSaslConfig() {
+		this.properties.setSaslConfig("EXTERNAL");
+		assertThat(this.properties.getSaslConfig()).isEqualTo("EXTERNAL");
 	}
 
 }

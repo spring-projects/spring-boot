@@ -69,6 +69,11 @@ public class RabbitProperties {
 	private final Ssl ssl = new Ssl();
 
 	/**
+	 * DefaultSaslConfig with an explicit mechanism to use.
+	 */
+	private String saslConfig;
+
+	/**
 	 * Virtual host to use when connecting to the broker.
 	 */
 	private String virtualHost;
@@ -240,6 +245,14 @@ public class RabbitProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public String getSaslConfig() {
+		return this.saslConfig;
+	}
+
+	public void setSaslConfig(String saslConfig) {
+		this.saslConfig = saslConfig;
 	}
 
 	public String getVirtualHost() {

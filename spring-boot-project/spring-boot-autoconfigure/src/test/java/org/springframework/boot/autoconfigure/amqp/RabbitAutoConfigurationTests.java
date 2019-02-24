@@ -25,6 +25,7 @@ import javax.net.ssl.TrustManager;
 
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DefaultSaslConfig;
 import com.rabbitmq.client.SslContextFactory;
 import com.rabbitmq.client.TrustEverythingTrustManager;
 import org.aopalliance.aop.Advice;
@@ -79,6 +80,7 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
+ * @author Artsiom Yudovin
  */
 public class RabbitAutoConfigurationTests {
 
@@ -791,6 +793,19 @@ public class RabbitAutoConfigurationTests {
 					TrustManager trustManager = getTrustManager(rabbitConnectionFactory);
 					assertThat(trustManager)
 							.isNotInstanceOf(TrustEverythingTrustManager.class);
+				});
+	}
+
+	@Test
+	public void enableSaslDefaultSaslConfig() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.saslConfig=EXTERNAL")
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					assertThat(rabbitConnectionFactory.getSaslConfig())
+							.isEqualTo(DefaultSaslConfig.EXTERNAL);
 				});
 	}
 

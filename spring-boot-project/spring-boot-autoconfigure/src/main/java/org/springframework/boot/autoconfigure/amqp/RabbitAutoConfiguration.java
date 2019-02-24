@@ -17,9 +17,11 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DefaultSaslConfig;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -98,7 +100,8 @@ public class RabbitAutoConfiguration {
 				throws Exception {
 			PropertyMapper map = PropertyMapper.get();
 			CachingConnectionFactory factory = new CachingConnectionFactory(
-					getRabbitConnectionFactoryBean(properties).getObject());
+					Objects.requireNonNull(
+							getRabbitConnectionFactoryBean(properties).getObject()));
 			map.from(properties::determineAddresses).to(factory::setAddresses);
 			map.from(properties::isPublisherConfirms).to(factory::setPublisherConfirms);
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
@@ -114,6 +117,18 @@ public class RabbitAutoConfiguration {
 			map.from(connectionNameStrategy::getIfUnique).whenNonNull()
 					.to(factory::setConnectionNameStrategy);
 			return factory;
+		}
+
+		private void customizeSaslConfig(String saslConfig,
+				RabbitConnectionFactoryBean factory) {
+			switch (saslConfig.toUpperCase()) {
+			case "PLAIN":
+				factory.setSaslConfig(DefaultSaslConfig.PLAIN);
+				break;
+			case "EXTERNAL":
+				factory.setSaslConfig(DefaultSaslConfig.EXTERNAL);
+				break;
+			}
 		}
 
 		private RabbitConnectionFactoryBean getRabbitConnectionFactoryBean(
@@ -147,6 +162,9 @@ public class RabbitAutoConfiguration {
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull()
 					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);
+			map.from(properties::getSaslConfig).whenNonNull()
+					.to((saslConfig) -> customizeSaslConfig(saslConfig, factory));
+
 			factory.afterPropertiesSet();
 			return factory;
 		}
