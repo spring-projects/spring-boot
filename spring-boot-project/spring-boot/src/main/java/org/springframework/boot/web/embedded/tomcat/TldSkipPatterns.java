@@ -50,6 +50,7 @@ final class TldSkipPatterns {
 		patterns.add("h2*.jar");
 		patterns.add("hamcrest*.jar");
 		patterns.add("hibernate*.jar");
+		patterns.add("jaxb-*.jar");
 		patterns.add("jmx*.jar");
 		patterns.add("jmx-tools-*.jar");
 		patterns.add("jta*.jar");
