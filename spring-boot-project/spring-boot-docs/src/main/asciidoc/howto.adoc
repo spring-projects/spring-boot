@@ -1154,15 +1154,9 @@ tend to send accept headers that prefer XML.
 
 [[howto-write-an-xml-rest-service]]
 === Write an XML REST Service
-If you have the Jackson XML extension (`jackson-dataformat-xml`) or JAXB on the classpath, you
+If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpath, you
 can use it to render XML responses. The previous example that we used for JSON would
-work.
-
-NOTE: To get the server to render XML instead of JSON, you might have to send an
-`Accept: text/xml` header (or use a browser).
-
-==== Jackson XML
-To use the Jackson XML renderer, add the following dependency to your project:
+work. To use the Jackson XML renderer, add the following dependency to your project:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1172,10 +1166,9 @@ To use the Jackson XML renderer, add the following dependency to your project:
 	</dependency>
 ----
 
-==== JAXB
-If Jackson's XML extension is not available, JAXB is tried next,
-with the additional requirement of having `MyThing` annotated as
-`@XmlRootElement`, as shown in the following example:
+If Jackson's XML extension is not available and JAXB is available, XML can be rendered
+with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as
+shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1186,7 +1179,8 @@ with the additional requirement of having `MyThing` annotated as
 	}
 ----
 
-To use JAXB as XML renderer, add the following dependency to your project:
+JAXB is only available out of the box with Java 8. If you're using a more recent java
+generation, add the following dependency to your project:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1195,6 +1189,10 @@ To use JAXB as XML renderer, add the following dependency to your project:
 		<artifactId>jaxb-runtime</artifactId>
 	</dependency>
 ----
+
+NOTE: To get the server to render XML instead of JSON, you might have to send an
+`Accept: text/xml` header (or use a browser).
+
 
 
 [[howto-customize-the-jackson-objectmapper]]
