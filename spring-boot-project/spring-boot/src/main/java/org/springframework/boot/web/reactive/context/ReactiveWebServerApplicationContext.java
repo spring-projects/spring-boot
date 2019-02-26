@@ -88,9 +88,11 @@ public class ReactiveWebServerApplicationContext
 		ServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
+			ReactiveWebServerFactory webServerFactory = getWebServerFactory(
+					webServerFactoryBeanName);
 			boolean lazyInit = getBeanFactory()
 					.getBeanDefinition(webServerFactoryBeanName).isLazyInit();
-			this.serverManager = ServerManager.get(getWebServerFactory(), lazyInit);
+			this.serverManager = ServerManager.get(webServerFactory, lazyInit);
 		}
 		initPropertySources();
 	}
