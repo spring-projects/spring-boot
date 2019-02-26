@@ -301,8 +301,10 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	protected LombokPropertyDescriptor createPropertyDescriptor(TypeElement ownerElement,
 			String name) {
 		VariableElement field = getField(ownerElement, name);
+		ExecutableElement getter = getMethod(ownerElement,
+				createAccessorMethodName("get", name));
 		return new LombokPropertyDescriptor(ownerElement, null, field, name,
-				field.asType(), null);
+				field.asType(), getter);
 	}
 
 }

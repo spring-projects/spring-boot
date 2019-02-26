@@ -266,7 +266,8 @@ public class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	protected JavaBeanPropertyDescriptor createPropertyDescriptor(
 			TypeElement ownerElement, String name) {
 		return createPropertyDescriptor(ownerElement, name,
-				createAccessorMethod("get", name), createAccessorMethod("set", name));
+				createAccessorMethodName("get", name),
+				createAccessorMethodName("set", name));
 	}
 
 	protected JavaBeanPropertyDescriptor createPropertyDescriptor(
@@ -276,12 +277,6 @@ public class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		VariableElement field = getField(ownerElement, name);
 		return new JavaBeanPropertyDescriptor(ownerElement, null, getter, name,
 				getter.getReturnType(), field, setter);
-	}
-
-	private String createAccessorMethod(String prefix, String name) {
-		char[] chars = name.toCharArray();
-		chars[0] = Character.toUpperCase(chars[0]);
-		return prefix + new String(chars, 0, chars.length);
 	}
 
 }
