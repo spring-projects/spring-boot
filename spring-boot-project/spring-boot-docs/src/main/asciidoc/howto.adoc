@@ -1166,9 +1166,9 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
-used, with the additional requirement of having `MyThing` annotated as
-`@XmlRootElement`, as shown in the following example:
+If Jackson's XML extension is not available and JAXB is available, XML can be rendered
+with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as
+shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1179,7 +1179,18 @@ used, with the additional requirement of having `MyThing` annotated as
 	}
 ----
 
-To get the server to render XML instead of JSON, you might have to send an
+JAXB is only available out of the box with Java 8. If you're using a more recent java
+generation, add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.glassfish.jaxb</groupId>
+		<artifactId>jaxb-runtime</artifactId>
+	</dependency>
+----
+
+NOTE: To get the server to render XML instead of JSON, you might have to send an
 `Accept: text/xml` header (or use a browser).
 
 
