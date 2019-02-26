@@ -49,6 +49,7 @@ import org.springframework.util.unit.DataSize;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Chentao Qu
+ * @author Andrew McGhie
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -257,6 +258,12 @@ public class TomcatWebServerFactoryCustomizer implements
 				tomcatProperties.getAccesslog().isRequestAttributesEnabled());
 		valve.setRotatable(tomcatProperties.getAccesslog().isRotate());
 		valve.setBuffered(tomcatProperties.getAccesslog().isBuffered());
+		valve.setCheckExists(tomcatProperties.getAccesslog().isCheckExists());
+		valve.setConditionIf(tomcatProperties.getAccesslog().getConditionIf());
+		valve.setConditionUnless(tomcatProperties.getAccesslog().getConditionUnless());
+		valve.setEncoding(tomcatProperties.getAccesslog().getEncoding());
+		valve.setIpv6Canonical(tomcatProperties.getAccesslog().isIpv6Canonical());
+		valve.setLocale(tomcatProperties.getAccesslog().getLocale());
 		factory.addEngineValves(valve);
 	}
 

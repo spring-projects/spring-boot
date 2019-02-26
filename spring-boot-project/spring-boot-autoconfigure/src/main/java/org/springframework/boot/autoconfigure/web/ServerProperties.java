@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Olivier Lamy
  * @author Chentao Qu
  * @author Artsiom Yudovin
+ * @author Andrew McGhie
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -598,6 +599,42 @@ public class ServerProperties {
 			 */
 			private boolean buffered = true;
 
+			/**
+			 * Check for log file existence so it can be recreated it if an external
+			 * process/agent has renamed it.
+			 */
+			private boolean checkExists = false;
+
+			/**
+			 * If the value returned from ServletRequest.getAttribute(conditionIf) yields
+			 * a null value, logging of the request will be skipped.
+			 */
+			private String conditionIf;
+
+			/**
+			 * If the value returned from ServletRequest.getAttribute(conditionUnless)
+			 * yields a non-null value, the logging of the request will be skipped.
+			 */
+			private String conditionUnless;
+
+			/**
+			 * Character set used by the log file. If it is <code>null</code>, the system
+			 * default character set will be used. An empty string will be treated as
+			 * <code>null</code> when this property is assigned.
+			 */
+			private String encoding;
+
+			/**
+			 * Use IPv6 canonical representation format as defined by RFC 5952 in output.
+			 */
+			private boolean ipv6Canonical = false;
+
+			/**
+			 * Set the locale used to format timestamps in log entries and in log file
+			 * name suffix.
+			 */
+			private String locale = Locale.getDefault().toString();
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -684,6 +721,54 @@ public class ServerProperties {
 
 			public void setBuffered(boolean buffered) {
 				this.buffered = buffered;
+			}
+
+			public boolean isCheckExists() {
+				return this.checkExists;
+			}
+
+			public void setCheckExists(boolean checkExists) {
+				this.checkExists = checkExists;
+			}
+
+			public String getConditionIf() {
+				return this.conditionIf;
+			}
+
+			public void setConditionIf(String conditionIf) {
+				this.conditionIf = conditionIf;
+			}
+
+			public String getConditionUnless() {
+				return this.conditionUnless;
+			}
+
+			public void setConditionUnless(String conditionUnless) {
+				this.conditionUnless = conditionUnless;
+			}
+
+			public String getEncoding() {
+				return this.encoding;
+			}
+
+			public void setEncoding(String encoding) {
+				this.encoding = encoding;
+			}
+
+			public boolean isIpv6Canonical() {
+				return this.ipv6Canonical;
+			}
+
+			public void setIpv6Canonical(boolean ipv6Canonical) {
+				this.ipv6Canonical = ipv6Canonical;
+			}
+
+			public String getLocale() {
+				return this.locale;
+			}
+
+			public void setLocale(String locale) {
+				this.locale = locale;
 			}
 
 		}
