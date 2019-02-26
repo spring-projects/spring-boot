@@ -47,7 +47,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
-	private static final String SECURITY_CONFIGURER = "org.springframework.security.config.annotation.web.WebSecurityConfigurer";
+	private static final String[] OPTIONAL_INCLUDES = {
+			"org.springframework.security.config.annotation.web.WebSecurityConfigurer" };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
@@ -64,19 +65,15 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(ErrorAttributes.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		for (String optionalInclude : OPTIONAL_INCLUDES) {
+			try {
+				includes.add(ClassUtils.forName(optionalInclude, null));
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
+		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
-	}
-
-	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER;
-
-	static {
-		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
-		try {
-			includes.add(ClassUtils.forName(SECURITY_CONFIGURER, null));
-		}
-		catch (Exception ex) {
-		}
-		DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER = Collections.unmodifiableSet(includes);
 	}
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_CONTROLLER;
@@ -85,16 +82,6 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
 		includes.add(Controller.class);
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
-	}
-
-	private static final Set<Class<?>> DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER;
-
-	static {
-		Set<Class<?>> includes = new LinkedHashSet<>(
-				DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER);
-		includes.add(Controller.class);
-		DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER = Collections
-				.unmodifiableSet(includes);
 	}
 
 	private final WebMvcTest annotation;
@@ -128,12 +115,6 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	@Override
 	@SuppressWarnings("deprecation")
 	protected Set<Class<?>> getDefaultIncludes() {
-		if (this.annotation.secure()) {
-			if (ObjectUtils.isEmpty(this.annotation.controllers())) {
-				return DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER;
-			}
-			return DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER;
-		}
 		if (ObjectUtils.isEmpty(this.annotation.controllers())) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}

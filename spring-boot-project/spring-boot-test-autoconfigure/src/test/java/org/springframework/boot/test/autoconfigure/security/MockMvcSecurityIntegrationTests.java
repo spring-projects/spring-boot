@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,14 +33,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link MockMvcSecurityAutoConfiguration}.
+ * Integration tests for MockMvc security.
  *
  * @author Andy Wilkinson
  */
 @WebMvcTest
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = { "debug=true" })
-public class MockMvcSecurityAutoConfigurationIntegrationTests {
+public class MockMvcSecurityIntegrationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
