@@ -72,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Andrew McGhie
  */
 public class ServerPropertiesTests {
 
@@ -117,6 +118,12 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
 		map.put("server.tomcat.accesslog.request-attributes-enabled", "true");
 		map.put("server.tomcat.accesslog.suffix", "-bar.log");
+		map.put("server.tomcat.accesslog.checkExists", "true");
+		map.put("server.tomcat.accesslog.conditionIf", "foo");
+		map.put("server.tomcat.accesslog.conditionUnless", "bar");
+		map.put("server.tomcat.accesslog.encoding", "UTF-8");
+		map.put("server.tomcat.accesslog.ipv6Canonical", "true");
+		map.put("server.tomcat.accesslog.locale", "en-AU");
 		map.put("server.tomcat.protocol-header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
@@ -129,6 +136,12 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getAccesslog().isRenameOnRotate()).isTrue();
 		assertThat(tomcat.getAccesslog().isRequestAttributesEnabled()).isTrue();
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
+		assertThat(tomcat.getAccesslog().isCheckExists()).isEqualTo(true);
+		assertThat(tomcat.getAccesslog().getConditionIf()).isEqualTo("foo");
+		assertThat(tomcat.getAccesslog().getConditionUnless()).isEqualTo("bar");
+		assertThat(tomcat.getAccesslog().getEncoding()).isEqualTo("UTF-8");
+		assertThat(tomcat.getAccesslog().isIpv6Canonical()).isTrue();
+		assertThat(tomcat.getAccesslog().getLocale()).isEqualTo("en-AU");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies())
