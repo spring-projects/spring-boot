@@ -73,6 +73,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.DeprecatedConfigurationProperty";
 
+	static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot."
+			+ "context.properties.bind.DefaultValue";
+
 	static final String ENDPOINT_ANNOTATION = "org.springframework.boot.actuate."
 			+ "endpoint.annotation.Endpoint";
 
@@ -98,6 +101,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String deprecatedConfigurationPropertyAnnotation() {
 		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	protected String defaultValueAnnotation() {
+		return DEFAULT_VALUE_ANNOTATION;
 	}
 
 	protected String endpointAnnotation() {
@@ -127,8 +134,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataEnv = new MetadataGenerationEnvironment(env,
 				configurationPropertiesAnnotation(),
 				nestedConfigurationPropertyAnnotation(),
-				deprecatedConfigurationPropertyAnnotation(), endpointAnnotation(),
-				readOperationAnnotation());
+				deprecatedConfigurationPropertyAnnotation(), defaultValueAnnotation(),
+				endpointAnnotation(), readOperationAnnotation());
 	}
 
 	@Override

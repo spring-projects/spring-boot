@@ -43,6 +43,9 @@ import org.springframework.boot.configurationsample.specific.InnerClassHierarchi
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
+import org.springframework.boot.configurationsample.specific.InvalidDefaultValueCharacterProperties;
+import org.springframework.boot.configurationsample.specific.InvalidDefaultValueFloatingPointProperties;
+import org.springframework.boot.configurationsample.specific.InvalidDefaultValueNumberProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.boot.configurationsample.specific.StaticAccessor;
@@ -382,6 +385,28 @@ public class ConfigurationMetadataAnnotationProcessorTests
 	public void invalidDoubleRegistration() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> compile(InvalidDoubleRegistrationProperties.class))
+				.withMessageContaining("Compilation failed");
+	}
+
+	@Test
+	public void constructorParameterPropertyWithInvalidDefaultValueOnNumber() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> compile(InvalidDefaultValueNumberProperties.class))
+				.withMessageContaining("Compilation failed");
+	}
+
+	@Test
+	public void constructorParameterPropertyWithInvalidDefaultValueOnFloatingPoint() {
+		assertThatIllegalStateException()
+				.isThrownBy(
+						() -> compile(InvalidDefaultValueFloatingPointProperties.class))
+				.withMessageContaining("Compilation failed");
+	}
+
+	@Test
+	public void constructorParameterPropertyWithInvalidDefaultValueOnCharacter() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> compile(InvalidDefaultValueCharacterProperties.class))
 				.withMessageContaining("Compilation failed");
 	}
 

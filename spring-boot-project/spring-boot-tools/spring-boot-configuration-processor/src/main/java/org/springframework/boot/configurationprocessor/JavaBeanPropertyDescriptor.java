@@ -41,4 +41,9 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor<ExecutableElement> {
 				&& (getSetter() != null || isCollection);
 	}
 
+	@Override
+	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
+		return environment.getFieldDefaultValue(getOwnerElement(), getName());
+	}
+
 }

@@ -58,6 +58,11 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	}
 
 	@Override
+	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
+		return environment.getFieldDefaultValue(getOwnerElement(), getName());
+	}
+
+	@Override
 	protected boolean isNested(MetadataGenerationEnvironment environment) {
 		if (!hasLombokPublicAccessor(environment, true)) {
 			return false;

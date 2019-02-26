@@ -47,6 +47,8 @@ public class TestConfigurationMetadataAnnotationProcessor
 
 	public static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
 
+	public static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.configurationsample.DefaultValue";
+
 	public static final String ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.Endpoint";
 
 	public static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.configurationsample.ReadOperation";
@@ -72,6 +74,11 @@ public class TestConfigurationMetadataAnnotationProcessor
 	@Override
 	protected String deprecatedConfigurationPropertyAnnotation() {
 		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	@Override
+	protected String defaultValueAnnotation() {
+		return DEFAULT_VALUE_ANNOTATION;
 	}
 
 	@Override

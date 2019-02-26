@@ -34,6 +34,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
+import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
@@ -41,6 +42,7 @@ import org.springframework.boot.configurationsample.simple.HierarchicalPropertie
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
+import org.springframework.boot.configurationsample.specific.TwoConstructorsExample;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,6 +100,21 @@ public class PropertyDescriptorResolverTests {
 		process(LombokSimpleDataProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name",
 						"description", "counter", "number", "items")));
+	}
+
+	@Test
+	public void propertiesWithConstructorParameters() throws IOException {
+		process(ImmutableSimpleProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("theName",
+						"flag", "comparator", "counter")));
+	}
+
+	@Test
+	public void propertiesWithSeveralConstructors() throws IOException {
+		process(TwoConstructorsExample.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("name")));
+		process(TwoConstructorsExample.class, properties((stream) -> assertThat(stream)
+				.element(0).isInstanceOf(JavaBeanPropertyDescriptor.class)));
 	}
 
 	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(
