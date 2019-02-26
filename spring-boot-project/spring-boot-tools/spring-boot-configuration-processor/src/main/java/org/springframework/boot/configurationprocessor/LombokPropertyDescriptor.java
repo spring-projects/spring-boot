@@ -43,9 +43,9 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	private static final String LOMBOK_ACCESS_LEVEL_PUBLIC = "PUBLIC";
 
 	LombokPropertyDescriptor(TypeElement typeElement, ExecutableElement factoryMethod,
-			VariableElement field, String name, TypeMirror type,
-			ExecutableElement getter) {
-		super(typeElement, factoryMethod, field, name, type, field, getter);
+			VariableElement field, String name, TypeMirror type, ExecutableElement getter,
+			ExecutableElement setter) {
+		super(typeElement, factoryMethod, field, name, type, field, getter, setter);
 	}
 
 	@Override
@@ -69,14 +69,15 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	protected ItemDeprecation resolveItemDeprecation(
 			MetadataGenerationEnvironment environment) {
 		boolean deprecated = environment.isDeprecated(getField())
+				|| environment.isDeprecated(getGetter())
 				|| environment.isDeprecated(getFactoryMethod());
-		return deprecated ? new ItemDeprecation() : null;
-
+		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
 
 	private boolean hasSetter(MetadataGenerationEnvironment env) {
-		return !getField().getModifiers().contains(Modifier.FINAL)
+		boolean nonFinalPublicField = !getField().getModifiers().contains(Modifier.FINAL)
 				&& hasLombokPublicAccessor(env, false);
+		return getSetter() != null || nonFinalPublicField;
 	}
 
 	/**

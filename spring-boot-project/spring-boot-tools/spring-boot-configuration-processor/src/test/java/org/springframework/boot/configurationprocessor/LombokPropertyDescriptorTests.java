@@ -191,7 +191,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 			VariableElement field = getField(ownerElement, "third");
 			ExecutableElement getter = getMethod(ownerElement, "getThird");
 			LombokPropertyDescriptor property = new LombokPropertyDescriptor(ownerElement,
-					null, field, "third", field.asType(), getter);
+					null, field, "third", field.asType(), getter, null);
 			assertItemMetadata(metadataEnv, property).isGroup().hasName("test.third")
 					.hasType(
 							"org.springframework.boot.configurationsample.lombok.SimpleLombokPojo")
@@ -303,8 +303,10 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 		VariableElement field = getField(ownerElement, name);
 		ExecutableElement getter = getMethod(ownerElement,
 				createAccessorMethodName("get", name));
+		ExecutableElement setter = getMethod(ownerElement,
+				createAccessorMethodName("set", name));
 		return new LombokPropertyDescriptor(ownerElement, null, field, name,
-				field.asType(), getter);
+				field.asType(), getter, setter);
 	}
 
 }
