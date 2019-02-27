@@ -132,6 +132,32 @@ public class EndpointServletTests {
 
 	}
 
+	@Test
+	public void withLoadOnStartupNotSetShouldReturnDefaultValue() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
+		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(-1);
+	}
+
+	@Test
+	public void withLoadOnStartupSetShouldReturnValue() {
+		final int loadOnStartupTestValue = 3;
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
+				.withLoadOnStartup(loadOnStartupTestValue);
+		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(loadOnStartupTestValue);
+	}
+
+	@Test
+	public void withLoadOnStartupAndInitParamsShouldReturnValue() {
+		final int loadOnStartupTestValue = 9;
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
+				.withLoadOnStartup(loadOnStartupTestValue).withInitParameter("a", "b")
+				.withInitParameter("c", "d");
+		Map<String, String> extra = new LinkedHashMap<>();
+		extra.put("a", "b1");
+		extra.put("e", "f");
+		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(loadOnStartupTestValue);
+	}
+
 	private static class TestServlet extends GenericServlet {
 
 		@Override

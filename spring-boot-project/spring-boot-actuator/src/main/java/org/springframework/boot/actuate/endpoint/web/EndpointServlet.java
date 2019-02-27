@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,23 +35,31 @@ public final class EndpointServlet {
 
 	private final Servlet servlet;
 
+	private final int loadOnStartup;
+
 	private final Map<String, String> initParameters;
 
 	public EndpointServlet(Class<? extends Servlet> servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = BeanUtils.instantiateClass(servlet);
 		this.initParameters = Collections.emptyMap();
+		this.loadOnStartup = -1;
+
 	}
 
 	public EndpointServlet(Servlet servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = servlet;
 		this.initParameters = Collections.emptyMap();
+		this.loadOnStartup = -1;
 	}
 
-	private EndpointServlet(Servlet servlet, Map<String, String> initParameters) {
+	private EndpointServlet(Servlet servlet, Map<String, String> initParameters,
+			int loadOnStartup) {
 		this.servlet = servlet;
 		this.initParameters = Collections.unmodifiableMap(initParameters);
+		this.loadOnStartup = loadOnStartup;
+
 	}
 
 	public EndpointServlet withInitParameter(String name, String value) {
@@ -67,7 +75,23 @@ public final class EndpointServlet {
 		Map<String, String> mergedInitParameters = new LinkedHashMap<>(
 				this.initParameters);
 		mergedInitParameters.putAll(initParameters);
-		return new EndpointServlet(this.servlet, mergedInitParameters);
+		return new EndpointServlet(this.servlet, mergedInitParameters,
+				this.loadOnStartup);
+	}
+
+	/**
+	 * Sets the <code>loadOnStartup</code> priority that will be set on Servlet
+	 * registration
+	 * <p>
+	 * The default value for <tt>loadOnStartup</tt> is <code>-1</code>.
+	 * @param loadOnStartup the initialization priority of the Servlet
+	 * @return a new instance of {@link EndpointServlet} with the provided
+	 * <tt>loadOnStartup</tt> value set
+	 * @since 2.2.0
+	 * @see ServletRegistration.Dynamic#setLoadOnStartup(int)
+	 */
+	public EndpointServlet withLoadOnStartup(int loadOnStartup) {
+		return new EndpointServlet(this.servlet, this.initParameters, loadOnStartup);
 	}
 
 	Servlet getServlet() {
@@ -76,6 +100,10 @@ public final class EndpointServlet {
 
 	Map<String, String> getInitParameters() {
 		return this.initParameters;
+	}
+
+	int getLoadOnStartup() {
+		return this.loadOnStartup;
 	}
 
 }
