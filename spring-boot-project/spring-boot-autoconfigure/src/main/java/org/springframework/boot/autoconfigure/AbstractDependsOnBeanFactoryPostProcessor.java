@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,9 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 		for (String beanName : getBeanNames(beanFactory)) {
 			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
 			String[] dependencies = definition.getDependsOn();
-			for (String bean : this.dependsOn) {
+			String[] dependsOn = Arrays.stream(this.dependsOn)
+					.filter(beanFactory::containsBean).toArray(String[]::new);
+			for (String bean : dependsOn) {
 				dependencies = StringUtils.addStringToArray(dependencies, bean);
 			}
 			definition.setDependsOn(dependencies);
