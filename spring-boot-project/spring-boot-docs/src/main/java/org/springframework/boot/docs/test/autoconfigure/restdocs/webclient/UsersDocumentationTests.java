@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.docs.test.autoconfigure.restdocs.webclient;
 
 // tag::source[]
-
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
@@ -40,7 +40,6 @@ public class UsersDocumentationTests {
 	void listUsers() {
 		this.webTestClient.get().uri("/").exchange().expectStatus().isOk().expectBody()
 				.consumeWith(document("list-users"));
-
 	}
 
 }

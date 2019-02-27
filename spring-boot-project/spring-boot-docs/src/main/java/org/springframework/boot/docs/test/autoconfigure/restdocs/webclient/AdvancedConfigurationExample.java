@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.docs.test.autoconfigure.restdocs.webclient;
 
 import org.springframework.boot.test.autoconfigure.restdocs.RestDocsWebTestClientConfigurationCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
-public class AdvancedRestDocsWebTestClientConfigurationExample {
+public class AdvancedConfigurationExample {
 
 	// tag::configuration[]
 	@TestConfiguration
-	static class CustomizationConfiguration
+	public static class CustomizationConfiguration
 			implements RestDocsWebTestClientConfigurationCustomizer {
 
 		@Override
