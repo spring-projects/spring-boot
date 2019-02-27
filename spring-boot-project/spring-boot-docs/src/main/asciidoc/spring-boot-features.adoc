@@ -7772,6 +7772,28 @@ generate the default snippets. The following example shows a
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-web-test-client]]
+===== Auto-configured Spring REST Docs Tests with WebTestClient
+`@AutoConfigureRestDocs` can also be used with `WebTestClient`. You can inject it by using
+`@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and
+Spring REST Docs, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/webclient/UsersDocumentationTests.java[tag=source]
+----
+
+If you require more control over Spring REST Docs configuration than offered by the
+attributes of `@AutoConfigureRestDocs`, you can use a
+`RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/webclient/AdvancedConfigurationExample.java[tag=configuration]
+----
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-rest-assured]]
 ===== Auto-configured Spring REST Docs Tests with REST Assured
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring
