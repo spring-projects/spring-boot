@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
@@ -321,8 +320,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
-		Optional.ofNullable(LOG_LEVEL_LOGGERS.get(level)).orElse(Collections.emptyList())
-				.stream()
+		LOG_LEVEL_LOGGERS.getOrDefault(level, Collections.emptyList()).stream()
 				.flatMap((logger) -> DEFAULT_GROUP_LOGGERS
 						.getOrDefault(logger, Collections.singletonList(logger)).stream())
 				.forEach((logger) -> system.setLogLevel(logger, level));

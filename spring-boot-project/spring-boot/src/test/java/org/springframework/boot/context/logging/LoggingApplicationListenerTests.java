@@ -264,15 +264,12 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseDebugArgExpandGroups() {
-		addPropertiesToEnvironment(this.context, "debug");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		ch.qos.logback.classic.Logger sqlGroup = this.loggerContext
-				.getLogger("org.hibernate.SQL");
-		ch.qos.logback.classic.Logger webGroup = this.loggerContext
-				.getLogger("org.springframework.boot.actuate.endpoint.web");
-		webGroup.debug("testdebugwebgroup");
-		sqlGroup.debug("testdebugsqlgroup");
+		this.logFactory.getInstance("org.springframework.boot.actuate.endpoint.web")
+				.debug("testdebugwebgroup");
+		this.logFactory.getInstance("org.hibernate.SQL").debug("testdebugsqlgroup");
 		assertThat(this.outputCapture.toString()).contains("testdebugwebgroup");
 		assertThat(this.outputCapture.toString()).contains("testdebugsqlgroup");
 	}
