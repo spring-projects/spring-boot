@@ -544,24 +544,6 @@ public class RestTemplateBuilderTests {
 				.isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
-	@Test
-	@SuppressWarnings("deprecation")
-	public void connectTimeoutCanBeSetWithInteger() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void readTimeoutCanBeSetWithInteger() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(Duration.ofMillis(1234))
-				.build().getRequestFactory();
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
-	}
-
 	public static class RestTemplateSubclass extends RestTemplate {
 
 	}

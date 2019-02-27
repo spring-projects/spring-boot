@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -331,11 +330,6 @@ public class ServerProperties {
 		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
-		 * Maximum size of the HTTP message header.
-		 */
-		private DataSize maxHttpHeaderSize = DataSize.ofBytes(0);
-
-		/**
 		 * Maximum amount of request body to swallow.
 		 */
 		private DataSize maxSwallowSize = DataSize.ofMegabytes(2);
@@ -502,17 +496,6 @@ public class ServerProperties {
 
 		public void setMaxConnections(int maxConnections) {
 			this.maxConnections = maxConnections;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
-		public DataSize getMaxHttpHeaderSize() {
-			return this.maxHttpHeaderSize;
-		}
-
-		@Deprecated
-		public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public DataSize getMaxSwallowSize() {

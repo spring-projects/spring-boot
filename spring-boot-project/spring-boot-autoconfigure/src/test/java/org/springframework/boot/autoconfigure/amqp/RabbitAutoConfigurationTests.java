@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -318,18 +318,6 @@ public class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
 						"spring.rabbitmq.template.default-receive-queue:default-queue")
-				.run((context) -> {
-					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue(
-							"defaultReceiveQueue", "default-queue");
-				});
-	}
-
-	@Test
-	@Deprecated
-	public void testRabbitTemplateDefaultQueue() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.template.queue:default-queue")
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue(

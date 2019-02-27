@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,22 +214,6 @@ public class ActiveMQAutoConfigurationTests {
 					assertThat(connectionFactory.getConnectionCheckInterval())
 							.isEqualTo(2048);
 					assertThat(connectionFactory.isUseAnonymousProducers()).isFalse();
-				});
-	}
-
-	@Test
-	@Deprecated
-	public void customPoolConnectionFactoryIsAppliedWithDeprecatedSettings() {
-		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.activemq.pool.enabled=true",
-						"spring.activemq.pool.maximumActiveSessionPerConnection=1024")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class))
-							.hasSize(1);
-					JmsPoolConnectionFactory connectionFactory = context
-							.getBean(JmsPoolConnectionFactory.class);
-					assertThat(connectionFactory.getMaxSessionsPerConnection())
-							.isEqualTo(1024);
 				});
 	}
 

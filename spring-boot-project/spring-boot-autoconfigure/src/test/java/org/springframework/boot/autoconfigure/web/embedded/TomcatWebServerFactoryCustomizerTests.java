@@ -146,16 +146,6 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@Deprecated
-	public void customMaxHttpHeaderSizeWithDeprecatedProperty() {
-		bind("server.max-http-header-size=4KB",
-				"server.tomcat.max-http-header-size=1024");
-		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
-				.getTomcat().getConnector().getProtocolHandler()).getMaxHttpHeaderSize())
-						.isEqualTo(DataSize.ofKilobytes(1).toBytes()));
-	}
-
-	@Test
 	public void customMaxSwallowSize() {
 		bind("server.tomcat.max-swallow-size=10MB");
 		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server

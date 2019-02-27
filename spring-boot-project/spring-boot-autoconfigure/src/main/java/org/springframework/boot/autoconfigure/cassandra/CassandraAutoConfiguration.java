@@ -23,7 +23,6 @@ import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -60,14 +59,8 @@ public class CassandraAutoConfiguration {
 		map.from(properties::getUsername).whenNonNull().to((username) -> builder
 				.withCredentials(username, properties.getPassword()));
 		map.from(properties::getCompression).whenNonNull().to(builder::withCompression);
-		map.from(properties::getLoadBalancingPolicy).whenNonNull()
-				.as(BeanUtils::instantiateClass).to(builder::withLoadBalancingPolicy);
 		QueryOptions queryOptions = getQueryOptions(properties);
 		map.from(queryOptions).to(builder::withQueryOptions);
-		map.from(properties::getReconnectionPolicy).whenNonNull()
-				.as(BeanUtils::instantiateClass).to(builder::withReconnectionPolicy);
-		map.from(properties::getRetryPolicy).whenNonNull().as(BeanUtils::instantiateClass)
-				.to(builder::withRetryPolicy);
 		SocketOptions socketOptions = getSocketOptions(properties);
 		map.from(socketOptions).to(builder::withSocketOptions);
 		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);

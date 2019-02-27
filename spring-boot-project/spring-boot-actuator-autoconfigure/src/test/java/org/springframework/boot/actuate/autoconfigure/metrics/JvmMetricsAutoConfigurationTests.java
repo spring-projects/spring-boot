@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,17 +48,6 @@ public class JvmMetricsAutoConfigurationTests {
 				.hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
 				.hasSingleBean(JvmThreadMetrics.class)
 				.hasSingleBean(ClassLoaderMetrics.class));
-	}
-
-	@Test
-	@Deprecated
-	public void allowsJvmMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.jvm.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(JvmGcMetrics.class)
-						.doesNotHaveBean(JvmMemoryMetrics.class)
-						.doesNotHaveBean(JvmThreadMetrics.class)
-						.doesNotHaveBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
