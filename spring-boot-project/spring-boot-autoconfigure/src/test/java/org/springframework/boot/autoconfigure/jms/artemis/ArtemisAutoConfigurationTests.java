@@ -402,21 +402,6 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPoolConnectionFactoryIsAppliedWithDeprecatedSettings() {
-		this.contextRunner
-				.withPropertyValues("spring.artemis.pool.enabled=true",
-						"spring.artemis.pool.maximumActiveSessionPerConnection=1024")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class))
-							.hasSize(1);
-					JmsPoolConnectionFactory connectionFactory = context
-							.getBean(JmsPoolConnectionFactory.class);
-					assertThat(connectionFactory.getMaxSessionsPerConnection())
-							.isEqualTo(1024);
-				});
-	}
-
-	@Test
 	public void poolConnectionFactoryConfiguration() {
 		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled:true")
 				.run((context) -> {

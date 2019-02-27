@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,6 @@ public interface PathMapper {
 	 * given endpoint ID
 	 */
 	String getRootPath(EndpointId endpointId);
-
-	/**
-	 * Returns an {@link PathMapper} that uses the endpoint ID as the path.
-	 * @return an {@link PathMapper} that uses the lowercase endpoint ID as the path
-	 * @deprecated since 2.1.0 in favor of {@link #getRootPath(List, EndpointId)} with a
-	 * {@code null} list
-	 */
-	@Deprecated
-	static PathMapper useEndpointId() {
-		return EndpointId::toString;
-	}
 
 	/**
 	 * Resolve the root path for the specified {@code endpointId} from the given path

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,6 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractFilterRegistrationBean<T extends Filter>
 		extends DynamicRegistrationBean<Dynamic> {
-
-	/**
-	 * Filters that wrap the servlet request should be ordered less than or equal to this.
-	 * @deprecated since 2.1.0 in favor of
-	 * {@code OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER}
-	 */
-	@Deprecated
-	protected static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 

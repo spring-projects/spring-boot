@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -79,30 +78,12 @@ public class DefaultEndpointObjectNameFactoryTests {
 		assertUniqueObjectName();
 	}
 
-	@Test
-	@Deprecated
-	public void generateObjectNameWithUniqueNamesDeprecatedProperty() {
-		this.properties.setUniqueNames(true);
-		assertUniqueObjectName();
-	}
-
 	private void assertUniqueObjectName() {
 		ExposableJmxEndpoint endpoint = endpoint(EndpointId.of("test"));
 		String id = ObjectUtils.getIdentityHexString(endpoint);
 		ObjectName objectName = generateObjectName(endpoint);
 		assertThat(objectName.toString()).isEqualTo(
 				"org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
-	}
-
-	@Test
-	@Deprecated
-	public void generateObjectNameWithUniqueNamesDeprecatedPropertyMismatchMainProperty() {
-		this.environment.setProperty("spring.jmx.unique-names", "false");
-		this.properties.setUniqueNames(true);
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> generateObjectName(endpoint(EndpointId.of("test"))))
-				.withMessageContaining("spring.jmx.unique-names")
-				.withMessageContaining("management.endpoints.jmx.unique-names");
 	}
 
 	@Test

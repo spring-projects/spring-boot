@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,15 +48,6 @@ public class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void allowsUptimeMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.uptime.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(UptimeMetrics.class));
-	}
-
-	@Test
 	public void allowsCustomUptimeMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class)
@@ -67,15 +58,6 @@ public class SystemMetricsAutoConfigurationTests {
 	public void autoConfiguresProcessorMetrics() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
-	}
-
-	@Test
-	@Deprecated
-	public void allowsProcessorMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.processor.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ProcessorMetrics.class));
 	}
 
 	@Test
@@ -91,15 +73,6 @@ public class SystemMetricsAutoConfigurationTests {
 	public void autoConfiguresFileDescriptorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(FileDescriptorMetrics.class));
-	}
-
-	@Test
-	@Deprecated
-	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.files.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(FileDescriptorMetrics.class));
 	}
 
 	@Test

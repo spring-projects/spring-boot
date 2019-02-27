@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,8 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.policies.LoadBalancingPolicy;
-import com.datastax.driver.core.policies.ReconnectionPolicy;
-import com.datastax.driver.core.policies.RetryPolicy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -83,11 +79,6 @@ public class CassandraProperties {
 	private Compression compression = Compression.NONE;
 
 	/**
-	 * Class name of the load balancing policy. The class must have a default constructor.
-	 */
-	private Class<? extends LoadBalancingPolicy> loadBalancingPolicy;
-
-	/**
 	 * Queries consistency level.
 	 */
 	private ConsistencyLevel consistencyLevel;
@@ -101,16 +92,6 @@ public class CassandraProperties {
 	 * Queries default fetch size.
 	 */
 	private int fetchSize = QueryOptions.DEFAULT_FETCH_SIZE;
-
-	/**
-	 * Class name of the reconnection policy. The class must have a default constructor.
-	 */
-	private Class<? extends ReconnectionPolicy> reconnectionPolicy;
-
-	/**
-	 * Class name of the retry policy. The class must have a default constructor.
-	 */
-	private Class<? extends RetryPolicy> retryPolicy;
 
 	/**
 	 * Socket option: connection time out.
@@ -195,18 +176,6 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
-	@Deprecated
-	public Class<? extends LoadBalancingPolicy> getLoadBalancingPolicy() {
-		return this.loadBalancingPolicy;
-	}
-
-	@Deprecated
-	public void setLoadBalancingPolicy(
-			Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
-		this.loadBalancingPolicy = loadBalancingPolicy;
-	}
-
 	public ConsistencyLevel getConsistencyLevel() {
 		return this.consistencyLevel;
 	}
@@ -229,29 +198,6 @@ public class CassandraProperties {
 
 	public void setFetchSize(int fetchSize) {
 		this.fetchSize = fetchSize;
-	}
-
-	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
-	@Deprecated
-	public Class<? extends ReconnectionPolicy> getReconnectionPolicy() {
-		return this.reconnectionPolicy;
-	}
-
-	@Deprecated
-	public void setReconnectionPolicy(
-			Class<? extends ReconnectionPolicy> reconnectionPolicy) {
-		this.reconnectionPolicy = reconnectionPolicy;
-	}
-
-	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
-	@Deprecated
-	public Class<? extends RetryPolicy> getRetryPolicy() {
-		return this.retryPolicy;
-	}
-
-	@Deprecated
-	public void setRetryPolicy(Class<? extends RetryPolicy> retryPolicy) {
-		this.retryPolicy = retryPolicy;
 	}
 
 	public Duration getConnectTimeout() {

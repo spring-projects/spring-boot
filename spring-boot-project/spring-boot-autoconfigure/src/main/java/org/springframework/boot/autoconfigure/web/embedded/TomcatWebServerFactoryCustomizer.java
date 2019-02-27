@@ -85,7 +85,7 @@ public class TomcatWebServerFactoryCustomizer implements
 						tomcatProperties.getMaxThreads()));
 		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper.from(this::determineMaxHttpHeaderSize).whenNonNull()
+		propertyMapper.from(this.serverProperties.getMaxHttpHeaderSize()).whenNonNull()
 				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
@@ -116,13 +116,6 @@ public class TomcatWebServerFactoryCustomizer implements
 
 	private boolean isPositive(int value) {
 		return value > 0;
-	}
-
-	@SuppressWarnings("deprecation")
-	private DataSize determineMaxHttpHeaderSize() {
-		return (this.serverProperties.getTomcat().getMaxHttpHeaderSize().toBytes() > 0)
-				? this.serverProperties.getTomcat().getMaxHttpHeaderSize()
-				: this.serverProperties.getMaxHttpHeaderSize();
 	}
 
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory,

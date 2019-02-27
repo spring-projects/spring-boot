@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
@@ -727,20 +726,6 @@ public class KafkaProperties {
 
 		public void setBootstrapServers(List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
-		}
-
-		@DeprecatedConfigurationProperty(replacement = "spring.kafka.streams.cache-max-size-buffering")
-		@Deprecated
-		public Integer getCacheMaxBytesBuffering() {
-			return (this.cacheMaxSizeBuffering != null)
-					? (int) this.cacheMaxSizeBuffering.toBytes() : null;
-		}
-
-		@Deprecated
-		public void setCacheMaxBytesBuffering(Integer cacheMaxBytesBuffering) {
-			DataSize cacheMaxSizeBuffering = (cacheMaxBytesBuffering != null)
-					? DataSize.ofBytes(cacheMaxBytesBuffering) : null;
-			setCacheMaxSizeBuffering(cacheMaxSizeBuffering);
 		}
 
 		public DataSize getCacheMaxSizeBuffering() {

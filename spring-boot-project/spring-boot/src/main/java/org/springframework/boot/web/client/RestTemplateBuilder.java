@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -376,20 +376,6 @@ public class RestTemplateBuilder {
 	 * @param username the user name
 	 * @param password the password
 	 * @return a new builder instance
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link #basicAuthentication(String username, String password)}
-	 */
-	@Deprecated
-	public RestTemplateBuilder basicAuthorization(String username, String password) {
-		return basicAuthentication(username, password);
-	}
-
-	/**
-	 * Add HTTP basic authentication to requests. See
-	 * {@link BasicAuthenticationInterceptor} for details.
-	 * @param username the user name
-	 * @param password the password
-	 * @return a new builder instance
 	 * @since 2.1.0
 	 */
 	public RestTemplateBuilder basicAuthentication(String username, String password) {
@@ -487,18 +473,6 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Sets the connection timeout in milliseconds on the underlying
-	 * {@link ClientHttpRequestFactory}.
-	 * @param connectTimeout the connection timeout in milliseconds
-	 * @return a new builder instance.
-	 * @deprecated since 2.1.0 in favor of {@link #setConnectTimeout(Duration)}
-	 */
-	@Deprecated
-	public RestTemplateBuilder setConnectTimeout(int connectTimeout) {
-		return setConnectTimeout(Duration.ofMillis(connectTimeout));
-	}
-
-	/**
 	 * Sets the read timeout on the underlying {@link ClientHttpRequestFactory}.
 	 * @param readTimeout the read timeout
 	 * @return a new builder instance.
@@ -511,18 +485,6 @@ public class RestTemplateBuilder {
 				this.restTemplateCustomizers,
 				this.requestFactoryCustomizer.readTimeout(readTimeout),
 				this.interceptors);
-	}
-
-	/**
-	 * Sets the read timeout in milliseconds on the underlying
-	 * {@link ClientHttpRequestFactory}.
-	 * @param readTimeout the read timeout in milliseconds
-	 * @return a new builder instance.
-	 * @deprecated since 2.1.0 in favor of {@link #setReadTimeout(Duration)}
-	 */
-	@Deprecated
-	public RestTemplateBuilder setReadTimeout(int readTimeout) {
-		return setReadTimeout(Duration.ofMillis(readTimeout));
 	}
 
 	/**

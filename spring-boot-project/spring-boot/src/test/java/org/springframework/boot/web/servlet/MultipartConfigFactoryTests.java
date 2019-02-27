@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,34 +40,6 @@ public class MultipartConfigFactoryTests {
 		assertThat(config.getMaxFileSize()).isEqualTo(-1L);
 		assertThat(config.getMaxRequestSize()).isEqualTo(-1L);
 		assertThat(config.getFileSizeThreshold()).isEqualTo(0);
-	}
-
-	@Test
-	@Deprecated
-	public void create() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setLocation("loc");
-		factory.setMaxFileSize(1);
-		factory.setMaxRequestSize(2);
-		factory.setFileSizeThreshold(3);
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation()).isEqualTo("loc");
-		assertThat(config.getMaxFileSize()).isEqualTo(1L);
-		assertThat(config.getMaxRequestSize()).isEqualTo(2L);
-		assertThat(config.getFileSizeThreshold()).isEqualTo(3);
-	}
-
-	@Test
-	@Deprecated
-	public void createWithStringSizes() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize("1");
-		factory.setMaxRequestSize("2KB");
-		factory.setFileSizeThreshold("3MB");
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getMaxFileSize()).isEqualTo(1L);
-		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
-		assertThat(config.getFileSizeThreshold()).isEqualTo(3 * 1024 * 1024);
 	}
 
 	@Test

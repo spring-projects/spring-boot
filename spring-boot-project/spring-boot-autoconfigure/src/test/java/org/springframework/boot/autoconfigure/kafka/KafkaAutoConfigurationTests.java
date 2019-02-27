@@ -352,22 +352,6 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void streamPropertiesWithCustomCacheMaxBytesBuffering() {
-		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
-				.withPropertyValues("spring.application.name=appName",
-						"spring.kafka.streams.cache-max-bytes-buffering=42")
-				.run((context) -> {
-					Properties configs = context.getBean(
-							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
-							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(
-							configs.get(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG))
-									.isEqualTo("42");
-				});
-	}
-
-	@Test
 	public void streamsApplicationIdUsesMainApplicationNameByDefault() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
 				.withPropertyValues("spring.application.name=my-test-app",

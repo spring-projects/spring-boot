@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,18 +53,6 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 		super("DiskSpace health check failed");
 		this.path = path;
 		this.threshold = threshold;
-	}
-
-	/**
-	 * Create a new {@code DiskSpaceHealthIndicator} instance.
-	 * @param path the Path used to compute the available disk space
-	 * @param threshold the minimum disk space that should be available (in bytes)
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link #DiskSpaceHealthIndicator(File, DataSize)}
-	 */
-	@Deprecated
-	public DiskSpaceHealthIndicator(File path, long threshold) {
-		this(path, DataSize.ofBytes(threshold));
 	}
 
 	@Override

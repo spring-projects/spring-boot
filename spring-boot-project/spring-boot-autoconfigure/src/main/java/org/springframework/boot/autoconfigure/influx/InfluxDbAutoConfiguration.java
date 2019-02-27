@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.influx;
 
 import okhttp3.OkHttpClient;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.InfluxDBImpl;
 
@@ -44,32 +42,19 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(InfluxDbProperties.class)
 public class InfluxDbAutoConfiguration {
 
-	private static final Log logger = LogFactory.getLog(InfluxDbAutoConfiguration.class);
-
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty("spring.influx.url")
 	public InfluxDB influxDb(InfluxDbProperties properties,
-			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
-			ObjectProvider<OkHttpClient.Builder> deprecatedBuilder) {
+			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder) {
 		return new InfluxDBImpl(properties.getUrl(), properties.getUser(),
-				properties.getPassword(), determineBuilder(builder.getIfAvailable(),
-						deprecatedBuilder.getIfAvailable()));
+				properties.getPassword(), determineBuilder(builder.getIfAvailable()));
 	}
 
-	@Deprecated
 	private static OkHttpClient.Builder determineBuilder(
-			InfluxDbOkHttpClientBuilderProvider builder,
-			OkHttpClient.Builder deprecatedBuilder) {
+			InfluxDbOkHttpClientBuilderProvider builder) {
 		if (builder != null) {
 			return builder.get();
-		}
-		else if (deprecatedBuilder != null) {
-			logger.warn(
-					"InfluxDB client customizations using a OkHttpClient.Builder is deprecated, register a "
-							+ InfluxDbOkHttpClientBuilderProvider.class.getSimpleName()
-							+ " bean instead");
-			return deprecatedBuilder;
 		}
 		return new OkHttpClient.Builder();
 	}
