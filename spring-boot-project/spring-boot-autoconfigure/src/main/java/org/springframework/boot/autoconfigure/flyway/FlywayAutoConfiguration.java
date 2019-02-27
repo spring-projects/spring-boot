@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -57,6 +58,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -76,6 +78,7 @@ import org.springframework.util.StringUtils;
  * @author Jacques-Etienne Beaudet
  * @author Eddú Meléndez
  * @author Dominic Gunn
+ * @author Dan Zheng
  * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
@@ -321,6 +324,23 @@ public class FlywayAutoConfiguration {
 
 			public FlywayInitializerJdbcOperationsDependencyConfiguration() {
 				super("flywayInitializer");
+
+			}
+
+		}
+
+		/**
+		 * Additional configuration to ensure that {@link NamedParameterJdbcOperations}
+		 * beans depend on the {@code flywayInitializer} bean.
+		 */
+		@Configuration
+		@ConditionalOnClass(NamedParameterJdbcOperations.class)
+		@ConditionalOnBean(NamedParameterJdbcOperations.class)
+		protected static class FlywayInitializerNamedParameterJdbcOperationsDependencyConfiguration
+				extends NamedParameterJdbcOperationsDependsOnPostProcessor {
+
+			public FlywayInitializerNamedParameterJdbcOperationsDependencyConfiguration() {
+				super("flywayInitializer");
 			}
 
 		}
@@ -354,6 +374,22 @@ public class FlywayAutoConfiguration {
 			extends JdbcOperationsDependsOnPostProcessor {
 
 		public FlywayJdbcOperationsDependencyConfiguration() {
+			super("flyway");
+		}
+
+	}
+
+	/**
+	 * Additional configuration to ensure that {@link NamedParameterJdbcOperations} beans
+	 * depend on the {@code flyway} bean.
+	 */
+	@Configuration
+	@ConditionalOnClass(NamedParameterJdbcOperations.class)
+	@ConditionalOnBean(NamedParameterJdbcOperations.class)
+	protected static class FlywayNamedParameterJdbcOperationsDependencyConfiguration
+			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
+
+		public FlywayNamedParameterJdbcOperationsDependencyConfiguration() {
 			super("flyway");
 		}
 
