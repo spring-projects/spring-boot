@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDepen
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
@@ -58,6 +60,7 @@ import org.springframework.util.Assert;
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  * @author Dominic Gunn
+ * @author Dan Zheng
  * @since 1.1.0
  */
 @Configuration
@@ -203,6 +206,22 @@ public class LiquibaseAutoConfiguration {
 			extends JdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseJdbcOperationsDependencyConfiguration() {
+			super("liquibase");
+		}
+
+	}
+
+	/**
+	 * Additional configuration to ensure that {@link NamedParameterJdbcOperations} beans
+	 * depend on the liquibase bean.
+	 */
+	@Configuration
+	@ConditionalOnClass(NamedParameterJdbcOperations.class)
+	@ConditionalOnBean(NamedParameterJdbcOperations.class)
+	protected static class LiquibaseNamedParameterJdbcOperationsDependencyConfiguration
+			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
+
+		public LiquibaseNamedParameterJdbcOperationsDependencyConfiguration() {
 			super("liquibase");
 		}
 
