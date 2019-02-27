@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,15 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import javax.sql.DataSource;
 
 import org.junit.Test;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +35,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -205,45 +192,14 @@ public class JdbcTemplateAutoConfigurationTests {
 	public void testDependencyToFlywayWithJdbcTemplateMixed() {
 		this.contextRunner
 				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
-				.withPropertyValues("spring.flyway.locations:classpath:db/city_np")
+				.withPropertyValues("spring.flyway.locations:classpath:db/city")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
 					assertThat(context.getBean(
 							NamedParameterDataSourceMigrationValidator.class).count)
-									.isEqualTo(1);
-				});
-	}
-
-	@Test
-	public void testDependencyToFlywayWithOnlyNamedParameterJdbcTemplate() {
-		ApplicationContextRunner contextRunner1 = new ApplicationContextRunner()
-				.withPropertyValues("spring.datasource.initialization-mode=never",
-						"spring.datasource.generate-unique-name=true")
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class,
-								JdbcTemplateAutoConfiguration.class,
-								OnlyNamedParameterJdbcTemplateAutoConfiguration.class));
-		contextRunner1
-				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
-				.withPropertyValues("spring.flyway.locations:classpath:db/city_np")
-				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.containsBean("jdbcTemplate")).isFalse();
-					try {
-						JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
-						fail("org.springframework.boot.autoconfigure.jdbc.JdcTemplate should not exist in the application context");
-					}
-					catch (NoSuchBeanDefinitionException ex) {
-
-					}
-					assertThat(context.getBean(NamedParameterJdbcTemplate.class))
-							.isNotNull();
-					assertThat(context.getBean(
-							NamedParameterDataSourceMigrationValidator.class).count)
-									.isEqualTo(1);
+									.isEqualTo(0);
 				});
 	}
 
@@ -266,7 +222,7 @@ public class JdbcTemplateAutoConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
 				.withPropertyValues(
-						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city-np.yaml")
+						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
 				.withConfiguration(
 						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 				.run((context) -> {
@@ -274,34 +230,7 @@ public class JdbcTemplateAutoConfigurationTests {
 					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
 					assertThat(context.getBean(
 							NamedParameterDataSourceMigrationValidator.class).count)
-									.isEqualTo(1);
-				});
-	}
-
-	@Test
-	public void testDependencyToLiquibaseWithOnlyNamedParameterJdbcTemplate() {
-		this.contextRunner
-				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
-				.withPropertyValues(
-						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city-np.yaml")
-				.withConfiguration(AutoConfigurations.of(
-						OnlyNamedParameterJdbcTemplateAutoConfiguration.class,
-						LiquibaseAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.containsBean("jdbcTemplate")).isFalse();
-					try {
-						JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
-						fail("org.springframework.boot.autoconfigure.jdbc.JdcTemplate should not exist in the application context");
-					}
-					catch (NoSuchBeanDefinitionException ex) {
-
-					}
-					assertThat(context.getBean(NamedParameterJdbcTemplate.class))
-							.isNotNull();
-					assertThat(context.getBean(
-							NamedParameterDataSourceMigrationValidator.class).count)
-									.isEqualTo(1);
+									.isEqualTo(0);
 				});
 	}
 
@@ -390,58 +319,8 @@ public class JdbcTemplateAutoConfigurationTests {
 
 		NamedParameterDataSourceMigrationValidator(
 				NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-			String sql = "SELECT COUNT(*) from CITY WHERE id = :id";
-			Map<String, Long> param = new HashMap<>();
-			param.put("id", 1L);
-			this.count = namedParameterJdbcTemplate.queryForObject(sql, param,
-					Integer.class);
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass({ DataSource.class })
-	@ConditionalOnSingleCandidate(DataSource.class)
-	@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-			JdbcTemplateAutoConfiguration.class })
-	@AutoConfigureBefore({ FlywayAutoConfiguration.class,
-			LiquibaseAutoConfiguration.class })
-	@EnableConfigurationProperties(JdbcProperties.class)
-	static class OnlyNamedParameterJdbcTemplateAutoConfiguration
-			implements BeanDefinitionRegistryPostProcessor {
-
-		@Bean
-		public NamedParameterJdbcTemplate myNamedParameterJdbcTemplate(
-				DataSource dataSource) {
-			return new NamedParameterJdbcTemplate(dataSource);
-		}
-
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
-			// do nothing
-		}
-
-		/**
-		 * <p>
-		 * we should remove the jdbc template bean definition to keep only
-		 * NamedParameterJdbcTemplate is registerd in the bean container
-		 * </p>
-		 * @param registry the bean definition registry.
-		 * @throws BeansException if the bean registry have any exception.
-		 */
-		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
-			String[] excludeBeanNames = new String[] { "jdbcTemplate",
-					"namedParameterJdbcTemplate" };
-			for (String beanName : excludeBeanNames) {
-				BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
-				if (beanDefinition != null) {
-					registry.removeBeanDefinition(beanName);
-				}
-			}
-
+			this.count = namedParameterJdbcTemplate.queryForObject(
+					"SELECT COUNT(*) from CITY", Collections.emptyMap(), Integer.class);
 		}
 
 	}

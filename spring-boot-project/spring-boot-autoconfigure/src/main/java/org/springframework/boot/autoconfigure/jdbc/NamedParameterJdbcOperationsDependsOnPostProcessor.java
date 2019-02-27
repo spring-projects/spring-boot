@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * beans.
  *
  * @author Dan Zheng
- * @since 2.1.x
+ * @since 2.1.4
  * @see BeanDefinition#setDependsOn(String[])
  */
 public class NamedParameterJdbcOperationsDependsOnPostProcessor
