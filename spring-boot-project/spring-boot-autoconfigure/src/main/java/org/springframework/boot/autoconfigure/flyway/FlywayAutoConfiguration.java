@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -63,7 +62,6 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -163,14 +161,11 @@ public class FlywayAutoConfiguration {
 		private void checkLocationExists(DataSource dataSource,
 				FlywayProperties properties, ResourceLoader resourceLoader) {
 			if (properties.isCheckLocation()) {
-				String[] locations = new LocationResolver(dataSource)
+				List<String> locations = new LocationResolver(dataSource)
 						.resolveLocations(properties.getLocations());
-				Assert.state(locations.length != 0,
-						"Migration script locations not configured");
-				boolean exists = hasAtLeastOneLocation(resourceLoader, locations);
-				Assert.state(exists, () -> "Cannot find migrations location in: "
-						+ Arrays.asList(locations)
-						+ " (please add migrations or check your Flyway configuration)");
+				if (!hasAtLeastOneLocation(resourceLoader, locations)) {
+					throw new FlywayMigrationScriptMissingException(locations);
+				}
 			}
 		}
 
@@ -178,7 +173,7 @@ public class FlywayAutoConfiguration {
 				FlywayProperties properties) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
-					.resolveLocations(properties.getLocations());
+					.resolveLocations(properties.getLocations()).toArray(new String[0]);
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
@@ -255,7 +250,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		private boolean hasAtLeastOneLocation(ResourceLoader resourceLoader,
-				String... locations) {
+				Collection<String> locations) {
 			for (String location : locations) {
 				if (resourceLoader.getResource(normalizePrefix(location)).exists()) {
 					return true;
@@ -385,11 +380,7 @@ public class FlywayAutoConfiguration {
 			this.dataSource = dataSource;
 		}
 
-		public String[] resolveLocations(Collection<String> locations) {
-			return resolveLocations(StringUtils.toStringArray(locations));
-		}
-
-		public String[] resolveLocations(String[] locations) {
+		public List<String> resolveLocations(List<String> locations) {
 			if (usesVendorLocation(locations)) {
 				DatabaseDriver databaseDriver = getDatabaseDriver();
 				return replaceVendorLocations(locations, databaseDriver);
@@ -397,15 +388,15 @@ public class FlywayAutoConfiguration {
 			return locations;
 		}
 
-		private String[] replaceVendorLocations(String[] locations,
+		private List<String> replaceVendorLocations(List<String> locations,
 				DatabaseDriver databaseDriver) {
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				return locations;
 			}
 			String vendor = databaseDriver.getId();
-			return Arrays.stream(locations)
+			return locations.stream()
 					.map((location) -> location.replace(VENDOR_PLACEHOLDER, vendor))
-					.toArray(String[]::new);
+					.collect(Collectors.toList());
 		}
 
 		private DatabaseDriver getDatabaseDriver() {
@@ -419,7 +410,7 @@ public class FlywayAutoConfiguration {
 
 		}
 
-		private boolean usesVendorLocation(String... locations) {
+		private boolean usesVendorLocation(Collection<String> locations) {
 			for (String location : locations) {
 				if (location.contains(VENDOR_PLACEHOLDER)) {
 					return true;
