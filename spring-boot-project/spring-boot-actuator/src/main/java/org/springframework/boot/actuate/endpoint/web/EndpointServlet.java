@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
