@@ -35,7 +35,7 @@ public class FlywayMigrationScriptNotFoundException extends RuntimeException {
 	}
 
 	public List<String> getLocations() {
-		return locations;
+		return this.locations;
 	}
 
 }

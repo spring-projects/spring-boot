@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
