@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -25,25 +25,35 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link FlywayMigrationScriptMissingFailureAnalyzer}
+ * Tests for {@link FlywayMigrationScriptMissingFailureAnalyzer}.
  *
  * @author Anand Shastri
  */
 public class FlywayMigrationScriptMissingFailureAnalyzerTests {
 
-	private final FlywayMigrationScriptMissingFailureAnalyzer analyzer = new FlywayMigrationScriptMissingFailureAnalyzer();
+	@Test
+	public void analysisForMissingScriptLocation() {
+		FailureAnalysis failureAnalysis = performAnalysis();
+		assertThat(failureAnalysis.getDescription())
+				.contains("no migration scripts location is configured");
+		assertThat(failureAnalysis.getAction())
+				.contains("Check your Flyway configuration");
+	}
 
 	@Test
-	public void analysisForFlywayScriptMissingFailure() {
-		FailureAnalysis failureAnalysis = this.analyzer
-				.analyze(new FlywayMigrationScriptNotFoundException(
-						"Migration script locations not configured",
-						Collections.singletonList("classpath:db/migration")));
+	public void analysisForScriptLocationsNotFound() {
+		FailureAnalysis failureAnalysis = performAnalysis("classpath:db/migration");
+		assertThat(failureAnalysis.getDescription()).contains(
+				"none of the following migration scripts locations could be found")
+				.contains("classpath:db/migration");
+		assertThat(failureAnalysis.getAction()).contains(
+				"Review the locations above or check your Flyway configuration");
+	}
 
-		assertThat(failureAnalysis.getDescription())
-				.endsWith("Cannot find migrations location in [classpath:db/migration]");
-		assertThat(failureAnalysis.getAction())
-				.endsWith(" please add migrations or check your Flyway configuration");
+	private FailureAnalysis performAnalysis(String... locations) {
+		FlywayMigrationScriptMissingException exception = new FlywayMigrationScriptMissingException(
+				Arrays.asList(locations));
+		return new FlywayMigrationScriptMissingFailureAnalyzer().analyze(exception);
 	}
 
 }

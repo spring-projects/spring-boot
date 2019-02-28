@@ -21,19 +21,32 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
  * A {@code FailureAnalyzer} that performs analysis of failures caused by a
- * {@code FlywayMigrationScriptNotFoundException}.
+ * {@link FlywayMigrationScriptMissingException}.
  *
  * @author Anand Shastri
+ * @author Stephane Nicoll
  */
-public class FlywayMigrationScriptMissingFailureAnalyzer
-		extends AbstractFailureAnalyzer<FlywayMigrationScriptNotFoundException> {
+class FlywayMigrationScriptMissingFailureAnalyzer
+		extends AbstractFailureAnalyzer<FlywayMigrationScriptMissingException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
-			FlywayMigrationScriptNotFoundException cause) {
-		return new FailureAnalysis(
-				"Cannot find migrations location in " + cause.getLocations(),
-				" please add migrations or check your Flyway configuration", cause);
+			FlywayMigrationScriptMissingException cause) {
+		StringBuilder description = new StringBuilder("Flyway failed to initialize: ");
+		if (cause.getLocations().isEmpty()) {
+			return new FailureAnalysis(description
+					.append("no migration scripts location is configured").toString(),
+					"Check your Flyway configuration", cause);
+		}
+		else {
+			description.append(String.format(
+					"none of the following migration scripts locations could be found:%n%n"));
+			cause.getLocations().forEach((location) -> description
+					.append(String.format("\t- %s%n", location)));
+			return new FailureAnalysis(description.toString(),
+					"Review the locations above or check your Flyway configuration",
+					cause);
+		}
 	}
 
 }

@@ -16,22 +16,25 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Exception thrown when no {@code flyway migration script} is available.
+ * Exception thrown when no Flyway migration script is available.
  *
  * @author Anand Shastri
+ * @author Stephane Nicoll
+ * @since 2.2.0
  */
-
-public class FlywayMigrationScriptNotFoundException extends RuntimeException {
+public class FlywayMigrationScriptMissingException extends RuntimeException {
 
 	private final List<String> locations;
 
-	public FlywayMigrationScriptNotFoundException(String message,
-			List<String> locations) {
-		super(message);
-		this.locations = locations;
+	FlywayMigrationScriptMissingException(List<String> locations) {
+		super(locations.isEmpty() ? "Migration script locations not configured"
+				: "Cannot find migrations location in: " + locations
+						+ " (please add migrations or check your Flyway configuration)");
+		this.locations = new ArrayList<>(locations);
 	}
 
 	public List<String> getLocations() {
