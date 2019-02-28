@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics.analyzer;
+package org.springframework.boot.autoconfigure.flyway;
 
 import org.junit.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,23 +34,16 @@ public class FlywayMigrationScriptMissingFailureAnalyzerTests {
 	private final FlywayMigrationScriptMissingFailureAnalyzer analyzer = new FlywayMigrationScriptMissingFailureAnalyzer();
 
 	@Test
-	public void analysisForFlywayScriptMissingFailureWhenIllegalStateExceptionIsForFlyway() {
-		FailureAnalysis failureAnalysis = this.analyzer.analyze(new IllegalStateException(
-				"Cannot find " + "migrations location in: [classpath:db/migration] "
-						+ "(please add migrations or check your Flyway configuration)"));
+	public void analysisForFlywayScriptMissingFailure() {
+		FailureAnalysis failureAnalysis = this.analyzer
+				.analyze(new FlywayMigrationScriptNotFoundException(
+						"Migration script locations not configured",
+						Collections.singletonList("classpath:db/migration")));
 
 		assertThat(failureAnalysis.getDescription())
-				.endsWith("Cannot find migrations location in classpath:db/migration");
+				.endsWith("Cannot find migrations location in [classpath:db/migration]");
 		assertThat(failureAnalysis.getAction())
 				.endsWith(" please add migrations or check your Flyway configuration");
-	}
-
-	@Test
-	public void analysisForFlywayScriptMissingFailureWhenIllegalStateExceptionIsNotForFlyway() {
-		FailureAnalysis failureAnalysis = this.analyzer
-				.analyze(new IllegalStateException("Some other exception"));
-
-		assertThat(failureAnalysis).isNull();
 	}
 
 }

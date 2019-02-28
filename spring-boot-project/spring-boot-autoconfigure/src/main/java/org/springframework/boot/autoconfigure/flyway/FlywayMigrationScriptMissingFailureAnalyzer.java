@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics.analyzer;
-
-import org.apache.commons.lang3.StringUtils;
+package org.springframework.boot.autoconfigure.flyway;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
  * A {@code FailureAnalyzer} that performs analysis of failures caused by a
- * {@code IllegalStateException}.
+ * {@code FlywayMigrationScriptNotFoundException}.
  *
  * @author Anand Shastri
  */
 public class FlywayMigrationScriptMissingFailureAnalyzer
-		extends AbstractFailureAnalyzer<IllegalStateException> {
-
-	private static final String MISSING_SCRIPT_MESSAGE = "Cannot find migrations location in";
+		extends AbstractFailureAnalyzer<FlywayMigrationScriptNotFoundException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, IllegalStateException cause) {
-		if (cause.getMessage().startsWith(MISSING_SCRIPT_MESSAGE)) {
-			String location = StringUtils.substringBetween(cause.getMessage(), "[", "]");
-			return new FailureAnalysis("Cannot find migrations location in " + location,
-					" please add migrations or check your Flyway configuration", cause);
-		}
-		return null;
+	protected FailureAnalysis analyze(Throwable rootFailure,
+			FlywayMigrationScriptNotFoundException cause) {
+		return new FailureAnalysis(
+				"Cannot find migrations location in " + cause.getLocations(),
+				" please add migrations or check your Flyway configuration", cause);
 	}
 
 }
