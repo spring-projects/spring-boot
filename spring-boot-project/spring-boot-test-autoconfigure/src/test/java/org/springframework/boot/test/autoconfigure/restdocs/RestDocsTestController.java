@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;

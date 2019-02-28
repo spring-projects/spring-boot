@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 class HateoasController {
 
 	@RequestMapping("/resource")
-	public Resource<Map<String, String>> resource() {
-		return new Resource<>(new HashMap<>(),
+	public EntityModel<Map<String, String>> resource() {
+		return new EntityModel<>(new HashMap<>(),
 				new Link("self", "http://api.example.com"));
 	}
 
