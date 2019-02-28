@@ -73,7 +73,7 @@ you covered>>:
 <<using-spring-boot.adoc#using-boot-auto-configuration, @EnableAutoConfiguration>> |
 <<using-spring-boot.adoc#using-boot-spring-beans-and-dependency-injection, Beans and
 Dependency Injection>>
-* *Running your code*
+* *Running your code:*
 <<using-spring-boot.adoc#using-boot-running-from-an-ide, IDE>> |
 <<using-spring-boot.adoc#using-boot-running-as-a-packaged-application, Packaged>> |
 <<using-spring-boot.adoc#using-boot-running-with-the-maven-plugin, Maven>> |
