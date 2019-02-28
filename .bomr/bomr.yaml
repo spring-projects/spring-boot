@@ -1,0 +1,21 @@
+bomr:
+  bom: spring-boot-project/spring-boot-dependencies/pom.xml
+  upgrade:
+    github:
+      organization: spring-projects
+      repository: spring-boot
+      issue-labels:
+        - 'type: dependency-upgrade'
+    policy: same-minor-version
+  verify:
+    ignored-dependencies:
+      # Avoid confliciting transitive requirements for
+      # io.grpc:grpc-core:jar:[1.0.1,1.0.1] (Jetty) and
+      # io.grpc:grpc-core:jar:[1.14.0,1.14.0] (Micrometer's Azure Registry)
+      - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
+      - 'org.eclipse.jetty:jetty-home'
+    repositories:
+      # Solr's Restlet dependencies
+      - 'https://maven.restlet.com'
+      # Caffeine Simulator's dependencies
+      - 'https://maven.imagej.net/content/repositories/public/'
