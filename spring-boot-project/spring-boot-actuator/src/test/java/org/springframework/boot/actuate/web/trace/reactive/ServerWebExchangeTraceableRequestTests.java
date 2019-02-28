@@ -28,7 +28,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,13 +46,13 @@ public class ServerWebExchangeTraceableRequestTests {
 	public void setUp() {
 		this.exchange = mock(ServerWebExchange.class);
 		this.request = mock(ServerHttpRequest.class);
-		doReturn(this.request).when(this.exchange).getRequest();
+		given(this.exchange.getRequest()).willReturn(this.request);
 	}
 
 	@Test
 	public void getMethod() {
 		String method = "POST";
-		doReturn(method).when(this.request).getMethodValue();
+		given(this.request.getMethodValue()).willReturn(method);
 		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
 				this.exchange);
 		assertThat(traceableRequest.getMethod()).isSameAs(method);
@@ -61,7 +61,7 @@ public class ServerWebExchangeTraceableRequestTests {
 	@Test
 	public void getUri() {
 		URI uri = URI.create("http://localhost:8080/");
-		doReturn(uri).when(this.request).getURI();
+		given(this.request.getURI()).willReturn(uri);
 		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
 				this.exchange);
 		assertThat(traceableRequest.getUri()).isSameAs(uri);
@@ -71,7 +71,7 @@ public class ServerWebExchangeTraceableRequestTests {
 	public void getHeaders() {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("name", "value");
-		doReturn(httpHeaders).when(this.request).getHeaders();
+		given(this.request.getHeaders()).willReturn(httpHeaders);
 		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
 				this.exchange);
 		assertThat(traceableRequest.getHeaders())
@@ -80,18 +80,18 @@ public class ServerWebExchangeTraceableRequestTests {
 
 	@Test
 	public void getUnresolvedRemoteAddress() {
-		InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("", 0);
-		doReturn(socketAddress).when(this.request).getRemoteAddress();
+		InetSocketAddress socketAddress = InetSocketAddress
+				.createUnresolved("unresolved.example.com", 8080);
+		given(this.request.getRemoteAddress()).willReturn(socketAddress);
 		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
 				this.exchange);
 		assertThat(traceableRequest.getRemoteAddress()).isNull();
-
 	}
 
 	@Test
 	public void getRemoteAddress() {
 		InetSocketAddress socketAddress = new InetSocketAddress(0);
-		doReturn(socketAddress).when(this.request).getRemoteAddress();
+		given(this.request.getRemoteAddress()).willReturn(socketAddress);
 		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
 				this.exchange);
 		assertThat(traceableRequest.getRemoteAddress())

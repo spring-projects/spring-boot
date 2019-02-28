@@ -50,6 +50,12 @@ class ServerWebExchangeTraceableRequest implements TraceableRequest {
 		this.remoteAddress = getRemoteAddress(request);
 	}
 
+	private static String getRemoteAddress(ServerHttpRequest request) {
+		InetSocketAddress remoteAddress = request.getRemoteAddress();
+		InetAddress address = (remoteAddress != null) ? remoteAddress.getAddress() : null;
+		return (address != null) ? address.toString() : null;
+	}
+
 	@Override
 	public String getMethod() {
 		return this.method;
@@ -68,12 +74,6 @@ class ServerWebExchangeTraceableRequest implements TraceableRequest {
 	@Override
 	public String getRemoteAddress() {
 		return this.remoteAddress;
-	}
-
-	private static String getRemoteAddress(ServerHttpRequest request) {
-		InetSocketAddress remoteAddress = request.getRemoteAddress();
-		InetAddress address = (remoteAddress != null) ? remoteAddress.getAddress() : null;
-		return (address != null) ? address.toString() : null;
 	}
 
 }
