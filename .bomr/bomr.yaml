@@ -1,0 +1,15 @@
+bomr:
+  bom: spring-boot-project/spring-boot-dependencies/pom.xml
+  upgrade:
+    github:
+      organization: spring-projects
+      repository: spring-boot
+      issue-labels:
+        - 'type: dependency-upgrade'
+    policy: same-minor-version
+  verify:
+    repositories:
+      # Solr's Restlet dependencies
+      - 'https://maven.restlet.com'
+      # Caffeine Simulator's dependencies
+      - 'https://maven.imagej.net/content/repositories/public/'
