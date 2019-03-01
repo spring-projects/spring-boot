@@ -57,6 +57,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -172,11 +173,11 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext,
-				"classpath:logback-nonexistent.xml", null);
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem.initialize(
+				this.initializationContext, "classpath:logback-nonexistent.xml", null));
 	}
 
 	@Test
