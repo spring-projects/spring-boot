@@ -7,6 +7,10 @@ bomr:
       issue-labels:
         - 'type: dependency-upgrade'
     policy: same-minor-version
+    prohibited:
+      - project: dom4j
+        versions:
+          - '[20040101,)' # Old versions that use yyyymmdd format
   verify:
     repositories:
       # Solr's Restlet dependencies
