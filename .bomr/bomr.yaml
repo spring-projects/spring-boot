@@ -7,6 +7,27 @@ bomr:
       issue-labels:
         - 'type: dependency-upgrade'
     policy: same-minor-version
+    prohibited:
+      - project: couchbase-client
+        versions:
+          # Jar contains dependencies' classes resulting in duplicates
+          - '2.7.3'
+      - project: dom4j
+        versions:
+          # Old versions that use yyyymmdd format
+          - '[20040101,)'
+      - project: glassfish-jaxb
+        versions:
+          # Switches to Jarkarta EE API dependencies resulting in duplicate classes
+          - '[2.3.2,2.4)'
+      - project: saaj-impl
+        versions:
+          # Switches to Jarkarta EE API dependencies resulting in duplicate classes
+          - '[1.5.1,1.6)'
+      - project: selenium-htmlunit
+        versions:
+          # Requires a new minor of Selenium which contains breaking API changes
+          - '[2.33.1,2.34)'
   verify:
     ignored-dependencies:
       # Avoid confliciting transitive requirements for
