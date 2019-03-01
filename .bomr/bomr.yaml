@@ -7,6 +7,11 @@ bomr:
       issue-labels:
         - 'type: dependency-upgrade'
     policy: same-major-version
+    prohibited:
+      - project: couchbase-client
+        versions:
+          # Jar contains dependencies' classes resulting in duplicates
+          - '2.7.3'
   verify:
     ignored-dependencies:
       # Avoid confliciting transitive requirements for
