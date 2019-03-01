@@ -532,7 +532,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.isEqualTo("test");
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate()
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
@@ -547,7 +547,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-		getResponse(getLocalUrl("https", "/test.txt"), requestFactory);
+		String localUrl = getLocalUrl("https", "/test.txt");
+		assertThatIOException().isThrownBy(() -> getResponse(localUrl, requestFactory));
 	}
 
 	@Test
