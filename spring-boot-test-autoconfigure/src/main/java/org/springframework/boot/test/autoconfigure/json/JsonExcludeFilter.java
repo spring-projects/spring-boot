@@ -20,13 +20,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.Module;
-
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link TypeExcludeFilter} for {@link JsonTest @JsonTest}.
@@ -39,8 +38,12 @@ class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
-		includes.add(Module.class);
 		includes.add(JsonComponent.class);
+		try {
+			includes.add(ClassUtils.forName("com.fasterxml.jackson.databind.Module", null));
+		} catch (Exception ex) {
+			// Ignore
+		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	};
 
