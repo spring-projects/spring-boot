@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.Module;
-
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link TypeExcludeFilter} for {@link JsonTest @JsonTest}.
@@ -35,11 +34,17 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
  */
 class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
+	private static final String JACKSON_MODULE = "com.fasterxml.jackson.databind.Module";
+
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
-		includes.add(Module.class);
+		try {
+			includes.add(ClassUtils.forName(JACKSON_MODULE, null));
+		}
+		catch (Exception ex) {
+		}
 		includes.add(JsonComponent.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
