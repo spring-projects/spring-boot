@@ -325,7 +325,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLoMaxDaysCanBeRedefined() {
+	public void accessLogMaxDaysCanBeRedefined() {
 		bind("server.tomcat.accesslog.enabled=true",
 				"server.tomcat.accesslog.max-days=20");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
