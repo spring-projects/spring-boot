@@ -118,6 +118,18 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void canSetIgnorePaths() {
+		bind("server.jetty.accesslog.enabled=true",
+				"server.jetty.accesslog.ignore-paths[0]=/a/path",
+				"server.jetty.accesslog.ignore-paths[1]=/b/path");
+		JettyWebServer server = customizeAndGetServer();
+		NCSARequestLog requestLog = getNCSARequestLog(server);
+		assertThat(requestLog.getIgnorePaths().length).isEqualTo(2);
+		assertThat(requestLog.getIgnorePaths()[0]).isEqualTo("/a/path");
+		assertThat(requestLog.getIgnorePaths()[1]).isEqualTo("/b/path");
+	}
+
+	@Test
 	public void accessLogCanBeEnabled() {
 		bind("server.jetty.accesslog.enabled=true");
 		JettyWebServer server = customizeAndGetServer();

@@ -309,8 +309,8 @@ public class ServerProperties {
 		private File basedir;
 
 		/**
-		 * Delay between the invocation of backgroundProcess methods. If a duration suffix
-		 * is not specified, seconds will be used.
+		 * Delay between the invocation of backgroundProcess methods. If a duration suffix is not
+		 * specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(10);
@@ -846,6 +846,11 @@ public class ServerProperties {
 			 */
 			private boolean logLatency;
 
+			/**
+			 * Set request paths that will not be logged.
+			 */
+			private List<String> ignorePaths;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -942,6 +947,13 @@ public class ServerProperties {
 				this.logLatency = logLatency;
 			}
 
+			public List<String> getIgnorePaths() {
+				return ignorePaths;
+			}
+
+			public void setIgnorePaths(List<String> ignorePaths) {
+				this.ignorePaths = ignorePaths;
+			}
 		}
 
 	}
