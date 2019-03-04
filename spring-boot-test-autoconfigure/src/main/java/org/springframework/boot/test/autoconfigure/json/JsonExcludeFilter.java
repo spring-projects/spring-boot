@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,18 +34,20 @@ import org.springframework.util.ClassUtils;
  */
 class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
+	private static final String JACKSON_MODULE = "com.fasterxml.jackson.databind.Module";
+
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
-		includes.add(JsonComponent.class);
 		try {
-			includes.add(ClassUtils.forName("com.fasterxml.jackson.databind.Module", null));
-		} catch (Exception ex) {
-			// Ignore
+			includes.add(ClassUtils.forName(JACKSON_MODULE, null));
 		}
+		catch (Exception ex) {
+		}
+		includes.add(JsonComponent.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
-	};
+	}
 
 	private final JsonTest annotation;
 
