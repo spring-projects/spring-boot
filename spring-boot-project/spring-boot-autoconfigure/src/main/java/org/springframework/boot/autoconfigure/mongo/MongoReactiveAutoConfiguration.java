@@ -21,11 +21,15 @@ import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import reactor.core.publisher.Flux;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -77,23 +81,51 @@ public class MongoReactiveAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(SocketChannel.class)
+	@ConditionalOnClass({ SocketChannel.class, NioEventLoopGroup.class })
 	static class NettyDriverConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		public MongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
 				ObjectProvider<MongoClientSettings> settings) {
-			return (builder) -> {
-				if (!isStreamFactoryFactoryDefined(settings.getIfAvailable())) {
-					builder.streamFactoryFactory(
-							NettyStreamFactoryFactory.builder().build());
-				}
-			};
+			return new EventLoopGroupMongoClientSettingsBuilderCustomizer(settings);
 		}
 
-		private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
-			return settings != null && settings.getStreamFactoryFactory() != null;
+		private static final class EventLoopGroupMongoClientSettingsBuilderCustomizer
+				implements MongoClientSettingsBuilderCustomizer, DisposableBean {
+
+			private final ObjectProvider<MongoClientSettings> settings;
+
+			private EventLoopGroup eventLoopGroup;
+
+			private EventLoopGroupMongoClientSettingsBuilderCustomizer(
+					ObjectProvider<MongoClientSettings> settings) {
+				this.settings = settings;
+			}
+
+			@Override
+			public void customize(Builder builder) {
+				if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
+					NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+					this.eventLoopGroup = eventLoopGroup;
+					builder.streamFactoryFactory(NettyStreamFactoryFactory.builder()
+							.eventLoopGroup(eventLoopGroup).build());
+				}
+			}
+
+			@Override
+			public void destroy() {
+				EventLoopGroup eventLoopGroup = this.eventLoopGroup;
+				if (eventLoopGroup != null) {
+					eventLoopGroup.shutdownGracefully().awaitUninterruptibly();
+					this.eventLoopGroup = null;
+				}
+			}
+
+			private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
+				return settings != null && settings.getStreamFactoryFactory() != null;
+			}
+
 		}
 
 	}
