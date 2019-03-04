@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 
@@ -119,13 +121,22 @@ public class PrometheusMetricsExportAutoConfiguration {
 				PrometheusProperties prometheusProperties, Environment environment) {
 			PrometheusProperties.Pushgateway properties = prometheusProperties
 					.getPushgateway();
-			PushGateway pushGateway = new PushGateway(properties.getBaseUrl());
 			Duration pushRate = properties.getPushRate();
 			String job = getJob(properties, environment);
 			Map<String, String> groupingKey = properties.getGroupingKey();
 			ShutdownOperation shutdownOperation = properties.getShutdownOperation();
-			return new PrometheusPushGatewayManager(pushGateway, collectorRegistry,
-					pushRate, job, groupingKey, shutdownOperation);
+			return new PrometheusPushGatewayManager(
+					getPushGateway(properties.getBaseUrl()), collectorRegistry, pushRate,
+					job, groupingKey, shutdownOperation);
+		}
+
+		private PushGateway getPushGateway(String url) {
+			try {
+				return new PushGateway(new URL(url));
+			}
+			catch (MalformedURLException ex) {
+				return new PushGateway(url);
+			}
 		}
 
 		private String getJob(PrometheusProperties.Pushgateway properties,
