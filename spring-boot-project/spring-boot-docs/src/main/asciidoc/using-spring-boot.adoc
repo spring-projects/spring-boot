@@ -762,10 +762,13 @@ listings for Maven and Gradle:
 
 NOTE: Developer tools are automatically disabled when running a fully packaged
 application. If your application is launched from `java -jar` or if it is started from a
-special classloader, then it is considered a "`production application`". Flagging the
-dependency as optional in Maven or using a custom`developmentOnly` configuration in
-Gradle  (as shown above) is a best practice that prevents devtools from being transitively
-applied to other modules that use your project.
+special classloader, then it is considered a "`production application`". If that does not
+apply to you (i.e. if you run your application from a container), consider excluding
+devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
+
+TIP: Flagging the dependency as optional in Maven or using a custom`developmentOnly`
+configuration in Gradle  (as shown above) is a best practice that prevents devtools from
+being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default. If you want to use a
 <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the
