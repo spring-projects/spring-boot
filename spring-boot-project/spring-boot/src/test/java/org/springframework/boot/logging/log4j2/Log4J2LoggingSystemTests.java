@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -126,10 +127,11 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null);
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem
+				.initialize(null, "classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
