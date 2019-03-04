@@ -948,6 +948,16 @@ public class ServerProperties {
 			 */
 			private boolean logLatency;
 
+			/**
+			 * Set request paths that will not be logged.
+			 */
+			private List<String> ignorePaths;
+
+			/**
+			 * true - IP address from header will be logged, false - IP address from the connection will be logged
+			 */
+			private boolean preferProxiedForAddress = false;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1044,6 +1054,21 @@ public class ServerProperties {
 				this.logLatency = logLatency;
 			}
 
+			public List<String> getIgnorePaths() {
+				return ignorePaths;
+			}
+
+			public void setIgnorePaths(List<String> ignorePaths) {
+				this.ignorePaths = ignorePaths;
+			}
+
+			public boolean getPreferProxiedForAddress(){
+				return preferProxiedForAddress;
+			}
+
+			public void setPreferProxiedForAddress(boolean preferProxiedForAddress){
+				this.preferProxiedForAddress = preferProxiedForAddress;
+			}
 		}
 
 	}

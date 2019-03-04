@@ -231,6 +231,8 @@ public class ServerPropertiesTests {
 		map.put("server.jetty.accesslog.file-date-format", "yyyymmdd");
 		map.put("server.jetty.accesslog.retention-period", "4");
 		map.put("server.jetty.accesslog.append", "true");
+		map.put("server.jetty.accesslog.ignore-paths[0]", "/a/path");
+		map.put("server.jetty.accesslog.ignore-paths[1]", "/b/path");
 		bind(map);
 		ServerProperties.Jetty jetty = this.properties.getJetty();
 		assertThat(jetty.getAccesslog().isEnabled()).isTrue();
@@ -238,6 +240,9 @@ public class ServerPropertiesTests {
 		assertThat(jetty.getAccesslog().getFileDateFormat()).isEqualTo("yyyymmdd");
 		assertThat(jetty.getAccesslog().getRetentionPeriod()).isEqualTo(4);
 		assertThat(jetty.getAccesslog().isAppend()).isTrue();
+		assertThat(jetty.getAccesslog().getIgnorePaths().size()).isEqualTo(2);
+		assertThat(jetty.getAccesslog().getIgnorePaths().get(0)).isEqualTo("/a/path");
+		assertThat(jetty.getAccesslog().getIgnorePaths().get(1)).isEqualTo("/b/path");
 	}
 
 	@Test

@@ -16,13 +16,16 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConfiguration.ConnectionFactory;
@@ -30,7 +33,6 @@ import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.RequestLog;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -40,10 +42,6 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JettyWebServerFactoryCustomizer}.
@@ -101,7 +99,10 @@ public class JettyWebServerFactoryCustomizerTests {
 				"server.jetty.accesslog.time-zone=" + timezone,
 				"server.jetty.accesslog.log-cookies=true",
 				"server.jetty.accesslog.log-server=true",
-				"server.jetty.accesslog.log-latency=true");
+				"server.jetty.accesslog.log-latency=true",
+				"server.jetty.accesslog.prefer-proxied-for-address=true",
+				"server.jetty.accesslog.ignore-paths[0]=/a/path",
+				"server.jetty.accesslog.ignore-paths[1]=/b/path");
 		JettyWebServer server = customizeAndGetServer();
 		NCSARequestLog requestLog = getNCSARequestLog(server);
 		assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
@@ -115,6 +116,10 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isTrue();
 		assertThat(requestLog.getLogServer()).isTrue();
 		assertThat(requestLog.getLogLatency()).isTrue();
+		assertThat(requestLog.getPreferProxiedForAddress()).isTrue();
+		assertThat(requestLog.getIgnorePaths().length).isEqualTo(2);
+		assertThat(requestLog.getIgnorePaths()[0]).isEqualTo("/a/path");
+		assertThat(requestLog.getIgnorePaths()[1]).isEqualTo("/b/path");
 	}
 
 	@Test
@@ -128,6 +133,8 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isFalse();
 		assertThat(requestLog.getLogServer()).isFalse();
 		assertThat(requestLog.getLogLatency()).isFalse();
+		assertThat(requestLog.getIgnorePaths().length).isZero();
+		assertThat(requestLog.getPreferProxiedForAddress()).isFalse();
 	}
 
 	private NCSARequestLog getNCSARequestLog(JettyWebServer server) {

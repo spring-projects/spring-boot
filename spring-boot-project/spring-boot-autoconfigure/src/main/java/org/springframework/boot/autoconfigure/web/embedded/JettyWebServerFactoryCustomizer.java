@@ -167,9 +167,13 @@ public class JettyWebServerFactoryCustomizer implements
 			if (properties.getTimeZone() != null) {
 				log.setLogTimeZone(properties.getTimeZone().getID());
 			}
+			if (properties.getIgnorePaths() != null) {
+				log.setIgnorePaths(properties.getIgnorePaths().toArray(new String[0]));
+			}
 			log.setLogCookies(properties.isLogCookies());
 			log.setLogServer(properties.isLogServer());
 			log.setLogLatency(properties.isLogLatency());
+			log.setPreferProxiedForAddress(properties.getPreferProxiedForAddress());
 			server.setRequestLog(log);
 		});
 	}
