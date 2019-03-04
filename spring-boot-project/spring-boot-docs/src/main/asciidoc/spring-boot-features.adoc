@@ -2216,7 +2216,7 @@ If you need to add or customize converters, you can use Spring Boot's
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+	import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 	import org.springframework.context.annotation.*;
 	import org.springframework.http.converter.*;
 
