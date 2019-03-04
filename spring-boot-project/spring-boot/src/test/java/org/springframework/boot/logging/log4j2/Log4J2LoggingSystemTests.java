@@ -46,6 +46,7 @@ import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -125,10 +126,11 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null);
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem
+				.initialize(null, "classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
