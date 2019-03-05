@@ -471,7 +471,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		testTotalSizeCapProperty(String.valueOf(10 * 1024 * 1024), "10 MB");
 	}
 
-	private void testTotalSizeCapProperty(String sizeValue, String expectFileSize) {
+	private void testTotalSizeCapProperty(String sizeValue, String expectedFileSize) {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.total-size-cap", sizeValue);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
@@ -482,7 +482,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
-				.toString()).isEqualTo(expectFileSize);
+				.toString()).isEqualTo(expectedFileSize);
 	}
 
 	@Test
