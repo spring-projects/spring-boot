@@ -1217,8 +1217,9 @@ following example:
 [[production-ready-jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
-applications. By default, Spring Boot exposes management endpoints as JMX MBeans under
-the `org.springframework.boot` domain.
+applications. By default, this feature is not enabled and can be turned on with
+the configuration property `spring.jmx.enabled=true`.  Spring Boot exposes
+management endpoints as JMX MBeans under the  `org.springframework.boot` domain by default.
 
 
 

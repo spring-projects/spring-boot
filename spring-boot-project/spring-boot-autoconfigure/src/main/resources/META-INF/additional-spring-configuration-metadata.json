@@ -463,7 +463,7 @@
       "name": "spring.jmx.enabled",
       "type": "java.lang.Boolean",
       "description": "Expose management beans to the JMX domain.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name": "spring.jmx.server",
