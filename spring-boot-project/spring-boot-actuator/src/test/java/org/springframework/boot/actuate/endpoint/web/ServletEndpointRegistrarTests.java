@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,6 +118,28 @@ public class ServletEndpointRegistrarTests {
 				Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setInitParameters(Collections.singletonMap("a", "b"));
+	}
+
+	@Test
+	public void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup()
+			throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).setLoadOnStartup(7);
+	}
+
+	@Test
+	public void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue()
+			throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).setLoadOnStartup(-1);
 	}
 
 	private ExposableServletEndpoint mockEndpoint(EndpointServlet endpointServlet) {
