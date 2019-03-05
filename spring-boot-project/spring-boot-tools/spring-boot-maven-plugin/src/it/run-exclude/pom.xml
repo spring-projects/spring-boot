@@ -29,7 +29,7 @@
 									<artifactId>log4j-api</artifactId>
 								</exclude>
 							</excludes>
-							<excludeGroupIds>javax.servlet</excludeGroupIds>
+							<excludeGroupIds>jakarta.servlet,javax.servlet</excludeGroupIds>
 						</configuration>
 					</execution>
 				</executions>
@@ -43,9 +43,9 @@
 			<version>@log4j2.version@</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>@servlet-api.version@</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>@jakarta-servlet.version@</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

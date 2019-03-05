@@ -61,8 +61,8 @@
 		<flyway.version>5.2.4</flyway.version>
 		<freemarker.version>2.3.28</freemarker.version>
 		<elasticsearch.version>6.5.4</elasticsearch.version>
-		<glassfish-el.version>3.0.0</glassfish-el.version>
-		<glassfish-jaxb.version>2.3.1</glassfish-jaxb.version>
+		<glassfish-el.version>3.0.2</glassfish-el.version>
+		<glassfish-jaxb.version>2.3.2</glassfish-jaxb.version>
 		<groovy.version>2.5.6</groovy.version>
 		<gson.version>2.8.5</gson.version>
 		<h2.version>1.4.197</h2.version>
@@ -80,6 +80,22 @@
 		<infinispan.version>9.4.6.Final</infinispan.version>
 		<influxdb-java.version>2.14</influxdb-java.version>
 		<jackson.version>2.9.8</jackson.version>
+		<jakarta-activation.version>1.2.1</jakarta-activation.version>
+		<jakarta-annotation.version>1.3.4</jakarta-annotation.version>
+		<jakarta-jms.version>2.0.2</jakarta-jms.version>
+		<jakarta-json.version>1.1.5</jakarta-json.version>
+		<jakarta-json-bind.version>1.0.1</jakarta-json-bind.version>
+		<jakarta-mail.version>1.6.3</jakarta-mail.version>
+		<jakarta-persistence.version>2.2.2</jakarta-persistence.version>
+		<jakarta-servlet.version>4.0.2</jakarta-servlet.version>
+		<jakarta-servlet-jsp.version>2.3.5</jakarta-servlet-jsp.version>
+		<jakarta-servlet-jsp-jstl.version>1.2.4</jakarta-servlet-jsp-jstl.version>
+		<jakarta-transaction.version>1.3.2</jakarta-transaction.version>
+		<jakarta-validation.version>2.0.1</jakarta-validation.version>
+		<jakarta-websocket.version>1.1.1</jakarta-websocket.version>
+		<jakarta-ws-rs.version>2.1.5</jakarta-ws-rs.version>
+		<jakarta-xml-bind.version>2.3.2</jakarta-xml-bind.version>
+		<jakarta-xml-ws.version>2.3.2</jakarta-xml-ws.version>
 		<janino.version>3.0.12</janino.version>
 		<javax-activation.version>1.2.0</javax-activation.version>
 		<javax-annotation.version>1.3.2</javax-annotation.version>
@@ -179,8 +195,8 @@
 		<spring-ws.version>3.0.6.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
-		<sun-mail.version>${javax-mail.version}</sun-mail.version>
-		<saaj-impl.version>1.5.0</saaj-impl.version>
+		<sun-mail.version>${jakarta-mail.version}</sun-mail.version>
+		<saaj-impl.version>1.5.1</saaj-impl.version>
 		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
@@ -749,7 +765,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
+				<artifactId>jakarta.mail</artifactId>
 				<version>${sun-mail.version}</version>
 			</dependency>
 			<dependency>
@@ -1065,6 +1081,81 @@
 				<groupId>io.undertow</groupId>
 				<artifactId>undertow-websockets-jsr</artifactId>
 				<version>${undertow.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>${jakarta-activation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.annotation</groupId>
+				<artifactId>jakarta.annotation-api</artifactId>
+				<version>${jakarta-annotation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.jms</groupId>
+				<artifactId>jakarta.jms-api</artifactId>
+				<version>${jakarta-jms.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.json</groupId>
+				<artifactId>jakarta.json-api</artifactId>
+				<version>${jakarta-json.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.json.bind</groupId>
+				<artifactId>jakarta.json.bind-api</artifactId>
+				<version>${jakarta-json-bind.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
+				<version>${jakarta-mail.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.persistence</groupId>
+				<artifactId>jakarta.persistence-api</artifactId>
+				<version>${jakarta-persistence.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${jakarta-servlet.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet.jsp.jstl</groupId>
+				<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+				<version>${jakarta-servlet-jsp-jstl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.transaction</groupId>
+				<artifactId>jakarta.transaction-api</artifactId>
+				<version>${jakarta-transaction.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.validation</groupId>
+				<artifactId>jakarta.validation-api</artifactId>
+				<version>${jakarta-validation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.websocket</groupId>
+				<artifactId>jakarta.websocket-api</artifactId>
+				<version>${jakarta-websocket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.ws.rs</groupId>
+				<artifactId>jakarta.ws.rs-api</artifactId>
+				<version>${jakarta-ws-rs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>${jakarta-xml-bind.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.ws</groupId>
+				<artifactId>jakarta.xml.ws-api</artifactId>
+				<version>${jakarta-xml-ws.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.activation</groupId>
@@ -2007,7 +2098,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish</groupId>
-				<artifactId>javax.el</artifactId>
+				<artifactId>jakarta.el</artifactId>
 				<version>${glassfish-el.version}</version>
 			</dependency>
 			<dependency>

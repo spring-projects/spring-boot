@@ -230,7 +230,7 @@ public final class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-core");
-			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/javax.servlet-api-4");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-4");
 			assertThat(verifier
 					.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isTrue();
@@ -263,7 +263,7 @@ public final class Verify {
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
 			verifier.assertHasEntryNameStartingWith(
-					"WEB-INF/lib-provided/javax.servlet-api-4");
+					"WEB-INF/lib-provided/jakarta.servlet-api-4");
 			assertThat(verifier
 					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isTrue();
@@ -314,7 +314,7 @@ public final class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("lib/spring-core");
-			verifier.assertHasNoEntryNameStartingWith("lib/javax.servlet-api");
+			verifier.assertHasNoEntryNameStartingWith("lib/jakarta.servlet-api");
 			assertThat(verifier
 					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isFalse();

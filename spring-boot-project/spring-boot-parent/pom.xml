@@ -575,6 +575,18 @@
 						</goals>
 						<configuration>
 							<rules>
+								<bannedDependencies>
+									<excludes>
+										<exclude>javax.*:*:*</exclude>
+									</excludes>
+									<includes>
+										<include>javax.batch:*:*</include>
+										<include>javax.cache:*:*</include>
+										<include>javax.inject:*:*</include>
+										<include>javax.money:*:*</include>
+									</includes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
 								<requireJavaVersion>
 									<version>[1.8,)</version>
 								</requireJavaVersion>
