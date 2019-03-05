@@ -8175,8 +8175,8 @@ published jar. The file should list your configuration classes under the
 ====
 Auto-configurations must be loaded that way _only_. Make sure that they are defined in
 a specific package space and that they are never the target of component scanning.
-Futhermore, auto-configuration classes should not enable component scanning to find
-additional components. Specific `@Import`s should be used instead.
+Furthermore, auto-configuration classes should not enable component scanning to find
+additional components. Specific ``@Import``s should be used instead.
 ====
 
 You can use the
