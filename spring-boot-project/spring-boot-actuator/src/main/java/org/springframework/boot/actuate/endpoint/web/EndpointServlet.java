@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
@@ -30,36 +31,35 @@ import org.springframework.util.StringUtils;
  * Contains details of a servlet that is exposed as an actuator endpoint.
  *
  * @author Phillip Webb
+ * @author Julio José Gómez Díaz
  */
 public final class EndpointServlet {
 
 	private final Servlet servlet;
 
-	private final int loadOnStartup;
-
 	private final Map<String, String> initParameters;
 
-	public EndpointServlet(Class<? extends Servlet> servlet) {
-		Assert.notNull(servlet, "Servlet must not be null");
-		this.servlet = BeanUtils.instantiateClass(servlet);
-		this.initParameters = Collections.emptyMap();
-		this.loadOnStartup = -1;
+	private final int loadOnStartup;
 
+	public EndpointServlet(Class<? extends Servlet> servlet) {
+		this(instantiateClass(servlet));
+	}
+
+	private static Servlet instantiateClass(Class<? extends Servlet> servlet) {
+		Assert.notNull(servlet, "Servlet must not be null");
+		return BeanUtils.instantiateClass(servlet);
 	}
 
 	public EndpointServlet(Servlet servlet) {
-		Assert.notNull(servlet, "Servlet must not be null");
-		this.servlet = servlet;
-		this.initParameters = Collections.emptyMap();
-		this.loadOnStartup = -1;
+		this(servlet, Collections.emptyMap(), -1);
 	}
 
 	private EndpointServlet(Servlet servlet, Map<String, String> initParameters,
 			int loadOnStartup) {
+		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = servlet;
 		this.initParameters = Collections.unmodifiableMap(initParameters);
 		this.loadOnStartup = loadOnStartup;
-
 	}
 
 	public EndpointServlet withInitParameter(String name, String value) {
@@ -80,13 +80,11 @@ public final class EndpointServlet {
 	}
 
 	/**
-	 * Sets the <code>loadOnStartup</code> priority that will be set on Servlet
-	 * registration
-	 * <p>
-	 * The default value for <tt>loadOnStartup</tt> is <code>-1</code>.
+	 * Sets the {@code loadOnStartup} priority that will be set on Servlet registration.
+	 * The default value for {@code loadOnStartup} is {@code -1}.
 	 * @param loadOnStartup the initialization priority of the Servlet
 	 * @return a new instance of {@link EndpointServlet} with the provided
-	 * <tt>loadOnStartup</tt> value set
+	 * {@code loadOnStartup} value set
 	 * @since 2.2.0
 	 * @see ServletRegistration.Dynamic#setLoadOnStartup(int)
 	 */

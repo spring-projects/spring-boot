@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -129,7 +127,6 @@ public class EndpointServletTests {
 		extra.put("e", "f");
 		assertThat(endpointServlet.withInitParameters(extra).getInitParameters())
 				.containsExactly(entry("a", "b1"), entry("c", "d"), entry("e", "f"));
-
 	}
 
 	@Test
@@ -140,29 +137,15 @@ public class EndpointServletTests {
 
 	@Test
 	public void withLoadOnStartupSetShouldReturnValue() {
-		final int loadOnStartupTestValue = 3;
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
-				.withLoadOnStartup(loadOnStartupTestValue);
-		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(loadOnStartupTestValue);
-	}
-
-	@Test
-	public void withLoadOnStartupAndInitParamsShouldReturnValue() {
-		final int loadOnStartupTestValue = 9;
-		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
-				.withLoadOnStartup(loadOnStartupTestValue).withInitParameter("a", "b")
-				.withInitParameter("c", "d");
-		Map<String, String> extra = new LinkedHashMap<>();
-		extra.put("a", "b1");
-		extra.put("e", "f");
-		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(loadOnStartupTestValue);
+				.withLoadOnStartup(3);
+		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(3);
 	}
 
 	private static class TestServlet extends GenericServlet {
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) {
 		}
 
 	}
