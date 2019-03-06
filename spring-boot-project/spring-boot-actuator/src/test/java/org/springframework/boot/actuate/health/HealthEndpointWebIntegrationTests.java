@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,20 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,23 +58,87 @@ public class HealthEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void whenHealthIsDown503ResponseIsReturned() {
-		HealthIndicatorRegistry registry = context.getBean(HealthIndicatorRegistry.class);
-		registry.register("charlie", () -> Health.down().build());
-		try {
-			client.get().uri("/actuator/health").exchange().expectStatus()
+	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
+		withHealthIndicator("charlie", () -> Health.down().build(),
+				() -> Mono.just(Health.down().build()), () -> {
+					client.get().uri("/actuator/health").exchange().expectStatus()
+							.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody()
+							.jsonPath("status").isEqualTo("DOWN")
+							.jsonPath("details.alpha.status").isEqualTo("UP")
+							.jsonPath("details.bravo.status").isEqualTo("UP")
+							.jsonPath("details.charlie.status").isEqualTo("DOWN");
+					return null;
+				});
+	}
+
+	@Test
+	public void whenComponentHealthIsDown503ResponseIsReturned() throws Exception {
+		withHealthIndicator("charlie", () -> Health.down().build(),
+				() -> Mono.just(Health.down().build()), () -> {
+					client.get().uri("/actuator/health/charlie").exchange().expectStatus()
+							.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody()
+							.jsonPath("status").isEqualTo("DOWN");
+					return null;
+				});
+	}
+
+	@Test
+	public void whenComponentInstanceHealthIsDown503ResponseIsReturned()
+			throws Exception {
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(
+				new OrderedHealthAggregator(),
+				Collections.singletonMap("one", () -> Health.down().build()));
+		CompositeReactiveHealthIndicator reactiveComposite = new CompositeReactiveHealthIndicator(
+				new OrderedHealthAggregator(),
+				new DefaultReactiveHealthIndicatorRegistry(Collections.singletonMap("one",
+						() -> Mono.just(Health.down().build()))));
+		withHealthIndicator("charlie", composite, reactiveComposite, () -> {
+			client.get().uri("/actuator/health/charlie/one").exchange().expectStatus()
 					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody()
-					.jsonPath("status").isEqualTo("DOWN").jsonPath("details.alpha.status")
-					.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP")
-					.jsonPath("details.charlie.status").isEqualTo("DOWN");
+					.jsonPath("status").isEqualTo("DOWN");
+			return null;
+		});
+	}
+
+	private void withHealthIndicator(String name, HealthIndicator healthIndicator,
+			ReactiveHealthIndicator reactiveHealthIndicator, Callable<Void> action)
+			throws Exception {
+		Consumer<String> unregister;
+		Consumer<String> reactiveUnregister;
+		try {
+			ReactiveHealthIndicatorRegistry registry = context
+					.getBean(ReactiveHealthIndicatorRegistry.class);
+			registry.register(name, reactiveHealthIndicator);
+			reactiveUnregister = registry::unregister;
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			reactiveUnregister = (indicatorName) -> {
+			};
+			// Continue
+		}
+		HealthIndicatorRegistry registry = context.getBean(HealthIndicatorRegistry.class);
+		registry.register(name, healthIndicator);
+		unregister = reactiveUnregister.andThen(registry::unregister);
+		try {
+			action.call();
 		}
 		finally {
-			registry.unregister("charlie");
+			unregister.accept("charlie");
 		}
 	}
 
 	@Test
 	public void whenHealthIndicatorIsRemovedResponseIsAltered() {
+		Consumer<String> reactiveRegister = null;
+		try {
+			ReactiveHealthIndicatorRegistry registry = context
+					.getBean(ReactiveHealthIndicatorRegistry.class);
+			ReactiveHealthIndicator unregistered = registry.unregister("bravo");
+			reactiveRegister = (name) -> registry.register(name, unregistered);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Continue
+		}
 		HealthIndicatorRegistry registry = context.getBean(HealthIndicatorRegistry.class);
 		HealthIndicator bravo = registry.unregister("bravo");
 		try {
@@ -78,6 +149,9 @@ public class HealthEndpointWebIntegrationTests {
 		}
 		finally {
 			registry.register("bravo", bravo);
+			if (reactiveRegister != null) {
+				reactiveRegister.accept("bravo");
+			}
 		}
 	}
 
@@ -92,15 +166,38 @@ public class HealthEndpointWebIntegrationTests {
 		}
 
 		@Bean
+		@ConditionalOnWebApplication(type = Type.REACTIVE)
+		public ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
+				Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+				Map<String, HealthIndicator> healthIndicators) {
+			return new ReactiveHealthIndicatorRegistryFactory()
+					.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators,
+							healthIndicators);
+		}
+
+		@Bean
 		public HealthEndpoint healthEndpoint(HealthIndicatorRegistry registry) {
 			return new HealthEndpoint(new CompositeHealthIndicator(
 					new OrderedHealthAggregator(), registry));
 		}
 
 		@Bean
+		@ConditionalOnWebApplication(type = Type.SERVLET)
 		public HealthEndpointWebExtension healthWebEndpointExtension(
 				HealthEndpoint healthEndpoint) {
 			return new HealthEndpointWebExtension(healthEndpoint,
+					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(),
+							ShowDetails.ALWAYS,
+							new HashSet<>(Arrays.asList("ACTUATOR"))));
+		}
+
+		@Bean
+		@ConditionalOnWebApplication(type = Type.REACTIVE)
+		public ReactiveHealthEndpointWebExtension reactiveHealthWebEndpointExtension(
+				ReactiveHealthIndicatorRegistry registry, HealthEndpoint healthEndpoint) {
+			return new ReactiveHealthEndpointWebExtension(
+					new CompositeReactiveHealthIndicator(new OrderedHealthAggregator(),
+							registry),
 					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(),
 							ShowDetails.ALWAYS,
 							new HashSet<>(Arrays.asList("ACTUATOR"))));
