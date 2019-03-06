@@ -74,6 +74,10 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 		return this;
 	}
 
+	ReactiveHealthIndicatorRegistry getRegistry() {
+		return this.registry;
+	}
+
 	@Override
 	public Mono<Health> health() {
 		return Flux.fromIterable(this.registry.getAll().entrySet())
