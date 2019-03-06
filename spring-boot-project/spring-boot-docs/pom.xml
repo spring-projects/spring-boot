@@ -229,12 +229,6 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-jersey2</artifactId>
 			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.annotation</groupId>
-					<artifactId>javax.annotation-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -634,14 +628,6 @@
 			<optional>true</optional>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.annotation</groupId>
-					<artifactId>javax.annotation-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>javax.validation</groupId>
 					<artifactId>validation-api</artifactId>
 				</exclusion>
@@ -651,31 +637,11 @@
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-spring4</artifactId>
 			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.annotation</groupId>
-					<artifactId>javax.annotation-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.validation</groupId>
-					<artifactId>validation-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>

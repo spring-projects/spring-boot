@@ -117,7 +117,7 @@
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>3.0.1</jedis.version>
-		<jersey.version>2.27</jersey.version>
+		<jersey.version>2.28</jersey.version>
 		<jest.version>6.3.1</jest.version>
 		<jetty.version>9.4.14.v20181114</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>

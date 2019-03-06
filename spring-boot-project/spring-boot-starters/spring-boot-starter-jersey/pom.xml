@@ -44,20 +44,8 @@
 			<artifactId>jersey-server</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.annotation</groupId>
-					<artifactId>javax.annotation-api</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>javax.validation</groupId>
 					<artifactId>validation-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.glassfish.hk2.external</groupId>
-					<artifactId>javax.inject</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -67,11 +55,7 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.glassfish.hk2.external</groupId>
-					<artifactId>javax.inject</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
+					<artifactId>jakarta.inject</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -90,28 +74,20 @@
 			<artifactId>jersey-bean-validation</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.el</groupId>
-					<artifactId>javax.el-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>javax.validation</groupId>
 					<artifactId>validation-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.glassfish.web</groupId>
-					<artifactId>javax.el</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.glassfish.hk2.external</groupId>
-					<artifactId>javax.inject</artifactId>
+					<groupId>org.glassfish</groupId>
+					<artifactId>jakarta.el</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-validator</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jakarta.el</groupId>
+					<artifactId>jakarta.el-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -120,24 +96,12 @@
 			<artifactId>jersey-spring4</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.annotation</groupId>
-					<artifactId>javax.annotation-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>org.jvnet</groupId>
 					<artifactId>tiger-types</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.glassfish.hk2.external</groupId>
 					<artifactId>bean-validator</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.glassfish.hk2.external</groupId>
-					<artifactId>javax.inject</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.hibernate</groupId>
@@ -148,12 +112,6 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>javax.ws.rs-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
