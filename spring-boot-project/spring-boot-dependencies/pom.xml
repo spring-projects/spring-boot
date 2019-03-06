@@ -46,7 +46,7 @@
 		<caffeine.version>2.7.0</caffeine.version>
 		<cassandra-driver.version>3.6.0</cassandra-driver.version>
 		<classmate.version>1.4.0</classmate.version>
-		<commons-codec.version>1.11</commons-codec.version>
+		<commons-codec.version>1.12</commons-codec.version>
 		<commons-dbcp2.version>2.5.0</commons-dbcp2.version>
 		<commons-lang3.version>3.8.1</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
