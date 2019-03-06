@@ -148,7 +148,7 @@
 		<micrometer.version>1.1.3</micrometer.version>
 		<mimepull.version>1.9.11</mimepull.version>
 		<mockito.version>2.25.0</mockito.version>
-		<mongo-driver-reactivestreams.version>1.9.2</mongo-driver-reactivestreams.version>
+		<mongo-driver-reactivestreams.version>1.11.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.10.1</mongodb.version>
 		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.15</mysql.version>
