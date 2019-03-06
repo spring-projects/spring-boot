@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public class ValidationErrorsTests {
 		allErrors.add(new ObjectError("foo", "bar"));
 		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
 				allErrors);
-		assertThat(errors.iterator()).containsExactlyElementsOf(allErrors);
+		assertThat(errors.iterator()).toIterable().containsExactlyElementsOf(allErrors);
 	}
 
 	@Test
