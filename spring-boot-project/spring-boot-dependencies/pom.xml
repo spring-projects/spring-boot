@@ -222,7 +222,7 @@
 		<maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
 		<maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-		<maven-invoker-plugin.version>3.1.0</maven-invoker-plugin.version>
+		<maven-invoker-plugin.version>3.2.0</maven-invoker-plugin.version>
 		<maven-help-plugin.version>3.1.1</maven-help-plugin.version>
 		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
 		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
