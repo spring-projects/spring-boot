@@ -16,24 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.MethodMetadata;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
@@ -44,7 +35,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  * @author Phillip Webb
  * @see ConditionalOnEnabledEndpoint
  */
-class OnEnabledEndpointCondition extends SpringBootCondition {
+class OnEnabledEndpointCondition extends AbstractEndpointCondition {
 
 	private static final String ENABLED_BY_DEFAULT_KEY = "management.endpoints.enabled-by-default";
 
@@ -54,7 +45,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
-		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
+		AnnotationAttributes attributes = getEndpointAttributes(
+				ConditionalOnEnabledEndpoint.class, context, metadata);
 		EndpointId id = EndpointId.of(attributes.getString("id"));
 		String key = "management.endpoint." + id.toLowerCaseString() + ".enabled";
 		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
@@ -86,51 +78,6 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 			enabledByDefaultCache.put(environment, enabledByDefault);
 		}
 		return enabledByDefault.orElse(null);
-	}
-
-	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		return getEndpointAttributes(getEndpointType(context, metadata));
-	}
-
-	private Class<?> getEndpointType(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata
-				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName());
-		if (attributes != null && attributes.containsKey("endpoint")) {
-			Class<?> target = (Class<?>) attributes.get("endpoint");
-			if (target != Void.class) {
-				return target;
-			}
-		}
-		Assert.state(
-				metadata instanceof MethodMetadata
-						&& metadata.isAnnotated(Bean.class.getName()),
-				"OnEnabledEndpointCondition must be used on @Bean methods when the endpoint is not specified");
-		MethodMetadata methodMetadata = (MethodMetadata) metadata;
-		try {
-			return ClassUtils.forName(methodMetadata.getReturnTypeName(),
-					context.getClassLoader());
-		}
-		catch (Throwable ex) {
-			throw new IllegalStateException("Failed to extract endpoint id for "
-					+ methodMetadata.getDeclaringClassName() + "."
-					+ methodMetadata.getMethodName(), ex);
-		}
-	}
-
-	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
-		AnnotationAttributes attributes = AnnotatedElementUtils
-				.findMergedAnnotationAttributes(type, Endpoint.class, true, true);
-		if (attributes != null) {
-			return attributes;
-		}
-		attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
-				EndpointExtension.class, false, true);
-		Assert.state(attributes != null,
-				"No endpoint is specified and the return type of the @Bean method is "
-						+ "neither an @Endpoint, nor an @EndpointExtension");
-		return getEndpointAttributes(attributes.getClass("endpoint"));
 	}
 
 }
