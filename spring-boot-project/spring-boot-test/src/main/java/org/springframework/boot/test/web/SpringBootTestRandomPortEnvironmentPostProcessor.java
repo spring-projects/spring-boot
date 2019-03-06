@@ -52,7 +52,8 @@ class SpringBootTestRandomPortEnvironmentPostProcessor
 		}
 		Integer managementPort = getPropertyAsInteger(environment,
 				MANAGEMENT_PORT_PROPERTY, null);
-		if (managementPort == null || managementPort.equals(-1)) {
+		if (managementPort == null || managementPort.equals(-1)
+				|| managementPort.equals(0)) {
 			return;
 		}
 		Integer serverPort = getPropertyAsInteger(environment, SERVER_PORT_PROPERTY,
