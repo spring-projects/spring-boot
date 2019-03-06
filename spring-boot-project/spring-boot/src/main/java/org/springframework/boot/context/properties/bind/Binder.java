@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ public class Binder {
 
 	static {
 		List<BeanBinder> binders = new ArrayList<>();
+		binders.add(new ConstructorParametersBinder());
 		binders.add(new JavaBeanBinder());
 		BEAN_BINDERS = Collections.unmodifiableList(binders);
 	}
