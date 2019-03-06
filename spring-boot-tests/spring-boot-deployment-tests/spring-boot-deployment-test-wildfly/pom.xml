@@ -14,7 +14,7 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<wildfly.version>12.0.0.Final</wildfly.version>
 		<cargo.container.id>wildfly12x</cargo.container.id>
-		<cargo.container.url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip
+		<cargo.container.url>https://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip
 		</cargo.container.url>
 	</properties>
 	<dependencies>
