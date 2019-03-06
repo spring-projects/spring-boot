@@ -36,7 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class KafkaMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(
+			.with(MetricsRun.simple()).withPropertyValues("spring.jmx.enabled=true")
+			.withConfiguration(
 					AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
 
 	@Test

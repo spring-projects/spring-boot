@@ -43,6 +43,12 @@ public abstract class PropertyDescriptorTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	protected String createAccessorMethodName(String prefix, String name) {
+		char[] chars = name.toCharArray();
+		chars[0] = Character.toUpperCase(chars[0]);
+		return prefix + new String(chars, 0, chars.length);
+	}
+
 	protected ExecutableElement getMethod(TypeElement element, String name) {
 		return ElementFilter.methodsIn(element.getEnclosedElements()).stream().filter(
 				(method) -> ((Element) method).getSimpleName().toString().equals(name))

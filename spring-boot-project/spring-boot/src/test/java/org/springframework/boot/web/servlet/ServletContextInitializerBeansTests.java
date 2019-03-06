@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,8 @@ public class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
 		assertThat(initializerBeans.size()).isEqualTo(1);
-		assertThat(initializerBeans.iterator()).hasOnlyElementsOfType(TestServlet.class);
+		assertThat(initializerBeans.iterator()).toIterable()
+				.hasOnlyElementsOfType(TestServlet.class);
 	}
 
 	@Test
@@ -57,7 +58,8 @@ public class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
 		assertThat(initializerBeans.size()).isEqualTo(1);
-		assertThat(initializerBeans.iterator()).hasOnlyElementsOfType(TestFilter.class);
+		assertThat(initializerBeans.iterator()).toIterable()
+				.hasOnlyElementsOfType(TestFilter.class);
 	}
 
 	@Test
@@ -66,7 +68,7 @@ public class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory(), TestServletContextInitializer.class);
 		assertThat(initializerBeans.size()).isEqualTo(1);
-		assertThat(initializerBeans.iterator())
+		assertThat(initializerBeans.iterator()).toIterable()
 				.hasOnlyElementsOfType(TestServletContextInitializer.class);
 	}
 

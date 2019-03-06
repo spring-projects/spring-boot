@@ -41,13 +41,13 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>javax.json.bind</groupId>
-			<artifactId>javax.json.bind-api</artifactId>
+			<groupId>jakarta.json.bind</groupId>
+			<artifactId>jakarta.json.bind-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-		<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+		<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -132,11 +132,6 @@
 		</dependency>
 		<!-- Test -->
 		<dependency>
-			<groupId>javax.json</groupId>
-			<artifactId>javax.json-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
@@ -149,6 +144,11 @@
 		<dependency>
 			<groupId>io.mockk</groupId>
 			<artifactId>mockk</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.json</groupId>
+			<artifactId>jakarta.json-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

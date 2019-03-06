@@ -50,7 +50,7 @@ public class JmxEndpointIntegrationTests {
 					EndpointAutoConfiguration.class, JmxEndpointAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class,
 					HttpTraceAutoConfiguration.class))
-			.withConfiguration(
+			.withPropertyValues("spring.jmx.enabled=true").withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
 	@Test

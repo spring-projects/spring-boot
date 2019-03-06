@@ -61,8 +61,9 @@ class PropertyDescriptorResolver {
 		members.getFields().forEach((name, field) -> {
 			TypeMirror returnType = field.asType();
 			ExecutableElement getter = members.getPublicGetter(name, returnType);
+			ExecutableElement setter = members.getPublicSetter(name, returnType);
 			candidates.add(new LombokPropertyDescriptor(type, factoryMethod, field, name,
-					returnType, getter));
+					returnType, getter, setter));
 		});
 		return candidates.stream().filter(this::isCandidate);
 	}

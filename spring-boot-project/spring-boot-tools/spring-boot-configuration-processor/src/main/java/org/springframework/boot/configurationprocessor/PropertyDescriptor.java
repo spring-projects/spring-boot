@@ -49,9 +49,11 @@ abstract class PropertyDescriptor<S> {
 
 	private final ExecutableElement getter;
 
+	private final ExecutableElement setter;
+
 	protected PropertyDescriptor(TypeElement ownerElement,
 			ExecutableElement factoryMethod, S source, String name, TypeMirror type,
-			VariableElement field, ExecutableElement getter) {
+			VariableElement field, ExecutableElement getter, ExecutableElement setter) {
 		this.ownerElement = ownerElement;
 		this.factoryMethod = factoryMethod;
 		this.source = source;
@@ -59,6 +61,7 @@ abstract class PropertyDescriptor<S> {
 		this.type = type;
 		this.field = field;
 		this.getter = getter;
+		this.setter = setter;
 	}
 
 	public TypeElement getOwnerElement() {
@@ -89,10 +92,19 @@ abstract class PropertyDescriptor<S> {
 		return this.getter;
 	}
 
-	protected abstract ItemDeprecation resolveItemDeprecation(
-			MetadataGenerationEnvironment environment);
+	public ExecutableElement getSetter() {
+		return this.setter;
+	}
 
 	protected abstract boolean isProperty(MetadataGenerationEnvironment environment);
+
+	protected ItemDeprecation resolveItemDeprecation(
+			MetadataGenerationEnvironment environment) {
+		boolean deprecated = environment.isDeprecated(getGetter())
+				|| environment.isDeprecated(getSetter())
+				|| environment.isDeprecated(getFactoryMethod());
+		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
+	}
 
 	protected boolean isNested(MetadataGenerationEnvironment environment) {
 		Element typeElement = environment.getTypeUtils().asElement(getType());
