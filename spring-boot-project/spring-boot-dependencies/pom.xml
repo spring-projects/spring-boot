@@ -206,7 +206,7 @@
 		<unboundid-ldapsdk.version>4.0.9</unboundid-ldapsdk.version>
 		<undertow.version>2.0.19.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
-		<webjars-locator-core.version>0.36</webjars-locator-core.version>
+		<webjars-locator-core.version>0.37</webjars-locator-core.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xmlunit2.version>2.6.2</xmlunit2.version>
 		<!-- Plugin versions -->
