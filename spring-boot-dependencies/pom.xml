@@ -149,7 +149,7 @@
 		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<snakeyaml.version>1.17</snakeyaml.version>
 		<solr.version>5.5.5</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
