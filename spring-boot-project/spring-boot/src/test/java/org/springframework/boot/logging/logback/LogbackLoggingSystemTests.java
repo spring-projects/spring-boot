@@ -138,8 +138,9 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testBasicConfigLocation() {
+	public void defaultConfigConfiguresAConsoleAppender() {
 		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		assertThat(getConsoleAppender()).isNotNull();
 	}
 
