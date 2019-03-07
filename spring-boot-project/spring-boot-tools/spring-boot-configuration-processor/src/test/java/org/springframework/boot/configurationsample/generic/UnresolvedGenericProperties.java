@@ -21,6 +21,8 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 /**
  * Properties with unresolved generic information.
  *
+ * @param <B> mapping key type
+ * @param <C> mapping value type
  * @author Stephane Nicoll
  */
 @ConfigurationProperties("generic")
