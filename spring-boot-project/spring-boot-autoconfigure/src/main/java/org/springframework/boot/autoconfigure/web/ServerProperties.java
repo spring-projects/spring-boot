@@ -235,8 +235,8 @@ public class ServerProperties {
 				// remove leading and trailing whitespaces if any exists
 				String ctxPath = StringUtils.trimWhitespace(contextPath);
 
-				if (contextPath.endsWith("/")) {
-					ctxPath = contextPath.substring(0, contextPath.length() - 1);
+				if (ctxPath.endsWith("/")) {
+					ctxPath = ctxPath.substring(0, ctxPath.length() - 1);
 				}
 				return ctxPath;
 			}
