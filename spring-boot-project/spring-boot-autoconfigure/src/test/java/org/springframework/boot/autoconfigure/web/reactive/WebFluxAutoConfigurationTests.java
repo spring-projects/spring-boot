@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.ValidatorFactory;
 
+import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -418,6 +419,7 @@ public class WebFluxAutoConfigurationTests {
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
 						if (handler instanceof ResourceWebHandler) {
+							Assertions.setExtractBareNamePropertyMethods(false);
 							assertThat(((ResourceWebHandler) handler).getCacheControl())
 									.isEqualToComparingFieldByField(
 											CacheControl.maxAge(5, TimeUnit.SECONDS));
@@ -436,6 +438,7 @@ public class WebFluxAutoConfigurationTests {
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
 						if (handler instanceof ResourceWebHandler) {
+							Assertions.setExtractBareNamePropertyMethods(false);
 							assertThat(((ResourceWebHandler) handler).getCacheControl())
 									.isEqualToComparingFieldByField(
 											CacheControl.maxAge(5, TimeUnit.SECONDS)

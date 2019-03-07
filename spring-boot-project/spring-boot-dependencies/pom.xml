@@ -44,7 +44,7 @@
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.9.10</byte-buddy.version>
 		<caffeine.version>2.7.0</caffeine.version>
-		<cassandra-driver.version>3.6.0</cassandra-driver.version>
+		<cassandra-driver.version>3.7.1</cassandra-driver.version>
 		<classmate.version>1.4.0</classmate.version>
 		<commons-codec.version>1.12</commons-codec.version>
 		<commons-dbcp2.version>2.6.0</commons-dbcp2.version>
@@ -148,7 +148,7 @@
 		<micrometer.version>1.1.3</micrometer.version>
 		<mimepull.version>1.9.11</mimepull.version>
 		<mockito.version>2.25.0</mockito.version>
-		<mongo-driver-reactivestreams.version>1.9.2</mongo-driver-reactivestreams.version>
+		<mongo-driver-reactivestreams.version>1.11.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.10.1</mongodb.version>
 		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.15</mysql.version>

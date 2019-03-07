@@ -104,6 +104,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void clear() {
 		super.clear();
 		this.loggingSystem.cleanUp();
+		((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).stop();
 	}
 
 	@Test
@@ -138,8 +139,9 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testBasicConfigLocation() {
+	public void defaultConfigConfiguresAConsoleAppender() {
 		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		assertThat(getConsoleAppender()).isNotNull();
 	}
 
