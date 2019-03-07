@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class Neo4jHealthIndicatorTests {
 
 	@Test
 	public void neo4jDown() {
-		CypherException cypherException = new CypherException("Error executing Cypher",
+		CypherException cypherException = new CypherException(
 				"Neo.ClientError.Statement.SyntaxError",
 				"Unable to execute invalid Cypher");
 		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap()))
