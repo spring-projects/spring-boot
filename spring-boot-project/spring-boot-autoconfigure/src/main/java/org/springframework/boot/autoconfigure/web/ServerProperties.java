@@ -240,7 +240,6 @@ public class ServerProperties {
 				}
 				return ctxPath;
 			}
-
 			return contextPath;
 		}
 
