@@ -232,7 +232,7 @@ public class ServerProperties {
 
 		private String cleanContextPath(String contextPath) {
 			if (StringUtils.hasLength(contextPath)) {
-				// remove leading and trailing whitespaces
+				// remove leading and trailing whitespaces if any exists
 				String ctxPath = StringUtils.trimWhitespace(contextPath);
 
 				if (contextPath.endsWith("/")) {
