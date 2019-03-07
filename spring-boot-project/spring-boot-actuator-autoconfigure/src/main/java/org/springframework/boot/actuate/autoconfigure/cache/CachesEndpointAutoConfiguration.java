@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -41,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnEnabledEndpoint(endpoint = CachesEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = CachesEndpoint.class)
 @AutoConfigureAfter(CacheAutoConfiguration.class)
 public class CachesEndpointAutoConfiguration {
 

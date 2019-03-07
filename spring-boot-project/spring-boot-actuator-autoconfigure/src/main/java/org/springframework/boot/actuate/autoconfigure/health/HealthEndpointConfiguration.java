@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnSingleCandidate(HealthIndicatorRegistry.class)
 @ConditionalOnEnabledEndpoint(endpoint = HealthEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = HealthEndpoint.class)
 class HealthEndpointConfiguration {
 
 	@Bean

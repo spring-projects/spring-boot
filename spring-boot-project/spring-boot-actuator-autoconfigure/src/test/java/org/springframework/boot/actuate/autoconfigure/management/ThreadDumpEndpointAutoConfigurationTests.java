@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,23 @@ public class ThreadDumpEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(ThreadDumpEndpoint.class));
+		this.contextRunner
+				.withPropertyValues(
+						"management.endpoints.web.exposure.include=threaddump")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ThreadDumpEndpoint.class));
+	}
+
+	@Test
+	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.doesNotHaveBean(ThreadDumpEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withPropertyValues("management.endpoint.threaddump.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ThreadDumpEndpoint.class));

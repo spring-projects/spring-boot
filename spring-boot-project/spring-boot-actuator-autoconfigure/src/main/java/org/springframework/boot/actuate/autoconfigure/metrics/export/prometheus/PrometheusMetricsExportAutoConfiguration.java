@@ -26,6 +26,7 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -83,6 +84,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnEnabledEndpoint(endpoint = PrometheusScrapeEndpoint.class)
+	@ConditionalOnExposedEndpoint(endpoint = PrometheusScrapeEndpoint.class)
 	public static class PrometheusScrapeEndpointConfiguration {
 
 		@Bean

@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDisco
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -58,6 +59,7 @@ import org.springframework.util.ObjectUtils;
 @Configuration
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 @EnableConfigurationProperties(JmxEndpointProperties.class)
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
 public class JmxEndpointAutoConfiguration {
 
 	private final ApplicationContext applicationContext;

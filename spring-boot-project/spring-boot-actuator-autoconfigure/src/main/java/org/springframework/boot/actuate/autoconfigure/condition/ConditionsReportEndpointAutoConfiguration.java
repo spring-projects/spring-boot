@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.condition;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnEnabledEndpoint(endpoint = ConditionsReportEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = ConditionsReportEndpoint.class)
 public class ConditionsReportEndpointAutoConfiguration {
 
 	@Bean

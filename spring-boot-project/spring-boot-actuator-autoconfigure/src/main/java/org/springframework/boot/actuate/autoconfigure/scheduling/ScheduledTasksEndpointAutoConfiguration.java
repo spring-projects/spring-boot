@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,6 +36,7 @@ import org.springframework.scheduling.config.ScheduledTaskHolder;
  */
 @Configuration
 @ConditionalOnEnabledEndpoint(endpoint = ScheduledTasksEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = ScheduledTasksEndpoint.class)
 public class ScheduledTasksEndpointAutoConfiguration {
 
 	@Bean

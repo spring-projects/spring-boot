@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnEnabledEndpoint(endpoint = InfoEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = InfoEndpoint.class)
 @AutoConfigureAfter(InfoContributorAutoConfiguration.class)
 public class InfoEndpointAutoConfiguration {
 

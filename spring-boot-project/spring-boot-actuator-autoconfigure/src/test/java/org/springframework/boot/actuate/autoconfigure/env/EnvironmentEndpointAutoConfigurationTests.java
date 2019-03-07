@@ -44,7 +44,9 @@ public class EnvironmentEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=env")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.run(validateSystemProperties("******", "******"));
 	}
 
@@ -56,8 +58,16 @@ public class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.doesNotHaveBean(EnvironmentEndpoint.class));
+	}
+
+	@Test
 	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=env")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
 				.run(validateSystemProperties("******", "123456"));
 	}

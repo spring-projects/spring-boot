@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,19 +42,30 @@ public class CachesEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(CacheConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
+		this.contextRunner.withUserConfiguration(CacheConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=caches")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWithoutCacheManagerShouldHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=caches")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(CachesEndpoint.class));
+	}
+
+	@Test
+	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.withUserConfiguration(CacheConfiguration.class).run(
+				(context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.caches.enabled:false")
+				.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withUserConfiguration(CacheConfiguration.class)
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(CachesEndpoint.class));

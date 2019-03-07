@@ -21,6 +21,7 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnEnabledEndpoint(endpoint = LiquibaseEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = LiquibaseEndpoint.class)
 @AutoConfigureAfter(LiquibaseAutoConfiguration.class)
 public class LiquibaseEndpointAutoConfiguration {
 

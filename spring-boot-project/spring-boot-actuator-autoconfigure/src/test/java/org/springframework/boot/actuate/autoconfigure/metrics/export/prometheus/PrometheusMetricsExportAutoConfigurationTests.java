@@ -104,8 +104,20 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues(
+						"management.endpoints.web.exposure.include=prometheus")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(PrometheusScrapeEndpoint.class));
+	}
+
+	@Test
+	public void scrapeEndpointNotAddedToManagementContextWhenNotExposed() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+				.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(PrometheusScrapeEndpoint.class));
 	}
 
 	@Test
@@ -113,6 +125,8 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+				.withPropertyValues(
+						"management.endpoints.web.exposure.include=prometheus")
 				.withPropertyValues("management.endpoint.prometheus.enabled=false")
 				.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)

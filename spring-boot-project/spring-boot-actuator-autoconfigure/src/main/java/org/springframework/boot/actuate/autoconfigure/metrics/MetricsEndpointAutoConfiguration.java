@@ -20,6 +20,7 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(Timed.class)
 @ConditionalOnEnabledEndpoint(endpoint = MetricsEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = MetricsEndpoint.class)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class,
 		CompositeMeterRegistryAutoConfiguration.class })
 public class MetricsEndpointAutoConfiguration {
