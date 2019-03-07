@@ -37,7 +37,8 @@ import org.springframework.core.env.Environment;
  * <li>{@code "management.endpoints.web.exposure.*"} expose this endpoint</li>
  * <li>or if JMX is enabled and {@code "management.endpoints.jmx.exposure.*"} expose this
  * endpoint</li>
- * <li>or if the application is running on {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}</li>
+ * <li>or if the application is running on
+ * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}</li>
  * </ul>
  *
  * When placed on a {@code @Bean} method, the endpoint defaults to the return type of the

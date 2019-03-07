@@ -144,10 +144,9 @@ public class ConditionalOnExposedEndpointTests {
 
 	@Test
 	public void outcomeOnCloudFoundryShouldMatchAll() {
-		this.contextRunner
-				.withPropertyValues("VCAP_APPLICATION:---")
-				.run((context) -> assertThat(context).hasBean("info")
-				.hasBean("health").hasBean("spring").hasBean("test"));
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---")
+				.run((context) -> assertThat(context).hasBean("info").hasBean("health")
+						.hasBean("spring").hasBean("test"));
 	}
 
 	@Endpoint(id = "health")
