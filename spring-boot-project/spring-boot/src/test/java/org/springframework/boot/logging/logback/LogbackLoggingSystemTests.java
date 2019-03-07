@@ -107,6 +107,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void clear() {
 		super.clear();
 		this.loggingSystem.cleanUp();
+		((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).stop();
 	}
 
 	@Test
