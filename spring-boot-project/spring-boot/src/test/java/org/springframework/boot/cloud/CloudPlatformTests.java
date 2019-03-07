@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public class CloudPlatformTests {
 		Map<String, Object> source = new HashMap<>();
 		source.put("EXAMPLE_SERVICE_HOST", "---");
 		source.put("EXAMPLE_SERVICE_PORT", "8080");
-		PropertySource propertySource = new SystemEnvironmentPropertySource(
+		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
 		environment.getPropertySources().addFirst(propertySource);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
@@ -103,7 +103,7 @@ public class CloudPlatformTests {
 	@Test
 	public void getActiveWhenHasServiceHostAndNoServicePortShouldNotReturnKubernetes() {
 		MockEnvironment environment = new MockEnvironment();
-		PropertySource propertySource = new SystemEnvironmentPropertySource(
+		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("EXAMPLE_SERVICE_HOST", "---"));
 		environment.getPropertySources().addFirst(propertySource);

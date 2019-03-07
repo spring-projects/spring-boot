@@ -49,7 +49,6 @@ public class CassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings("deprecation")
 	public Cluster cassandraCluster(CassandraProperties properties,
 			ObjectProvider<ClusterBuilderCustomizer> builderCustomizers) {
 		PropertyMapper map = PropertyMapper.get();
