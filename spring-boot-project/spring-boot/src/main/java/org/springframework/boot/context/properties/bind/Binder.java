@@ -254,7 +254,8 @@ public class Binder {
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
 		ConfigurationProperty property = findProperty(name, context);
-		if (property == null && containsNoDescendantOf(context.getSources(), name)) {
+		if (property == null && containsNoDescendantOf(context.getSources(), name)
+				&& context.depth != 0) {
 			return null;
 		}
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
@@ -330,8 +331,7 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context, boolean allowRecursiveBinding) {
-		if (containsNoDescendantOf(context.getSources(), name)
-				|| isUnbindableBean(name, target, context)) {
+		if (isUnbindableBean(name, target, context)) {
 			return null;
 		}
 		Class<?> type = target.getType().resolve(Object.class);

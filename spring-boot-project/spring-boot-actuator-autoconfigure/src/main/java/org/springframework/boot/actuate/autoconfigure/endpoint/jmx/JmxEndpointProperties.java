@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
@@ -46,6 +47,7 @@ public class JmxEndpointProperties {
 	 */
 	private final Properties staticNames = new Properties();
 
+	@Autowired
 	public JmxEndpointProperties(Environment environment) {
 		String defaultDomain = environment.getProperty("spring.jmx.default-domain");
 		if (StringUtils.hasText(defaultDomain)) {

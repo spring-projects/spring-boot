@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -89,7 +92,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 				ConfigurableListableBeanFactory beanFactory, Class<?> type) {
 			String name = getName(type);
 			if (!containsBeanDefinition(beanFactory, name)) {
-				registerBeanDefinition(registry, name, type);
+				registerBeanDefinition(registry, beanFactory, name, type);
 			}
 		}
 
@@ -114,12 +117,11 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			return false;
 		}
 
-		private void registerBeanDefinition(BeanDefinitionRegistry registry, String name,
-				Class<?> type) {
+		private void registerBeanDefinition(BeanDefinitionRegistry registry,
+				ConfigurableListableBeanFactory beanFactory, String name, Class<?> type) {
 			assertHasAnnotation(type);
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(type);
-			registry.registerBeanDefinition(name, definition);
+			registry.registerBeanDefinition(name,
+					createBeanDefinition(beanFactory, name, type));
 		}
 
 		private void assertHasAnnotation(Class<?> type) {
@@ -127,6 +129,29 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 					AnnotationUtils.findAnnotation(type, ConfigurationProperties.class),
 					() -> "No " + ConfigurationProperties.class.getSimpleName()
 							+ " annotation found on  '" + type.getName() + "'.");
+		}
+
+		private BeanDefinition createBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory, String name, Class<?> type) {
+			if (canBindAtCreationTime(type)) {
+				return ConfigurationPropertiesBeanDefinition.from(beanFactory, name,
+						type);
+			}
+			else {
+				GenericBeanDefinition definition = new GenericBeanDefinition();
+				definition.setBeanClass(type);
+				return definition;
+			}
+		}
+
+		private boolean canBindAtCreationTime(Class<?> type) {
+			Constructor<?>[] constructors = type.getDeclaredConstructors();
+			boolean autowiredPresent = Arrays.stream(constructors).anyMatch(
+					(c) -> AnnotationUtils.findAnnotation(c, Autowired.class) != null);
+			if (autowiredPresent) {
+				return false;
+			}
+			return (constructors.length == 1 && constructors[0].getParameterCount() > 0);
 		}
 
 	}

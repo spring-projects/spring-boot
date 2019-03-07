@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.lang.reflect.Method;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -53,8 +55,11 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	/**
 	 * The bean name of the configuration properties validator.
+	 * @deprecated see
+	 * {@link ConfigurationPropertiesBindingPostProcessorRegistrar#VALIDATOR_BEAN_NAME}
 	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+	@Deprecated
+	public static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME;
 
 	private ConfigurationBeanFactoryMetadata beanFactoryMetadata;
 
@@ -75,8 +80,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		this.beanFactoryMetadata = this.applicationContext.getBean(
 				ConfigurationBeanFactoryMetadata.BEAN_NAME,
 				ConfigurationBeanFactoryMetadata.class);
-		this.configurationPropertiesBinder = new ConfigurationPropertiesBinder(
-				this.applicationContext, VALIDATOR_BEAN_NAME);
+		this.configurationPropertiesBinder = this.applicationContext.getBean(
+				ConfigurationPropertiesBinder.BEAN_NAME,
+				ConfigurationPropertiesBinder.class);
 	}
 
 	@Override
@@ -89,10 +95,16 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			throws BeansException {
 		ConfigurationProperties annotation = getAnnotation(bean, beanName,
 				ConfigurationProperties.class);
-		if (annotation != null) {
+		if (annotation != null && !hasBeenBound(beanName)) {
 			bind(bean, beanName, annotation);
 		}
 		return bean;
+	}
+
+	private boolean hasBeenBound(String beanName) {
+		BeanDefinition beanDefinition = ((BeanDefinitionRegistry) this.applicationContext
+				.getAutowireCapableBeanFactory()).getBeanDefinition(beanName);
+		return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
 	}
 
 	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
@@ -107,8 +119,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			this.configurationPropertiesBinder.bind(target);
 		}
 		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(beanName, bean, annotation,
-					ex);
+			throw new ConfigurationPropertiesBindException(beanName, bean.getClass(),
+					annotation, ex);
 		}
 	}
 
