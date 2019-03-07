@@ -150,6 +150,32 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void makeSureTrailingAndLeadingWhitespacesRemoved_case1() {
+		bind("server.servlet.context-path", " /assets");
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets");
+	}
+
+	@Test
+	public void makeSureTrailingAndLeadingWhitespacesRemoved_case2() {
+		bind("server.servlet.context-path", " /assets ");
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets");
+	}
+
+	@Test
+	public void makeSureTrailingAndLeadingWhitespacesRemoved_case3() {
+		bind("server.servlet.context-path", "/assets/copy/ ");
+		assertThat(this.properties.getServlet().getContextPath())
+				.isEqualTo("/assets/copy");
+	}
+
+	@Test
+	public void makeSureTrailingAndLeadingWhitespacesRemoved_case4() {
+		bind("server.servlet.context-path", "  /assets /copy/    ");
+		assertThat(this.properties.getServlet().getContextPath())
+				.isEqualTo("/assets /copy");
+	}
+
+	@Test
 	public void testCustomizeUriEncoding() {
 		bind("server.tomcat.uri-encoding", "US-ASCII");
 		assertThat(this.properties.getTomcat().getUriEncoding())
