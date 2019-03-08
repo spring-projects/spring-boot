@@ -193,7 +193,6 @@ jobs:
       exclude:
       - "**/*.effective-pom"
       - "**/spring-boot-configuration-docs/**"
-      - "**/spring-boot-docs/**"
       - "**/spring-boot-test-support/**"
       artifact_set:
       - include:
