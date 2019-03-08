@@ -50,6 +50,10 @@ org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis=\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
+# AutoConfigureFreeMarker auto-configuration imports
+org.springframework.boot.test.autoconfigure.core.AutoConfigureFreeMarker=\
+org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
@@ -112,9 +116,17 @@ org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfigura
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer=\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerAutoConfiguration
 
+# AutoConfigureMustache auto-configuration imports
+org.springframework.boot.test.autoconfigure.core.AutoConfigureMustache=\
+org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
+
 # AutoConfigureRestDocs auto-configuration imports
 org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsAutoConfiguration
+
+# AutoConfigureThymeleaf auto-configuration imports
+org.springframework.boot.test.autoconfigure.core.AutoConfigureThymeleaf=\
+org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
 
 # AutoConfigureTestEntityManager auto-configuration imports
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager=\

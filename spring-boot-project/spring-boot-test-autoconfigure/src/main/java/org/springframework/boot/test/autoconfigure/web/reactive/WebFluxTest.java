@@ -29,6 +29,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureFreeMarker;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureMustache;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureThymeleaf;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -80,7 +83,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(WebFluxTypeExcludeFilter.class)
 @AutoConfigureCache
+@AutoConfigureFreeMarker
 @AutoConfigureJson
+@AutoConfigureMustache
+@AutoConfigureThymeleaf
 @AutoConfigureWebFlux
 @AutoConfigureWebTestClient
 @ImportAutoConfiguration
