@@ -21,6 +21,9 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +36,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * Tests for the auto-configuration imported by {@link WebFluxTest}.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
 @WebFluxTest
@@ -51,6 +55,24 @@ public class WebFluxTestAutoConfigurationIntegrationTests {
 	public void validationAutoConfigurationIsImported() {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(ValidationAutoConfiguration.class));
+	}
+
+	@Test
+	public void mustacheAutoConfigurationIsImported() {
+		assertThat(this.applicationContext)
+				.has(importedAutoConfiguration(MustacheAutoConfiguration.class));
+	}
+
+	@Test
+	public void freemarkerAutoConfigurationIsImported() {
+		assertThat(this.applicationContext)
+				.has(importedAutoConfiguration(FreeMarkerAutoConfiguration.class));
+	}
+
+	@Test
+	public void thymeleafAutoConfigurationIsImported() {
+		assertThat(this.applicationContext)
+				.has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
 	}
 
 }
