@@ -846,6 +846,24 @@ public class ConfigurationPropertiesTests {
 				});
 	}
 
+	@Test
+	public void noSuchBeanInHasBeenBound() {
+		load(BasicConfiguration.class, "name=foo");
+
+		String[] names = this.context
+				.getBeanNamesForType(BasicProperties.class);
+		assertThat(names).hasSize(1);
+		assertThat(this.context.containsBean(BasicProperties.class.getName())).isTrue();
+		BasicProperties basicProperties = this.context.getBean(BasicProperties.class);
+		assertThat(basicProperties.name).isEqualTo("foo");
+
+		this.context.getAutowireCapableBeanFactory()
+				.destroyBean(basicProperties);
+		this.context.getAutowireCapableBeanFactory()
+				.initializeBean(basicProperties, names[0]);
+	}
+
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
 			String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
