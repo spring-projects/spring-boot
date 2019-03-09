@@ -102,9 +102,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private boolean hasBeenBound(String beanName) {
-		BeanDefinition beanDefinition = ((BeanDefinitionRegistry) this.applicationContext
-				.getAutowireCapableBeanFactory()).getBeanDefinition(beanName);
-		return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) this.applicationContext
+				.getAutowireCapableBeanFactory();
+		if (registry.containsBeanDefinition(beanName)) {
+			BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
+			return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
+		}
+		return false;
 	}
 
 	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {

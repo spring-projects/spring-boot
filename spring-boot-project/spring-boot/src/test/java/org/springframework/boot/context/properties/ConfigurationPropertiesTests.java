@@ -846,6 +846,17 @@ public class ConfigurationPropertiesTests {
 				});
 	}
 
+	@Test
+	public void loadWhenBindingOnBeanWithoutBeanDefinitionShouldBind() {
+		load(BasicConfiguration.class, "name=test");
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.name).isEqualTo("test");
+		bean.name = "override";
+		this.context.getBean(ConfigurationPropertiesBindingPostProcessor.class)
+				.postProcessBeforeInitialization(bean, "does-not-exist");
+		assertThat(bean.name).isEqualTo("test");
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
 			String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
