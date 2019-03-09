@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -102,9 +103,14 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private boolean hasBeenBound(String beanName) {
-		BeanDefinition beanDefinition = ((BeanDefinitionRegistry) this.applicationContext
-				.getAutowireCapableBeanFactory()).getBeanDefinition(beanName);
-		return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
+		try {
+			BeanDefinition beanDefinition = ((BeanDefinitionRegistry) this.applicationContext
+					.getAutowireCapableBeanFactory()).getBeanDefinition(beanName);
+			return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return false;
+		}
 	}
 
 	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
