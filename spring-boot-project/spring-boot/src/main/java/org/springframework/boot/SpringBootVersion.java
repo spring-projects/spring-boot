@@ -16,6 +16,14 @@
 
 package org.springframework.boot;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+
 /**
  * Class that exposes the Spring Boot version. Fetches the "Implementation-Version"
  * manifest attribute from the jar file.
@@ -40,8 +48,35 @@ public final class SpringBootVersion {
 	 * @see Package#getImplementationVersion()
 	 */
 	public static String getVersion() {
-		Package pkg = SpringBootVersion.class.getPackage();
-		return (pkg != null) ? pkg.getImplementationVersion() : null;
+		return determineSpringBootVersion();
+	}
+
+	private static String determineSpringBootVersion() {
+		String implementationVersion = SpringBootVersion.class.getPackage()
+				.getImplementationVersion();
+		if (implementationVersion != null) {
+			return implementationVersion;
+		}
+		URL codeSourceLocation = SpringBootVersion.class.getProtectionDomain()
+				.getCodeSource().getLocation();
+		try {
+			URLConnection connection = codeSourceLocation.openConnection();
+			if (connection instanceof JarURLConnection) {
+				return getImplementationVersion(
+						((JarURLConnection) connection).getJarFile());
+			}
+			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
+				return getImplementationVersion(jarFile);
+			}
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private static String getImplementationVersion(JarFile jarFile) throws IOException {
+		return jarFile.getManifest().getMainAttributes()
+				.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
 	}
 
 }
