@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRegistration.Dynamic;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
@@ -86,7 +86,7 @@ public final class EndpointServlet {
 	 * @return a new instance of {@link EndpointServlet} with the provided
 	 * {@code loadOnStartup} value set
 	 * @since 2.2.0
-	 * @see ServletRegistration.Dynamic#setLoadOnStartup(int)
+	 * @see Dynamic#setLoadOnStartup(int)
 	 */
 	public EndpointServlet withLoadOnStartup(int loadOnStartup) {
 		return new EndpointServlet(this.servlet, this.initParameters, loadOnStartup);

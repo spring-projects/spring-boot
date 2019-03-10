@@ -1195,7 +1195,7 @@ public class ConfigurationPropertiesTests {
 	@EnableConfigurationProperties(WithCustomValidatorProperties.class)
 	static class WithCustomValidatorConfiguration {
 
-		@Bean(name = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME)
+		@Bean(name = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME)
 		public CustomPropertiesValidator validator() {
 			return new CustomPropertiesValidator();
 		}
@@ -1206,7 +1206,7 @@ public class ConfigurationPropertiesTests {
 	@EnableConfigurationProperties(WithSetterThatThrowsValidationExceptionProperties.class)
 	static class WithUnsupportedCustomValidatorConfiguration {
 
-		@Bean(name = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME)
+		@Bean(name = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME)
 		public CustomPropertiesValidator validator() {
 			return new CustomPropertiesValidator();
 		}
@@ -1823,7 +1823,7 @@ public class ConfigurationPropertiesTests {
 	@ConfigurationProperties(prefix = "test")
 	static class OtherInjectedProperties {
 
-		private final DataSizeProperties dataSizeProperties;
+		final DataSizeProperties dataSizeProperties;
 
 		@Autowired
 		OtherInjectedProperties(ObjectProvider<DataSizeProperties> dataSizeProperties) {

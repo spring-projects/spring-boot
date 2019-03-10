@@ -55,6 +55,7 @@ class ConstructorParametersBinder implements BeanBinder {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
 			Binder.Context context, BeanPropertyBinder propertyBinder) {
 		Bean bean = Bean.get(target);
