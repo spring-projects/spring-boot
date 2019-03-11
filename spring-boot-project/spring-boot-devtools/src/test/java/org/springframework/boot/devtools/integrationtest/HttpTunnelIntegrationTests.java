@@ -128,7 +128,7 @@ public class HttpTunnelIntegrationTests {
 
 	}
 
-	@Configuration
+	@org.springframework.context.annotation.Configuration
 	static class TunnelConfiguration {
 
 		@Bean
