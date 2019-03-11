@@ -8708,7 +8708,7 @@ documentation] for more details. You also need to
 {junit5-documentation}/#writing-tests-test-instance-lifecycle-changing-default[switch test
 instance lifecycle to "per-class"].
 
-To mock Kotlin classes, https://mockk.io/[Mockk] is recommended. If you need the `Mockk`
+To mock Kotlin classes, https://mockk.io/[MockK] is recommended. If you need the `Mockk`
 equivalent of the Mockito specific
 <<boot-features-testing-spring-boot-applications-mocking-beans,`@MockBean` and `@SpyBean`
 annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which
