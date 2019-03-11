@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 
@@ -72,6 +73,7 @@ public class WebMvcEndpointChildContextConfigurationTests {
 								.isEqualTo("/"));
 	}
 
+	@Configuration
 	static class ExistingConfig {
 
 		@Bean
@@ -81,6 +83,7 @@ public class WebMvcEndpointChildContextConfigurationTests {
 
 	}
 
+	@Configuration
 	static class RequestContextListenerConfig {
 
 		@Bean
