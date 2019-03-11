@@ -63,7 +63,7 @@
 			<dependency>
 				<groupId>io.mockk</groupId>
 				<artifactId>mockk</artifactId>
-				<version>1.9.1.kotlin12</version>
+				<version>1.9.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
@@ -287,8 +287,6 @@
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
-						<apiVersion>1.1</apiVersion>
-						<languageVersion>1.1</languageVersion>
 						<javaParameters>true</javaParameters>
 					</configuration>
 				</plugin>
