@@ -111,6 +111,7 @@ public class MongoAutoConfigurationTests {
 
 	}
 
+	@Configuration
 	static class FallbackMongoClientConfig {
 
 		@Bean
