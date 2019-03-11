@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,6 +133,7 @@ public class RemoteClientConfiguration {
 	/**
 	 * LiveReload configuration.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
@@ -179,6 +180,7 @@ public class RemoteClientConfiguration {
 	/**
 	 * Client configuration for remote update and restarts.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
@@ -242,6 +244,7 @@ public class RemoteClientConfiguration {
 	/**
 	 * Client configuration for remote debug HTTP tunneling.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.debug", name = "enabled", matchIfMissing = true)
 	@ConditionalOnClass(Filter.class)
 	@Conditional(LocalDebugPortAvailableCondition.class)

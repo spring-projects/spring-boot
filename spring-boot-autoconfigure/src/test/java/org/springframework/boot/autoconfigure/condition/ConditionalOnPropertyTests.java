@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -434,6 +434,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
+	@Configuration
 	@ConditionalOnMyFeature
 	protected static class MetaAnnotation {
 
@@ -444,6 +445,7 @@ public class ConditionalOnPropertyTests {
 
 	}
 
+	@Configuration
 	@ConditionalOnMyFeature
 	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
 	protected static class MetaAnnotationAndDirectAnnotation {

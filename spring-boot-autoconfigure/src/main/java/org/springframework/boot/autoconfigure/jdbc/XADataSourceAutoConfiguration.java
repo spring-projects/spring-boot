@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -46,6 +47,7 @@ import org.springframework.util.StringUtils;
  * @author Josh Long
  * @since 1.2.0
  */
+@Configuration
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class,
