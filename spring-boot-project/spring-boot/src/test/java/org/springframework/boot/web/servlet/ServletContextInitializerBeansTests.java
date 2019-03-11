@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -76,6 +77,7 @@ public class ServletContextInitializerBeansTests {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
 
+	@Configuration
 	static class ServletConfiguration {
 
 		@Bean
@@ -85,6 +87,7 @@ public class ServletContextInitializerBeansTests {
 
 	}
 
+	@Configuration
 	static class FilterConfiguration {
 
 		@Bean
@@ -94,6 +97,7 @@ public class ServletContextInitializerBeansTests {
 
 	}
 
+	@Configuration
 	static class TestConfiguration {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -127,6 +128,7 @@ public class JerseyServerMetricsAutoConfigurationTests {
 				String.class);
 	}
 
+	@Configuration
 	static class ResourceConfiguration {
 
 		@Bean
@@ -147,6 +149,7 @@ public class JerseyServerMetricsAutoConfigurationTests {
 
 	}
 
+	@Configuration
 	static class CustomJerseyTagsProviderConfiguration {
 
 		@Bean

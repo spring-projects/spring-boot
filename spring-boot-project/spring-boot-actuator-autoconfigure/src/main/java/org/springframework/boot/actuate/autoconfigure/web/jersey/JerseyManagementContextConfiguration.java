@@ -23,12 +23,14 @@ import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Shared configuration for Jersey-based actuators regardless of management context type.
  *
  * @author Madhura Bhave
  */
+@Configuration
 class JerseyManagementContextConfiguration {
 
 	@Bean

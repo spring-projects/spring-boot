@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 /**
@@ -31,6 +32,7 @@ import org.springframework.core.Ordered;
  * @author Andy Wilkinson
  * @since 2.2.0
  */
+@Configuration
 public class EagerInitializationAutoConfiguration {
 
 	@Bean
