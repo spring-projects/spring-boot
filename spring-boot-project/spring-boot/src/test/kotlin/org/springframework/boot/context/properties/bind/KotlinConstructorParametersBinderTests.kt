@@ -192,7 +192,7 @@ class KotlinConstructorParametersBinderTests {
 		constructor(intValue: Int, longValue: Long) : this(intValue)
 	}
 
-	class DefaultConstructorBean {}
+	class DefaultConstructorBean
 
 	class ExampleNestedBean(val valueBean: ExampleValueBean)
 

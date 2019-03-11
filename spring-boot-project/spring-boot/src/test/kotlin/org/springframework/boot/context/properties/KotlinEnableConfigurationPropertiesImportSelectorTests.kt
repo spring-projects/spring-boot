@@ -20,7 +20,6 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 
 	private val beanFactory = DefaultListableBeanFactory()
 
-
 	@Test
 	fun `type with default constructor should register generic bean definition`() {
 		this.registrar.registerBeanDefinitions(
@@ -45,7 +44,8 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 				getAnnotationMetadata(TestConfiguration::class.java), this.beanFactory)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
 				"baz-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$BazProperties")
-		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition::class.java)
+		assertThat(beanDefinition).isExactlyInstanceOf(
+				ConfigurationPropertiesBeanDefinition::class.java)
 	}
 
 	@Test
@@ -63,7 +63,8 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 	}
 
 
-	@EnableConfigurationProperties(FooProperties::class, BarProperties::class, BazProperties::class, BingProperties::class)
+	@EnableConfigurationProperties(FooProperties::class, BarProperties::class,
+			BazProperties::class, BingProperties::class)
 	class TestConfiguration
 
 	@ConfigurationProperties(prefix = "foo")
