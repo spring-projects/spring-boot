@@ -33,7 +33,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.cli.common.PropertiesKt;
-import org.jetbrains.kotlin.compilerRunner.KotlinCompilerRunner;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
@@ -139,7 +138,6 @@ public class GradleBuild implements TestRule {
 				new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining(PropertiesKt.class)),
-				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
 				new File(pathOfJarContaining(KotlinPlugin.class)),
 				new File(pathOfJarContaining(KotlinProject.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
