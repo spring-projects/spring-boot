@@ -19,12 +19,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import kotlin.reflect.KFunction;
+import kotlin.reflect.KParameter;
+import kotlin.reflect.jvm.ReflectJvmMapping;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.ConfigurationPropertyDefaultValue;
@@ -41,18 +44,6 @@ import org.springframework.core.ResolvableType;
 class ConstructorParametersBinder implements BeanBinder {
 
 	private static boolean KOTLIN_PRESENT = KotlinDetector.isKotlinPresent();
-
-	private static final Map<Class<?>, Object> DEFAULT_TYPE_VALUES;
-
-	static {
-		Map<Class<?>, Object> values = new HashMap<>();
-		values.put(boolean.class, false);
-		values.put(byte.class, (byte) 0);
-		values.put(short.class, (short) 0);
-		values.put(int.class, 0);
-		values.put(long.class, (long) 0);
-		DEFAULT_TYPE_VALUES = Collections.unmodifiableMap(values);
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -72,14 +63,14 @@ class ConstructorParametersBinder implements BeanBinder {
 		for (ConstructorParameter parameter : bean.getParameters().values()) {
 			Object bound = bind(parameter, propertyBinder);
 			if (bound == null) {
-				bound = getDefaultValue(parameter, bean, converter);
+				bound = getDefaultValue(parameter, converter);
 			}
 			boundParams.add(bound);
 		}
 		return boundParams;
 	}
 
-	private Object getDefaultValue(ConstructorParameter parameter, Bean bean,
+	private Object getDefaultValue(ConstructorParameter parameter,
 			BindConverter converter) {
 		if (parameter.getDefaultValue() != null) {
 			return converter.convert(parameter.getDefaultValue(), parameter.getType(),
@@ -88,7 +79,7 @@ class ConstructorParametersBinder implements BeanBinder {
 		else {
 			Class<?> resolve = parameter.getType().resolve();
 			if (resolve != null && resolve.isPrimitive()) {
-				return (bean.kotlinType) ? null : DEFAULT_TYPE_VALUES.get(resolve);
+				return null;
 			}
 		}
 		return null;
@@ -103,15 +94,12 @@ class ConstructorParametersBinder implements BeanBinder {
 
 	private static final class Bean {
 
-		private final boolean kotlinType;
-
 		private final Constructor<?> constructor;
 
 		private final Map<String, ConstructorParameter> parameters;
 
-		private Bean(boolean kotlinType, Constructor<?> constructor,
+		private Bean(Constructor<?> constructor,
 				Map<String, ConstructorParameter> parameters) {
-			this.kotlinType = kotlinType;
 			this.constructor = constructor;
 			this.parameters = parameters;
 		}
@@ -129,18 +117,35 @@ class ConstructorParametersBinder implements BeanBinder {
 						.findPrimaryConstructor(type);
 				if (primaryConstructor != null
 						&& primaryConstructor.getParameterCount() > 0) {
-					return new Bean(true, primaryConstructor,
-							parseParameters(primaryConstructor));
+					return KotlinBeanProvider.get(primaryConstructor);
 				}
 			}
 			else {
 				Constructor<?>[] constructors = type.getDeclaredConstructors();
 				if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
-					Constructor<?> constructor = constructors[0];
-					return new Bean(false, constructor, parseParameters(constructor));
+					return SimpleBeanProvider.get(constructors[0]);
 				}
 			}
 			return null;
+		}
+
+		public Map<String, ConstructorParameter> getParameters() {
+			return this.parameters;
+		}
+
+		public Constructor<?> getConstructor() {
+			return this.constructor;
+		}
+
+	}
+
+	/**
+	 * A simple bean provider that uses `-parameters` to extract the parameter names.
+	 */
+	private static class SimpleBeanProvider {
+
+		public static Bean get(Constructor<?> constructor) {
+			return new Bean(constructor, parseParameters(constructor));
 		}
 
 		private static Map<String, ConstructorParameter> parseParameters(
@@ -160,12 +165,37 @@ class ConstructorParametersBinder implements BeanBinder {
 			return parameters;
 		}
 
-		public Map<String, ConstructorParameter> getParameters() {
-			return this.parameters;
+	}
+
+	/**
+	 * A bean provider for a Kotlin class. Uses the Kotlin constructor to extract the
+	 * parameter names.
+	 */
+	private static class KotlinBeanProvider {
+
+		public static Bean get(Constructor<?> constructor) {
+			KFunction<?> kotlinConstructor = ReflectJvmMapping
+					.getKotlinFunction(constructor);
+			if (kotlinConstructor != null) {
+				return new Bean(constructor, parseParameters(kotlinConstructor));
+			}
+			else {
+				return SimpleBeanProvider.get(constructor);
+			}
 		}
 
-		public Constructor<?> getConstructor() {
-			return this.constructor;
+		private static Map<String, ConstructorParameter> parseParameters(
+				KFunction<?> constructor) {
+			Map<String, ConstructorParameter> parameters = new LinkedHashMap<>();
+			for (KParameter parameter : constructor.getParameters()) {
+				String name = parameter.getName();
+				Type type = ReflectJvmMapping.getJavaType(parameter.getType());
+				Annotation[] annotations = parameter.getAnnotations()
+						.toArray(new Annotation[0]);
+				parameters.computeIfAbsent(name, (s) -> new ConstructorParameter(name,
+						ResolvableType.forType(type), annotations, null));
+			}
+			return parameters;
 		}
 
 	}
