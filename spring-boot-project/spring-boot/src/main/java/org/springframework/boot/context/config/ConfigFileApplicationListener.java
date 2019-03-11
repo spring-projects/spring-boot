@@ -56,6 +56,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertySource;
@@ -323,6 +324,9 @@ public class ConfigFileApplicationListener
 			this.processedProfiles = new LinkedList<>();
 			this.activatedProfiles = false;
 			this.loaded = new LinkedHashMap<>();
+			MapPropertySource defaultProperties = (MapPropertySource) this.environment
+					.getPropertySources().get(DEFAULT_PROPERTIES);
+			replaceDefaultPropertySourceIfNecessary(defaultProperties);
 			initializeProfiles();
 			while (!this.profiles.isEmpty()) {
 				Profile profile = this.profiles.poll();
@@ -333,10 +337,19 @@ public class ConfigFileApplicationListener
 						addToLoaded(MutablePropertySources::addLast, false));
 				this.processedProfiles.add(profile);
 			}
-			resetEnvironmentProfiles(this.processedProfiles);
 			load(null, this::getNegativeProfileFilter,
 					addToLoaded(MutablePropertySources::addFirst, true));
 			addLoadedPropertySources();
+			resetEnvironment(defaultProperties);
+		}
+
+		private void replaceDefaultPropertySourceIfNecessary(
+				MapPropertySource defaultProperties) {
+			if (defaultProperties != null) {
+				this.environment.getPropertySources().replace(DEFAULT_PROPERTIES,
+						new FilteredDefaultPropertySource(DEFAULT_PROPERTIES,
+								defaultProperties.getSource()));
+			}
 		}
 
 		/**
@@ -727,6 +740,76 @@ public class ConfigFileApplicationListener
 			else {
 				destination.addAfter(lastAdded, source);
 			}
+		}
+
+		private void resetEnvironment(MapPropertySource defaultProperties) {
+			List<String> activeProfiles = new ArrayList<>();
+			handleDefaultPropertySource(defaultProperties, activeProfiles);
+			activeProfiles.addAll(this.processedProfiles.stream()
+					.filter((profile) -> profile != null && !profile.isDefaultProfile())
+					.map(Profile::getName).collect(Collectors.toList()));
+			this.environment.setActiveProfiles(activeProfiles.toArray(new String[0]));
+		}
+
+		private void handleDefaultPropertySource(MapPropertySource defaultProperties,
+				List<String> activeProfiles) {
+			if (defaultProperties != null) {
+				Binder binder = new Binder(
+						ConfigurationPropertySources.from(defaultProperties),
+						new PropertySourcesPlaceholdersResolver(this.environment));
+				List<String> includes = getDefaultProfiles(binder,
+						"spring.profiles.include");
+				activeProfiles.addAll(includes);
+				if (!this.activatedProfiles) {
+					List<String> active = getDefaultProfiles(binder,
+							"spring.profiles.active");
+					activeProfiles.addAll(active);
+				}
+				this.environment.getPropertySources().replace(DEFAULT_PROPERTIES,
+						defaultProperties);
+			}
+		}
+
+		private List<String> getDefaultProfiles(Binder binder, String property) {
+			return Arrays
+					.asList(binder.bind(property, STRING_ARRAY).orElse(new String[] {}));
+		}
+
+	}
+
+	private static class FilteredDefaultPropertySource extends MapPropertySource {
+
+		private static final List<String> FILTERED_PROPERTY = Arrays
+				.asList("spring.profiles.active", "spring.profiles.include");
+
+		FilteredDefaultPropertySource(String name, Map<String, Object> source) {
+			super(name, source);
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			if (isFilteredProperty(name)) {
+				return null;
+			}
+			return super.getProperty(name);
+		}
+
+		@Override
+		public boolean containsProperty(String name) {
+			if (isFilteredProperty(name)) {
+				return false;
+			}
+			return super.containsProperty(name);
+		}
+
+		@Override
+		public String[] getPropertyNames() {
+			return Arrays.stream(super.getPropertyNames())
+					.filter((name) -> !isFilteredProperty(name)).toArray(String[]::new);
+		}
+
+		protected boolean isFilteredProperty(String name) {
+			return FILTERED_PROPERTY.contains(name);
 		}
 
 	}
