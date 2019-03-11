@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -48,6 +50,13 @@ import static org.mockito.Mockito.verify;
 public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void createFromScan() {
@@ -131,6 +140,54 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 		verifyContext();
 		assertThat(this.context.getBean(ServletContextAwareConfiguration.class)
 				.getServletContext()).isNotNull();
+	}
+
+	@Test
+	public void registerBean() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigServletWebServerApplicationContextTests.TestBean"))
+						.isTrue();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
+	}
+
+	@Test
+	public void registerBeanWithLazy() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class, Lazy.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigServletWebServerApplicationContextTests.TestBean"))
+						.isFalse();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
+	}
+
+	@Test
+	public void registerBeanWithSupplier() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class, TestBean::new);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigServletWebServerApplicationContextTests.TestBean"))
+						.isTrue();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
+	}
+
+	@Test
+	public void registerBeanWithSupplierAndLazy() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class, TestBean::new, Lazy.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigServletWebServerApplicationContextTests.TestBean"))
+						.isFalse();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
 	}
 
 	private void verifyContext() {
@@ -217,6 +274,10 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 		public ServletContext getServletContext() {
 			return this.servletContext;
 		}
+
+	}
+
+	private static class TestBean {
 
 	}
 

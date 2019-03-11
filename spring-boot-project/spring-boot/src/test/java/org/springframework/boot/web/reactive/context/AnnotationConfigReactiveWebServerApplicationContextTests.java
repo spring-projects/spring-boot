@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
@@ -25,6 +26,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -41,6 +43,13 @@ import static org.mockito.Mockito.mock;
 public class AnnotationConfigReactiveWebServerApplicationContextTests {
 
 	private AnnotationConfigReactiveWebServerApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void createFromScan() {
@@ -91,6 +100,54 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				InitializationTestConfig.class);
 		verifyContext();
+	}
+
+	@Test
+	public void registerBean() {
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
+		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigReactiveWebServerApplicationContextTests.TestBean"))
+						.isTrue();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
+	}
+
+	@Test
+	public void registerBeanWithLazy() {
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
+		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class, Lazy.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigReactiveWebServerApplicationContextTests.TestBean"))
+						.isFalse();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
+	}
+
+	@Test
+	public void registerBeanWithSupplier() {
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
+		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class, TestBean::new);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigReactiveWebServerApplicationContextTests.TestBean"))
+						.isTrue();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
+	}
+
+	@Test
+	public void registerBeanWithSupplierAndLazy() {
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
+		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
+		this.context.registerBean(TestBean.class, TestBean::new, Lazy.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanFactory().containsSingleton(
+				"annotationConfigReactiveWebServerApplicationContextTests.TestBean"))
+						.isFalse();
+		assertThat(this.context.getBean(TestBean.class)).isNotNull();
 	}
 
 	private void verifyContext() {
@@ -171,6 +228,10 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 			}
 
 		}
+
+	}
+
+	private static class TestBean {
 
 	}
 

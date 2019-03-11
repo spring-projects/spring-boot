@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ReactiveWebServerApplicationContext} that accepts annotated classes as input -
@@ -66,6 +69,8 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
 	private String[] basePackages;
+
+	private final Set<BeanRegistration> registeredBeans = new LinkedHashSet<>();
 
 	/**
 	 * Create a new {@link AnnotationConfigReactiveWebServerApplicationContext} that needs
@@ -197,6 +202,45 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 		this.basePackages = basePackages;
 	}
 
+	/**
+	 * Register a bean from the given bean class.
+	 * @param annotatedClass the class of the bean
+	 * @param <T> the type of the bean
+	 * @since 2.2.0
+	 */
+	public final <T> void registerBean(Class<T> annotatedClass) {
+		this.registeredBeans.add(new BeanRegistration(annotatedClass, null, null));
+	}
+
+	/**
+	 * Register a bean from the given bean class, using the given supplier for obtaining a
+	 * new instance (typically declared as a lambda expression or method reference).
+	 * @param annotatedClass the class of the bean
+	 * @param supplier a callback for creating an instance of the bean
+	 * @param <T> the type of the bean
+	 * @since 2.2.0
+	 */
+	public final <T> void registerBean(Class<T> annotatedClass, Supplier<T> supplier) {
+		this.registeredBeans.add(new BeanRegistration(annotatedClass, supplier, null));
+	}
+
+	@Override
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	public final <T> void registerBean(Class<T> annotatedClass,
+			Class<? extends Annotation>... qualifiers) {
+		this.registeredBeans.add(new BeanRegistration(annotatedClass, null, qualifiers));
+	}
+
+	@Override
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	public final <T> void registerBean(Class<T> annotatedClass, Supplier<T> supplier,
+			Class<? extends Annotation>... qualifiers) {
+		this.registeredBeans
+				.add(new BeanRegistration(annotatedClass, supplier, qualifiers));
+	}
+
 	@Override
 	protected void prepareRefresh() {
 		this.scanner.clearCache();
@@ -212,6 +256,60 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 		if (!this.annotatedClasses.isEmpty()) {
 			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
+		if (!this.registeredBeans.isEmpty()) {
+			registerBeans(this.reader);
+		}
+	}
+
+	private void registerBeans(AnnotatedBeanDefinitionReader reader) {
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Registering supplied beans: ["
+					+ StringUtils.collectionToCommaDelimitedString(this.registeredBeans)
+					+ "]");
+		}
+		this.registeredBeans.forEach((reg) -> reader.registerBean(reg.getAnnotatedClass(),
+				reg.getSupplier(), reg.getQualifiers()));
+	}
+
+	/**
+	 * Holder for a programmatic bean registration.
+	 *
+	 * @see #registerBean(Class, Class[])
+	 * @see #registerBean(Class, Supplier, Class[])
+	 */
+	private static class BeanRegistration {
+
+		private final Class<?> annotatedClass;
+
+		private final Supplier<?> supplier;
+
+		private final Class<? extends Annotation>[] qualifiers;
+
+		BeanRegistration(Class<?> annotatedClass, Supplier<?> supplier,
+				Class<? extends Annotation>[] qualifiers) {
+			this.annotatedClass = annotatedClass;
+			this.supplier = supplier;
+			this.qualifiers = qualifiers;
+		}
+
+		public Class<?> getAnnotatedClass() {
+			return this.annotatedClass;
+		}
+
+		@SuppressWarnings("rawtypes")
+		public Supplier getSupplier() {
+			return this.supplier;
+		}
+
+		public Class<? extends Annotation>[] getQualifiers() {
+			return this.qualifiers;
+		}
+
+		@Override
+		public String toString() {
+			return this.annotatedClass.getName();
+		}
+
 	}
 
 }

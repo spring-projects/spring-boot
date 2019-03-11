@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -64,6 +66,8 @@ public class AnnotationConfigReactiveWebApplicationContext
 	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
 	private final Set<String> basePackages = new LinkedHashSet<>();
+
+	private final Set<BeanRegistration> registeredBeans = new LinkedHashSet<>();
 
 	@Override
 	protected ConfigurableEnvironment createEnvironment() {
@@ -137,6 +141,23 @@ public class AnnotationConfigReactiveWebApplicationContext
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
 		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
+	}
+
+	@Override
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	public final <T> void registerBean(Class<T> annotatedClass,
+			Class<? extends Annotation>... qualifiers) {
+		this.registeredBeans.add(new BeanRegistration(annotatedClass, null, qualifiers));
+	}
+
+	@Override
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	public final <T> void registerBean(Class<T> annotatedClass, Supplier<T> supplier,
+			Class<? extends Annotation>... qualifiers) {
+		this.registeredBeans
+				.add(new BeanRegistration(annotatedClass, supplier, qualifiers));
 	}
 
 	/**
@@ -221,6 +242,9 @@ public class AnnotationConfigReactiveWebApplicationContext
 		if (!this.basePackages.isEmpty()) {
 			scanBasePackages(scanner);
 		}
+		if (!this.registeredBeans.isEmpty()) {
+			registerBeans(reader);
+		}
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			registerConfigLocations(reader, scanner, configLocations);
@@ -243,6 +267,16 @@ public class AnnotationConfigReactiveWebApplicationContext
 					+ "]");
 		}
 		scanner.scan(StringUtils.toStringArray(this.basePackages));
+	}
+
+	private void registerBeans(AnnotatedBeanDefinitionReader reader) {
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Registering supplied beans: ["
+					+ StringUtils.collectionToCommaDelimitedString(this.registeredBeans)
+					+ "]");
+		}
+		this.registeredBeans.forEach((reg) -> reader.registerBean(reg.getAnnotatedClass(),
+				reg.getSupplier(), reg.getQualifiers()));
 	}
 
 	private void registerConfigLocations(AnnotatedBeanDefinitionReader reader,
@@ -321,6 +355,47 @@ public class AnnotationConfigReactiveWebApplicationContext
 	protected Resource getResourceByPath(String path) {
 		// We must be careful not to expose classpath resources
 		return new FilteredReactiveWebContextResource(path);
+	}
+
+	/**
+	 * Holder for a programmatic bean registration.
+	 *
+	 * @see #registerBean(Class, Class[])
+	 * @see #registerBean(Class, Supplier, Class[])
+	 */
+	private static class BeanRegistration {
+
+		private final Class<?> annotatedClass;
+
+		private final Supplier<?> supplier;
+
+		private final Class<? extends Annotation>[] qualifiers;
+
+		BeanRegistration(Class<?> annotatedClass, Supplier<?> supplier,
+				Class<? extends Annotation>[] qualifiers) {
+			this.annotatedClass = annotatedClass;
+			this.supplier = supplier;
+			this.qualifiers = qualifiers;
+		}
+
+		public Class<?> getAnnotatedClass() {
+			return this.annotatedClass;
+		}
+
+		@SuppressWarnings("rawtypes")
+		public Supplier getSupplier() {
+			return this.supplier;
+		}
+
+		public Class<? extends Annotation>[] getQualifiers() {
+			return this.qualifiers;
+		}
+
+		@Override
+		public String toString() {
+			return this.annotatedClass.getName();
+		}
+
 	}
 
 }
