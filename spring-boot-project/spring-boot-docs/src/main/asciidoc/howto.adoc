@@ -2626,7 +2626,7 @@ There are several options for hot reloading. The recommended approach is to use
 additional development-time features, such as support for fast application restarts
 and LiveReload as well as sensible development-time configuration (such as template
 caching). Devtools works by monitoring the classpath for changes. This means that static
-resource changes must be "built" for the change to take affect. By default, this happens
+resource changes must be "built" for the change to take effect. By default, this happens
 automatically in Eclipse when you save your changes. In IntelliJ IDEA, the Make Project
 command triggers the necessary build. Due to the
 <<using-spring-boot.adoc#using-boot-devtools-restart-exclude, default restart
