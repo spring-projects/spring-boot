@@ -1009,13 +1009,14 @@ name of the bean is used.
 The bean name in the example above is `acme-com.example.AcmeProperties`.
 ====
 
-Even if the preceding configuration creates a regular bean for `AcmeProperties`, we
-recommend that `@ConfigurationProperties` only deal with the environment and, in
-particular, does not inject other beans from the context. Having said that, the
+The preceding configuration creates a regular bean for `AcmeProperties`. We recommend that
+`@ConfigurationProperties` only deal with the environment and, in particular, does not
+inject other beans from the context. Keep in mind that the
 `@EnableConfigurationProperties` annotation is _also_ automatically applied to your
 project so that any _existing_ bean annotated with `@ConfigurationProperties` is
-configured from the `Environment`. You could shortcut `MyConfiguration` by making sure
-`AcmeProperties` is already a bean, as shown in the following example:
+configured from the `Environment`. Instead of annotating `MyConfiguration` with
+`@EnableConfigurationProperties(AcmeProperties.class)`, you could make `AcmeProperties`
+a bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
