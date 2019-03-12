@@ -169,7 +169,7 @@ public class ScheduledTasksEndpointTests {
 
 	@Configuration
 	@EnableScheduling
-	private static class BaseConfiguration {
+	static class BaseConfiguration {
 
 		@Bean
 		public ScheduledTasksEndpoint endpoint(
