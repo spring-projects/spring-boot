@@ -44,7 +44,6 @@ public class NoSuchMethodFailureAnalyzerTests {
 		assertThat(failure).isNotNull();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
-		System.out.println(analysis.getDescription());
 		assertThat(analysis.getDescription())
 				.contains(NoSuchMethodFailureAnalyzerTests.class.getName()
 						+ ".createFailure(")
