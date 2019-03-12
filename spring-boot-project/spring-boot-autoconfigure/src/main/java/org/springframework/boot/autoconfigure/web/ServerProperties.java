@@ -231,10 +231,11 @@ public class ServerProperties {
 		}
 
 		private String cleanContextPath(String contextPath) {
-			if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-				return contextPath.substring(0, contextPath.length() - 1);
+			String candidate = StringUtils.trimWhitespace(contextPath);
+			if (StringUtils.hasText(candidate) && candidate.endsWith("/")) {
+				return candidate.substring(0, candidate.length() - 1);
 			}
-			return contextPath;
+			return candidate;
 		}
 
 		public String getApplicationDisplayName() {
