@@ -62,7 +62,7 @@ public class ScheduledTasksEndpointAutoConfigurationTests {
 	}
 
 	@Configuration
-	private static class CustomEndpointConfiguration {
+	static class CustomEndpointConfiguration {
 
 		@Bean
 		public CustomEndpoint customEndpoint() {
