@@ -11,7 +11,7 @@ bomr:
       - project: couchbase-client
         versions:
           # Jar contains dependencies' classes resulting in duplicates
-          - '2.7.3'
+          - '[2.7.3]'
       - project: maven-invoker-plugin
         versions:
           # NPE in InstallMojo.installProjectPom (InstallMojo.java:387)
