@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,26 +150,26 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void makeSureTrailingAndLeadingWhitespacesRemoved_case1() {
+	public void testContextPathWithLeadingWhitespace() {
 		bind("server.servlet.context-path", " /assets");
 		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets");
 	}
 
 	@Test
-	public void makeSureTrailingAndLeadingWhitespacesRemoved_case2() {
-		bind("server.servlet.context-path", " /assets ");
-		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets");
-	}
-
-	@Test
-	public void makeSureTrailingAndLeadingWhitespacesRemoved_case3() {
+	public void testContextPathWithTrailingWhitespace() {
 		bind("server.servlet.context-path", "/assets/copy/ ");
 		assertThat(this.properties.getServlet().getContextPath())
 				.isEqualTo("/assets/copy");
 	}
 
 	@Test
-	public void makeSureTrailingAndLeadingWhitespacesRemoved_case4() {
+	public void testContextPathWithLeadingAndTrailingWhitespace() {
+		bind("server.servlet.context-path", " /assets ");
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets");
+	}
+
+	@Test
+	public void testContextPathWithLeadingAndTrailingWhitespaceAndContextWithSpace() {
 		bind("server.servlet.context-path", "  /assets /copy/    ");
 		assertThat(this.properties.getServlet().getContextPath())
 				.isEqualTo("/assets /copy");
