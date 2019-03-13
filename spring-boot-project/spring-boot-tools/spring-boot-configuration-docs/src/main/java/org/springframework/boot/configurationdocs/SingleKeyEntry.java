@@ -57,7 +57,7 @@ class SingleKeyEntry extends AbstractConfigurationEntry {
 	public void writeAsciidoc(StringBuilder builder) {
 		builder.append("|`+").append(this.key).append("+`").append(NEWLINE);
 		String defaultValue = processDefaultValue();
-		if (defaultValue.length() > 0) {
+		if (!defaultValue.isEmpty()) {
 			builder.append("|`+").append(defaultValue).append("+`").append(NEWLINE);
 		}
 		else {
@@ -73,7 +73,7 @@ class SingleKeyEntry extends AbstractConfigurationEntry {
 	}
 
 	private String processDefaultValue() {
-		if (this.defaultValue != null && this.defaultValue.length() > 0) {
+		if (this.defaultValue != null && !this.defaultValue.isEmpty()) {
 			return this.defaultValue.replace("\\", "\\\\").replace("|",
 					"{vbar}" + NEWLINE);
 		}
