@@ -18,11 +18,14 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * {@link BeanPostProcessor} that delegates to a lazily created
@@ -32,7 +35,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class MeterRegistryPostProcessor implements BeanPostProcessor {
+class MeterRegistryPostProcessor implements BeanPostProcessor, ApplicationContextAware {
 
 	private final ObjectProvider<MeterBinder> meterBinders;
 
@@ -43,6 +46,8 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 	private final ObjectProvider<MetricsProperties> metricsProperties;
 
 	private volatile MeterRegistryConfigurer configurer;
+
+	private volatile ApplicationContext applicationContext;
 
 	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders,
 			ObjectProvider<MeterFilter> meterFilters,
@@ -67,9 +72,17 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 		if (this.configurer == null) {
 			this.configurer = new MeterRegistryConfigurer(this.meterRegistryCustomizers,
 					this.meterFilters, this.meterBinders,
-					this.metricsProperties.getObject().isUseGlobalRegistry());
+					this.metricsProperties.getObject().isUseGlobalRegistry(),
+					this.applicationContext.getBeanNamesForType(
+							CompositeMeterRegistry.class).length != 0);
 		}
 		return this.configurer;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 }
