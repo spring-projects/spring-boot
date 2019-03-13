@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointDiscoverer;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
@@ -100,9 +101,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@ConditionalOnExposedEndpoint
 	@ConditionalOnBean({ InfoEndpoint.class, GitProperties.class })
 	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(
-			InfoEndpoint infoEndpoint, GitProperties properties) {
-		List<InfoContributor> existingContributors = infoEndpoint.getInfoContributors();
-		List<InfoContributor> contributors = existingContributors.stream()
+			GitProperties properties, ObjectProvider<InfoContributor> infoContributors) {
+		List<InfoContributor> contributors = infoContributors.orderedStream()
 				.map((infoContributor) -> {
 					if (infoContributor instanceof GitInfoContributor) {
 						return new GitInfoContributor(properties,
