@@ -1180,7 +1180,7 @@ shown in the following example:
 	}
 ----
 
-JAXB is only available out of the box with Java 8. If you're using a more recent java
+JAXB is only available out of the box with Java 8. If you're using a more recent Java
 generation, add the following dependency to your project:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]

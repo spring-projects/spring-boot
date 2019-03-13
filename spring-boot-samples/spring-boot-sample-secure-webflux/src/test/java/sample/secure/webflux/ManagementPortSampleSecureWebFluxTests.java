@@ -18,7 +18,6 @@ package sample.secure.webflux;
 
 import java.util.Base64;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -37,6 +36,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Integration tests for separate management and main service ports.
  *
@@ -50,10 +51,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public class ManagementPortSampleSecureWebFluxTests {
 
 	@LocalServerPort
-	private int port = 9010;
+	private int port;
 
 	@LocalManagementPort
-	private int managementPort = 9011;
+	private int managementPort;
 
 	@Autowired
 	private WebTestClient webClient;
@@ -90,7 +91,7 @@ public class ManagementPortSampleSecureWebFluxTests {
 						String.class)
 				.exchange().expectStatus().isOk().expectBody(String.class).returnResult()
 				.getResponseBody();
-		Assertions.assertThat(responseBody).contains("\"status\":\"UP\"");
+		assertThat(responseBody).contains("\"status\":\"UP\"");
 	}
 
 	private String getBasicAuth() {
