@@ -237,14 +237,15 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthDoesNotResetErrorHandler() {
+	public void withBasicAuthShouldUseNoOpErrorHandler() throws Exception {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);
 		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user",
 				"password");
 		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler())
-				.isSameAs(errorHandler);
+				.isInstanceOf(Class.forName(
+						"org.springframework.boot.test.web.client.TestRestTemplate$NoOpResponseErrorHandler"));
 	}
 
 	@Test

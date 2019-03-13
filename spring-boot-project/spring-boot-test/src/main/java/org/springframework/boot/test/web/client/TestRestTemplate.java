@@ -1034,11 +1034,8 @@ public class TestRestTemplate {
 				.messageConverters(getRestTemplate().getMessageConverters())
 				.interceptors(getRestTemplate().getInterceptors())
 				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler()).build();
-		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
-				password, this.httpClientOptions);
-		testRestTemplate.getRestTemplate()
-				.setErrorHandler(getRestTemplate().getErrorHandler());
-		return testRestTemplate;
+		return new TestRestTemplate(restTemplate, username, password,
+				this.httpClientOptions);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
