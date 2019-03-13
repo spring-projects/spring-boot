@@ -41,10 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JerseyApplicationPathAndManagementPortTests {
 
 	@LocalServerPort
-	private int port = 9010;
+	private int port;
 
 	@LocalManagementPort
-	private int managementPort = 9011;
+	private int managementPort;
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;

@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.After;
 import org.junit.Before;
@@ -1084,7 +1083,7 @@ public class SpringApplicationTests {
 				ExampleConfig.class);
 		application.addListeners(
 				(ApplicationListener<ApplicationEnvironmentPreparedEvent>) (event) -> {
-					Assertions.assertThat(event.getEnvironment())
+					assertThat(event.getEnvironment())
 							.isInstanceOf(StandardServletEnvironment.class);
 					TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
 							event.getEnvironment(), "foo=bar");
