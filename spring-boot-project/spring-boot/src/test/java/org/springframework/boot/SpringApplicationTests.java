@@ -185,9 +185,9 @@ public class SpringApplicationTests {
 
 	@Test
 	public void sourcesMustBeAccessible() {
-		assertThatIllegalStateException().isThrownBy(
+		assertThatIllegalArgumentException().isThrownBy(
 				() -> new SpringApplication(InaccessibleConfiguration.class).run())
-				.withMessageContaining("Cannot load configuration");
+				.withMessageContaining("No visible constructors");
 	}
 
 	@Test
