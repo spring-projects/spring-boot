@@ -22,12 +22,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
-import org.springframework.boot.actuate.health.HealthEndpoint;
 
 /**
- * Identifies a type as being a Cloud Foundry specific extension for the
- * {@link HealthEndpoint}.
+ * Identifies a type as being a Cloud Foundry specific extension for an {@link Endpoint}.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -35,7 +34,9 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EndpointExtension(filter = CloudFoundryEndpointFilter.class, endpoint = HealthEndpoint.class)
-public @interface HealthEndpointCloudFoundryExtension {
+@EndpointExtension(filter = CloudFoundryEndpointFilter.class)
+public @interface EndpointCloudFoundryExtension {
+
+	Class<?> endpoint();
 
 }

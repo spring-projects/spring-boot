@@ -79,7 +79,7 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 
 	private boolean isCloudFoundryHealthEndpointExtension(Object extensionBean) {
 		return AnnotatedElementUtils.hasAnnotation(extensionBean.getClass(),
-				HealthEndpointCloudFoundryExtension.class);
+				EndpointCloudFoundryExtension.class);
 	}
 
 }

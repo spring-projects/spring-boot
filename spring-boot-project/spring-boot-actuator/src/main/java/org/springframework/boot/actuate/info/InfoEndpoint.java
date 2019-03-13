@@ -55,4 +55,8 @@ public class InfoEndpoint {
 		return build.getDetails();
 	}
 
+	public List<InfoContributor> getInfoContributors() {
+		return this.infoContributors;
+	}
+
 }
