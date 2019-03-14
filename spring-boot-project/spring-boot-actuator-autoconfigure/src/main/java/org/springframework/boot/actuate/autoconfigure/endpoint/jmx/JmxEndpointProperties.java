@@ -20,10 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for JMX export of endpoints.
@@ -39,21 +36,13 @@ public class JmxEndpointProperties {
 	/**
 	 * Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
 	 */
-	private String domain = "org.springframework.boot";
+	private String domain;
 
 	/**
 	 * Additional static properties to append to all ObjectNames of MBeans representing
 	 * Endpoints.
 	 */
 	private final Properties staticNames = new Properties();
-
-	@Autowired
-	public JmxEndpointProperties(Environment environment) {
-		String defaultDomain = environment.getProperty("spring.jmx.default-domain");
-		if (StringUtils.hasText(defaultDomain)) {
-			this.domain = defaultDomain;
-		}
-	}
 
 	public Exposure getExposure() {
 		return this.exposure;

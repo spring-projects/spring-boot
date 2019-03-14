@@ -57,10 +57,10 @@ public class SessionProperties {
 
 	private Servlet servlet = new Servlet();
 
-	private final ServerProperties serverProperties;
+	private ServerProperties serverProperties;
 
 	@Autowired
-	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
+	void setServerProperties(ObjectProvider<ServerProperties> serverProperties) {
 		this.serverProperties = serverProperties.getIfUnique();
 	}
 

@@ -34,6 +34,10 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
+      "name": "management.endpoints.jmx.domain",
+      "defaultValue": "org.springframework.boot"
+    },
+    {
       "name": "management.endpoints.jmx.exposure.include",
       "defaultValue": "*"
     },
