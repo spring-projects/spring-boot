@@ -81,7 +81,7 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		return this.environment.getProperty("spring.jmx.default-domain",
 				"org.springframework.boot");
 	}
-	
+
 	private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
 		ObjectName query = new ObjectName(baseObjectName + ",*");
 		return !this.mBeanServer.queryNames(query, null).isEmpty();
