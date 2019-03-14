@@ -894,7 +894,17 @@ Using the `@Value("${property}")` annotation to inject configuration properties 
 sometimes be cumbersome, especially if you are working with multiple properties or your
 data is hierarchical in nature. Spring Boot provides an alternative method of working
 with properties that lets strongly typed beans govern and validate the configuration of
-your application, as shown in the following example:
+your application.
+
+TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
+and type-safe configuration properties>>.
+
+
+
+[[boot-features-external-config-java-bean-binding]]
+==== JavaBean properties binding
+It is possible to bind a bean declaring standard JavaBean properties as shown in the
+following example:
 
 [source,java,indent=0]
 ----
@@ -958,13 +968,13 @@ The preceding POJO defines the following properties:
 the name of the property. In particular, the return type is not used at all there and
 could have been `SecurityProperties`.
 * `acme.security.password`.
-* `acme.security.roles`, with a collection of `String`.
+* `acme.security.roles`, with a collection of `String` that defaults to `USER`.
 
 [NOTE]
 ====
-Getters and setters are usually mandatory, since binding is through standard Java Beans
-property descriptors, just like in Spring MVC. A setter may be omitted in the following
-cases:
+Such arrangement relies on a default empty constructor and getters and setters are usually
+mandatory, since binding is through standard Java Beans property descriptors, just like in
+Spring MVC. A setter may be omitted in the following cases:
 
 * Maps, as long as they are initialized, need a getter but not necessarily a setter,
 since they can be mutated by the binder.
@@ -984,11 +994,84 @@ Finally, only standard Java Bean properties are considered and binding on static
 properties is not supported.
 ====
 
-TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
-and `@ConfigurationProperties`>>.
 
-You also need to list the properties classes to register in the
-`@EnableConfigurationProperties` annotation, as shown in the following example:
+
+[[boot-features-external-config-constructor-binding]]
+==== Constructor binding
+The example in the previous section can be rewritten in an immutable fashion as shown in
+the following example:
+
+[source,java,indent=0]
+----
+	package com.example;
+
+	import java.net.InetAddress;
+	import java.util.List;
+
+	import org.springframework.boot.context.properties.ConfigurationProperties;
+	import org.springframework.boot.context.properties.ConfigurationPropertyDefaultValue;
+
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		private final boolean enabled;
+
+		private final InetAddress remoteAddress;
+
+		private final Security security;
+
+		public AcmeProperties(boolean enabled, InetAddress remoteAddress, Security security) {
+			this.enabled = enabled;
+			this.remoteAddress = remoteAddress;
+			this.security = security;
+		}
+
+		public boolean isEnabled() { ... }
+
+		public InetAddress getRemoteAddress() { ... }
+
+		public Security getSecurity() { ... }
+
+		public static class Security {
+
+			private final String username;
+
+			private final String password;
+
+			private final List<String> roles;
+
+			public Security(String username, String password,
+					@ConfigurationPropertyDefaultValue("USER") List<String> roles) {
+				this.username = username;
+				this.password = password;
+				this.roles = roles;
+			}
+
+			public String getUsername() { ... }
+
+			public String getPassword() { ... }
+
+			public List<String> getRoles() { ... }
+
+		}
+
+	}
+----
+
+In this setup one, and only one constructor must be defined with the list of properties
+that you wish to bind and not other properties than the ones in the constructor are bound.
+
+Default values can be specified using `@ConfigurationPropertyDefaultValue` and the same
+conversion service will be applied to coerce the `String` value to the target type of a
+missing property.
+
+
+
+[[boot-features-external-config-enabling]]
+==== Enabling `@ConfigurationProperties`-annotated types
+Spring Boot provides an infrastructure to bind such types and register them as beans
+automatically. Any `@Configuration` class can specify the list of types to process as
+shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1006,15 +1089,19 @@ specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully 
 name of the bean. If the annotation does not provide any prefix, only the fully qualified
 name of the bean is used.
 
-The bean name in the example above is `acme-com.example.AcmeProperties`.
+The bean name in the examples above is `acme-com.example.AcmeProperties`.
 ====
 
-The preceding configuration creates a regular bean for `AcmeProperties`. We recommend that
-`@ConfigurationProperties` only deal with the environment and, in particular, does not
-inject other beans from the context. Keep in mind that the
-`@EnableConfigurationProperties` annotation is _also_ automatically applied to your
-project so that any _existing_ bean annotated with `@ConfigurationProperties` is
-configured from the `Environment`. Instead of annotating `MyConfiguration` with
+We recommend that `@ConfigurationProperties` only deal with the environment and, in
+particular, does not inject other beans from the context. In particular, it is not
+possible to inject other beans using the constructor as this would trigger the constructor
+binder that only deals with the environment.
+
+For corner cases, setter injection can be used or any of the `*Aware` interfaces provided
+by the framework (such as `EnvironmentAware` if you need access to the `Environment`).
+
+If you find using `@EnableConfigurationProperties` tedious, you can also declare a bean
+yourself. For instance, instead of annotating `MyConfiguration` with
 `@EnableConfigurationProperties(AcmeProperties.class)`, you could make `AcmeProperties`
 a bean, as shown in the following example:
 
@@ -1024,11 +1111,21 @@ a bean, as shown in the following example:
 	@ConfigurationProperties(prefix="acme")
 	public class AcmeProperties {
 
-		// ... see the preceding example
+			private boolean enabled;
+
+    		private InetAddress remoteAddress;
+
+    		private final Security security = new Security();
+
+			// ... see the preceding JavaBean properties binding example
 
 	}
 ----
 
+
+
+[[boot-features-external-config-using]]
+==== Using `@ConfigurationProperties`-annotated types
 This style of configuration works particularly well with the `SpringApplication` external
 YAML configuration, as shown in the following example:
 
@@ -1097,8 +1194,8 @@ its bean registration, as shown in the following example:
 	}
 ----
 
-Any property defined with the `another` prefix is mapped onto that `AnotherComponent` bean
-in manner similar to the preceding `AcmeProperties` example.
+Any JavaBean property defined with the `another` prefix is mapped onto that
+`AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
 
 
 
