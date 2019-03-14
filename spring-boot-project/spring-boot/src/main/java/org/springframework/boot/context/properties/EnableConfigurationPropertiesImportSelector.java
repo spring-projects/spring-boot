@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -151,11 +150,6 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 		private boolean canBindAtCreationTime(Class<?> type) {
 			List<Constructor<?>> constructors = determineConstructors(type);
-			boolean autowiredPresent = constructors.stream().anyMatch(
-					(c) -> AnnotationUtils.findAnnotation(c, Autowired.class) != null);
-			if (autowiredPresent) {
-				return false;
-			}
 			return (constructors.size() == 1
 					&& constructors.get(0).getParameterCount() > 0);
 		}

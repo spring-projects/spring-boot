@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -71,22 +70,12 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 	}
 
 	@Test
-	public void typeWithAutowiredOnConstructorShouldRegisterGenericBeanDefinition()
-			throws Exception {
-		this.registrar.registerBeanDefinitions(
-				getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
-		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
-				"bar-org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelectorTests$BarProperties");
-		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
-	}
-
-	@Test
 	public void typeWithOneConstructorWithParametersShouldRegisterConfigurationPropertiesBeanDefinition()
 			throws Exception {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
-				"baz-org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelectorTests$BazProperties");
+				"bar-org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelectorTests$BarProperties");
 		assertThat(beanDefinition)
 				.isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 	}
@@ -135,7 +124,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 	}
 
 	@EnableConfigurationProperties({ FooProperties.class, BarProperties.class,
-			BazProperties.class, BingProperties.class })
+			BingProperties.class })
 	static class TestConfiguration {
 
 	}
@@ -163,17 +152,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 	@ConfigurationProperties(prefix = "bar")
 	public static class BarProperties {
 
-		@Autowired
 		public BarProperties(String foo) {
-
-		}
-
-	}
-
-	@ConfigurationProperties(prefix = "baz")
-	public static class BazProperties {
-
-		public BazProperties(String foo) {
 
 		}
 

@@ -808,7 +808,10 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenConfigurationPropertiesInjectsAnotherBeanShouldNotFail() {
-		load(OtherInjectPropertiesConfiguration.class);
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(OtherInjectPropertiesConfiguration.class))
+				.withMessageContaining(OtherInjectedProperties.class.getName())
+				.withMessageContaining("Failed to bind properties under 'test'");
 	}
 
 	@Test
@@ -1825,7 +1828,6 @@ public class ConfigurationPropertiesTests {
 
 		final DataSizeProperties dataSizeProperties;
 
-		@Autowired
 		OtherInjectedProperties(ObjectProvider<DataSizeProperties> dataSizeProperties) {
 			this.dataSizeProperties = dataSizeProperties.getIfUnique();
 		}

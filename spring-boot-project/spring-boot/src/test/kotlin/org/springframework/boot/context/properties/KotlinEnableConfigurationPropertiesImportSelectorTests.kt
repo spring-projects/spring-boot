@@ -2,7 +2,6 @@ package org.springframework.boot.context.properties
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.core.type.AnnotationMetadata
@@ -30,20 +29,11 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 	}
 
 	@Test
-	fun `type with autowired on constructor should register generic bean definition`() {
-		this.registrar.registerBeanDefinitions(
-				getAnnotationMetadata(TestConfiguration::class.java), this.beanFactory)
-		val beanDefinition = this.beanFactory.getBeanDefinition(
-				"bar-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$BarProperties")
-		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition::class.java)
-	}
-
-	@Test
 	fun `type with primary constructor and no autowired should register configuration properties bean definition`() {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration::class.java), this.beanFactory)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
-				"baz-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$BazProperties")
+				"bar-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$BarProperties")
 		assertThat(beanDefinition).isExactlyInstanceOf(
 				ConfigurationPropertiesBeanDefinition::class.java)
 	}
@@ -64,17 +54,14 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 
 
 	@EnableConfigurationProperties(FooProperties::class, BarProperties::class,
-			BazProperties::class, BingProperties::class)
+			BingProperties::class)
 	class TestConfiguration
 
 	@ConfigurationProperties(prefix = "foo")
 	class FooProperties
 
 	@ConfigurationProperties(prefix = "bar")
-	class BarProperties @Autowired constructor(val foo: String)
-
-	@ConfigurationProperties(prefix = "baz")
-	class BazProperties(val name: String?, val counter: Int = 42)
+	class BarProperties(val name: String?, val counter: Int = 42)
 
 	@ConfigurationProperties(prefix = "bing")
 	class BingProperties {
