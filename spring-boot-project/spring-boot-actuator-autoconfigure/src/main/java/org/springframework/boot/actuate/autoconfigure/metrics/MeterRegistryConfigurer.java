@@ -46,16 +46,16 @@ class MeterRegistryConfigurer {
 
 	private final boolean addToGlobalRegistry;
 
-	private final boolean hasCompositeMeterRegistry;
+	private final boolean onlyBindToCompositeMeterRegistry;
 
 	MeterRegistryConfigurer(ObjectProvider<MeterRegistryCustomizer<?>> customizers,
 			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders,
-			boolean addToGlobalRegistry, boolean hasCompositeMeterRegistry) {
+			boolean addToGlobalRegistry, boolean onlyBindToCompositeMeterRegistry) {
 		this.customizers = customizers;
 		this.filters = filters;
 		this.binders = binders;
 		this.addToGlobalRegistry = addToGlobalRegistry;
-		this.hasCompositeMeterRegistry = hasCompositeMeterRegistry;
+		this.onlyBindToCompositeMeterRegistry = onlyBindToCompositeMeterRegistry;
 	}
 
 	void configure(MeterRegistry registry) {
@@ -63,7 +63,7 @@ class MeterRegistryConfigurer {
 		// tags or alter timer or summary configuration.
 		customize(registry);
 		addFilters(registry);
-		if (this.hasCompositeMeterRegistry) {
+		if (this.onlyBindToCompositeMeterRegistry) {
 			if ((registry instanceof CompositeMeterRegistry)) {
 				addBinders(registry);
 			}
