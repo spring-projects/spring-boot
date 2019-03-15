@@ -8742,8 +8742,7 @@ make it possible to take advantage of Kotlin reified type parameters.
 [[boot-features-kotlin-dependency-management]]
 === Dependency management
 In order to avoid mixing different versions of Kotlin dependencies on the classpath,
-https://search.maven.org/artifact/org.jetbrains.kotlin/kotlin-bom/[Kotlin BOM] is
-included in Spring Boot dependency management to set the version of Kotlin dependencies.
+Spring Boot imports the Kotlin BOM.
 
 With Maven, the Kotlin version can be customized via the `kotlin.version` property and
 plugin management is provided for `kotlin-maven-plugin`. With Gradle, the Spring Boot
@@ -8753,7 +8752,8 @@ plugin automatically aligns the `kotlin.version` with the version of the Kotlin 
 
 [[boot-features-kotlin-configuration-properties]]
 === `@ConfigurationProperties`
-As of Spring Boot 2.2, `@ConfigurationProperties` supports classes with immutable `val` properties.
+`@ConfigurationProperties` supports classes with immutable `val` properties as shown in
+the following example:
 
 [source,kotlin,indent=0]
 ----
@@ -8770,7 +8770,11 @@ data class MyService(
 )
 ----
 
-WARNING: <<appendix.adoc#configuration-metadata-annotation-processor,Metadata>> is not working yet.
+TIP: To generate <<appendix.adoc#configuration-metadata-annotation-processor,your own
+metadata>> using the annotation processor, {kotlin-documentation}kapt.html[`kapt` should
+be configured] with the `spring-boot-configuration-processor` dependency. Note that some
+features (such as detecting the default value or deperecated items) are not working due
+to limitations in the model kapt provides.
 
 
 [[boot-features-kotlin-testing]]
