@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context.properties;
+package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER })
 @Documented
-public @interface ConfigurationPropertyDefaultValue {
+public @interface DefaultValue {
 
 	/**
 	 * The default value of the property. Can be an array of values for collection or

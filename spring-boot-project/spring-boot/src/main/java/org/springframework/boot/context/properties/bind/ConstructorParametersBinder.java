@@ -30,7 +30,6 @@ import kotlin.reflect.KParameter;
 import kotlin.reflect.jvm.ReflectJvmMapping;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.context.properties.ConfigurationPropertyDefaultValue;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.ResolvableType;
@@ -153,8 +152,8 @@ class ConstructorParametersBinder implements BeanBinder {
 			Map<String, ConstructorParameter> parameters = new LinkedHashMap<>();
 			for (Parameter parameter : constructor.getParameters()) {
 				String name = parameter.getName();
-				ConfigurationPropertyDefaultValue[] annotationsByType = parameter
-						.getAnnotationsByType(ConfigurationPropertyDefaultValue.class);
+				DefaultValue[] annotationsByType = parameter
+						.getAnnotationsByType(DefaultValue.class);
 				String[] defaultValue = (annotationsByType.length > 0)
 						? annotationsByType[0].value() : null;
 				parameters.computeIfAbsent(name,

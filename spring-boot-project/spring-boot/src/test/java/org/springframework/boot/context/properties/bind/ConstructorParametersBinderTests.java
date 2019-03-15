@@ -21,7 +21,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.context.properties.ConfigurationPropertyDefaultValue;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
@@ -259,11 +258,9 @@ public class ConstructorParametersBinderTests {
 
 		private final List<String> customList;
 
-		public ExampleDefaultValueBean(
-				@ConfigurationPropertyDefaultValue("5") int intValue,
-				@ConfigurationPropertyDefaultValue({ "a", "b",
-						"c" }) List<String> stringsList,
-				@ConfigurationPropertyDefaultValue("x,y,z") List<String> customList) {
+		public ExampleDefaultValueBean(@DefaultValue("5") int intValue,
+				@DefaultValue({ "a", "b", "c" }) List<String> stringsList,
+				@DefaultValue("x,y,z") List<String> customList) {
 			this.intValue = intValue;
 			this.stringsList = stringsList;
 			this.customList = customList;
