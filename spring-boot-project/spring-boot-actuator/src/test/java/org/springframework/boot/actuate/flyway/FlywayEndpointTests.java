@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.flyway;
 
 import java.util.Map;
 
+import org.flywaydb.core.api.configuration.ClassicConfiguration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint.FlywayDescriptor;
@@ -56,7 +57,7 @@ class FlywayEndpointTests {
 	@SuppressWarnings("deprecation")
 	void whenFlywayHasBeenBaselinedFlywayReportIsProduced() {
 		this.contextRunner.withBean(FlywayMigrationStrategy.class, () -> (flyway) -> {
-			flyway.setBaselineVersionAsString("2");
+			((ClassicConfiguration) flyway.getConfiguration()).setBaselineVersionAsString("2");
 			flyway.baseline();
 			flyway.migrate();
 		}).run((context) -> {
