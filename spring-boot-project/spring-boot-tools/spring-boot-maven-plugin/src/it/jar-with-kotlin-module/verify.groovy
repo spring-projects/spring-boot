@@ -17,7 +17,7 @@
 import java.io.*;
 import org.springframework.boot.maven.*;
 
-File f = new File( basedir, "target/jar-with-kotlin-module-0.0.1.BUILD-SNAPSHOT.jar");
+File f = new File(basedir, "target/jar-with-kotlin-module-0.0.1.BUILD-SNAPSHOT.jar")
 new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 	@Override
 	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
@@ -27,4 +27,4 @@ new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 		verifier.assertHasNonUnpackEntry("BOOT-INF/lib/kotlin-stdlib-")
 		verifier.assertHasNonUnpackEntry("BOOT-INF/lib/kotlin-reflect-")
 	}
-}.verify();
+}.verify()

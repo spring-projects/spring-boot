@@ -44,10 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ManagementAddressActuatorApplicationTests {
 
 	@LocalServerPort
-	private int port = 9010;
+	private int port;
 
 	@LocalManagementPort
-	private int managementPort = 9011;
+	private int managementPort;
 
 	@Test
 	public void testHome() {
