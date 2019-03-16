@@ -6,9 +6,9 @@ buildscript {
 		// NOTE: You should declare only repositories that you need here
 		mavenLocal()
 		mavenCentral()
-		maven { url "http://repo.spring.io/release" }
-		maven { url "http://repo.spring.io/milestone" }
-		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/release" }
+		maven { url "https://repo.spring.io/milestone" }
+		maven { url "https://repo.spring.io/snapshot" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -31,9 +31,9 @@ repositories {
 	// NOTE: You should declare only repositories that you need here
 	mavenLocal()
 	mavenCentral()
-	maven { url "http://repo.spring.io/release" }
-	maven { url "http://repo.spring.io/milestone" }
-	maven { url "http://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/release" }
+	maven { url "https://repo.spring.io/milestone" }
+	maven { url "https://repo.spring.io/snapshot" }
 }
 
 configurations {
