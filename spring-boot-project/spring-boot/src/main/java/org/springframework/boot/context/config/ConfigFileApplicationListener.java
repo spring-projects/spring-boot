@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,11 +74,13 @@ import org.springframework.util.StringUtils;
  * properties from well known file locations. By default properties will be loaded from
  * 'application.properties' and/or 'application.yml' files in the following locations:
  * <ul>
- * <li>classpath:</li>
+ * <li>file:./config/:</li>
  * <li>file:./</li>
  * <li>classpath:config/</li>
- * <li>file:./config/:</li>
+ * <li>classpath:</li>
  * </ul>
+ * The list is ordered by precedence (properties defined in locations higher in the list
+ * override those defined in lower locations).
  * <p>
  * Alternative search locations and names can be specified using
  * {@link #setSearchLocations(String)} and {@link #setSearchNames(String)}.
