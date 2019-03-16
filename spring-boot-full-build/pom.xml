@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-full-build</artifactId>
@@ -7,15 +7,15 @@
 	<packaging>pom</packaging>
 	<name>Spring Boot Full Build</name>
 	<description>Spring Boot Full Build</description>
-	<url>http://projects.spring.io/spring-boot/</url>
+	<url>https://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
+		<url>https://www.spring.io</url>
 	</organization>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
 	<scm>
@@ -27,7 +27,7 @@
 			<name>Phillip Webb</name>
 			<email>pwebb at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
-			<organizationUrl>http://www.spring.io</organizationUrl>
+			<organizationUrl>https://www.spring.io</organizationUrl>
 			<roles>
 				<role>Project lead</role>
 			</roles>
@@ -37,7 +37,7 @@
 			<name>Dave Syer</name>
 			<email>dsyer at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
-			<organizationUrl>http://www.spring.io</organizationUrl>
+			<organizationUrl>https://www.spring.io</organizationUrl>
 			<roles>
 				<role>Project lead</role>
 			</roles>

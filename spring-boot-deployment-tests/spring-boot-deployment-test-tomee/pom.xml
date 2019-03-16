@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -10,10 +10,10 @@
 	<packaging>war</packaging>
 	<name>Spring Boot TomEE Deployment Test</name>
 	<description>Spring Boot TomEE Deployment Test</description>
-	<url>http://projects.spring.io/spring-boot/</url>
+	<url>https://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
+		<url>https://www.spring.io</url>
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
@@ -22,7 +22,7 @@
 		<cargo.container.url>
 			https://www.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip
 			<!-- Alternative location
-			http://archive.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip
+			https://archive.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip
 			 -->
 		</cargo.container.url>
 	</properties>
