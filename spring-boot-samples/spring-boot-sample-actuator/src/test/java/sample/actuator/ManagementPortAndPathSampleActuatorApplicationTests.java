@@ -46,10 +46,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
-	private int port = 9010;
+	private int port;
 
 	@LocalManagementPort
-	private int managementPort = 9011;
+	private int managementPort;
 
 	@Autowired
 	private Environment environment;
