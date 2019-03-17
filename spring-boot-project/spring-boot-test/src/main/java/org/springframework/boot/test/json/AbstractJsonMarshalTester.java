@@ -86,6 +86,16 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @param resourceLoadClass the source class used when loading relative classpath
 	 * resources
 	 * @param type the type under test
+	 */
+	public AbstractJsonMarshalTester(Class<?> resourceLoadClass, ResolvableType type) {
+		this(resourceLoadClass, type, Configuration.defaultConfiguration());
+	}
+
+	/**
+	 * Create a new {@link AbstractJsonMarshalTester} instance.
+	 * @param resourceLoadClass the source class used when loading relative classpath
+	 * resources
+	 * @param type the type under test
 	 * @param configuration the json-path configuration
 	 */
 	public AbstractJsonMarshalTester(Class<?> resourceLoadClass, ResolvableType type,
@@ -94,6 +104,16 @@ public abstract class AbstractJsonMarshalTester<T> {
 		Assert.notNull(type, "Type must not be null");
 		Assert.notNull(configuration, "Configuration must not be null");
 		initialize(resourceLoadClass, type, configuration);
+	}
+
+	/**
+	 * Initialize the marshal tester for use.
+	 * @param resourceLoadClass the source class used when loading relative classpath
+	 * resources
+	 * @param type the type under test
+	 */
+	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
+		initialize(resourceLoadClass, type, Configuration.defaultConfiguration());
 	}
 
 	/**

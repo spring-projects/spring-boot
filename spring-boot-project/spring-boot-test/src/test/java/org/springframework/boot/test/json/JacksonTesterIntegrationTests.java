@@ -85,10 +85,8 @@ public class JacksonTesterIntegrationTests {
 
 	// This test confirms that the handling of special characters is symmetrical between
 	// the serialisation (via the JacksonTester) and the parsing (via json-path). By
-	// default
-	// json-path uses SimpleJson as its parser, which has a slightly different behaviour
-	// to
-	// Jackson and breaks the symmetry. However JacksonTester
+	// default json-path uses SimpleJson as its parser, which has a slightly different
+	// behaviour to Jackson and breaks the symmetry. However JacksonTester
 	// configures json-path to use Jackson for evaluating the path expressions and
 	// restores the symmetry.
 	@Test
