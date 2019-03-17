@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,12 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.springframework.util.ReflectionUtils;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Utility used to run a process.
@@ -33,12 +30,10 @@ import org.springframework.util.ReflectionUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Dmytro Nosan
  * @since 1.1.0
  */
 public class RunProcess {
-
-	private static final Method INHERIT_IO_METHOD = ReflectionUtils
-			.findMethod(ProcessBuilder.class, "inheritIO");
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
@@ -71,22 +66,20 @@ public class RunProcess {
 	}
 
 	public int run(boolean waitForProcess, String... args) throws IOException {
-		return run(waitForProcess, Arrays.asList(args));
+		return run(waitForProcess, Arrays.asList(args), Collections.emptyMap());
 	}
 
-	protected int run(boolean waitForProcess, Collection<String> args)
-			throws IOException {
+	public int run(boolean waitForProcess, Collection<String> args,
+			Map<String, String> environmentVariables) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.directory(this.workingDirectory);
 		builder.command().addAll(args);
+		builder.environment().putAll(environmentVariables);
 		builder.redirectErrorStream(true);
-		boolean inheritedIO = inheritIO(builder);
+		builder.inheritIO();
 		try {
 			Process process = builder.start();
 			this.process = process;
-			if (!inheritedIO) {
-				redirectOutput(process);
-			}
 			SignalUtils.attachSignalHandler(this::handleSigInt);
 			if (waitForProcess) {
 				try {
@@ -105,60 +98,6 @@ public class RunProcess {
 				this.process = null;
 			}
 		}
-	}
-
-	private boolean inheritIO(ProcessBuilder builder) {
-		if (isInheritIOBroken()) {
-			return false;
-		}
-		try {
-			INHERIT_IO_METHOD.invoke(builder);
-			return true;
-		}
-		catch (Exception ex) {
-			return false;
-		}
-	}
-
-	// There's a bug in the Windows VM (https://bugs.openjdk.java.net/browse/JDK-8023130)
-	// that means we need to avoid inheritIO
-	private static boolean isInheritIOBroken() {
-		if (!System.getProperty("os.name", "none").toLowerCase().contains("windows")) {
-			return false;
-		}
-		String runtime = System.getProperty("java.runtime.version");
-		if (!runtime.startsWith("1.7")) {
-			return false;
-		}
-		String[] tokens = runtime.split("_");
-		if (tokens.length < 2) {
-			return true; // No idea actually, shouldn't happen
-		}
-		try {
-			Integer build = Integer.valueOf(tokens[1].split("[^0-9]")[0]);
-			if (build < 60) {
-				return true;
-			}
-		}
-		catch (Exception ex) {
-			return true;
-		}
-		return false;
-	}
-
-	private void redirectOutput(Process process) {
-		new Thread(() -> {
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(process.getInputStream()))) {
-				reader.lines().forEach((line) -> {
-					System.out.println(line);
-					System.out.flush();
-				});
-			}
-			catch (Exception ex) {
-				// Ignore
-			}
-		}).start();
 	}
 
 	/**

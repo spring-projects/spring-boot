@@ -20,15 +20,10 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.async.client.MongoClientSettings;
-import com.mongodb.async.client.MongoClientSettings.Builder;
-import com.mongodb.connection.ClusterSettings;
-import com.mongodb.connection.ConnectionPoolSettings;
-import com.mongodb.connection.ServerSettings;
-import com.mongodb.connection.SocketSettings;
-import com.mongodb.connection.SslSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 
@@ -54,8 +49,8 @@ public class ReactiveMongoClientFactory {
 			List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
 		this.environment = environment;
-		this.builderCustomizers = (builderCustomizers != null ? builderCustomizers
-				: Collections.emptyList());
+		this.builderCustomizers = (builderCustomizers != null) ? builderCustomizers
+				: Collections.emptyList();
 	}
 
 	/**
@@ -86,11 +81,10 @@ public class ReactiveMongoClientFactory {
 	private MongoClient createEmbeddedMongoClient(MongoClientSettings settings,
 			int port) {
 		Builder builder = builder(settings);
-		String host = this.properties.getHost() == null ? "localhost"
-				: this.properties.getHost();
-		ClusterSettings clusterSettings = ClusterSettings.builder()
-				.hosts(Collections.singletonList(new ServerAddress(host, port))).build();
-		builder.clusterSettings(clusterSettings);
+		String host = (this.properties.getHost() != null) ? this.properties.getHost()
+				: "localhost";
+		builder.applyToClusterSettings((cluster) -> cluster
+				.hosts(Collections.singletonList(new ServerAddress(host, port))));
 		return createMongoClient(builder);
 	}
 
@@ -113,22 +107,21 @@ public class ReactiveMongoClientFactory {
 		String host = getOrDefault(this.properties.getHost(), "localhost");
 		int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
 		ServerAddress serverAddress = new ServerAddress(host, port);
-		builder.clusterSettings(ClusterSettings.builder()
-				.hosts(Collections.singletonList(serverAddress)).build());
+		builder.applyToClusterSettings(
+				(cluster) -> cluster.hosts(Collections.singletonList(serverAddress)));
 		return createMongoClient(builder);
 	}
 
 	private void applyCredentials(Builder builder) {
-		String database = this.properties.getAuthenticationDatabase() == null
-				? this.properties.getMongoClientDatabase()
-				: this.properties.getAuthenticationDatabase();
+		String database = (this.properties.getAuthenticationDatabase() != null)
+				? this.properties.getAuthenticationDatabase()
+				: this.properties.getMongoClientDatabase();
 		builder.credential((MongoCredential.createCredential(
 				this.properties.getUsername(), database, this.properties.getPassword())));
-
 	}
 
 	private <T> T getOrDefault(T value, T defaultValue) {
-		return (value == null ? defaultValue : value);
+		return (value != null) ? value : defaultValue;
 	}
 
 	private MongoClient createMongoClient(Builder builder) {
@@ -138,49 +131,7 @@ public class ReactiveMongoClientFactory {
 
 	private Builder createBuilder(MongoClientSettings settings,
 			ConnectionString connection) {
-		Builder builder = builder(settings);
-		builder.clusterSettings(getClusterSettings(connection));
-		builder.connectionPoolSettings(getConnectionPoolSettings(connection));
-		builder.serverSettings(getServerSettings(connection));
-		if (connection.getCredential() != null) {
-			builder.credential(connection.getCredential());
-		}
-		builder.sslSettings(getSslSettings(connection));
-		builder.socketSettings(getSocketSettings(connection));
-		if (connection.getReadPreference() != null) {
-			builder.readPreference(connection.getReadPreference());
-		}
-		if (connection.getReadConcern() != null) {
-			builder.readConcern(connection.getReadConcern());
-		}
-		if (connection.getWriteConcern() != null) {
-			builder.writeConcern(connection.getWriteConcern());
-		}
-		if (connection.getApplicationName() != null) {
-			builder.applicationName(connection.getApplicationName());
-		}
-		return builder;
-	}
-
-	private ClusterSettings getClusterSettings(ConnectionString connection) {
-		return ClusterSettings.builder().applyConnectionString(connection).build();
-	}
-
-	private ConnectionPoolSettings getConnectionPoolSettings(
-			ConnectionString connection) {
-		return ConnectionPoolSettings.builder().applyConnectionString(connection).build();
-	}
-
-	private ServerSettings getServerSettings(ConnectionString connection) {
-		return ServerSettings.builder().applyConnectionString(connection).build();
-	}
-
-	private SslSettings getSslSettings(ConnectionString connection) {
-		return SslSettings.builder().applyConnectionString(connection).build();
-	}
-
-	private SocketSettings getSocketSettings(ConnectionString connection) {
-		return SocketSettings.builder().applyConnectionString(connection).build();
+		return builder(settings).applyConnectionString(connection);
 	}
 
 	private void customize(MongoClientSettings.Builder builder) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Assume;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -42,7 +43,9 @@ import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
@@ -53,6 +56,10 @@ import org.springframework.util.FileCopyUtils;
  */
 public class CliTester implements TestRule {
 
+	private final TemporaryFolder temp = new TemporaryFolder();
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
+
 	private final OutputCapture outputCapture = new OutputCapture();
 
 	private long timeout = TimeUnit.MINUTES.toMillis(6);
@@ -60,6 +67,8 @@ public class CliTester implements TestRule {
 	private final List<AbstractCommand> commands = new ArrayList<>();
 
 	private final String prefix;
+
+	private File serverPortFile;
 
 	public CliTester(String prefix) {
 		this.prefix = prefix;
@@ -74,17 +83,18 @@ public class CliTester implements TestRule {
 		boolean classpathUpdated = false;
 		for (String arg : args) {
 			if (arg.startsWith("--classpath=")) {
-				arg = arg + ":" + new File("target/test-classes").getAbsolutePath();
+				arg = arg + ":"
+						+ this.buildOutput.getTestClassesLocation().getAbsolutePath();
 				classpathUpdated = true;
 			}
 			updatedArgs.add(arg);
 		}
 		if (!classpathUpdated) {
-			updatedArgs.add(
-					"--classpath=.:" + new File("target/test-classes").getAbsolutePath());
+			updatedArgs.add("--classpath=.:"
+					+ this.buildOutput.getTestClassesLocation().getAbsolutePath());
 		}
 		Future<RunCommand> future = submitCommand(new RunCommand(),
-				updatedArgs.toArray(new String[updatedArgs.size()]));
+				StringUtils.toStringArray(updatedArgs));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
@@ -110,8 +120,8 @@ public class CliTester implements TestRule {
 			System.setProperty("server.port", "0");
 			System.setProperty("spring.application.class.name",
 					"org.springframework.boot.cli.CliTesterSpringApplication");
-			System.setProperty("portfile",
-					new File("target/server.port").getAbsolutePath());
+			this.serverPortFile = new File(this.temp.newFolder(), "server.port");
+			System.setProperty("portfile", this.serverPortFile.getAbsolutePath());
 			try {
 				command.run(sources);
 				return command;
@@ -167,8 +177,9 @@ public class CliTester implements TestRule {
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		final Statement statement = CliTester.this.outputCapture
-				.apply(new RunLauncherStatement(base), description);
+		final Statement statement = this.temp.apply(
+				this.outputCapture.apply(new RunLauncherStatement(base), description),
+				description);
 		return new Statement() {
 
 			@Override
@@ -179,6 +190,7 @@ public class CliTester implements TestRule {
 								.contains("integration"));
 				statement.evaluate();
 			}
+
 		};
 	}
 
@@ -189,7 +201,7 @@ public class CliTester implements TestRule {
 	public String getHttpOutput(String uri) {
 		try {
 			int port = Integer.parseInt(
-					FileCopyUtils.copyToString(new FileReader("target/server.port")));
+					FileCopyUtils.copyToString(new FileReader(this.serverPortFile)));
 			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
 					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

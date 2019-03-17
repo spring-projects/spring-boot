@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 
@@ -39,9 +40,10 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
@@ -51,17 +53,28 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(NewRelicProperties.class)
 public class NewRelicMetricsExportAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public NewRelicConfig newRelicConfig(NewRelicProperties props) {
-		return new NewRelicPropertiesConfigAdapter(props);
+	private final NewRelicProperties properties;
+
+	public NewRelicMetricsExportAutoConfiguration(NewRelicProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config,
+	public NewRelicConfig newRelicConfig() {
+		return new NewRelicPropertiesConfigAdapter(this.properties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig,
 			Clock clock) {
-		return new NewRelicMeterRegistry(config, clock);
+		return NewRelicMeterRegistry.builder(newRelicConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
+				.build();
+
 	}
 
 }

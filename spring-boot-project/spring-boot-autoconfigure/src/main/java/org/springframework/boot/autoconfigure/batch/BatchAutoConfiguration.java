@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,9 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
+ * @author Mahmoud Ben Hassine
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
@@ -67,12 +68,8 @@ public class BatchAutoConfiguration {
 
 	private final BatchProperties properties;
 
-	private final JobParametersConverter jobParametersConverter;
-
-	public BatchAutoConfiguration(BatchProperties properties,
-			ObjectProvider<JobParametersConverter> jobParametersConverter) {
+	public BatchAutoConfiguration(BatchProperties properties) {
 		this.properties = properties;
-		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 	}
 
 	@Bean
@@ -88,9 +85,10 @@ public class BatchAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
-			JobLauncher jobLauncher, JobExplorer jobExplorer) {
+			JobLauncher jobLauncher, JobExplorer jobExplorer,
+			JobRepository jobRepository) {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
-				jobLauncher, jobExplorer);
+				jobLauncher, jobExplorer, jobRepository);
 		String jobNames = this.properties.getJob().getNames();
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);
@@ -106,7 +104,9 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
-	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+	public SimpleJobOperator jobOperator(
+			ObjectProvider<JobParametersConverter> jobParametersConverter,
+			JobExplorer jobExplorer, JobLauncher jobLauncher,
 			ListableJobLocator jobRegistry, JobRepository jobRepository)
 			throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
@@ -114,9 +114,7 @@ public class BatchAutoConfiguration {
 		factory.setJobLauncher(jobLauncher);
 		factory.setJobRegistry(jobRegistry);
 		factory.setJobRepository(jobRepository);
-		if (this.jobParametersConverter != null) {
-			factory.setJobParametersConverter(this.jobParametersConverter);
-		}
+		jobParametersConverter.ifAvailable(factory::setJobParametersConverter);
 		return factory;
 	}
 

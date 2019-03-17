@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	public void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis.getDescription()).contains(
-				"'spring.datasource.url' is not specified",
-				"no embedded datasource could be auto-configured",
+				"'url' attribute is not specified",
+				"no embedded datasource could be configured",
 				"Failed to determine a suitable driver class");
 		assertThat(failureAnalysis.getAction()).contains(
 				"If you want an embedded database (H2, HSQL or Derby), please put it on the classpath",
@@ -85,7 +85,7 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
 	static class TestConfiguration {
 

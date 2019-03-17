@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.jdbc;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -66,8 +67,8 @@ public enum DatabaseDriver {
 	/**
 	 * MySQL.
 	 */
-	MYSQL("MySQL", "com.mysql.jdbc.Driver",
-			"com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "/* ping */ SELECT 1"),
+	MYSQL("MySQL", "com.mysql.cj.jdbc.Driver", "com.mysql.cj.jdbc.MysqlXADataSource",
+			"/* ping */ SELECT 1"),
 
 	/**
 	 * Maria DB.
@@ -99,6 +100,18 @@ public enum DatabaseDriver {
 			"SELECT 1"),
 
 	/**
+	 * HANA - SAP HANA Database - HDB.
+	 * @since 2.1.0
+	 */
+	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
+			"SELECT 1 FROM SYS.DUMMY") {
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("sap");
+		}
+	},
+
+	/**
 	 * jTDS. As it can be used for several databases, there isn't a single product name we
 	 * could rely on.
 	 */
@@ -127,13 +140,13 @@ public enum DatabaseDriver {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
-			return Collections.singleton("firebirdsql");
+			return Arrays.asList("firebirdsql", "firebird");
 		}
 
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
-					|| productName.toLowerCase().startsWith("firebird");
+					|| productName.toLowerCase(Locale.ENGLISH).startsWith("firebird");
 		}
 	},
 
@@ -146,7 +159,7 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
-					|| productName.toLowerCase().startsWith("db2/");
+					|| productName.toLowerCase(Locale.ENGLISH).startsWith("db2/");
 		}
 	},
 
@@ -170,7 +183,7 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
-					|| productName.toLowerCase().contains("as/400");
+					|| productName.toLowerCase(Locale.ENGLISH).contains("as/400");
 		}
 	},
 
@@ -222,7 +235,7 @@ public enum DatabaseDriver {
 	 * @return the identifier
 	 */
 	public String getId() {
-		return name().toLowerCase();
+		return name().toLowerCase(Locale.ENGLISH);
 	}
 
 	protected boolean matchProductName(String productName) {
@@ -230,7 +243,7 @@ public enum DatabaseDriver {
 	}
 
 	protected Collection<String> getUrlPrefixes() {
-		return Collections.singleton(this.name().toLowerCase());
+		return Collections.singleton(this.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	/**
@@ -259,13 +272,14 @@ public enum DatabaseDriver {
 
 	/**
 	 * Find a {@link DatabaseDriver} for the given URL.
-	 * @param url JDBC URL
+	 * @param url the JDBC URL
 	 * @return the database driver or {@link #UNKNOWN} if not found
 	 */
 	public static DatabaseDriver fromJdbcUrl(String url) {
 		if (StringUtils.hasLength(url)) {
 			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
-			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase();
+			String urlWithoutPrefix = url.substring("jdbc".length())
+					.toLowerCase(Locale.ENGLISH);
 			for (DatabaseDriver driver : values()) {
 				for (String urlPrefix : driver.getUrlPrefixes()) {
 					String prefix = ":" + urlPrefix + ":";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,10 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
 @ConditionalOnMissingBean(BatchConfigurer.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class BatchConfigurerConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "entityManagerFactory")
 	static class JdbcBatchConfiguration {
 
@@ -53,8 +53,8 @@ class BatchConfigurerConfiguration {
 
 	}
 
-	@Configuration
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(EntityManagerFactory.class)
 	@ConditionalOnBean(name = "entityManagerFactory")
 	static class JpaBatchConfiguration {
 

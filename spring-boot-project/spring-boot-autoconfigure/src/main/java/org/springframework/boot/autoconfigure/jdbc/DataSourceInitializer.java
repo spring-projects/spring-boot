@@ -68,8 +68,8 @@ class DataSourceInitializer {
 			ResourceLoader resourceLoader) {
 		this.dataSource = dataSource;
 		this.properties = properties;
-		this.resourceLoader = (resourceLoader != null ? resourceLoader
-				: new DefaultResourceLoader());
+		this.resourceLoader = (resourceLoader != null) ? resourceLoader
+				: new DefaultResourceLoader();
 	}
 
 	/**

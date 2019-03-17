@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,8 @@ public abstract class AbstractHttpClientMockTests {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, request.content, request.contentType);
 		mockStatus(response, 200);
-		String header = (request.fileName != null
-				? contentDispositionValue(request.fileName) : null);
+		String header = (request.fileName != null)
+				? contentDispositionValue(request.fileName) : null;
 		mockHttpHeader(response, "Content-Disposition", header);
 		given(this.http.execute(argThat(getForNonMetadata()))).willReturn(response);
 	}
@@ -119,7 +119,7 @@ public abstract class AbstractHttpClientMockTests {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
-			Header contentTypeHeader = contentType != null
+			Header contentTypeHeader = (contentType != null)
 					? new BasicHeader("Content-Type", contentType) : null;
 			given(entity.getContentType()).willReturn(contentTypeHeader);
 			given(response.getEntity()).willReturn(entity);
@@ -138,7 +138,7 @@ public abstract class AbstractHttpClientMockTests {
 
 	protected void mockHttpHeader(CloseableHttpResponse response, String headerName,
 			String value) {
-		Header header = value != null ? new BasicHeader(headerName, value) : null;
+		Header header = (value != null) ? new BasicHeader(headerName, value) : null;
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
 

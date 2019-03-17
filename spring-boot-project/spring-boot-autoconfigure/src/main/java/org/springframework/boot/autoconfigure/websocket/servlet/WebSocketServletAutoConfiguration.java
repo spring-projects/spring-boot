@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import javax.servlet.Servlet;
 import javax.websocket.server.ServerContainer;
 
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.websocket.server.WsSci;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -51,43 +52,43 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureBefore(ServletWebServerFactoryAutoConfiguration.class)
 public class WebSocketServletAutoConfiguration {
 
-	@Configuration
-	@ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci", value = Tomcat.class)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ Tomcat.class, WsSci.class })
 	static class TomcatWebSocketConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		public TomcatWebSocketServletWebServerCustomizer websocketContainerCustomizer() {
+		public TomcatWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new TomcatWebSocketServletWebServerCustomizer();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(WebSocketServerContainerInitializer.class)
 	static class JettyWebSocketConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		public JettyWebSocketServletWebServerCustomizer websocketContainerCustomizer() {
+		public JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketServletWebServerCustomizer();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(io.undertow.websockets.jsr.Bootstrap.class)
 	static class UndertowWebSocketConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		public UndertowWebSocketServletWebServerCustomizer websocketContainerCustomizer() {
+		public UndertowWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new UndertowWebSocketServletWebServerCustomizer();
 		}
 

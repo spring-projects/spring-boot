@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -63,11 +63,10 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Brian Clozel
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
-@EnableConfigurationProperties(ServerProperties.class)
 public class DispatcherServletAutoConfiguration {
 
 	/*
@@ -80,27 +79,24 @@ public class DispatcherServletAutoConfiguration {
 	 */
 	public static final String DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME = "dispatcherServletRegistration";
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(DefaultDispatcherServletCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
-	@EnableConfigurationProperties(WebMvcProperties.class)
+	@EnableConfigurationProperties({ HttpProperties.class, WebMvcProperties.class })
 	protected static class DispatcherServletConfiguration {
 
-		private final WebMvcProperties webMvcProperties;
-
-		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties) {
-			this.webMvcProperties = webMvcProperties;
-		}
-
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public DispatcherServlet dispatcherServlet() {
+		public DispatcherServlet dispatcherServlet(HttpProperties httpProperties,
+				WebMvcProperties webMvcProperties) {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setDispatchOptionsRequest(
-					this.webMvcProperties.isDispatchOptionsRequest());
-			dispatcherServlet.setDispatchTraceRequest(
-					this.webMvcProperties.isDispatchTraceRequest());
+					webMvcProperties.isDispatchOptionsRequest());
+			dispatcherServlet
+					.setDispatchTraceRequest(webMvcProperties.isDispatchTraceRequest());
 			dispatcherServlet.setThrowExceptionIfNoHandlerFound(
-					this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
+					webMvcProperties.isThrowExceptionIfNoHandlerFound());
+			dispatcherServlet
+					.setEnableLoggingRequestDetails(httpProperties.isLogRequestDetails());
 			return dispatcherServlet;
 		}
 
@@ -114,40 +110,24 @@ public class DispatcherServletAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(DispatcherServletRegistrationCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
 	@EnableConfigurationProperties(WebMvcProperties.class)
 	@Import(DispatcherServletConfiguration.class)
 	protected static class DispatcherServletRegistrationConfiguration {
 
-		private final ServerProperties serverProperties;
-
-		private final WebMvcProperties webMvcProperties;
-
-		private final MultipartConfigElement multipartConfig;
-
-		public DispatcherServletRegistrationConfiguration(
-				ServerProperties serverProperties, WebMvcProperties webMvcProperties,
-				ObjectProvider<MultipartConfigElement> multipartConfigProvider) {
-			this.serverProperties = serverProperties;
-			this.webMvcProperties = webMvcProperties;
-			this.multipartConfig = multipartConfigProvider.getIfAvailable();
-		}
-
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(
-				DispatcherServlet dispatcherServlet) {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
-					dispatcherServlet,
-					this.serverProperties.getServlet().getServletMapping());
+		public DispatcherServletRegistrationBean dispatcherServletRegistration(
+				DispatcherServlet dispatcherServlet, WebMvcProperties webMvcProperties,
+				ObjectProvider<MultipartConfigElement> multipartConfig) {
+			DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(
+					dispatcherServlet, webMvcProperties.getServlet().getPath());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			registration.setLoadOnStartup(
-					this.webMvcProperties.getServlet().getLoadOnStartup());
-			if (this.multipartConfig != null) {
-				registration.setMultipartConfig(this.multipartConfig);
-			}
+			registration
+					.setLoadOnStartup(webMvcProperties.getServlet().getLoadOnStartup());
+			multipartConfig.ifAvailable(registration::setMultipartConfig);
 			return registration;
 		}
 

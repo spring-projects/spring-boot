@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -71,7 +72,8 @@ public class BuildInfoMojo extends AbstractMojo {
 			new BuildPropertiesWriter(this.outputFile)
 					.writeBuildProperties(new ProjectDetails(this.project.getGroupId(),
 							this.project.getArtifactId(), this.project.getVersion(),
-							this.project.getName(), this.additionalProperties));
+							this.project.getName(), Instant.now(),
+							this.additionalProperties));
 			this.buildContext.refresh(this.outputFile);
 		}
 		catch (NullAdditionalPropertyValueException ex) {

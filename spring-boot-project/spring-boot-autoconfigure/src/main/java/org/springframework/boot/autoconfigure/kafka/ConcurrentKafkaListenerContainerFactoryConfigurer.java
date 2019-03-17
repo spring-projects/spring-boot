@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,11 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.config.ContainerProperties;
-import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.ErrorHandler;
+import org.springframework.kafka.support.converter.MessageConverter;
+import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
 /**
  * Configure {@link ConcurrentKafkaListenerContainerFactory} with sensible defaults.
@@ -37,9 +40,15 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private KafkaProperties properties;
 
-	private RecordMessageConverter messageConverter;
+	private MessageConverter messageConverter;
 
 	private KafkaTemplate<Object, Object> replyTemplate;
+
+	private KafkaAwareTransactionManager<Object, Object> transactionManager;
+
+	private ErrorHandler errorHandler;
+
+	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -50,10 +59,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Set the {@link RecordMessageConverter} to use.
+	 * Set the {@link MessageConverter} to use.
 	 * @param messageConverter the message converter
 	 */
-	void setMessageConverter(RecordMessageConverter messageConverter) {
+	void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -63,6 +72,32 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 */
 	void setReplyTemplate(KafkaTemplate<Object, Object> replyTemplate) {
 		this.replyTemplate = replyTemplate;
+	}
+
+	/**
+	 * Set the {@link KafkaAwareTransactionManager} to use.
+	 * @param transactionManager the transaction manager
+	 */
+	void setTransactionManager(
+			KafkaAwareTransactionManager<Object, Object> transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	/**
+	 * Set the {@link ErrorHandler} to use.
+	 * @param errorHandler the error handler
+	 */
+	void setErrorHandler(ErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
+	}
+
+	/**
+	 * Set the {@link AfterRollbackProcessor} to use.
+	 * @param afterRollbackProcessor the after rollback processor
+	 */
+	void setAfterRollbackProcessor(
+			AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
+		this.afterRollbackProcessor = afterRollbackProcessor;
 	}
 
 	/**
@@ -82,34 +117,33 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private void configureListenerFactory(
 			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
-		PropertyMapper map = PropertyMapper.get();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
-		map.from(properties::getConcurrency).whenNonNull().to(factory::setConcurrency);
-		map.from(() -> this.messageConverter).whenNonNull()
-				.to(factory::setMessageConverter);
-		map.from(() -> this.replyTemplate).whenNonNull().to(factory::setReplyTemplate);
+		map.from(properties::getConcurrency).to(factory::setConcurrency);
+		map.from(this.messageConverter).to(factory::setMessageConverter);
+		map.from(this.replyTemplate).to(factory::setReplyTemplate);
 		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH)
 				.toCall(() -> factory.setBatchListener(true));
+		map.from(this.errorHandler).to(factory::setErrorHandler);
+		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
 	}
 
 	private void configureContainer(ContainerProperties container) {
-		PropertyMapper map = PropertyMapper.get();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
-		map.from(properties::getAckMode).whenNonNull().to(container::setAckMode);
-		map.from(properties::getClientId).whenNonNull().to(container::setClientId);
-		map.from(properties::getAckCount).whenNonNull().to(container::setAckCount);
-		map.from(properties::getAckTime).whenNonNull().as(Duration::toMillis)
-				.to(container::setAckTime);
-		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis)
+		map.from(properties::getAckMode).to(container::setAckMode);
+		map.from(properties::getClientId).to(container::setClientId);
+		map.from(properties::getAckCount).to(container::setAckCount);
+		map.from(properties::getAckTime).as(Duration::toMillis).to(container::setAckTime);
+		map.from(properties::getPollTimeout).as(Duration::toMillis)
 				.to(container::setPollTimeout);
-		map.from(properties::getNoPollThreshold).whenNonNull()
-				.to(container::setNoPollThreshold);
-		map.from(properties::getIdleEventInterval).whenNonNull().as(Duration::toMillis)
+		map.from(properties::getNoPollThreshold).to(container::setNoPollThreshold);
+		map.from(properties::getIdleEventInterval).as(Duration::toMillis)
 				.to(container::setIdleEventInterval);
-		map.from(properties::getMonitorInterval).whenNonNull().as(Duration::getSeconds)
+		map.from(properties::getMonitorInterval).as(Duration::getSeconds)
 				.as(Number::intValue).to(container::setMonitorInterval);
-		map.from(properties::getLogContainerConfig).whenNonNull()
-				.to(container::setLogContainerConfig);
+		map.from(properties::getLogContainerConfig).to(container::setLogContainerConfig);
+		map.from(this.transactionManager).to(container::setTransactionManager);
 	}
 
 }

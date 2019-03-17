@@ -16,6 +16,8 @@
 
 package org.springframework.boot.env;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import org.springframework.core.env.PropertySource;
@@ -41,17 +43,17 @@ public class PropertiesPropertySourceLoaderTests {
 
 	@Test
 	public void loadProperties() throws Exception {
-		PropertySource<?> source = this.loader.load("test.properties",
-				new ClassPathResource("test-properties.properties", getClass()), null,
-				(profile) -> true);
+		List<PropertySource<?>> loaded = this.loader.load("test.properties",
+				new ClassPathResource("test-properties.properties", getClass()));
+		PropertySource<?> source = loaded.get(0);
 		assertThat(source.getProperty("test")).isEqualTo("properties");
 	}
 
 	@Test
 	public void loadXml() throws Exception {
-		PropertySource<?> source = this.loader.load("test.xml",
-				new ClassPathResource("test-xml.xml", getClass()), null,
-				(profile) -> true);
+		List<PropertySource<?>> loaded = this.loader.load("test.xml",
+				new ClassPathResource("test-xml.xml", getClass()));
+		PropertySource<?> source = loaded.get(0);
 		assertThat(source.getProperty("test")).isEqualTo("xml");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class CommandCompleter extends StringsCompleter {
 	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
 		int completionIndex = super.complete(buffer, cursor, candidates);
 		int spaceIndex = buffer.indexOf(' ');
-		String commandName = (spaceIndex == -1) ? "" : buffer.substring(0, spaceIndex);
+		String commandName = ((spaceIndex != -1) ? buffer.substring(0, spaceIndex) : "");
 		if (!"".equals(commandName.trim())) {
 			for (Command command : this.commands) {
 				if (command.getName().equals(commandName)) {
@@ -127,12 +127,7 @@ public class CommandCompleter extends StringsCompleter {
 		private final String usage;
 
 		OptionHelpLine(OptionHelp optionHelp) {
-			StringBuilder options = new StringBuilder();
-			for (String option : optionHelp.getOptions()) {
-				options.append(options.length() == 0 ? "" : ", ");
-				options.append(option);
-			}
-			this.options = options.toString();
+			this.options = String.join(", ", optionHelp.getOptions());
 			this.usage = optionHelp.getUsageHelp();
 		}
 

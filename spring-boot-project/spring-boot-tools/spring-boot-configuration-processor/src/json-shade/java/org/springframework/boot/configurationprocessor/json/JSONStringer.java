@@ -75,7 +75,7 @@ public class JSONStringer {
 		EMPTY_ARRAY,
 
 		/**
-		 * A array with at least one value requires a comma and newline before the next
+		 * An array with at least one value requires a comma and newline before the next
 		 * element.
 		 */
 		NONEMPTY_ARRAY,

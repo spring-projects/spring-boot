@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,48 +70,28 @@ public class BuildInfoIntegrationTests {
 	}
 
 	@Test
-	public void upToDateWhenExecutedTwice() {
+	public void notUpToDateWhenExecutedTwiceAsTimeChanges() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
+				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@Test
-	public void notUpToDateWhenDestinationDirChanges() {
-		notUpToDateWithChangeToProperty("buildInfoDestinationDir");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectArtifactChanges() {
-		notUpToDateWithChangeToProperty("buildInfoArtifact");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectGroupChanges() {
-		notUpToDateWithChangeToProperty("buildInfoGroup");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectVersionChanges() {
-		notUpToDateWithChangeToProperty("buildInfoVersion");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectNameChanges() {
-		notUpToDateWithChangeToProperty("buildInfoName");
-	}
-
-	@Test
-	public void notUpToDateWhenAdditionalPropertyChanges() {
-		notUpToDateWithChangeToProperty("buildInfoAdditional");
-	}
-
-	private void notUpToDateWithChangeToProperty(String name) {
-		assertThat(this.gradleBuild.build("buildInfo", "--stacktrace").task(":buildInfo")
+	public void upToDateWhenExecutedTwiceWithFixedTime() {
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("buildInfo", "-P" + name + "=changed")
-				.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+	}
+
+	@Test
+	public void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildResult result = this.gradleBuild.build("buildInfo", "-PnullTime",
+				"-PprojectVersion=0.2.0");
+		assertThat(result.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	private Properties buildInfoProperties() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,12 +35,12 @@ public class EndpointIdTimeToLivePropertyFunctionTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private final Function<String, Long> timeToLive = new EndpointIdTimeToLivePropertyFunction(
+	private final Function<EndpointId, Long> timeToLive = new EndpointIdTimeToLivePropertyFunction(
 			this.environment);
 
 	@Test
 	public void defaultConfiguration() {
-		Long result = this.timeToLive.apply("test");
+		Long result = this.timeToLive.apply(EndpointId.of("test"));
 		assertThat(result).isNull();
 	}
 
@@ -47,7 +48,15 @@ public class EndpointIdTimeToLivePropertyFunctionTests {
 	public void userConfiguration() {
 		this.environment.setProperty("management.endpoint.test.cache.time-to-live",
 				"500");
-		Long result = this.timeToLive.apply("test");
+		Long result = this.timeToLive.apply(EndpointId.of("test"));
+		assertThat(result).isEqualTo(500L);
+	}
+
+	@Test
+	public void mixedCaseUserConfiguration() {
+		this.environment.setProperty(
+				"management.endpoint.another-test.cache.time-to-live", "500");
+		Long result = this.timeToLive.apply(EndpointId.of("anotherTest"));
 		assertThat(result).isEqualTo(500L);
 	}
 

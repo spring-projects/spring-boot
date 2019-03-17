@@ -14,7 +14,7 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<glassfish.version>4.1.1</glassfish.version>
 		<cargo.container.id>glassfish4x</cargo.container.id>
-		<cargo.container.url>http://download.oracle.com/glassfish/${glassfish.version}/release/glassfish-${glassfish.version}.zip</cargo.container.url>
+		<cargo.container.url>https://download.oracle.com/glassfish/${glassfish.version}/release/glassfish-${glassfish.version}.zip</cargo.container.url>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,8 +36,8 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

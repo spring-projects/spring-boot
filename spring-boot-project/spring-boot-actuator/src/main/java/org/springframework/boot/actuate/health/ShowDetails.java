@@ -38,6 +38,6 @@ public enum ShowDetails {
 	/**
 	 * Always show details in the response.
 	 */
-	ALWAYS;
+	ALWAYS
 
 }

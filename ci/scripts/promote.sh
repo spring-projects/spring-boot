@@ -36,25 +36,42 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	curl \
 		-s \
 		--connect-timeout 240 \
-		--max-time 900 \
+		--max-time 2700 \
 		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 		-H "Content-type:application/json" \
-		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
-		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\"}" \
+		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}" \
 		-f \
 		-X \
-		POST "${ARTIFACTORY_SERVER}/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
+		POST "${ARTIFACTORY_SERVER}/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to distribute" >&2; exit 1; }
 
-	curl \
-		-s \
-		--connect-timeout 240 \
-		--max-time 900 \
-		-u ${BINTRAY_USERNAME}:${BINTRAY_PASSWORD} \
-		-H "Content-Type: application/json" -d "{\"username\": \"${SONATYPE_USERNAME}\", \"password\": \"${SONATYPE_PASSWORD}\"}" \
-		-f \
-		-X \
-		POST "https://api.bintray.com/maven_central_sync/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/${groupId}/versions/${version}" > /dev/null || { echo "Failed to sync" >&2; exit 1; }
+	echo "Waiting for artifacts to be published"
+	ARTIFACTS_PUBLISHED=false
+	WAIT_TIME=10
+	COUNTER=0
+	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 120 ]; do
+		result=$( curl -s https://api.bintray.com/packages/"${BINTRAY_SUBJECT}"/"${BINTRAY_REPO}"/"${groupId}" )
+		versions=$( echo "$result" | jq -r '.versions' )
+		exists=$( echo "$versions" | grep "$version" -o || true )
+		if [ "$exists" = "$version" ]; then
+			ARTIFACTS_PUBLISHED=true
+		fi
+		COUNTER=$(( COUNTER + 1 ))
+		sleep $WAIT_TIME
+	done
+	if [[ $ARTIFACTS_PUBLISHED = "false" ]]; then
+		echo "Failed to publish"
+		exit 1
+	else
+		curl \
+			-s \
+			-u ${BINTRAY_USERNAME}:${BINTRAY_API_KEY} \
+			-H "Content-Type: application/json" \
+			-d '[ { "name": "gradle-plugin", "values": ["org.springframework.boot:org.springframework.boot:spring-boot-gradle-plugin"] } ]' \
+			-X POST \
+			https://api.bintray.com/packages/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/${groupId}/versions/${version}/attributes  > /dev/null || { echo "Failed to add attributes" >&2; exit 1; }
+	fi
 fi
 
 
 echo "Promotion complete"
+echo $version > version/version

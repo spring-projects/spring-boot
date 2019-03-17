@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,11 +98,19 @@ public class TestTypeExcludeFilterTests {
 				this.metadataReaderFactory)).isFalse();
 	}
 
+	@Test
+	public void matchesNestedConfigurationClassWithoutTestNgAnnotation()
+			throws Exception {
+		assertThat(this.filter.match(
+				getMetadataReader(AbstractTestNgTestWithConfig.Config.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
 	private MetadataReader getMetadataReader(Class<?> source) throws IOException {
 		return this.metadataReaderFactory.getMetadataReader(source.getName());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class NestedConfig {
 
 	}

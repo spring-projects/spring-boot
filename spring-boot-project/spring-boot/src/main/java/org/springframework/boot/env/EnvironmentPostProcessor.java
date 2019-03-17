@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.core.env.Environment;
  * <p>
  * {@code EnvironmentPostProcessor} processors are encouraged to detect whether Spring's
  * {@link org.springframework.core.Ordered Ordered} interface has been implemented or if
- * the @{@link org.springframework.core.annotation.Order Order} annotation is present and
+ * the {@link org.springframework.core.annotation.Order @Order} annotation is present and
  * to sort instances accordingly if so prior to invocation.
  *
  * @author Andy Wilkinson

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ final class AutoConfigurationMetadataLoader {
 
 	static AutoConfigurationMetadata loadMetadata(ClassLoader classLoader, String path) {
 		try {
-			Enumeration<URL> urls = (classLoader != null ? classLoader.getResources(path)
-					: ClassLoader.getSystemResources(path));
+			Enumeration<URL> urls = (classLoader != null) ? classLoader.getResources(path)
+					: ClassLoader.getSystemResources(path);
 			Properties properties = new Properties();
 			while (urls.hasMoreElements()) {
 				properties.putAll(PropertiesLoaderUtils
@@ -89,7 +89,7 @@ final class AutoConfigurationMetadataLoader {
 		@Override
 		public Integer getInteger(String className, String key, Integer defaultValue) {
 			String value = get(className, key);
-			return (value != null ? Integer.valueOf(value) : defaultValue);
+			return (value != null) ? Integer.valueOf(value) : defaultValue;
 		}
 
 		@Override
@@ -101,8 +101,8 @@ final class AutoConfigurationMetadataLoader {
 		public Set<String> getSet(String className, String key,
 				Set<String> defaultValue) {
 			String value = get(className, key);
-			return (value != null ? StringUtils.commaDelimitedListToSet(value)
-					: defaultValue);
+			return (value != null) ? StringUtils.commaDelimitedListToSet(value)
+					: defaultValue;
 		}
 
 		@Override
@@ -113,7 +113,7 @@ final class AutoConfigurationMetadataLoader {
 		@Override
 		public String get(String className, String key, String defaultValue) {
 			String value = this.properties.getProperty(className + "." + key);
-			return (value != null ? value : defaultValue);
+			return (value != null) ? value : defaultValue;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.ClassUtils;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for
@@ -220,7 +221,7 @@ public class GroovyCompiler {
 			classes.add(0, mainClass);
 		}
 
-		return classes.toArray(new Class<?>[classes.size()]);
+		return ClassUtils.toClassArray(classes);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -234,8 +235,7 @@ public class GroovyCompiler {
 		try {
 			Field field = CompilationUnit.class.getDeclaredField("phaseOperations");
 			field.setAccessible(true);
-			LinkedList[] phaseOperations = (LinkedList[]) field.get(compilationUnit);
-			return phaseOperations;
+			return (LinkedList[]) field.get(compilationUnit);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(
@@ -307,7 +307,6 @@ public class GroovyCompiler {
 
 	private static class MainClass {
 
-		@SuppressWarnings("unchecked")
 		public static ClassNode get(CompilationUnit source) {
 			return get(source.getAST().getClasses());
 		}
@@ -322,7 +321,7 @@ public class GroovyCompiler {
 					return node;
 				}
 			}
-			return (classes.isEmpty() ? null : classes.get(0));
+			return classes.isEmpty() ? null : classes.get(0);
 		}
 
 	}

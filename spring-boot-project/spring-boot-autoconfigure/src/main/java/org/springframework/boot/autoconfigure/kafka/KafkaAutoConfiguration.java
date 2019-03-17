@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,32 +49,28 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
  * @author Nakul Mishra
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(KafkaTemplate.class)
 @EnableConfigurationProperties(KafkaProperties.class)
-@Import(KafkaAnnotationDrivenConfiguration.class)
+@Import({ KafkaAnnotationDrivenConfiguration.class,
+		KafkaStreamsAnnotationDrivenConfiguration.class })
 public class KafkaAutoConfiguration {
 
 	private final KafkaProperties properties;
 
-	private final RecordMessageConverter messageConverter;
-
-	public KafkaAutoConfiguration(KafkaProperties properties,
-			ObjectProvider<RecordMessageConverter> messageConverter) {
+	public KafkaAutoConfiguration(KafkaProperties properties) {
 		this.properties = properties;
-		this.messageConverter = messageConverter.getIfUnique();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaTemplate.class)
 	public KafkaTemplate<?, ?> kafkaTemplate(
 			ProducerFactory<Object, Object> kafkaProducerFactory,
-			ProducerListener<Object, Object> kafkaProducerListener) {
+			ProducerListener<Object, Object> kafkaProducerListener,
+			ObjectProvider<RecordMessageConverter> messageConverter) {
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(
 				kafkaProducerFactory);
-		if (this.messageConverter != null) {
-			kafkaTemplate.setMessageConverter(this.messageConverter);
-		}
+		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		kafkaTemplate.setProducerListener(kafkaProducerListener);
 		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
 		return kafkaTemplate;
@@ -131,7 +127,7 @@ public class KafkaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(KafkaAdmin.class)
+	@ConditionalOnMissingBean
 	public KafkaAdmin kafkaAdmin() {
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
 		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailFast());

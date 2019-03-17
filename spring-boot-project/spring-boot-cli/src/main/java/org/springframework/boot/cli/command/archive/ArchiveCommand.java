@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.jar.Manifest;
 
 import groovy.lang.Grab;
@@ -123,13 +124,16 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		protected ExitStatus run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(
 					options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() >= 2, "The name of the resulting "
-					+ this.type + " and at least one source file must be specified");
+			Assert.isTrue(nonOptionArguments.size() >= 2,
+					() -> "The name of the " + "resulting " + this.type
+							+ " and at least one source file must be " + "specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
-			Assert.isTrue(output.getName().toLowerCase().endsWith("." + this.type),
-					"The output '" + output + "' is not a " + this.type.toUpperCase()
-							+ " file.");
+			Assert.isTrue(
+					output.getName().toLowerCase(Locale.ENGLISH)
+							.endsWith("." + this.type),
+					() -> "The output '" + output + "' is not a "
+							+ this.type.toUpperCase(Locale.ENGLISH) + " file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);
@@ -226,7 +230,9 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		private String commaDelimitedClassNames(Class<?>[] classes) {
 			StringBuilder builder = new StringBuilder();
 			for (int i = 0; i < classes.length; i++) {
-				builder.append(i == 0 ? "" : ",");
+				if (i != 0) {
+					builder.append(',');
+				}
 				builder.append(classes[i].getName());
 			}
 			return builder.toString();

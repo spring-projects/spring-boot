@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -32,15 +29,16 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicate;
-import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.ResponseStatusException;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.all;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
  * Basic global {@link org.springframework.web.server.WebExceptionHandler}, rendering
@@ -77,9 +75,6 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 
 	private static final Map<HttpStatus.Series, String> SERIES_VIEWS;
 
-	private static final Log logger = LogFactory
-			.getLog(DefaultErrorWebExceptionHandler.class);
-
 	static {
 		Map<HttpStatus.Series, String> views = new EnumMap<>(HttpStatus.Series.class);
 		views.put(HttpStatus.Series.CLIENT_ERROR, "4xx");
@@ -106,8 +101,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	@Override
 	protected RouterFunction<ServerResponse> getRoutingFunction(
 			ErrorAttributes errorAttributes) {
-		return RouterFunctions.route(acceptsTextHtml(), this::renderErrorView)
-				.andRoute(RequestPredicates.all(), this::renderErrorResponse);
+		return route(acceptsTextHtml(), this::renderErrorView).andRoute(all(),
+				this::renderErrorResponse);
 	}
 
 	/**
@@ -119,14 +114,16 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		HttpStatus errorStatus = getHttpStatus(error);
-		ServerResponse.BodyBuilder response = ServerResponse.status(errorStatus)
+		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
 				.contentType(MediaType.TEXT_HTML);
 		return Flux
-				.just("error/" + errorStatus.toString(),
+				.just("error/" + errorStatus.value(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
-				.flatMap((viewName) -> renderErrorView(viewName, response, error))
-				.switchIfEmpty(renderDefaultErrorView(response, error)).next()
-				.doOnNext((resp) -> logError(request, errorStatus));
+				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
+				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
+						? renderDefaultErrorView(responseBody, error)
+						: Mono.error(getError(request)))
+				.next();
 	}
 
 	/**
@@ -137,11 +134,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
-		HttpStatus errorStatus = getHttpStatus(error);
 		return ServerResponse.status(getHttpStatus(error))
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.body(BodyInserters.fromObject(error))
-				.doOnNext((resp) -> logError(request, errorStatus));
+				.body(BodyInserters.fromObject(error));
 	}
 
 	/**
@@ -181,46 +176,17 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 */
 	protected RequestPredicate acceptsTextHtml() {
 		return (serverRequest) -> {
-			List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
-			acceptedMediaTypes.remove(MediaType.ALL);
-			MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
-			return acceptedMediaTypes.stream()
-					.anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
+			try {
+				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
+				acceptedMediaTypes.remove(MediaType.ALL);
+				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
+				return acceptedMediaTypes.stream()
+						.anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
+			}
+			catch (InvalidMediaTypeException ex) {
+				return false;
+			}
 		};
-	}
-
-	/**
-	 * Log the original exception if handling it results in a Server Error or a Bad
-	 * Request (Client Error with 400 status code) one.
-	 * @param request the source request
-	 * @param errorStatus the HTTP error status
-	 */
-	protected void logError(ServerRequest request, HttpStatus errorStatus) {
-		Throwable ex = getError(request);
-		log(request, ex, (errorStatus.is5xxServerError() ? logger::error : logger::warn));
-	}
-
-	private void log(ServerRequest request, Throwable ex,
-			BiConsumer<Object, Throwable> logger) {
-		if (ex instanceof ResponseStatusException) {
-			logger.accept(buildMessage(request, ex), null);
-		}
-		else {
-			logger.accept(buildMessage(request, null), ex);
-		}
-	}
-
-	private String buildMessage(ServerRequest request, Throwable ex) {
-		StringBuilder message = new StringBuilder("Failed to handle request [");
-		message.append(request.methodName());
-		message.append(" ");
-		message.append(request.uri());
-		message.append("]");
-		if (ex != null) {
-			message.append(": ");
-			message.append(ex.getMessage());
-		}
-		return message.toString();
 	}
 
 }

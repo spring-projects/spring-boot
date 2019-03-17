@@ -37,4 +37,5 @@ public class Tables {
 	 * The table <code>PUBLIC.BOOK_TO_BOOK_STORE</code>.
 	 */
 	public static final BookToBookStore BOOK_TO_BOOK_STORE = sample.jooq.domain.BookToBookStore.BOOK_TO_BOOK_STORE;
+
 }

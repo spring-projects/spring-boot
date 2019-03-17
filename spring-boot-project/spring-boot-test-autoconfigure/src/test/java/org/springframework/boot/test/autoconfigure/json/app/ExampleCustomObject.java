@@ -30,16 +30,16 @@ public class ExampleCustomObject {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj.getClass() == getClass()) {
 			return this.value.equals(((ExampleCustomObject) obj).value);
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			}
 		}
 		resources.addAll(getAdditionalResources(locationPattern));
-		return resources.toArray(new Resource[resources.size()]);
+		return resources.toArray(new Resource[0]);
 	}
 
 	private List<Resource> getAdditionalResources(String locationPattern)
@@ -130,7 +130,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {
 				String name = entry.getKey();
 				ClassLoaderFile file = entry.getValue();
-				if (file.getKind() == Kind.ADDED
+				if (file.getKind() != Kind.DELETED
 						&& this.antPathMatcher.match(trimmedLocationPattern, name)) {
 					URL url = new URL("reloaded", null, -1, "/" + name,
 							new ClassLoaderFileURLStreamHandler(file));

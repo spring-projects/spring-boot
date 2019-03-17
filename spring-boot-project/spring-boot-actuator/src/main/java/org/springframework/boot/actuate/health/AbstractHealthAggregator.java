@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Base {@link HealthAggregator} implementation to allow subclasses to focus on
@@ -33,10 +33,8 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
-		List<Status> statusCandidates = new ArrayList<>();
-		for (Map.Entry<String, Health> entry : healths.entrySet()) {
-			statusCandidates.add(entry.getValue().getStatus());
-		}
+		List<Status> statusCandidates = healths.values().stream().map(Health::getStatus)
+				.collect(Collectors.toList());
 		Status status = aggregateStatus(statusCandidates);
 		Map<String, Object> details = aggregateDetails(healths);
 		return new Health.Builder(status, details).build();

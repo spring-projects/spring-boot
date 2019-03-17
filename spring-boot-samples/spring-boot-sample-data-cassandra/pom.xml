@@ -33,8 +33,14 @@
 		<dependency>
 			<groupId>org.cassandraunit</groupId>
 			<artifactId>cassandra-unit-spring</artifactId>
-			<version>3.0.0.1</version>
+			<version>3.5.0.1</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
@@ -105,9 +111,9 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>java9</id>
+			<id>java9+</id>
 			<activation>
-				<jdk>9</jdk>
+				<jdk>[9,)</jdk>
 			</activation>
 			<build>
 				<plugins>

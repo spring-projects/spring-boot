@@ -52,9 +52,7 @@ public class SessionsEndpoint {
 	@ReadOperation
 	public SessionsReport sessionsForUsername(String username) {
 		Map<String, ? extends Session> sessions = this.sessionRepository
-				.findByIndexNameAndIndexValue(
-						FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
-						username);
+				.findByPrincipalName(username);
 		return new SessionsReport(sessions);
 	}
 
@@ -81,8 +79,7 @@ public class SessionsEndpoint {
 		private final List<SessionDescriptor> sessions;
 
 		public SessionsReport(Map<String, ? extends Session> sessions) {
-			this.sessions = sessions.entrySet().stream()
-					.map((s) -> new SessionDescriptor(s.getValue()))
+			this.sessions = sessions.values().stream().map(SessionDescriptor::new)
 					.collect(Collectors.toList());
 		}
 

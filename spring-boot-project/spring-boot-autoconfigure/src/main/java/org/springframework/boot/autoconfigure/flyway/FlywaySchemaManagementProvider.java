@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.List;
+import java.util.stream.StreamSupport;
 
 import javax.sql.DataSource;
 
@@ -33,20 +33,19 @@ import org.springframework.boot.jdbc.SchemaManagementProvider;
  */
 class FlywaySchemaManagementProvider implements SchemaManagementProvider {
 
-	private final List<Flyway> flywayInstances;
+	private final Iterable<Flyway> flywayInstances;
 
-	FlywaySchemaManagementProvider(List<Flyway> flywayInstances) {
+	FlywaySchemaManagementProvider(Iterable<Flyway> flywayInstances) {
 		this.flywayInstances = flywayInstances;
 	}
 
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
-		for (Flyway flywayInstance : this.flywayInstances) {
-			if (dataSource.equals(flywayInstance.getDataSource())) {
-				return SchemaManagement.MANAGED;
-			}
-		}
-		return SchemaManagement.UNMANAGED;
+		return StreamSupport.stream(this.flywayInstances.spliterator(), false)
+				.map((flyway) -> flyway.getConfiguration().getDataSource())
+				.filter(dataSource::equals).findFirst()
+				.map((managedDataSource) -> SchemaManagement.MANAGED)
+				.orElse(SchemaManagement.UNMANAGED);
 	}
 
 }

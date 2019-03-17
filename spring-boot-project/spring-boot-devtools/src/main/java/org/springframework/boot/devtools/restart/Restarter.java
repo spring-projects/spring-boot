@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,9 @@ public class Restarter {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
-		this.logger.debug("Creating new Restarter for thread " + thread);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Creating new Restarter for thread " + thread);
+		}
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
 		this.initialUrls = initializer.getInitialUrls(thread);
@@ -273,7 +275,7 @@ public class Restarter {
 
 	private Throwable doStart() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
-		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
+		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
 		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader,
 				urls, updatedFiles, this.logger);
@@ -330,17 +332,28 @@ public class Restarter {
 	private void cleanupKnownCaches() throws Exception {
 		// Whilst not strictly necessary it helps to cleanup soft reference caches
 		// early rather than waiting for memory limits to be reached
-		clear(ResolvableType.class, "cache");
-		clear("org.springframework.core.SerializableTypeWrapper", "cache");
+		ResolvableType.clearCache();
+		cleanCachedIntrospectionResultsCache();
+		ReflectionUtils.clearCache();
+		clearAnnotationUtilsCache();
+		if (!JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.NINE)) {
+			clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+		}
+	}
+
+	private void cleanCachedIntrospectionResultsCache() throws Exception {
 		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
 		clear(CachedIntrospectionResults.class, "strongClassCache");
 		clear(CachedIntrospectionResults.class, "softClassCache");
-		clear(ReflectionUtils.class, "declaredFieldsCache");
-		clear(ReflectionUtils.class, "declaredMethodsCache");
-		clear(AnnotationUtils.class, "findAnnotationCache");
-		clear(AnnotationUtils.class, "annotatedInterfaceCache");
-		if (!JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.NINE)) {
-			clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+	}
+
+	private void clearAnnotationUtilsCache() throws Exception {
+		try {
+			AnnotationUtils.clearCache();
+		}
+		catch (Throwable ex) {
+			clear(AnnotationUtils.class, "findAnnotationCache");
+			clear(AnnotationUtils.class, "annotatedInterfaceCache");
 		}
 	}
 
@@ -349,27 +362,35 @@ public class Restarter {
 			clear(Class.forName(className), fieldName);
 		}
 		catch (Exception ex) {
-			this.logger.debug("Unable to clear field " + className + " " + fieldName, ex);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Unable to clear field " + className + " " + fieldName,
+						ex);
+			}
 		}
 	}
 
 	private void clear(Class<?> type, String fieldName) throws Exception {
-		Field field = type.getDeclaredField(fieldName);
-		field.setAccessible(true);
-		Object instance = field.get(null);
-		if (instance instanceof Set) {
-			((Set<?>) instance).clear();
+		try {
+			Field field = type.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			Object instance = field.get(null);
+			if (instance instanceof Set) {
+				((Set<?>) instance).clear();
+			}
+			if (instance instanceof Map) {
+				((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
+			}
 		}
-		if (instance instanceof Map) {
-			((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
+		catch (Exception ex) {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
+			}
 		}
 	}
 
 	private boolean isFromRestartClassLoader(Object object) {
-		if (object instanceof Class) {
-			return ((Class<?>) object).getClassLoader() instanceof RestartClassLoader;
-		}
-		return false;
+		return (object instanceof Class
+				&& ((Class<?>) object).getClassLoader() instanceof RestartClassLoader);
 	}
 
 	/**

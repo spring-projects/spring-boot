@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package org.springframework.boot.origin;
  * An interface that may be implemented by an object that can lookup {@link Origin}
  * information from a given key. Can be used to add origin support to existing classes.
  *
- * @param <K> The lookup key type
+ * @param <K> the lookup key type
  * @author Phillip Webb
  * @since 2.0.0
  */

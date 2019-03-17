@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import java.util.zip.ZipFile;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.
@@ -140,13 +140,11 @@ public final class Verify {
 		}
 
 		private ZipEntry getEntryStartingWith(String entryName) {
-			for (Map.Entry<String, ZipEntry> entry : this.content.entrySet()) {
-				if (entry.getKey().startsWith(entryName)) {
-					return entry.getValue();
-				}
-			}
-			throw new IllegalStateException(
-					"Unable to find entry starting with " + entryName);
+			return this.content.entrySet().stream()
+					.filter((entry) -> entry.getKey().startsWith(entryName))
+					.map(Map.Entry::getValue).findFirst()
+					.orElseThrow(() -> new IllegalStateException(
+							"Unable to find entry starting with " + entryName));
 		}
 
 		public boolean hasEntry(String entry) {
@@ -167,7 +165,7 @@ public final class Verify {
 
 	}
 
-	private static abstract class AbstractArchiveVerification {
+	private abstract static class AbstractArchiveVerification {
 
 		private final File file;
 
@@ -184,7 +182,7 @@ public final class Verify {
 			assertThat(this.file).exists().isFile();
 
 			if (scriptContents.length > 0 && executable) {
-				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				String contents = contentOf(this.file);
 				contents = contents.substring(0, contents
 						.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
 				for (String content : scriptContents) {
@@ -193,7 +191,7 @@ public final class Verify {
 			}
 
 			if (!executable) {
-				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				String contents = contentOf(this.file);
 				assertThat(contents).as("Is executable")
 						.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 }));
 			}
@@ -232,7 +230,7 @@ public final class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-core");
-			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/javax.servlet-api-3");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-4");
 			assertThat(verifier
 					.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isTrue();
@@ -265,7 +263,7 @@ public final class Verify {
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
 			verifier.assertHasEntryNameStartingWith(
-					"WEB-INF/lib-provided/javax.servlet-api-3");
+					"WEB-INF/lib-provided/jakarta.servlet-api-4");
 			assertThat(verifier
 					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isTrue();
@@ -316,7 +314,7 @@ public final class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("lib/spring-core");
-			verifier.assertHasNoEntryNameStartingWith("lib/javax.servlet-api-3");
+			verifier.assertHasNoEntryNameStartingWith("lib/jakarta.servlet-api");
 			assertThat(verifier
 					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isFalse();

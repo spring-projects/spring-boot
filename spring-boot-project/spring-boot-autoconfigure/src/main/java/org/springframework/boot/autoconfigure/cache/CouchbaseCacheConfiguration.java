@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Couchbase cache configuration.
@@ -39,36 +40,24 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Bucket.class, CouchbaseCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnSingleCandidate(Bucket.class)
 @Conditional(CacheCondition.class)
 public class CouchbaseCacheConfiguration {
 
-	private final CacheProperties cacheProperties;
-
-	private final CacheManagerCustomizers customizers;
-
-	private final Bucket bucket;
-
-	public CouchbaseCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers, Bucket bucket) {
-		this.cacheProperties = cacheProperties;
-		this.customizers = customizers;
-		this.bucket = bucket;
-	}
-
 	@Bean
-	public CouchbaseCacheManager cacheManager() {
-		List<String> cacheNames = this.cacheProperties.getCacheNames();
-		CacheBuilder builder = CacheBuilder.newInstance(this.bucket);
-		Couchbase couchbase = this.cacheProperties.getCouchbase();
+	public CouchbaseCacheManager cacheManager(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers, Bucket bucket) {
+		List<String> cacheNames = cacheProperties.getCacheNames();
+		CacheBuilder builder = CacheBuilder.newInstance(bucket);
+		Couchbase couchbase = cacheProperties.getCouchbase();
 		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull()
 				.asInt(Duration::getSeconds).to(builder::withExpiration);
-		String[] names = cacheNames.toArray(new String[cacheNames.size()]);
+		String[] names = StringUtils.toStringArray(cacheNames);
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(builder, names);
-		return this.customizers.customize(cacheManager);
+		return customizers.customize(cacheManager);
 	}
 
 }

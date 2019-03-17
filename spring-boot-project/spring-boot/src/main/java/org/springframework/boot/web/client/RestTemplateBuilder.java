@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,25 +19,23 @@ package org.springframework.boot.web.client;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -64,19 +62,6 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class RestTemplateBuilder {
 
-	private static final Map<String, String> REQUEST_FACTORY_CANDIDATES;
-
-	static {
-		Map<String, String> candidates = new LinkedHashMap<>();
-		candidates.put("org.apache.http.client.HttpClient",
-				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory");
-		candidates.put("okhttp3.OkHttpClient",
-				"org.springframework.http.client.OkHttp3ClientHttpRequestFactory");
-		candidates.put("com.squareup.okhttp.OkHttpClient",
-				"org.springframework.http.client.OkHttpClientHttpRequestFactory");
-		REQUEST_FACTORY_CANDIDATES = Collections.unmodifiableMap(candidates);
-	}
-
 	private final boolean detectRequestFactory;
 
 	private final String rootUri;
@@ -89,11 +74,11 @@ public class RestTemplateBuilder {
 
 	private final ResponseErrorHandler errorHandler;
 
-	private final BasicAuthorizationInterceptor basicAuthorization;
+	private final BasicAuthenticationInterceptor basicAuthentication;
 
 	private final Set<RestTemplateCustomizer> restTemplateCustomizers;
 
-	private final Set<RequestFactoryCustomizer> requestFactoryCustomizers;
+	private final RequestFactoryCustomizer requestFactoryCustomizer;
 
 	private final Set<ClientHttpRequestInterceptor> interceptors;
 
@@ -110,10 +95,10 @@ public class RestTemplateBuilder {
 		this.requestFactorySupplier = null;
 		this.uriTemplateHandler = null;
 		this.errorHandler = null;
-		this.basicAuthorization = null;
+		this.basicAuthentication = null;
 		this.restTemplateCustomizers = Collections
 				.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(customizers)));
-		this.requestFactoryCustomizers = Collections.emptySet();
+		this.requestFactoryCustomizer = new RequestFactoryCustomizer();
 		this.interceptors = Collections.emptySet();
 	}
 
@@ -121,9 +106,9 @@ public class RestTemplateBuilder {
 			Set<HttpMessageConverter<?>> messageConverters,
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier,
 			UriTemplateHandler uriTemplateHandler, ResponseErrorHandler errorHandler,
-			BasicAuthorizationInterceptor basicAuthorization,
+			BasicAuthenticationInterceptor basicAuthentication,
 			Set<RestTemplateCustomizer> restTemplateCustomizers,
-			Set<RequestFactoryCustomizer> requestFactoryCustomizers,
+			RequestFactoryCustomizer requestFactoryCustomizer,
 			Set<ClientHttpRequestInterceptor> interceptors) {
 		this.detectRequestFactory = detectRequestFactory;
 		this.rootUri = rootUri;
@@ -131,9 +116,9 @@ public class RestTemplateBuilder {
 		this.requestFactorySupplier = requestFactorySupplier;
 		this.uriTemplateHandler = uriTemplateHandler;
 		this.errorHandler = errorHandler;
-		this.basicAuthorization = basicAuthorization;
+		this.basicAuthentication = basicAuthentication;
 		this.restTemplateCustomizers = restTemplateCustomizers;
-		this.requestFactoryCustomizers = requestFactoryCustomizers;
+		this.requestFactoryCustomizer = requestFactoryCustomizer;
 		this.interceptors = interceptors;
 	}
 
@@ -147,8 +132,8 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder detectRequestFactory(boolean detectRequestFactory) {
 		return new RestTemplateBuilder(detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
-				this.restTemplateCustomizers, this.requestFactoryCustomizers,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				this.interceptors);
 	}
 
@@ -161,15 +146,16 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder rootUri(String rootUri) {
 		return new RestTemplateBuilder(this.detectRequestFactory, rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
-				this.restTemplateCustomizers, this.requestFactoryCustomizers,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				this.interceptors);
 	}
 
 	/**
 	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be used with
 	 * the {@link RestTemplate}. Setting this value will replace any previously configured
-	 * converters.
+	 * converters and any converters configured on the builder will replace RestTemplate's
+	 * default converters.
 	 * @param messageConverters the converters to set
 	 * @return a new builder instance
 	 * @see #additionalMessageConverters(HttpMessageConverter...)
@@ -183,7 +169,8 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be used with
 	 * the {@link RestTemplate}. Setting this value will replace any previously configured
-	 * converters.
+	 * converters and any converters configured on the builder will replace RestTemplate's
+	 * default converters.
 	 * @param messageConverters the converters to set
 	 * @return a new builder instance
 	 * @see #additionalMessageConverters(HttpMessageConverter...)
@@ -195,13 +182,14 @@ public class RestTemplateBuilder {
 				Collections.unmodifiableSet(
 						new LinkedHashSet<HttpMessageConverter<?>>(messageConverters)),
 				this.requestFactorySupplier, this.uriTemplateHandler, this.errorHandler,
-				this.basicAuthorization, this.restTemplateCustomizers,
-				this.requestFactoryCustomizers, this.interceptors);
+				this.basicAuthentication, this.restTemplateCustomizers,
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
 	 * Add additional {@link HttpMessageConverter HttpMessageConverters} that should be
-	 * used with the {@link RestTemplate}.
+	 * used with the {@link RestTemplate}. Any converters configured on the builder will
+	 * replace RestTemplate's default converters.
 	 * @param messageConverters the converters to add
 	 * @return a new builder instance
 	 * @see #messageConverters(HttpMessageConverter...)
@@ -214,7 +202,8 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Add additional {@link HttpMessageConverter HttpMessageConverters} that should be
-	 * used with the {@link RestTemplate}.
+	 * used with the {@link RestTemplate}. Any converters configured on the builder will
+	 * replace RestTemplate's default converters.
 	 * @param messageConverters the converters to add
 	 * @return a new builder instance
 	 * @see #messageConverters(HttpMessageConverter...)
@@ -225,8 +214,8 @@ public class RestTemplateBuilder {
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				append(this.messageConverters, messageConverters),
 				this.requestFactorySupplier, this.uriTemplateHandler, this.errorHandler,
-				this.basicAuthorization, this.restTemplateCustomizers,
-				this.requestFactoryCustomizers, this.interceptors);
+				this.basicAuthentication, this.restTemplateCustomizers,
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
@@ -241,8 +230,8 @@ public class RestTemplateBuilder {
 				Collections.unmodifiableSet(
 						new LinkedHashSet<>(new RestTemplate().getMessageConverters())),
 				this.requestFactorySupplier, this.uriTemplateHandler, this.errorHandler,
-				this.basicAuthorization, this.restTemplateCustomizers,
-				this.requestFactoryCustomizers, this.interceptors);
+				this.basicAuthentication, this.restTemplateCustomizers,
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
@@ -274,8 +263,8 @@ public class RestTemplateBuilder {
 		Assert.notNull(interceptors, "interceptors must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
-				this.restTemplateCustomizers, this.requestFactoryCustomizers,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				Collections.unmodifiableSet(new LinkedHashSet<>(interceptors)));
 	}
 
@@ -306,8 +295,8 @@ public class RestTemplateBuilder {
 		Assert.notNull(interceptors, "interceptors must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
-				this.restTemplateCustomizers, this.requestFactoryCustomizers,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				append(this.interceptors, interceptors));
 	}
 
@@ -348,8 +337,8 @@ public class RestTemplateBuilder {
 				"RequestFactory Supplier must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, requestFactorySupplier, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthorization, this.restTemplateCustomizers,
-				this.requestFactoryCustomizers, this.interceptors);
+				this.errorHandler, this.basicAuthentication, this.restTemplateCustomizers,
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
@@ -362,8 +351,8 @@ public class RestTemplateBuilder {
 		Assert.notNull(uriTemplateHandler, "UriTemplateHandler must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier, uriTemplateHandler,
-				this.errorHandler, this.basicAuthorization, this.restTemplateCustomizers,
-				this.requestFactoryCustomizers, this.interceptors);
+				this.errorHandler, this.basicAuthentication, this.restTemplateCustomizers,
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
@@ -376,24 +365,25 @@ public class RestTemplateBuilder {
 		Assert.notNull(errorHandler, "ErrorHandler must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, errorHandler, this.basicAuthorization,
-				this.restTemplateCustomizers, this.requestFactoryCustomizers,
+				this.uriTemplateHandler, errorHandler, this.basicAuthentication,
+				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				this.interceptors);
 	}
 
 	/**
 	 * Add HTTP basic authentication to requests. See
-	 * {@link BasicAuthorizationInterceptor} for details.
+	 * {@link BasicAuthenticationInterceptor} for details.
 	 * @param username the user name
 	 * @param password the password
 	 * @return a new builder instance
+	 * @since 2.1.0
 	 */
-	public RestTemplateBuilder basicAuthorization(String username, String password) {
+	public RestTemplateBuilder basicAuthentication(String username, String password) {
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
 				this.uriTemplateHandler, this.errorHandler,
-				new BasicAuthorizationInterceptor(username, password),
-				this.restTemplateCustomizers, this.requestFactoryCustomizers,
+				new BasicAuthenticationInterceptor(username, password),
+				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				this.interceptors);
 	}
 
@@ -428,10 +418,10 @@ public class RestTemplateBuilder {
 				"RestTemplateCustomizers must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
 				Collections.unmodifiableSet(new LinkedHashSet<RestTemplateCustomizer>(
 						restTemplateCustomizers)),
-				this.requestFactoryCustomizers, this.interceptors);
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
@@ -462,40 +452,38 @@ public class RestTemplateBuilder {
 		Assert.notNull(customizers, "RestTemplateCustomizers must not be null");
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
 				append(this.restTemplateCustomizers, customizers),
-				this.requestFactoryCustomizers, this.interceptors);
+				this.requestFactoryCustomizer, this.interceptors);
 	}
 
 	/**
-	 * Sets the connect timeout in milliseconds on the underlying
-	 * {@link ClientHttpRequestFactory}.
-	 * @param connectTimeout the connect timeout in milliseconds
+	 * Sets the connection timeout on the underlying {@link ClientHttpRequestFactory}.
+	 * @param connectTimeout the connection timeout
 	 * @return a new builder instance.
+	 * @since 2.1.0
 	 */
-	public RestTemplateBuilder setConnectTimeout(int connectTimeout) {
+	public RestTemplateBuilder setConnectTimeout(Duration connectTimeout) {
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
 				this.restTemplateCustomizers,
-				append(this.requestFactoryCustomizers,
-						new ConnectTimeoutRequestFactoryCustomizer(connectTimeout)),
+				this.requestFactoryCustomizer.connectTimeout(connectTimeout),
 				this.interceptors);
 	}
 
 	/**
-	 * Sets the read timeout in milliseconds on the underlying
-	 * {@link ClientHttpRequestFactory}.
-	 * @param readTimeout the read timeout in milliseconds
+	 * Sets the read timeout on the underlying {@link ClientHttpRequestFactory}.
+	 * @param readTimeout the read timeout
 	 * @return a new builder instance.
+	 * @since 2.1.0
 	 */
-	public RestTemplateBuilder setReadTimeout(int readTimeout) {
+	public RestTemplateBuilder setReadTimeout(Duration readTimeout) {
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthorization,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
 				this.restTemplateCustomizers,
-				append(this.requestFactoryCustomizers,
-						new ReadTimeoutRequestFactoryCustomizer(readTimeout)),
+				this.requestFactoryCustomizer.readTimeout(readTimeout),
 				this.interceptors);
 	}
 
@@ -545,15 +533,15 @@ public class RestTemplateBuilder {
 		if (this.rootUri != null) {
 			RootUriTemplateHandler.addTo(restTemplate, this.rootUri);
 		}
-		if (this.basicAuthorization != null) {
-			restTemplate.getInterceptors().add(this.basicAuthorization);
+		if (this.basicAuthentication != null) {
+			restTemplate.getInterceptors().add(this.basicAuthentication);
 		}
+		restTemplate.getInterceptors().addAll(this.interceptors);
 		if (!CollectionUtils.isEmpty(this.restTemplateCustomizers)) {
 			for (RestTemplateCustomizer customizer : this.restTemplateCustomizers) {
 				customizer.customize(restTemplate);
 			}
 		}
-		restTemplate.getInterceptors().addAll(this.interceptors);
 		return restTemplate;
 	}
 
@@ -563,122 +551,106 @@ public class RestTemplateBuilder {
 			requestFactory = this.requestFactorySupplier.get();
 		}
 		else if (this.detectRequestFactory) {
-			requestFactory = detectRequestFactory();
+			requestFactory = new ClientHttpRequestFactorySupplier().get();
 		}
 		if (requestFactory != null) {
-			ClientHttpRequestFactory unwrappedRequestFactory = unwrapRequestFactoryIfNecessary(
-					requestFactory);
-			for (RequestFactoryCustomizer customizer : this.requestFactoryCustomizers) {
-				customizer.customize(unwrappedRequestFactory);
+			if (this.requestFactoryCustomizer != null) {
+				this.requestFactoryCustomizer.accept(requestFactory);
 			}
 			restTemplate.setRequestFactory(requestFactory);
 		}
 	}
 
-	private ClientHttpRequestFactory unwrapRequestFactoryIfNecessary(
-			ClientHttpRequestFactory requestFactory) {
-		if (!(requestFactory instanceof AbstractClientHttpRequestFactoryWrapper)) {
-			return requestFactory;
-		}
-		ClientHttpRequestFactory unwrappedRequestFactory = requestFactory;
-		Field field = ReflectionUtils.findField(
-				AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
-		ReflectionUtils.makeAccessible(field);
-		do {
-			unwrappedRequestFactory = (ClientHttpRequestFactory) ReflectionUtils
-					.getField(field, unwrappedRequestFactory);
-		}
-		while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper);
-		return unwrappedRequestFactory;
-	}
-
-	private ClientHttpRequestFactory detectRequestFactory() {
-		for (Map.Entry<String, String> candidate : REQUEST_FACTORY_CANDIDATES
-				.entrySet()) {
-			ClassLoader classLoader = getClass().getClassLoader();
-			if (ClassUtils.isPresent(candidate.getKey(), classLoader)) {
-				Class<?> factoryClass = ClassUtils.resolveClassName(candidate.getValue(),
-						classLoader);
-				return (ClientHttpRequestFactory) BeanUtils
-						.instantiateClass(factoryClass);
-			}
-		}
-		return new SimpleClientHttpRequestFactory();
-	}
-
-	private <T> Set<T> append(Set<T> set, T addition) {
-		Set<T> result = new LinkedHashSet<>(set == null ? Collections.emptySet() : set);
-		result.add(addition);
-		return Collections.unmodifiableSet(result);
-	}
-
 	private <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<>(set == null ? Collections.emptySet() : set);
+		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		result.addAll(additions);
 		return Collections.unmodifiableSet(result);
 	}
 
-	/**
-	 * Strategy interface used to customize the {@link ClientHttpRequestFactory}.
-	 */
-	private interface RequestFactoryCustomizer {
+	private static class RequestFactoryCustomizer
+			implements Consumer<ClientHttpRequestFactory> {
 
-		void customize(ClientHttpRequestFactory factory);
+		private final Duration connectTimeout;
 
-	}
+		private final Duration readTimeout;
 
-	/**
-	 * {@link RequestFactoryCustomizer} to call a "set timeout" method.
-	 */
-	private abstract static class TimeoutRequestFactoryCustomizer
-			implements RequestFactoryCustomizer {
+		RequestFactoryCustomizer() {
+			this(null, null);
+		}
 
-		private final int timeout;
+		private RequestFactoryCustomizer(Duration connectTimeout, Duration readTimeout) {
+			this.connectTimeout = connectTimeout;
+			this.readTimeout = readTimeout;
+		}
 
-		private final String methodName;
+		public RequestFactoryCustomizer connectTimeout(Duration connectTimeout) {
+			return new RequestFactoryCustomizer(connectTimeout, this.readTimeout);
+		}
 
-		TimeoutRequestFactoryCustomizer(int timeout, String methodName) {
-			this.timeout = timeout;
-			this.methodName = methodName;
+		public RequestFactoryCustomizer readTimeout(Duration readTimeout) {
+			return new RequestFactoryCustomizer(this.connectTimeout, readTimeout);
 		}
 
 		@Override
-		public void customize(ClientHttpRequestFactory factory) {
-			ReflectionUtils.invokeMethod(findMethod(factory), factory, this.timeout);
-		}
-
-		private Method findMethod(ClientHttpRequestFactory factory) {
-			Method method = ReflectionUtils.findMethod(factory.getClass(),
-					this.methodName, int.class);
-			if (method != null) {
-				return method;
+		public void accept(ClientHttpRequestFactory requestFactory) {
+			ClientHttpRequestFactory unwrappedRequestFactory = unwrapRequestFactoryIfNecessary(
+					requestFactory);
+			if (this.connectTimeout != null) {
+				new TimeoutRequestFactoryCustomizer(this.connectTimeout,
+						"setConnectTimeout").customize(unwrappedRequestFactory);
 			}
-			throw new IllegalStateException("Request factory " + factory.getClass()
-					+ " does not have a " + this.methodName + "(int) method");
+			if (this.readTimeout != null) {
+				new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout")
+						.customize(unwrappedRequestFactory);
+			}
 		}
 
-	}
-
-	/**
-	 * {@link RequestFactoryCustomizer} to set the read timeout.
-	 */
-	private static class ReadTimeoutRequestFactoryCustomizer
-			extends TimeoutRequestFactoryCustomizer {
-
-		ReadTimeoutRequestFactoryCustomizer(int readTimeout) {
-			super(readTimeout, "setReadTimeout");
+		private ClientHttpRequestFactory unwrapRequestFactoryIfNecessary(
+				ClientHttpRequestFactory requestFactory) {
+			if (!(requestFactory instanceof AbstractClientHttpRequestFactoryWrapper)) {
+				return requestFactory;
+			}
+			ClientHttpRequestFactory unwrappedRequestFactory = requestFactory;
+			Field field = ReflectionUtils.findField(
+					AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
+			ReflectionUtils.makeAccessible(field);
+			do {
+				unwrappedRequestFactory = (ClientHttpRequestFactory) ReflectionUtils
+						.getField(field, unwrappedRequestFactory);
+			}
+			while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper);
+			return unwrappedRequestFactory;
 		}
 
-	}
+		/**
+		 * {@link ClientHttpRequestFactory} customizer to call a "set timeout" method.
+		 */
+		private static final class TimeoutRequestFactoryCustomizer {
 
-	/**
-	 * {@link RequestFactoryCustomizer} to set the connect timeout.
-	 */
-	private static class ConnectTimeoutRequestFactoryCustomizer
-			extends TimeoutRequestFactoryCustomizer {
+			private final Duration timeout;
 
-		ConnectTimeoutRequestFactoryCustomizer(int connectTimeout) {
-			super(connectTimeout, "setConnectTimeout");
+			private final String methodName;
+
+			TimeoutRequestFactoryCustomizer(Duration timeout, String methodName) {
+				this.timeout = timeout;
+				this.methodName = methodName;
+			}
+
+			void customize(ClientHttpRequestFactory factory) {
+				ReflectionUtils.invokeMethod(findMethod(factory), factory,
+						Math.toIntExact(this.timeout.toMillis()));
+			}
+
+			private Method findMethod(ClientHttpRequestFactory factory) {
+				Method method = ReflectionUtils.findMethod(factory.getClass(),
+						this.methodName, int.class);
+				if (method != null) {
+					return method;
+				}
+				throw new IllegalStateException("Request factory " + factory.getClass()
+						+ " does not have a " + this.methodName + "(int) method");
+			}
+
 		}
 
 	}

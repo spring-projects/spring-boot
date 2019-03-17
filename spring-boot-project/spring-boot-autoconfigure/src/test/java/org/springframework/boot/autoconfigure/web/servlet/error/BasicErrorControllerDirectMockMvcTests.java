@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -45,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -53,20 +50,18 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
- * {@link SpringRunner}.
+ * {@link org.springframework.test.context.junit4.SpringRunner}.
  *
  * @author Dave Syer
  * @author Sebastien Deleuze
  */
 public class BasicErrorControllerDirectMockMvcTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private ConfigurableWebApplicationContext wac;
 
@@ -110,8 +105,8 @@ public class BasicErrorControllerDirectMockMvcTests {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
 						"--server.error.whitelabel.enabled=false"));
-		this.thrown.expect(ServletException.class);
-		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));
+		assertThatExceptionOfType(ServletException.class).isThrownBy(
+				() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
 	}
 
 	@Test
@@ -136,13 +131,13 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	protected static class ParentConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	@EnableWebMvc
 	protected static class WebMvcIncludedConfiguration {
@@ -154,7 +149,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	protected static class VanillaConfiguration {
 
@@ -165,7 +160,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	protected static class ChildConfiguration {
 
@@ -177,7 +172,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
 	@MinimalWebConfiguration
 	@Aspect

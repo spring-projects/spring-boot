@@ -1,1 +1,0 @@
-provides: spring-data-redis,lettuce-core

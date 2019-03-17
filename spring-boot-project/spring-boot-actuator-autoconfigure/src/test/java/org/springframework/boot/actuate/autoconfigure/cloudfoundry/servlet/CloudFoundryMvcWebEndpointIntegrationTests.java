@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServic
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -164,14 +163,10 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		BiConsumer<ApplicationContext, WebTestClient> consumer = (context,
 				client) -> clientConsumer.accept(client);
-		AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(
-				configuration, CloudFoundryMvcConfiguration.class);
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(
+				configuration, CloudFoundryMvcConfiguration.class)) {
 			consumer.accept(context, WebTestClient.bindToServer()
 					.baseUrl("http://localhost:" + getPort(context)).build());
-		}
-		finally {
-			context.close();
 		}
 	}
 
@@ -181,7 +176,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 				+ Base64Utils.encodeToString("signature".getBytes());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class CloudFoundryMvcConfiguration {
 
@@ -219,8 +214,8 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
 			return new WebEndpointDiscoverer(applicationContext, parameterMapper,
-					endpointMediaTypes, PathMapper.useEndpointId(),
-					Collections.emptyList(), Collections.emptyList());
+					endpointMediaTypes, null, Collections.emptyList(),
+					Collections.emptyList());
 		}
 
 		@Bean
@@ -286,7 +281,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CloudFoundryMvcConfiguration.class)
 	protected static class TestEndpointConfiguration {
 

@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration;
+import org.springframework.util.ClassUtils;
 
 /**
  * A list of all endpoint auto-configuration classes for use in tests.
@@ -51,7 +52,7 @@ final class EndpointAutoConfigurationClasses {
 		all.add(ThreadDumpEndpointAutoConfiguration.class);
 		all.add(HttpTraceEndpointAutoConfiguration.class);
 		all.add(MappingsEndpointAutoConfiguration.class);
-		ALL = all.toArray(new Class<?>[] {});
+		ALL = ClassUtils.toClassArray(all);
 	}
 
 	private EndpointAutoConfigurationClasses() {

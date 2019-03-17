@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
@@ -135,19 +136,17 @@ public class ApplicationPidFileWriter
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (this.triggerEventType.isInstance(event)) {
-			if (created.compareAndSet(false, true)) {
-				try {
-					writePidFile(event);
+		if (this.triggerEventType.isInstance(event)
+				&& created.compareAndSet(false, true)) {
+			try {
+				writePidFile(event);
+			}
+			catch (Exception ex) {
+				String message = String.format("Cannot create pid file %s", this.file);
+				if (failOnWriteError(event)) {
+					throw new IllegalStateException(message, ex);
 				}
-				catch (Exception ex) {
-					String message = String.format("Cannot create pid file %s",
-							this.file);
-					if (failOnWriteError(event)) {
-						throw new IllegalStateException(message, ex);
-					}
-					logger.warn(message, ex);
-				}
+				logger.warn(message, ex);
 			}
 		}
 	}
@@ -164,7 +163,7 @@ public class ApplicationPidFileWriter
 
 	private boolean failOnWriteError(SpringApplicationEvent event) {
 		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
-		return (value == null ? false : Boolean.parseBoolean(value));
+		return (value != null) ? Boolean.parseBoolean(value) : false;
 	}
 
 	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {
@@ -250,7 +249,8 @@ public class ApplicationPidFileWriter
 		private final String[] properties;
 
 		SystemProperty(String name) {
-			this.properties = new String[] { name.toUpperCase(), name.toLowerCase() };
+			this.properties = new String[] { name.toUpperCase(Locale.ENGLISH),
+					name.toLowerCase(Locale.ENGLISH) };
 		}
 
 		@Override

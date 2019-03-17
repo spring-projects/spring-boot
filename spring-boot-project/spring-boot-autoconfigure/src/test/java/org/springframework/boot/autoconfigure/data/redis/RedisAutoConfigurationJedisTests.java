@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@ public class RedisAutoConfigurationJedisTests {
 
 	@Test
 	public void testOverrideRedisConfiguration() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1")
+		this.contextRunner
+				.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1")
 				.run((context) -> {
 					JedisConnectionFactory cf = context
 							.getBean(JedisConnectionFactory.class);
@@ -60,10 +61,12 @@ public class RedisAutoConfigurationJedisTests {
 
 	@Test
 	public void testCustomizeRedisConfiguration() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
-			assertThat(cf.isUseSsl()).isTrue();
-		});
+		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
+				.run((context) -> {
+					JedisConnectionFactory cf = context
+							.getBean(JedisConnectionFactory.class);
+					assertThat(cf.isUseSsl()).isTrue();
+				});
 	}
 
 	@Test
@@ -99,7 +102,8 @@ public class RedisAutoConfigurationJedisTests {
 
 	@Test
 	public void testPasswordInUrlWithColon() {
-		this.contextRunner.withPropertyValues("spring.redis.url:redis://:pass:word@example:33")
+		this.contextRunner
+				.withPropertyValues("spring.redis.url:redis://:pass:word@example:33")
 				.run((context) -> {
 					assertThat(
 							context.getBean(JedisConnectionFactory.class).getHostName())
@@ -196,7 +200,7 @@ public class RedisAutoConfigurationJedisTests {
 						.getClusterConnection()).isNotNull());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -206,7 +210,7 @@ public class RedisAutoConfigurationJedisTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JedisConnectionFactoryCaptorConfiguration {
 
 		@Bean

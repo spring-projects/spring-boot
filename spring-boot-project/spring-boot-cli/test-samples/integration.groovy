@@ -8,7 +8,7 @@ class BookTests {
 	}
 }
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class Application {
 	@Bean
 	Book book() {

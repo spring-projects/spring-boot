@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,16 @@ package org.springframework.boot.autoconfigureprocessor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -34,10 +38,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
@@ -50,6 +52,9 @@ import javax.tools.StandardLocation;
  */
 @SupportedAnnotationTypes({ "org.springframework.context.annotation.Configuration",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+		"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
+		"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
+		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigure.AutoConfigureBefore",
 		"org.springframework.boot.autoconfigure.AutoConfigureAfter",
 		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
@@ -58,7 +63,9 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	protected static final String PROPERTIES_PATH = "META-INF/"
 			+ "spring-autoconfigure-metadata.properties";
 
-	private Map<String, String> annotations;
+	private final Map<String, String> annotations;
+
+	private final Map<String, ValueExtractor> valueExtractors;
 
 	private final Properties properties = new Properties();
 
@@ -66,6 +73,9 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		Map<String, String> annotations = new LinkedHashMap<>();
 		addAnnotations(annotations);
 		this.annotations = Collections.unmodifiableMap(annotations);
+		Map<String, ValueExtractor> valueExtractors = new LinkedHashMap<>();
+		addValueExtractors(valueExtractors);
+		this.valueExtractors = Collections.unmodifiableMap(valueExtractors);
 	}
 
 	protected void addAnnotations(Map<String, String> annotations) {
@@ -73,12 +83,30 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				"org.springframework.context.annotation.Configuration");
 		annotations.put("ConditionalOnClass",
 				"org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
+		annotations.put("ConditionalOnBean",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
+		annotations.put("ConditionalOnSingleCandidate",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate");
+		annotations.put("ConditionalOnWebApplication",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication");
 		annotations.put("AutoConfigureBefore",
 				"org.springframework.boot.autoconfigure.AutoConfigureBefore");
 		annotations.put("AutoConfigureAfter",
 				"org.springframework.boot.autoconfigure.AutoConfigureAfter");
 		annotations.put("AutoConfigureOrder",
 				"org.springframework.boot.autoconfigure.AutoConfigureOrder");
+	}
+
+	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
+		attributes.put("Configuration", ValueExtractor.allFrom("value"));
+		attributes.put("ConditionalOnClass", new OnClassConditionValueExtractor());
+		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
+		attributes.put("ConditionalOnSingleCandidate",
+				new OnBeanConditionValueExtractor());
+		attributes.put("ConditionalOnWebApplication", ValueExtractor.allFrom("type"));
+		attributes.put("AutoConfigureBefore", ValueExtractor.allFrom("value", "name"));
+		attributes.put("AutoConfigureAfter", ValueExtractor.allFrom("value", "name"));
+		attributes.put("AutoConfigureOrder", ValueExtractor.allFrom("value"));
 	}
 
 	@Override
@@ -121,10 +149,10 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	private void processElement(Element element, String propertyKey,
 			String annotationName) {
 		try {
-			String qualifiedName = getQualifiedName(element);
+			String qualifiedName = Elements.getQualifiedName(element);
 			AnnotationMirror annotation = getAnnotation(element, annotationName);
 			if (qualifiedName != null && annotation != null) {
-				List<Object> values = getValues(annotation);
+				List<Object> values = getValues(propertyKey, annotation);
 				this.properties.put(qualifiedName + "." + propertyKey,
 						toCommaDelimitedString(values));
 				this.properties.put(qualifiedName, "");
@@ -150,64 +178,18 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	private String toCommaDelimitedString(List<Object> list) {
 		StringBuilder result = new StringBuilder();
 		for (Object item : list) {
-			result.append(result.length() != 0 ? "," : "");
+			result.append((result.length() != 0) ? "," : "");
 			result.append(item);
 		}
 		return result.toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Object> getValues(AnnotationMirror annotation) {
-		List<Object> result = new ArrayList<>();
-		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
-				.getElementValues().entrySet()) {
-			String attributeName = entry.getKey().getSimpleName().toString();
-			if ("name".equals(attributeName) || "value".equals(attributeName)) {
-				Object value = entry.getValue().getValue();
-				if (value instanceof List) {
-					for (AnnotationValue annotationValue : (List<AnnotationValue>) value) {
-						result.add(processValue(annotationValue.getValue()));
-					}
-				}
-				else {
-					result.add(processValue(value));
-				}
-			}
+	private List<Object> getValues(String propertyKey, AnnotationMirror annotation) {
+		ValueExtractor extractor = this.valueExtractors.get(propertyKey);
+		if (extractor == null) {
+			return Collections.emptyList();
 		}
-		return result;
-	}
-
-	private Object processValue(Object value) {
-		if (value instanceof DeclaredType) {
-			return getQualifiedName(((DeclaredType) value).asElement());
-		}
-		return value;
-	}
-
-	private String getQualifiedName(Element element) {
-		if (element != null) {
-			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
-			if (enclosingElement != null) {
-				return getQualifiedName(enclosingElement) + "$"
-						+ ((DeclaredType) element.asType()).asElement().getSimpleName()
-								.toString();
-			}
-			if (element instanceof TypeElement) {
-				return ((TypeElement) element).getQualifiedName().toString();
-			}
-		}
-		return null;
-	}
-
-	private TypeElement getEnclosingTypeElement(TypeMirror type) {
-		if (type instanceof DeclaredType) {
-			DeclaredType declaredType = (DeclaredType) type;
-			Element enclosingElement = declaredType.asElement().getEnclosingElement();
-			if (enclosingElement != null && enclosingElement instanceof TypeElement) {
-				return (TypeElement) enclosingElement;
-			}
-		}
-		return null;
+		return extractor.getValues(annotation);
 	}
 
 	private void writeProperties() throws IOException {
@@ -218,6 +200,105 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				this.properties.store(outputStream, null);
 			}
 		}
+	}
+
+	@FunctionalInterface
+	private interface ValueExtractor {
+
+		List<Object> getValues(AnnotationMirror annotation);
+
+		static ValueExtractor allFrom(String... names) {
+			return new NamedValuesExtractor(names);
+		}
+
+	}
+
+	private abstract static class AbstractValueExtractor implements ValueExtractor {
+
+		@SuppressWarnings("unchecked")
+		protected Stream<Object> extractValues(AnnotationValue annotationValue) {
+			if (annotationValue == null) {
+				return Stream.empty();
+			}
+			Object value = annotationValue.getValue();
+			if (value instanceof List) {
+				return ((List<AnnotationValue>) value).stream()
+						.map((annotation) -> extractValue(annotation.getValue()));
+			}
+			return Stream.of(extractValue(value));
+		}
+
+		private Object extractValue(Object value) {
+			if (value instanceof DeclaredType) {
+				return Elements.getQualifiedName(((DeclaredType) value).asElement());
+			}
+			return value;
+		}
+
+	}
+
+	private static class NamedValuesExtractor extends AbstractValueExtractor {
+
+		private final Set<String> names;
+
+		NamedValuesExtractor(String... names) {
+			this.names = new HashSet<>(Arrays.asList(names));
+		}
+
+		@Override
+		public List<Object> getValues(AnnotationMirror annotation) {
+			List<Object> result = new ArrayList<>();
+			annotation.getElementValues().forEach((key, value) -> {
+				if (this.names.contains(key.getSimpleName().toString())) {
+					extractValues(value).forEach(result::add);
+				}
+			});
+			return result;
+		}
+
+	}
+
+	private static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
+
+		@Override
+		public List<Object> getValues(AnnotationMirror annotation) {
+			Map<String, AnnotationValue> attributes = new LinkedHashMap<>();
+			annotation.getElementValues().forEach((key, value) -> attributes
+					.put(key.getSimpleName().toString(), value));
+			if (attributes.containsKey("name")) {
+				return Collections.emptyList();
+			}
+			List<Object> result = new ArrayList<>();
+			extractValues(attributes.get("value")).forEach(result::add);
+			extractValues(attributes.get("type")).forEach(result::add);
+			return result;
+		}
+
+	}
+
+	private static class OnClassConditionValueExtractor extends NamedValuesExtractor {
+
+		OnClassConditionValueExtractor() {
+			super("value", "name");
+		}
+
+		@Override
+		public List<Object> getValues(AnnotationMirror annotation) {
+			List<Object> values = super.getValues(annotation);
+			values.sort(this::compare);
+			return values;
+		}
+
+		private int compare(Object o1, Object o2) {
+			return Comparator.comparing(this::isSpringClass)
+					.thenComparing(String.CASE_INSENSITIVE_ORDER)
+					.compare(o1.toString(), o2.toString());
+		}
+
+		private boolean isSpringClass(String type) {
+			return type.startsWith("org.springframework");
+		}
+
 	}
 
 }

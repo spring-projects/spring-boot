@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,6 @@ public class SystemEnvironmentOrigin implements Origin {
 	}
 
 	@Override
-	public String toString() {
-		return "System Environment Property \"" + this.property + "\"";
-	}
-
-	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.property);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -61,4 +51,15 @@ public class SystemEnvironmentOrigin implements Origin {
 		SystemEnvironmentOrigin other = (SystemEnvironmentOrigin) obj;
 		return ObjectUtils.nullSafeEquals(this.property, other.property);
 	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.property);
+	}
+
+	@Override
+	public String toString() {
+		return "System Environment Property \"" + this.property + "\"";
+	}
+
 }

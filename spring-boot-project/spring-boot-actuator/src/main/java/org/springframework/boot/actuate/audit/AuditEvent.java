@@ -55,9 +55,9 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Create a new audit event for the current time.
-	 * @param principal The user principal responsible
+	 * @param principal the user principal responsible
 	 * @param type the event type
-	 * @param data The event data
+	 * @param data the event data
 	 */
 	public AuditEvent(String principal, String type, Map<String, Object> data) {
 		this(Instant.now(), principal, type, data);
@@ -66,9 +66,9 @@ public class AuditEvent implements Serializable {
 	/**
 	 * Create a new audit event for the current time from data provided as name-value
 	 * pairs.
-	 * @param principal The user principal responsible
+	 * @param principal the user principal responsible
 	 * @param type the event type
-	 * @param data The event data in the form 'key=value' or simply 'key'
+	 * @param data the event data in the form 'key=value' or simply 'key'
 	 */
 	public AuditEvent(String principal, String type, String... data) {
 		this(Instant.now(), principal, type, convert(data));
@@ -76,17 +76,17 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Create a new audit event.
-	 * @param timestamp The date/time of the event
-	 * @param principal The user principal responsible
+	 * @param timestamp the date/time of the event
+	 * @param principal the user principal responsible
 	 * @param type the event type
-	 * @param data The event data
+	 * @param data the event data
 	 */
 	public AuditEvent(Instant timestamp, String principal, String type,
 			Map<String, Object> data) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.timestamp = timestamp;
-		this.principal = (principal != null ? principal : "");
+		this.principal = (principal != null) ? principal : "";
 		this.type = type;
 		this.data = Collections.unmodifiableMap(data);
 	}

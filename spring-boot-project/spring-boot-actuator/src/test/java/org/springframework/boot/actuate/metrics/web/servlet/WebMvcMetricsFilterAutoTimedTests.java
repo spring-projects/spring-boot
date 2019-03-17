@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class WebMvcMetricsFilterAutoTimedTests {
 				.count()).isEqualTo(1L);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Import({ Controller.class })
 	static class TestConfiguration {
@@ -95,8 +95,8 @@ public class WebMvcMetricsFilterAutoTimedTests {
 		@Bean
 		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context,
 				MeterRegistry registry) {
-			return new WebMvcMetricsFilter(context, registry,
-					new DefaultWebMvcTagsProvider(), "http.server.requests", true);
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true);
 		}
 
 	}

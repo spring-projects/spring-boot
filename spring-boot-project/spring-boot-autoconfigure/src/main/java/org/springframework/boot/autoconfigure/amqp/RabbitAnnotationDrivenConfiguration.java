@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.amqp;
+
+import java.util.stream.Collectors;
 
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
@@ -37,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Josh Thornhill
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
@@ -45,13 +47,17 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageRecoverer> messageRecoverer;
 
+	private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
+			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
 			RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
+		this.retryTemplateCustomizers = retryTemplateCustomizers;
 		this.properties = properties;
 	}
 
@@ -61,6 +67,8 @@ class RabbitAnnotationDrivenConfiguration {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRetryTemplateCustomizers(this.retryTemplateCustomizers
+				.orderedStream().collect(Collectors.toList()));
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
@@ -82,6 +90,8 @@ class RabbitAnnotationDrivenConfiguration {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRetryTemplateCustomizers(this.retryTemplateCustomizers
+				.orderedStream().collect(Collectors.toList()));
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
@@ -97,7 +107,7 @@ class RabbitAnnotationDrivenConfiguration {
 		return factory;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableRabbit
 	@ConditionalOnMissingBean(name = RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableRabbitConfiguration {

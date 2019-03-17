@@ -32,6 +32,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * Selects configuration classes for the management context configuration. Entries are
@@ -65,7 +66,7 @@ class ManagementContextConfigurationImportSelector
 				names.add(configuration.getClassName());
 			}
 		}
-		return names.toArray(new String[names.size()]);
+		return StringUtils.toStringArray(names);
 	}
 
 	private List<ManagementConfiguration> getConfigurations() {
@@ -124,16 +125,17 @@ class ManagementContextConfigurationImportSelector
 			Map<String, Object> annotationAttributes = annotationMetadata
 					.getAnnotationAttributes(
 							ManagementContextConfiguration.class.getName());
-			return (annotationAttributes == null ? ManagementContextType.ANY
-					: (ManagementContextType) annotationAttributes.get("value"));
+			return (annotationAttributes != null)
+					? (ManagementContextType) annotationAttributes.get("value")
+					: ManagementContextType.ANY;
 		}
 
 		private int readOrder(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> attributes = annotationMetadata
 					.getAnnotationAttributes(Order.class.getName());
-			Integer order = (attributes == null ? null
-					: (Integer) attributes.get("value"));
-			return (order == null ? Ordered.LOWEST_PRECEDENCE : order);
+			Integer order = (attributes != null) ? (Integer) attributes.get("value")
+					: null;
+			return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 		}
 
 		public String getClassName() {

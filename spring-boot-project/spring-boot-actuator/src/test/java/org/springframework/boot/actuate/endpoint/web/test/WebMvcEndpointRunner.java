@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServic
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -43,6 +42,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
@@ -60,12 +60,12 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 	private static ConfigurableApplicationContext createContext(List<Class<?>> classes) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		classes.add(WebMvcEndpointConfiguration.class);
-		context.register(classes.toArray(new Class<?>[classes.size()]));
+		context.register(ClassUtils.toClassArray(classes));
 		context.refresh();
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
@@ -90,8 +90,8 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 					mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
 					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, PathMapper.useEndpointId(),
-					Collections.emptyList(), Collections.emptyList());
+					endpointMediaTypes, null, Collections.emptyList(),
+					Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"),
 					discoverer.getEndpoints(), endpointMediaTypes,
 					new CorsConfiguration(),

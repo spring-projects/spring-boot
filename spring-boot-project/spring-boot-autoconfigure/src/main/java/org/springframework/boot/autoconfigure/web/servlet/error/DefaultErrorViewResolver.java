@@ -102,7 +102,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	@Override
 	public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status,
 			Map<String, Object> model) {
-		ModelAndView modelAndView = resolve(String.valueOf(status), model);
+		ModelAndView modelAndView = resolve(String.valueOf(status.value()), model);
 		if (modelAndView == null && SERIES_VIEWS.containsKey(status.series())) {
 			modelAndView = resolve(SERIES_VIEWS.get(status.series()), model);
 		}

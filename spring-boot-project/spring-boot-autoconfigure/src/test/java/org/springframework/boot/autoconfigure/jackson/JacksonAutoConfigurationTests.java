@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -459,6 +458,18 @@ public class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	public void writeWithVisibility() {
+		this.contextRunner.withPropertyValues("spring.jackson.visibility.getter:none",
+				"spring.jackson.visibility.field:any").run((context) -> {
+					ObjectMapper mapper = context.getBean(ObjectMapper.class);
+					String json = mapper.writeValueAsString(new VisibilityBean());
+					assertThat(json).contains("property1");
+					assertThat(json).contains("property2");
+					assertThat(json).doesNotContain("property3");
+				});
+	}
+
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode,
 			Class<?>... configClasses) {
 		this.contextRunner.withUserConfiguration(configClasses).run((context) -> {
@@ -466,8 +477,8 @@ public class JacksonAutoConfigurationTests {
 					.getBean(ObjectMapper.class).getDeserializationConfig();
 			AnnotationIntrospector annotationIntrospector = deserializationConfig
 					.getAnnotationIntrospector().allIntrospectors().iterator().next();
-			assertThat(ReflectionTestUtils.getField(annotationIntrospector,
-					"creatorBinding")).isEqualTo(expectedMode);
+			assertThat(annotationIntrospector)
+					.hasFieldOrPropertyWithValue("creatorBinding", expectedMode);
 		});
 	}
 
@@ -479,7 +490,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MockObjectMapperConfig {
 
 		@Bean
@@ -490,7 +501,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BazSerializer.class)
 	protected static class ModuleConfig {
 
@@ -530,7 +541,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ParameterNamesModuleConfig {
 
 		@Bean
@@ -540,7 +551,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ObjectMapperBuilderCustomConfig {
 
 		@Bean
@@ -610,6 +621,19 @@ public class JacksonAutoConfigurationTests {
 
 		Set<ObjectCodec> getOwners() {
 			return this.owners;
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	private static class VisibilityBean {
+
+		private String property1;
+
+		public String property2;
+
+		public String getProperty3() {
+			return null;
 		}
 
 	}

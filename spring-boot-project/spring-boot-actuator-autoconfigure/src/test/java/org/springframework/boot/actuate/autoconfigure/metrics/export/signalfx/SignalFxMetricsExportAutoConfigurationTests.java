@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 
-import java.util.Map;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.signalfx.SignalFxConfig;
 import io.micrometer.signalfx.SignalFxMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SignalFxMetricsExportAutoConfiguration}.
@@ -71,9 +65,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	@Test
 	public void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.signalfx.access-token=abcde",
-						"management.metrics.export.signalfx.enabled=false")
+				.withPropertyValues("management.metrics.export.signalfx.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(SignalFxMeterRegistry.class)
 						.doesNotHaveBean(SignalFxConfig.class));
@@ -108,28 +100,15 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 				.withPropertyValues(
 						"management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					SignalFxMeterRegistry registry = spyOnDisposableBean(
-							SignalFxMeterRegistry.class, context);
+					SignalFxMeterRegistry registry = context
+							.getBean(SignalFxMeterRegistry.class);
+					assertThat(registry.isClosed()).isFalse();
 					context.close();
-					verify(registry).stop();
+					assertThat(registry.isClosed()).isTrue();
 				});
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> T spyOnDisposableBean(Class<T> type,
-			AssertableApplicationContext context) {
-		String[] names = context.getBeanNamesForType(type);
-		assertThat(names).hasSize(1);
-		String registryBeanName = names[0];
-		Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils
-				.getField(context.getAutowireCapableBeanFactory(), "disposableBeans");
-		Object registryAdapter = disposableBeans.get(registryBeanName);
-		T registry = (T) spy(ReflectionTestUtils.getField(registryAdapter, "bean"));
-		ReflectionTestUtils.setField(registryAdapter, "bean", registry);
-		return registry;
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -139,32 +118,27 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
 		public SignalFxConfig customConfig() {
-			return new SignalFxConfig() {
-
-				@Override
-				public String get(String k) {
-					if ("signalfx.accessToken".equals(k)) {
-						return "abcde";
-					}
-					return null;
+			return (key) -> {
+				if ("signalfx.accessToken".equals(key)) {
+					return "abcde";
 				}
-
+				return null;
 			};
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public SignalFxMeterRegistry customRegistry(SignalFxConfig config, Clock clock) {
 			return new SignalFxMeterRegistry(config, clock);
 		}

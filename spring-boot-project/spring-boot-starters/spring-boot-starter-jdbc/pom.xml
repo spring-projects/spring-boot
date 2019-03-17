@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-jdbc</artifactId>
 	<name>Spring Boot JDBC Starter</name>
-	<description>Starter for using JDBC with the Tomcat JDBC connection pool</description>
+	<description>Starter for using JDBC with the HikariCP connection pool</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>

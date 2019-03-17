@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 package org.springframework.boot.actuate.health;
 
 import java.time.Duration;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
-
-import org.springframework.util.Assert;
 
 /**
  * {@link ReactiveHealthIndicator} that returns health indications from all registered
@@ -37,7 +33,7 @@ import org.springframework.util.Assert;
  */
 public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator {
 
-	private final Map<String, ReactiveHealthIndicator> indicators;
+	private final ReactiveHealthIndicatorRegistry registry;
 
 	private final HealthAggregator healthAggregator;
 
@@ -47,30 +43,18 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 
 	private final Function<Mono<Health>, Mono<Health>> timeoutCompose;
 
-	public CompositeReactiveHealthIndicator(HealthAggregator healthAggregator) {
-		this(healthAggregator, new LinkedHashMap<>());
-	}
-
-	public CompositeReactiveHealthIndicator(HealthAggregator healthAggregator,
-			Map<String, ReactiveHealthIndicator> indicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(indicators, "Indicators must not be null");
-		this.indicators = new LinkedHashMap<>(indicators);
-		this.healthAggregator = healthAggregator;
-		this.timeoutCompose = (mono) -> this.timeout != null ? mono.timeout(
-				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
-	}
-
 	/**
-	 * Add a {@link ReactiveHealthIndicator} with the specified name.
-	 * @param name the name of the health indicator
-	 * @param indicator the health indicator to add
-	 * @return this instance
+	 * Create a new {@link CompositeReactiveHealthIndicator} from the indicators in the
+	 * given {@code registry}.
+	 * @param healthAggregator the health aggregator
+	 * @param registry the registry of {@link ReactiveHealthIndicator HealthIndicators}.
 	 */
-	public CompositeReactiveHealthIndicator addHealthIndicator(String name,
-			ReactiveHealthIndicator indicator) {
-		this.indicators.put(name, indicator);
-		return this;
+	public CompositeReactiveHealthIndicator(HealthAggregator healthAggregator,
+			ReactiveHealthIndicatorRegistry registry) {
+		this.registry = registry;
+		this.healthAggregator = healthAggregator;
+		this.timeoutCompose = (mono) -> (this.timeout != null) ? mono.timeout(
+				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
 	}
 
 	/**
@@ -85,14 +69,18 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	public CompositeReactiveHealthIndicator timeoutStrategy(long timeout,
 			Health timeoutHealth) {
 		this.timeout = timeout;
-		this.timeoutHealth = (timeoutHealth != null ? timeoutHealth
-				: Health.unknown().build());
+		this.timeoutHealth = (timeoutHealth != null) ? timeoutHealth
+				: Health.unknown().build();
 		return this;
+	}
+
+	ReactiveHealthIndicatorRegistry getRegistry() {
+		return this.registry;
 	}
 
 	@Override
 	public Mono<Health> health() {
-		return Flux.fromIterable(this.indicators.entrySet())
+		return Flux.fromIterable(this.registry.getAll().entrySet())
 				.flatMap((entry) -> Mono.zip(Mono.just(entry.getKey()),
 						entry.getValue().health().compose(this.timeoutCompose)))
 				.collectMap(Tuple2::getT1, Tuple2::getT2)

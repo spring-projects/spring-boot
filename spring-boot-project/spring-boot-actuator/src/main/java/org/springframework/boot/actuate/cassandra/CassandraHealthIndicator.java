@@ -46,6 +46,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 	 * @param cassandraOperations the Cassandra operations
 	 */
 	public CassandraHealthIndicator(CassandraOperations cassandraOperations) {
+		super("Cassandra health check failed");
 		Assert.notNull(cassandraOperations, "CassandraOperations must not be null");
 		this.cassandraOperations = cassandraOperations;
 	}

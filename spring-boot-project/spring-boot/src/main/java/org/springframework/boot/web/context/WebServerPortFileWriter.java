@@ -17,6 +17,7 @@
 package org.springframework.boot.web.context;
 
 import java.io.File;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -111,10 +112,10 @@ public class WebServerPortFileWriter
 		String extension = StringUtils.getFilenameExtension(this.file.getName());
 		name = name.substring(0, name.length() - extension.length() - 1);
 		if (isUpperCase(name)) {
-			name = name + "-" + namespace.toUpperCase();
+			name = name + "-" + namespace.toUpperCase(Locale.ENGLISH);
 		}
 		else {
-			name = name + "-" + namespace.toLowerCase();
+			name = name + "-" + namespace.toLowerCase(Locale.ENGLISH);
 		}
 		if (StringUtils.hasLength(extension)) {
 			name = name + "." + extension;

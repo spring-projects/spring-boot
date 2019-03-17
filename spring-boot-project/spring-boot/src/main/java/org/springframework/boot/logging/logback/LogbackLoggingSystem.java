@@ -22,6 +22,8 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -35,6 +37,7 @@ import ch.qos.logback.core.status.Status;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.LogFile;
@@ -157,7 +160,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
 			if (status.getLevel() == Status.ERROR) {
-				errors.append(errors.length() > 0 ? String.format("%n") : "");
+				errors.append((errors.length() > 0) ? String.format("%n") : "");
 				errors.append(status.toString());
 			}
 		}
@@ -184,9 +187,18 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	private void stopAndReset(LoggerContext loggerContext) {
 		loggerContext.stop();
 		loggerContext.reset();
-		if (isBridgeHandlerAvailable()) {
+		if (isBridgeHandlerInstalled()) {
 			addLevelChangePropagator(loggerContext);
 		}
+	}
+
+	private boolean isBridgeHandlerInstalled() {
+		if (!isBridgeHandlerAvailable()) {
+			return false;
+		}
+		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		return handlers.length == 1 && handlers[0] instanceof SLF4JBridgeHandler;
 	}
 
 	private void addLevelChangePropagator(LoggerContext loggerContext) {

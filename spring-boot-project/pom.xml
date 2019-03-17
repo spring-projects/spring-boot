@@ -12,7 +12,7 @@
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
 		<module>spring-boot-dependencies</module>

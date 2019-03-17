@@ -44,7 +44,7 @@ public class EmbeddedLdapProperties {
 	private Credential credential = new Credential();
 
 	/**
-	 * List of base DN.
+	 * List of base DNs.
 	 */
 	@Delimiter(Delimiter.NONE)
 	private List<String> baseDn = new ArrayList<>();

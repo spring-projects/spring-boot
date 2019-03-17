@@ -17,13 +17,19 @@
 package org.springframework.boot.web.servlet.support;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +44,7 @@ import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
@@ -74,6 +81,14 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	public static final String ERROR_REQUEST_URI = "javax.servlet.error.request_uri";
 
 	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
+
+	private static final Set<Class<?>> CLIENT_ABORT_EXCEPTIONS;
+	static {
+		Set<Class<?>> clientAbortExceptions = new HashSet<>();
+		addClassIfPresent(clientAbortExceptions,
+				"org.apache.catalina.connector.ClientAbortException");
+		CLIENT_ABORT_EXCEPTIONS = Collections.unmodifiableSet(clientAbortExceptions);
+	}
 
 	private String global;
 
@@ -162,7 +177,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 			handleCommittedResponse(request, ex);
 			return;
 		}
-
 		forwardToErrorPage(errorPath, request, wrapped, ex);
 	}
 
@@ -179,7 +193,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass());
 		response.reset();
-		response.sendError(500, ex.getMessage());
+		response.setStatus(500);
 		request.getRequestDispatcher(path).forward(request, response);
 		request.removeAttribute(ERROR_EXCEPTION);
 		request.removeAttribute(ERROR_EXCEPTION_TYPE);
@@ -193,11 +207,14 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	 * @since 1.5.0
 	 */
 	protected String getDescription(HttpServletRequest request) {
-		return "[" + request.getServletPath()
-				+ (request.getPathInfo() == null ? "" : request.getPathInfo()) + "]";
+		String pathInfo = (request.getPathInfo() != null) ? request.getPathInfo() : "";
+		return "[" + request.getServletPath() + pathInfo + "]";
 	}
 
 	private void handleCommittedResponse(HttpServletRequest request, Throwable ex) {
+		if (isClientAbortException(ex)) {
+			return;
+		}
 		String message = "Cannot forward to error page for request "
 				+ getDescription(request) + " as the response has already been"
 				+ " committed. As a result, the response may have the wrong status"
@@ -212,6 +229,18 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 			// exception isn't going to help anyone (we'll log it to be on the safe side)
 			logger.error(message, ex);
 		}
+	}
+
+	private boolean isClientAbortException(Throwable ex) {
+		if (ex == null) {
+			return false;
+		}
+		for (Class<?> candidate : CLIENT_ABORT_EXCEPTIONS) {
+			if (candidate.isInstance(ex)) {
+				return true;
+			}
+		}
+		return isClientAbortException(ex.getCause());
 	}
 
 	private String getErrorPath(Map<Integer, String> map, Integer status) {
@@ -274,6 +303,15 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	public void destroy() {
 	}
 
+	private static void addClassIfPresent(Collection<Class<?>> collection,
+			String className) {
+		try {
+			collection.add(ClassUtils.forName(className, null));
+		}
+		catch (Throwable ex) {
+		}
+	}
+
 	private static class ErrorWrapperResponse extends HttpServletResponseWrapper {
 
 		private int status;
@@ -311,11 +349,15 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		@Override
 		public void flushBuffer() throws IOException {
+			sendErrorIfNecessary();
+			super.flushBuffer();
+		}
+
+		private void sendErrorIfNecessary() throws IOException {
 			if (this.hasErrorToSend && !isCommitted()) {
 				((HttpServletResponse) getResponse()).sendError(this.status,
 						this.message);
 			}
-			super.flushBuffer();
 		}
 
 		public String getMessage() {
@@ -324,6 +366,19 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		public boolean hasErrorToSend() {
 			return this.hasErrorToSend;
+		}
+
+		@Override
+		public PrintWriter getWriter() throws IOException {
+			sendErrorIfNecessary();
+			return super.getWriter();
+
+		}
+
+		@Override
+		public ServletOutputStream getOutputStream() throws IOException {
+			sendErrorIfNecessary();
+			return super.getOutputStream();
 		}
 
 	}

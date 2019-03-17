@@ -32,6 +32,7 @@ public class SignalFxPropertiesConfigAdapter
 
 	public SignalFxPropertiesConfigAdapter(SignalFxProperties properties) {
 		super(properties);
+		accessToken(); // validate that an access token is set
 	}
 
 	@Override

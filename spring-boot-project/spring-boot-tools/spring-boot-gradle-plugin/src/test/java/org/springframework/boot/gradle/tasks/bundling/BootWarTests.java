@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +39,34 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("one.jar"),
-				this.temp.newFile("two.jar"));
-		getTask().execute();
+		getTask().providedClasspath(jarFile("one.jar"), jarFile("two.jar"));
+		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNotNull();
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
+	public void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
+		getTask().setMainClassName("com.example.Main");
+		getTask().providedClasspath(jarFile("one.jar"));
+		getTask().setProvidedClasspath(getTask().getProject().files(jarFile("two.jar")));
+		executeTask();
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/two.jar")).isNotNull();
+		}
+	}
+
+	@Test
+	public void providedClasspathCanBeSetUsingAnObject() throws IOException {
+		getTask().setMainClassName("com.example.Main");
+		getTask().providedClasspath(jarFile("one.jar"));
+		getTask().setProvidedClasspath(jarFile("two.jar"));
+		executeTask();
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/two.jar")).isNotNull();
 		}
 	}
@@ -53,7 +76,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 			throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
-		getTask().execute();
+		executeTask();
 		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile
@@ -66,9 +89,9 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	public void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath()
 			throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().setExcludeDevtools(false);
-		getTask().execute();
+		executeTask();
 		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile
@@ -86,7 +109,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		new File(orgFolder, "foo.txt").createNewFile();
 		getTask().from(webappFolder);
 		getTask().setMainClassName("com.example.Main");
-		getTask().execute();
+		executeTask();
 		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("org/")).isNotNull();
@@ -97,11 +120,16 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().classpath(this.temp.newFile("library.jar"));
-		getTask().providedClasspath(this.temp.newFile("provided-library.jar"));
-		getTask().execute();
+		getTask().classpath(jarFile("library.jar"));
+		getTask().providedClasspath(jarFile("provided-library.jar"));
+		executeTask();
 		assertThat(getEntryNames(getTask().getArchivePath())).containsSubsequence(
 				"WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+	}
+
+	@Override
+	protected void executeTask() {
+		getTask().copy();
 	}
 
 }

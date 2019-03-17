@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -189,6 +190,28 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
+	public void streamingError() throws Exception {
+		MvcResult result = this.mvc.perform(get("/api/c1/streamingError"))
+				.andExpect(request().asyncStarted()).andReturn();
+		assertThatCode(
+				() -> this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk()));
+		assertThat(this.registry.get("http.server.requests")
+				.tags("exception", "IOException").timer().count()).isEqualTo(1L);
+	}
+
+	@Test
+	public void anonymousError() {
+		try {
+			this.mvc.perform(get("/api/c1/anonymousError/10"));
+		}
+		catch (Throwable ignore) {
+		}
+		assertThat(this.registry.get("http.server.requests")
+				.tag("uri", "/api/c1/anonymousError/{id}").timer().getId()
+				.getTag("exception")).endsWith("$1");
+	}
+
+	@Test
 	public void asyncCallableRequest() throws Exception {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
@@ -207,39 +230,24 @@ public class WebMvcMetricsFilterTests {
 		// once the mapping completes, we can gather information about status, etc.
 		this.callableBarrier.await();
 		MockClock.clock(this.registry).add(Duration.ofSeconds(2));
-		// while the mapping is running, it contributes to the activeTasks count
-		assertThat(this.registry.get("my.long.request").tags("region", "test")
-				.longTaskTimer().activeTasks()).isEqualTo(1);
 		this.callableBarrier.await();
 		backgroundRequest.join();
 		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests").tags("status", "200")
 				.tags("uri", "/api/c1/callable/{id}").timer().totalTime(TimeUnit.SECONDS))
 						.isEqualTo(2L);
-		// once the async dispatch is complete, it should no longer contribute to the
-		// activeTasks count
-		assertThat(this.registry.get("my.long.request").tags("region", "test")
-				.longTaskTimer().activeTasks()).isEqualTo(0);
 	}
 
 	@Test
 	public void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
 				.andExpect(request().asyncStarted()).andReturn();
-		// once the async dispatch is complete, it should no longer contribute to the
-		// activeTasks count
-		assertThat(this.registry.get("my.long.request.exception").longTaskTimer()
-				.activeTasks()).isEqualTo(1);
 		assertThatExceptionOfType(NestedServletException.class)
 				.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
 				.withRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.get("http.server.requests")
 				.tags("uri", "/api/c1/completableFutureException").timer().count())
 						.isEqualTo(1);
-		// once the async dispatch is complete, it should no longer contribute to the
-		// activeTasks count
-		assertThat(this.registry.get("my.long.request.exception").longTaskTimer()
-				.activeTasks()).isEqualTo(0);
 	}
 
 	@Test
@@ -250,8 +258,8 @@ public class WebMvcMetricsFilterTests {
 				result.set(this.mvc.perform(get("/api/c1/completableFuture/{id}", 1))
 						.andExpect(request().asyncStarted()).andReturn());
 			}
-			catch (Exception e) {
-				fail("Failed to execute async request", e);
+			catch (Exception ex) {
+				fail("Failed to execute async request", ex);
 			}
 		});
 		backgroundRequest.start();
@@ -301,7 +309,7 @@ public class WebMvcMetricsFilterTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Import({ Controller1.class, Controller2.class })
 	static class MetricsFilterApp {
@@ -363,7 +371,7 @@ public class WebMvcMetricsFilterTests {
 		@Bean
 		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
 				WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
 					"http.server.requests", true);
 		}
 
@@ -441,9 +449,25 @@ public class WebMvcMetricsFilterTests {
 		}
 
 		@Timed
+		@GetMapping("/anonymousError/{id}")
+		public String alwaysThrowsAnonymousException(@PathVariable Long id)
+				throws Exception {
+			throw new Exception("this exception won't have a simple class name") {
+			};
+		}
+
+		@Timed
 		@GetMapping("/unhandledError/{id}")
 		public String alwaysThrowsUnhandledException(@PathVariable Long id) {
 			throw new RuntimeException("Boom on " + id + "!");
+		}
+
+		@GetMapping("/streamingError")
+		public ResponseBodyEmitter streamingError() {
+			ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+			emitter.completeWithError(
+					new IOException("error while writing to the response"));
+			return emitter;
 		}
 
 		@Timed

@@ -45,7 +45,7 @@ public class JsonMarshaller {
 	public void write(ConfigurationMetadata metadata, OutputStream outputStream)
 			throws IOException {
 		try {
-			JSONObject object = new JSONOrderedObject();
+			JSONObject object = new JSONObject();
 			JsonConverter converter = new JsonConverter();
 			object.put("groups", converter.toJsonArray(metadata, ItemType.GROUP));
 			object.put("properties", converter.toJsonArray(metadata, ItemType.PROPERTY));
@@ -111,7 +111,7 @@ public class JsonMarshaller {
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);
+		return object.optBoolean("deprecated") ? new ItemDeprecation() : null;
 	}
 
 	private ItemHint toItemHint(JSONObject object) throws Exception {

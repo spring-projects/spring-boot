@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param name the name of the runner or {@code null}
 	 */
 	public CommandRunner(String name) {
-		this.name = (StringUtils.hasLength(name) ? name + " " : "");
+		this.name = StringUtils.hasLength(name) ? name + " " : "";
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class CommandRunner implements Iterable<Command> {
 			ExitStatus result = run(argsWithoutDebugFlags);
 			// The caller will hang up if it gets a non-zero status
 			if (result != null && result.isHangup()) {
-				return (result.getCode() > 0 ? result.getCode() : 0);
+				return (result.getCode() > 0) ? result.getCode() : 0;
 			}
 			return 0;
 		}
@@ -195,7 +195,7 @@ public class CommandRunner implements Iterable<Command> {
 			}
 			rtn.add(arg);
 		}
-		return rtn.toArray(new String[rtn.size()]);
+		return StringUtils.toStringArray(rtn);
 	}
 
 	/**
@@ -260,7 +260,7 @@ public class CommandRunner implements Iterable<Command> {
 	}
 
 	protected boolean errorMessage(String message) {
-		Log.error(message == null ? "Unexpected error" : message);
+		Log.error((message != null) ? message : "Unexpected error");
 		return message != null;
 	}
 
@@ -280,8 +280,8 @@ public class CommandRunner implements Iterable<Command> {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
-						(usageHelp == null ? "" : usageHelp),
-						(description == null ? "" : description)));
+						(usageHelp != null) ? usageHelp : "",
+						(description != null) ? description : ""));
 			}
 		}
 		Log.info("");

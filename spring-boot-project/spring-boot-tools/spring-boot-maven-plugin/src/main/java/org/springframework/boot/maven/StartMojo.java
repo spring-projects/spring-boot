@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.net.ConnectException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.management.MBeanServerConnection;
@@ -88,9 +89,10 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void runWithForkedJvm(File workingDirectory, List<String> args)
+	protected void runWithForkedJvm(File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables)
 			throws MojoExecutionException, MojoFailureException {
-		RunProcess runProcess = runProcess(workingDirectory, args);
+		RunProcess runProcess = runProcess(workingDirectory, args, environmentVariables);
 		try {
 			waitForSpringApplication();
 		}
@@ -100,12 +102,12 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private RunProcess runProcess(File workingDirectory, List<String> args)
-			throws MojoExecutionException {
+	private RunProcess runProcess(File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables) throws MojoExecutionException {
 		try {
 			RunProcess runProcess = new RunProcess(workingDirectory,
 					new JavaExecutable().toString());
-			runProcess.run(false, args.toArray(new String[args.size()]));
+			runProcess.run(false, args, environmentVariables);
 			return runProcess;
 		}
 		catch (Exception ex) {
@@ -133,6 +135,7 @@ public class StartMojo extends AbstractRunMojo {
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.port=" + this.jmxPort);
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.authenticate=false");
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.ssl=false");
+			remoteJmxArguments.add("-Djava.rmi.server.hostname=127.0.0.1");
 			jvmArguments.getArgs().addAll(remoteJmxArguments);
 		}
 		return jvmArguments;

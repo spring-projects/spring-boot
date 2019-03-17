@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,19 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -56,9 +58,7 @@ public class TomcatReactiveWebServerFactoryTests
 	public void tomcatCustomizers() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(TomcatContextCustomizer.class);
-		}
+		Arrays.setAll(listeners, (i) -> mock(TomcatContextCustomizer.class));
 		factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
 		factory.addContextCustomizers(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
@@ -69,22 +69,14 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
+	public void contextIsAddedToHostBeforeCustomizersAreCalled() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
-		willAnswer(new Answer<Void>() {
-
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				assertThat(((Context) invocation.getArguments()[0]).getParent())
-						.isNotNull();
-				return null;
-			}
-
-		}).given(customizer).customize(any(Context.class));
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
-		verify(customizer).customize(any(Context.class));
+		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+		verify(customizer).customize(contextCaptor.capture());
+		assertThat(contextCaptor.getValue().getParent()).isNotNull();
 	}
 
 	@Test
@@ -98,9 +90,7 @@ public class TomcatReactiveWebServerFactoryTests
 	public void tomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		LifecycleListener[] listeners = new LifecycleListener[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(LifecycleListener.class);
-		}
+		Arrays.setAll(listeners, (i) -> mock(LifecycleListener.class));
 		factory.setContextLifecycleListeners(Arrays.asList(listeners[0], listeners[1]));
 		factory.addContextLifecycleListeners(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
@@ -113,17 +103,17 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		factory.setTomcatConnectorCustomizers(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -131,9 +121,7 @@ public class TomcatReactiveWebServerFactoryTests
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(TomcatConnectorCustomizer.class);
-		}
+		Arrays.setAll(listeners, (i) -> mock(TomcatConnectorCustomizer.class));
 		factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
 		factory.addConnectorCustomizers(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(handler);
@@ -141,6 +129,27 @@ public class TomcatReactiveWebServerFactoryTests
 		for (TomcatConnectorCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Connector.class));
 		}
+	}
+
+	@Test
+	public void useForwardedHeaders() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		RemoteIpValve valve = new RemoteIpValve();
+		valve.setProtocolHeader("X-Forwarded-Proto");
+		factory.addEngineValves(valve);
+		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	public void referenceClearingIsDisabled() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(mock(HttpHandler.class));
+		this.webServer.start();
+		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
+		StandardContext context = (StandardContext) tomcat.getHost().findChildren()[0];
+		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
+		assertThat(context.getClearReferencesRmiTargets()).isFalse();
+		assertThat(context.getClearReferencesThreadLocals()).isFalse();
 	}
 
 }

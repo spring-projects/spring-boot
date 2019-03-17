@@ -86,7 +86,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		super("DataSource health check failed");
 		this.dataSource = dataSource;
 		this.query = query;
-		this.jdbcTemplate = (dataSource == null ? null : new JdbcTemplate(dataSource));
+		this.jdbcTemplate = (dataSource != null) ? new JdbcTemplate(dataSource) : null;
 	}
 
 	@Override
@@ -110,11 +110,16 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		builder.up().withDetail("database", product);
 		String validationQuery = getValidationQuery(product);
 		if (StringUtils.hasText(validationQuery)) {
-			// Avoid calling getObject as it breaks MySQL on Java 7
-			List<Object> results = this.jdbcTemplate.query(validationQuery,
-					new SingleColumnRowMapper());
-			Object result = DataAccessUtils.requiredSingleResult(results);
-			builder.withDetail("hello", result);
+			try {
+				// Avoid calling getObject as it breaks MySQL on Java 7
+				List<Object> results = this.jdbcTemplate.query(validationQuery,
+						new SingleColumnRowMapper());
+				Object result = DataAccessUtils.requiredSingleResult(results);
+				builder.withDetail("result", result);
+			}
+			finally {
+				builder.withDetail("validationQuery", validationQuery);
+			}
 		}
 	}
 

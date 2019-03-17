@@ -58,6 +58,25 @@ public class InfluxProperties extends StepRegistryProperties {
 	private String retentionPolicy;
 
 	/**
+	 * Time period for which Influx should retain data in the current database. For
+	 * instance 7d, check the influx documentation for more details on the duration
+	 * format.
+	 */
+	private String retentionDuration;
+
+	/**
+	 * How many copies of the data are stored in the cluster. Must be 1 for a single node
+	 * instance.
+	 */
+	private Integer retentionReplicationFactor;
+
+	/**
+	 * Time range covered by a shard group. For instance 2w, check the influx
+	 * documentation for more details on the duration format.
+	 */
+	private String retentionShardDuration;
+
+	/**
 	 * URI of the Influx server.
 	 */
 	private String uri = "http://localhost:8086";
@@ -111,6 +130,30 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	public void setRetentionPolicy(String retentionPolicy) {
 		this.retentionPolicy = retentionPolicy;
+	}
+
+	public String getRetentionDuration() {
+		return this.retentionDuration;
+	}
+
+	public void setRetentionDuration(String retentionDuration) {
+		this.retentionDuration = retentionDuration;
+	}
+
+	public Integer getRetentionReplicationFactor() {
+		return this.retentionReplicationFactor;
+	}
+
+	public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
+		this.retentionReplicationFactor = retentionReplicationFactor;
+	}
+
+	public String getRetentionShardDuration() {
+		return this.retentionShardDuration;
+	}
+
+	public void setRetentionShardDuration(String retentionShardDuration) {
+		this.retentionShardDuration = retentionShardDuration;
 	}
 
 	public String getUri() {

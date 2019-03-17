@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 
@@ -41,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
@@ -60,14 +59,8 @@ public class GangliaMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig,
-			HierarchicalNameMapper nameMapper, Clock clock) {
-		return new GangliaMeterRegistry(gangliaConfig, clock, nameMapper);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HierarchicalNameMapper hierarchicalNameMapper() {
-		return HierarchicalNameMapper.DEFAULT;
+			Clock clock) {
+		return new GangliaMeterRegistry(gangliaConfig, clock);
 	}
 
 }

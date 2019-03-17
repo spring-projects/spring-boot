@@ -20,13 +20,14 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -55,7 +56,7 @@ public final class StaticResourceRequest {
 	 * {@link StaticResourceRequestMatcher#excluding(StaticResourceLocation, StaticResourceLocation...)
 	 * excluding} method can be used to remove specific locations if required. For
 	 * example: <pre class="code">
-	 * StaticResourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS)
+	 * PathRequest.toStaticResources().atCommonLocations().excluding(StaticResourceLocation.CSS)
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
 	 */
@@ -66,7 +67,7 @@ public final class StaticResourceRequest {
 	/**
 	 * Returns a matcher that includes the specified {@link StaticResourceLocation
 	 * Locations}. For example: <pre class="code">
-	 * StaticResourceRequest.at(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
+	 * PathRequest.toStaticResources().at(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
 	 * </pre>
 	 * @param first the first location to include
 	 * @param rest additional locations to include
@@ -80,7 +81,7 @@ public final class StaticResourceRequest {
 	/**
 	 * Returns a matcher that includes the specified {@link StaticResourceLocation
 	 * Locations}. For example: <pre class="code">
-	 * StaticResourceRequest.at(locations)
+	 * PathRequest.toStaticResources().at(locations)
 	 * </pre>
 	 * @param locations the locations to include
 	 * @return the configured {@link RequestMatcher}
@@ -95,14 +96,14 @@ public final class StaticResourceRequest {
 	 * Locations}.
 	 */
 	public static final class StaticResourceRequestMatcher
-			extends ApplicationContextRequestMatcher<ServerProperties> {
+			extends ApplicationContextRequestMatcher<DispatcherServletPath> {
 
 		private final Set<StaticResourceLocation> locations;
 
-		private RequestMatcher delegate;
+		private volatile RequestMatcher delegate;
 
 		private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
-			super(ServerProperties.class);
+			super(DispatcherServletPath.class);
 			this.locations = locations;
 		}
 
@@ -133,23 +134,26 @@ public final class StaticResourceRequest {
 		}
 
 		@Override
-		protected void initialized(ServerProperties serverProperties) {
-			this.delegate = new OrRequestMatcher(getDelegateMatchers(serverProperties));
+		protected void initialized(
+				Supplier<DispatcherServletPath> dispatcherServletPath) {
+			this.delegate = new OrRequestMatcher(
+					getDelegateMatchers(dispatcherServletPath.get()));
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(
-				ServerProperties serverProperties) {
-			return getPatterns(serverProperties).map(AntPathRequestMatcher::new)
+				DispatcherServletPath dispatcherServletPath) {
+			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new)
 					.collect(Collectors.toList());
 		}
 
-		private Stream<String> getPatterns(ServerProperties serverProperties) {
+		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {
 			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
-					.map(serverProperties.getServlet()::getPath);
+					.map(dispatcherServletPath::getRelativePath);
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, ServerProperties context) {
+		protected boolean matches(HttpServletRequest request,
+				Supplier<DispatcherServletPath> context) {
 			return this.delegate.matches(request);
 		}
 

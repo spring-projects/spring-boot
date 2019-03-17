@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -177,15 +178,15 @@ class JsonReader {
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new Deprecation() : null);
+		return object.optBoolean("deprecated") ? new Deprecation() : null;
 	}
 
 	private Deprecation.Level parseDeprecationLevel(String value) {
 		if (value != null) {
 			try {
-				return Deprecation.Level.valueOf(value.toUpperCase());
+				return Deprecation.Level.valueOf(value.toUpperCase(Locale.ENGLISH));
 			}
-			catch (IllegalArgumentException e) {
+			catch (IllegalArgumentException ex) {
 				// let's use the default
 			}
 		}

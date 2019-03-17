@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class PrometheusScrapeEndpointDocumentationTests
 				.andDo(document("prometheus"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
@@ -54,14 +53,7 @@ public class PrometheusScrapeEndpointDocumentationTests
 		public PrometheusScrapeEndpoint endpoint() {
 			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
 			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry(
-					new PrometheusConfig() {
-
-						@Override
-						public String get(String key) {
-							return null;
-						}
-
-					}, collectorRegistry, Clock.SYSTEM);
+					(key) -> null, collectorRegistry, Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}

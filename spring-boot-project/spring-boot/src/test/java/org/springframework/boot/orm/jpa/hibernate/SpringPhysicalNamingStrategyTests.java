@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,12 @@ package org.springframework.boot.orm.jpa.hibernate;
 
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.mapping.PersistentClass;
-import org.hibernate.service.ServiceRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,20 +41,16 @@ public class SpringPhysicalNamingStrategyTests {
 
 	private MetadataSources metadataSources;
 
-	private StandardServiceRegistry serviceRegistry;
-
 	@Before
 	public void setup() {
-		this.metadataSources = new MetadataSources();
+		this.metadataSources = new MetadataSources(createServiceRegistry());
 		this.metadataSources.addAnnotatedClass(TelephoneNumber.class);
-		this.serviceRegistry = getServiceRegistry(this.metadataSources);
-		this.metadata = this.metadataSources.getMetadataBuilder(this.serviceRegistry)
+		this.metadata = this.metadataSources.getMetadataBuilder()
 				.applyPhysicalNamingStrategy(new SpringPhysicalNamingStrategy()).build();
 	}
 
-	private StandardServiceRegistry getServiceRegistry(MetadataSources metadataSources) {
-		ServiceRegistry registry = metadataSources.getServiceRegistry();
-		return new StandardServiceRegistryBuilder((BootstrapServiceRegistry) registry)
+	private StandardServiceRegistry createServiceRegistry() {
+		return new StandardServiceRegistryBuilder()
 				.applySetting(AvailableSettings.DIALECT, H2Dialect.class).build();
 	}
 
@@ -69,7 +63,7 @@ public class SpringPhysicalNamingStrategyTests {
 
 	@Test
 	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
-		this.metadata = this.metadataSources.getMetadataBuilder(this.serviceRegistry)
+		this.metadata = this.metadataSources.getMetadataBuilder()
 				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy())
 				.build();
 		PersistentClass binding = this.metadata

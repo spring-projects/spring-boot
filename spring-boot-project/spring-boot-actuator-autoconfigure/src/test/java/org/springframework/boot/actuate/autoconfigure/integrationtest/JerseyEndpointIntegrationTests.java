@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,23 +29,39 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * Integration tests for the Jersey actuator endpoints.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class JerseyEndpointIntegrationTests {
 
 	@Test
-	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+	public void linksAreProvidedToAllEndpointTypes() {
+		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class,
+				ResourceConfigConfiguration.class });
+	}
+
+	@Test
+	public void actuatorEndpointsWhenUserProvidedResourceConfigBeanNotAvailable() {
+		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class });
+	}
+
+	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
+		FilteredClassLoader classLoader = new FilteredClassLoader(
+				DispatcherServlet.class);
 		new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(classLoader)
 						.withConfiguration(
 								AutoConfigurations.of(JacksonAutoConfiguration.class,
 										JerseyAutoConfiguration.class,
@@ -54,7 +70,7 @@ public class JerseyEndpointIntegrationTests {
 										WebEndpointAutoConfiguration.class,
 										ManagementContextAutoConfiguration.class,
 										BeansEndpointAutoConfiguration.class))
-						.withUserConfiguration(EndpointsConfiguration.class)
+						.withUserConfiguration(userConfigurations)
 						.withPropertyValues("management.endpoints.web.exposure.include:*",
 								"server.port:0")
 						.run((context) -> {
@@ -65,8 +81,8 @@ public class JerseyEndpointIntegrationTests {
 									.baseUrl("http://localhost:" + port).build();
 							client.get().uri("/actuator").exchange().expectStatus().isOk()
 									.expectBody().jsonPath("_links.beans").isNotEmpty()
-									.jsonPath("_links.restcontroller").isNotEmpty()
-									.jsonPath("_links.controller").isNotEmpty();
+									.jsonPath("_links.restcontroller").doesNotExist()
+									.jsonPath("_links.controller").doesNotExist();
 						});
 	}
 
@@ -80,13 +96,8 @@ public class JerseyEndpointIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EndpointsConfiguration {
-
-		@Bean
-		ResourceConfig testResourceConfig() {
-			return new ResourceConfig();
-		}
 
 		@Bean
 		TestControllerEndpoint testControllerEndpoint() {
@@ -96,6 +107,16 @@ public class JerseyEndpointIntegrationTests {
 		@Bean
 		TestRestControllerEndpoint testRestControllerEndpoint() {
 			return new TestRestControllerEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ResourceConfigConfiguration {
+
+		@Bean
+		ResourceConfig testResourceConfig() {
+			return new ResourceConfig();
 		}
 
 	}

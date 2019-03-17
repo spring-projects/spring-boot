@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -44,7 +44,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(PlatformTransactionManager.class)
 @AutoConfigureAfter({ JtaAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
@@ -55,41 +55,37 @@ public class TransactionAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TransactionManagerCustomizers platformTransactionManagerCustomizers(
-			ObjectProvider<List<PlatformTransactionManagerCustomizer<?>>> customizers) {
-		return new TransactionManagerCustomizers(customizers.getIfAvailable());
+			ObjectProvider<PlatformTransactionManagerCustomizer<?>> customizers) {
+		return new TransactionManagerCustomizers(
+				customizers.orderedStream().collect(Collectors.toList()));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(PlatformTransactionManager.class)
 	public static class TransactionTemplateConfiguration {
 
-		private final PlatformTransactionManager transactionManager;
-
-		public TransactionTemplateConfiguration(
-				PlatformTransactionManager transactionManager) {
-			this.transactionManager = transactionManager;
-		}
-
 		@Bean
 		@ConditionalOnMissingBean
-		public TransactionTemplate transactionTemplate() {
-			return new TransactionTemplate(this.transactionManager);
+		public TransactionTemplate transactionTemplate(
+				PlatformTransactionManager transactionManager) {
+			return new TransactionTemplate(transactionManager);
 		}
+
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(PlatformTransactionManager.class)
 	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
 	public static class EnableTransactionManagementConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = false)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing = false)
 		public static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = true)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing = true)
 		public static class CglibAutoProxyConfiguration {

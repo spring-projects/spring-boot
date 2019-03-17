@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public final class ConditionMessage {
 	}
 
 	private ConditionMessage(ConditionMessage prior, String message) {
-		this.message = (prior.isEmpty() ? message : prior + "; " + message);
+		this.message = prior.isEmpty() ? message : prior + "; " + message;
 	}
 
 	/**
@@ -60,8 +60,14 @@ public final class ConditionMessage {
 	}
 
 	@Override
-	public String toString() {
-		return (this.message == null ? "" : this.message);
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ConditionMessage)) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		return ObjectUtils.nullSafeEquals(((ConditionMessage) obj).message, this.message);
 	}
 
 	@Override
@@ -70,14 +76,8 @@ public final class ConditionMessage {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !ConditionMessage.class.isInstance(obj)) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		return ObjectUtils.nullSafeEquals(((ConditionMessage) obj).message, this.message);
+	public String toString() {
+		return (this.message != null) ? this.message : "";
 	}
 
 	/**
@@ -358,8 +358,7 @@ public final class ConditionMessage {
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage items(Style style, Object... items) {
-			return items(style,
-					items == null ? null : Arrays.asList(items));
+			return items(style, (items != null) ? Arrays.asList(items) : null);
 		}
 
 		/**
@@ -387,14 +386,14 @@ public final class ConditionMessage {
 			items = style.applyTo(items);
 			if ((this.condition == null || items.size() <= 1)
 					&& StringUtils.hasLength(this.singular)) {
-				message.append(" " + this.singular);
+				message.append(" ").append(this.singular);
 			}
 			else if (StringUtils.hasLength(this.plural)) {
-				message.append(" " + this.plural);
+				message.append(" ").append(this.plural);
 			}
 			if (items != null && !items.isEmpty()) {
-				message.append(
-						" " + StringUtils.collectionToDelimitedString(items, ", "));
+				message.append(" ")
+						.append(StringUtils.collectionToDelimitedString(items, ", "));
 			}
 			return this.condition.because(message.toString());
 		}
@@ -416,7 +415,7 @@ public final class ConditionMessage {
 		QUOTE {
 			@Override
 			protected String applyToItem(Object item) {
-				return (item == null ? null : "'" + item + "'");
+				return (item != null) ? "'" + item + "'" : null;
 			}
 		};
 

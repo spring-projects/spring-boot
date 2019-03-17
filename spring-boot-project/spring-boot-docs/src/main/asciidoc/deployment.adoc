@@ -1,5 +1,6 @@
 [[deployment]]
 = Deploying Spring Boot Applications
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -400,9 +401,13 @@ identifier for you and also sets up HTTP routes. Add a Java app to the project a
 it empty and then use the https://cloud.google.com/sdk/downloads[Google Cloud SDK] to
 push your Spring Boot app into that slot from the command line or CI build.
 
-App Engine needs you to create an `app.yaml` file to describe the resources your app
-requires. Normally, you put this file in `src/main/appengine`, and it should resemble the
-following file:
+App Engine Standard requires you to use WAR packaging. Follow
+https://github.com/GoogleCloudPlatform/getting-started-java/blob/master/appengine-standard-java8/springboot-appengine-standard/README.md[these steps]
+to deploy App Engine Standard application to Google Cloud.
+
+Alternatively, App Engine Flex requires you to create an `app.yaml` file to describe
+the resources your app requires. Normally, you put this file in `src/main/appengine`,
+and it should resemble the following file:
 
 [source,yaml,indent=0]
 ----
@@ -446,15 +451,11 @@ build configuration, as shown in the following example:
 Then deploy with `mvn appengine:deploy` (if you need to authenticate first, the build
 fails).
 
-NOTE: Google App Engine Classic is tied to the Servlet 2.5 API, so you cannot deploy a
-Spring Application there without some modifications. See the
-<<howto.adoc#howto-servlet-2-5,Servlet 2.5 section>> of this guide.
-
 
 
 [[deployment-install]]
 == Installing Spring Boot Applications
-In additional to running Spring Boot applications by using `java -jar`, it is also
+In addition to running Spring Boot applications by using `java -jar`, it is also
 possible to make fully executable applications for Unix systems. A fully executable jar
 can be executed like any other executable binary or it can be
 <<deployment-service,registered with `init.d` or `systemd`>>. This makes it very easy to
@@ -674,73 +675,104 @@ description up front (and it need not change), you may as well provide it when t
 generated.
 
 To customize written elements, use the `embeddedLaunchScriptProperties` option of the
-Spring Boot Maven or Gradle plugins.
+Spring Boot Maven plugin or the
+{spring-boot-gradle-plugin-reference}/#packaging-executable-configuring-launch-script[`properties`
+property of the Spring Boot Gradle plugin's `launchScript`].
 
 The following property substitutions are supported with the default script:
 
-[cols="1,6"]
+[cols="1,3,3,3"]
 |===
-|Name |Description
+|Name |Description |Gradle default |Maven default
 
 |`mode`
-|The script mode. Defaults to `auto`.
+|The script mode.
+|`auto`
+|`auto`
 
 |`initInfoProvides`
-|The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
- and to `${project.artifactId}` for Maven.
+|The `Provides` section of "`INIT INFO`"
+|`${task.baseName}`
+|`${project.artifactId}`
 
 |`initInfoRequiredStart`
-|The `Required-Start` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
+|`Required-Start` section of "`INIT INFO`".
+|`$remote_fs $syslog $network`
+|`$remote_fs $syslog $network`
 
 |`initInfoRequiredStop`
-|The `Required-Stop` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
-
+|`Required-Stop` section of "`INIT INFO`".
+|`$remote_fs $syslog $network`
+|`$remote_fs $syslog $network`
 
 |`initInfoDefaultStart`
-|The `Default-Start` section of "`INIT INFO`". Defaults to `2 3 4 5`.
+|`Default-Start` section of "`INIT INFO`".
+|`2 3 4 5`
+|`2 3 4 5`
 
 |`initInfoDefaultStop`
-|The `Default-Stop` section of "`INIT INFO`". Defaults to `0 1 6`.
+|`Default-Stop` section of "`INIT INFO`".
+|`0 1 6`
+|`0 1 6`
 
 |`initInfoShortDescription`
-|The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
-for Gradle and to `${project.name}` for Maven.
+|`Short-Description` section of "`INIT INFO`".
+|Single-line version of `${project.description}` (falling back to `${task.baseName}`)
+|`${project.name}`
 
 |`initInfoDescription`
-|The `Description` section of "`INIT INFO`". Defaults to `Spring Boot Application` for
- Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
+|`Description` section of "`INIT INFO`".
+|`${project.description}` (falling back to `${task.baseName}`)
+|`${project.description}` (falling back to `${project.name}`)
 
 |`initInfoChkconfig`
-|The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
+|`chkconfig` section of "`INIT INFO`"
+|`2345 99 01`
+|`2345 99 01`
 
 |`confFolder`
-|The default value for `CONF_FOLDER`. Defaults to the folder containing the jar.
+|The default value for `CONF_FOLDER`
+|Folder containing the jar
+|Folder containing the jar
 
 |`inlinedConfScript`
 |Reference to a file script that should be inlined in the default launch script.
  This can be used to set environmental variables such as `JAVA_OPTS` before any external
- config files are loaded.
+ config files are loaded
+|
+|
 
 |`logFolder`
-|The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
+|Default value for `LOG_FOLDER`. Only valid for an `init.d` service
+|
+|
 
 |`logFilename`
-|The default value for `LOG_FILENAME`. Only valid for an `init.d` service.
+|Default value for `LOG_FILENAME`. Only valid for an `init.d` service
+|
+|
 
 |`pidFolder`
-|The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+|Default value for `PID_FOLDER`. Only valid for an `init.d` service
+|
+|
 
 |`pidFilename`
-|The default value for the name of the PID file in `PID_FOLDER`. Only valid for an
- `init.d` service.
+|Default value for the name of the PID file in `PID_FOLDER`. Only valid for an
+ `init.d` service
+|
+|
 
 |`useStartStopDaemon`
 |Whether the `start-stop-daemon` command, when it's available, should be used to control
- the process. Defaults to `true`.
+ the process
+|`true`
+|`true`
 
 |`stopWaitTime`
-|The default value for `STOP_WAIT_TIME`. Only valid for an `init.d` service.
- Defaults to 60 seconds.
+|Default value for `STOP_WAIT_TIME` in seconds. Only valid for an `init.d` service
+|60
+|60
 |===
 
 
@@ -847,7 +879,7 @@ application.
 
 [[deployment-whats-next]]
 == What to Read Next
-Check out the https://www.cloudfoundry.com/[Cloud Foundry],
+Check out the https://www.cloudfoundry.org/[Cloud Foundry],
 https://www.heroku.com/[Heroku], https://www.openshift.com[OpenShift], and
 https://boxfuse.com[Boxfuse] web sites for more information about the kinds of features
 that a PaaS can offer. These are just four of the most popular Java PaaS providers. Since

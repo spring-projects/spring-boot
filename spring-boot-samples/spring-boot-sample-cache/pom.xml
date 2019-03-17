@@ -46,15 +46,6 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>jcache</id>
-			<dependencies>
-				<dependency>
-					<groupId>javax.cache</groupId>
-					<artifactId>cache-api</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
 			<id>caffeine</id>
 			<dependencies>
 				<dependency>
@@ -130,16 +121,6 @@
 				<dependency>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-data-redis</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>guava</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-					<version>18.0</version>
 				</dependency>
 			</dependencies>
 		</profile>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -32,7 +33,7 @@ class RunArguments {
 
 	private static final String[] NO_ARGS = {};
 
-	private final LinkedList<String> args = new LinkedList<>();
+	private final Deque<String> args = new LinkedList<>();
 
 	RunArguments(String arguments) {
 		this(parseArgs(arguments));
@@ -44,12 +45,12 @@ class RunArguments {
 		}
 	}
 
-	public LinkedList<String> getArgs() {
+	public Deque<String> getArgs() {
 		return this.args;
 	}
 
 	public String[] asArray() {
-		return this.args.toArray(new String[this.args.size()]);
+		return this.args.toArray(new String[0]);
 	}
 
 	private static String[] parseArgs(String arguments) {

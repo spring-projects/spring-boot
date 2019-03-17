@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ public class Customer {
 	private String id;
 
 	private String firstName;
+
 	private String lastName;
 
 	public Customer() {
@@ -36,8 +37,8 @@ public class Customer {
 
 	@Override
 	public String toString() {
-		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", id,
-				firstName, lastName);
+		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", this.id,
+				this.firstName, this.lastName);
 	}
 
 }

@@ -55,6 +55,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.condition.ConsumesRequestCondition;
 import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
@@ -73,6 +74,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 2.0.0
  */
 public abstract class AbstractWebFluxEndpointHandlerMapping
@@ -87,9 +89,6 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	private final EndpointMediaTypes endpointMediaTypes;
 
 	private final CorsConfiguration corsConfiguration;
-
-	private final Method linksMethod = ReflectionUtils.findMethod(getClass(), "links",
-			ServerWebExchange.class);
 
 	private final Method handleWriteMethod = ReflectionUtils.findMethod(
 			WriteOperationHandler.class, "handle", ServerWebExchange.class, Map.class);
@@ -127,14 +126,17 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		}
 	}
 
+	@Override
+	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
+		HandlerMethod handlerMethod = super.createHandlerMethod(handler, method);
+		return new WebFluxEndpointHandlerMethod(handlerMethod.getBean(),
+				handlerMethod.getMethod());
+	}
+
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint,
 			WebOperation operation) {
-		OperationInvoker invoker = operation::invoke;
-		if (operation.isBlocking()) {
-			invoker = new ElasticSchedulerInvoker(invoker);
-		}
 		ReactiveWebOperation reactiveWebOperation = wrapReactiveWebOperation(endpoint,
-				operation, new ReactiveWebOperationAdapter(invoker));
+				operation, new ReactiveWebOperationAdapter(operation));
 		if (operation.getType() == OperationType.WRITE) {
 			registerMapping(createRequestMappingInfo(operation),
 					new WriteOperationHandler((reactiveWebOperation)),
@@ -167,15 +169,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(predicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
-				toStringArray(predicate.getConsumes()));
+				StringUtils.toStringArray(predicate.getConsumes()));
 		ProducesRequestCondition produces = new ProducesRequestCondition(
-				toStringArray(predicate.getProduces()));
+				StringUtils.toStringArray(predicate.getProduces()));
 		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
 				produces, null);
-	}
-
-	private String[] toStringArray(Collection<String> collection) {
-		return collection.toArray(new String[collection.size()]);
 	}
 
 	private void registerLinksMapping() {
@@ -184,11 +182,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.GET);
 		ProducesRequestCondition produces = new ProducesRequestCondition(
-				this.endpointMediaTypes.getProduced().toArray(
-						new String[this.endpointMediaTypes.getProduced().size()]));
+				StringUtils.toStringArray(this.endpointMediaTypes.getProduced()));
 		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
 				null, produces, null);
-		registerMapping(mapping, this, this.linksMethod);
+		LinksHandler linksHandler = getLinksHandler();
+		registerMapping(mapping, linksHandler, ReflectionUtils
+				.findMethod(linksHandler.getClass(), "links", ServerWebExchange.class));
 	}
 
 	@Override
@@ -208,7 +207,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		return null;
 	}
 
-	protected abstract Object links(ServerWebExchange exchange);
+	/**
+	 * Return the Handler providing actuator links at the root endpoint.
+	 * @return the links handler
+	 */
+	protected abstract LinksHandler getLinksHandler();
 
 	/**
 	 * Return the web endpoints being mapped.
@@ -249,6 +252,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	}
 
 	/**
+	 * Reactive handler providing actuator links at the root endpoint.
+	 */
+	@FunctionalInterface
+	protected interface LinksHandler {
+
+		Object links(ServerWebExchange exchange);
+
+	}
+
+	/**
 	 * A reactive web operation that can be handled by WebFlux.
 	 */
 	@FunctionalInterface
@@ -256,6 +269,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				Map<String, String> body);
+
 	}
 
 	/**
@@ -267,11 +281,22 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		private final OperationInvoker invoker;
 
+		private final String operationId;
+
 		private final Supplier<Mono<? extends SecurityContext>> securityContextSupplier;
 
-		private ReactiveWebOperationAdapter(OperationInvoker invoker) {
-			this.invoker = invoker;
+		private ReactiveWebOperationAdapter(WebOperation operation) {
+			this.invoker = getInvoker(operation);
+			this.operationId = operation.getId();
 			this.securityContextSupplier = getSecurityContextSupplier();
+		}
+
+		private OperationInvoker getInvoker(WebOperation operation) {
+			OperationInvoker invoker = operation::invoke;
+			if (operation.isBlocking()) {
+				invoker = new ElasticSchedulerInvoker(invoker);
+			}
+			return invoker;
 		}
 
 		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
@@ -314,7 +339,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 				arguments.putAll(body);
 			}
 			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
-					.put(name, values.size() == 1 ? values.get(0) : values));
+					.put(name, (values.size() != 1) ? values : values.get(0)));
 			return arguments;
 		}
 
@@ -328,8 +353,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 					.onErrorMap(InvalidEndpointRequestException.class,
 							(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 									ex.getReason()))
-					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET
-							? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
+					.defaultIfEmpty(new ResponseEntity<>((httpMethod != HttpMethod.GET)
+							? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND));
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {
@@ -339,6 +364,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			return new ResponseEntity<>(webEndpointResponse.getBody(),
 					HttpStatus.valueOf(webEndpointResponse.getStatus()));
+		}
+
+		@Override
+		public String toString() {
+			return "Actuator web endpoint '" + this.operationId + "'";
 		}
 
 	}
@@ -376,6 +406,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		@ResponseBody
 		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
+		}
+
+	}
+
+	private static class WebFluxEndpointHandlerMethod extends HandlerMethod {
+
+		WebFluxEndpointHandlerMethod(Object bean, Method method) {
+			super(bean, method);
+		}
+
+		@Override
+		public String toString() {
+			return getBean().toString();
+		}
+
+		@Override
+		public HandlerMethod createWithResolvedBean() {
+			HandlerMethod handlerMethod = super.createWithResolvedBean();
+			return new WebFluxEndpointHandlerMethod(handlerMethod.getBean(),
+					handlerMethod.getMethod());
 		}
 
 	}

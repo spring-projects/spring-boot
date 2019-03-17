@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -112,7 +113,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
 	// Not this package or its parent
 	@EnableMongoRepositories(basePackageClasses = Country.class)
@@ -120,7 +121,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
 	@EnableMongoRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
@@ -129,7 +130,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
@@ -139,14 +140,14 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 	// In this one the Jpa repositories and the auto-configuration packages overlap, so
 	// Mongo will try and configure the same repositories
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CityRepository.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
 	protected static class OverlapConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Registrar.class)
 	protected static class BaseConfiguration {
 
@@ -164,7 +165,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 					MongoRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
-			return names.toArray(new String[0]);
+			return StringUtils.toStringArray(names);
 		}
 
 	}

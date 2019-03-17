@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.condition;
+
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -68,12 +70,26 @@ public class ConditionalOnClassTests {
 				.run(this::hasBarBean);
 	}
 
+	@Test
+	public void onClassConditionOutputShouldNotContainConditionalOnMissingClassInMessage() {
+		this.contextRunner.withUserConfiguration(BasicConfiguration.class)
+				.run((context) -> {
+					Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
+							.get(context.getSourceApplicationContext().getBeanFactory())
+							.getConditionAndOutcomesBySource().values();
+					String message = conditionAndOutcomes.iterator().next().iterator()
+							.next().getOutcome().getMessage();
+					assertThat(message).doesNotContain(
+							"@ConditionalOnMissingClass did not find unwanted class");
+				});
+	}
+
 	private void hasBarBean(AssertableApplicationContext context) {
 		assertThat(context).hasBean("bar");
 		assertThat(context.getBean("bar")).isEqualTo("bar");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ConditionalOnClassTests.class)
 	protected static class BasicConfiguration {
 
@@ -84,7 +100,7 @@ public class ConditionalOnClassTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "FOO")
 	protected static class MissingConfiguration {
 
@@ -95,7 +111,7 @@ public class ConditionalOnClassTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FooConfiguration {
 
 		@Bean
@@ -105,13 +121,13 @@ public class ConditionalOnClassTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class XmlConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BasicConfiguration.class)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class CombinedXmlConfiguration {

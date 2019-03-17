@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,14 @@ import org.xnio.SslClientAuthMode;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ResourceUtils;
 
 /**
  * {@link UndertowBuilderCustomizer} that configures SSL on the given builder instance.
  *
  * @author Brian Clozel
+ * @author Raheela Aslam
  */
 class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
@@ -84,10 +86,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 						Sequence.of(this.ssl.getCiphers()));
 			}
 		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (KeyManagementException ex) {
+		catch (NoSuchAlgorithmException | KeyManagementException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -114,8 +113,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = (ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray() : null);
+			char[] keyPassword = (ssl.getKeyPassword() != null)
+					? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
@@ -147,8 +146,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getKeyStore();
 		}
-		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStore(),
-				ssl.getKeyStorePassword());
+		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
+				ssl.getKeyStore(), ssl.getKeyStorePassword());
 	}
 
 	private TrustManager[] getTrustManagers(Ssl ssl, SslStoreProvider sslStoreProvider) {
@@ -169,20 +168,38 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStore(),
-				ssl.getTrustStorePassword());
+		return loadTrustStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
+				ssl.getTrustStore(), ssl.getTrustStorePassword());
 	}
 
-	private KeyStore loadKeyStore(String type, String resource, String password)
-			throws Exception {
-		type = (type == null ? "JKS" : type);
+	private KeyStore loadKeyStore(String type, String provider, String resource,
+			String password) throws Exception {
+		return loadStore(type, provider, resource, password);
+	}
+
+	private KeyStore loadTrustStore(String type, String provider, String resource,
+			String password) throws Exception {
 		if (resource == null) {
 			return null;
 		}
-		KeyStore store = KeyStore.getInstance(type);
-		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password == null ? null : password.toCharArray());
-		return store;
+		return loadStore(type, provider, resource, password);
+	}
+
+	private KeyStore loadStore(String type, String provider, String resource,
+			String password) throws Exception {
+		type = (type != null) ? type : "JKS";
+		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider)
+				: KeyStore.getInstance(type);
+		try {
+			URL url = ResourceUtils.getURL(resource);
+			store.load(url.openStream(),
+					(password != null) ? password.toCharArray() : null);
+			return store;
+		}
+		catch (Exception ex) {
+			throw new WebServerException("Could not load key store '" + resource + "'",
+					ex);
+		}
 	}
 
 	/**

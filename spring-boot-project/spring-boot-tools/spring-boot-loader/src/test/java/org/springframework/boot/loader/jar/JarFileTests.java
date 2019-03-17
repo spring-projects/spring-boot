@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilePermission;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -31,11 +30,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -44,6 +43,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -59,9 +60,6 @@ public class JarFileTests {
 	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -92,6 +90,8 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("special/\u00EB.dat");
 		assertThat(entries.nextElement().getName()).isEqualTo("nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("another-nested.jar");
+		assertThat(entries.nextElement().getName()).isEqualTo("space nested.jar");
+		assertThat(entries.nextElement().getName()).isEqualTo("multi-release.jar");
 		assertThat(entries.hasMoreElements()).isFalse();
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
@@ -134,6 +134,8 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("special/\u00EB.dat");
 		assertThat(entries.nextElement().getName()).isEqualTo("nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("another-nested.jar");
+		assertThat(entries.nextElement().getName()).isEqualTo("space nested.jar");
+		assertThat(entries.nextElement().getName()).isEqualTo("multi-release.jar");
 		assertThat(entries.hasMoreElements()).isFalse();
 	}
 
@@ -168,8 +170,10 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getSize() {
-		assertThat(this.jarFile.size()).isEqualTo((int) this.rootJarFile.length());
+	public void getSize() throws Exception {
+		try (ZipFile zip = new ZipFile(this.rootJarFile)) {
+			assertThat(this.jarFile.size()).isEqualTo(zip.size());
+		}
 	}
 
 	@Test
@@ -183,7 +187,7 @@ public class JarFileTests {
 	@Test
 	public void close() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = spy(
-				new RandomAccessDataFile(this.rootJarFile, 1));
+				new RandomAccessDataFile(this.rootJarFile));
 		JarFile jarFile = new JarFile(randomAccessDataFile);
 		jarFile.close();
 		verify(randomAccessDataFile).close();
@@ -226,16 +230,15 @@ public class JarFileTests {
 		URL url = new URL(this.jarFile.getUrl(), "missing.dat");
 		assertThat(url.toString())
 				.isEqualTo("jar:" + this.rootJarFile.toURI() + "!/missing.dat");
-		this.thrown.expect(FileNotFoundException.class);
-		((JarURLConnection) url.openConnection()).getJarEntry();
+		assertThatExceptionOfType(FileNotFoundException.class)
+				.isThrownBy(((JarURLConnection) url.openConnection())::getJarEntry);
 	}
 
 	@Test
 	public void getUrlStream() throws Exception {
 		URL url = this.jarFile.getUrl();
 		url.openConnection();
-		this.thrown.expect(IOException.class);
-		url.openStream();
+		assertThatIOException().isThrownBy(url::openStream);
 	}
 
 	@Test
@@ -427,8 +430,8 @@ public class JarFileTests {
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		URL nestedUrl = nestedJarFile.getUrl();
 		URL url = new URL(nestedUrl, nestedJarFile.getUrl() + "missing.jar!/3.dat");
-		this.thrown.expect(FileNotFoundException.class);
-		url.openConnection().getInputStream();
+		assertThatExceptionOfType(FileNotFoundException.class)
+				.isThrownBy(url.openConnection()::getInputStream);
 	}
 
 	@Test
@@ -476,6 +479,48 @@ public class JarFileTests {
 		JarFile jf = new JarFile(temp);
 		jf.close();
 		assertThat(temp.delete()).isTrue();
+	}
+
+	@Test
+	public void createUrlFromStringWithContextWhenNotFound() throws Exception {
+		// gh-12483
+		JarURLConnection.setUseFastExceptions(true);
+		try {
+			JarFile.registerUrlProtocolHandler();
+			JarFile nested = this.jarFile
+					.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+			URL context = nested.getUrl();
+			new URL(context, "jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat")
+					.openConnection().getInputStream().close();
+			assertThatExceptionOfType(FileNotFoundException.class).isThrownBy(
+					new URL(context, "jar:" + this.rootJarFile.toURI() + "!/no.dat")
+							.openConnection()::getInputStream);
+		}
+		finally {
+			JarURLConnection.setUseFastExceptions(false);
+		}
+	}
+
+	@Test
+	public void multiReleaseEntry() throws Exception {
+		JarFile multiRelease = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("multi-release.jar"));
+		ZipEntry entry = multiRelease.getEntry("multi-release.dat");
+		assertThat(entry.getName()).isEqualTo("multi-release.dat");
+		InputStream inputStream = multiRelease.getInputStream(entry);
+		assertThat(inputStream.available()).isEqualTo(1);
+		assertThat(inputStream.read()).isEqualTo(getJavaVersion());
+	}
+
+	private int getJavaVersion() {
+		try {
+			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
+			return (int) runtimeVersion.getClass().getMethod("major")
+					.invoke(runtimeVersion);
+		}
+		catch (Throwable ex) {
+			return 8;
+		}
 	}
 
 }

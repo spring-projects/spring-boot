@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,12 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("durationMinutes")).isEqualTo("30m");
 		assertThat(values.get("durationHours")).isEqualTo("40h");
 		assertThat(values.get("durationDays")).isEqualTo("50d");
+		assertThat(values.get("dataSizeNone")).isNull();
+		assertThat(values.get("dataSizeBytes")).isEqualTo("5B");
+		assertThat(values.get("dataSizeKilobytes")).isEqualTo("10KB");
+		assertThat(values.get("dataSizeMegabytes")).isEqualTo("20MB");
+		assertThat(values.get("dataSizeGigabytes")).isEqualTo("30GB");
+		assertThat(values.get("dataSizeTerabytes")).isEqualTo("40TB");
 	}
 
 	@SupportedAnnotationTypes({

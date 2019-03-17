@@ -20,13 +20,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -202,21 +205,24 @@ public class PropertiesLauncher extends Launcher {
 		if (config.startsWith("classpath:")) {
 			return getClasspathResource(config.substring("classpath:".length()));
 		}
-		config = stripFileUrlPrefix(config);
+		config = handleUrl(config);
 		if (isUrl(config)) {
 			return getURLResource(config);
 		}
 		return getFileResource(config);
 	}
 
-	private String stripFileUrlPrefix(String config) {
-		if (config.startsWith("file:")) {
-			config = config.substring("file:".length());
-			if (config.startsWith("//")) {
-				config = config.substring(2);
+	private String handleUrl(String path) throws UnsupportedEncodingException {
+		if (path.startsWith("jar:file:") || path.startsWith("file:")) {
+			path = URLDecoder.decode(path, "UTF-8");
+			if (path.startsWith("file:")) {
+				path = path.substring("file:".length());
+				if (path.startsWith("//")) {
+					path = path.substring(2);
+				}
 			}
 		}
-		return config;
+		return path;
 	}
 
 	private boolean isUrl(String config) {
@@ -298,7 +304,7 @@ public class PropertiesLauncher extends Launcher {
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
-			path = ("".equals(path) ? "/" : path);
+			path = "".equals(path) ? "/" : path;
 			paths.add(path);
 		}
 		if (paths.isEmpty()) {
@@ -428,8 +434,9 @@ public class PropertiesLauncher extends Launcher {
 				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 			}
 		}
-		return defaultValue == null ? defaultValue
-				: SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue);
+		return (defaultValue != null)
+				? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
+				: defaultValue;
 	}
 
 	@Override
@@ -453,7 +460,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
-		String root = cleanupPath(stripFileUrlPrefix(path));
+		String root = cleanupPath(handleUrl(path));
 		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!"/".equals(root)) {
@@ -488,7 +495,7 @@ public class PropertiesLauncher extends Launcher {
 		if (isNestedArchivePath(file)) {
 			return null;
 		}
-		String name = file.getName().toLowerCase();
+		String name = file.getName().toLowerCase(Locale.ENGLISH);
 		if (name.endsWith(".jar") || name.endsWith(".zip")) {
 			return new JarFileArchive(file);
 		}
@@ -514,7 +521,7 @@ public class PropertiesLauncher extends Launcher {
 				file = new File(root.substring("jar:file:".length(), index));
 			}
 			parent = new JarFileArchive(file);
-			root = root.substring(index + 1, root.length());
+			root = root.substring(index + 1);
 			while (root.startsWith("/")) {
 				root = root.substring(1);
 			}
@@ -564,7 +571,7 @@ public class PropertiesLauncher extends Launcher {
 		if (path.startsWith("./")) {
 			path = path.substring(2);
 		}
-		String lowerCasePath = path.toLowerCase();
+		String lowerCasePath = path.toLowerCase(Locale.ENGLISH);
 		if (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip")) {
 			return path;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class CustomContainerWebSocketsApplicationTests {
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/ws/echo/websocket")
-						.run("--spring.main.web_environment=false");
+						.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;
@@ -81,7 +81,7 @@ public class CustomContainerWebSocketsApplicationTests {
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
 								+ "/ws/reverse")
-						.run("--spring.main.web_environment=false");
+						.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;
@@ -90,7 +90,7 @@ public class CustomContainerWebSocketsApplicationTests {
 		assertThat(messagePayloadReference.get()).isEqualTo("Reversed: !dlrow olleH");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomContainerConfiguration {
 
 		@Bean
@@ -100,7 +100,7 @@ public class CustomContainerWebSocketsApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClientConfiguration implements CommandLineRunner {
 
 		@Value("${websocket.uri}")

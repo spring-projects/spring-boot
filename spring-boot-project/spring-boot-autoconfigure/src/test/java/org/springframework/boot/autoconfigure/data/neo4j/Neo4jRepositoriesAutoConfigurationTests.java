@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
@@ -74,10 +75,11 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-		this.context.getBean(CityRepository.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(CityRepository.class));
 	}
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
@@ -91,26 +93,26 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	protected static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
 	@EnableNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class)
 	protected static class CustomizedConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// To not find any repositories
 	@EnableNeo4jRepositories("foo.bar")
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)

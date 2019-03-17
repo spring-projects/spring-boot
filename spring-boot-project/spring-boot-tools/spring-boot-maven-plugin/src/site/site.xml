@@ -11,6 +11,8 @@
 			<item name="Local repackaged artifact" href="examples/repackage-disable-attach.html"/>
 			<item name="Exclude a dependency" href="examples/exclude-dependency.html"/>
 			<item name="Debug the application" href="examples/run-debug.html"/>
+			<item name="Using system properties" href="examples/run-system-properties.html"/>
+			<item name="Using environment variable" href="examples/run-env-variables.html"/>
 			<item name="Random port for integration tests" href="examples/it-random-port.html"/>
 			<item name="Skip integration tests" href="examples/it-skip.html"/>
 			<item name="Specify active profiles" href="examples/run-profiles.html"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,12 +66,12 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 				.getPropertySources().get("systemEnvironment");
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
 		Map<String, Object> replacedMap = replaced.getSource();
-		for (Map.Entry<String, Object> entry : originalMap.entrySet()) {
-			Object actual = replacedMap.get(entry.getKey());
-			assertThat(actual).isEqualTo(entry.getValue());
-			assertThat(replaced.getOrigin(entry.getKey()))
+		originalMap.forEach((key, value) -> {
+			Object actual = replacedMap.get(key);
+			assertThat(actual).isEqualTo(value);
+			assertThat(replaced.getOrigin(key))
 					.isInstanceOf(SystemEnvironmentOrigin.class);
-		}
+		});
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ final class StringSequence implements CharSequence {
 	private int hash;
 
 	StringSequence(String source) {
-		this(source, 0, (source == null ? -1 : source.length()));
+		this(source, 0, (source != null) ? source.length() : -1);
 	}
 
 	StringSequence(String source, int start, int end) {
@@ -65,6 +65,9 @@ final class StringSequence implements CharSequence {
 		}
 		if (subSequenceEnd > this.end) {
 			throw new StringIndexOutOfBoundsException(end);
+		}
+		if (start == 0 && subSequenceEnd == this.end) {
+			return this;
 		}
 		return new StringSequence(this.source, subSequenceStart, subSequenceEnd);
 	}
@@ -95,9 +98,46 @@ final class StringSequence implements CharSequence {
 		return this.source.indexOf(str, this.start + fromIndex) - this.start;
 	}
 
+	public boolean startsWith(CharSequence prefix) {
+		return startsWith(prefix, 0);
+	}
+
+	public boolean startsWith(CharSequence prefix, int offset) {
+		int prefixLength = prefix.length();
+		if (length() - prefixLength - offset < 0) {
+			return false;
+		}
+		int prefixOffset = 0;
+		int sourceOffset = offset;
+		while (prefixLength-- != 0) {
+			if (charAt(sourceOffset++) != prefix.charAt(prefixOffset++)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
-	public String toString() {
-		return this.source.substring(this.start, this.end);
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof CharSequence)) {
+			return false;
+		}
+		CharSequence other = (CharSequence) obj;
+		int n = length();
+		if (n != other.length()) {
+			return false;
+		}
+		int i = 0;
+		while (n-- != 0) {
+			if (charAt(i) != other.charAt(i)) {
+				return false;
+			}
+			i++;
+		}
+		return true;
 	}
 
 	@Override
@@ -113,26 +153,8 @@ final class StringSequence implements CharSequence {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		StringSequence other = (StringSequence) obj;
-		int n = length();
-		if (n == other.length()) {
-			int i = 0;
-			while (n-- != 0) {
-				if (charAt(i) != other.charAt(i)) {
-					return false;
-				}
-				i++;
-			}
-			return true;
-		}
-		return true;
+	public String toString() {
+		return this.source.substring(this.start, this.end);
 	}
 
 }

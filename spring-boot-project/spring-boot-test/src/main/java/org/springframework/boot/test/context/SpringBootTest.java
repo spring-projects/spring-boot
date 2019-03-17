@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
@@ -36,6 +39,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextLoader;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -52,6 +56,8 @@ import org.springframework.web.context.WebApplicationContext;
  * specified.</li>
  * <li>Allows custom {@link Environment} properties to be defined using the
  * {@link #properties() properties attribute}.</li>
+ * <li>Allows application arguments to be defined using the {@link #args() args
+ * attribute}.</li>
  * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
  * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
@@ -72,6 +78,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Documented
 @Inherited
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
+@ExtendWith(SpringExtension.class)
 public @interface SpringBootTest {
 
 	/**
@@ -88,6 +95,14 @@ public @interface SpringBootTest {
 	 */
 	@AliasFor("value")
 	String[] properties() default {};
+
+	/**
+	 * Application arguments that should be passed to the application under test.
+	 * @return the application arguments to pass to the application under test.
+	 * @see ApplicationArguments
+	 * @see SpringApplication#run(String...)
+	 */
+	String[] args() default {};
 
 	/**
 	 * The <em>annotated classes</em> to use for loading an

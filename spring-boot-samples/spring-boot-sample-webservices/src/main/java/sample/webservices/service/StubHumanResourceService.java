@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,20 @@ package sample.webservices.service;
 
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class StubHumanResourceService implements HumanResourceService {
 
-	private final Logger logger = LoggerFactory.getLogger(StubHumanResourceService.class);
+	private final Log logger = LogFactory.getLog(StubHumanResourceService.class);
 
 	@Override
 	public void bookHoliday(Date startDate, Date endDate, String name) {
-		this.logger.info("Booking holiday for [{} - {}] for [{}] ", startDate, endDate,
-				name);
+		this.logger.info("Booking holiday for [" + startDate + " - " + endDate + "] for ["
+				+ name + "]");
 	}
 
 }

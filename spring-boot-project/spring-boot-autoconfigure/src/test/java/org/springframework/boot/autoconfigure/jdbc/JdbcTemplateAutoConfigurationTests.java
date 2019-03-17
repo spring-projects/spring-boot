@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.util.Random;
+import java.util.Collections;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -43,135 +43,198 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Dan Zheng
  */
 public class JdbcTemplateAutoConfigurationTests {
 
-	private ConfigurableApplicationContext context;
-
-	@After
-	public void restore() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withPropertyValues("spring.datasource.initialization-mode=never",
+					"spring.datasource.generate-unique-name=true")
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					JdbcTemplateAutoConfiguration.class));
 
 	@Test
 	public void testJdbcTemplateExists() {
-		load();
-		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
-		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate.getDataSource())
-				.isEqualTo(this.context.getBean(DataSource.class));
-		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
-		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
-		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(JdbcOperations.class);
+			JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+			assertThat(jdbcTemplate.getDataSource())
+					.isEqualTo(context.getBean(DataSource.class));
+			assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
+			assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
+			assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
+		});
 	}
 
 	@Test
 	public void testJdbcTemplateWithCustomProperties() {
-		load("spring.jdbc.template.fetch-size:100",
+		this.contextRunner.withPropertyValues("spring.jdbc.template.fetch-size:100",
 				"spring.jdbc.template.query-timeout:60",
-				"spring.jdbc.template.max-rows:1000");
-		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource()).isNotNull();
-		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
-		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
-		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
+				"spring.jdbc.template.max-rows:1000").run((context) -> {
+					assertThat(context).hasSingleBean(JdbcOperations.class);
+					JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+					assertThat(jdbcTemplate.getDataSource()).isNotNull();
+					assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
+					assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
+					assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
+				});
 	}
 
 	@Test
 	public void testJdbcTemplateExistsWithCustomDataSource() {
-		load(TestDataSourceConfiguration.class);
-		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
-		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource())
-				.isEqualTo(this.context.getBean("customDataSource"));
+		this.contextRunner.withUserConfiguration(TestDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JdbcOperations.class);
+					JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+					assertThat(jdbcTemplate.getDataSource())
+							.isEqualTo(context.getBean("customDataSource"));
+				});
 	}
 
 	@Test
 	public void testNamedParameterJdbcTemplateExists() {
-		load();
-		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
-				.hasSize(1);
-		NamedParameterJdbcTemplate namedParameterJdbcTemplate = this.context
-				.getBean(NamedParameterJdbcTemplate.class);
-		assertThat(namedParameterJdbcTemplate.getJdbcOperations())
-				.isEqualTo(this.context.getBean(JdbcOperations.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
+			NamedParameterJdbcTemplate namedParameterJdbcTemplate = context
+					.getBean(NamedParameterJdbcTemplate.class);
+			assertThat(namedParameterJdbcTemplate.getJdbcOperations())
+					.isEqualTo(context.getBean(JdbcOperations.class));
+		});
 	}
 
 	@Test
 	public void testMultiDataSource() {
-		load(MultiDataSourceConfiguration.class);
-		assertThat(this.context.getBeansOfType(JdbcOperations.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
-				.isEmpty();
+		this.contextRunner.withUserConfiguration(MultiDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(JdbcOperations.class);
+					assertThat(context)
+							.doesNotHaveBean(NamedParameterJdbcOperations.class);
+				});
 	}
 
 	@Test
 	public void testMultiJdbcTemplate() {
-		load(MultiJdbcTemplateConfiguration.class);
-		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
-				.isEmpty();
+		this.contextRunner.withUserConfiguration(MultiJdbcTemplateConfiguration.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(NamedParameterJdbcOperations.class));
 	}
 
 	@Test
 	public void testMultiDataSourceUsingPrimary() {
-		load(MultiDataSourceUsingPrimaryConfiguration.class);
-		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(JdbcTemplate.class).getDataSource())
-				.isEqualTo(this.context.getBean("test1DataSource"));
+		this.contextRunner
+				.withUserConfiguration(MultiDataSourceUsingPrimaryConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JdbcOperations.class);
+					assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
+					assertThat(context.getBean(JdbcTemplate.class).getDataSource())
+							.isEqualTo(context.getBean("test1DataSource"));
+				});
 	}
 
 	@Test
 	public void testMultiJdbcTemplateUsingPrimary() {
-		load(MultiJdbcTemplateUsingPrimaryConfiguration.class);
-		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(NamedParameterJdbcTemplate.class)
-				.getJdbcOperations()).isEqualTo(this.context.getBean("test1Template"));
+		this.contextRunner
+				.withUserConfiguration(MultiJdbcTemplateUsingPrimaryConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
+					assertThat(context.getBean(NamedParameterJdbcTemplate.class)
+							.getJdbcOperations())
+									.isEqualTo(context.getBean("test1Template"));
+				});
 	}
 
 	@Test
 	public void testExistingCustomJdbcTemplate() {
-		load(CustomConfiguration.class);
-		assertThat(this.context.getBeansOfType(JdbcOperations.class)).hasSize(1);
-		assertThat(this.context.getBean(JdbcOperations.class))
-				.isEqualTo(this.context.getBean("customJdbcOperations"));
+		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JdbcOperations.class);
+					assertThat(context.getBean(JdbcOperations.class))
+							.isEqualTo(context.getBean("customJdbcOperations"));
+				});
 	}
 
 	@Test
 	public void testExistingCustomNamedParameterJdbcTemplate() {
-		load(CustomConfiguration.class);
-		assertThat(this.context.getBeansOfType(NamedParameterJdbcOperations.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(NamedParameterJdbcOperations.class))
-				.isEqualTo(this.context.getBean("customNamedParameterJdbcOperations"));
+		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
+					assertThat(context.getBean(NamedParameterJdbcOperations.class))
+							.isEqualTo(context
+									.getBean("customNamedParameterJdbcOperations"));
+				});
 	}
 
-	public void load(String... environment) {
-		load(null, environment);
+	@Test
+	public void testDependencyToDataSourceInitialization() {
+		this.contextRunner.withUserConfiguration(DataSourceInitializationValidator.class)
+				.withPropertyValues("spring.datasource.initialization-mode=always")
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context
+							.getBean(DataSourceInitializationValidator.class).count)
+									.isEqualTo(1);
+				});
 	}
 
-	public void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialization-mode:never",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
-				.applyTo(ctx);
-		TestPropertyValues.of(environment).applyTo(ctx);
-		if (config != null) {
-			ctx.register(config);
-		}
-		ctx.register(DataSourceAutoConfiguration.class,
-				JdbcTemplateAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+	@Test
+	public void testDependencyToFlyway() {
+		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
+				.withPropertyValues("spring.flyway.locations:classpath:db/city")
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(DataSourceMigrationValidator.class).count)
+							.isEqualTo(0);
+				});
 	}
 
-	@Configuration
+	@Test
+	public void testDependencyToFlywayWithJdbcTemplateMixed() {
+		this.contextRunner
+				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
+				.withPropertyValues("spring.flyway.locations:classpath:db/city")
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
+					assertThat(context.getBean(
+							NamedParameterDataSourceMigrationValidator.class).count)
+									.isEqualTo(0);
+				});
+	}
+
+	@Test
+	public void testDependencyToLiquibase() {
+		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
+				.withPropertyValues(
+						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
+				.withConfiguration(
+						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(DataSourceMigrationValidator.class).count)
+							.isEqualTo(0);
+				});
+	}
+
+	@Test
+	public void testDependencyToLiquibaseWithJdbcTemplateMixed() {
+		this.contextRunner
+				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
+				.withPropertyValues(
+						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
+				.withConfiguration(
+						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
+					assertThat(context.getBean(
+							NamedParameterDataSourceMigrationValidator.class).count)
+									.isEqualTo(0);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -187,7 +250,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestDataSourceConfiguration {
 
 		@Bean
@@ -197,7 +260,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultiJdbcTemplateConfiguration {
 
 		@Bean
@@ -212,7 +275,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultiJdbcTemplateUsingPrimaryConfiguration {
 
 		@Bean
@@ -224,6 +287,40 @@ public class JdbcTemplateAutoConfigurationTests {
 		@Bean
 		public JdbcTemplate test2Template() {
 			return mock(JdbcTemplate.class);
+		}
+
+	}
+
+	static class DataSourceInitializationValidator {
+
+		private final Integer count;
+
+		DataSourceInitializationValidator(JdbcTemplate jdbcTemplate) {
+			this.count = jdbcTemplate.queryForObject("SELECT COUNT(*) from BAR",
+					Integer.class);
+		}
+
+	}
+
+	static class DataSourceMigrationValidator {
+
+		private final Integer count;
+
+		DataSourceMigrationValidator(JdbcTemplate jdbcTemplate) {
+			this.count = jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY",
+					Integer.class);
+		}
+
+	}
+
+	static class NamedParameterDataSourceMigrationValidator {
+
+		private final Integer count;
+
+		NamedParameterDataSourceMigrationValidator(
+				NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+			this.count = namedParameterJdbcTemplate.queryForObject(
+					"SELECT COUNT(*) from CITY", Collections.emptyMap(), Integer.class);
 		}
 
 	}

@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 
 /**
  * {@link PluginApplicationAction} that reacts to Kotlin's Gradle plugin being applied by
@@ -39,6 +40,12 @@ class KotlinPluginAction implements PluginApplicationAction {
 		if (!extraProperties.has("kotlin.version")) {
 			extraProperties.set("kotlin.version", kotlinVersion);
 		}
+		enableJavaParametersOption(project);
+	}
+
+	private void enableJavaParametersOption(Project project) {
+		project.getTasks().withType(KotlinCompile.class,
+				(compile) -> compile.getKotlinOptions().setJavaParameters(true));
 	}
 
 	@Override

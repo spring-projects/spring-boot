@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,18 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
+	public void propertyBasedCommonTagsIsAutoConfigured() {
+		this.contextRunner.withPropertyValues("management.metrics.tags.region=test",
+				"management.metrics.tags.origin=local").run((context) -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.counter("my.counter", "env", "qa");
+					assertThat(registry.find("my.counter").tags("env", "qa")
+							.tags("region", "test").tags("origin", "local").counter())
+									.isNotNull();
+				});
+	}
+
+	@Test
 	public void simpleMeterRegistryIsUsedAsAFallback() {
 		this.contextRunner
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
@@ -103,7 +115,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class PrimaryMeterRegistryConfiguration {
 
 		@Primary

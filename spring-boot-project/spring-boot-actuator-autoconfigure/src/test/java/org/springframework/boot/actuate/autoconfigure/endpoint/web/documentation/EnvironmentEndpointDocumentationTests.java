@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -145,7 +144,7 @@ public class EnvironmentEndpointDocumentationTests
 				|| key.startsWith("com.example");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
@@ -156,8 +155,7 @@ public class EnvironmentEndpointDocumentationTests
 				@Override
 				protected void customizePropertySources(
 						MutablePropertySources propertySources) {
-					StreamSupport
-							.stream(environment.getPropertySources().spliterator(), false)
+					environment.getPropertySources().stream()
 							.filter(this::includedPropertySource)
 							.forEach(propertySources::addLast);
 				}

@@ -65,7 +65,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	private void registerWebTestClient(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerWebTestClient((BeanDefinitionRegistry) context);
+			registerWebTestClient((BeanDefinitionRegistry) beanFactory);
 		}
 	}
 
@@ -78,13 +78,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public int hashCode() {
-		return getClass().hashCode();
+	public boolean equals(Object obj) {
+		return (obj != null && obj.getClass() == getClass());
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		return (obj != null && obj.getClass() == getClass());
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 
 	/**

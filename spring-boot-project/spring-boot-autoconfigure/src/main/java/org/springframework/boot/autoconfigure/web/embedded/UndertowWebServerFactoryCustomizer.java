@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebSer
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Customization for Undertow-specific features common for both Servlet and Reactive
@@ -36,6 +37,7 @@ import org.springframework.core.env.Environment;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Arstiom Yudovin
  * @since 2.0.0
  */
 public class UndertowWebServerFactoryCustomizer implements
@@ -63,13 +65,14 @@ public class UndertowWebServerFactoryCustomizer implements
 		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
 				.getAccesslog();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		propertyMapper.from(undertowProperties::getBufferSize).to(factory::setBufferSize);
+		propertyMapper.from(undertowProperties::getBufferSize).whenNonNull()
+				.asInt(DataSize::toBytes).to(factory::setBufferSize);
 		propertyMapper.from(undertowProperties::getIoThreads).to(factory::setIoThreads);
 		propertyMapper.from(undertowProperties::getWorkerThreads)
 				.to(factory::setWorkerThreads);
 		propertyMapper.from(undertowProperties::getDirectBuffers)
 				.to(factory::setUseDirectBuffers);
-		propertyMapper.from(accesslogProperties::getEnabled)
+		propertyMapper.from(accesslogProperties::isEnabled)
 				.to(factory::setAccessLogEnabled);
 		propertyMapper.from(accesslogProperties::getDir)
 				.to(factory::setAccessLogDirectory);
@@ -81,12 +84,14 @@ public class UndertowWebServerFactoryCustomizer implements
 				.to(factory::setAccessLogSuffix);
 		propertyMapper.from(accesslogProperties::isRotate)
 				.to(factory::setAccessLogRotate);
-		propertyMapper.from(() -> getOrDeduceUseForwardHeaders())
+		propertyMapper.from(this::getOrDeduceUseForwardHeaders)
 				.to(factory::setUseForwardHeaders);
-		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
+		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(this::isPositive)
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
 		propertyMapper.from(properties::getConnectionTimeout)
@@ -102,7 +107,7 @@ public class UndertowWebServerFactoryCustomizer implements
 
 	private void customizeConnectionTimeout(ConfigurableUndertowWebServerFactory factory,
 			Duration connectionTimeout) {
-		factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
+		factory.addBuilderCustomizers((builder) -> builder.setServerOption(
 				UndertowOptions.NO_REQUEST_TIMEOUT, (int) connectionTimeout.toMillis()));
 	}
 

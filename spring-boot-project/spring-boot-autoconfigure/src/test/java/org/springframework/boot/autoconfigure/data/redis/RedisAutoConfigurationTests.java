@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -49,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Alen Turkovic
  */
 public class RedisAutoConfigurationTests {
 
@@ -157,8 +159,8 @@ public class RedisAutoConfigurationTests {
 					LettuceConnectionFactory cf = context
 							.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					GenericObjectPoolConfig poolConfig = getPoolingClientConfiguration(cf)
-							.getPoolConfig();
+					GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(
+							cf).getPoolConfig();
 					assertThat(poolConfig.getMinIdle()).isEqualTo(1);
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
@@ -192,6 +194,20 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRedisConfigurationWithSentinelAndDatabase() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.database:1",
+						"spring.redis.sentinel.master:mymaster",
+						"spring.redis.sentinel.nodes:127.0.0.1:26379, 127.0.0.1:26380")
+				.run((context) -> {
+					LettuceConnectionFactory connectionFactory = context
+							.getBean(LettuceConnectionFactory.class);
+					assertThat(connectionFactory.getDatabase()).isEqualTo(1);
+					assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
+				});
+	}
+
+	@Test
 	public void testRedisConfigurationWithSentinelAndPassword() {
 		this.contextRunner
 				.withPropertyValues("spring.redis.password=password",
@@ -216,9 +232,17 @@ public class RedisAutoConfigurationTests {
 				.withPropertyValues(
 						"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 						"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1))
-				.run((context) -> assertThat(context
-						.getBean(LettuceConnectionFactory.class).getClusterConnection())
-								.isNotNull());
+				.run((context) -> {
+					RedisClusterConfiguration clusterConfiguration = context
+							.getBean(LettuceConnectionFactory.class)
+							.getClusterConfiguration();
+					assertThat(clusterConfiguration.getClusterNodes()).hasSize(2);
+					assertThat(clusterConfiguration.getClusterNodes())
+							.extracting((node) -> node.getHost() + ":" + node.getPort())
+							.containsExactlyInAnyOrder("127.0.0.1:27379",
+									"127.0.0.1:27380");
+				});
+
 	}
 
 	@Test
@@ -241,7 +265,7 @@ public class RedisAutoConfigurationTests {
 				"clientConfiguration");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean

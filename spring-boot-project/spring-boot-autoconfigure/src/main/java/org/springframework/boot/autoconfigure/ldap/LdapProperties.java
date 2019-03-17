@@ -36,7 +36,7 @@ public class LdapProperties {
 	private static final int DEFAULT_PORT = 389;
 
 	/**
-	 * LDAP URLs.
+	 * LDAP URLs of the server.
 	 */
 	private String[] urls;
 

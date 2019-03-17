@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.autoconfigure.web.servlet;
+
+import java.io.File;
+import java.security.AccessControlException;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
@@ -37,7 +40,14 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
 			String resourceName = getResourceName(view, environment);
-			return resourceLoader.getResource(resourceName).exists();
+			if (resourceLoader.getResource(resourceName).exists()) {
+				return true;
+			}
+			try {
+				return new File("src/main/webapp", resourceName).exists();
+			}
+			catch (AccessControlException ex) {
+			}
 		}
 		return false;
 	}

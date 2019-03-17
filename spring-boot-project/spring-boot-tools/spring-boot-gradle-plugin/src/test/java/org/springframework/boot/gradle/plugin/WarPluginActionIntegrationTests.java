@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,14 @@ public class WarPluginActionIntegrationTests {
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"),
 				new File(buildLibs,
 						this.gradleBuild.getProjectDir().getName() + "-boot.war"));
+	}
+
+	@Test
+	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
+		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyWarPlugin");
+		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains(
+				"Main class name has not been configured and it could not be resolved");
 	}
 
 }

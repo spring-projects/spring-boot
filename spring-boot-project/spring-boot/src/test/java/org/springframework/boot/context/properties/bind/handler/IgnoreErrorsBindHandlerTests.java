@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -31,6 +29,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link IgnoreErrorsBindHandler}.
@@ -39,9 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 public class IgnoreErrorsBindHandlerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -57,8 +53,8 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenNotIgnoringErrorsShouldFail() {
-		this.thrown.expect(BindException.class);
-		this.binder.bind("example", Bindable.of(Example.class));
+		assertThatExceptionOfType(BindException.class).isThrownBy(
+				() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test

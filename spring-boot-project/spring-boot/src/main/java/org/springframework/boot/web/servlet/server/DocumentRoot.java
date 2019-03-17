@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.CodeSource;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 
@@ -59,9 +60,9 @@ class DocumentRoot {
 	 */
 	public final File getValidDirectory() {
 		File file = this.directory;
-		file = (file != null ? file : getWarFileDocumentRoot());
-		file = (file != null ? file : getExplodedWarFileDocumentRoot());
-		file = (file != null ? file : getCommonDocumentRoot());
+		file = (file != null) ? file : getWarFileDocumentRoot();
+		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
+		file = (file != null) ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isDebugEnabled()) {
 			logNoDocumentRoots();
 		}
@@ -81,7 +82,7 @@ class DocumentRoot {
 			this.logger.debug("Code archive: " + file);
 		}
 		if (file != null && file.exists() && !file.isDirectory()
-				&& file.getName().toLowerCase().endsWith(extension)) {
+				&& file.getName().toLowerCase(Locale.ENGLISH).endsWith(extension)) {
 			return file.getAbsoluteFile();
 		}
 		return null;
@@ -97,7 +98,7 @@ class DocumentRoot {
 
 	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			URL location = (codeSource == null ? null : codeSource.getLocation());
+			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			if (location == null) {
 				return null;
 			}

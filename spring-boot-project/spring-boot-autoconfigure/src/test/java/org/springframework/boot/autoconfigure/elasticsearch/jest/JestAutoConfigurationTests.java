@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,22 +25,16 @@ import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.http.JestHttpClient;
+import io.searchbox.core.Get;
 import io.searchbox.core.Index;
-import io.searchbox.core.Search;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -54,29 +48,19 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
-@ClassPathOverrides("org.apache.logging.log4j:log4j-core:2.10.0")
 public class JestAutoConfigurationTests {
+
+	@ClassRule
+	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class,
 					JestAutoConfiguration.class));
 
-	@Before
-	public void preventElasticsearchFromConfiguringNetty() {
-		System.setProperty("es.set.netty.runtime.available.processors", "false");
-	}
-
-	@After
-	public void close() {
-		System.clearProperty("es.set.netty.runtime.available.processors");
-	}
-
 	@Test
 	public void jestClientOnLocalhostByDefault() {
 		this.contextRunner
-				.run((context) -> assertThat(context.getBeansOfType(JestClient.class))
-						.hasSize(1));
+				.run((context) -> assertThat(context).hasSingleBean(JestClient.class));
 	}
 
 	@Test
@@ -84,8 +68,7 @@ public class JestAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomJestClient.class)
 				.withPropertyValues(
 						"spring.elasticsearch.jest.uris[0]=http://localhost:9200")
-				.run((context) -> assertThat(context.getBeansOfType(JestClient.class))
-						.hasSize(1));
+				.run((context) -> assertThat(context).hasSingleBean(JestClient.class));
 	}
 
 	@Test
@@ -126,27 +109,32 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void jestCanCommunicateWithElasticsearchInstance() {
-		new ElasticsearchNodeTemplate().doWithNode((node) -> this.contextRunner
+		this.contextRunner
 				.withPropertyValues("spring.elasticsearch.jest.uris=http://localhost:"
-						+ node.getHttpPort())
+						+ elasticsearch.getMappedPort())
 				.run((context) -> {
 					JestClient client = context.getBean(JestClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
 					Index index = new Index.Builder(source).index("foo").type("bar")
-							.build();
+							.id("1").build();
 					execute(client, index);
-					SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-					searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
-					assertThat(execute(client,
-							new Search.Builder(searchSourceBuilder.toString())
-									.addIndex("foo").build()).getResponseCode())
-											.isEqualTo(200);
-				}));
+					Get getRequest = new Get.Builder("foo", "1").build();
+					assertThat(execute(client, getRequest).getResponseCode())
+							.isEqualTo(200);
+				});
 	}
 
 	private JestResult execute(JestClient client, Action<? extends JestResult> action) {
+		for (int i = 0; i < 2; i++) {
+			try {
+				return client.execute(action);
+			}
+			catch (IOException ex) {
+				// Continue
+			}
+		}
 		try {
 			return client.execute(action);
 		}
@@ -155,7 +143,7 @@ public class JestAutoConfigurationTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJestClient {
 
 		@Bean
@@ -165,7 +153,7 @@ public class JestAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomGson {
 
 		@Bean
@@ -175,7 +163,7 @@ public class JestAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CustomGson.class)
 	static class BuilderCustomizer {
 

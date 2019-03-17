@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -36,18 +38,20 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.util.StringUtils;
 
 /**
- * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Adds an
- * {@link InMemoryUserDetailsManager} with a default user and generated password. This can
- * be disabled by providing a bean of type {@link AuthenticationManager},
- * {@link AuthenticationProvider} or {@link UserDetailsService}.
+ * {@link EnableAutoConfiguration Auto-configuration} for a Spring Security in-memory
+ * {@link AuthenticationManager}. Adds an {@link InMemoryUserDetailsManager} with a
+ * default user and generated password. This can be disabled by providing a bean of type
+ * {@link AuthenticationManager}, {@link AuthenticationProvider} or
+ * {@link UserDetailsService}.
  *
  * @author Dave Syer
  * @author Rob Winch
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(AuthenticationManager.class)
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean({ AuthenticationManager.class, AuthenticationProvider.class,
@@ -64,17 +68,18 @@ public class UserDetailsServiceAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
+	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
 			SecurityProperties properties,
-			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {
+			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();
 		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
 				.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-				.roles(roles.toArray(new String[roles.size()])).build());
+				.roles(StringUtils.toStringArray(roles)).build());
 	}
 
-	public String getOrDeducePassword(SecurityProperties.User user,
+	private String getOrDeducePassword(SecurityProperties.User user,
 			PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {

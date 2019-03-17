@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import javax.management.ObjectName;
 
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
+import org.springframework.core.env.Environment;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -36,33 +37,49 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private final JmxEndpointProperties properties;
 
+	private final Environment environment;
+
 	private final MBeanServer mBeanServer;
 
 	private final String contextId;
 
+	private final boolean uniqueNames;
+
 	DefaultEndpointObjectNameFactory(JmxEndpointProperties properties,
-			MBeanServer mBeanServer, String contextId) {
+			Environment environment, MBeanServer mBeanServer, String contextId) {
 		this.properties = properties;
+		this.environment = environment;
 		this.mBeanServer = mBeanServer;
 		this.contextId = contextId;
+		this.uniqueNames = environment.getProperty("spring.jmx.unique-names",
+				Boolean.class, false);
 	}
 
 	@Override
 	public ObjectName getObjectName(ExposableJmxEndpoint endpoint)
 			throws MalformedObjectNameException {
-		StringBuilder builder = new StringBuilder(this.properties.getDomain());
+		StringBuilder builder = new StringBuilder(determineDomain());
 		builder.append(":type=Endpoint");
-		builder.append(",name=" + StringUtils.capitalize(endpoint.getId()));
+		builder.append(",name=")
+				.append(StringUtils.capitalize(endpoint.getEndpointId().toString()));
 		String baseName = builder.toString();
 		if (this.mBeanServer != null && hasMBean(baseName)) {
-			builder.append(",context=" + this.contextId);
+			builder.append(",context=").append(this.contextId);
 		}
-		if (this.properties.isUniqueNames()) {
+		if (this.uniqueNames) {
 			String identity = ObjectUtils.getIdentityHexString(endpoint);
-			builder.append(",identity=" + identity);
+			builder.append(",identity=").append(identity);
 		}
 		builder.append(getStaticNames());
 		return ObjectNameManager.getInstance(builder.toString());
+	}
+
+	private String determineDomain() {
+		if (StringUtils.hasText(this.properties.getDomain())) {
+			return this.properties.getDomain();
+		}
+		return this.environment.getProperty("spring.jmx.default-domain",
+				"org.springframework.boot");
 	}
 
 	private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
@@ -75,8 +92,8 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 			return "";
 		}
 		StringBuilder builder = new StringBuilder();
-		this.properties.getStaticNames()
-				.forEach((name, value) -> builder.append("," + name + "=" + value));
+		this.properties.getStaticNames().forEach((name, value) -> builder.append(",")
+				.append(name).append("=").append(value));
 		return builder.toString();
 	}
 

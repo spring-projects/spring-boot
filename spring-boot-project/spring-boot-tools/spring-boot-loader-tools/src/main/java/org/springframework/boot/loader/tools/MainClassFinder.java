@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,7 +248,7 @@ public abstract class MainClassFinder {
 
 	private static List<JarEntry> getClassEntries(JarFile source,
 			String classesLocation) {
-		classesLocation = (classesLocation != null ? classesLocation : "");
+		classesLocation = (classesLocation != null) ? classesLocation : "";
 		Enumeration<JarEntry> sourceEntries = source.entries();
 		List<JarEntry> classEntries = new ArrayList<>();
 		while (sourceEntries.hasMoreElements()) {
@@ -385,16 +385,6 @@ public abstract class MainClassFinder {
 		}
 
 		@Override
-		public String toString() {
-			return this.name;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.name.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -410,6 +400,16 @@ public abstract class MainClassFinder {
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 	}
@@ -452,8 +452,8 @@ public abstract class MainClassFinder {
 						"Unable to find a single main class from the following candidates "
 								+ matchingMainClasses);
 			}
-			return matchingMainClasses.isEmpty() ? null
-					: matchingMainClasses.iterator().next().getName();
+			return (matchingMainClasses.isEmpty() ? null
+					: matchingMainClasses.iterator().next().getName());
 		}
 
 	}

@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 /**
  * Base class for properties to config adapters.
  *
- * @param <T> The properties type
+ * @param <T> the properties type
  * @author Phillip Webb
  * @author Nikolay Rybak
  * @since 2.0.0
@@ -51,7 +51,7 @@ public class PropertiesConfigAdapter<T> {
 	 */
 	protected final <V> V get(Function<T, V> getter, Supplier<V> fallback) {
 		V value = getter.apply(this.properties);
-		return (value != null ? value : fallback.get());
+		return (value != null) ? value : fallback.get();
 	}
 
 }

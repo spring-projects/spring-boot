@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileCopyUtils;
 
@@ -65,13 +66,21 @@ public class LogFileWebEndpointWebIntegrationTests {
 
 	@Test
 	public void getRequestProducesResponseWithLogFile() {
-		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
+		TestPropertyValues.of("logging.file.name:" + this.logFile.getAbsolutePath())
 				.applyTo(context);
 		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
 				.expectBody(String.class).isEqualTo("--TEST--");
 	}
 
-	@Configuration
+	@Test
+	public void getRequestThatAcceptsTextPlainProducesResponseWithLogFile() {
+		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
+				.applyTo(context);
+		client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange()
+				.expectStatus().isOk().expectBody(String.class).isEqualTo("--TEST--");
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean

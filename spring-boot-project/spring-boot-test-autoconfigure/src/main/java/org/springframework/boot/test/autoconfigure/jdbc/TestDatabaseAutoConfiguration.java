@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,21 +53,15 @@ import org.springframework.util.ObjectUtils;
  * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public class TestDatabaseAutoConfiguration {
-
-	private final Environment environment;
-
-	TestDatabaseAutoConfiguration(Environment environment) {
-		this.environment = environment;
-	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
-	public DataSource dataSource() {
-		return new EmbeddedDataSourceFactory(this.environment).getEmbeddedDatabase();
+	public DataSource dataSource(Environment environment) {
+		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();
 	}
 
 	@Bean
@@ -105,6 +99,7 @@ public class TestDatabaseAutoConfiguration {
 				boolean primary = holder.getBeanDefinition().isPrimary();
 				logger.info("Replacing '" + beanName + "' DataSource bean with "
 						+ (primary ? "primary " : "") + "embedded version");
+				registry.removeBeanDefinition(beanName);
 				registry.registerBeanDefinition(beanName,
 						createEmbeddedBeanDefinition(primary));
 			}
@@ -196,7 +191,7 @@ public class TestDatabaseAutoConfiguration {
 					"Failed to replace DataSource with an embedded database for tests. If "
 							+ "you want an embedded database please put a supported one "
 							+ "on the classpath or tune the replace attribute of "
-							+ "@AutoconfigureTestDatabase.");
+							+ "@AutoConfigureTestDatabase.");
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
 					.setType(connection.getType()).build();
 		}

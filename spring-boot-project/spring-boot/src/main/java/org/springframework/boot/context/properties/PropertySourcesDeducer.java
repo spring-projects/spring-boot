@@ -27,7 +27,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
-import org.springframework.util.Assert;
 
 /**
  * Utility to deduce the {@link PropertySources} to use for configuration binding.
@@ -45,20 +44,16 @@ class PropertySourcesDeducer {
 	}
 
 	public PropertySources getPropertySources() {
-		MutablePropertySources environmentPropertySources = extractEnvironmentPropertySources();
-		PropertySourcesPlaceholderConfigurer placeholderConfigurer = getSinglePropertySourcesPlaceholderConfigurer();
-		if (placeholderConfigurer == null) {
-			Assert.state(environmentPropertySources != null,
-					"Unable to obtain PropertySources from "
-							+ "PropertySourcesPlaceholderConfigurer or Environment");
-			return environmentPropertySources;
+		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
+		if (configurer != null) {
+			return configurer.getAppliedPropertySources();
 		}
-		PropertySources appliedPropertySources = placeholderConfigurer
-				.getAppliedPropertySources();
-		if (environmentPropertySources == null) {
-			return appliedPropertySources;
+		MutablePropertySources sources = extractEnvironmentPropertySources();
+		if (sources != null) {
+			return sources;
 		}
-		return merge(environmentPropertySources, appliedPropertySources);
+		throw new IllegalStateException("Unable to obtain PropertySources from "
+				+ "PropertySourcesPlaceholderConfigurer or Environment");
 	}
 
 	private MutablePropertySources extractEnvironmentPropertySources() {
@@ -82,14 +77,6 @@ class PropertySourcesDeducer {
 							+ beans.keySet() + ", falling back to Environment");
 		}
 		return null;
-	}
-
-	private PropertySources merge(PropertySources environmentPropertySources,
-			PropertySources appliedPropertySources) {
-		FilteredPropertySources filtered = new FilteredPropertySources(
-				appliedPropertySources,
-				PropertySourcesPlaceholderConfigurer.ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME);
-		return new CompositePropertySources(filtered, environmentPropertySources);
 	}
 
 }

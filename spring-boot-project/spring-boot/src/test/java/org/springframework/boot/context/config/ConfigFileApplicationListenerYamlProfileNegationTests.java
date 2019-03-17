@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,16 +88,71 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		assertVersionProperty(this.context, "NOT A", "C", "B");
 	}
 
+	@Test
+	public void yamlProfileCascading() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName);
+		assertVersionProperty(this.context, "D", "A", "C", "E", "B", "D");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
+	@Test
+	public void yamlProfileCascadingOverrideProfilesA() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName, "--spring.profiles.active=A");
+		assertVersionProperty(this.context, "E", "A", "C", "E");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
+	@Test
+	public void yamlProfileCascadingMultipleActiveProfilesViaPropertiesShouldPreserveOrder() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName, "--spring.profiles.active=A,B");
+		assertVersionProperty(this.context, "D", "A", "C", "E", "B", "D");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
+	@Test
+	public void yamlProfileCascadingOverrideProfilesB() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName, "--spring.profiles.active=B");
+		assertVersionProperty(this.context, "E", "B", "D", "E");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
 	private void assertVersionProperty(ConfigurableApplicationContext context,
 			String expectedVersion, String... expectedActiveProfiles) {
 		assertThat(context.getEnvironment().getActiveProfiles())
 				.isEqualTo(expectedActiveProfiles);
 		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
 				.isEqualTo(expectedVersion);
-		context.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class Config {
 
 	}

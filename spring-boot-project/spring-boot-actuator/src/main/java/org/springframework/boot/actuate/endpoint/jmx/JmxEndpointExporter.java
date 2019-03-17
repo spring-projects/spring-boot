@@ -29,6 +29,7 @@ import javax.management.ObjectName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.JmxException;
@@ -42,9 +43,12 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class JmxEndpointExporter implements InitializingBean, DisposableBean {
+public class JmxEndpointExporter
+		implements InitializingBean, DisposableBean, BeanClassLoaderAware {
 
 	private static final Log logger = LogFactory.getLog(JmxEndpointExporter.class);
+
+	private ClassLoader classLoader;
 
 	private final MBeanServer mBeanServer;
 
@@ -71,6 +75,11 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean {
 	}
 
 	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	@Override
 	public void afterPropertiesSet() {
 		this.registered = register();
 	}
@@ -88,7 +97,8 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean {
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		try {
 			ObjectName name = this.objectNameFactory.getObjectName(endpoint);
-			EndpointMBean mbean = new EndpointMBean(this.responseMapper, endpoint);
+			EndpointMBean mbean = new EndpointMBean(this.responseMapper, this.classLoader,
+					endpoint);
 			this.mBeanServer.registerMBean(mbean, name);
 			return name;
 		}
@@ -126,7 +136,7 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean {
 	}
 
 	private String getEndpointDescription(ExposableJmxEndpoint endpoint) {
-		return "endpoint '" + endpoint.getId() + "'";
+		return "endpoint '" + endpoint.getEndpointId() + "'";
 	}
 
 }

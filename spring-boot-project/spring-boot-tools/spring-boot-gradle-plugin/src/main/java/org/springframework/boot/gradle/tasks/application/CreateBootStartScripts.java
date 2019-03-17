@@ -24,6 +24,7 @@ import org.gradle.jvm.application.tasks.CreateStartScripts;
  * main class name} optional.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class CreateBootStartScripts extends CreateStartScripts {
 

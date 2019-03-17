@@ -33,8 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JolokiaProperties {
 
 	/**
-	 * Jolokia settings. These are traditionally set using servlet parameters. Refer to
-	 * the documentation of Jolokia for more details.
+	 * Jolokia settings. Refer to the documentation of Jolokia for more details.
 	 */
 	private final Map<String, String> config = new HashMap<>();
 

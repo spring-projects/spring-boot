@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,16 @@ public class WelcomePageHandlerMappingTests {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(HandlerMappingConfiguration.class).withConfiguration(
 					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class));
+
+	@Test
+	public void isOrderedAtLowPriority() {
+		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
+				.run((context) -> {
+					WelcomePageHandlerMapping handler = context
+							.getBean(WelcomePageHandlerMapping.class);
+					assertThat(handler.getOrder()).isEqualTo(2);
+				});
+	}
 
 	@Test
 	public void handlesRequestForStaticPageThatAcceptsTextHtml() {
@@ -155,7 +165,7 @@ public class WelcomePageHandlerMappingTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class HandlerMappingConfiguration {
 
 		@Bean
@@ -175,7 +185,7 @@ public class WelcomePageHandlerMappingTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class StaticResourceConfiguration {
 
 		@Bean
@@ -185,7 +195,7 @@ public class WelcomePageHandlerMappingTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TemplateConfiguration {
 
 		@Bean

@@ -58,12 +58,12 @@ class DataSourceBeanCreationFailureAnalyzer
 
 	private String getDescription(DataSourceBeanCreationException cause) {
 		StringBuilder description = new StringBuilder();
-		description.append("Failed to auto-configure a DataSource: ");
-		if (!this.environment.containsProperty("spring.datasource.url")) {
-			description.append("'spring.datasource.url' is not specified and ");
+		description.append("Failed to configure a DataSource: ");
+		if (!StringUtils.hasText(cause.getProperties().getUrl())) {
+			description.append("'url' attribute is not specified and ");
 		}
-		description.append(
-				String.format("no embedded datasource could be auto-configured.%n"));
+		description
+				.append(String.format("no embedded datasource could be configured.%n"));
 		description.append(String.format("%nReason: %s%n", cause.getMessage()));
 		return description.toString();
 	}

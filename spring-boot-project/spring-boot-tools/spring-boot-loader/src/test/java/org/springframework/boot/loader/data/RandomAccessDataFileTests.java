@@ -16,16 +16,13 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -34,25 +31,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
-
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.data.RandomAccessDataFile.FilePool;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.spy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link RandomAccessDataFile}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RandomAccessDataFileTests {
 
@@ -64,9 +54,6 @@ public class RandomAccessDataFileTests {
 			BYTES[i] = (byte) i;
 		}
 	}
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -84,7 +71,7 @@ public class RandomAccessDataFileTests {
 		outputStream.write(BYTES);
 		outputStream.close();
 		this.file = new RandomAccessDataFile(this.tempFile);
-		this.inputStream = this.file.getInputStream(ResourceAccess.PER_READ);
+		this.inputStream = this.file.getInputStream();
 	}
 
 	@After
@@ -95,34 +82,52 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void fileNotNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new RandomAccessDataFile(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new RandomAccessDataFile(null))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void fileExists() {
 		File file = new File("/does/not/exist");
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
-				String.format("File %s must exist", file.getAbsolutePath()));
-		new RandomAccessDataFile(file);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new RandomAccessDataFile(file)).withMessageContaining(
+						String.format("File %s must exist", file.getAbsolutePath()));
 	}
 
 	@Test
-	public void fileNotNullWithConcurrentReads() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new RandomAccessDataFile(null, 1);
+	public void readWithOffsetAndLengthShouldRead() throws Exception {
+		byte[] read = this.file.read(2, 3);
+		assertThat(read).isEqualTo(new byte[] { 2, 3, 4 });
 	}
 
 	@Test
-	public void fileExistsWithConcurrentReads() {
-		File file = new File("/does/not/exist");
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
-				String.format("File %s must exist", file.getAbsolutePath()));
-		new RandomAccessDataFile(file, 1);
+	public void readWhenOffsetIsBeyondEOFShouldThrowException() throws Exception {
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.read(257, 0));
+	}
+
+	@Test
+	public void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException()
+			throws Exception {
+		RandomAccessData subsection = this.file.getSubsection(0, 10);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> subsection.read(11, 0));
+	}
+
+	@Test
+	public void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException()
+			throws Exception {
+		assertThatExceptionOfType(EOFException.class)
+				.isThrownBy(() -> this.file.read(256, 1));
+	}
+
+	@Test
+	public void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException()
+			throws Exception {
+		RandomAccessData subsection = this.file.getSubsection(0, 10);
+		assertThatExceptionOfType(EOFException.class)
+				.isThrownBy(() -> subsection.read(10, 1));
 	}
 
 	@Test
@@ -134,16 +139,15 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void inputStreamReadNullBytes() throws Exception {
-		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Bytes must not be null");
-		this.inputStream.read(null);
+		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null))
+				.withMessage("Bytes must not be null");
 	}
 
 	@Test
 	public void inputStreamReadNullBytesWithOffset() throws Exception {
-		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Bytes must not be null");
-		this.inputStream.read(null, 0, 1);
+		assertThatNullPointerException()
+				.isThrownBy(() -> this.inputStream.read(null, 0, 1))
+				.withMessage("Bytes must not be null");
 	}
 
 	@Test
@@ -211,48 +215,46 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void subsectionNegativeOffset() {
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(-1, 1);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(-1, 1));
 	}
 
 	@Test
 	public void subsectionNegativeLength() {
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(0, -1);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(0, -1));
 	}
 
 	@Test
 	public void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
-				.isEqualTo(-1);
+		assertThat(subsection.getInputStream().read()).isEqualTo(-1);
 	}
 
 	@Test
 	public void subsectionTooBig() {
 		this.file.getSubsection(0, 256);
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(0, 257);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(0, 257));
 	}
 
 	@Test
 	public void subsectionTooBigWithOffset() {
 		this.file.getSubsection(1, 255);
-		this.thrown.expect(IndexOutOfBoundsException.class);
-		this.file.getSubsection(1, 256);
+		assertThatExceptionOfType(IndexOutOfBoundsException.class)
+				.isThrownBy(() -> this.file.getSubsection(1, 256));
 	}
 
 	@Test
 	public void subsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 1);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
-				.isEqualTo(1);
+		assertThat(subsection.getInputStream().read()).isEqualTo(1);
 	}
 
 	@Test
 	public void inputStreamReadPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
-		InputStream inputStream = subsection.getInputStream(ResourceAccess.PER_READ);
+		InputStream inputStream = subsection.getInputStream();
 		assertThat(inputStream.read()).isEqualTo(1);
 		assertThat(inputStream.read()).isEqualTo(2);
 		assertThat(inputStream.read()).isEqualTo(-1);
@@ -261,7 +263,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void inputStreamReadBytesPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
-		InputStream inputStream = subsection.getInputStream(ResourceAccess.PER_READ);
+		InputStream inputStream = subsection.getInputStream();
 		byte[] b = new byte[3];
 		int amountRead = inputStream.read(b);
 		assertThat(b).isEqualTo(new byte[] { 1, 2, 0 });
@@ -271,7 +273,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void inputStreamSkipPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
-		InputStream inputStream = subsection.getInputStream(ResourceAccess.PER_READ);
+		InputStream inputStream = subsection.getInputStream();
 		assertThat(inputStream.skip(3)).isEqualTo(2L);
 		assertThat(inputStream.read()).isEqualTo(-1);
 	}
@@ -293,7 +295,7 @@ public class RandomAccessDataFileTests {
 		for (int i = 0; i < 100; i++) {
 			results.add(executorService.submit(() -> {
 				InputStream subsectionInputStream = RandomAccessDataFileTests.this.file
-						.getSubsection(0, 256).getInputStream(ResourceAccess.PER_READ);
+						.getSubsection(0, 256).getInputStream();
 				byte[] b = new byte[256];
 				subsectionInputStream.read(b);
 				return Arrays.equals(b, BYTES);
@@ -301,47 +303,6 @@ public class RandomAccessDataFileTests {
 		}
 		for (Future<Boolean> future : results) {
 			assertThat(future.get()).isTrue();
-		}
-	}
-
-	@Test
-	public void close() throws Exception {
-		this.file.getInputStream(ResourceAccess.PER_READ).read();
-		this.file.close();
-		Field filePoolField = RandomAccessDataFile.class.getDeclaredField("filePool");
-		filePoolField.setAccessible(true);
-		Object filePool = filePoolField.get(this.file);
-		Field filesField = filePool.getClass().getDeclaredField("files");
-		filesField.setAccessible(true);
-		Queue<?> queue = (Queue<?>) filesField.get(filePool);
-		assertThat(queue).isEmpty();
-	}
-
-	@Test
-	public void seekFailuresDoNotPreventSubsequentReads() throws Exception {
-		FilePool filePool = (FilePool) ReflectionTestUtils.getField(this.file,
-				"filePool");
-		FilePool spiedPool = spy(filePool);
-		ReflectionTestUtils.setField(this.file, "filePool", spiedPool);
-		willAnswer((invocation) -> {
-			RandomAccessFile originalFile = (RandomAccessFile) invocation
-					.callRealMethod();
-			if (Mockito.mockingDetails(originalFile).isSpy()) {
-				return originalFile;
-			}
-			RandomAccessFile spiedFile = spy(originalFile);
-			willThrow(new IOException("Seek failed")).given(spiedFile).seek(anyLong());
-			return spiedFile;
-		}).given(spiedPool).acquire();
-
-		for (int i = 0; i < 5; i++) {
-			try {
-				this.file.getInputStream(ResourceAccess.PER_READ).read();
-				fail("Read should fail due to exception from seek");
-			}
-			catch (IOException ex) {
-
-			}
 		}
 	}
 

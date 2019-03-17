@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,6 +104,30 @@ public class SpringBootJoranConfiguratorTests {
 	@Test
 	public void profileNotActive() throws Exception {
 		initialize("production-profile.xml");
+		this.logger.trace("Hello");
+		this.out.expect(not(containsString("Hello")));
+	}
+
+	@Test
+	public void profileExpressionMatchFirst() throws Exception {
+		this.environment.setActiveProfiles("production");
+		initialize("profile-expression.xml");
+		this.logger.trace("Hello");
+		this.out.expect(containsString("Hello"));
+	}
+
+	@Test
+	public void profileExpressionMatchSecond() throws Exception {
+		this.environment.setActiveProfiles("test");
+		initialize("profile-expression.xml");
+		this.logger.trace("Hello");
+		this.out.expect(containsString("Hello"));
+	}
+
+	@Test
+	public void profileExpressionNoMatch() throws Exception {
+		this.environment.setActiveProfiles("development");
+		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
 		this.out.expect(not(containsString("Hello")));
 	}

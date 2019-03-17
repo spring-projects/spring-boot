@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.bundling.Jar;
 
 /**
@@ -37,28 +38,38 @@ import org.gradle.api.tasks.bundling.Jar;
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private BootArchiveSupport support = new BootArchiveSupport(
+	private final BootArchiveSupport support = new BootArchiveSupport(
 			"org.springframework.boot.loader.JarLauncher", this::resolveZipCompression);
 
-	private FileCollection classpath;
+	private final CopySpec bootInf;
 
 	private String mainClassName;
+
+	private FileCollection classpath;
 
 	/**
 	 * Creates a new {@code BootJar} task.
 	 */
 	public BootJar() {
-		CopySpec bootInf = getRootSpec().addChildBeforeSpec(getMainSpec())
-				.into("BOOT-INF");
-		bootInf.into("classes", classpathFiles(File::isDirectory));
-		bootInf.into("lib", classpathFiles(File::isFile));
+		this.bootInf = getProject().copySpec().into("BOOT-INF");
+		getMainSpec().with(this.bootInf);
+		this.bootInf.into("classes", classpathFiles(File::isDirectory));
+		this.bootInf.into("lib", classpathFiles(File::isFile));
+		this.bootInf.filesMatching("module-info.class",
+				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
+		getRootSpec().eachFile((details) -> {
+			String pathString = details.getRelativePath().getPathString();
+			if (pathString.startsWith("BOOT-INF/lib/")
+					&& !this.support.isZip(details.getFile())) {
+				details.exclude();
+			}
+		});
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
 		return (copySpec) -> copySpec
-				.from((Callable<Iterable<File>>) () -> this.classpath == null
-						? Collections.emptyList() : this.classpath.filter(filter));
-
+				.from((Callable<Iterable<File>>) () -> (this.classpath != null)
+						? this.classpath.filter(filter) : Collections.emptyList());
 	}
 
 	@Override
@@ -74,6 +85,13 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public String getMainClassName() {
+		if (this.mainClassName == null) {
+			String manifestStartClass = (String) getManifest().getAttributes()
+					.get("Start-Class");
+			if (manifestStartClass != null) {
+				setMainClassName(manifestStartClass);
+			}
+		}
 		return this.mainClassName;
 	}
 
@@ -116,8 +134,16 @@ public class BootJar extends Jar implements BootArchive {
 	public void classpath(Object... classpath) {
 		FileCollection existingClasspath = this.classpath;
 		this.classpath = getProject().files(
-				existingClasspath == null ? Collections.emptyList() : existingClasspath,
+				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
+	}
+
+	public void setClasspath(Object classpath) {
+		this.classpath = getProject().files(classpath);
+	}
+
+	public void setClasspath(FileCollection classpath) {
+		this.classpath = getProject().files(classpath);
 	}
 
 	@Override
@@ -131,12 +157,38 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	/**
+	 * Returns a {@code CopySpec} that can be used to add content to the {@code BOOT-INF}
+	 * directory of the jar.
+	 * @return a {@code CopySpec} for {@code BOOT-INF}
+	 * @since 2.0.3
+	 */
+	@Internal
+	public CopySpec getBootInf() {
+		CopySpec child = getProject().copySpec();
+		this.bootInf.with(child);
+		return child;
+	}
+
+	/**
+	 * Calls the given {@code action} to add content to the {@code BOOT-INF} directory of
+	 * the jar.
+	 * @param action the {@code Action} to call
+	 * @return the {@code CopySpec} for {@code BOOT-INF} that was passed to the
+	 * {@code Action}
+	 * @since 2.0.3
+	 */
+	public CopySpec bootInf(Action<CopySpec> action) {
+		CopySpec bootInf = getBootInf();
+		action.execute(bootInf);
+		return bootInf;
+	}
+
+	/**
 	 * Returns the {@link ZipCompression} that should be used when adding the file
 	 * represented by the given {@code details} to the jar.
 	 * <p>
 	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
 	 * deflated.
-	 *
 	 * @param details the details
 	 * @return the compression to use
 	 */
@@ -150,7 +202,7 @@ public class BootJar extends Jar implements BootArchive {
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
 		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
 		if (launchScript == null) {
-			launchScript = new LaunchScriptConfiguration();
+			launchScript = new LaunchScriptConfiguration(this);
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;

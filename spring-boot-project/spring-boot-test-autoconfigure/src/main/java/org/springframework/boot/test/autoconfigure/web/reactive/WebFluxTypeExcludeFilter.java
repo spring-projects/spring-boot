@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,11 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.server.WebExceptionHandler;
 
 /**
  * {@link TypeExcludeFilter} for {@link WebFluxTest @WebFluxTest}.
@@ -42,6 +44,9 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
+	private static final String[] OPTIONAL_INCLUDES = {
+			"org.springframework.security.config.web.server.ServerHttpSecurity" };
+
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
 		includes.add(ControllerAdvice.class);
@@ -49,6 +54,15 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(WebFluxConfigurer.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		includes.add(WebExceptionHandler.class);
+		for (String optionalInclude : OPTIONAL_INCLUDES) {
+			try {
+				includes.add(ClassUtils.forName(optionalInclude, null));
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
+		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 

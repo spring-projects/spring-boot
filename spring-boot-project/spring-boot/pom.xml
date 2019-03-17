@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -56,11 +57,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.samskivert</groupId>
 			<artifactId>jmustache</artifactId>
 			<optional>true</optional>
@@ -76,8 +72,13 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
+			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-tcnative-boringssl-static</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -86,13 +87,18 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -144,6 +150,12 @@
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.transaction</groupId>
+					<artifactId>jta</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -179,6 +191,12 @@
 			<groupId>org.eclipse.jetty.http2</groupId>
 			<artifactId>http2-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -189,35 +207,35 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.persistence</groupId>
+					<artifactId>javax.persistence-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-transaction-spi</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jdbc</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jms</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jta</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jts</groupId>
-			<artifactId>narayana-jts-integration</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -247,6 +265,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -268,6 +291,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -318,18 +346,28 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.squareup.okhttp</groupId>
-			<artifactId>okhttp</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.sun.xml.messaging.saaj</groupId>
+			<artifactId>saaj-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -356,6 +394,12 @@
 			<groupId>org.firebirdsql.jdbc</groupId>
 			<artifactId>jaybird-jdk18</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.resource</groupId>
+					<artifactId>connector-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -375,11 +419,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

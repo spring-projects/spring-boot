@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
-import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
-import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
-import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.config.MeterFilter;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -45,7 +38,7 @@ import org.springframework.core.annotation.Order;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
 @AutoConfigureBefore(CompositeMeterRegistryAutoConfiguration.class)
@@ -59,78 +52,18 @@ public class MetricsAutoConfiguration {
 
 	@Bean
 	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ApplicationContext context) {
-		return new MeterRegistryPostProcessor(context);
+			ObjectProvider<MeterBinder> meterBinders,
+			ObjectProvider<MeterFilter> meterFilters,
+			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
+			ObjectProvider<MetricsProperties> metricsProperties) {
+		return new MeterRegistryPostProcessor(meterBinders, meterFilters,
+				meterRegistryCustomizers, metricsProperties);
 	}
 
 	@Bean
 	@Order(0)
 	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
 		return new PropertiesMeterFilter(properties);
-	}
-
-	@Configuration
-	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
-	static class JvmMeterBindersConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public JvmGcMetrics jvmGcMetrics() {
-			return new JvmGcMetrics();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public JvmMemoryMetrics jvmMemoryMetrics() {
-			return new JvmMemoryMetrics();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public JvmThreadMetrics jvmThreadMetrics() {
-			return new JvmThreadMetrics();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ClassLoaderMetrics classLoaderMetrics() {
-			return new ClassLoaderMetrics();
-		}
-
-	}
-
-	@Configuration
-	static class MeterBindersConfiguration {
-
-		@Bean
-		@ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
-		@ConditionalOnMissingBean(LogbackMetrics.class)
-		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
-		public LogbackMetrics logbackMetrics() {
-			return new LogbackMetrics();
-		}
-
-		@Bean
-		@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled", matchIfMissing = true)
-		@ConditionalOnMissingBean
-		public UptimeMetrics uptimeMetrics() {
-			return new UptimeMetrics();
-		}
-
-		@Bean
-		@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled", matchIfMissing = true)
-		@ConditionalOnMissingBean
-		public ProcessorMetrics processorMetrics() {
-			return new ProcessorMetrics();
-		}
-
-		@Bean
-		@ConditionalOnProperty(name = "management.metrics.binders.files.enabled", matchIfMissing = true)
-		@ConditionalOnMissingBean
-		public FileDescriptorMetrics fileDescriptorMetrics() {
-			return new FileDescriptorMetrics();
-		}
-
 	}
 
 }

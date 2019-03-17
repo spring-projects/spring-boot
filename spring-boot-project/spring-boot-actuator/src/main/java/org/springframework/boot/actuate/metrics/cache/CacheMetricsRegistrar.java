@@ -26,6 +26,8 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.cache.Cache;
+import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
+import org.springframework.util.ClassUtils;
 
 /**
  * Register supported {@link Cache} to a {@link MeterRegistry}.
@@ -59,7 +61,7 @@ public class CacheMetricsRegistrar {
 	 * @return {@code true} if the {@code cache} is supported and was registered
 	 */
 	public boolean bindCacheToRegistry(Cache cache, Tag... tags) {
-		MeterBinder meterBinder = getMeterBinder(cache, Tags.of(tags));
+		MeterBinder meterBinder = getMeterBinder(unwrapIfNecessary(cache), Tags.of(tags));
 		if (meterBinder != null) {
 			meterBinder.bindTo(this.registry);
 			return true;
@@ -85,6 +87,31 @@ public class CacheMetricsRegistrar {
 	 */
 	protected Iterable<Tag> getAdditionalTags(Cache cache) {
 		return Tags.of("name", cache.getName());
+	}
+
+	private Cache unwrapIfNecessary(Cache cache) {
+		if (ClassUtils.isPresent(
+				"org.springframework.cache.transaction.TransactionAwareCacheDecorator",
+				getClass().getClassLoader())) {
+			return TransactionAwareCacheDecoratorHandler.unwrapIfNecessary(cache);
+		}
+		return cache;
+	}
+
+	private static class TransactionAwareCacheDecoratorHandler {
+
+		private static Cache unwrapIfNecessary(Cache cache) {
+			try {
+				if (cache instanceof TransactionAwareCacheDecorator) {
+					return ((TransactionAwareCacheDecorator) cache).getTargetCache();
+				}
+			}
+			catch (NoClassDefFoundError ex) {
+				// Ignore
+			}
+			return cache;
+		}
+
 	}
 
 }

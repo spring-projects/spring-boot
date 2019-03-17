@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@ public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentat
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric", responseFields(
 						fieldWithPath("name").description("Name of the metric"),
+						fieldWithPath("description")
+								.description("Description of the metric"),
+						fieldWithPath("baseUnit").description("Base unit of the metric"),
 						fieldWithPath("measurements")
 								.description("Measurements of the metric"),
 						fieldWithPath("measurements[].statistic")
@@ -79,7 +82,7 @@ public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentat
 								"A tag to use for drill-down in the form `name:value`."))));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 

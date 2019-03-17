@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 /**
  * Default user {@link Configuration} for a reactive web application. Configures a
@@ -44,7 +45,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
 @ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
 		ReactiveUserDetailsService.class })
@@ -72,14 +73,14 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 	private UserDetails getUserDetails(SecurityProperties.User user, String password) {
 		List<String> roles = user.getRoles();
 		return User.withUsername(user.getName()).password(password)
-				.roles(roles.toArray(new String[roles.size()])).build();
+				.roles(StringUtils.toStringArray(roles)).build();
 	}
 
 	private String getOrDeducePassword(SecurityProperties.User user,
 			PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing default security password: %s%n",
+			logger.info(String.format("%n%nUsing generated security password: %s%n",
 					user.getPassword()));
 		}
 		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {

@@ -24,7 +24,7 @@ import org.springframework.cache.Cache;
 /**
  * Provide a {@link MeterBinder} based on a {@link Cache}.
  *
- * @param <C> The cache type
+ * @param <C> the cache type
  * @author Stephane Nicoll
  * @since 2.0.0
  */

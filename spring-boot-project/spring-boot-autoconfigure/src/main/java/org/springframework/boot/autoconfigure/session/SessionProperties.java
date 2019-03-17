@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,18 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.session.web.http.SessionRepositoryFilter;
@@ -45,17 +50,25 @@ public class SessionProperties {
 	private StoreType storeType;
 
 	/**
-	 * Session timeout.
+	 * Session timeout. If a duration suffix is not specified, seconds will be used.
 	 */
-	private final Duration timeout;
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration timeout;
 
 	private Servlet servlet = new Servlet();
 
-	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
-		ServerProperties properties = serverProperties.getIfUnique();
-		Session session = (properties == null ? null
-				: properties.getServlet().getSession());
-		this.timeout = (session == null ? null : session.getTimeout());
+	private ServerProperties serverProperties;
+
+	@Autowired
+	void setServerProperties(ObjectProvider<ServerProperties> serverProperties) {
+		this.serverProperties = serverProperties.getIfUnique();
+	}
+
+	@PostConstruct
+	public void checkSessionTimeout() {
+		if (this.timeout == null && this.serverProperties != null) {
+			this.timeout = this.serverProperties.getServlet().getSession().getTimeout();
+		}
 	}
 
 	public StoreType getStoreType() {
@@ -73,6 +86,10 @@ public class SessionProperties {
 	 */
 	public Duration getTimeout() {
 		return this.timeout;
+	}
+
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
 	}
 
 	public Servlet getServlet() {

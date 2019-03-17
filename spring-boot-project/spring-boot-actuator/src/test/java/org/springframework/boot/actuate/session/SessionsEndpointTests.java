@@ -48,9 +48,8 @@ public class SessionsEndpointTests {
 
 	@Test
 	public void sessionsForUsername() {
-		given(this.repository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
-						.willReturn(Collections.singletonMap(session.getId(), session));
+		given(this.repository.findByPrincipalName("user"))
+				.willReturn(Collections.singletonMap(session.getId(), session));
 		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user")
 				.getSessions();
 		assertThat(result).hasSize(1);

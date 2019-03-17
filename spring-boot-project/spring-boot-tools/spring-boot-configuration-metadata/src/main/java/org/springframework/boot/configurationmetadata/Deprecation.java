@@ -65,7 +65,7 @@ public class Deprecation implements Serializable {
 	 * A single-line, single-sentence reason why the related property is deprecated, if
 	 * any.
 	 * @return the short deprecation reason
-	 * @see #getShortReason()
+	 * @see #getReason()
 	 */
 	public String getShortReason() {
 		return this.shortReason;

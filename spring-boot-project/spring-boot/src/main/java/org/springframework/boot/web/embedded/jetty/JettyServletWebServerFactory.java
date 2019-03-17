@@ -23,14 +23,11 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -138,14 +135,14 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = createServer(address);
 		configureWebAppContext(context, initializers);
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
-			customizeSsl(server, port);
+			customizeSsl(server, address);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
@@ -193,8 +190,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return wrapper;
 	}
 
-	private void customizeSsl(Server server, int port) {
-		new SslServerCustomizer(port, getSsl(), getSslStoreProvider(), getHttp2())
+	private void customizeSsl(Server server, InetSocketAddress address) {
+		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2())
 				.customize(server);
 	}
 
@@ -226,6 +223,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
+		context.setThrowUnavailableOnStartupException(true);
 		configureSession(context);
 		postProcessWebAppContext(context);
 	}
@@ -249,45 +247,42 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private void addLocaleMappings(WebAppContext context) {
-		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
-			Locale locale = entry.getKey();
-			Charset charset = entry.getValue();
-			context.addLocaleEncoding(locale.toString(), charset.toString());
-		}
+		getLocaleCharsetMappings().forEach((locale, charset) -> context
+				.addLocaleEncoding(locale.toString(), charset.toString()));
 	}
 
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
-		return (temp == null ? null : new File(temp));
+		return (temp != null) ? new File(temp) : null;
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
-		File docBase = (root != null ? root : createTempDir("jetty-docbase"));
+		File docBase = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
 			List<Resource> resources = new ArrayList<>();
-			Resource rootResource = docBase.isDirectory()
+			Resource rootResource = (docBase.isDirectory()
 					? Resource.newResource(docBase.getCanonicalFile())
-					: JarResource.newJarResource(Resource.newResource(docBase));
-			resources.add(
-					root == null ? rootResource : new LoaderHidingResource(rootResource));
+					: JarResource.newJarResource(Resource.newResource(docBase)));
+			resources.add((root != null) ? new LoaderHidingResource(rootResource)
+					: rootResource);
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {
 					resources.add(resource);
 				}
 			}
-			handler.setBaseResource(new ResourceCollection(
-					resources.toArray(new Resource[resources.size()])));
+			handler.setBaseResource(
+					new ResourceCollection(resources.toArray(new Resource[0])));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private Resource createResource(URL url) throws IOException {
+	private Resource createResource(URL url) throws Exception {
 		if ("file".equals(url.getProtocol())) {
-			File file = new File(url.getFile());
+			File file = new File(url.toURI());
 			if (file.isFile()) {
 				return Resource.newResource("jar:" + url + "!/META-INF/resources");
 			}
@@ -343,7 +338,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
-		return configurations.toArray(new Configuration[configurations.size()]);
+		return configurations.toArray(new Configuration[0]);
 	}
 
 	/**

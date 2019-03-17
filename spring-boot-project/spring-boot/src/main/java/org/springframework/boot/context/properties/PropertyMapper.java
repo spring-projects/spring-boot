@@ -97,6 +97,7 @@ public final class PropertyMapper {
 	 * @param <T> the source type
 	 * @param supplier the value supplier
 	 * @return a {@link Source} that can be used to complete the mapping
+	 * @see #from(Object)
 	 */
 	public <T> Source<T> from(Supplier<T> supplier) {
 		Assert.notNull(supplier, "Supplier must not be null");
@@ -105,6 +106,17 @@ public final class PropertyMapper {
 			source = this.sourceOperator.apply(source);
 		}
 		return source;
+	}
+
+	/**
+	 * Return a new {@link Source} from the specified value that can be used to perform
+	 * the mapping.
+	 * @param <T> the source type
+	 * @param value the value
+	 * @return a {@link Source} that can be used to complete the mapping
+	 */
+	public <T> Source<T> from(T value) {
+		return from(() -> value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -167,6 +179,7 @@ public final class PropertyMapper {
 
 	/**
 	 * A source that is in the process of being mapped.
+	 *
 	 * @param <T> the source type
 	 */
 	public static final class Source<T> {

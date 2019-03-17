@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -40,7 +41,16 @@ import org.springframework.web.util.UriTemplateHandler;
 public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 	@ClassRule
-	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	public static final TemporaryFolder temporaryFolder = new TemporaryFolder() {
+
+		@Override
+		public void delete() {
+		}
+
+	};
+
+	public static final BuildOutput buildOutput = new BuildOutput(
+			AbstractEmbeddedServletContainerIntegrationTests.class);
 
 	@Rule
 	public final AbstractApplicationLauncher launcher;
@@ -53,7 +63,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 		parameters.addAll(createParameters(packaging, "jetty", applicationLaunchers));
 		parameters.addAll(createParameters(packaging, "tomcat", applicationLaunchers));
 		parameters.addAll(createParameters(packaging, "undertow", applicationLaunchers));
-		return parameters.toArray(new Object[parameters.size()]);
+		return parameters.toArray(new Object[0]);
 	}
 
 	private static List<Object> createParameters(String packaging, String container,
@@ -64,8 +74,9 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
 			try {
 				AbstractApplicationLauncher launcher = launcherClass
-						.getDeclaredConstructor(ApplicationBuilder.class)
-						.newInstance(applicationBuilder);
+						.getDeclaredConstructor(ApplicationBuilder.class,
+								BuildOutput.class)
+						.newInstance(applicationBuilder, buildOutput);
 				String name = StringUtils.capitalize(container) + ": "
 						+ launcher.getDescription(packaging);
 				parameters.add(new Object[] { name, launcher });

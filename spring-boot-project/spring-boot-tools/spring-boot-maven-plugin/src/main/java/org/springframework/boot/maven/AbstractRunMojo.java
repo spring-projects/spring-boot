@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
@@ -46,6 +48,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author Stephane Nicoll
  * @author David Liu
  * @author Daniel Young
+ * @author Dmytro Nosan
  * @see RunMojo
  * @see StartMojo
  */
@@ -75,9 +78,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Path to agent jar. NOTE: the use of agents means that processes will be started by
 	 * forking a new JVM.
 	 * @since 1.0
+	 * @deprecated since version 2.2. Use agents instead.
 	 */
+	@Deprecated
 	@Parameter(property = "spring-boot.run.agent")
 	private File[] agent;
+
+	/**
+	 * Path to agent jars. NOTE: the use of agents means that processes will be started by
+	 * forking a new JVM.
+	 * @since 2.2
+	 */
+	@Parameter(property = "spring-boot.run.agents")
+	private File[] agents;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
@@ -104,6 +117,23 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.jvmArguments")
 	private String jvmArguments;
+
+	/**
+	 * List of JVM system properties to pass to the process. NOTE: the use of system
+	 * properties means that processes will be started by forking a new JVM.
+	 * @since 2.1
+	 */
+	@Parameter
+	private Map<String, String> systemPropertyVariables;
+
+	/**
+	 * List of Environment variables that should be associated with the forked process
+	 * used to run the application. NOTE: the use of Environment variables means that
+	 * processes will be started by forking a new JVM.
+	 * @since 2.1
+	 */
+	@Parameter
+	private Map<String, String> environmentVariables;
 
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
@@ -193,15 +223,24 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @see #logDisabledFork()
 	 */
 	protected boolean enableForkByDefault() {
-		return hasAgent() || hasJvmArgs() || hasWorkingDirectorySet();
+		return hasAgent() || hasJvmArgs() || hasEnvVariables()
+				|| hasWorkingDirectorySet();
 	}
 
 	private boolean hasAgent() {
-		return (this.agent != null && this.agent.length > 0);
+		File[] configuredAgents = determineAgents();
+		return (configuredAgents != null && configuredAgents.length > 0);
 	}
 
 	private boolean hasJvmArgs() {
-		return (this.jvmArguments != null && !this.jvmArguments.isEmpty());
+		return (this.jvmArguments != null && !this.jvmArguments.isEmpty())
+				|| (this.systemPropertyVariables != null
+						&& !this.systemPropertyVariables.isEmpty());
+	}
+
+	private boolean hasEnvVariables() {
+		return (this.environmentVariables != null
+				&& !this.environmentVariables.isEmpty());
 	}
 
 	private boolean hasWorkingDirectorySet() {
@@ -228,15 +267,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @see #enableForkByDefault()
 	 */
 	protected void logDisabledFork() {
-		if (hasAgent()) {
-			getLog().warn("Fork mode disabled, ignoring agent");
-		}
-		if (hasJvmArgs()) {
-			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-					+ this.jvmArguments + "]");
-		}
-		if (hasWorkingDirectorySet()) {
-			getLog().warn("Fork mode disabled, ignoring working directory configuration");
+		if (getLog().isWarnEnabled()) {
+			if (hasAgent()) {
+				getLog().warn("Fork mode disabled, ignoring agent");
+			}
+			if (hasJvmArgs()) {
+				RunArguments runArguments = resolveJvmArguments();
+				getLog().warn("Fork mode disabled, ignoring JVM argument(s) [" + Arrays
+						.stream(runArguments.asArray()).collect(Collectors.joining(" "))
+						+ "]");
+			}
+			if (hasWorkingDirectorySet()) {
+				getLog().warn(
+						"Fork mode disabled, ignoring working directory configuration");
+			}
 		}
 	}
 
@@ -248,17 +292,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		addClasspath(args);
 		args.add(startClassName);
 		addArgs(args);
-		runWithForkedJvm(this.workingDirectory, args);
+		runWithForkedJvm(this.workingDirectory, args, determineEnvironmentVariables());
 	}
 
 	/**
 	 * Run with a forked VM, using the specified command line arguments.
 	 * @param workingDirectory the working directory of the forked JVM
 	 * @param args the arguments (JVM arguments and application arguments)
+	 * @param environmentVariables the environment variables
 	 * @throws MojoExecutionException in case of MOJO execution errors
 	 * @throws MojoFailureException in case of MOJO failures
 	 */
-	protected abstract void runWithForkedJvm(File workingDirectory, List<String> args)
+	protected abstract void runWithForkedJvm(File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables)
 			throws MojoExecutionException, MojoFailureException;
 
 	/**
@@ -281,10 +327,24 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return runArguments;
 	}
 
+	/**
+	 * Resolve the environment variables to use.
+	 * @return an {@link EnvVariables} defining the environment variables
+	 */
+	protected EnvVariables resolveEnvVariables() {
+		return new EnvVariables(this.environmentVariables);
+	}
+
 	private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
 		logArguments("Application argument(s): ", this.arguments);
+	}
+
+	private Map<String, String> determineEnvironmentVariables() {
+		EnvVariables envVariables = resolveEnvVariables();
+		logArguments("Environment variable(s): ", envVariables.asArray());
+		return envVariables.asMap();
 	}
 
 	/**
@@ -292,7 +352,16 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the JVM arguments
 	 */
 	protected RunArguments resolveJvmArguments() {
-		return new RunArguments(this.jvmArguments);
+		StringBuilder stringBuilder = new StringBuilder();
+		if (this.systemPropertyVariables != null) {
+			stringBuilder.append(this.systemPropertyVariables.entrySet().stream()
+					.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
+					.collect(Collectors.joining(" ")));
+		}
+		if (this.jvmArguments != null) {
+			stringBuilder.append(" ").append(this.jvmArguments);
+		}
+		return new RunArguments(stringBuilder.toString());
 	}
 
 	private void addJvmArgs(List<String> args) {
@@ -302,15 +371,22 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addAgents(List<String> args) {
-		if (this.agent != null) {
-			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
-			for (File agent : this.agent) {
+		File[] configuredAgents = determineAgents();
+		if (configuredAgents != null) {
+			if (getLog().isInfoEnabled()) {
+				getLog().info("Attaching agents: " + Arrays.asList(configuredAgents));
+			}
+			for (File agent : configuredAgents) {
 				args.add("-javaagent:" + agent);
 			}
 		}
 		if (this.noverify) {
 			args.add("-noverify");
 		}
+	}
+
+	private File[] determineAgents() {
+		return (this.agents != null) ? this.agents : this.agent;
 	}
 
 	private void addActiveProfileArgument(RunArguments arguments) {
@@ -331,11 +407,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
-				classpath = classpath
-						.append((classpath.length() > 0 ? File.pathSeparator : "")
-								+ new File(ele.toURI()));
+				if (classpath.length() > 0) {
+					classpath.append(File.pathSeparator);
+				}
+				classpath.append(new File(ele.toURI()));
 			}
-			getLog().debug("Classpath for forked process: " + classpath);
+			if (getLog().isDebugEnabled()) {
+				getLog().debug("Classpath for forked process: " + classpath);
+			}
 			args.add("-cp");
 			args.add(classpath.toString());
 		}
@@ -369,7 +448,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
-			return urls.toArray(new URL[urls.size()]);
+			return urls.toArray(new URL[0]);
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException("Unable to build classpath", ex);
@@ -401,8 +480,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addDependencies(List<URL> urls)
 			throws MalformedURLException, MojoExecutionException {
-		FilterArtifacts filters = this.useTestClasspath ? getFilters()
-				: getFilters(new TestArtifactFilter());
+		FilterArtifacts filters = (this.useTestClasspath ? getFilters()
+				: getFilters(new TestArtifactFilter()));
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				filters);
 		for (Artifact artifact : artifacts) {
@@ -413,11 +492,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void logArguments(String message, String[] args) {
-		StringBuilder sb = new StringBuilder(message);
-		for (String arg : args) {
-			sb.append(arg).append(" ");
+		if (getLog().isDebugEnabled()) {
+			getLog().debug(
+					Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
-		getLog().debug(sb.toString().trim());
 	}
 
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
@@ -450,7 +528,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		public void uncaughtException(Thread thread, Throwable ex) {
 			if (!(ex instanceof ThreadDeath)) {
 				synchronized (this.monitor) {
-					this.exception = (this.exception == null ? ex : this.exception);
+					this.exception = (this.exception != null) ? this.exception : ex;
 				}
 				getLog().warn(ex);
 			}
@@ -480,7 +558,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 		LaunchRunner(String startClassName, String... args) {
 			this.startClassName = startClassName;
-			this.args = (args != null ? args : new String[] {});
+			this.args = (args != null) ? args : new String[] {};
 		}
 
 		@Override
@@ -505,6 +583,23 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			catch (Exception ex) {
 				thread.getThreadGroup().uncaughtException(thread, ex);
 			}
+		}
+
+	}
+
+	/**
+	 * Format System properties.
+	 */
+	static class SystemPropertyFormatter {
+
+		public static String format(String key, String value) {
+			if (key == null) {
+				return "";
+			}
+			if (value == null || value.isEmpty()) {
+				return String.format("-D%s", key);
+			}
+			return String.format("-D%s=\"%s\"", key, value);
 		}
 
 	}

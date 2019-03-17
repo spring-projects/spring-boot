@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 import java.io.File;
 
 import io.restassured.specification.RequestSpecification;
-import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,18 +27,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileSystemUtils;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured3.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 
 /**
  * Integration tests for advanced configuration of {@link AutoConfigureRestDocs} with REST
@@ -55,13 +60,17 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 	@LocalServerPort
 	private int port;
 
-	@Before
-	public void deleteSnippets() {
-		FileSystemUtils.deleteRecursively(new File("target/generated-snippets"));
-	}
-
 	@Autowired
 	private RequestSpecification documentationSpec;
+
+	private File generatedSnippets;
+
+	@Before
+	public void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
+				"generated-snippets");
+		FileSystemUtils.deleteRecursively(this.generatedSnippets);
+	}
 
 	@Test
 	public void snippetGeneration() {
@@ -70,26 +79,34 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 						preprocessRequest(modifyUris().scheme("https")
 								.host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
-		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
+		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.md"))
-				.has(contentContaining("api.example.com"));
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
+				.contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md")))
+				.contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
-	}
-
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
+		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration
-			implements RestDocsRestAssuredConfigurationCustomizer {
+	public static class CustomizationConfiguration {
 
-		@Override
-		public void customize(RestAssuredRestDocumentationConfigurer configurer) {
-			configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
+		@Bean
+		public RestDocumentationResultHandler restDocumentation() {
+			return MockMvcRestDocumentation.document("{method-name}");
+		}
+
+		@Bean
+		public RestDocsRestAssuredConfigurationCustomizer templateFormatCustomizer() {
+			return (configurer) -> configurer.snippets()
+					.withTemplateFormat(TemplateFormats.markdown());
+		}
+
+		@Bean
+		public RestDocsRestAssuredConfigurationCustomizer defaultSnippetsCustomizer() {
+			return (configurer) -> configurer.snippets().withAdditionalDefaults(
+					responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

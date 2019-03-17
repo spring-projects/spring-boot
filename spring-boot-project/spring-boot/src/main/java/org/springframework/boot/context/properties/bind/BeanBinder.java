@@ -34,7 +34,7 @@ interface BeanBinder {
 	 * @param target the bindable to bind
 	 * @param context the bind context
 	 * @param propertyBinder property binder
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @return a bound instance or {@code null}
 	 */
 	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,

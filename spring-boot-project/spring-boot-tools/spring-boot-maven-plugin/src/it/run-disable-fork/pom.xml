@@ -26,6 +26,10 @@
 							<fork>false</fork>
 							<jvmArguments>-Dfoo=bar</jvmArguments>
 							<workingDirectory>${project.build.sourceDirectory}</workingDirectory>
+							<systemPropertyVariables>
+								<property1>value1</property1>
+								<property2/>
+							</systemPropertyVariables>
 						</configuration>
 					</execution>
 				</executions>

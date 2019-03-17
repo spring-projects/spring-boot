@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Dave Syer
  * @see JsonParserFactory
  */
-public class JacksonJsonParser implements JsonParser {
+public class JacksonJsonParser extends AbstractJsonParser {
 
 	private static final TypeReference<?> MAP_TYPE = new MapTypeReference();
 
@@ -36,24 +36,30 @@ public class JacksonJsonParser implements JsonParser {
 
 	private ObjectMapper objectMapper; // Late binding
 
+	/**
+	 * Creates an instance with the specified {@link ObjectMapper}.
+	 * @param objectMapper the object mapper to use
+	 */
+	public JacksonJsonParser(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
+
+	/**
+	 * Creates an instance with a default {@link ObjectMapper} that is created lazily.
+	 */
+	public JacksonJsonParser() {
+	}
+
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		try {
-			return getObjectMapper().readValue(json, MAP_TYPE);
-		}
-		catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
-		}
+		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE),
+				Exception.class);
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		try {
-			return getObjectMapper().readValue(json, LIST_TYPE);
-		}
-		catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
-		}
+		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE),
+				Exception.class);
 	}
 
 	private ObjectMapper getObjectMapper() {

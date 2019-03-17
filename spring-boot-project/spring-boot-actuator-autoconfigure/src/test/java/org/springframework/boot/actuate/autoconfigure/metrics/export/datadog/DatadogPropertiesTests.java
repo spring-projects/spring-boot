@@ -32,7 +32,7 @@ public class DatadogPropertiesTests extends StepRegistryPropertiesTests {
 	@Override
 	public void defaultValuesAreConsistent() {
 		DatadogProperties properties = new DatadogProperties();
-		DatadogConfig config = DatadogConfig.DEFAULT;
+		DatadogConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
 		assertThat(properties.getHostTag()).isEqualTo(config.hostTag());

@@ -21,12 +21,14 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.stream.Stream;
 
 /**
  * Logic to extract URLs of static resource jars (those containing
@@ -37,21 +39,25 @@ import java.util.jar.JarFile;
  */
 class StaticResourceJars {
 
-	public final List<URL> getUrls() {
+	List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		List<URL> urls = new ArrayList<>();
 		if (classLoader instanceof URLClassLoader) {
-			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-				addUrl(urls, url);
-			}
+			return getUrlsFrom(((URLClassLoader) classLoader).getURLs());
 		}
 		else {
-			for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
-					.split(File.pathSeparator)) {
-				addUrl(urls, toUrl(entry));
-			}
+			return getUrlsFrom(Stream
+					.of(ManagementFactory.getRuntimeMXBean().getClassPath()
+							.split(File.pathSeparator))
+					.map(this::toUrl).toArray(URL[]::new));
 		}
-		return urls;
+	}
+
+	List<URL> getUrlsFrom(URL... urls) {
+		List<URL> resourceJarUrls = new ArrayList<>();
+		for (URL url : urls) {
+			addUrl(resourceJarUrls, url);
+		}
+		return resourceJarUrls;
 	}
 
 	private URL toUrl(String classPathEntry) {
@@ -64,13 +70,32 @@ class StaticResourceJars {
 		}
 	}
 
+	private File toFile(URL url) {
+		try {
+			return new File(url.toURI());
+		}
+		catch (URISyntaxException ex) {
+			throw new IllegalStateException(
+					"Failed to create File from URL '" + url + "'");
+		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
+	}
+
 	private void addUrl(List<URL> urls, URL url) {
 		try {
-			if ("file".equals(url.getProtocol())) {
-				addUrlFile(urls, url, new File(url.getFile()));
+			if (!"file".equals(url.getProtocol())) {
+				addUrlConnection(urls, url, url.openConnection());
 			}
 			else {
-				addUrlConnection(urls, url, url.openConnection());
+				File file = toFile(url);
+				if (file != null) {
+					addUrlFile(urls, url, file);
+				}
+				else {
+					addUrlConnection(urls, url, url.openConnection());
+				}
 			}
 		}
 		catch (IOException ex) {

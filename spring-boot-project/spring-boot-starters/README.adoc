@@ -34,8 +34,17 @@ do as they were designed before this was clarified.
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
+| http://arangodb.com/[ArangoDB]
+| https://github.com/arangodb/spring-boot-starter
+
+| http://www.axonframework.org/[Axon Framework]
+| https://github.com/AxonFramework/AxonFramework
+
 | https://azure.microsoft.com/[Azure]
 | https://github.com/Microsoft/azure-spring-boot-starters
+
+| https://docs.microsoft.com/en-us/azure/application-insights/app-insights-overview[Azure Application Insights]
+| https://github.com/Microsoft/ApplicationInsights-Java/tree/master/azure-application-insights-spring-boot-starter
 
 | https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
 | https://github.com/MarcGiffing/bucket4j-spring-boot-starter
@@ -43,14 +52,8 @@ do as they were designed before this was clarified.
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
-| Central Authentication Service (CAS) client
-| https://github.com/Unicon/cas-client-autoconfig-support
-
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
-
-| https://citrusframework.org/[Citrus] simulator
-| https://github.com/christophd/citrus-simulator
 
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
@@ -61,20 +64,23 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
+| https://github.com/jliu666/docker-api-spring-boot
+
+| https://dozermapper.github.io/[Dozer]
+| https://github.com/DozerMapper/dozer
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
-| http://ff4j.org/[Feature Flipping For Java (FF4J)]
-| https://github.com/clun/ff4j/
+| https://www.flowable.org/[Flowable]
+| https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
 
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
 | http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
-
-| http://graphql.org/[GraphQL]
-| https://github.com/merapar/graphql-spring-boot-starter
 
 | http://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
@@ -95,42 +101,33 @@ do as they were designed before this was clarified.
 | https://github.com/infinispan/infinispan-spring-boot
 
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
-| https://github.com/domix/spring-boot-starter-jade4j
+| https://github.com/domix/jade4j-spring-boot-starter
+
+| https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
+| https://github.com/javamelody/javamelody/wiki/SpringBootStarter
+
+| https://javers.org[JaVers]
+| https://github.com/javers/javers
 
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
-| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
+| JSF integration for various libraries
 | http://joinfaces.org
 
 | http://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 
-| http://log4jdbc.brunorozendo.com/[Log4jdbc]
-| https://github.com/candrews/log4jdbc-spring-boot-starter
-
 | https://logback.qos.ch/access.html[Logback-access]
 | https://github.com/akihyro/logback-access-spring-boot-starter
 
-| https://github.com/membrane/service-proxy[Membrane Service Proxy]
-| https://github.com/membrane/membrane-spring-boot-starter
-
-| http://modelmapper.org/[ModelMapper]
-| https://github.com/jmnarloch/modelmapper-spring-boot-starter
-
-| http://secondmarket.github.io/mongeez/[Mongeez]
-| https://github.com/hzpz/mongeez-spring-boot-starter/
-
-| https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB]
-| https://github.com/denschu/mule-spring-boot-starter
-
-| http://mybatis.org/mybatis-3/[Mybatis]
+| http://mybatis.org/mybatis-3/[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
-| https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
-| https://github.com/bigdullrock/nifty-spring-boot-starter
+| http://narayana.io/[Narayana]
+| https://github.com/snowdrop/narayana-spring-boot
 
-| https://github.com/nutzam/nutz[Nutz.Dao]
+| https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
 | http://square.github.io/okhttp/[OkHttp]
@@ -142,34 +139,52 @@ do as they were designed before this was clarified.
 | http://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
-| http://resteasy.jboss.org/[RESTEasy]
-| https://github.com/paypal/resteasy-spring-boot
+| https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
+| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
 
-| http://restfb.com/[RestFB] Messenger
-| https://github.com/marsbits/restfbmessenger
+| http://resteasy.jboss.org/[RESTEasy]
+| https://github.com/resteasy/resteasy-spring-boot
+
+| https://github.com/rollbar/rollbar-java/[Rollbar]
+| https://github.com/olmero/rollbar-spring-boot-starter
+
+| https://sentry.io[Sentry]
+| https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
+
+| SOAP Web Services support with Apache CXF
+| https://github.com/codecentric/cxf-spring-boot-starter
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
+| https://projects.spring.io/spring-shell/[Spring Shell]
+| https://github.com/fonimus/ssh-shell-spring-boot
+
+| https://github.com/savantly-net/sprout-platform[Sprout Platform]
+| https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
+
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
+
+| https://github.com/stripe/stripe-java[Stripe API]
+| https://github.com/pankajtandon/stripe-starter
 
 | https://github.com/StripesFramework/stripes[Stripes]
 | https://github.com/juanpablo-santos/stripes-spring-boot
 
-| http://teiid.org/[Teiid]
-| https://github.com/teiid/teiid-spring-boot
+| https://github.com/structurizr/java[Structurizr]
+| https://github.com/Catalysts/structurizr-extensions
 
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
 
+| https://github.com/valiktor/valiktor[Valiktor]
+| https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter
+
 | http://www.wiremock.org[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
-| https://code.google.com/p/wro4j/[WRO4J]
-| https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
-
-| http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
+| http://alexo.github.io/wro4j/[Wro4j]
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
 |===

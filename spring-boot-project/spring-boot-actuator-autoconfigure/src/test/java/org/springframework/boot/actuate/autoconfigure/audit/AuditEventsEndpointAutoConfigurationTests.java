@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,24 @@ public class AuditEventsEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues(
+						"management.endpoints.web.exposure.include=auditevents")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(AuditEventsEndpoint.class));
+	}
+
+	@Test
+	public void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(AuditEventsEndpoint.class));
+				.doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpoint() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.auditevents.enabled:false")
+				.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(AuditEventsEndpoint.class));
 	}

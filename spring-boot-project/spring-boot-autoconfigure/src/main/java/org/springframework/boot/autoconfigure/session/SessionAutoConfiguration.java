@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +28,8 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -38,9 +41,14 @@ import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfig
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -48,6 +56,10 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.web.http.CookieHttpSessionIdResolver;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -59,10 +71,10 @@ import org.springframework.session.SessionRepository;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
-@EnableConfigurationProperties(SessionProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, MongoDataAutoConfiguration.class,
 		MongoReactiveDataAutoConfiguration.class, RedisAutoConfiguration.class,
@@ -70,13 +82,30 @@ import org.springframework.session.SessionRepository;
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class,
 			SessionRepositoryFilterConfiguration.class })
 	static class ServletSessionConfiguration {
 
-		@Configuration
+		@Bean
+		@Conditional(DefaultCookieSerializerCondition.class)
+		public DefaultCookieSerializer cookieSerializer(
+				ServerProperties serverProperties) {
+			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
+			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(cookie::getName).to(cookieSerializer::setCookieName);
+			map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
+			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
+			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
+			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
+			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer
+					.setCookieMaxAge((int) maxAge.getSeconds()));
+			return cookieSerializer;
+		}
+
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
 		@Import({ ServletSessionRepositoryImplementationValidator.class,
 				ServletSessionConfigurationImportSelector.class })
@@ -86,16 +115,41 @@ public class SessionAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 		@Import({ ReactiveSessionRepositoryImplementationValidator.class,
 				ReactiveSessionConfigurationImportSelector.class })
 		static class ReactiveSessionRepositoryConfiguration {
+
+		}
+
+	}
+
+	/**
+	 * Condition to trigger the creation of a {@link DefaultCookieSerializer}. This kicks
+	 * in if either no {@link HttpSessionIdResolver} and {@link CookieSerializer} beans
+	 * are registered, or if {@link CookieHttpSessionIdResolver} is registered but
+	 * {@link CookieSerializer} is not.
+	 */
+	static class DefaultCookieSerializerCondition extends AnyNestedCondition {
+
+		DefaultCookieSerializerCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnMissingBean({ HttpSessionIdResolver.class, CookieSerializer.class })
+		static class NoComponentsAvailable {
+
+		}
+
+		@ConditionalOnBean(CookieHttpSessionIdResolver.class)
+		@ConditionalOnMissingBean(CookieSerializer.class)
+		static class CookieHttpSessionIdResolverAvailable {
 
 		}
 
@@ -107,13 +161,10 @@ public class SessionAutoConfiguration {
 	abstract static class SessionConfigurationImportSelector implements ImportSelector {
 
 		protected final String[] selectImports(WebApplicationType webApplicationType) {
-			List<String> imports = new ArrayList<>();
-			StoreType[] types = StoreType.values();
-			for (int i = 0; i < types.length; i++) {
-				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType,
-						types[i]));
-			}
-			return imports.toArray(new String[imports.size()]);
+			return Arrays.stream(StoreType.values())
+					.map((type) -> SessionStoreMappings
+							.getConfigurationClass(webApplicationType, type))
+					.toArray(String[]::new);
 		}
 
 	}
@@ -189,6 +240,7 @@ public class SessionAutoConfiguration {
 				// Ignore
 			}
 		}
+
 	}
 
 	/**
@@ -246,13 +298,13 @@ public class SessionAutoConfiguration {
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE
-					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
-				if (storeType != null) {
-					throw new SessionRepositoryUnavailableException("No session "
-							+ "repository could be auto-configured, check your "
-							+ "configuration (session store type is '"
-							+ storeType.name().toLowerCase() + "')", storeType);
-				}
+					&& this.sessionRepositoryProvider.getIfAvailable() == null
+					&& storeType != null) {
+				throw new SessionRepositoryUnavailableException(
+						"No session repository could be auto-configured, check your "
+								+ "configuration (session store type is '"
+								+ storeType.name().toLowerCase(Locale.ENGLISH) + "')",
+						storeType);
 			}
 		}
 

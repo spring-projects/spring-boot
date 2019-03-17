@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.logging.log4j2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -32,8 +31,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -44,10 +43,11 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.boot.testsupport.rule.OutputCapture;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,6 +76,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	public void setup() {
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
+	}
+
+	@Override
+	@After
+	public void clear() {
+		super.clear();
+		this.loggingSystem.cleanUp();
 	}
 
 	@Test
@@ -119,10 +126,11 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null);
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem
+				.initialize(null, "classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
@@ -189,7 +197,6 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	@Ignore("Fails on Bamboo")
 	public void loggingThatUsesJulIsCaptured() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
@@ -237,14 +244,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void exceptionsIncludeClassPackaging() throws Exception {
+	public void exceptionsIncludeClassPackaging() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		Matcher<String> expectedOutput = containsString("[junit-");
 		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
-		String fileContents = FileCopyUtils
-				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
+		String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
 		assertThat(fileContents).is(Matched.by(expectedOutput));
 	}
 
@@ -256,7 +262,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void customExceptionConversionWord() throws Exception {
+	public void customExceptionConversionWord() {
 		System.setProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD, "%ex");
 		try {
 			this.loggingSystem.beforeInitialize();
@@ -268,8 +274,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			this.output.expect(expectedOutput);
 			this.logger.warn("Expected exception",
 					new RuntimeException("Expected", new RuntimeException("Cause")));
-			String fileContents = FileCopyUtils
-					.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
+			String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
 			assertThat(fileContents).is(Matched.by(expectedOutput));
 		}
 		finally {

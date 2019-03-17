@@ -61,6 +61,24 @@ class InfluxPropertiesConfigAdapter extends
 	}
 
 	@Override
+	public Integer retentionReplicationFactor() {
+		return get(InfluxProperties::getRetentionReplicationFactor,
+				InfluxConfig.super::retentionReplicationFactor);
+	}
+
+	@Override
+	public String retentionDuration() {
+		return get(InfluxProperties::getRetentionDuration,
+				InfluxConfig.super::retentionDuration);
+	}
+
+	@Override
+	public String retentionShardDuration() {
+		return get(InfluxProperties::getRetentionShardDuration,
+				InfluxConfig.super::retentionShardDuration);
+	}
+
+	@Override
 	public String uri() {
 		return get(InfluxProperties::getUri, InfluxConfig.super::uri);
 	}

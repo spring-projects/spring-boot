@@ -67,7 +67,7 @@ public class SentenceExtractorTests {
 
 	@Test
 	public void extractFirstSentenceNull() {
-		assertThat(this.extractor.getFirstSentence(null)).isEqualTo(null);
+		assertThat(this.extractor.getFirstSentence(null)).isNull();
 	}
 
 }

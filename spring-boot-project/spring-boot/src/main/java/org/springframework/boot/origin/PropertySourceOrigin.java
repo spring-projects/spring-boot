@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,8 @@ public class PropertySourceOrigin implements Origin {
 	}
 
 	/**
-	 * Get a {@link Origin} for the given {@link PropertySource} and {@code propertyName}.
-	 * Will either return an {@link OriginLookup} result or a
+	 * Get an {@link Origin} for the given {@link PropertySource} and
+	 * {@code propertyName}. Will either return an {@link OriginLookup} result or a
 	 * {@link PropertySourceOrigin}.
 	 * @param propertySource the origin property source
 	 * @param name the property name
@@ -76,7 +76,7 @@ public class PropertySourceOrigin implements Origin {
 	 */
 	public static Origin get(PropertySource<?> propertySource, String name) {
 		Origin origin = OriginLookup.getOrigin(propertySource, name);
-		return (origin != null ? origin : new PropertySourceOrigin(propertySource, name));
+		return (origin != null) ? origin : new PropertySourceOrigin(propertySource, name);
 	}
 
 }

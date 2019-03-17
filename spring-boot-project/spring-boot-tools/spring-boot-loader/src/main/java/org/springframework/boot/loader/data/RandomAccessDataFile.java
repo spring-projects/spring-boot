@@ -16,26 +16,22 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Semaphore;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RandomAccessDataFile implements RandomAccessData {
 
-	private static final int DEFAULT_CONCURRENT_READS = 4;
-
-	private final File file;
-
-	private final FilePool filePool;
+	private final FileAccess fileAccess;
 
 	private final long offset;
 
@@ -45,44 +41,24 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * Create a new {@link RandomAccessDataFile} backed by the specified file.
 	 * @param file the underlying file
 	 * @throws IllegalArgumentException if the file is null or does not exist
-	 * @see #RandomAccessDataFile(File, int)
 	 */
 	public RandomAccessDataFile(File file) {
-		this(file, DEFAULT_CONCURRENT_READS);
-	}
-
-	/**
-	 * Create a new {@link RandomAccessDataFile} backed by the specified file.
-	 * @param file the underlying file
-	 * @param concurrentReads the maximum number of concurrent reads allowed on the
-	 * underlying file before blocking
-	 * @throws IllegalArgumentException if the file is null or does not exist
-	 * @see #RandomAccessDataFile(File)
-	 */
-	public RandomAccessDataFile(File file, int concurrentReads) {
 		if (file == null) {
 			throw new IllegalArgumentException("File must not be null");
 		}
-		if (!file.exists()) {
-			throw new IllegalArgumentException(
-					String.format("File %s must exist", file.getAbsolutePath()));
-		}
-		this.file = file;
-		this.filePool = new FilePool(file, concurrentReads);
+		this.fileAccess = new FileAccess(file);
 		this.offset = 0L;
 		this.length = file.length();
 	}
 
 	/**
 	 * Private constructor used to create a {@link #getSubsection(long, long) subsection}.
-	 * @param file the underlying file
-	 * @param pool the underlying pool
+	 * @param fileAccess provides access to the underlying file
 	 * @param offset the offset of the section
 	 * @param length the length of the section
 	 */
-	private RandomAccessDataFile(File file, FilePool pool, long offset, long length) {
-		this.file = file;
-		this.filePool = pool;
+	private RandomAccessDataFile(FileAccess fileAccess, long offset, long length) {
+		this.fileAccess = fileAccess;
 		this.offset = offset;
 		this.length = length;
 	}
@@ -92,12 +68,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * @return the underlying file
 	 */
 	public File getFile() {
-		return this.file;
+		return this.fileAccess.file;
 	}
 
 	@Override
-	public InputStream getInputStream(ResourceAccess access) throws IOException {
-		return new DataInputStream(access);
+	public InputStream getInputStream() throws IOException {
+		return new DataInputStream();
 	}
 
 	@Override
@@ -105,8 +81,40 @@ public class RandomAccessDataFile implements RandomAccessData {
 		if (offset < 0 || length < 0 || offset + length > this.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		return new RandomAccessDataFile(this.file, this.filePool, this.offset + offset,
-				length);
+		return new RandomAccessDataFile(this.fileAccess, this.offset + offset, length);
+	}
+
+	@Override
+	public byte[] read() throws IOException {
+		return read(0, this.length);
+	}
+
+	@Override
+	public byte[] read(long offset, long length) throws IOException {
+		if (offset > this.length) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (offset + length > this.length) {
+			throw new EOFException();
+		}
+		byte[] bytes = new byte[(int) length];
+		read(bytes, offset, 0, bytes.length);
+		return bytes;
+	}
+
+	private int readByte(long position) throws IOException {
+		if (position >= this.length) {
+			return -1;
+		}
+		return this.fileAccess.readByte(this.offset + position);
+	}
+
+	private int read(byte[] bytes, long position, int offset, int length)
+			throws IOException {
+		if (position > this.length) {
+			return -1;
+		}
+		return this.fileAccess.read(bytes, this.offset + position, offset, length);
 	}
 
 	@Override
@@ -115,34 +123,28 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	public void close() throws IOException {
-		this.filePool.close();
+		this.fileAccess.close();
 	}
 
 	/**
-	 * {@link RandomAccessDataInputStream} implementation for the
-	 * {@link RandomAccessDataFile}.
+	 * {@link InputStream} implementation for the {@link RandomAccessDataFile}.
 	 */
 	private class DataInputStream extends InputStream {
 
-		private RandomAccessFile file;
-
 		private int position;
-
-		DataInputStream(ResourceAccess access) throws IOException {
-			if (access == ResourceAccess.ONCE) {
-				this.file = new RandomAccessFile(RandomAccessDataFile.this.file, "r");
-				this.file.seek(RandomAccessDataFile.this.offset);
-			}
-		}
 
 		@Override
 		public int read() throws IOException {
-			return doRead(null, 0, 1);
+			int read = RandomAccessDataFile.this.readByte(this.position);
+			if (read > -1) {
+				moveOn(1);
+			}
+			return read;
 		}
 
 		@Override
 		public int read(byte[] b) throws IOException {
-			return read(b, 0, b == null ? 0 : b.length);
+			return read(b, 0, (b != null) ? b.length : 0);
 		}
 
 		@Override
@@ -170,38 +172,13 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (cappedLen <= 0) {
 				return -1;
 			}
-			RandomAccessFile file = this.file;
-			try {
-				if (file == null) {
-					file = RandomAccessDataFile.this.filePool.acquire();
-					file.seek(RandomAccessDataFile.this.offset + this.position);
-				}
-				if (b == null) {
-					int rtn = file.read();
-					moveOn(rtn == -1 ? 0 : 1);
-					return rtn;
-				}
-				else {
-					return (int) moveOn(file.read(b, off, cappedLen));
-				}
-			}
-			finally {
-				if (this.file == null && file != null) {
-					RandomAccessDataFile.this.filePool.release(file);
-				}
-			}
+			return (int) moveOn(
+					RandomAccessDataFile.this.read(b, this.position, off, cappedLen));
 		}
 
 		@Override
 		public long skip(long n) throws IOException {
-			return (n <= 0 ? 0 : moveOn(cap(n)));
-		}
-
-		@Override
-		public void close() throws IOException {
-			if (this.file != null) {
-				this.file.close();
-			}
+			return (n <= 0) ? 0 : moveOn(cap(n));
 		}
 
 		/**
@@ -226,52 +203,54 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	}
 
-	/**
-	 * Manage a pool that can be used to perform concurrent reads on the underlying
-	 * {@link RandomAccessFile}.
-	 */
-	static class FilePool {
+	private static final class FileAccess {
+
+		private final Object monitor = new Object();
 
 		private final File file;
 
-		private final int size;
+		private RandomAccessFile randomAccessFile;
 
-		private final Semaphore available;
-
-		private final Queue<RandomAccessFile> files;
-
-		FilePool(File file, int size) {
+		private FileAccess(File file) {
 			this.file = file;
-			this.size = size;
-			this.available = new Semaphore(size);
-			this.files = new ConcurrentLinkedQueue<>();
+			openIfNecessary();
 		}
 
-		public RandomAccessFile acquire() throws IOException {
-			this.available.acquireUninterruptibly();
-			RandomAccessFile file = this.files.poll();
-			if (file != null) {
-				return file;
+		private int read(byte[] bytes, long position, int offset, int length)
+				throws IOException {
+			synchronized (this.monitor) {
+				openIfNecessary();
+				this.randomAccessFile.seek(position);
+				return this.randomAccessFile.read(bytes, offset, length);
 			}
-			return new RandomAccessFile(this.file, "r");
 		}
 
-		public void release(RandomAccessFile file) {
-			this.files.add(file);
-			this.available.release();
-		}
-
-		public void close() throws IOException {
-			this.available.acquireUninterruptibly(this.size);
-			try {
-				RandomAccessFile pooledFile = this.files.poll();
-				while (pooledFile != null) {
-					pooledFile.close();
-					pooledFile = this.files.poll();
+		private void openIfNecessary() {
+			if (this.randomAccessFile == null) {
+				try {
+					this.randomAccessFile = new RandomAccessFile(this.file, "r");
+				}
+				catch (FileNotFoundException ex) {
+					throw new IllegalArgumentException(String.format("File %s must exist",
+							this.file.getAbsolutePath()));
 				}
 			}
-			finally {
-				this.available.release(this.size);
+		}
+
+		private void close() throws IOException {
+			synchronized (this.monitor) {
+				if (this.randomAccessFile != null) {
+					this.randomAccessFile.close();
+					this.randomAccessFile = null;
+				}
+			}
+		}
+
+		private int readByte(long position) throws IOException {
+			synchronized (this.monitor) {
+				openIfNecessary();
+				this.randomAccessFile.seek(position);
+				return this.randomAccessFile.read();
 			}
 		}
 

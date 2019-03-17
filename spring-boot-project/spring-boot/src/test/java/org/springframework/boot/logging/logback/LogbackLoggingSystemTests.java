@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Handler;
@@ -31,8 +30,6 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -57,10 +54,11 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.mock;
@@ -76,6 +74,7 @@ import static org.mockito.Mockito.verify;
  * @author Ben Hale
  * @author Madhura Bhave
  * @author Vedran Pavic
+ * @author Robert Thornton
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("log4j-*.jar")
@@ -87,24 +86,25 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
 			getClass().getClassLoader());
 
-	private Log logger;
+	private Logger logger;
 
 	private LoggingInitializationContext initializationContext;
-
-	private MockEnvironment environment;
 
 	@Before
 	public void setup() {
 		this.loggingSystem.cleanUp();
-		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
-		this.environment = new MockEnvironment();
-		this.initializationContext = new LoggingInitializationContext(this.environment);
+		this.logger = ((LoggerContext) StaticLoggerBinder.getSingleton()
+				.getLoggerFactory()).getLogger(getClass());
+		MockEnvironment environment = new MockEnvironment();
+		this.initializationContext = new LoggingInitializationContext(environment);
 	}
 
 	@Override
 	@After
 	public void clear() {
+		super.clear();
 		this.loggingSystem.cleanUp();
+		((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).stop();
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void withFile() throws Exception {
+	public void withFile() {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
 		this.loggingSystem.initialize(this.initializationContext, null,
@@ -139,8 +139,9 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testBasicConfigLocation() {
+	public void defaultConfigConfiguresAConsoleAppender() {
 		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		assertThat(getConsoleAppender()).isNotNull();
 	}
 
@@ -174,11 +175,11 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext,
-				"classpath:logback-nonexistent.xml", null);
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem.initialize(
+				this.initializationContext, "classpath:logback-nonexistent.xml", null));
 	}
 
 	@Test
@@ -340,7 +341,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testFilePatternProperty() throws Exception {
+	public void testFilePatternProperty() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.pattern.file", "%logger %msg");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
@@ -355,9 +356,52 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testMaxFileSizeProperty() throws Exception {
+	public void testCleanHistoryOnStartProperty() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.file.max-size", "100MB");
+		environment.setProperty("logging.file.clean-history-on-start", "true");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
+	}
+
+	@Test
+	public void testCleanHistoryOnStartPropertyWithXmlConfiguration() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.clean-history-on-start", "true");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().isCleanHistoryOnStart()).isTrue();
+	}
+
+	@Test
+	public void testMaxFileSizePropertyWithLogbackFileSize() {
+		testMaxFileSizeProperty("100 MB", "100 MB");
+	}
+
+	@Test
+	public void testMaxFileSizePropertyWithDataSize() {
+		testMaxFileSizeProperty("15MB", "15 MB");
+	}
+
+	@Test
+	public void testMaxFileSizePropertyWithBytesValue() {
+		testMaxFileSizeProperty(String.valueOf(10 * 1024 * 1024), "10 MB");
+	}
+
+	private void testMaxFileSizeProperty(String sizeValue, String expectedFileSize) {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.max-size", sizeValue);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
 				environment);
 		File file = new File(tmpDir(), "logback-test.log");
@@ -366,11 +410,11 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
-				.toString()).isEqualTo("100 MB");
+				.toString()).isEqualTo(expectedFileSize);
 	}
 
 	@Test
-	public void testMaxFileSizePropertyWithXmlConfiguration() throws Exception {
+	public void testMaxFileSizePropertyWithXmlConfiguration() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-size", "100MB");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
@@ -386,7 +430,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testMaxHistoryProperty() throws Exception {
+	public void testMaxHistoryProperty() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.file.max-history", "30");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
@@ -415,20 +459,65 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void exceptionsIncludeClassPackaging() throws Exception {
+	public void testTotalSizeCapPropertyWithLogbackFileSize() {
+		testTotalSizeCapProperty("101 MB", "101 MB");
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyWithDataSize() {
+		testTotalSizeCapProperty("10MB", "10 MB");
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyWithBytesValue() {
+		testTotalSizeCapProperty(String.valueOf(10 * 1024 * 1024), "10 MB");
+	}
+
+	private void testTotalSizeCapProperty(String sizeValue, String expectedFileSize) {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.total-size-cap", sizeValue);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
+				.toString()).isEqualTo(expectedFileSize);
+	}
+
+	@Test
+	public void testTotalSizeCapPropertyWithXmlConfiguration() {
+		String expectedSize = "101 MB";
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.file.total-size-cap", expectedSize);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext,
+				"classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")
+				.toString()).isEqualTo(expectedSize);
+	}
+
+	@Test
+	public void exceptionsIncludeClassPackaging() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null,
 				getLogFile(null, tmpDir()));
 		Matcher<String> expectedOutput = containsString("[junit-");
 		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
-		String fileContents = FileCopyUtils
-				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
+		String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
 		assertThat(fileContents).is(Matched.by(expectedOutput));
 	}
 
 	@Test
-	public void customExceptionConversionWord() throws Exception {
+	public void customExceptionConversionWord() {
 		System.setProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD, "%ex");
 		try {
 			this.loggingSystem.beforeInitialize();
@@ -441,8 +530,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			this.output.expect(expectedOutput);
 			this.logger.warn("Expected exception",
 					new RuntimeException("Expected", new RuntimeException("Cause")));
-			String fileContents = FileCopyUtils
-					.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
+			String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
 			assertThat(fileContents).is(Matched.by(expectedOutput));
 		}
 		finally {
@@ -512,9 +600,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		return (SizeAndTimeBasedRollingPolicy<?>) getFileAppender().getRollingPolicy();
 	}
 
-	private String getLineWithText(File file, String outputSearch) throws Exception {
-		return getLineWithText(FileCopyUtils.copyToString(new FileReader(file)),
-				outputSearch);
+	private String getLineWithText(File file, String outputSearch) {
+		return getLineWithText(contentOf(file), outputSearch);
 	}
 
 	private String getLineWithText(String output, String outputSearch) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,9 @@ import org.springframework.util.MultiValueMap;
  * Abstract base class for nested conditions.
  *
  * @author Phillip Webb
+ * @since 2.0.1
  */
-abstract class AbstractNestedCondition extends SpringBootCondition
+public abstract class AbstractNestedCondition extends SpringBootCondition
 		implements ConfigurationCondition {
 
 	private final ConfigurationPhase configurationPhase;
@@ -60,7 +61,8 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		String className = getClass().getName();
-		MemberConditions memberConditions = new MemberConditions(context, className);
+		MemberConditions memberConditions = new MemberConditions(context,
+				this.configurationPhase, className);
 		MemberMatchOutcomes memberOutcomes = new MemberMatchOutcomes(memberConditions);
 		return getFinalMatchOutcome(memberOutcomes);
 	}
@@ -109,27 +111,43 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		private final Map<AnnotationMetadata, List<Condition>> memberConditions;
 
-		MemberConditions(ConditionContext context, String className) {
+		MemberConditions(ConditionContext context, ConfigurationPhase phase,
+				String className) {
 			this.context = context;
 			this.readerFactory = new SimpleMetadataReaderFactory(
 					context.getResourceLoader());
 			String[] members = getMetadata(className).getMemberClassNames();
-			this.memberConditions = getMemberConditions(members);
+			this.memberConditions = getMemberConditions(members, phase, className);
 		}
 
 		private Map<AnnotationMetadata, List<Condition>> getMemberConditions(
-				String[] members) {
+				String[] members, ConfigurationPhase phase, String className) {
 			MultiValueMap<AnnotationMetadata, Condition> memberConditions = new LinkedMultiValueMap<>();
 			for (String member : members) {
 				AnnotationMetadata metadata = getMetadata(member);
 				for (String[] conditionClasses : getConditionClasses(metadata)) {
 					for (String conditionClass : conditionClasses) {
 						Condition condition = getCondition(conditionClass);
+						validateMemberCondition(condition, phase, className);
 						memberConditions.add(metadata, condition);
 					}
 				}
 			}
 			return Collections.unmodifiableMap(memberConditions);
+		}
+
+		private void validateMemberCondition(Condition condition,
+				ConfigurationPhase nestedPhase, String nestedClassName) {
+			if (nestedPhase == ConfigurationPhase.PARSE_CONFIGURATION
+					&& condition instanceof ConfigurationCondition) {
+				ConfigurationPhase memberPhase = ((ConfigurationCondition) condition)
+						.getConfigurationPhase();
+				if (memberPhase == ConfigurationPhase.REGISTER_BEAN) {
+					throw new IllegalStateException("Nested condition " + nestedClassName
+							+ " uses a configuration "
+							+ "phase that is inappropriate for " + condition.getClass());
+				}
+			}
 		}
 
 		private AnnotationMetadata getMetadata(String className) {
@@ -146,8 +164,8 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 		private List<String[]> getConditionClasses(AnnotatedTypeMetadata metadata) {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(Conditional.class.getName(), true);
-			Object values = (attributes != null ? attributes.get("value") : null);
-			return (List<String[]>) (values != null ? values : Collections.emptyList());
+			Object values = (attributes != null) ? attributes.get("value") : null;
+			return (List<String[]>) ((values != null) ? values : Collections.emptyList());
 		}
 
 		private Condition getCondition(String conditionClassName) {
@@ -158,13 +176,9 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		public List<ConditionOutcome> getMatchOutcomes() {
 			List<ConditionOutcome> outcomes = new ArrayList<>();
-			for (Map.Entry<AnnotationMetadata, List<Condition>> entry : this.memberConditions
-					.entrySet()) {
-				AnnotationMetadata metadata = entry.getKey();
-				List<Condition> conditions = entry.getValue();
-				outcomes.add(new MemberOutcomes(this.context, metadata, conditions)
-						.getUltimateOutcome());
-			}
+			this.memberConditions.forEach((metadata, conditions) -> outcomes
+					.add(new MemberOutcomes(this.context, metadata, conditions)
+							.getUltimateOutcome()));
 			return Collections.unmodifiableList(outcomes);
 		}
 

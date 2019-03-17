@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,10 @@ public class SampleAtmosphereApplication {
 	public ServletRegistrationBean<AtmosphereServlet> atmosphereServlet() {
 		// Dispatcher servlet is mapped to '/home' to allow the AtmosphereServlet
 		// to be mapped to '/chat'
+		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
+		atmosphereServlet.framework().setHandlersPath("/");
 		ServletRegistrationBean<AtmosphereServlet> registration = new ServletRegistrationBean<>(
-				new AtmosphereServlet(), "/chat/*");
+				atmosphereServlet, "/chat/*");
 		registration.addInitParameter("org.atmosphere.cpr.packages", "sample");
 		registration.addInitParameter("org.atmosphere.interceptor.HeartbeatInterceptor"
 				+ ".clientHeartbeatFrequencyInSeconds", "10");
@@ -59,7 +61,11 @@ public class SampleAtmosphereApplication {
 		return registration;
 	}
 
-	@Configuration
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleAtmosphereApplication.class, args);
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class MvcConfiguration implements WebMvcConfigurer {
 
 		@Override
@@ -77,10 +83,6 @@ public class SampleAtmosphereApplication {
 			onStartup(Collections.emptySet(), servletContext);
 		}
 
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(SampleAtmosphereApplication.class, args);
 	}
 
 }

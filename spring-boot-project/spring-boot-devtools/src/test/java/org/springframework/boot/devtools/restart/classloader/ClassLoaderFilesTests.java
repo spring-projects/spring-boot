@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Iterator;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -39,23 +38,20 @@ import static org.mockito.Mockito.mock;
  */
 public class ClassLoaderFilesTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test
 	public void addFileNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be null");
-		this.files.addFile(null, mock(ClassLoaderFile.class));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void addFileFileMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		this.files.addFile("test", null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.files.addFile("test", null))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
@@ -161,9 +157,8 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void classLoaderFilesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassLoaderFiles must not be null");
-		new ClassLoaderFiles(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFiles(null))
+				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test

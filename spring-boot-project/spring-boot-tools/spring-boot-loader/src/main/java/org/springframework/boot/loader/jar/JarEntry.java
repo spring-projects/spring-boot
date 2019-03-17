@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,13 @@ import java.util.jar.Manifest;
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private final AsciiBytes name;
+
+	private final AsciiBytes headerName;
 
 	private Certificate[] certificates;
 
@@ -41,19 +44,19 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private long localHeaderOffset;
 
-	JarEntry(JarFile jarFile, CentralDirectoryFileHeader header) {
-		super(header.getName().toString());
-		this.name = header.getName();
+	JarEntry(JarFile jarFile, CentralDirectoryFileHeader header, AsciiBytes nameAlias) {
+		super((nameAlias != null) ? nameAlias.toString() : header.getName().toString());
+		this.name = (nameAlias != null) ? nameAlias : header.getName();
+		this.headerName = header.getName();
 		this.jarFile = jarFile;
 		this.localHeaderOffset = header.getLocalHeaderOffset();
 		setCompressedSize(header.getCompressedSize());
 		setMethod(header.getMethod());
 		setCrc(header.getCrc());
-		setSize(header.getSize());
-		setExtra(header.getExtra());
 		setComment(header.getComment().toString());
 		setSize(header.getSize());
 		setTime(header.getTime());
+		setExtra(header.getExtra());
 	}
 
 	AsciiBytes getAsciiBytesName() {
@@ -62,7 +65,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	@Override
 	public boolean hasName(CharSequence name, char suffix) {
-		return this.name.matches(name, suffix);
+		return this.headerName.matches(name, suffix);
 	}
 
 	/**
@@ -77,7 +80,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 	@Override
 	public Attributes getAttributes() throws IOException {
 		Manifest manifest = this.jarFile.getManifest();
-		return (manifest == null ? null : manifest.getAttributes(getName()));
+		return (manifest != null) ? manifest.getAttributes(getName()) : null;
 	}
 
 	@Override

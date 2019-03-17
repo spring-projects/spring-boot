@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -35,16 +35,17 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnEnabledEndpoint(endpoint = InfoEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = InfoEndpoint.class)
 @AutoConfigureAfter(InfoContributorAutoConfiguration.class)
 public class InfoEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public InfoEndpoint infoEndpoint(
-			ObjectProvider<List<InfoContributor>> infoContributors) {
-		return new InfoEndpoint(infoContributors.getIfAvailable(Collections::emptyList));
+	public InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
+		return new InfoEndpoint(
+				infoContributors.orderedStream().collect(Collectors.toList()));
 	}
 
 }

@@ -39,11 +39,13 @@ org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProce
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.BeanDefinitionOverrideFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BindFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BindValidationFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ConnectorStartFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PortInUseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,\

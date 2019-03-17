@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,27 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.util.Optional;
+
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.EntityLinksConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.HypermediaConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.LinkDiscoverer;
-import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.client.LinkDiscoverer;
+import org.springframework.hateoas.client.LinkDiscoverers;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.hateoas.hal.HalLinkDiscoverer;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
+import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockServletContext;
@@ -69,8 +71,9 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		LinkDiscoverers discoverers = this.context.getBean(LinkDiscoverers.class);
 		assertThat(discoverers).isNotNull();
-		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
-		assertThat(HalLinkDiscoverer.class.isInstance(discoverer)).isTrue();
+		Optional<LinkDiscoverer> discoverer = discoverers
+				.getLinkDiscovererFor(MediaTypes.HAL_JSON);
+		assertThat(discoverer).containsInstanceOf(HalLinkDiscoverer.class);
 	}
 
 	@Test
@@ -91,24 +94,8 @@ public class HypermediaAutoConfigurationTests {
 		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
 				.applyTo(this.context);
 		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
-				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isFalse();
-	}
-
-	@Test
-	public void jacksonConfigurationIsAppliedToTheHalObjectMapper() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(BaseConfig.class);
-		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
-				.applyTo(this.context);
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
-				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isTrue();
+		assertThat(this.context.getBeansOfType(HypermediaConfiguration.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(EntityLinksConfiguration.class)).isEmpty();
 	}
 
 	@Test
@@ -152,7 +139,7 @@ public class HypermediaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	static class EnableHypermediaSupportConfig {
 

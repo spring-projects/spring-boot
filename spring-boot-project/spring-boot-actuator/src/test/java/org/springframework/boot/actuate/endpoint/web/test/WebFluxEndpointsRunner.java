@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServic
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -44,6 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
@@ -62,18 +62,20 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 	private static ConfigurableApplicationContext createContext(List<Class<?>> classes) {
 		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
 		classes.add(WebFluxEndpointConfiguration.class);
-		context.register(classes.toArray(new Class<?>[classes.size()]));
+		context.register(ClassUtils.toClassArray(classes));
 		context.refresh();
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			WebFluxAutoConfiguration.class })
 	static class WebFluxEndpointConfiguration
 			implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
+
+		private final PortHolder portHolder = new PortHolder();
 
 		WebFluxEndpointConfiguration(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
@@ -86,12 +88,12 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 
 		@Bean
 		public PortHolder portHolder() {
-			return new PortHolder();
+			return this.portHolder;
 		}
 
 		@Override
 		public void onApplicationEvent(WebServerInitializedEvent event) {
-			portHolder().setPort(event.getWebServer().getPort());
+			this.portHolder.setPort(event.getWebServer().getPort());
 		}
 
 		@Bean
@@ -107,8 +109,8 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 					mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
 					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, PathMapper.useEndpointId(),
-					Collections.emptyList(), Collections.emptyList());
+					endpointMediaTypes, null, Collections.emptyList(),
+					Collections.emptyList());
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"),
 					discoverer.getEndpoints(), endpointMediaTypes,
 					new CorsConfiguration(),

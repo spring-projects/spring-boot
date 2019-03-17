@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
@@ -42,7 +43,6 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -69,9 +69,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class BasicErrorControllerMockMvcTests {
 
 	@Autowired
@@ -129,7 +130,7 @@ public class BasicErrorControllerMockMvcTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
+	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
@@ -137,7 +138,7 @@ public class BasicErrorControllerMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	public static class TestConfiguration {
 

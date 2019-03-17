@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.session;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.session.SessionsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,15 +36,16 @@ import org.springframework.session.Session;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(FindByIndexNameSessionRepository.class)
+@ConditionalOnEnabledEndpoint(endpoint = SessionsEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = SessionsEndpoint.class)
 @AutoConfigureAfter(SessionAutoConfiguration.class)
 public class SessionsEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(FindByIndexNameSessionRepository.class)
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	public SessionsEndpoint sessionEndpoint(
 			FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
 		return new SessionsEndpoint(sessionRepository);

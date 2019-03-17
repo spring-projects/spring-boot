@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package org.springframework.boot.devtools.remote.server;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -30,6 +28,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link HttpStatusHandler}.
@@ -37,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class HttpStatusHandlerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockHttpServletRequest servletRequest;
 
@@ -59,9 +55,8 @@ public class HttpStatusHandlerTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Status must not be null");
-		new HttpStatusHandler(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpStatusHandler(null))
+				.withMessageContaining("Status must not be null");
 	}
 
 	@Test

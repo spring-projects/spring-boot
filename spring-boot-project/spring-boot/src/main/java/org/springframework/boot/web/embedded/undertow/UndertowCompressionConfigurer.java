@@ -65,7 +65,8 @@ final class UndertowCompressionConfigurer {
 
 	private static Predicate[] getCompressionPredicates(Compression compression) {
 		List<Predicate> predicates = new ArrayList<>();
-		predicates.add(new MaxSizePredicate(compression.getMinResponseSize()));
+		predicates.add(
+				new MaxSizePredicate((int) compression.getMinResponseSize().toBytes()));
 		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
 		if (compression.getExcludedUserAgents() != null) {
 			for (String agent : compression.getExcludedUserAgents()) {
@@ -74,7 +75,7 @@ final class UndertowCompressionConfigurer {
 				predicates.add(Predicates.not(Predicates.regex(agentHeader, agent)));
 			}
 		}
-		return predicates.toArray(new Predicate[predicates.size()]);
+		return predicates.toArray(new Predicate[0]);
 	}
 
 	private static class CompressibleMimeTypePredicate implements Predicate {
@@ -126,4 +127,5 @@ final class UndertowCompressionConfigurer {
 		}
 
 	}
+
 }

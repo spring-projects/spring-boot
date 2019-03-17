@@ -61,7 +61,7 @@ public final class ReactiveWebApplicationContextRunner extends
 
 	private ReactiveWebApplicationContextRunner(
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
-			List<ApplicationContextInitializer<ConfigurableReactiveWebApplicationContext>> initializers,
+			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
@@ -72,7 +72,7 @@ public final class ReactiveWebApplicationContextRunner extends
 	@Override
 	protected ReactiveWebApplicationContextRunner newInstance(
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
-			List<ApplicationContextInitializer<ConfigurableReactiveWebApplicationContext>> initializers,
+			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {

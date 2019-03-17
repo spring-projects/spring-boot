@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -170,7 +171,22 @@ public class SysVinitLaunchScriptIT {
 
 	@Test
 	public void basicLaunch() throws Exception {
-		doLaunch("basic-launch.sh");
+		String output = doTest("basic-launch.sh");
+		assertThat(output).doesNotContain("PID_FOLDER");
+	}
+
+	@Test
+	public void launchWithMissingLogFolderGeneratesAWarning() throws Exception {
+		String output = doTest("launch-with-missing-log-folder.sh");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW,
+				"LOG_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
+	}
+
+	@Test
+	public void launchWithMissingPidFolderGeneratesAWarning() throws Exception {
+		String output = doTest("launch-with-missing-pid-folder.sh");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW,
+				"PID_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
 	}
 
 	@Test
@@ -312,7 +328,8 @@ public class SysVinitLaunchScriptIT {
 	private String buildImage(DockerClient docker) {
 		String dockerfile = "src/test/resources/conf/" + this.os + "/" + this.version
 				+ "/Dockerfile";
-		String tag = "spring-boot-it/" + this.os.toLowerCase() + ":" + this.version;
+		String tag = "spring-boot-it/" + this.os.toLowerCase(Locale.ENGLISH) + ":"
+				+ this.version;
 		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
 
 			private List<BuildResponseItem> items = new ArrayList<>();

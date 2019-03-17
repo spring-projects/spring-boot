@@ -31,7 +31,6 @@ interface PluginApplicationAction extends Action<Project> {
 	/**
 	 * The class of the {@code Plugin} that, when applied, will trigger the execution of
 	 * this action. May return {@code null} if the plugin class is not on the classpath.
-	 *
 	 * @return the plugin class or {@code null}
 	 */
 	Class<? extends Plugin<? extends Project>> getPluginClass();

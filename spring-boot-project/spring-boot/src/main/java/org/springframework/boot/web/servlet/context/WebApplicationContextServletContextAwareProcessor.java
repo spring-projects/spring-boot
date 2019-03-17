@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,13 @@ public class WebApplicationContextServletContextAwareProcessor
 	@Override
 	protected ServletContext getServletContext() {
 		ServletContext servletContext = this.webApplicationContext.getServletContext();
-		return (servletContext != null ? servletContext : super.getServletContext());
+		return (servletContext != null) ? servletContext : super.getServletContext();
 	}
 
 	@Override
 	protected ServletConfig getServletConfig() {
 		ServletConfig servletConfig = this.webApplicationContext.getServletConfig();
-		return (servletConfig != null ? servletConfig : super.getServletConfig());
+		return (servletConfig != null) ? servletConfig : super.getServletConfig();
 	}
 
 }

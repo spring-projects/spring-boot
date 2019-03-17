@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -74,9 +72,10 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
-		Iterable<PropertySource<?>> sources = (this.environment == null
-				? Collections.emptyList() : this.environment.getPropertySources());
-		return StreamSupport.stream(sources.spliterator(), false)
+		if (this.environment == null) {
+			return Stream.empty();
+		}
+		return this.environment.getPropertySources().stream()
 				.filter((source) -> !ConfigurationPropertySources
 						.isAttachedConfigurationPropertySource(source));
 	}
@@ -85,8 +84,9 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			InvalidConfigurationPropertyValueException cause,
 			List<Descriptor> descriptors) {
 		Descriptor mainDescriptor = descriptors.get(0);
-		message.append("Invalid value '" + mainDescriptor.getValue()
-				+ "' for configuration property '" + cause.getName() + "'");
+		message.append("Invalid value '").append(mainDescriptor.getValue())
+				.append("' for configuration property '");
+		message.append(cause.getName()).append("'");
 		mainDescriptor.appendOrigin(message);
 		message.append(".");
 	}
@@ -110,10 +110,10 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			message.append(String.format(
 					"%n%nAdditionally, this property is also set in the following "
 							+ "property %s:%n%n",
-					others.size() > 1 ? "sources" : "source"));
+					(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
-				message.append("\t- In '" + other.getPropertySource() + "'");
-				message.append(" with the value '" + other.getValue() + "'");
+				message.append("\t- In '").append(other.getPropertySource()).append("'");
+				message.append(" with the value '").append(other.getValue()).append("'");
 				other.appendOrigin(message);
 				message.append(String.format(".%n"));
 			}
@@ -154,7 +154,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 
 		public void appendOrigin(StringBuilder message) {
 			if (this.origin != null) {
-				message.append(" (originating from '" + this.origin + "')");
+				message.append(" (originating from '").append(this.origin).append("')");
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,22 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for the configuration of development-time properties
@@ -41,9 +44,6 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  */
 public class DevToolPropertiesIntegrationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ConfigurableApplicationContext context;
 
@@ -86,8 +86,8 @@ public class DevToolPropertiesIntegrationTests {
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(MyBean.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test
@@ -103,13 +103,29 @@ public class DevToolPropertiesIntegrationTests {
 		this.context.getBean(MyBean.class);
 	}
 
-	@Configuration
+	@Test
+	public void postProcessEnablesIncludeStackTraceProperty() {
+		SpringApplication application = new SpringApplication(TestConfiguration.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		String property = environment.getProperty("server.error.include-stacktrace");
+		assertThat(property)
+				.isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty("spring.h2.console.enabled")
 	static class ClassConditionConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BeanConditionConfiguration {
 
 		@Bean

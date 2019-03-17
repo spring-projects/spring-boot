@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -93,7 +94,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
+			<artifactId>jakarta.mail</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -107,18 +108,18 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
+			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.json.bind</groupId>
+			<artifactId>jakarta.json.bind-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.json.bind</groupId>
-			<artifactId>javax.json.bind-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -132,6 +133,17 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.ws.rs</groupId>
+					<artifactId>javax.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 			<optional>true</optional>
@@ -140,6 +152,12 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -157,6 +175,10 @@
 			<optional>true</optional>
 			<exclusions>
 				<exclusion>
+					<groupId>org.glassfish.hk2.external</groupId>
+					<artifactId>bean-validator</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-validator</artifactId>
 				</exclusion>
@@ -170,17 +192,6 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<artifactId>geronimo-jms_1.1_spec</artifactId>
-					<groupId>org.apache.geronimo.specs</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-pool</artifactId>
 			<optional>true</optional>
 			<exclusions>
 				<exclusion>
@@ -255,6 +266,12 @@
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.transaction</groupId>
+					<artifactId>jta</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -280,11 +297,40 @@
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-reactive-httpclient</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>javax-websocket-server-impl</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-client-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.undertow</groupId>
@@ -297,8 +343,33 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -310,11 +381,36 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.persistence</groupId>
+					<artifactId>javax.persistence-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jcache</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
@@ -330,6 +426,17 @@
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-transaction-spi</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.messaginghub</groupId>
+			<artifactId>pooled-jms</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -441,6 +548,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jdbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-ldap</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -515,11 +627,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -527,6 +634,23 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-data</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>javax.mail</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -535,7 +659,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-oauth2-client</artifactId>
+			<artifactId>spring-security-oauth2-resource-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -557,6 +686,12 @@
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-hazelcast</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
@@ -615,17 +750,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -647,21 +782,12 @@
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jms</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jta</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jts</groupId>
-			<artifactId>narayana-jts-integration</artifactId>
-			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
@@ -696,6 +822,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jms</artifactId>
 			<scope>test</scope>
@@ -706,8 +837,23 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.json</groupId>
-			<artifactId>javax.json-api</artifactId>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>mockwebserver</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.messaging.saaj</groupId>
+			<artifactId>saaj-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.json</groupId>
+			<artifactId>jakarta.json-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -718,6 +864,11 @@
 		<dependency>
 			<groupId>org.apache.johnzon</groupId>
 			<artifactId>johnzon-jsonb</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -732,12 +883,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-ogm-http-driver</artifactId>
+			<artifactId>neo4j-ogm-bolt-native-types</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-ogm-embedded-driver</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-ogm-http-driver</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -757,8 +913,23 @@
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
+			<artifactId>cassandra</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.yaml</groupId>
@@ -766,4 +937,19 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>java9+</id>
+			<activation>
+				<jdk>[9,)</jdk>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+					<optional>true</optional>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,7 +185,7 @@ public class DependencyCustomizer {
 	 * Add dependencies and all of their dependencies. The group ID and version of the
 	 * dependencies are resolved from the modules using the customizer's
 	 * {@link ArtifactCoordinatesResolver}.
-	 * @param modules The module IDs
+	 * @param modules the module IDs
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String... modules) {
@@ -199,9 +199,9 @@ public class DependencyCustomizer {
 	 * Add a single dependency and, optionally, all of its dependencies. The group ID and
 	 * version of the dependency are resolved from the module using the customizer's
 	 * {@link ArtifactCoordinatesResolver}.
-	 * @param module The module ID
+	 * @param module the module ID
 	 * @param transitive {@code true} if the transitive dependencies should also be added,
-	 * otherwise {@code false}.
+	 * otherwise {@code false}
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module, boolean transitive) {
@@ -212,11 +212,11 @@ public class DependencyCustomizer {
 	 * Add a single dependency with the specified classifier and type and, optionally, all
 	 * of its dependencies. The group ID and version of the dependency are resolved from
 	 * the module by using the customizer's {@link ArtifactCoordinatesResolver}.
-	 * @param module The module ID
-	 * @param classifier The classifier, may be {@code null}
-	 * @param type The type, may be {@code null}
+	 * @param module the module ID
+	 * @param classifier the classifier, may be {@code null}
+	 * @param type the type, may be {@code null}
 	 * @param transitive {@code true} if the transitive dependencies should also be added,
-	 * otherwise {@code false}.
+	 * otherwise {@code false}
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module, String classifier, String type,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
-	private int port = 9010;
+	private int port;
 
 	@LocalManagementPort
-	private int managementPort = 9011;
+	private int managementPort;
 
 	@Test
 	public void testHome() {
@@ -54,6 +54,13 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("Hello World");
+	}
+
+	@Test
+	public void actuatorPathOnMainPortShouldNotMatch() {
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/actuator/health", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test

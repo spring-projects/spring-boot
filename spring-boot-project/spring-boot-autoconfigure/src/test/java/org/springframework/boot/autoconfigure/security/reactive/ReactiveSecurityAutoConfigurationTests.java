@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.server.WebFilterChainProxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ReactiveSecurityAutoConfiguration}.
@@ -34,17 +37,33 @@ public class ReactiveSecurityAutoConfigurationTests {
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
-	public void importsConfigurationThatEnablesWebFluxSecurity() {
+	public void backsOffWhenWebFilterChainProxyBeanPresent() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(WebFilterChainProxy.class));
+	}
+
+	@Test
+	public void enablesWebFluxSecurity() {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
 								ReactiveUserDetailsServiceAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).getBean(WebFilterChainProxy.class).isNotNull();
-					assertThat(context).getBean(WebFluxSecurityConfiguration.class)
-							.isNotNull();
-					assertThat(context).getBean(WebFilterChainProxy.class).isNotNull();
-				});
+				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class)
+						.isNotNull());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebFilterChainProxyConfiguration {
+
+		@Bean
+		public WebFilterChainProxy webFilterChainProxy() {
+			return mock(WebFilterChainProxy.class);
+		}
+
 	}
 
 }

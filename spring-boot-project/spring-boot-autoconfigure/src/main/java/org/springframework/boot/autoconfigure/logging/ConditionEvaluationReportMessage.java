@@ -18,17 +18,19 @@ package org.springframework.boot.autoconfigure.logging;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -135,19 +137,28 @@ public class ConditionEvaluationReportMessage {
 
 	private Map<String, ConditionAndOutcomes> orderByName(
 			Map<String, ConditionAndOutcomes> outcomes) {
-		List<String> names = new ArrayList<>();
-		Map<String, String> classNames = new HashMap<>();
-		for (String name : outcomes.keySet()) {
-			String shortName = ClassUtils.getShortName(name);
-			names.add(shortName);
-			classNames.put(shortName, name);
-		}
-		Collections.sort(names);
+		MultiValueMap<String, String> map = mapToFullyQualifiedNames(outcomes.keySet());
+		List<String> shortNames = new ArrayList<>(map.keySet());
+		Collections.sort(shortNames);
 		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
-		for (String shortName : names) {
-			result.put(shortName, outcomes.get(classNames.get(shortName)));
+		for (String shortName : shortNames) {
+			List<String> fullyQualifiedNames = map.get(shortName);
+			if (fullyQualifiedNames.size() > 1) {
+				fullyQualifiedNames.forEach((fullyQualifiedName) -> result
+						.put(fullyQualifiedName, outcomes.get(fullyQualifiedName)));
+			}
+			else {
+				result.put(shortName, outcomes.get(fullyQualifiedNames.get(0)));
+			}
 		}
 		return result;
+	}
+
+	private MultiValueMap<String, String> mapToFullyQualifiedNames(Set<String> keySet) {
+		LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+		keySet.forEach((fullyQualifiedName) -> map
+				.add(ClassUtils.getShortName(fullyQualifiedName), fullyQualifiedName));
+		return map;
 	}
 
 	private void addMatchLogMessage(StringBuilder message, String source,

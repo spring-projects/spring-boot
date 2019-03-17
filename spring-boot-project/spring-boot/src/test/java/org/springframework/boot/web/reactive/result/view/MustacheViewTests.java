@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.reactive.result.view;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
@@ -59,9 +60,9 @@ public class MustacheViewTests {
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML,
-				this.exchange).block();
-		assertThat(this.exchange.getResponse().getBodyAsString().block())
-				.isEqualTo("Hello Spring");
+				this.exchange).block(Duration.ofSeconds(30));
+		assertThat(this.exchange.getResponse().getBodyAsString()
+				.block(Duration.ofSeconds(30))).isEqualTo("Hello Spring");
 	}
 
 }

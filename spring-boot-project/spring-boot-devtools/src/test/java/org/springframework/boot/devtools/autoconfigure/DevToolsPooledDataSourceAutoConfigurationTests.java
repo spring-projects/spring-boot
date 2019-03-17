@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -23,11 +24,14 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -39,9 +43,13 @@ import static org.mockito.Mockito.verify;
 public class DevToolsPooledDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
 	@Before
-	public void before() {
-		System.setProperty("derby.stream.error.file", "target/derby.log");
+	public void before() throws IOException {
+		System.setProperty("derby.stream.error.file",
+				this.temp.newFile("derby.log").getAbsolutePath());
 	}
 
 	@After
@@ -66,7 +74,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -77,7 +85,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -99,7 +107,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -121,7 +129,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test

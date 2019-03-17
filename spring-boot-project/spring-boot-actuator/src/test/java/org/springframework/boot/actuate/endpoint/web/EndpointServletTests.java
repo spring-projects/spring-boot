@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,19 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -42,21 +39,18 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class EndpointServletTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenServletClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
-		new EndpointServlet((Class<Servlet>) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new EndpointServlet((Class<Servlet>) null))
+				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	public void createWhenServletIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
-		new EndpointServlet((Servlet) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new EndpointServlet((Servlet) null))
+				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
@@ -75,15 +69,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameter(null, "value");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> endpointServlet.withInitParameter(null, "value"));
 	}
 
 	@Test
 	public void withInitParameterEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameter(" ", "value");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> endpointServlet.withInitParameter(" ", "value"));
 	}
 
 	@Test
@@ -105,15 +99,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParametersNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(null, "value"));
+		assertThatIllegalArgumentException().isThrownBy(() -> endpointServlet
+				.withInitParameters(Collections.singletonMap(null, "value")));
 	}
 
 	@Test
 	public void withInitParametersEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(" ", "value"));
+		assertThatIllegalArgumentException().isThrownBy(() -> endpointServlet
+				.withInitParameters(Collections.singletonMap(" ", "value")));
 	}
 
 	@Test
@@ -133,14 +127,25 @@ public class EndpointServletTests {
 		extra.put("e", "f");
 		assertThat(endpointServlet.withInitParameters(extra).getInitParameters())
 				.containsExactly(entry("a", "b1"), entry("c", "d"), entry("e", "f"));
+	}
 
+	@Test
+	public void withLoadOnStartupNotSetShouldReturnDefaultValue() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
+		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(-1);
+	}
+
+	@Test
+	public void withLoadOnStartupSetShouldReturnValue() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
+				.withLoadOnStartup(3);
+		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(3);
 	}
 
 	private static class TestServlet extends GenericServlet {
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) {
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
@@ -38,9 +39,10 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Datadog.
  *
  * @author Jon Schneider
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
@@ -50,17 +52,27 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogMetricsExportAutoConfiguration {
 
+	private final DatadogProperties properties;
+
+	public DatadogMetricsExportAutoConfiguration(DatadogProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public DatadogConfig datadogConfig(DatadogProperties datadogProperties) {
-		return new DatadogPropertiesConfigAdapter(datadogProperties);
+	public DatadogConfig datadogConfig() {
+		return new DatadogPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
 			Clock clock) {
-		return new DatadogMeterRegistry(datadogConfig, clock);
+		return DatadogMeterRegistry.builder(datadogConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
+				.build();
 	}
 
 }

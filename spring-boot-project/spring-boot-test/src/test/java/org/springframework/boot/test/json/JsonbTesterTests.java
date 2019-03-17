@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link JsonbTester}.
@@ -36,16 +37,16 @@ public class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void initFieldsWhenTestIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TestInstance must not be null");
-		JsonbTester.initFields(null, JsonbBuilder.create());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> JsonbTester.initFields(null, JsonbBuilder.create()))
+				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Marshaller must not be null");
-		JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null))
+				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
@@ -66,7 +67,7 @@ public class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 		return new JsonbTester<>(resourceLoadClass, type, JsonbBuilder.create());
 	}
 
-	static abstract class InitFieldsBaseClass {
+	abstract static class InitFieldsBaseClass {
 
 		public JsonbTester<ExampleObject> base;
 

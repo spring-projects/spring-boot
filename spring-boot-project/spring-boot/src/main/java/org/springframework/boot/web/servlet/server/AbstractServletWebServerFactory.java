@@ -255,8 +255,7 @@ public abstract class AbstractServletWebServerFactory
 		mergedInitializers.add(new SessionConfiguringInitializer(this.session));
 		mergedInitializers.addAll(Arrays.asList(initializers));
 		mergedInitializers.addAll(this.initializers);
-		return mergedInitializers
-				.toArray(new ServletContextInitializer[mergedInitializers.size()]);
+		return mergedInitializers.toArray(new ServletContextInitializer[0]);
 	}
 
 	/**

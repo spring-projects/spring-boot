@@ -21,11 +21,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JsonReader}.
@@ -47,8 +47,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void invalidMetadata() throws IOException {
-		this.thrown.expectCause(CoreMatchers.instanceOf(JSONException.class));
-		readFor("invalid");
+		assertThatIllegalStateException().isThrownBy(() -> readFor("invalid"))
+				.withCauseInstanceOf(JSONException.class);
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertThat(valueHint.getDescription()).isEqualTo("One.");
 		ValueHint valueHint2 = hint.getValueHints().get(1);
 		assertThat(valueHint2.getValue()).isEqualTo("two");
-		assertThat(valueHint2.getDescription()).isEqualTo(null);
+		assertThat(valueHint2.getDescription()).isNull();
 
 		assertThat(hint.getValueProviders()).hasSize(2);
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
@@ -175,7 +175,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertProperty(item3, "spring.server.name", "spring.server.name", String.class,
 				null);
 		assertThat(item3.isDeprecated()).isFalse();
-		assertThat(item3.getDeprecation()).isEqualTo(null);
+		assertThat(item3.getDeprecation()).isNull();
 
 		ConfigurationMetadataItem item4 = items.get(3);
 		assertProperty(item4, "spring.server-name", "spring.server-name", String.class,

@@ -197,7 +197,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private boolean isTransitive(Map<?, ?> dependencyMap) {
 		Boolean transitive = (Boolean) dependencyMap.get("transitive");
-		return (transitive == null ? true : transitive);
+		return (transitive != null) ? transitive : true;
 	}
 
 	private List<Dependency> getDependencies(DependencyResult dependencyResult) {
@@ -219,7 +219,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private GroovyClassLoader getClassLoader(Map args) {
 		GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
-		return (classLoader == null ? this.classLoader : classLoader);
+		return (classLoader != null) ? classLoader : this.classLoader;
 	}
 
 	@Override
@@ -290,7 +290,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			for (File file : files) {
 				uris.add(file.toURI());
 			}
-			return uris.toArray(new URI[uris.size()]);
+			return uris.toArray(new URI[0]);
 		}
 		catch (Exception ex) {
 			throw new DependencyResolutionFailedException(ex);
@@ -324,10 +324,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private DependencyRequest getDependencyRequest(CollectRequest collectRequest) {
-		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
-				DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE,
-						JavaScopes.RUNTIME));
-		return dependencyRequest;
+		return new DependencyRequest(collectRequest, DependencyFilterUtils
+				.classpathFilter(JavaScopes.COMPILE, JavaScopes.RUNTIME));
 	}
 
 	private void addManagedDependencies(DependencyResult result) {

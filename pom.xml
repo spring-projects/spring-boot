@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
@@ -9,7 +10,7 @@
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
 	<properties>
-		<revision>2.0.0.BUILD-SNAPSHOT</revision>
+		<revision>2.2.0.BUILD-SNAPSHOT</revision>
 		<main.basedir>${basedir}</main.basedir>
 	</properties>
 	<!-- Most elements are in profiles so they are stripped out during maven-flatten -->
@@ -18,8 +19,66 @@
 		<profile>
 			<id>default</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>!disable-spring-boot-default-profile</name>
+				</property>
 			</activation>
+			<properties>
+				<spring-javaformat.version>0.0.6</spring-javaformat.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<version>3.0.0</version>
+						<dependencies>
+							<dependency>
+								<groupId>com.puppycrawl.tools</groupId>
+								<artifactId>checkstyle</artifactId>
+								<version>8.12</version>
+							</dependency>
+							<dependency>
+								<groupId>io.spring.javaformat</groupId>
+								<artifactId>spring-javaformat-checkstyle</artifactId>
+								<version>${spring-javaformat.version}</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>checkstyle-validation</id>
+								<phase>validate</phase>
+								<configuration>
+									<skip>${disable.checks}</skip>
+									<configLocation>src/checkstyle/checkstyle.xml</configLocation>
+									<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+									<includeTestSourceDirectory>true</includeTestSourceDirectory>
+									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
+								</configuration>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.spring.javaformat</groupId>
+						<artifactId>spring-javaformat-maven-plugin</artifactId>
+						<version>${spring-javaformat.version}</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<configuration>
+									<skip>${disable.checks}</skip>
+								</configuration>
+								<goals>
+									<goal>validate</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 			<modules>
 				<module>spring-boot-project</module>
 				<!-- Samples are built via the invoker plugin -->

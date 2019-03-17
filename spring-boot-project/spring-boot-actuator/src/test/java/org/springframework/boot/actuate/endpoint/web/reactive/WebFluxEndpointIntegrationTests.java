@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.util.Arrays;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -44,9 +43,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,7 +102,7 @@ public class WebFluxEndpointIntegrationTests extends
 		return context.getBean(ReactiveConfiguration.class).port;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebFlux
 	@ImportAutoConfiguration(ErrorWebFluxAutoConfiguration.class)
 	static class ReactiveConfiguration {
@@ -143,25 +140,16 @@ public class WebFluxEndpointIntegrationTests extends
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AuthenticatedConfiguration {
 
 		@Bean
 		public WebFilter webFilter() {
-			return new WebFilter() {
-
-				@Override
-				public Mono<Void> filter(ServerWebExchange exchange,
-						WebFilterChain chain) {
-					return chain.filter(exchange).subscriberContext(
-							ReactiveSecurityContextHolder.withAuthentication(
-									new UsernamePasswordAuthenticationToken("Alice",
-											"secret",
-											Arrays.asList(new SimpleGrantedAuthority(
-													"ROLE_ACTUATOR")))));
-				}
-
-			};
+			return (exchange, chain) -> chain.filter(exchange)
+					.subscriberContext(ReactiveSecurityContextHolder.withAuthentication(
+							new UsernamePasswordAuthenticationToken("Alice", "secret",
+									Arrays.asList(new SimpleGrantedAuthority(
+											"ROLE_ACTUATOR")))));
 		}
 
 	}

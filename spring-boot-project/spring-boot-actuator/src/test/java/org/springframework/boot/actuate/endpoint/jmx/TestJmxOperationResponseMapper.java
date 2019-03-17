@@ -32,4 +32,5 @@ class TestJmxOperationResponseMapper implements JmxOperationResponseMapper {
 	public Class<?> mapResponseType(Class<?> responseType) {
 		return responseType;
 	}
+
 }

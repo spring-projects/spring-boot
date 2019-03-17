@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration for a no-op meter registry when the context does not contain an
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Andy Wilkinson
  */
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnMissingBean(MeterRegistry.class)
 class NoOpMeterRegistryConfiguration {

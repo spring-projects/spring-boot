@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,9 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "management.endpoints.web.exposure.include=jolokia")
 @DirtiesContext
-@TestPropertySource(properties = "management.endpoints.web.exposure.include=jolokia")
 public class JolokiaEndpointAutoConfigurationIntegrationTests {
 
 	@Autowired
@@ -100,7 +98,7 @@ public class JolokiaEndpointAutoConfigurationIntegrationTests {
 		assertThat(response.getBody()).contains("NonHeapMemoryUsage");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,

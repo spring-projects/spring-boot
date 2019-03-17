@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -39,6 +36,7 @@ import org.springframework.boot.convert.Delimiter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -48,9 +46,6 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Madhura Bhave
  */
 public class JavaBeanBinderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -181,10 +176,10 @@ public class JavaBeanBinderTests {
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[2]", "bar-baz");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(
-				Matchers.instanceOf(UnboundConfigurationPropertiesException.class));
-		this.binder.bind("foo", Bindable.of(ExampleListBean.class));
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(
+						() -> this.binder.bind("foo", Bindable.of(ExampleListBean.class)))
+				.withCauseInstanceOf(UnboundConfigurationPropertiesException.class);
 	}
 
 	@Test
@@ -326,9 +321,8 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.foo", "bar");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.binder.bind("foo",
-				Bindable.of(ExampleImmutableNestedBeanWithoutSetter.class));
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder
+				.bind("foo", Bindable.of(ExampleImmutableNestedBeanWithoutSetter.class)));
 	}
 
 	@Test
@@ -354,13 +348,15 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenNoDefaultConstructorShouldReturnUnbound() {
+	public void bindToClassWhenNoDefaultConstructorShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
 		BindResult<ExampleWithNonDefaultConstructor> bean = this.binder.bind("foo",
 				Bindable.of(ExampleWithNonDefaultConstructor.class));
-		assertThat(bean.isBound()).isFalse();
+		assertThat(bean.isBound()).isTrue();
+		ExampleWithNonDefaultConstructor boundBean = bean.get();
+		assertThat(boundBean.getValue()).isEqualTo("bar");
 	}
 
 	@Test
@@ -392,8 +388,8 @@ public class JavaBeanBinderTests {
 	@Test
 	public void bindToClassWhenPropertyCannotBeConvertedShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo.int-value", "foo"));
-		this.thrown.expect(BindException.class);
-		this.binder.bind("foo", Bindable.of(ExampleValueBean.class));
+		assertThatExceptionOfType(BindException.class).isThrownBy(
+				() -> this.binder.bind("foo", Bindable.of(ExampleValueBean.class)));
 	}
 
 	@Test
@@ -463,6 +459,39 @@ public class JavaBeanBinderTests {
 		ConverterAnnotatedExampleBean bean = this.binder
 				.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class)).get();
 		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
+	}
+
+	@Test
+	public void bindWhenValueIsConvertedWithPropertyEditorShouldBind() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "java.lang.RuntimeException");
+		this.sources.add(source);
+		ExampleWithPropertyEditorType bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithPropertyEditorType.class)).get();
+		assertThat(bean.getValue()).isEqualTo(RuntimeException.class);
+	}
+
+	@Test
+	public void bindToClassShouldIgnoreInvalidAccessors() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.name", "something");
+		this.sources.add(source);
+		ExampleWithInvalidAccessors bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithInvalidAccessors.class)).get();
+		assertThat(bean.getName()).isEqualTo("something");
+	}
+
+	@Test
+	public void bindToClassShouldIgnoreStaticAccessors() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.name", "invalid");
+		source.put("foo.counter", "42");
+		this.sources.add(source);
+		ExampleWithStaticAccessors bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithStaticAccessors.class)).get();
+		assertThat(ExampleWithStaticAccessors.name).isNull();
+		assertThat(bean.getCounter()).isEqualTo(42);
 	}
 
 	public static class ExampleValueBean {
@@ -802,6 +831,52 @@ public class JavaBeanBinderTests {
 
 	}
 
+	public static class ExampleWithInvalidAccessors {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String get() {
+			throw new IllegalArgumentException("should not be invoked");
+		}
+
+		public boolean is() {
+			throw new IllegalArgumentException("should not be invoked");
+		}
+
+	}
+
+	public static class ExampleWithStaticAccessors {
+
+		private static String name;
+
+		private int counter;
+
+		public static String getName() {
+			return name;
+		}
+
+		public static void setName(String name) {
+			ExampleWithStaticAccessors.name = name;
+		}
+
+		public int getCounter() {
+			return this.counter;
+		}
+
+		public void setCounter(int counter) {
+			this.counter = counter;
+		}
+
+	}
+
 	public enum ExampleEnum {
 
 		FOO_BAR,
@@ -821,6 +896,20 @@ public class JavaBeanBinderTests {
 
 		public void setDate(LocalDate date) {
 			this.date = date;
+		}
+
+	}
+
+	public static class ExampleWithPropertyEditorType {
+
+		private Class<? extends Throwable> value;
+
+		public Class<? extends Throwable> getValue() {
+			return this.value;
+		}
+
+		public void setValue(Class<? extends Throwable> value) {
+			this.value = value;
 		}
 
 	}

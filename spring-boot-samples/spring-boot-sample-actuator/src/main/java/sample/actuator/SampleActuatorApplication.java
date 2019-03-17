@@ -33,14 +33,7 @@ public class SampleActuatorApplication {
 
 	@Bean
 	public HealthIndicator helloHealthIndicator() {
-		return new HealthIndicator() {
-
-			@Override
-			public Health health() {
-				return Health.up().withDetail("hello", "world").build();
-			}
-
-		};
+		return () -> Health.up().withDetail("hello", "world").build();
 	}
 
 }

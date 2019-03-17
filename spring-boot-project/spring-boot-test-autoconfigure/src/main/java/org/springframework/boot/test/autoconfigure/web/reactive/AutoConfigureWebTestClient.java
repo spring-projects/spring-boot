@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Annotation that can be applied to a test class to enable a {@link WebTestClient}.
+ * Annotation that can be applied to a test class to enable a {@link WebTestClient}. At
+ * the moment, only WebFlux applications are supported.
  *
  * @author Stephane Nicoll
  * @since 2.0.0

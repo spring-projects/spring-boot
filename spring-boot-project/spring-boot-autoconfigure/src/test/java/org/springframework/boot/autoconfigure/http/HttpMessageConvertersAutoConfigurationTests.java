@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,14 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -257,6 +259,24 @@ public class HttpMessageConvertersAutoConfigurationTests {
 						"jsonbHttpMessageConverter"));
 	}
 
+	@Test
+	public void whenServletWebApplicationHttpMessageConvertersIsConfigured() {
+		new WebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations
+						.of(HttpMessageConvertersAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.hasSingleBean(HttpMessageConverters.class));
+	}
+
+	@Test
+	public void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
+		new ReactiveWebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations
+						.of(HttpMessageConvertersAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(HttpMessageConverters.class));
+	}
+
 	private ApplicationContextRunner allOptionsRunner() {
 		return this.contextRunner
 				.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class,
@@ -286,7 +306,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		assertThat(converters.getConverters()).contains(converter);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonObjectMapperConfig {
 
 		@Bean
@@ -296,7 +316,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonObjectMapperBuilderConfig {
 
 		@Bean
@@ -311,7 +331,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonConverterConfig {
 
 		@Bean
@@ -324,7 +344,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class GsonConverterConfig {
 
 		@Bean
@@ -336,7 +356,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JsonbConverterConfig {
 
 		@Bean
@@ -348,7 +368,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class StringConverterConfig {
 
 		@Bean
@@ -358,13 +378,13 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TypeConstrainedConverterConfiguration {
 
 		@Bean
 		public TypeConstrainedMappingJackson2HttpMessageConverter typeConstrainedConverter() {
 			return new TypeConstrainedMappingJackson2HttpMessageConverter(
-					ResourceSupport.class);
+					RepresentationModel.class);
 		}
 
 	}

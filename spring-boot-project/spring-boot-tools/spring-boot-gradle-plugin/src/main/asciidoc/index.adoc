@@ -11,6 +11,7 @@ Andy Wilkinson
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
 :gradle-userguide: https://docs.gradle.org/current/userguide
 :gradle-dsl: https://docs.gradle.org/current/dsl
+:gradle-api: https://docs.gradle.org/current/javadoc
 :application-plugin: {gradle-userguide}/application_plugin.html
 :groovy-plugin: {gradle-userguide}/groovy_plugin.html
 :java-plugin: {gradle-userguide}/java_plugin.html
@@ -36,7 +37,8 @@ Andy Wilkinson
 The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle],
 allowing you to package executable jar or war archives, run Spring Boot applications, and
 use the dependency management provided by `spring-boot-dependencies`. Spring Boot's
-Gradle plugin requires Gradle 4.0 or later.
+Gradle plugin requires Gradle 4.4 or later. If you choose to use the newer Kotlin DSL,
+it requires Gradle 4.10 or later.
 
 In addition to this user guide, {api-documentation}[API documentation] is also available.
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
-import java.util.List;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Cassandra.
@@ -43,61 +42,41 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class })
 @EnableConfigurationProperties(CassandraProperties.class)
 public class CassandraAutoConfiguration {
 
-	private final CassandraProperties properties;
-
-	private final List<ClusterBuilderCustomizer> builderCustomizers;
-
-	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
-		this.properties = properties;
-		this.builderCustomizers = builderCustomizers.getIfAvailable();
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public Cluster cassandraCluster() {
+	public Cluster cassandraCluster(CassandraProperties properties,
+			ObjectProvider<ClusterBuilderCustomizer> builderCustomizers) {
 		PropertyMapper map = PropertyMapper.get();
-		CassandraProperties properties = this.properties;
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(properties.getClusterName())
 				.withPort(properties.getPort());
 		map.from(properties::getUsername).whenNonNull().to((username) -> builder
 				.withCredentials(username, properties.getPassword()));
 		map.from(properties::getCompression).whenNonNull().to(builder::withCompression);
-		map.from(properties::getLoadBalancingPolicy).whenNonNull()
-				.as(BeanUtils::instantiateClass).to(builder::withLoadBalancingPolicy);
-		map.from(this::getQueryOptions).to(builder::withQueryOptions);
-		map.from(properties::getReconnectionPolicy).whenNonNull()
-				.as(BeanUtils::instantiateClass).to(builder::withReconnectionPolicy);
-		map.from(properties::getRetryPolicy).whenNonNull().as(BeanUtils::instantiateClass)
-				.to(builder::withRetryPolicy);
-		map.from(this::getSocketOptions).to(builder::withSocketOptions);
+		QueryOptions queryOptions = getQueryOptions(properties);
+		map.from(queryOptions).to(builder::withQueryOptions);
+		SocketOptions socketOptions = getSocketOptions(properties);
+		map.from(socketOptions).to(builder::withSocketOptions);
 		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);
-		map.from(this::getPoolingOptions).to(builder::withPoolingOptions);
-		map.from(properties::getContactPoints)
-				.as((list) -> list.toArray(new String[list.size()]))
+		PoolingOptions poolingOptions = getPoolingOptions(properties);
+		map.from(poolingOptions).to(builder::withPoolingOptions);
+		map.from(properties::getContactPoints).as(StringUtils::toStringArray)
 				.to(builder::addContactPoints);
-		customize(builder);
+		map.from(properties::isJmxEnabled).whenFalse()
+				.toCall(builder::withoutJMXReporting);
+		builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
-	private void customize(Cluster.Builder builder) {
-		if (this.builderCustomizers != null) {
-			for (ClusterBuilderCustomizer customizer : this.builderCustomizers) {
-				customizer.customize(builder);
-			}
-		}
-	}
-
-	private QueryOptions getQueryOptions() {
+	private QueryOptions getQueryOptions(CassandraProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
 		QueryOptions options = new QueryOptions();
-		CassandraProperties properties = this.properties;
 		map.from(properties::getConsistencyLevel).whenNonNull()
 				.to(options::setConsistencyLevel);
 		map.from(properties::getSerialConsistencyLevel).whenNonNull()
@@ -106,27 +85,27 @@ public class CassandraAutoConfiguration {
 		return options;
 	}
 
-	private SocketOptions getSocketOptions() {
+	private SocketOptions getSocketOptions(CassandraProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
 		SocketOptions options = new SocketOptions();
-		map.from(this.properties::getConnectTimeout).whenNonNull()
-				.asInt(Duration::toMillis).to(options::setConnectTimeoutMillis);
-		map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
+		map.from(properties::getConnectTimeout).whenNonNull().asInt(Duration::toMillis)
+				.to(options::setConnectTimeoutMillis);
+		map.from(properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
 				.to(options::setReadTimeoutMillis);
 		return options;
 	}
 
-	private PoolingOptions getPoolingOptions() {
+	private PoolingOptions getPoolingOptions(CassandraProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
-		CassandraProperties.Pool properties = this.properties.getPool();
+		CassandraProperties.Pool poolProperties = properties.getPool();
 		PoolingOptions options = new PoolingOptions();
-		map.from(properties::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
+		map.from(poolProperties::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
 				.to(options::setIdleTimeoutSeconds);
-		map.from(properties::getPoolTimeout).whenNonNull().asInt(Duration::toMillis)
+		map.from(poolProperties::getPoolTimeout).whenNonNull().asInt(Duration::toMillis)
 				.to(options::setPoolTimeoutMillis);
-		map.from(properties::getHeartbeatInterval).whenNonNull()
+		map.from(poolProperties::getHeartbeatInterval).whenNonNull()
 				.asInt(Duration::getSeconds).to(options::setHeartbeatIntervalSeconds);
-		map.from(properties::getMaxQueueSize).to(options::setMaxQueueSize);
+		map.from(poolProperties::getMaxQueueSize).to(options::setMaxQueueSize);
 		return options;
 	}
 

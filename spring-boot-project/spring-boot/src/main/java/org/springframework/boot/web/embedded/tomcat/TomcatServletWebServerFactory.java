@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
@@ -160,8 +158,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null ? this.baseDirectory
-				: createTempDir("tomcat"));
+		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
+				: createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -192,12 +190,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
-		File docBase = (documentRoot != null ? documentRoot
-				: createTempDir("tomcat-docbase"));
+		File docBase = (documentRoot != null) ? documentRoot
+				: createTempDir("tomcat-docbase");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
 		context.setParentClassLoader(
-				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+				(this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
@@ -234,12 +232,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void addLocaleMappings(TomcatEmbeddedContext context) {
-		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
-			Locale locale = entry.getKey();
-			Charset charset = entry.getValue();
-			context.addLocaleEncodingMappingParameter(locale.toString(),
-					charset.toString());
-		}
+		getLocaleCharsetMappings()
+				.forEach((locale, charset) -> context.addLocaleEncodingMappingParameter(
+						locale.toString(), charset.toString()));
 	}
 
 	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
@@ -267,10 +262,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		jspServlet.setName("jsp");
 		jspServlet.setServletClass(getJsp().getClassName());
 		jspServlet.addInitParameter("fork", "false");
-		for (Entry<String, String> initParameter : getJsp().getInitParameters()
-				.entrySet()) {
-			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
-		}
+		getJsp().getInitParameters().forEach(jspServlet::addInitParameter);
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
 		context.addServletMappingDecoded("*.jsp", "jsp");
@@ -291,7 +283,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		connector.setPort(port);
 		if (StringUtils.hasText(this.getServerHeader())) {
 			connector.setAttribute("server", this.getServerHeader());
@@ -337,8 +329,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			ServletContextInitializer[] initializers) {
 		TomcatStarter starter = new TomcatStarter(initializers);
 		if (context instanceof TomcatEmbeddedContext) {
-			// Should be true
-			((TomcatEmbeddedContext) context).setStarter(starter);
+			TomcatEmbeddedContext embeddedContext = (TomcatEmbeddedContext) context;
+			embeddedContext.setStarter(starter);
+			embeddedContext.setFailCtxIfServletStartFails(true);
 		}
 		context.addServletContainerInitializer(starter, NO_CLASSES);
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
@@ -354,6 +347,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
 		configureSession(context);
+		new DisableReferenceClearingContextCustomizer().customize(context);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
@@ -362,6 +356,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
+		Boolean httpOnly = getSession().getCookie().getHttpOnly();
+		if (httpOnly != null) {
+			context.setUseHttpOnly(httpOnly);
+		}
 		if (getSession().isPersistent()) {
 			Manager manager = context.getManager();
 			if (manager == null) {
@@ -682,8 +680,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		private void addResourceJars(List<URL> resourceJarUrls) {
 			for (URL url : resourceJarUrls) {
-				String file = url.getFile();
-				if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
+				String path = url.getPath();
+				if (path.endsWith(".jar") || path.endsWith(".jar!/")) {
 					String jar = url.toString();
 					if (!jar.startsWith("jar:")) {
 						// A jar file in the file system. Convert to Jar URL.

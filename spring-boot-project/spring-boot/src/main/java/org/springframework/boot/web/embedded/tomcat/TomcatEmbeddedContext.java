@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,24 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Stream;
+
+import javax.servlet.ServletException;
+
 import org.apache.catalina.Container;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Manager;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.ManagerBase;
 
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatWebServer} to support deferred
@@ -35,20 +46,10 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	private TomcatStarter starter;
 
-	private final boolean overrideLoadOnStart;
-
-	TomcatEmbeddedContext() {
-		this.overrideLoadOnStart = ReflectionUtils
-				.findMethod(StandardContext.class, "loadOnStartup", Container[].class)
-				.getReturnType() == boolean.class;
-	}
-
 	@Override
 	public boolean loadOnStartup(Container[] children) {
-		if (this.overrideLoadOnStart) {
-			return true;
-		}
-		return super.loadOnStartup(children);
+		// deferred until later (see deferredLoadOnStartup)
+		return true;
 	}
 
 	@Override
@@ -59,26 +60,57 @@ class TomcatEmbeddedContext extends StandardContext {
 		super.setManager(manager);
 	}
 
-	public void deferredLoadOnStartup() {
-		// Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
-		// loader to create servlet instances in this phase. If they do that and then try
-		// to initialize them later the class loader may have changed, so wrap the call to
-		// loadOnStartup in what we think its going to be the main webapp classloader at
-		// runtime.
-		ClassLoader classLoader = getLoader().getClassLoader();
-		ClassLoader existingLoader = null;
-		if (classLoader != null) {
-			existingLoader = ClassUtils.overrideThreadContextClassLoader(classLoader);
-		}
+	public void deferredLoadOnStartup() throws LifecycleException {
+		doWithThreadContextClassLoader(getLoader().getClassLoader(),
+				() -> getLoadOnStartupWrappers(findChildren()).forEach(this::load));
+	}
 
-		if (this.overrideLoadOnStart) {
-			// Earlier versions of Tomcat used a version that returned void. If that
-			// version is used our overridden loadOnStart method won't have been called
-			// and the original will have already run.
-			super.loadOnStartup(findChildren());
+	private Stream<Wrapper> getLoadOnStartupWrappers(Container[] children) {
+		Map<Integer, List<Wrapper>> grouped = new TreeMap<>();
+		for (Container child : children) {
+			Wrapper wrapper = (Wrapper) child;
+			int order = wrapper.getLoadOnStartup();
+			if (order >= 0) {
+				grouped.computeIfAbsent(order, ArrayList::new);
+				grouped.get(order).add(wrapper);
+			}
 		}
-		if (existingLoader != null) {
-			ClassUtils.overrideThreadContextClassLoader(existingLoader);
+		return grouped.values().stream().flatMap(List::stream);
+	}
+
+	private void load(Wrapper wrapper) {
+		try {
+			wrapper.load();
+		}
+		catch (ServletException ex) {
+			String message = sm.getString("standardContext.loadOnStartup.loadException",
+					getName(), wrapper.getName());
+			if (getComputedFailCtxIfServletStartFails()) {
+				throw new WebServerException(message, ex);
+			}
+			getLogger().error(message, StandardWrapper.getRootCause(ex));
+		}
+	}
+
+	/**
+	 * Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
+	 * loader to create servlet instances in this phase. If they do that and then try to
+	 * initialize them later the class loader may have changed, so wrap the call to
+	 * loadOnStartup in what we think its going to be the main webapp classloader at
+	 * runtime.
+	 * @param classLoader the class loader to use
+	 * @param code the code to run
+	 */
+	private void doWithThreadContextClassLoader(ClassLoader classLoader, Runnable code) {
+		ClassLoader existingLoader = (classLoader != null)
+				? ClassUtils.overrideThreadContextClassLoader(classLoader) : null;
+		try {
+			code.run();
+		}
+		finally {
+			if (existingLoader != null) {
+				ClassUtils.overrideThreadContextClassLoader(existingLoader);
+			}
 		}
 	}
 

@@ -36,6 +36,7 @@ plugin:
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version
    of the plugin. This is achieved by setting the `kotlin.version` property with a value
    that matches the version of the Kotlin plugin.
+2. Configures any `KotlinCompile` tasks to use the `-java-parameters` compiler argument.
 
 
 
@@ -69,8 +70,10 @@ applied to a project, the Spring Boot plugin will automatically import the
 When Gradle's {application-plugin}[`application` plugin] is applied to a project, the
 Spring Boot plugin:
 
-1. Creates a `CreateStartScripts` task named `bootStartScripts` that will creates scripts
-   that launch the artifact in the `bootArchives` configuration using `java -jar`.
+1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts
+   that launch the artifact in the `bootArchives` configuration using `java -jar`. The
+   task is configured to use the `applicationDefaultJvmArgs` property as a convention
+   for its `defaultJvmOpts` property.
 2. Creates a new distribution named `boot` and configures it to contain the artifact in
    the `bootArchives` configuration in its `lib` directory and the start scripts in its
    `bin` directory.

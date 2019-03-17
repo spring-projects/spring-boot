@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
@@ -61,7 +65,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -80,9 +83,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Jon Schneider
  */
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class, properties = "management.metrics.use-global-registry=false")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class)
-@TestPropertySource(properties = "management.metrics.use-global-registry=false")
 public class MetricsIntegrationTests {
 
 	@Autowired
@@ -139,11 +141,14 @@ public class MetricsIntegrationTests {
 						DispatcherType.ASYNC);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class,
-			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
+			JvmMetricsAutoConfiguration.class, LogbackMetricsAutoConfiguration.class,
+			SystemMetricsAutoConfiguration.class, RabbitMetricsAutoConfiguration.class,
+			CacheMetricsAutoConfiguration.class,
 			DataSourcePoolMetricsAutoConfiguration.class,
-			RestTemplateMetricsAutoConfiguration.class,
+			HibernateMetricsAutoConfiguration.class,
+			HttpClientMetricsAutoConfiguration.class,
 			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			RestTemplateAutoConfiguration.class, WebMvcAutoConfiguration.class,

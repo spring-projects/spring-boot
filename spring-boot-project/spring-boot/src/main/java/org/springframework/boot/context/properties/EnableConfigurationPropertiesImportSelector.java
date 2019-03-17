@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
@@ -39,7 +44,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties} bean or not, depending on whether the enclosing
  * {@link EnableConfigurationProperties} explicitly declares one. If none is declared then
  * a bean post processor will still kick in for any beans annotated as external
- * configuration. If one is declared then it a bean definition is registered with id equal
+ * configuration. If one is declared, then a bean definition is registered with id equal
  * to the class name (thus an application context usually only contains one
  * {@link ConfigurationProperties} bean of each unique type).
  *
@@ -48,6 +53,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 class EnableConfigurationPropertiesImportSelector implements ImportSelector {
+
+	private static boolean KOTLIN_PRESENT = KotlinDetector.isKotlinPresent();
 
 	private static final String[] IMPORTS = {
 			ConfigurationPropertiesBeanRegistrar.class.getName(),
@@ -75,8 +82,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(
 							EnableConfigurationProperties.class.getName(), false);
-			return collectClasses(attributes == null ? Collections.emptyList()
-					: attributes.get("value"));
+			return collectClasses((attributes != null) ? attributes.get("value")
+					: Collections.emptyList());
 		}
 
 		private List<Class<?>> collectClasses(List<?> values) {
@@ -89,14 +96,14 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 				ConfigurableListableBeanFactory beanFactory, Class<?> type) {
 			String name = getName(type);
 			if (!containsBeanDefinition(beanFactory, name)) {
-				registerBeanDefinition(registry, name, type);
+				registerBeanDefinition(registry, beanFactory, name, type);
 			}
 		}
 
 		private String getName(Class<?> type) {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
-			String prefix = (annotation != null ? annotation.prefix() : "");
+			String prefix = (annotation != null) ? annotation.prefix() : "";
 			return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
 					: type.getName());
 		}
@@ -114,19 +121,52 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			return false;
 		}
 
-		private void registerBeanDefinition(BeanDefinitionRegistry registry, String name,
-				Class<?> type) {
+		private void registerBeanDefinition(BeanDefinitionRegistry registry,
+				ConfigurableListableBeanFactory beanFactory, String name, Class<?> type) {
 			assertHasAnnotation(type);
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(type);
-			registry.registerBeanDefinition(name, definition);
+			registry.registerBeanDefinition(name,
+					createBeanDefinition(beanFactory, name, type));
 		}
 
 		private void assertHasAnnotation(Class<?> type) {
 			Assert.notNull(
 					AnnotationUtils.findAnnotation(type, ConfigurationProperties.class),
-					"No " + ConfigurationProperties.class.getSimpleName()
+					() -> "No " + ConfigurationProperties.class.getSimpleName()
 							+ " annotation found on  '" + type.getName() + "'.");
+		}
+
+		private BeanDefinition createBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory, String name, Class<?> type) {
+			if (canBindAtCreationTime(type)) {
+				return ConfigurationPropertiesBeanDefinition.from(beanFactory, name,
+						type);
+			}
+			else {
+				GenericBeanDefinition definition = new GenericBeanDefinition();
+				definition.setBeanClass(type);
+				return definition;
+			}
+		}
+
+		private boolean canBindAtCreationTime(Class<?> type) {
+			List<Constructor<?>> constructors = determineConstructors(type);
+			return (constructors.size() == 1
+					&& constructors.get(0).getParameterCount() > 0);
+		}
+
+		private List<Constructor<?>> determineConstructors(Class<?> type) {
+			List<Constructor<?>> constructors = new ArrayList<>();
+			if (KOTLIN_PRESENT && KotlinDetector.isKotlinType(type)) {
+				Constructor<?> primaryConstructor = BeanUtils
+						.findPrimaryConstructor(type);
+				if (primaryConstructor != null) {
+					constructors.add(primaryConstructor);
+				}
+			}
+			else {
+				constructors.addAll(Arrays.asList(type.getDeclaredConstructors()));
+			}
+			return constructors;
 		}
 
 	}

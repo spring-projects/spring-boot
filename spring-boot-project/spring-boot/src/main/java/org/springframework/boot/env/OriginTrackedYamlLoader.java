@@ -16,13 +16,14 @@
 
 package org.springframework.boot.env;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -53,11 +54,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private final Resource resource;
 
-	OriginTrackedYamlLoader(Resource resource, String profileToLoad,
-			Predicate<String[]> acceptsProfiles) {
+	OriginTrackedYamlLoader(Resource resource) {
 		this.resource = resource;
-		setDocumentMatchers(new ProfileToLoadDocumentMatcher(profileToLoad),
-				new AcceptsProfilesDocumentMatcher(acceptsProfiles));
 		setResources(resource);
 	}
 
@@ -67,19 +65,21 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
 		LimitedResolver resolver = new LimitedResolver();
-		return new Yaml(constructor, representer, dumperOptions, resolver);
+		LoaderOptions loaderOptions = new LoaderOptions();
+		loaderOptions.setAllowDuplicateKeys(false);
+		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
-	public Map<String, Object> load() {
-		final Map<String, Object> result = new LinkedHashMap<>();
-		process((properties, map) -> result.putAll(getFlattenedMap(map)));
+	public List<Map<String, Object>> load() {
+		final List<Map<String, Object>> result = new ArrayList<>();
+		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
 	}
 
 	/**
 	 * {@link Constructor} that tracks property origins.
 	 */
-	private class OriginTrackingConstructor extends StrictMapAppenderConstructor {
+	private class OriginTrackingConstructor extends Constructor {
 
 		@Override
 		protected Object constructObject(Node node) {
@@ -105,7 +105,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private Object getValue(Object value) {
-			return (value != null ? value : "");
+			return (value != null) ? value : "";
 		}
 
 		private Origin getOrigin(Node node) {
@@ -124,7 +124,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 		KeyScalarNode(ScalarNode node) {
 			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(),
-					node.getStyle());
+					node.getScalarStyle());
 		}
 
 		public static NodeTuple get(NodeTuple nodeTuple) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link Configuration Auto-configuration} for {@link CacheMeterBinderProvider} beans.
+ * Configure {@link CacheMeterBinderProvider} beans.
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MeterBinder.class)
 class CacheMeterBinderProvidersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ CaffeineCache.class,
 			com.github.benmanes.caffeine.cache.Cache.class })
 	static class CaffeineCacheMeterBinderProviderConfiguration {
@@ -54,7 +54,7 @@ class CacheMeterBinderProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class })
 	static class EhCache2CacheMeterBinderProviderConfiguration {
 
@@ -65,7 +65,7 @@ class CacheMeterBinderProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ HazelcastCache.class, Hazelcast.class })
 	static class HazelcastCacheMeterBinderProviderConfiguration {
 
@@ -76,7 +76,7 @@ class CacheMeterBinderProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JCacheCache.class, javax.cache.CacheManager.class })
 	static class JCacheCacheMeterBinderProviderConfiguration {
 

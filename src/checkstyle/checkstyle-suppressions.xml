@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<suppressions>
+	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
+	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
+	<suppress files=".+Application\.java" checks="HideUtilityClassConstructor" />
+	<suppress files="SignalUtils\.java" checks="IllegalImport" />
+	<suppress files="OrderedFilter\.java" checks="InterfaceIsType" />
+	<suppress files="OrderedWebFilter\.java" checks="InterfaceIsType" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-samples[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-samples[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
+	<suppress files="Ansi.*\.java" checks="JavadocVariable" />
+	<suppress files="Ansi.*\.java" checks="JavadocStyle" />
+	<suppress files="LogLevel\.java" checks="JavadocVariable" />
+	<suppress files="HelpMojo\.java" checks=".*"/>
+	<suppress files="[\\/]org.springframework.boot.configurationprocessor.json[\\/].*\.java$" checks=".*" />
+	<suppress files="TripType\.java" checks="JavadocVariable" />
+	<suppress files="Rating\.java" checks="JavadocVariable" />
+	<suppress files="Direction\.java" checks="JavadocVariable" />
+	<suppress files="JooqExamples\.java" checks="AvoidStaticImport" />
+	<suppress files="LoggingApplicationListenerIntegrationTests\.java" checks="IllegalImport" />
+	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
+	<suppress files="EmbeddedMongoAutoConfiguration\.java" checks="IllegalImport" />
+	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
+	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
+	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
+</suppressions>

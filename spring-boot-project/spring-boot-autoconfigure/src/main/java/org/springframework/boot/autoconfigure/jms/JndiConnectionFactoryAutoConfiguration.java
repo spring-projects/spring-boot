@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(JmsAutoConfiguration.class)
 @ConditionalOnClass(JmsTemplate.class)
 @ConditionalOnMissingBean(ConnectionFactory.class)
@@ -55,25 +55,23 @@ public class JndiConnectionFactoryAutoConfiguration {
 	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA",
 			"java:/XAConnectionFactory" };
 
-	private final JmsProperties properties;
-
-	public JndiConnectionFactoryAutoConfiguration(JmsProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
-	public ConnectionFactory connectionFactory() throws NamingException {
-		if (StringUtils.hasLength(this.properties.getJndiName())) {
-			return new JndiLocatorDelegate().lookup(this.properties.getJndiName(),
+	public ConnectionFactory connectionFactory(JmsProperties properties)
+			throws NamingException {
+		JndiLocatorDelegate jndiLocatorDelegate = JndiLocatorDelegate
+				.createDefaultResourceRefLocator();
+		if (StringUtils.hasLength(properties.getJndiName())) {
+			return jndiLocatorDelegate.lookup(properties.getJndiName(),
 					ConnectionFactory.class);
 		}
-		return findJndiConnectionFactory();
+		return findJndiConnectionFactory(jndiLocatorDelegate);
 	}
 
-	private ConnectionFactory findJndiConnectionFactory() {
+	private ConnectionFactory findJndiConnectionFactory(
+			JndiLocatorDelegate jndiLocatorDelegate) {
 		for (String name : JNDI_LOCATIONS) {
 			try {
-				return new JndiLocatorDelegate().lookup(name, ConnectionFactory.class);
+				return jndiLocatorDelegate.lookup(name, ConnectionFactory.class);
 			}
 			catch (NamingException ex) {
 				// Swallow and continue

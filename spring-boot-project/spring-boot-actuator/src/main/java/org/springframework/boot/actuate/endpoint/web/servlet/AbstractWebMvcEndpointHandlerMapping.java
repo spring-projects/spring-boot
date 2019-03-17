@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +49,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.handler.MatchableHandlerMapping;
+import org.springframework.web.servlet.handler.RequestMatchResult;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
@@ -63,10 +67,12 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 2.0.0
  */
 public abstract class AbstractWebMvcEndpointHandlerMapping
-		extends RequestMappingInfoHandlerMapping implements InitializingBean {
+		extends RequestMappingInfoHandlerMapping
+		implements InitializingBean, MatchableHandlerMapping {
 
 	private final EndpointMapping endpointMapping;
 
@@ -76,11 +82,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 	private final CorsConfiguration corsConfiguration;
 
-	private final Method linksMethod = ReflectionUtils.findMethod(getClass(), "links",
-			HttpServletRequest.class, HttpServletResponse.class);
-
 	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class,
 			"handle", HttpServletRequest.class, Map.class);
+
+	private static final RequestMappingInfo.BuilderConfiguration builderConfig = getBuilderConfig();
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
@@ -125,11 +130,40 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		}
 	}
 
+	@Override
+	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
+		HandlerMethod handlerMethod = super.createHandlerMethod(handler, method);
+		return new WebMvcEndpointHandlerMethod(handlerMethod.getBean(),
+				handlerMethod.getMethod());
+	}
+
+	@Override
+	public RequestMatchResult match(HttpServletRequest request, String pattern) {
+		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(builderConfig)
+				.build();
+		RequestMappingInfo matchingInfo = info.getMatchingCondition(request);
+		if (matchingInfo == null) {
+			return null;
+		}
+		Set<String> patterns = matchingInfo.getPatternsCondition().getPatterns();
+		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+		return new RequestMatchResult(patterns.iterator().next(), lookupPath,
+				getPathMatcher());
+	}
+
+	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
+		RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
+		config.setUrlPathHelper(null);
+		config.setPathMatcher(null);
+		config.setSuffixPatternMatch(false);
+		config.setTrailingSlashMatch(true);
+		return config;
+	}
+
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint,
 			WebOperation operation) {
-		OperationInvoker invoker = operation::invoke;
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint,
-				operation, new ServletWebOperationAdapter(invoker));
+				operation, new ServletWebOperationAdapter(operation));
 		registerMapping(createRequestMappingInfo(operation),
 				new OperationHandler(servletWebOperation), this.handleMethod);
 	}
@@ -142,7 +176,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * @param servletWebOperation the servlet web operation to wrap
 	 * @return a wrapped servlet web operation
 	 */
-
 	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint,
 			WebOperation operation, ServletWebOperation servletWebOperation) {
 		return servletWebOperation;
@@ -155,15 +188,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(predicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
-				toStringArray(predicate.getConsumes()));
+				StringUtils.toStringArray(predicate.getConsumes()));
 		ProducesRequestCondition produces = new ProducesRequestCondition(
-				toStringArray(predicate.getProduces()));
+				StringUtils.toStringArray(predicate.getProduces()));
 		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
 				produces, null);
-	}
-
-	private String[] toStringArray(Collection<String> collection) {
-		return collection.toArray(new String[collection.size()]);
 	}
 
 	private void registerLinksMapping() {
@@ -171,16 +200,21 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.GET);
 		ProducesRequestCondition produces = new ProducesRequestCondition(
-				this.endpointMediaTypes.getProduced().toArray(
-						new String[this.endpointMediaTypes.getProduced().size()]));
+				this.endpointMediaTypes.getProduced().toArray(StringUtils
+						.toStringArray(this.endpointMediaTypes.getProduced())));
 		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
 				null, produces, null);
-		registerMapping(mapping, this, this.linksMethod);
+		LinksHandler linksHandler = getLinksHandler();
+		registerMapping(mapping, linksHandler,
+				ReflectionUtils.findMethod(linksHandler.getClass(), "links",
+						HttpServletRequest.class, HttpServletResponse.class));
 	}
 
 	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
 		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
-		return new PatternsRequestCondition(patterns, null, null, false, true);
+		return new PatternsRequestCondition(patterns, builderConfig.getUrlPathHelper(),
+				builderConfig.getPathMatcher(), builderConfig.useSuffixPatternMatch(),
+				builderConfig.useTrailingSlashMatch());
 	}
 
 	@Override
@@ -205,8 +239,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		interceptors.add(new SkipPathExtensionContentNegotiation());
 	}
 
-	protected abstract Object links(HttpServletRequest request,
-			HttpServletResponse response);
+	/**
+	 * Return the Handler providing actuator links at the root endpoint.
+	 * @return the links handler
+	 */
+	protected abstract LinksHandler getLinksHandler();
 
 	/**
 	 * Return the web endpoints being mapped.
@@ -214,6 +251,16 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 */
 	public Collection<ExposableWebEndpoint> getEndpoints() {
 		return this.endpoints;
+	}
+
+	/**
+	 * Handler providing actuator links at the root endpoint.
+	 */
+	@FunctionalInterface
+	protected interface LinksHandler {
+
+		Object links(HttpServletRequest request, HttpServletResponse response);
+
 	}
 
 	/**
@@ -232,10 +279,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 */
 	private class ServletWebOperationAdapter implements ServletWebOperation {
 
-		private final OperationInvoker invoker;
+		private final WebOperation operation;
 
-		ServletWebOperationAdapter(OperationInvoker invoker) {
-			this.invoker = invoker;
+		ServletWebOperationAdapter(WebOperation operation) {
+			this.operation = operation;
 		}
 
 		@Override
@@ -244,13 +291,18 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				return handleResult(
-						this.invoker.invoke(new InvocationContext(
+						this.operation.invoke(new InvocationContext(
 								new ServletSecurityContext(request), arguments)),
 						HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
 				throw new BadOperationRequestException(ex.getReason());
 			}
+		}
+
+		@Override
+		public String toString() {
+			return "Actuator web endpoint '" + this.operation.getId() + "'";
 		}
 
 		private Map<String, Object> getArguments(HttpServletRequest request,
@@ -261,7 +313,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 				arguments.putAll(body);
 			}
 			request.getParameterMap().forEach((name, values) -> arguments.put(name,
-					values.length == 1 ? values[0] : Arrays.asList(values)));
+					(values.length != 1) ? Arrays.asList(values) : values[0]));
 			return arguments;
 		}
 
@@ -273,8 +325,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 		private Object handleResult(Object result, HttpMethod httpMethod) {
 			if (result == null) {
-				return new ResponseEntity<>(httpMethod == HttpMethod.GET
-						? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT);
+				return new ResponseEntity<>((httpMethod != HttpMethod.GET)
+						? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
 			}
 			if (!(result instanceof WebEndpointResponse)) {
 				return result;
@@ -301,6 +353,32 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		public Object handle(HttpServletRequest request,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
+		}
+
+		@Override
+		public String toString() {
+			return this.operation.toString();
+		}
+
+	}
+
+	/**
+	 * {@link HandlerMethod} subclass for endpoint information logging.
+	 */
+	private static class WebMvcEndpointHandlerMethod extends HandlerMethod {
+
+		WebMvcEndpointHandlerMethod(Object bean, Method method) {
+			super(bean, method);
+		}
+
+		@Override
+		public String toString() {
+			return getBean().toString();
+		}
+
+		@Override
+		public HandlerMethod createWithResolvedBean() {
+			return this;
 		}
 
 	}

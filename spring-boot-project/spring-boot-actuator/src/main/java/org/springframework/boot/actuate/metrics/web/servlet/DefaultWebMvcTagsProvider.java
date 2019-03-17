@@ -34,7 +34,8 @@ public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 	public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response,
 			Object handler, Throwable exception) {
 		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response),
-				WebMvcTags.exception(exception), WebMvcTags.status(response));
+				WebMvcTags.exception(exception), WebMvcTags.status(response),
+				WebMvcTags.outcome(response));
 	}
 
 	@Override

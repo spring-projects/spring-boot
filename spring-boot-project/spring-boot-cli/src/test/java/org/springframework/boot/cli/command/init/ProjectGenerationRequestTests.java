@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,14 @@ import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ProjectGenerationRequest}.
@@ -44,9 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectGenerationRequestTests {
 
 	public static final Map<String, String> EMPTY_TAGS = Collections.emptyMap();
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final ProjectGenerationRequest request = new ProjectGenerationRequest();
 
@@ -172,19 +168,19 @@ public class ProjectGenerationRequestTests {
 	public void buildNoMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("does-not-exist");
-		this.request.generateUrl(metadata);
+		assertThatExceptionOfType(ReportableException.class)
+				.isThrownBy(() -> this.request.generateUrl(metadata))
+				.withMessageContaining("does-not-exist");
 	}
 
 	@Test
 	public void buildMultipleMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("gradle-project");
-		this.thrown.expectMessage("gradle-project-2");
-		this.request.generateUrl(metadata);
+		assertThatExceptionOfType(ReportableException.class)
+				.isThrownBy(() -> this.request.generateUrl(metadata))
+				.withMessageContaining("gradle-project")
+				.withMessageContaining("gradle-project-2");
 	}
 
 	@Test
@@ -207,15 +203,16 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void invalidType() {
 		this.request.setType("does-not-exist");
-		this.thrown.expect(ReportableException.class);
-		this.request.generateUrl(createDefaultMetadata());
+		assertThatExceptionOfType(ReportableException.class)
+				.isThrownBy(() -> this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void noTypeAndNoDefault() throws Exception {
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("no default is defined");
-		this.request.generateUrl(readMetadata("types-conflict"));
+		assertThatExceptionOfType(ReportableException.class)
+				.isThrownBy(
+						() -> this.request.generateUrl(readMetadata("types-conflict")))
+				.withMessageContaining("no default is defined");
 	}
 
 	private static URI createUrl(String actionAndParam) {
@@ -232,8 +229,8 @@ public class ProjectGenerationRequestTests {
 	}
 
 	public void setBuildAndFormat(String build, String format) {
-		this.request.setBuild(build != null ? build : "maven");
-		this.request.setFormat(format != null ? format : "project");
+		this.request.setBuild((build != null) ? build : "maven");
+		this.request.setFormat((format != null) ? format : "project");
 		this.request.setDetectType(true);
 	}
 

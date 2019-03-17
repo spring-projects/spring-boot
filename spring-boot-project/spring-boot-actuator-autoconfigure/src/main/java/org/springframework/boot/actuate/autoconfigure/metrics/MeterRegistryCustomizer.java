@@ -27,7 +27,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * the registry.
  *
  * @author Jon Schneider
- * @param <T> The registry type to customize
+ * @param <T> the registry type to customize
  * @since 2.0.0
  */
 @FunctionalInterface

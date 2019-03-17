@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -39,7 +40,6 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.operation.preprocess.ContentModifyingOperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -127,8 +127,8 @@ public abstract class AbstractEndpointDocumentationTests {
 				.limit(3).collect(Collectors.toList());
 	}
 
-	@Configuration
-	@Import({ JacksonAutoConfiguration.class,
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
 			WebEndpointAutoConfiguration.class,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 package org.springframework.boot.devtools.remote.server;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link HttpHeaderAccessManager}.
@@ -38,9 +37,6 @@ public class HttpHeaderAccessManagerTests {
 	private static final String HEADER = "X-AUTH_TOKEN";
 
 	private static final String SECRET = "password";
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockHttpServletRequest request;
 
@@ -57,30 +53,30 @@ public class HttpHeaderAccessManagerTests {
 
 	@Test
 	public void headerNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderName must not be empty");
-		new HttpHeaderAccessManager(null, SECRET);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
+				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	public void headerNameMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderName must not be empty");
-		new HttpHeaderAccessManager("", SECRET);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
+				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	public void expectedSecretMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ExpectedSecret must not be empty");
-		new HttpHeaderAccessManager(HEADER, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
+				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test
 	public void expectedSecretMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ExpectedSecret must not be empty");
-		new HttpHeaderAccessManager(HEADER, "");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
+				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test

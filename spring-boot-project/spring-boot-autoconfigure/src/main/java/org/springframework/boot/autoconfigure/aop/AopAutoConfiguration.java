@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,27 +32,27 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * configuration.
  * <p>
  * The configuration will not be activated if {@literal spring.aop.auto=false}. The
- * {@literal proxyTargetClass} attribute will be {@literal false}, by default, but can be
- * overridden by specifying {@literal spring.aop.proxyTargetClass=true}.
+ * {@literal proxyTargetClass} attribute will be {@literal true}, by default, but can be
+ * overridden by specifying {@literal spring.aop.proxy-target-class=false}.
  *
  * @author Dave Syer
  * @author Josh Long
  * @see EnableAspectJAutoProxy
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ EnableAspectJAutoProxy.class, Aspect.class, Advice.class,
 		AnnotatedElement.class })
 @ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true)
 public class AopAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
 	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing = false)
 	public static class JdkDynamicAutoProxyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAspectJAutoProxy(proxyTargetClass = true)
 	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing = true)
 	public static class CglibAutoProxyConfiguration {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,9 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	@Override
 	protected Collection<String> getBasePackages(
 			AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		return AutoConfigurationPackages.has(this.beanFactory)
+		return (AutoConfigurationPackages.has(this.beanFactory)
 				? AutoConfigurationPackages.get(this.beanFactory)
-				: Collections.emptyList();
+				: Collections.emptyList());
 	}
 
 	@IntegrationComponentScan

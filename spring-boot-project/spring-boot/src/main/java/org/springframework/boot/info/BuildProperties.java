@@ -16,9 +16,9 @@
 
 package org.springframework.boot.info;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 /**
@@ -89,12 +89,12 @@ public class BuildProperties extends InfoProperties {
 	private static void coerceDate(Properties properties, String key) {
 		String value = properties.getProperty(key);
 		if (value != null) {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 			try {
-				String updatedValue = String.valueOf(format.parse(value).getTime());
+				String updatedValue = String.valueOf(DateTimeFormatter.ISO_INSTANT
+						.parse(value, Instant::from).toEpochMilli());
 				properties.setProperty(key, updatedValue);
 			}
-			catch (ParseException ex) {
+			catch (DateTimeException ex) {
 				// Ignore and store the original value
 			}
 		}

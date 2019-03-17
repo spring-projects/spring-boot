@@ -41,7 +41,6 @@ public class ServletRegistrationMappingDescription
 
 	/**
 	 * Returns the mappings for the registered servlet.
-	 *
 	 * @return the mappings
 	 */
 	public Collection<String> getMappings() {

@@ -26,8 +26,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * A {@link TestExecutionListener} for Spring REST Docs that removes the need for a
- * <code>@Rule</code> when using JUnit or manual before and after test calls when using
- * TestNG.
+ * {@code @Rule} when using JUnit or manual before and after test calls when using TestNG.
  *
  * @author Andy Wilkinson
  * @since 1.4.0

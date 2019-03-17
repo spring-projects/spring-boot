@@ -25,7 +25,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Sample Application to show Tomcat running two connectors
+ * Sample Application to show Tomcat running two connectors.
  *
  * @author Brock Mills
  * @author Andy Wilkinson

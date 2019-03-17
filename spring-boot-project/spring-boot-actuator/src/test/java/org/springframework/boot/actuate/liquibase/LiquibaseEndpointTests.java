@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,11 @@
  */
 
 package org.springframework.boot.actuate.liquibase;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 import org.junit.Test;
 
@@ -62,7 +67,23 @@ public class LiquibaseEndpointTests {
 										.hasSize(1));
 	}
 
-	@Configuration
+	@Test
+	public void connectionAutoCommitPropertyIsReset() {
+		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
+			DataSource dataSource = context.getBean(DataSource.class);
+			assertThat(getAutoCommit(dataSource)).isTrue();
+			context.getBean(LiquibaseEndpoint.class).liquibaseBeans();
+			assertThat(getAutoCommit(dataSource)).isTrue();
+		});
+	}
+
+	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
+		try (Connection connection = dataSource.getConnection()) {
+			return connection.getAutoCommit();
+		}
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	public static class Config {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,11 @@ import java.nio.charset.StandardCharsets;
  */
 final class AsciiBytes {
 
-	private static final int[] EXCESS = { 0x0, 0x1080, 0x96, 0x1c82080 };
+	private static final String EMPTY_STRING = "";
+
+	private static final int[] INITIAL_BYTE_BITMASK = { 0x7F, 0x1F, 0x0F, 0x07 };
+
+	private static final int SUBSEQUENT_BYTE_BITMASK = 0x3F;
 
 	private final byte[] bytes;
 
@@ -120,28 +124,16 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	@Override
-	public String toString() {
-		if (this.string == null) {
-			this.string = new String(this.bytes, this.offset, this.length,
-					StandardCharsets.UTF_8);
-		}
-		return this.string;
-	}
-
 	public boolean matches(CharSequence name, char suffix) {
 		int charIndex = 0;
 		int nameLen = name.length();
-		int totalLen = (nameLen + (suffix == 0 ? 0 : 1));
+		int totalLen = nameLen + ((suffix != 0) ? 1 : 0);
 		for (int i = this.offset; i < this.offset + this.length; i++) {
 			int b = this.bytes[i];
-			if (b < 0) {
-				b = b & 0x7F;
-				int limit = getRemainingUtfBytes(b);
-				for (int j = 0; j < limit; j++) {
-					b = (b << 6) + (this.bytes[++i] & 0xFF);
-				}
-				b -= EXCESS[limit];
+			int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+			b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+			for (int j = 0; j < remainingUtfBytes; j++) {
+				b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
 			}
 			char c = getChar(name, suffix, charIndex++);
 			if (b <= 0xFFFF) {
@@ -172,35 +164,16 @@ final class AsciiBytes {
 		return 0;
 	}
 
-	@Override
-	public int hashCode() {
-		int hash = this.hash;
-		if (hash == 0 && this.bytes.length > 0) {
-			for (int i = this.offset; i < this.offset + this.length; i++) {
-				int b = this.bytes[i];
-				if (b < 0) {
-					b = b & 0x7F;
-					int limit = getRemainingUtfBytes(b);
-					for (int j = 0; j < limit; j++) {
-						b = (b << 6) + (this.bytes[++i] & 0xFF);
-					}
-					b -= EXCESS[limit];
-				}
-				if (b <= 0xFFFF) {
-					hash = 31 * hash + b;
-				}
-				else {
-					hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
-					hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
-				}
-			}
-			this.hash = hash;
+	private int getNumberOfUtfBytes(int b) {
+		if ((b & 0x80) == 0) {
+			return 1;
 		}
-		return hash;
-	}
-
-	private int getRemainingUtfBytes(int b) {
-		return (b < 96 ? 1 : (b < 112 ? 2 : 3));
+		int numberOfUtfBytes = 0;
+		while ((b & 0x80) != 0) {
+			b <<= 1;
+			numberOfUtfBytes++;
+		}
+		return numberOfUtfBytes;
 	}
 
 	@Override
@@ -225,6 +198,44 @@ final class AsciiBytes {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		int hash = this.hash;
+		if (hash == 0 && this.bytes.length > 0) {
+			for (int i = this.offset; i < this.offset + this.length; i++) {
+				int b = this.bytes[i];
+				int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+				b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+				for (int j = 0; j < remainingUtfBytes; j++) {
+					b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
+				}
+				if (b <= 0xFFFF) {
+					hash = 31 * hash + b;
+				}
+				else {
+					hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
+					hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
+				}
+			}
+			this.hash = hash;
+		}
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		if (this.string == null) {
+			if (this.length == 0) {
+				this.string = EMPTY_STRING;
+			}
+			else {
+				this.string = new String(this.bytes, this.offset, this.length,
+						StandardCharsets.UTF_8);
+			}
+		}
+		return this.string;
+	}
+
 	static String toString(byte[] bytes) {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
@@ -239,7 +250,7 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(int hash, char suffix) {
-		return (suffix == 0 ? hash : (31 * hash + suffix));
+		return (suffix != 0) ? (31 * hash + suffix) : hash;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.assertj.core.api.AssertProvider;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ObjectContentAssert}.
@@ -45,9 +46,10 @@ public class ObjectContentAssertTests {
 		assertThat(forObject(SOURCE)).isEqualTo(SOURCE);
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void isEqualToWhenObjectsAreDifferentShouldFail() {
-		assertThat(forObject(SOURCE)).isEqualTo(DIFFERENT);
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forObject(SOURCE)).isEqualTo(DIFFERENT));
 	}
 
 	@Test
@@ -56,9 +58,10 @@ public class ObjectContentAssertTests {
 		assertThat(forObject(source)).asArray().containsExactly(SOURCE);
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void asArrayForNonArrayShouldFail() {
-		assertThat(forObject(SOURCE)).asArray();
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forObject(SOURCE)).asArray());
 	}
 
 	@Test
@@ -67,9 +70,10 @@ public class ObjectContentAssertTests {
 		assertThat(forObject(source)).asMap().containsEntry("a", SOURCE);
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void asMapForNonMapShouldFail() {
-		assertThat(forObject(SOURCE)).asMap();
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forObject(SOURCE)).asMap());
 	}
 
 	private AssertProvider<ObjectContentAssert<Object>> forObject(Object source) {

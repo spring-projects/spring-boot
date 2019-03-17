@@ -26,6 +26,7 @@ import org.springframework.boot.loader.data.RandomAccessData;
  * Parses the central directory from a JAR file.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see CentralDirectoryVisitor
  */
 class CentralDirectoryParser {
@@ -43,7 +44,7 @@ class CentralDirectoryParser {
 	 * Parse the source data, triggering {@link CentralDirectoryVisitor visitors}.
 	 * @param data the source data
 	 * @param skipPrefixBytes if prefix bytes should be skipped
-	 * @return The actual archive data without any prefix bytes
+	 * @return the actual archive data without any prefix bytes
 	 * @throws IOException on error
 	 */
 	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes)
@@ -61,7 +62,7 @@ class CentralDirectoryParser {
 
 	private void parseEntries(CentralDirectoryEndRecord endRecord,
 			RandomAccessData centralDirectoryData) throws IOException {
-		byte[] bytes = Bytes.get(centralDirectoryData);
+		byte[] bytes = centralDirectoryData.read(0, centralDirectoryData.getSize());
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		int dataOffset = 0;
 		for (int i = 0; i < endRecord.getNumberOfRecords(); i++) {

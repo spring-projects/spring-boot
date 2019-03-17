@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,8 +98,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null ? this.baseDirectory
-				: createTempDir("tomcat"));
+		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
+				: createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -131,7 +131,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		loader.setDelegate(true);
 		context.setLoader(loader);
-		Tomcat.addServlet(context, "httpHandlerServlet", servlet);
+		Tomcat.addServlet(context, "httpHandlerServlet", servlet).setAsyncSupported(true);
 		context.addServletMappingDecoded("/", "httpHandlerServlet");
 		host.addChild(context);
 		configureContext(context);
@@ -149,12 +149,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	protected void configureContext(Context context) {
 		this.contextLifecycleListeners.forEach(context::addLifecycleListener);
+		new DisableReferenceClearingContextCustomizer().customize(context);
 		this.tomcatContextCustomizers
 				.forEach((customizer) -> customizer.customize(context));
 	}
 
 	protected void customizeConnector(Connector connector) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		connector.setPort(port);
 		if (StringUtils.hasText(this.getServerHeader())) {
 			connector.setAttribute("server", this.getServerHeader());

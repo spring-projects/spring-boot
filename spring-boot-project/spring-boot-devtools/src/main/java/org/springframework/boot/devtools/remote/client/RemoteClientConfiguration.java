@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -67,7 +67,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  * @see org.springframework.boot.devtools.RemoteSpringApplication
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class RemoteClientConfiguration implements InitializingBean {
 
@@ -129,6 +129,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	/**
 	 * LiveReload configuration.
 	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
@@ -154,11 +155,15 @@ public class RemoteClientConfiguration implements InitializingBean {
 					Restarter.getInstance().getThreadFactory());
 		}
 
-		@EventListener
-		public void onClassPathChanged(ClassPathChangedEvent event) {
-			String url = this.remoteUrl + this.properties.getRemote().getContextPath();
-			this.executor.execute(new DelayedLiveReloadTrigger(optionalLiveReloadServer(),
-					this.clientHttpRequestFactory, url));
+		@Bean
+		public ApplicationListener<ClassPathChangedEvent> liveReloadTriggeringClassPathChangedEventListener(
+				OptionalLiveReloadServer optionalLiveReloadServer) {
+			return (event) -> {
+				String url = this.remoteUrl
+						+ this.properties.getRemote().getContextPath();
+				this.executor.execute(new DelayedLiveReloadTrigger(
+						optionalLiveReloadServer, this.clientHttpRequestFactory, url));
+			};
 		}
 
 		@Bean
@@ -175,6 +180,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	/**
 	 * Client configuration for remote update and restarts.
 	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
@@ -185,14 +191,16 @@ public class RemoteClientConfiguration implements InitializingBean {
 		private String remoteUrl;
 
 		@Bean
-		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
+		public ClassPathFileSystemWatcher classPathFileSystemWatcher(
+				FileSystemWatcherFactory fileSystemWatcherFactory,
+				ClassPathRestartStrategy classPathRestartStrategy) {
 			DefaultRestartInitializer restartInitializer = new DefaultRestartInitializer();
 			URL[] urls = restartInitializer.getInitialUrls(Thread.currentThread());
 			if (urls == null) {
 				urls = new URL[0];
 			}
-			return new ClassPathFileSystemWatcher(getFileSystemWatcherFactory(),
-					classPathRestartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(fileSystemWatcherFactory,
+					classPathRestartStrategy, urls);
 		}
 
 		@Bean

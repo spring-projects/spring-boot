@@ -29,7 +29,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * It might be safer to lookup dependencies lazily in the enclosing BeanFactory rather
  * than injecting them with {@code @Autowired}.
  *
- * @param <T> The configurable web server factory
+ * @param <T> the configurable web server factory
  * @author Phillip Webb
  * @author Dave Syer
  * @author Brian Clozel

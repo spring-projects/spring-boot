@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.boot.cli;
 
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
@@ -33,9 +35,6 @@ public class ReproIntegrationTests {
 
 	@Rule
 	public CliTester cli = new CliTester("src/test/resources/repro-samples/");
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void grabAntBuilder() throws Exception {
@@ -57,9 +56,9 @@ public class ReproIntegrationTests {
 
 	@Test
 	public void jarFileExtensionNeeded() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("is not a JAR file");
-		this.cli.jar("secure.groovy", "data-jpa.groovy");
+		assertThatExceptionOfType(ExecutionException.class)
+				.isThrownBy(() -> this.cli.jar("secure.groovy", "data-jpa.groovy"))
+				.withMessageContaining("is not a JAR file");
 	}
 
 }

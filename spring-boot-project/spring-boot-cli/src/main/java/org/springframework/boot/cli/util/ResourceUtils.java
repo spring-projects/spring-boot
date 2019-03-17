@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,11 +103,10 @@ public abstract class ResourceUtils {
 		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
-				if (resource.getURI().getScheme().equals("file")) {
-					if (resource.getFile().isDirectory()) {
-						result.addAll(getChildFiles(resource));
-						continue;
-					}
+				if (resource.getURI().getScheme().equals("file")
+						&& resource.getFile().isDirectory()) {
+					result.addAll(getChildFiles(resource));
+					continue;
 				}
 				result.add(absolutePath(resource));
 			}
@@ -160,8 +159,7 @@ public abstract class ResourceUtils {
 			}
 			else {
 				if (location.startsWith(FILE_URL_PREFIX)) {
-					Resource resource = this.files.getResource(location);
-					return resource;
+					return this.files.getResource(location);
 				}
 				try {
 					// Try to parse the location as a URL...

@@ -32,9 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
@@ -44,6 +42,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link PropertiesLauncher}.
@@ -57,9 +56,6 @@ public class PropertiesLauncherTests {
 	public OutputCapture output = new OutputCapture();
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private ClassLoader contextClassLoader;
@@ -67,7 +63,6 @@ public class PropertiesLauncherTests {
 	@Before
 	public void setup() {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
-		MockitoAnnotations.initMocks(this);
 		System.setProperty("loader.home",
 				new File("src/test/resources").getAbsolutePath());
 	}
@@ -104,10 +99,9 @@ public class PropertiesLauncherTests {
 	@Test
 	public void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
-		this.expected.expectMessage("Invalid source folder");
-		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertThat(launcher.getHomeDirectory())
-				.isNotEqualTo(new File(System.getProperty("loader.home")));
+		assertThatIllegalStateException().isThrownBy(PropertiesLauncher::new)
+				.withMessageContaining("Invalid source folder")
+				.withCauseInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
@@ -344,6 +338,17 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.home", "src/test/resources/placeholders");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(launcher.getMainClass()).isEqualTo("demo.FooApplication");
+	}
+
+	@Test
+	public void encodedFileUrlLoaderPathIsHandledCorrectly() throws Exception {
+		File loaderPath = this.temporaryFolder.newFolder("loader path");
+		System.setProperty("loader.path", loaderPath.toURI().toURL().toString());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		List<Archive> archives = launcher.getClassPathArchives();
+		assertThat(archives.size()).isEqualTo(1);
+		File archiveRoot = (File) ReflectionTestUtils.getField(archives.get(0), "root");
+		assertThat(archiveRoot).isEqualTo(loaderPath);
 	}
 
 	private void waitFor(String value) throws Exception {

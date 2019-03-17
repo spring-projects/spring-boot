@@ -15,6 +15,7 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<gradle.executable>./gradlew</gradle.executable>
 		<gradle.task>build</gradle.task>
+		<skip.gradle.build>false</skip.gradle.build>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -84,6 +85,7 @@
 								<argument>-Pdescription=${project.description}</argument>
 								<argument>-S</argument>
 							</arguments>
+							<skip>${skip.gradle.build}</skip>
 						</configuration>
 						<goals>
 							<goal>exec</goal>
@@ -118,12 +120,20 @@
 									<classifier>sources</classifier>
 								</artifact>
 							</artifacts>
+							<skipAttach>${skip.gradle.build}</skipAttach>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>springio</id>
+			<name>Spring IO releases repository</name>
+			<url>https://repo.spring.io/release</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<profiles>
 		<profile>
 			<id>windows</id>
@@ -183,6 +193,9 @@
 								<version>3.2.10</version>
 							</dependency>
 						</dependencies>
+						<configuration>
+							<skip>${skip.gradle.build}</skip>
+						</configuration>
 						<executions>
 							<execution>
 								<id>set-up-maven-properties</id>
@@ -268,6 +281,7 @@
 								<github-tag>${github-tag}</github-tag>
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>
+								<dependency-management-plugin-version>${dependency-management-plugin.version}</dependency-management-plugin-version>
 							</attributes>
 						</configuration>
 						<dependencies>
@@ -275,6 +289,11 @@
 								<groupId>org.asciidoctor</groupId>
 								<artifactId>asciidoctorj-pdf</artifactId>
 								<version>1.5.0-alpha.11</version>
+							</dependency>
+							<dependency>
+								<groupId>io.spring.asciidoctor</groupId>
+								<artifactId>spring-asciidoctor-extensions</artifactId>
+								<version>0.1.3.RELEASE</version>
 							</dependency>
 						</dependencies>
 					</plugin>
@@ -295,12 +314,22 @@
 											<classifier>docs</classifier>
 										</artifact>
 									</artifacts>
+									<skipAttach>${skip.gradle.build}</skipAttach>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>java9</id>
+			<activation>
+				<jdk>[9,)</jdk>
+			</activation>
+			<properties>
+				<skip.gradle.build>true</skip.gradle.build>
+			</properties>
 		</profile>
 	</profiles>
 </project>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link JacksonTester}.
@@ -34,16 +35,17 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void initFieldsWhenTestIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TestInstance must not be null");
-		JacksonTester.initFields(null, new ObjectMapper());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> JacksonTester.initFields(null, new ObjectMapper()))
+				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Marshaller must not be null");
-		JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> JacksonTester.initFields(new InitFieldsTestClass(),
+						(ObjectMapper) null))
+				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
@@ -64,7 +66,7 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 		return new JacksonTester<>(resourceLoadClass, type, new ObjectMapper());
 	}
 
-	static abstract class InitFieldsBaseClass {
+	abstract static class InitFieldsBaseClass {
 
 		public JacksonTester<ExampleObject> base;
 

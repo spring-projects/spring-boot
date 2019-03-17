@@ -51,7 +51,7 @@ class OperationMethodParameters implements OperationParameters {
 		String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 		Parameter[] parameters = method.getParameters();
 		Assert.state(parameterNames != null,
-				"Failed to extract parameter names for " + method);
+				() -> "Failed to extract parameter names for " + method);
 		this.operationParameters = getOperationParameters(parameters, parameterNames);
 	}
 

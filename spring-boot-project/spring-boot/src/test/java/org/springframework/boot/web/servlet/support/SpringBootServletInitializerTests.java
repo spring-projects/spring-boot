@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 package org.springframework.boot.web.servlet.support;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.ServletContext;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -43,6 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -55,18 +55,24 @@ import static org.mockito.Mockito.mock;
 public class SpringBootServletInitializerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public OutputCapture output = new OutputCapture();
 
 	private ServletContext servletContext = new MockServletContext();
 
 	private SpringApplication application;
 
+	@After
+	public void verifyLoggingOutput() {
+		assertThat(this.output.toString())
+				.doesNotContain(StandardServletEnvironment.class.getSimpleName());
+	}
+
 	@Test
 	public void failsWithoutConfigure() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No SpringApplication sources have been defined");
-		new MockSpringBootServletInitializer()
-				.createRootApplicationContext(this.servletContext);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new MockSpringBootServletInitializer()
+						.createRootApplicationContext(this.servletContext))
+				.withMessageContaining("No SpringApplication sources have been defined");
 	}
 
 	@Test
@@ -92,13 +98,11 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void mainClassHasSensibleDefault() {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
-				.getPropertyValue("mainApplicationClass");
-		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
+		assertThat(this.application).hasFieldOrPropertyWithValue("mainApplicationClass",
+				WithConfigurationAnnotation.class);
 	}
 
 	@Test
@@ -130,8 +134,8 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void servletContextPropertySourceIsAvailablePriorToRefresh() {
 		ServletContext servletContext = mock(ServletContext.class);
-		given(servletContext.getInitParameterNames()).willReturn(
-				Collections.enumeration(Arrays.asList("spring.profiles.active")));
+		given(servletContext.getInitParameterNames()).willReturn(Collections
+				.enumeration(Collections.singletonList("spring.profiles.active")));
 		given(servletContext.getInitParameter("spring.profiles.active"))
 				.willReturn("from-servlet-context");
 		given(servletContext.getAttributeNames())
@@ -154,7 +158,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestApp {
 
 	}
@@ -187,7 +191,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
 
 	}
@@ -202,7 +206,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WithErrorPageFilterNotRegistered
 			extends SpringBootServletInitializer {
 
@@ -212,7 +216,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class ExecutableWar extends SpringBootServletInitializer {
 
 		@Bean
@@ -222,7 +226,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class Config {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,19 +138,21 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		if (file != null && file.getKind() == Kind.DELETED) {
 			throw new ClassNotFoundException(name);
 		}
-		Class<?> loadedClass = findLoadedClass(name);
-		if (loadedClass == null) {
-			try {
-				loadedClass = findClass(name);
+		synchronized (getClassLoadingLock(name)) {
+			Class<?> loadedClass = findLoadedClass(name);
+			if (loadedClass == null) {
+				try {
+					loadedClass = findClass(name);
+				}
+				catch (ClassNotFoundException ex) {
+					loadedClass = getParent().loadClass(name);
+				}
 			}
-			catch (ClassNotFoundException ex) {
-				loadedClass = getParent().loadClass(name);
+			if (resolve) {
+				resolveClass(loadedClass);
 			}
+			return loadedClass;
 		}
-		if (resolve) {
-			resolveClass(loadedClass);
-		}
-		return loadedClass;
 	}
 
 	@Override

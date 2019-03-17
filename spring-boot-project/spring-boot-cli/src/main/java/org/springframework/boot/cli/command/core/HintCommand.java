@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class HintCommand extends AbstractCommand {
 	@Override
 	public ExitStatus run(String... args) throws Exception {
 		try {
-			int index = (args.length == 0 ? 0 : Integer.valueOf(args[0]) - 1);
+			int index = (args.length != 0) ? Integer.valueOf(args[0]) - 1 : 0;
 			List<String> arguments = new ArrayList<>(args.length);
 			for (int i = 2; i < args.length; i++) {
 				arguments.add(args[i]);

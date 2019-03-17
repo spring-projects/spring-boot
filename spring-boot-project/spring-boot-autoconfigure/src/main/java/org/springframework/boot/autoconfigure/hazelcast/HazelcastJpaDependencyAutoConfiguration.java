@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Additional configuration to ensure that {@link EntityManagerFactory} beans depend-on
+ * Additional configuration to ensure that {@link EntityManagerFactory} beans depend on
  * the {@code hazelcastInstance} bean.
  *
  * @author Stephane Nicoll
  * @since 1.3.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ HazelcastInstance.class,
 		LocalContainerEntityManagerFactoryBean.class })
 @AutoConfigureAfter({ HazelcastAutoConfiguration.class,

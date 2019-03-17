@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
@@ -115,7 +114,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	@Ignore("gh-11037")
 	public void testCycle() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(CycleConfig.class);
@@ -260,7 +258,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	public static class Base {
 
@@ -271,7 +269,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class FooConfig {
 
@@ -283,7 +281,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class SelfReferentialConfig {
 
@@ -295,7 +293,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class MetadataCycleConfig {
 
@@ -307,7 +305,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class MapConfig {
 
@@ -319,7 +317,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class ListConfig {
 
@@ -331,7 +329,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class MetadataMapConfig {
 
@@ -343,7 +341,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class AddressedConfig {
 
@@ -355,7 +353,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	public static class InitializedMapAndListPropertiesConfig {
 
@@ -510,20 +508,20 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
 	static class CycleConfig {
 
 		@Bean
 		// gh-11037
-		// @ConfigurationProperties(prefix = "cycle")
+		@ConfigurationProperties(prefix = "cycle")
 		public Cycle cycle() {
 			return new Cycle();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class HikariDataSourceConfig {
 

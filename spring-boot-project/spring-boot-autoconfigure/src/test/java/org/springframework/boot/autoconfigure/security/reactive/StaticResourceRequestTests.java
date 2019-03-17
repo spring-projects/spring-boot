@@ -16,10 +16,10 @@
 
 package org.springframework.boot.autoconfigure.security.reactive;
 
+import java.time.Duration;
+
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -35,6 +35,7 @@ import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -45,9 +46,6 @@ import static org.mockito.Mockito.mock;
 public class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void atCommonLocationsShouldMatchCommonLocations() {
@@ -78,16 +76,17 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Locations must not be null");
-		this.resourceRequest.at(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.resourceRequest.at(null))
+				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Locations must not be null");
-		this.resourceRequest.atCommonLocations().excluding(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(
+						() -> this.resourceRequest.atCommonLocations().excluding(null))
+				.withMessageContaining("Locations must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
@@ -116,8 +115,8 @@ public class StaticResourceRequestTests {
 		}
 
 		private void matches(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block().isMatch())
-					.as("Matches " + getRequestPath(exchange)).isTrue();
+			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30))
+					.isMatch()).as("Matches " + getRequestPath(exchange)).isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -128,8 +127,9 @@ public class StaticResourceRequestTests {
 		}
 
 		private void doesNotMatch(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block().isMatch())
-					.as("Does not match " + getRequestPath(exchange)).isFalse();
+			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30))
+					.isMatch()).as("Does not match " + getRequestPath(exchange))
+							.isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {

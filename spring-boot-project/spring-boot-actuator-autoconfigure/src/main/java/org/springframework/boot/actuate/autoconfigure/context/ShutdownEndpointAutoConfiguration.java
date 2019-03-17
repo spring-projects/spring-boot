@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.context;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,12 +30,13 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnEnabledEndpoint(endpoint = ShutdownEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = ShutdownEndpoint.class)
 public class ShutdownEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
 	}

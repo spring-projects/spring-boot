@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,30 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository;
 import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
 import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,56 +54,120 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JpaRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		this.context.close();
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class,
+					JpaRepositoriesAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class))
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class);
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		prepareApplicationContext(TestConfiguration.class);
-
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
-		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CityRepository.class);
+					assertThat(context).hasSingleBean(PlatformTransactionManager.class);
+					assertThat(context).hasSingleBean(EntityManagerFactory.class);
+					assertThat(
+							context.getBean(LocalContainerEntityManagerFactoryBean.class)
+									.getBootstrapExecutor()).isNull();
+				});
 	}
 
 	@Test
 	public void testOverrideRepositoryConfiguration() {
-		prepareApplicationContext(CustomConfiguration.class);
-		assertThat(this.context.getBean(
-				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class))
-						.isNotNull();
-		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
-		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
+		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CityJpaRepository.class);
+					assertThat(context).hasSingleBean(PlatformTransactionManager.class);
+					assertThat(context).hasSingleBean(EntityManagerFactory.class);
+				});
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
-		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-
-		this.context.getBean(CityRepository.class);
+		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(CityRepository.class));
 	}
 
-	private void prepareApplicationContext(Class<?>... configurationClasses) {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(configurationClasses);
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	@Test
+	public void whenBootstrappingModeIsLazyWithMultipleAsyncExecutorBootstrapExecutorIsConfigured() {
+		this.contextRunner
+				.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
+								TaskSchedulingAutoConfiguration.class))
+				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
+				.run((context) -> assertThat(
+						context.getBean(LocalContainerEntityManagerFactoryBean.class)
+								.getBootstrapExecutor()).isEqualTo(
+										context.getBean("applicationTaskExecutor")));
 	}
 
-	@Configuration
+	@Test
+	public void whenBootstrappingModeIsLazyWithSingleAsyncExecutorBootstrapExecutorIsConfigured() {
+		this.contextRunner
+				.withUserConfiguration(SingleAsyncTaskExecutorConfiguration.class)
+				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
+				.run((context) -> assertThat(
+						context.getBean(LocalContainerEntityManagerFactoryBean.class)
+								.getBootstrapExecutor()).isEqualTo(
+										context.getBean("testAsyncTaskExecutor")));
+	}
+
+	@Test
+	public void whenBootstrappingModeIsDeferredBootstrapExecutorIsConfigured() {
+		this.contextRunner
+				.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
+								TaskSchedulingAutoConfiguration.class))
+				.withPropertyValues(
+						"spring.data.jpa.repositories.bootstrap-mode=deferred")
+				.run((context) -> assertThat(
+						context.getBean(LocalContainerEntityManagerFactoryBean.class)
+								.getBootstrapExecutor()).isEqualTo(
+										context.getBean("applicationTaskExecutor")));
+	}
+
+	@Test
+	public void whenBootstrappingModeIsDefaultBootstrapExecutorIsNotConfigured() {
+		this.contextRunner
+				.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
+								TaskSchedulingAutoConfiguration.class))
+				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=default")
+				.run((context) -> assertThat(
+						context.getBean(LocalContainerEntityManagerFactoryBean.class)
+								.getBootstrapExecutor()).isNull());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableScheduling
+	@Import(TestConfiguration.class)
+	protected static class MultipleAsyncTaskExecutorConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestConfiguration.class)
+	protected static class SingleAsyncTaskExecutorConfiguration {
+
+		@Bean
+		public SimpleAsyncTaskExecutor testAsyncTaskExecutor() {
+			return new SimpleAsyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class, excludeFilters = {
 			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
 			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
@@ -105,7 +176,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// To not find any repositories
 	@EnableJpaRepositories("foo.bar")
 	@TestAutoConfigurationPackage(City.class)

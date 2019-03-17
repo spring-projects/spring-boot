@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,8 +36,10 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Timed.class)
+@ConditionalOnEnabledEndpoint(endpoint = MetricsEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = MetricsEndpoint.class)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class,
 		CompositeMeterRegistryAutoConfiguration.class })
 public class MetricsEndpointAutoConfiguration {
@@ -44,7 +47,6 @@ public class MetricsEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
 	public MetricsEndpoint metricsEndpoint(MeterRegistry registry) {
 		return new MetricsEndpoint(registry);
 	}

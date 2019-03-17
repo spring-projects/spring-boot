@@ -1,0 +1,76 @@
+:numbered!:
+[appendix]
+[[common-application-properties]]
+== Common application properties
+Various properties can be specified inside your `application.properties` file, inside
+your `application.yml` file, or as command line switches. This appendix provides a list
+of common Spring Boot properties and references to the underlying classes that consume
+them.
+
+TIP: Spring Boot provides various conversion mechanism with advanced value formatting,
+make sure to review <<spring-boot-features.adoc#boot-features-external-config-conversion,
+the properties conversion section>>.
+
+NOTE: Property contributions can come from additional jar files on your classpath, so you
+should not consider this an exhaustive list. Also, you can define your own properties.
+
+
+=== Core properties
+
+include::../../../target/generated-resources/config-docs/core.adoc[]
+
+=== Cache properties
+
+include::../../../target/generated-resources/config-docs/cache.adoc[]
+
+=== Mail properties
+
+include::../../../target/generated-resources/config-docs/mail.adoc[]
+
+=== JSON properties
+
+include::../../../target/generated-resources/config-docs/json.adoc[]
+
+=== Data properties
+
+include::../../../target/generated-resources/config-docs/data.adoc[]
+
+=== Transaction properties
+
+include::../../../target/generated-resources/config-docs/transaction.adoc[]
+
+=== Data migration properties
+
+include::../../../target/generated-resources/config-docs/data-migration.adoc[]
+
+=== Integration properties
+
+include::../../../target/generated-resources/config-docs/integration.adoc[]
+
+=== Web properties
+
+include::../../../target/generated-resources/config-docs/web.adoc[]
+
+=== Templating properties
+
+include::../../../target/generated-resources/config-docs/templating.adoc[]
+
+=== Server properties
+
+include::../../../target/generated-resources/config-docs/server.adoc[]
+
+=== Security properties
+
+include::../../../target/generated-resources/config-docs/security.adoc[]
+
+=== Actuator properties
+
+include::../../../target/generated-resources/config-docs/actuator.adoc[]
+
+=== Devtools properties
+
+include::../../../target/generated-resources/config-docs/devtools.adoc[]
+
+=== Testing properties
+
+include::../../../target/generated-resources/config-docs/testing.adoc[]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.condition;
-
-import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,11 +73,11 @@ public class OnClassConditionAutoConfigurationImportFilterTests {
 	private AutoConfigurationMetadata getAutoConfigurationMetadata() {
 		AutoConfigurationMetadata metadata = mock(AutoConfigurationMetadata.class);
 		given(metadata.wasProcessed("test.match")).willReturn(true);
-		given(metadata.getSet("test.match", "ConditionalOnClass"))
-				.willReturn(Collections.singleton("java.io.InputStream"));
+		given(metadata.get("test.match", "ConditionalOnClass"))
+				.willReturn("java.io.InputStream");
 		given(metadata.wasProcessed("test.nomatch")).willReturn(true);
-		given(metadata.getSet("test.nomatch", "ConditionalOnClass"))
-				.willReturn(Collections.singleton("java.io.DoesNotExist"));
+		given(metadata.get("test.nomatch", "ConditionalOnClass"))
+				.willReturn("java.io.DoesNotExist");
 		return metadata;
 	}
 

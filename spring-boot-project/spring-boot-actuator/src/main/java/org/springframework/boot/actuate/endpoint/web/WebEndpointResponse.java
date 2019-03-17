@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,11 @@ public final class WebEndpointResponse<T> {
 	 * {@code 200 OK}.
 	 */
 	public static final int STATUS_OK = 200;
+
+	/**
+	 * {@code 204 No Content}.
+	 */
+	public static final int STATUS_NO_CONTENT = 204;
 
 	/**
 	 * {@code 400 Bad Request}.

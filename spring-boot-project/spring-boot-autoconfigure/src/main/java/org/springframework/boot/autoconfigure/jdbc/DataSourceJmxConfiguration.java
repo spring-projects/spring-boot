@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
@@ -40,48 +41,52 @@ import org.springframework.jmx.export.MBeanExporter;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 class DataSourceJmxConfiguration {
 
 	private static final Log logger = LogFactory.getLog(DataSourceJmxConfiguration.class);
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
-	@ConditionalOnSingleCandidate(HikariDataSource.class)
+	@ConditionalOnSingleCandidate(DataSource.class)
 	static class Hikari {
 
-		private final HikariDataSource dataSource;
+		private final DataSource dataSource;
 
 		private final ObjectProvider<MBeanExporter> mBeanExporter;
 
-		Hikari(HikariDataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
+		Hikari(DataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
 			this.dataSource = dataSource;
 			this.mBeanExporter = mBeanExporter;
 		}
 
 		@PostConstruct
 		public void validateMBeans() {
-			MBeanExporter exporter = this.mBeanExporter.getIfUnique();
-			if (exporter != null && this.dataSource.isRegisterMbeans()) {
-				exporter.addExcludedBean("dataSource");
+			HikariDataSource hikariDataSource = DataSourceUnwrapper
+					.unwrap(this.dataSource, HikariDataSource.class);
+			if (hikariDataSource != null && hikariDataSource.isRegisterMbeans()) {
+				this.mBeanExporter
+						.ifUnique((exporter) -> exporter.addExcludedBean("dataSource"));
 			}
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled")
-	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
+	@ConditionalOnClass(DataSourceProxy.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class TomcatDataSourceJmxConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "dataSourceMBean")
 		public Object dataSourceMBean(DataSource dataSource) {
-			if (dataSource instanceof DataSourceProxy) {
+			DataSourceProxy dataSourceProxy = DataSourceUnwrapper.unwrap(dataSource,
+					DataSourceProxy.class);
+			if (dataSourceProxy != null) {
 				try {
-					return ((DataSourceProxy) dataSource).createPool().getJmxPool();
+					return dataSourceProxy.createPool().getJmxPool();
 				}
 				catch (SQLException ex) {
 					logger.warn("Cannot expose DataSource to JMX (could not connect)");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,32 @@ import org.springframework.core.type.AnnotationMetadata;
 public class ConfigurationPropertiesBindingPostProcessorRegistrar
 		implements ImportBeanDefinitionRegistrar {
 
+	/**
+	 * The bean name of the configuration properties validator.
+	 */
+	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME)) {
+			registerConfigurationPropertiesBinder(registry);
+		}
 		if (!registry.containsBeanDefinition(
 				ConfigurationPropertiesBindingPostProcessor.BEAN_NAME)) {
 			registerConfigurationPropertiesBindingPostProcessor(registry);
 			registerConfigurationBeanFactoryMetadata(registry);
 		}
+	}
+
+	private void registerConfigurationPropertiesBinder(BeanDefinitionRegistry registry) {
+		GenericBeanDefinition definition = new GenericBeanDefinition();
+		definition.setBeanClass(ConfigurationPropertiesBinder.class);
+		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
+				VALIDATOR_BEAN_NAME);
+		registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME,
+				definition);
 	}
 
 	private void registerConfigurationPropertiesBindingPostProcessor(
@@ -49,7 +67,6 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(
 				ConfigurationPropertiesBindingPostProcessor.BEAN_NAME, definition);
-
 	}
 
 	private void registerConfigurationBeanFactoryMetadata(

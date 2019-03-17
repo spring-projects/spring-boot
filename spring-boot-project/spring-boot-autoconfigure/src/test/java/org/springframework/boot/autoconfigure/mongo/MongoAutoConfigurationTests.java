@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import javax.net.SocketFactory;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.client.MongoClients;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -49,26 +50,22 @@ public class MongoAutoConfigurationTests {
 
 	@Test
 	public void optionsAdded() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
-				.withUserConfiguration(OptionsConfig.class)
+		this.contextRunner.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(context.getBean(MongoClient.class)
 						.getMongoClientOptions().getSocketTimeout()).isEqualTo(300));
 	}
 
 	@Test
 	public void optionsAddedButNoHost() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(OptionsConfig.class)
+		this.contextRunner.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(context.getBean(MongoClient.class)
 						.getMongoClientOptions().getSocketTimeout()).isEqualTo(300));
 	}
 
 	@Test
 	public void optionsSslConfig() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(SslOptionsConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClient mongo = context.getBean(MongoClient.class);
 					MongoClientOptions options = mongo.getMongoClientOptions();
@@ -78,7 +75,17 @@ public class MongoAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Test
+	public void doesNotCreateMongoClientWhenAlreadyDefined() {
+		this.contextRunner.withUserConfiguration(FallbackMongoClientConfig.class)
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(MongoClient.class);
+					assertThat(context)
+							.hasSingleBean(com.mongodb.client.MongoClient.class);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class OptionsConfig {
 
 		@Bean
@@ -88,18 +95,28 @@ public class MongoAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SslOptionsConfig {
 
 		@Bean
-		public MongoClientOptions mongoClientOptions() {
+		public MongoClientOptions mongoClientOptions(SocketFactory socketFactory) {
 			return MongoClientOptions.builder().sslEnabled(true)
-					.socketFactory(mySocketFactory()).build();
+					.socketFactory(socketFactory).build();
 		}
 
 		@Bean
 		public SocketFactory mySocketFactory() {
 			return mock(SocketFactory.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FallbackMongoClientConfig {
+
+		@Bean
+		com.mongodb.client.MongoClient fallbackMongoClient() {
+			return MongoClients.create();
 		}
 
 	}

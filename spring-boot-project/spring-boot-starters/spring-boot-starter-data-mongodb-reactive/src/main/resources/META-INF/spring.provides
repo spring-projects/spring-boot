@@ -1,1 +1,0 @@
-provides: spring-data-mongodb,mongodb-driver-async,mongodb-driver-reactivestreams

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -79,12 +80,36 @@ public class SampleSecureWebFluxCustomSecurityTests {
 	}
 
 	@Test
+	public void actuatorExcludedFromEndpointRequestMatcher() {
+		this.webClient.get().uri("/actuator/mappings").accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", "basic " + getBasicAuth()).exchange()
+				.expectStatus().isOk();
+	}
+
+	@Test
 	public void staticResourceShouldBeAccessible() {
 		this.webClient.get().uri("/css/bootstrap.min.css")
 				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
 	}
 
-	@Configuration
+	@Test
+	public void actuatorLinksIsSecure() {
+		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isUnauthorized();
+		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange()
+				.expectStatus().isOk();
+	}
+
+	private String getBasicAuth() {
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+	}
+
+	private String getBasicAuthForAdmin() {
+		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class SecurityConfiguration {
 
 		@SuppressWarnings("deprecation")
@@ -99,23 +124,16 @@ public class SampleSecureWebFluxCustomSecurityTests {
 
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
-					.permitAll().matchers(EndpointRequest.toAnyEndpoint())
+			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
+					.permitAll()
+					.matchers(EndpointRequest.toAnyEndpoint()
+							.excluding(MappingsEndpoint.class))
 					.hasRole("ACTUATOR")
 					.matchers(PathRequest.toStaticResources().atCommonLocations())
 					.permitAll().pathMatchers("/login").permitAll().anyExchange()
-					.authenticated().and().httpBasic();
-			return http.build();
+					.authenticated().and().httpBasic().and().build();
 		}
 
-	}
-
-	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
-	}
-
-	private String getBasicAuthForAdmin() {
-		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
 	}
 
 }

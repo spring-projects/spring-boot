@@ -74,7 +74,7 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 		ParameterizableViewController controller = new ParameterizableViewController();
 		controller.setViewName(viewName);
 		setRootHandler(controller);
-		setOrder(0);
+		setOrder(2);
 	}
 
 	@Override

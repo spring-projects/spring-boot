@@ -32,7 +32,7 @@ public class SignalFxPropertiesTests extends StepRegistryPropertiesTests {
 	@Override
 	public void defaultValuesAreConsistent() {
 		SignalFxProperties properties = new SignalFxProperties();
-		SignalFxConfig config = SignalFxConfig.DEFAULT;
+		SignalFxConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
 		// access token is mandatory
 		assertThat(properties.getUri()).isEqualTo(config.uri());

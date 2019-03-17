@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SampleLiquibaseApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
@@ -41,8 +41,8 @@ public class SampleLiquibaseApplicationTests {
 				return;
 			}
 		}
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Successfully acquired change log lock")
+		assertThat(this.output.toString())
+				.contains("Successfully acquired change log lock")
 				.contains("Creating database history "
 						+ "table with name: PUBLIC.DATABASECHANGELOG")
 				.contains("Table person created")
@@ -68,4 +68,5 @@ public class SampleLiquibaseApplicationTests {
 		}
 		return false;
 	}
+
 }

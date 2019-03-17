@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,9 +89,7 @@ public class SessionsEndpointDocumentationTests
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
-		given(this.sessionRepository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "alice"))
-						.willReturn(sessions);
+		given(this.sessionRepository.findByPrincipalName("alice")).willReturn(sessions);
 		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
 				.andExpect(status().isOk())
 				.andDo(document("sessions/username",
@@ -135,7 +133,7 @@ public class SessionsEndpointDocumentationTests
 		return session;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 

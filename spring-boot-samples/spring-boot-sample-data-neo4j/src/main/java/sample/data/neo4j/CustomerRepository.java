@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 public interface CustomerRepository extends Neo4jRepository<Customer, Long> {
 
-	public Customer findByFirstName(String firstName);
+	Customer findByFirstName(String firstName);
 
-	public List<Customer> findByLastName(String lastName);
+	List<Customer> findByLastName(String lastName);
 
 }

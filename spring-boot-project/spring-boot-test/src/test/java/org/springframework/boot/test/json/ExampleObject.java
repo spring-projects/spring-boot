@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,6 @@ public class ExampleObject {
 	}
 
 	@Override
-	public int hashCode() {
-		return 0;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
@@ -56,6 +51,11 @@ public class ExampleObject {
 		ExampleObject other = (ExampleObject) obj;
 		return ObjectUtils.nullSafeEquals(this.name, other.name)
 				&& ObjectUtils.nullSafeEquals(this.age, other.age);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
 	}
 
 	@Override

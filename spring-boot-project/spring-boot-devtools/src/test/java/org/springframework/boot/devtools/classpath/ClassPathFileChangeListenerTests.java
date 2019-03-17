@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -37,6 +35,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,9 +46,6 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 public class ClassPathFileChangeListenerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private ApplicationEventPublisher eventPublisher;
@@ -70,18 +66,18 @@ public class ClassPathFileChangeListenerTests {
 
 	@Test
 	public void eventPublisherMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("EventPublisher must not be null");
-		new ClassPathFileChangeListener(null, this.restartStrategy,
-				this.fileSystemWatcher);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathFileChangeListener(null,
+						this.restartStrategy, this.fileSystemWatcher))
+				.withMessageContaining("EventPublisher must not be null");
 	}
 
 	@Test
 	public void restartStrategyMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("RestartStrategy must not be null");
-		new ClassPathFileChangeListener(this.eventPublisher, null,
-				this.fileSystemWatcher);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher,
+						null, this.fileSystemWatcher))
+				.withMessageContaining("RestartStrategy must not be null");
 	}
 
 	@Test

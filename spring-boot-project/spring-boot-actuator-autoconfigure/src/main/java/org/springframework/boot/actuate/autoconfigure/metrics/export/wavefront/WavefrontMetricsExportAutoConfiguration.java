@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 
@@ -38,9 +39,10 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Wavefront.
  *
  * @author Jon Schneider
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
@@ -50,17 +52,27 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontMetricsExportAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean(WavefrontConfig.class)
-	public WavefrontConfig wavefrontConfig(WavefrontProperties props) {
-		return new WavefrontPropertiesConfigAdapter(props);
+	private final WavefrontProperties properties;
+
+	public WavefrontMetricsExportAutoConfiguration(WavefrontProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig config,
+	public WavefrontConfig wavefrontConfig() {
+		return new WavefrontPropertiesConfigAdapter(this.properties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig,
 			Clock clock) {
-		return new WavefrontMeterRegistry(config, clock);
+		return WavefrontMeterRegistry.builder(wavefrontConfig).clock(clock)
+				.httpClient(
+						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+								this.properties.getReadTimeout()))
+				.build();
 	}
 
 }

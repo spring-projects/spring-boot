@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package org.springframework.boot.test.web.client;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.web.client.RequestExpectationManager;
@@ -28,6 +26,8 @@ import org.springframework.test.web.client.UnorderedRequestExpectationManager;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -39,9 +39,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 public class MockServerRestTemplateCustomizerTests {
 
 	private MockServerRestTemplateCustomizer customizer;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
 	public void setup() {
@@ -58,9 +55,9 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void createWhenExpectationManagerClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ExpectationManager must not be null");
-		new MockServerRestTemplateCustomizer(null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
+				.withMessageContaining("ExpectationManager must not be null");
 	}
 
 	@Test
@@ -102,20 +99,20 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void getServerWhenNoServersAreBoundShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to return a single MockRestServiceServer since "
-				+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
-		this.customizer.getServer();
+		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
+				.withMessageContaining(
+						"Unable to return a single MockRestServiceServer since "
+								+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 	}
 
 	@Test
 	public void getServerWhenMultipleServersAreBoundShouldThrowException() {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to return a single MockRestServiceServer since "
-				+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
-		this.customizer.getServer();
+		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
+				.withMessageContaining(
+						"Unable to return a single MockRestServiceServer since "
+								+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 	}
 
 	@Test

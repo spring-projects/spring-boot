@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,12 @@ package org.springframework.boot.actuate.audit;
 import java.util.Collections;
 
 import org.json.JSONObject;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link AuditEvent}.
@@ -34,9 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  */
 public class AuditEventTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void nowEvent() {
@@ -64,17 +60,18 @@ public class AuditEventTests {
 
 	@Test
 	public void nullTimestamp() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Timestamp must not be null");
-		new AuditEvent(null, "phil", "UNKNOWN",
-				Collections.singletonMap("a", (Object) "b"));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN",
+						Collections.singletonMap("a", (Object) "b")))
+				.withMessageContaining("Timestamp must not be null");
 	}
 
 	@Test
 	public void nullType() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b"));
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new AuditEvent("phil", null,
+						Collections.singletonMap("a", (Object) "b")))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test

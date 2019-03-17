@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.mockito.mock.MockCreationSettings;
@@ -28,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -40,14 +39,11 @@ public class MockDefinitionTests {
 	private static final ResolvableType EXAMPLE_SERVICE_TYPE = ResolvableType
 			.forClass(ExampleService.class);
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void classToMockMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TypeToMock must not be null");
-		new MockDefinition(null, null, null, null, false, null, null);
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new MockDefinition(null, null, null, null, false, null, null))
+				.withMessageContaining("TypeToMock must not be null");
 	}
 
 	@Test

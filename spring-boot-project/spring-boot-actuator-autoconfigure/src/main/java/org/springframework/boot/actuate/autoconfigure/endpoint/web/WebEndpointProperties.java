@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,6 +57,8 @@ public class WebEndpointProperties {
 	}
 
 	public void setBasePath(String basePath) {
+		Assert.isTrue(basePath.isEmpty() || basePath.startsWith("/"),
+				"Base path must start with '/' or be empty");
 		this.basePath = cleanBasePath(basePath);
 	}
 
@@ -78,7 +81,7 @@ public class WebEndpointProperties {
 		private Set<String> include = new LinkedHashSet<>();
 
 		/**
-		 * Endpoint IDs that should be excluded.
+		 * Endpoint IDs that should be excluded or '*' for all.
 		 */
 		private Set<String> exclude = new LinkedHashSet<>();
 

@@ -59,8 +59,8 @@ public class MappingsEndpoint {
 		this.descriptionProviders
 				.forEach((provider) -> mappings.put(provider.getMappingName(),
 						provider.describeMappings(applicationContext)));
-		return new ContextMappings(mappings, applicationContext.getParent() == null ? null
-				: applicationContext.getId());
+		return new ContextMappings(mappings, (applicationContext.getParent() != null)
+				? applicationContext.getId() : null);
 	}
 
 	/**

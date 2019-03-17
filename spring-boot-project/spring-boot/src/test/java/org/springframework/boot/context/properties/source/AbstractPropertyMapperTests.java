@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,20 +31,12 @@ public abstract class AbstractPropertyMapperTests {
 	protected abstract PropertyMapper getMapper();
 
 	protected final Iterator<String> namesFromString(String name) {
-		return namesFromString(name, "value");
-	}
-
-	protected final Iterator<String> namesFromString(String name, Object value) {
 		return Arrays.stream(getMapper().map(name))
 				.map((mapping) -> mapping.getConfigurationPropertyName().toString())
 				.iterator();
 	}
 
 	protected final Iterator<String> namesFromConfiguration(String name) {
-		return namesFromConfiguration(name, "value");
-	}
-
-	protected final Iterator<String> namesFromConfiguration(String name, String value) {
 		return Arrays.stream(getMapper().map(ConfigurationPropertyName.of(name)))
 				.map(PropertyMapping::getPropertySourceName).iterator();
 	}

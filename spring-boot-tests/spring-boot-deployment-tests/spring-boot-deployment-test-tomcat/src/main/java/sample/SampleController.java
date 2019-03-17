@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package sample;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +29,16 @@ public class SampleController {
 	@RequestMapping("/")
 	public String hello() {
 		return "Hello World";
+	}
+
+	@RequestMapping("/send-error")
+	public void sendError(HttpServletResponse response) throws IOException {
+		response.sendError(500);
+	}
+
+	@RequestMapping("/exception")
+	public void exception() {
+		throw new RuntimeException();
 	}
 
 }

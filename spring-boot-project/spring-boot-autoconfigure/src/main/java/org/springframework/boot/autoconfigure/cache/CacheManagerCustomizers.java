@@ -36,8 +36,8 @@ public class CacheManagerCustomizers {
 
 	public CacheManagerCustomizers(
 			List<? extends CacheManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null ? new ArrayList<>(customizers)
-				: Collections.emptyList());
+		this.customizers = (customizers != null) ? new ArrayList<>(customizers)
+				: Collections.emptyList();
 	}
 
 	/**

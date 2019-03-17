@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -41,9 +42,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Madhura Bhave
  */
 public class BindResultTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private Consumer<String> consumer;
@@ -68,9 +66,8 @@ public class BindResultTests {
 	@Test
 	public void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
-		this.thrown.expect(NoSuchElementException.class);
-		this.thrown.expectMessage("No value bound");
-		result.get();
+		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(result::get)
+				.withMessageContaining("No value bound");
 	}
 
 	@Test
@@ -88,9 +85,8 @@ public class BindResultTests {
 	@Test
 	public void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Consumer must not be null");
-		result.ifBound(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> result.ifBound(null))
+				.withMessageContaining("Consumer must not be null");
 	}
 
 	@Test
@@ -110,9 +106,8 @@ public class BindResultTests {
 	@Test
 	public void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Mapper must not be null");
-		result.map(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> result.map(null))
+				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test
@@ -158,9 +153,8 @@ public class BindResultTests {
 	@Test
 	public void orElseCreateWhenTypeIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
-		result.orElseCreate(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> result.orElseCreate(null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -184,8 +178,7 @@ public class BindResultTests {
 	@Test
 	public void orElseThrowWhenHasNoValueShouldThrowException() throws Exception {
 		BindResult<String> result = BindResult.of(null);
-		this.thrown.expect(IOException.class);
-		result.orElseThrow(IOException::new);
+		assertThatIOException().isThrownBy(() -> result.orElseThrow(IOException::new));
 	}
 
 	@Test

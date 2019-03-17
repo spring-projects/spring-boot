@@ -47,14 +47,22 @@ final class StringToDurationConverter implements GenericConverter {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}
-		DurationFormat format = targetType.getAnnotation(DurationFormat.class);
-		DurationUnit unit = targetType.getAnnotation(DurationUnit.class);
-		return convert(source.toString(), (format == null ? null : format.value()),
-				(unit == null ? null : unit.value()));
+		return convert(source.toString(), getStyle(targetType),
+				getDurationUnit(targetType));
+	}
+
+	private DurationStyle getStyle(TypeDescriptor targetType) {
+		DurationFormat annotation = targetType.getAnnotation(DurationFormat.class);
+		return (annotation != null) ? annotation.value() : null;
+	}
+
+	private ChronoUnit getDurationUnit(TypeDescriptor targetType) {
+		DurationUnit annotation = targetType.getAnnotation(DurationUnit.class);
+		return (annotation != null) ? annotation.value() : null;
 	}
 
 	private Duration convert(String source, DurationStyle style, ChronoUnit unit) {
-		style = (style != null ? style : DurationStyle.detect(source));
+		style = (style != null) ? style : DurationStyle.detect(source);
 		return style.parse(source, unit);
 	}
 

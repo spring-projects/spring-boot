@@ -1,0 +1,51 @@
+ -----
+ Using environment variables
+ -----
+Dmytro Nosan
+ -----
+ 2018-04-08
+ -----
+
+  Environment variables can be specified using the <<<environmentVariables>>> attribute.
+  The following sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+            <environmentVariables>
+                <ENV1>5000</ENV1>
+                <ENV2>Some Text</ENV2>
+                <ENV3/>
+                <ENV4></ENV4>
+            </environmentVariables>
+        </configuration>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  If the value is empty or not defined (i.e. <<<<MY_ENV/>>>>), the env variable is set
+  with an empty String as the value. Maven trims values specified in the pom so it is
+  not possible to specify an env variable which needs to start or end with a space.
+
+  Any String typed Maven variable can be passed as system properties. Any attempt to pass
+  any other Maven variable type (e.g. a <<<List>>> or a <<<URL>>> variable) will cause the
+  variable expression to be passed literally (unevaluated).
+
+  Environment variables defined this way take precedence over existing values.
+
+

@@ -52,6 +52,10 @@ Spring Boot Maven Plugin
 
   * {{{./examples/run-debug.html}Debug the application}}
 
+  * {{{./examples/run-system-properties.html}Using system properties}}
+
+  * {{{./examples/run-env-variables.html}Using environment variables}}
+
   * {{{./examples/it-random-port.html}Random port for integration tests}}
 
   * {{{./examples/it-skip.html}Skip integration tests}}

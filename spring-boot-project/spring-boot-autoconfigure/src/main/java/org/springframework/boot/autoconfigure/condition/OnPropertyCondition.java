@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
@@ -69,8 +68,8 @@ class OnPropertyCondition extends SpringBootCondition {
 	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(
 			MultiValueMap<String, Object> multiValueMap) {
 		List<Map<String, Object>> maps = new ArrayList<>();
-		for (Entry<String, List<Object>> entry : multiValueMap.entrySet()) {
-			for (int i = 0; i < entry.getValue().size(); i++) {
+		multiValueMap.forEach((key, value) -> {
+			for (int i = 0; i < value.size(); i++) {
 				Map<String, Object> map;
 				if (i < maps.size()) {
 					map = maps.get(i);
@@ -79,9 +78,9 @@ class OnPropertyCondition extends SpringBootCondition {
 					map = new HashMap<>();
 					maps.add(map);
 				}
-				map.put(entry.getKey(), entry.getValue().get(i));
+				map.put(key, value.get(i));
 			}
-		}
+		});
 		List<AnnotationAttributes> annotationAttributes = new ArrayList<>(maps.size());
 		for (Map<String, Object> map : maps) {
 			annotationAttributes.add(AnnotationAttributes.fromMap(map));
@@ -140,7 +139,7 @@ class OnPropertyCondition extends SpringBootCondition {
 					"The name or value attribute of @ConditionalOnProperty must be specified");
 			Assert.state(value.length == 0 || name.length == 0,
 					"The name and value attributes of @ConditionalOnProperty are exclusive");
-			return (value.length > 0 ? value : name);
+			return (value.length > 0) ? value : name;
 		}
 
 		private void collectProperties(PropertyResolver resolver, List<String> missing,

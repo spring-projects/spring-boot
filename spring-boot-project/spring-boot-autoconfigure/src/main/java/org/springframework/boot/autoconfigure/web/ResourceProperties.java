@@ -69,7 +69,7 @@ public class ResourceProperties {
 		String[] normalized = new String[staticLocations.length];
 		for (int i = 0; i < staticLocations.length; i++) {
 			String location = staticLocations[i];
-			normalized[i] = (location.endsWith("/") ? location : location + "/");
+			normalized[i] = location.endsWith("/") ? location : location + "/";
 		}
 		return normalized;
 	}
@@ -112,10 +112,10 @@ public class ResourceProperties {
 		private boolean htmlApplicationCache = false;
 
 		/**
-		 * Whether to enable resolution of already gzipped resources. Checks for a
-		 * resource name variant with the "*.gz" extension.
+		 * Whether to enable resolution of already compressed resources (gzip, brotli).
+		 * Checks for a resource name with the '.gz' or '.br' file extensions.
 		 */
-		private boolean gzipped = false;
+		private boolean compressed = false;
 
 		private final Strategy strategy = new Strategy();
 
@@ -154,17 +154,17 @@ public class ResourceProperties {
 			this.htmlApplicationCache = htmlApplicationCache;
 		}
 
-		public boolean isGzipped() {
-			return this.gzipped;
+		public boolean isCompressed() {
+			return this.compressed;
 		}
 
-		public void setGzipped(boolean gzipped) {
-			this.gzipped = gzipped;
+		public void setCompressed(boolean compressed) {
+			this.compressed = compressed;
 		}
 
 		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
 				Boolean chainEnabled) {
-			return (fixedEnabled || contentEnabled ? Boolean.TRUE : chainEnabled);
+			return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 		}
 
 	}

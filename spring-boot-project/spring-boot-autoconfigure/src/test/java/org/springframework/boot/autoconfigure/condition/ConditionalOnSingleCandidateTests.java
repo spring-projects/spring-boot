@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConditionalOnSingleCandidate}.
@@ -36,9 +34,6 @@ import static org.hamcrest.CoreMatchers.isA;
  * @author Andy Wilkinson
  */
 public class ConditionalOnSingleCandidateTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -126,20 +121,20 @@ public class ConditionalOnSingleCandidateTests {
 
 	@Test
 	public void invalidAnnotationTwoTypes() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(
-				OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
-		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> load(OnBeanSingleCandidateTwoTypesConfiguration.class))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining(
+						OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 	}
 
 	@Test
 	public void invalidAnnotationNoType() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown
-				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
-		load(OnBeanSingleCandidateNoTypeConfiguration.class);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> load(OnBeanSingleCandidateNoTypeConfiguration.class))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining(
+						OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 	}
 
 	@Test
@@ -161,7 +156,7 @@ public class ConditionalOnSingleCandidateTests {
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
 
@@ -172,7 +167,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(value = String.class, search = SearchStrategy.ANCESTORS)
 	protected static class OnBeanSingleCandidateInAncestorsConfiguration {
 
@@ -183,19 +178,19 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(value = String.class, type = "java.lang.String")
 	protected static class OnBeanSingleCandidateTwoTypesConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate
 	protected static class OnBeanSingleCandidateNoTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FooConfiguration {
 
 		@Bean
@@ -205,7 +200,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class FooPrimaryConfiguration {
 
 		@Bean
@@ -216,7 +211,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class BarConfiguration {
 
 		@Bean
@@ -226,7 +221,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class BarPrimaryConfiguration {
 
 		@Bean
