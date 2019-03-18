@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link SampleActuatorLog4J2Application}.
  *
  * @author Dave Syer
- * @@author Stephane Nicoll
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
