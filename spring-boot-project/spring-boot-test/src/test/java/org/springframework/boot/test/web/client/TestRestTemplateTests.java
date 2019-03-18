@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,20 @@ public class TestRestTemplateTests {
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
 				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+	}
+
+	@Test
+	public void useTheSameRequestFactoryClassWithBasicAuth() {
+		OkHttp3ClientHttpRequestFactory customFactory = new OkHttp3ClientHttpRequestFactory();
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+				.requestFactory(OkHttp3ClientHttpRequestFactory::new);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
+				.withBasicAuth("test", "test");
+		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
+		Object requestFactory = ReflectionTestUtils
+				.getField(restTemplate.getRequestFactory(), "requestFactory");
+		assertThat(requestFactory).isNotEqualTo(customFactory)
+				.hasSameClassAs(customFactory);
 	}
 
 	@Test
