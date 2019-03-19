@@ -33,6 +33,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -97,7 +98,7 @@ public class TestRestTemplateTests {
 	public void useTheSameRequestFactoryClassWithBasicAuth() {
 		OkHttp3ClientHttpRequestFactory customFactory = new OkHttp3ClientHttpRequestFactory();
 		RestTemplateBuilder builder = new RestTemplateBuilder()
-				.requestFactory(OkHttp3ClientHttpRequestFactory::new);
+				.requestFactory(() -> customFactory);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
 				.withBasicAuth("test", "test");
 		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
@@ -105,6 +106,21 @@ public class TestRestTemplateTests {
 				.getField(restTemplate.getRequestFactory(), "requestFactory");
 		assertThat(requestFactory).isNotEqualTo(customFactory)
 				.hasSameClassAs(customFactory);
+	}
+
+	@Test
+	public void withBasicAuthWhenRequestFactoryTypeCannotBeInstantiatedShouldFallback() {
+		TestClientHttpRequestFactory customFactory = new TestClientHttpRequestFactory(
+				"my-request-factory");
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+				.requestFactory(() -> customFactory);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
+				.withBasicAuth("test", "test");
+		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
+		Object requestFactory = ReflectionTestUtils
+				.getField(restTemplate.getRequestFactory(), "requestFactory");
+		assertThat(requestFactory).isNotEqualTo(customFactory)
+				.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -394,6 +410,19 @@ public class TestRestTemplateTests {
 	private interface TestRestTemplateCallback {
 
 		void doWithTestRestTemplate(TestRestTemplate testRestTemplate, URI relativeUri);
+
+	}
+
+	static class TestClientHttpRequestFactory implements ClientHttpRequestFactory {
+
+		TestClientHttpRequestFactory(String value) {
+		}
+
+		@Override
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
+				throws IOException {
+			return null;
+		}
 
 	}
 

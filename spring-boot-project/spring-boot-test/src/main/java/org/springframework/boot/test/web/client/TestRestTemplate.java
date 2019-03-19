@@ -1027,10 +1027,8 @@ public class TestRestTemplate {
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
 	 * except that it will send basic authorization headers using the given
-	 * {@code username} and {@code password}. Note, that a new instance of
-	 * {@link ClientHttpRequestFactory} will be created (if possible) based on the current
-	 * factory class, otherwise {@link ClientHttpRequestFactorySupplier} will be used to
-	 * instantiate a {@link ClientHttpRequestFactory}.
+	 * {@code username} and {@code password}. The request factory used is a new instance
+	 * of the underlying {@link RestTemplate}'s request factory type (when possible).
 	 * @param username the username
 	 * @param password the password
 	 * @return the new template
