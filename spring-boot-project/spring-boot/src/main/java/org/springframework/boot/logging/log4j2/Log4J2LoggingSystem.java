@@ -112,6 +112,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private String[] getCurrentlySupportedConfigLocations() {
 		List<String> supportedConfigLocations = new ArrayList<>();
+		supportedConfigLocations.add("log4j2.properties");
 		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
 			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
 		}
