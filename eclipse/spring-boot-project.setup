@@ -61,8 +61,6 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="AnyEditTools.feature.group"/>
-    <requirement
         name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
@@ -84,8 +82,6 @@
         url="https://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
     <repository
         url="https://download.eclipse.org/releases/oxygen/"/>
-    <repository
-        url="http://andrei.gmxhome.de/eclipse/"/>
     <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
@@ -146,18 +142,6 @@
           xsi:type="predicates:NamePredicate"
           pattern="spring-boot-.*-test.*"/>
     </workingSet>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="de.loskutov.anyedit.AnyEditTools">
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/org.eclipse.jdt.ui.editor.tab.width"
-        value="4"/>
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/saveAndAddLine"
-        value="true"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
