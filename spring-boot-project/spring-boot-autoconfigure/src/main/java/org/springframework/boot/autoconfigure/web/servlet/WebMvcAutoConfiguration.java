@@ -449,10 +449,10 @@ public class WebMvcAutoConfiguration {
 
 		}
 
-		static final class FaviconRequestHandler
+		private static final class FaviconRequestHandler
 				extends ResourceHttpRequestHandler {
 
-			FaviconRequestHandler(List<Resource> locations) {
+			private FaviconRequestHandler(List<Resource> locations) {
 				setLocations(locations);
 			}
 
