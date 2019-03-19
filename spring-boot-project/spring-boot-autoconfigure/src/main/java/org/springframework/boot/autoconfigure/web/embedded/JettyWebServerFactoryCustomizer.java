@@ -173,6 +173,7 @@ public class JettyWebServerFactoryCustomizer implements
 			log.setLogCookies(properties.isLogCookies());
 			log.setLogServer(properties.isLogServer());
 			log.setLogLatency(properties.isLogLatency());
+			log.setPreferProxiedForAddress(properties.getPreferProxiedForAddress());
 			server.setRequestLog(log);
 		});
 	}

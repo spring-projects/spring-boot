@@ -99,7 +99,10 @@ public class JettyWebServerFactoryCustomizerTests {
 				"server.jetty.accesslog.time-zone=" + timezone,
 				"server.jetty.accesslog.log-cookies=true",
 				"server.jetty.accesslog.log-server=true",
-				"server.jetty.accesslog.log-latency=true");
+				"server.jetty.accesslog.log-latency=true",
+				"server.jetty.accesslog.prefer-proxied-for-address=true",
+				"server.jetty.accesslog.ignore-paths[0]=/a/path",
+				"server.jetty.accesslog.ignore-paths[1]=/b/path");
 		JettyWebServer server = customizeAndGetServer();
 		NCSARequestLog requestLog = getNCSARequestLog(server);
 		assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
@@ -113,15 +116,7 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isTrue();
 		assertThat(requestLog.getLogServer()).isTrue();
 		assertThat(requestLog.getLogLatency()).isTrue();
-	}
-
-	@Test
-	public void canSetIgnorePaths() {
-		bind("server.jetty.accesslog.enabled=true",
-				"server.jetty.accesslog.ignore-paths[0]=/a/path",
-				"server.jetty.accesslog.ignore-paths[1]=/b/path");
-		JettyWebServer server = customizeAndGetServer();
-		NCSARequestLog requestLog = getNCSARequestLog(server);
+		assertThat(requestLog.getPreferProxiedForAddress()).isTrue();
 		assertThat(requestLog.getIgnorePaths().length).isEqualTo(2);
 		assertThat(requestLog.getIgnorePaths()[0]).isEqualTo("/a/path");
 		assertThat(requestLog.getIgnorePaths()[1]).isEqualTo("/b/path");
@@ -138,6 +133,8 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isFalse();
 		assertThat(requestLog.getLogServer()).isFalse();
 		assertThat(requestLog.getLogLatency()).isFalse();
+		assertThat(requestLog.getIgnorePaths().length).isZero();
+		assertThat(requestLog.getPreferProxiedForAddress()).isFalse();
 	}
 
 	private NCSARequestLog getNCSARequestLog(JettyWebServer server) {

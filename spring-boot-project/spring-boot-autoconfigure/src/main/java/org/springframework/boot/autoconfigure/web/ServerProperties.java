@@ -851,6 +851,11 @@ public class ServerProperties {
 			 */
 			private List<String> ignorePaths;
 
+			/**
+			 * true - IP address from header will be logged, false - IP address from the connection will be logged
+			 */
+			private boolean preferProxiedForAddress = false;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -953,6 +958,14 @@ public class ServerProperties {
 
 			public void setIgnorePaths(List<String> ignorePaths) {
 				this.ignorePaths = ignorePaths;
+			}
+
+			public boolean getPreferProxiedForAddress(){
+				return preferProxiedForAddress;
+			}
+
+			public void setPreferProxiedForAddress(boolean preferProxiedForAddress){
+				this.preferProxiedForAddress = preferProxiedForAddress;
 			}
 		}
 
