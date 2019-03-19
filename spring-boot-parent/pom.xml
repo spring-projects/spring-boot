@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -11,10 +11,10 @@
 	<packaging>pom</packaging>
 	<name>Spring Boot Parent</name>
 	<description>Spring Boot Parent</description>
-	<url>http://projects.spring.io/spring-boot/</url>
+	<url>https://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
+		<url>https://www.spring.io</url>
 	</organization>
 	<properties>
 		<main.basedir>..</main.basedir>
@@ -26,7 +26,7 @@
 		<maven.version>3.1.1</maven.version>
 	</properties>
 	<scm>
-		<url>http://github.com/spring-projects/spring-boot</url>
+		<url>https://github.com/spring-projects/spring-boot</url>
 		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
 	</scm>
@@ -644,7 +644,7 @@
 			<repositories>
 				<repository>
 					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
+					<url>https://repo.spring.io/ext-release-local/</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -655,7 +655,7 @@
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
+					<url>https://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -663,7 +663,7 @@
 				<repository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -673,7 +673,7 @@
 				<pluginRepository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
+					<url>https://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -681,7 +681,7 @@
 				<pluginRepository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -701,7 +701,7 @@
 			<repositories>
 				<repository>
 					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
+					<url>https://repo.spring.io/ext-release-local/</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -712,7 +712,7 @@
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
+					<url>https://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -720,7 +720,7 @@
 				<repository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -730,7 +730,7 @@
 				<pluginRepository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
+					<url>https://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -738,7 +738,7 @@
 				<pluginRepository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -777,7 +777,7 @@
 			<repositories>
 				<repository>
 					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
+					<url>https://repo.spring.io/ext-release-local/</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -788,7 +788,7 @@
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
+					<url>https://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -796,7 +796,7 @@
 				<repository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -806,7 +806,7 @@
 				<pluginRepository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
+					<url>https://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -814,7 +814,7 @@
 				<pluginRepository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -826,7 +826,7 @@
 			<repositories>
 				<repository>
 					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
+					<url>https://repo.spring.io/ext-release-local/</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -856,16 +856,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>objectstyle</id>
-					<name>ObjectStyle.org Repository</name>
-					<url>http://objectstyle.org/maven2/</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
 		</profile>
 		<profile>
 			<id>snapshot</id>
