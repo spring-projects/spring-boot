@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -91,6 +92,35 @@ public class TestRestTemplateTests {
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
 				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+	}
+
+	@Test
+	public void useTheSameRequestFactoryClassWithBasicAuth() {
+		OkHttp3ClientHttpRequestFactory customFactory = new OkHttp3ClientHttpRequestFactory();
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+				.requestFactory(() -> customFactory);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
+				.withBasicAuth("test", "test");
+		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
+		Object requestFactory = ReflectionTestUtils
+				.getField(restTemplate.getRequestFactory(), "requestFactory");
+		assertThat(requestFactory).isNotEqualTo(customFactory)
+				.hasSameClassAs(customFactory);
+	}
+
+	@Test
+	public void withBasicAuthWhenRequestFactoryTypeCannotBeInstantiatedShouldFallback() {
+		TestClientHttpRequestFactory customFactory = new TestClientHttpRequestFactory(
+				"my-request-factory");
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+				.requestFactory(() -> customFactory);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
+				.withBasicAuth("test", "test");
+		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
+		Object requestFactory = ReflectionTestUtils
+				.getField(restTemplate.getRequestFactory(), "requestFactory");
+		assertThat(requestFactory).isNotEqualTo(customFactory)
+				.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -381,6 +411,19 @@ public class TestRestTemplateTests {
 	private interface TestRestTemplateCallback {
 
 		void doWithTestRestTemplate(TestRestTemplate testRestTemplate, URI relativeUri);
+
+	}
+
+	static class TestClientHttpRequestFactory implements ClientHttpRequestFactory {
+
+		TestClientHttpRequestFactory(String value) {
+		}
+
+		@Override
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
+				throws IOException {
+			return null;
+		}
 
 	}
 
