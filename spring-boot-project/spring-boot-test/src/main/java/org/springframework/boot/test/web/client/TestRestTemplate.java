@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -38,6 +39,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.BeanUtils;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -1023,7 +1027,8 @@ public class TestRestTemplate {
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
 	 * except that it will send basic authorization headers using the given
-	 * {@code username} and {@code password}.
+	 * {@code username} and {@code password}. The request factory used is a new instance
+	 * of the underlying {@link RestTemplate}'s request factory type (when possible).
 	 * @param username the username
 	 * @param password the password
 	 * @return the new template
@@ -1031,6 +1036,7 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
 		RestTemplate restTemplate = new RestTemplateBuilder()
+				.requestFactory(getRequestFactorySupplier())
 				.messageConverters(getRestTemplate().getMessageConverters())
 				.interceptors(getRestTemplate().getInterceptors())
 				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler()).build();
@@ -1039,6 +1045,18 @@ public class TestRestTemplate {
 		testRestTemplate.getRestTemplate()
 				.setErrorHandler(getRestTemplate().getErrorHandler());
 		return testRestTemplate;
+	}
+
+	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier() {
+		return () -> {
+			try {
+				return BeanUtils
+						.instantiateClass(getRequestFactoryClass(getRestTemplate()));
+			}
+			catch (BeanInstantiationException ex) {
+				return new ClientHttpRequestFactorySupplier().get();
+			}
+		};
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
