@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestPropertiesIntegrationTests {
 
 	@ClassRule
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
+	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
 			() -> new Neo4jContainer<>().withAdminPassword(null));
 
 	@Autowired

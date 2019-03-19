@@ -1276,8 +1276,7 @@ public class WebMvcAutoConfigurationTests {
 
 		@Bean
 		public FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
-			return new FilterRegistrationBean<RequestContextFilter>(
-					new RequestContextFilter());
+			return new FilterRegistrationBean<>(new RequestContextFilter());
 		}
 
 	}

@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class DataNeo4jTestIntegrationTests {
 
 	@ClassRule
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
+	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
 			() -> new Neo4jContainer<>().withAdminPassword(null));
 
 	@Autowired
