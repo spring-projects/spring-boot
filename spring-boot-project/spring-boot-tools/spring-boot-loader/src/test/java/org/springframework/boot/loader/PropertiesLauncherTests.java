@@ -142,7 +142,7 @@ public class PropertiesLauncherTests {
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
 				.isEqualTo("[jars/]");
 		List<Archive> archives = launcher.getClassPathArchives();
-		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
 
 	@Test

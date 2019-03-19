@@ -44,9 +44,7 @@ public class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(
 				new File(explodedRoot, "WEB-INF/classes").toURI().toURL(),
-				new URL("jar:"
-						+ new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL()
-						+ "!/"));
+				new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL());
 	}
 
 	@Test
