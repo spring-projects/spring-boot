@@ -240,7 +240,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).isEqualTo(new String[] { "log4j2-spring.xml" });
+		assertThat(locations).isEqualTo(new String[] { "log4j2-spring.properties", "log4j2-spring.xml" });
 	}
 
 	@Test
