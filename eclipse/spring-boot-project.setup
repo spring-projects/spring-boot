@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <setup:Project
     xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xmi="https://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
     xmlns:maven="http://www.eclipse.org/oomph/setup/maven/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
-    xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
-    xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
+    xmlns:setup="https://www.eclipse.org/oomph/setup/1.0"
+    xmlns:setup.p2="https://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
     name="spring.boot"
     label="Spring Boot">
   <setupTask
@@ -61,8 +61,6 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="AnyEditTools.feature.group"/>
-    <requirement
         name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
@@ -81,19 +79,17 @@
     <requirement
         name="org.springframework.ide.eclipse.boot.feature.feature.group"/>
     <repository
-        url="http://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
+        url="https://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
     <repository
-        url="http://download.eclipse.org/releases/oxygen/"/>
-    <repository
-        url="http://andrei.gmxhome.de/eclipse/"/>
+        url="https://download.eclipse.org/releases/oxygen/"/>
     <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
-        url="http://download.eclipse.org/egit/github/updates/"/>
+        url="https://download.eclipse.org/egit/github/updates/"/>
     <repository
-        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
     <repository
-        url="http://dist.springsource.com/release/TOOLS/update/e4.7"/>
+        url="https://dist.springsource.com/release/TOOLS/update/e4.7"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
@@ -146,18 +142,6 @@
           xsi:type="predicates:NamePredicate"
           pattern="spring-boot-.*-test.*"/>
     </workingSet>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="de.loskutov.anyedit.AnyEditTools">
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/org.eclipse.jdt.ui.editor.tab.width"
-        value="4"/>
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/saveAndAddLine"
-        value="true"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
