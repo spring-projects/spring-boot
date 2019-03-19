@@ -17,7 +17,9 @@ package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -27,9 +29,11 @@ import org.springframework.web.server.WebExceptionHandler;
  * Example {@link WebExceptionHandler} used with {@link WebFluxTest} tests.
  *
  * @author Madhura Bhave
+ * @author Ali Dehghani
  */
 @Component
-public class ExampleWebExceptionHandler implements WebExceptionHandler {
+@ConditionalOnProperty(name = "custom-error-handler.enable")
+public class ExampleWebExceptionHandler implements ErrorWebExceptionHandler {
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
