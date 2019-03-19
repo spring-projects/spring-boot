@@ -210,7 +210,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void configLocationsWithNoExtraDependencies() {
 		assertThat(this.loggingSystem.getStandardConfigLocations())
-				.contains("log4j2.xml");
+				.contains("log4j2.properties", "log4j2.xml");
 	}
 
 	@Test
