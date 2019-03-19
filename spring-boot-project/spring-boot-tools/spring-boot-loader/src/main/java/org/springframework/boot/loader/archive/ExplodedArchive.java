@@ -117,7 +117,7 @@ public class ExplodedArchive implements Archive {
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		File file = ((FileEntry) entry).getFile();
 		return (file.isDirectory() ? new ExplodedArchive(file)
-				: new JarFileArchive(file));
+				: new JarFileArchive(file, file.toURI().toURL()));
 	}
 
 	@Override
