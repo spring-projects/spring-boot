@@ -19,7 +19,7 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<java.version>1.8</java.version>
-		<spring-javaformat.version>0.0.6</spring-javaformat.version>
+		<spring-javaformat.version>0.0.7</spring-javaformat.version>
 		<disable.checks>false</disable.checks>
 	</properties>
 	<modules>
@@ -148,7 +148,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>8.8</version>
+						<version>8.18</version>
 					</dependency>
 					<dependency>
 						<groupId>io.spring.javaformat</groupId>
