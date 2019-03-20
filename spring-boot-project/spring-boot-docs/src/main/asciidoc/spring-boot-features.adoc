@@ -1070,7 +1070,23 @@ missing property.
 [[boot-features-external-config-enabling]]
 ==== Enabling `@ConfigurationProperties`-annotated types
 Spring Boot provides an infrastructure to bind such types and register them as beans
-automatically. Any `@Configuration` class can specify the list of types to process as
+automatically. If your application uses `@SpringBootApplication`, classes annotated with
+`@ConfigurationProperties` will automatically be scanned and registered as beans. By default,
+scanning will occur from the package of the class that declares this annotation. If you want
+to define specific packages to scan, you can do so using an explicit `@ConfigurationPropertiesScan`
+directive on your `@SpringBootApplication`-annotated class as shown in the following example:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
+	public class MyApplication {
+	}
+----
+
+Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable
+for scanning, for example, if you're developing your own auto-configuration. In these
+cases, you can specify the list of types to process on any `@Configuration` class as
 shown in the following example:
 
 [source,java,indent=0]
@@ -1083,13 +1099,13 @@ shown in the following example:
 
 [NOTE]
 ====
-When the `@ConfigurationProperties` bean is registered that way, the bean has a
-conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix
-specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified
-name of the bean. If the annotation does not provide any prefix, only the fully qualified
-name of the bean is used.
+When the `@ConfigurationProperties` bean is registered using scanning or via
+`@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`,
+where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties`
+annotation and `<fqn>` is the fully qualified name of the bean. If the annotation does not
+provide any prefix, only the fully qualified name of the bean is used.
 
-The bean name in the examples above is `acme-com.example.AcmeProperties`.
+The bean name in the example above is `acme-com.example.AcmeProperties`.
 ====
 
 We recommend that `@ConfigurationProperties` only deal with the environment and, in
@@ -1100,27 +1116,10 @@ binder that only deals with the environment.
 For corner cases, setter injection can be used or any of the `*Aware` interfaces provided
 by the framework (such as `EnvironmentAware` if you need access to the `Environment`).
 
-If you find using `@EnableConfigurationProperties` tedious, you can also declare a bean
-yourself. For instance, instead of annotating `MyConfiguration` with
-`@EnableConfigurationProperties(AcmeProperties.class)`, you could make `AcmeProperties`
-a bean, as shown in the following example:
-
-[source,java,indent=0]
-----
-	@Component
-	@ConfigurationProperties(prefix="acme")
-	public class AcmeProperties {
-
-			private boolean enabled;
-
-    		private InetAddress remoteAddress;
-
-    		private final Security security = new Security();
-
-			// ... see the preceding JavaBean properties binding example
-
-	}
-----
+NOTE: Annotating a `@ConfigurationProperties` type with `@Component` will result in two
+beans of the same type if the type is also scanned as part of classpath scanning. If you want
+to register the bean yourself using `@Component`, consider disabling scanning of
+`@ConfigurationProperties`.
 
 
 
