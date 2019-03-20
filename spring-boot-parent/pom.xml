@@ -24,7 +24,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
-		<spring-javaformat.version>0.0.6</spring-javaformat.version>
+		<spring-javaformat.version>0.0.7</spring-javaformat.version>
 	</properties>
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
@@ -311,7 +311,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>8.8</version>
+							<version>8.18</version>
 						</dependency>
 						<dependency>
 							<groupId>io.spring.javaformat</groupId>
