@@ -21,6 +21,7 @@ mkdir -p /opt/openjdk
 cd /opt/openjdk
 curl -L ${JDK_URL} | tar zx --strip-components=1
 test -f /opt/openjdk/bin/java
+test -f /opt/openjdk/bin/javac
 
 
 ###########################################################
