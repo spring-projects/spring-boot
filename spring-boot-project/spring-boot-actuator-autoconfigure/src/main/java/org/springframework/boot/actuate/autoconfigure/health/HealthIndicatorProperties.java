@@ -17,8 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -42,6 +44,11 @@ public class HealthIndicatorProperties {
 	 */
 	private final Map<String, Integer> httpMapping = new HashMap<>();
 
+	/**
+	 * Health indicators that must always stay UP in case they were UP at least once.
+	 */
+	private Set<String> sticky = new HashSet<>();
+
 	public List<String> getOrder() {
 		return this.order;
 	}
@@ -54,6 +61,14 @@ public class HealthIndicatorProperties {
 
 	public Map<String, Integer> getHttpMapping() {
 		return this.httpMapping;
+	}
+
+	public Set<String> getSticky() {
+		return sticky;
+	}
+
+	public void setSticky(Set<String> sticky) {
+		this.sticky = sticky;
 	}
 
 }

@@ -73,6 +73,12 @@ public class HealthIndicatorAutoConfiguration {
 		return HealthIndicatorRegistryBeans.get(applicationContext);
 	}
 
+	@Bean
+	public StickyHealthIndicatorDecoratorBeanPostProcessor stickyHealthIndicatorDecoratorBeanPostProcessor(
+		HealthIndicatorProperties properties) {
+		return new StickyHealthIndicatorDecoratorBeanPostProcessor(properties.getSticky());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Flux.class)
 	static class ReactiveHealthIndicatorConfiguration {
