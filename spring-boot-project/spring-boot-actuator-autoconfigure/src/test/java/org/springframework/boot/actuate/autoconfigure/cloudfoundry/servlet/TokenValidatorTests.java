@@ -179,7 +179,7 @@ public class TokenValidatorTests {
 	@Test
 	public void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
-		given(this.securityService.getUaaUrl()).willReturn("http://other-uaa.com");
+		given(this.securityService.getUaaUrl()).willReturn("https://other-uaa.com");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\", \"scope\": [\"actuator.read\"]}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)

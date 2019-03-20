@@ -113,7 +113,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations
 						.of(OAuth2ResourceServerAutoConfiguration.class))
 				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ManagementWebSecurityConfigurerAdapter.class));
 	}

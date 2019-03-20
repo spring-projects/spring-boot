@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @since 1.3.0
- * @see "http://cloud.spring.io"
+ * @see "https://cloud.spring.io"
  */
 public enum CloudPlatform {
 

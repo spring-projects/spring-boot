@@ -101,7 +101,7 @@ public class LocalHostUriTemplateHandlerTests {
 		MockEnvironment environment = new MockEnvironment();
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
 		Map<String, ?> uriVariables = new HashMap<>();
-		URI uri = URI.create("http://www.example.com");
+		URI uri = URI.create("https://www.example.com");
 		given(uriTemplateHandler.expand("https://localhost:8080/", uriVariables))
 				.willReturn(uri);
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment,

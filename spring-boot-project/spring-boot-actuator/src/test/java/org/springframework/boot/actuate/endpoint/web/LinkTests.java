@@ -36,21 +36,21 @@ public class LinkTests {
 
 	@Test
 	public void getHrefShouldReturnHref() {
-		String href = "http://example.com";
+		String href = "https://example.com";
 		Link link = new Link(href);
 		assertThat(link.getHref()).isEqualTo(href);
 	}
 
 	@Test
 	public void isTemplatedWhenContainsPlaceholderShouldReturnTrue() {
-		String href = "http://example.com/{path}";
+		String href = "https://example.com/{path}";
 		Link link = new Link(href);
 		assertThat(link.isTemplated()).isTrue();
 	}
 
 	@Test
 	public void isTemplatedWhenContainsNoPlaceholderShouldReturnFalse() {
-		String href = "http://example.com/path";
+		String href = "https://example.com/path";
 		Link link = new Link(href);
 		assertThat(link.isTemplated()).isFalse();
 	}

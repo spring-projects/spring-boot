@@ -826,7 +826,7 @@ public class TestRestTemplate {
 	 * {@link ParameterizedTypeReference} is used to pass generic type information:
 	 * <pre class="code">
 	 * ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt;() {};
-	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;http://example.com&quot;,HttpMethod.GET, null, myBean);
+	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
 	 * @param method the HTTP method (GET, POST, etc)
@@ -854,7 +854,7 @@ public class TestRestTemplate {
 	 * {@link ParameterizedTypeReference} is used to pass generic type information:
 	 * <pre class="code">
 	 * ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt;() {};
-	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;http://example.com&quot;,HttpMethod.GET, null, myBean);
+	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
 	 * @param method the HTTP method (GET, POST, etc)
@@ -882,7 +882,7 @@ public class TestRestTemplate {
 	 * {@link ParameterizedTypeReference} is used to pass generic type information:
 	 * <pre class="code">
 	 * ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt;() {};
-	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;http://example.com&quot;,HttpMethod.GET, null, myBean);
+	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
 	 * @param method the HTTP method (GET, POST, etc)
@@ -908,7 +908,7 @@ public class TestRestTemplate {
 	 * response as {@link ResponseEntity}. Typically used in combination with the static
 	 * builder methods on {@code RequestEntity}, for instance: <pre class="code">
 	 * MyRequest body = ...
-	 * RequestEntity request = RequestEntity.post(new URI(&quot;http://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
+	 * RequestEntity request = RequestEntity.post(new URI(&quot;https://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
 	 * ResponseEntity&lt;MyResponse&gt; response = template.exchange(request, MyResponse.class);
 	 * </pre>
 	 * @param requestEntity the entity to write to the request
@@ -929,7 +929,7 @@ public class TestRestTemplate {
 	 * response as {@link ResponseEntity}. The given {@link ParameterizedTypeReference} is
 	 * used to pass generic type information: <pre class="code">
 	 * MyRequest body = ...
-	 * RequestEntity request = RequestEntity.post(new URI(&quot;http://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
+	 * RequestEntity request = RequestEntity.post(new URI(&quot;https://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
 	 * ParameterizedTypeReference&lt;List&lt;MyResponse&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyResponse&gt;&gt;() {};
 	 * ResponseEntity&lt;List&lt;MyResponse&gt;&gt; response = template.exchange(request, myBean);
 	 * </pre>

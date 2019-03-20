@@ -110,9 +110,9 @@ public class Neo4jPropertiesTests {
 	@Test
 	public void credentialsAreSetFromUri() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
+				"spring.data.neo4j.uri=https://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://my-server:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "https://my-server:7474");
 		assertCredentials(configuration, "user", "secret");
 	}
 

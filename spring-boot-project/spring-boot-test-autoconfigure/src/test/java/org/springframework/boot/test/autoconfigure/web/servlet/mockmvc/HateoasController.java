@@ -36,7 +36,7 @@ class HateoasController {
 	@RequestMapping("/resource")
 	public EntityModel<Map<String, String>> resource() {
 		return new EntityModel<>(new HashMap<>(),
-				new Link("self", "http://api.example.com"));
+				new Link("self", "https://api.example.com"));
 	}
 
 	@RequestMapping("/plain")

@@ -74,7 +74,7 @@ public class MockServerRestTemplateCustomizerTests {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(
-				new RestTemplateBuilder().rootUri("http://example.com").build());
+				new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(RootUriRequestExpectationManager.class);
 	}
@@ -83,7 +83,7 @@ public class MockServerRestTemplateCustomizerTests {
 	public void setDetectRootUriShouldDisableRootUriDetection() {
 		this.customizer.setDetectRootUri(false);
 		this.customizer.customize(
-				new RestTemplateBuilder().rootUri("http://example.com").build());
+				new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
 

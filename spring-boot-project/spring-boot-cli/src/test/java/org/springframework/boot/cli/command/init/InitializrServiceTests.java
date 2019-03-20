@@ -38,7 +38,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	@Test
 	public void loadMetadata() throws Exception {
 		mockSuccessfulMetadataGet(false);
-		InitializrServiceMetadata metadata = this.invoker.loadMetadata("http://foo/bar");
+		InitializrServiceMetadata metadata = this.invoker.loadMetadata("https://foo/bar");
 		assertThat(metadata).isNotNull();
 	}
 

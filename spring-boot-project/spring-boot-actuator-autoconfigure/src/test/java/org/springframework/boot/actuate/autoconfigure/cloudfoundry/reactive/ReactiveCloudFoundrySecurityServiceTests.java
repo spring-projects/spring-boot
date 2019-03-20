@@ -46,7 +46,7 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 	private static final String CLOUD_CONTROLLER_PERMISSIONS = CLOUD_CONTROLLER
 			+ "/v2/apps/my-app-id/permissions";
 
-	private static final String UAA_URL = "http://my-cloud-controller.com/uaa";
+	private static final String UAA_URL = "https://my-cloud-controller.com/uaa";
 
 	private ReactiveCloudFoundrySecurityService securityService;
 
