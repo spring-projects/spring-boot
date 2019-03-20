@@ -24,7 +24,7 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.6</spring-javaformat.version>
+				<spring-javaformat.version>0.0.7</spring-javaformat.version>
 			</properties>
 			<build>
 				<plugins>
@@ -36,7 +36,7 @@
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>8.12</version>
+								<version>8.18</version>
 							</dependency>
 							<dependency>
 								<groupId>io.spring.javaformat</groupId>
