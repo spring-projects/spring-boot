@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<!DOCTYPE module PUBLIC
+		"-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+		"https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="com.puppycrawl.tools.checkstyle.Checker">
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
