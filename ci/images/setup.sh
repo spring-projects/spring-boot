@@ -19,12 +19,15 @@ curl https://raw.githubusercontent.com/spring-io/concourse-java-scripts/v0.0.2/c
 case "$1" in
 	java8)
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u202-b08/OpenJDK8U-jdk_x64_linux_hotspot_8u202b08.tar.gz
+		 COMPONENTS=1
 	;;
 	java9)
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_linux_hotspot_9.0.4_11.tar.gz
+		 COMPONENTS=2
 	;;
 	java10)
 		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk10-releases/releases/download/jdk-10.0.2%2B13/OpenJDK10_x64_Linux_jdk-10.0.2+13.tar.gz
+		 COMPONENTS=2
 	;;
 	*)
 		echo $"Unknown java version"
@@ -32,8 +35,9 @@ case "$1" in
 esac
 mkdir -p /opt/openjdk
 cd /opt/openjdk
-curl -L ${JDK_URL} | tar zx --strip-components=2
+curl -L ${JDK_URL} | tar zx --strip-components=$COMPONENTS
 test -f /opt/openjdk/bin/java
+test -f /opt/openjdk/bin/javac
 
 
 ###########################################################
