@@ -21,11 +21,10 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Tests for {@link WebFluxTest} when no explicit exception handler is defined.
@@ -44,11 +43,11 @@ public class WebFluxTestWithDefaultErrorHandlerTests {
 	public void defaultWebExceptionHandling() {
 		// @formatter:off
 		this.webClient.get().uri("/one/error").exchange()
-				.expectStatus().isEqualTo(INTERNAL_SERVER_ERROR)
+				.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 				.expectBody()
 					.jsonPath("$.timestamp").exists()
 					.jsonPath("$.status").isEqualTo(500)
-					.jsonPath("$.error").isEqualTo(INTERNAL_SERVER_ERROR.getReasonPhrase())
+					.jsonPath("$.error").isEqualTo("Internal Server Error")
 					.jsonPath("$.path").isEqualTo("/one/error")
 					.jsonPath("$.message").isEqualTo("foo");
 		// @formatter:on
