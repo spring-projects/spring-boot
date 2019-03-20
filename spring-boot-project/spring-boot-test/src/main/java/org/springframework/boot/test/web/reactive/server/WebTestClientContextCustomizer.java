@@ -111,8 +111,8 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 				throws BeansException {
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					(ListableBeanFactory) this.beanFactory,
-					WebTestClient.class).length == 0) {
+					(ListableBeanFactory) this.beanFactory, WebTestClient.class, false,
+					false).length == 0) {
 				registry.registerBeanDefinition(WebTestClient.class.getName(),
 						new RootBeanDefinition(WebTestClientFactory.class));
 			}

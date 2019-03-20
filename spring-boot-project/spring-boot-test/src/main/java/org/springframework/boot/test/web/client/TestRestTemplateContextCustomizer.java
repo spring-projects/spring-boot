@@ -111,8 +111,8 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 				throws BeansException {
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					(ListableBeanFactory) this.beanFactory,
-					TestRestTemplate.class).length == 0) {
+					(ListableBeanFactory) this.beanFactory, TestRestTemplate.class, false,
+					false).length == 0) {
 				registry.registerBeanDefinition(TestRestTemplate.class.getName(),
 						new RootBeanDefinition(TestRestTemplateFactory.class));
 			}
