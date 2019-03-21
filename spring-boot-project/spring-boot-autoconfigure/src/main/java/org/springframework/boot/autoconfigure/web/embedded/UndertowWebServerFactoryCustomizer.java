@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import java.time.Duration;
-
 import io.undertow.UndertowOptions;
+import org.xnio.Option;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -38,6 +37,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Arstiom Yudovin
+ * @author Rafiullah Hamedy
  * @since 2.0.0
  */
 public class UndertowWebServerFactoryCustomizer implements
@@ -86,17 +86,50 @@ public class UndertowWebServerFactoryCustomizer implements
 				.to(factory::setAccessLogRotate);
 		propertyMapper.from(this::getOrDeduceUseForwardHeaders)
 				.to(factory::setUseForwardHeaders);
+
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
 				.asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
-						maxHttpHeaderSize));
+				.to((maxHttpHeaderSize) -> customizeProperties(factory,
+						UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
+
 		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
 				.asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
-						maxHttpPostSize));
+				.to((maxHttpPostSize) -> customizeProperties(factory,
+						UndertowOptions.MAX_HEADER_SIZE, maxHttpPostSize));
+
 		propertyMapper.from(properties::getConnectionTimeout)
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
-						connectionTimeout));
+				.to((connectionTimeout) -> customizeProperties(factory,
+						UndertowOptions.NO_REQUEST_TIMEOUT,
+						(int) connectionTimeout.toMillis()));
+
+		propertyMapper.from(undertowProperties::getMaxParameters)
+				.to((maxParameters) -> customizeProperties(factory,
+						UndertowOptions.MAX_PARAMETERS, maxParameters));
+
+		propertyMapper.from(undertowProperties::getMaxHeaders)
+				.to((maxHeaders) -> customizeProperties(factory,
+						UndertowOptions.MAX_HEADERS, maxHeaders));
+
+		propertyMapper.from(undertowProperties::getMaxCookies)
+				.to((maxCookies) -> customizeProperties(factory,
+						UndertowOptions.MAX_COOKIES, maxCookies));
+
+		propertyMapper.from(undertowProperties::isAllowEncodedSlash)
+				.to((allowEncodedSlash) -> customizeProperties(factory,
+						UndertowOptions.ALLOW_ENCODED_SLASH, allowEncodedSlash));
+
+		propertyMapper.from(undertowProperties::isDecodeUrl)
+				.to((isDecodeUrl) -> customizeProperties(factory,
+						UndertowOptions.DECODE_URL, isDecodeUrl));
+
+		propertyMapper.from(undertowProperties::getUrlCharset)
+				.to((urlCharset) -> customizeProperties(factory,
+						UndertowOptions.URL_CHARSET, urlCharset));
+
+		propertyMapper.from(undertowProperties::isAlwaysSetKeepAlive)
+				.to((alwaysSetKeepAlive) -> customizeProperties(factory,
+						UndertowOptions.ALWAYS_SET_KEEP_ALIVE, alwaysSetKeepAlive));
+
 		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
 				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 	}
@@ -105,22 +138,10 @@ public class UndertowWebServerFactoryCustomizer implements
 		return value.longValue() > 0;
 	}
 
-	private void customizeConnectionTimeout(ConfigurableUndertowWebServerFactory factory,
-			Duration connectionTimeout) {
-		factory.addBuilderCustomizers((builder) -> builder.setServerOption(
-				UndertowOptions.NO_REQUEST_TIMEOUT, (int) connectionTimeout.toMillis()));
-	}
-
-	private void customizeMaxHttpHeaderSize(ConfigurableUndertowWebServerFactory factory,
-			int maxHttpHeaderSize) {
-		factory.addBuilderCustomizers((builder) -> builder
-				.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
-	}
-
-	private void customizeMaxHttpPostSize(ConfigurableUndertowWebServerFactory factory,
-			long maxHttpPostSize) {
-		factory.addBuilderCustomizers((builder) -> builder
-				.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
+	private <T> void customizeProperties(ConfigurableUndertowWebServerFactory factory,
+			Option<T> propType, T prop) {
+		factory.addBuilderCustomizers(
+				(builder) -> builder.setServerOption(propType, prop));
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {

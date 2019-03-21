@@ -48,6 +48,8 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Rafiullah Hamedy
+ *
  */
 public class UndertowWebServerFactoryCustomizerTests {
 
@@ -83,6 +85,40 @@ public class UndertowWebServerFactoryCustomizerTests {
 		verify(factory).setAccessLogSuffix("txt");
 		verify(factory).setAccessLogDirectory(new File("test-logs"));
 		verify(factory).setAccessLogRotate(false);
+	}
+
+	@Test
+	public void customizeUndertowConnectionCommonSettings() {
+		bind("server.undertow.maxParameters=50", "server.undertow.maxHeaders=60",
+				"server.undertow.maxCookies=70", "server.undertow.allowEncodedSlash=true",
+				"server.undertow.decodeUrl=true", "server.undertow.urlCharset=UTF-8",
+				"server.undertow.alwaysSetKeepAlive=true");
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
+				"serverOptions")).getMap();
+		assertThat(map.get(UndertowOptions.MAX_PARAMETERS)).isEqualTo(50);
+		assertThat(map.get(UndertowOptions.MAX_HEADERS)).isEqualTo(60);
+		assertThat(map.get(UndertowOptions.MAX_COOKIES)).isEqualTo(70);
+		assertThat(map.get(UndertowOptions.ALLOW_ENCODED_SLASH)).isTrue();
+		assertThat(map.get(UndertowOptions.DECODE_URL)).isTrue();
+		assertThat(map.get(UndertowOptions.URL_CHARSET)).isEqualTo("UTF-8");
+		assertThat(map.get(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isTrue();
+	}
+
+	@Test
+	public void customizeUndertowCommonConnectionCommonBoolSettings() {
+		bind("server.undertow.allowEncodedSlash=false", "server.undertow.decodeUrl=false",
+				"server.undertow.alwaysSetKeepAlive=false");
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
+				"serverOptions")).getMap();
+		assertThat(map.get(UndertowOptions.ALLOW_ENCODED_SLASH)).isFalse();
+		assertThat(map.get(UndertowOptions.DECODE_URL)).isFalse();
+		assertThat(map.get(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
 	}
 
 	@Test
