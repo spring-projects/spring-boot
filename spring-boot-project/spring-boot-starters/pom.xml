@@ -150,6 +150,7 @@
  							</ignoredClassPatterns>
 							<ignoredResourcePatterns>
 								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
+								<ignoredResourcePattern>about.html</ignoredResourcePattern>
 							</ignoredResourcePatterns>
 						</configuration>
 					</execution>
