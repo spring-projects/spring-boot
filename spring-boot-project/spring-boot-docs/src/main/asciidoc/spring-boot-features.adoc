@@ -7185,6 +7185,10 @@ NOTE: `@WebFluxTest` cannot detect routes registered via the functional web fram
 testing `RouterFunction` beans in the context, consider importing your `RouterFunction`
 yourself via `@Import` or using `@SpringBootTest`.
 
+NOTE: `@WebFluxTest` cannot detect custom security configuration registered via a `@Bean`
+of type `SecurityWebFilterChain`. To include that in your test, you will need to import
+the configuration that registers the bean via `@Import` or use `@SpringBootTest`.
+
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run
 <<boot-features-testing-spring-boot-applications-testing-with-running-server,
 full end-to-end tests with an actual server>>.
@@ -7812,6 +7816,34 @@ NOTE: Depending on the complexity of your application, you may either have a sin
 `@Configuration` class for your customizations or one class per domain area. The latter
 approach lets you enable it in one of your tests, if necessary, with the `@Import`
 annotation.
+
+Test slices exclude `@Configuration` classes from scanning. For example, for a `@WebMvcTest`,
+the following configuration will not include the given `WebMvcConfigurer` bean in the application
+context loaded by the test slice:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class WebConfiguration {
+		@Bean
+		public WebMvcConfigurer testConfigurer() {
+			return new WebMvcConfigurer() {
+				...
+			};
+		}
+	}
+----
+
+The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded
+by the test slice.
+
+[source,java,indent=0]
+----
+	@Component
+	public class TestWebMvcConfigurer extends WebMvcConfigurer {
+		...
+	}
+----
 
 Another source of confusion is classpath scanning. Assume that, while you structured your
 code in a sensible way, you need to scan an additional package. Your application may
