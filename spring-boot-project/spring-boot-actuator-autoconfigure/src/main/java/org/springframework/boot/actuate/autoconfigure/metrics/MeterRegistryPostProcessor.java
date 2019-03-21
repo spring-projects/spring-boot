@@ -25,7 +25,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  * {@link BeanPostProcessor} that delegates to a lazily created
@@ -35,7 +34,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class MeterRegistryPostProcessor implements BeanPostProcessor, ApplicationContextAware {
+class MeterRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<MeterBinder> meterBinders;
 
@@ -47,16 +46,18 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, ApplicationContex
 
 	private volatile MeterRegistryConfigurer configurer;
 
-	private volatile ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders,
 			ObjectProvider<MeterFilter> meterFilters,
 			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
-			ObjectProvider<MetricsProperties> metricsProperties) {
+			ObjectProvider<MetricsProperties> metricsProperties,
+			ApplicationContext applicationContext) {
 		this.meterBinders = meterBinders;
 		this.meterFilters = meterFilters;
 		this.meterRegistryCustomizers = meterRegistryCustomizers;
 		this.metricsProperties = metricsProperties;
+		this.applicationContext = applicationContext;
 	}
 
 	@Override
@@ -70,19 +71,15 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, ApplicationContex
 
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
+			boolean hasCompositeMeterRegistry = this.applicationContext
+					.getBeanNamesForType(CompositeMeterRegistry.class, false,
+							false).length != 0;
 			this.configurer = new MeterRegistryConfigurer(this.meterRegistryCustomizers,
 					this.meterFilters, this.meterBinders,
 					this.metricsProperties.getObject().isUseGlobalRegistry(),
-					this.applicationContext.getBeanNamesForType(
-							CompositeMeterRegistry.class).length != 0);
+					hasCompositeMeterRegistry);
 		}
 		return this.configurer;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
 	}
 
 }
