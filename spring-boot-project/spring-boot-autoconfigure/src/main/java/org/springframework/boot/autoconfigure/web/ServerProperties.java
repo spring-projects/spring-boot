@@ -58,6 +58,8 @@ import org.springframework.util.unit.DataSize;
  * @author Chentao Qu
  * @author Artsiom Yudovin
  * @author Andrew McGhie
+ * @author Rafiullah Hamedy
+ *
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -1114,6 +1116,49 @@ public class ServerProperties {
 		 */
 		private boolean eagerFilterInit = true;
 
+		/**
+		 * The maximum number of query or path parameters that are allowed. This limit
+		 * exists to prevent hash collision based DOS attacks.
+		 */
+		private Integer maxParameters;
+
+		/**
+		 * The maximum number of headers that are allowed. This limit exists to prevent
+		 * hash collision based DOS attacks.
+		 */
+		private Integer maxHeaders;
+
+		/**
+		 * The maximum number of cookies that are allowed. This limit exists to prevent
+		 * hash collision based DOS attacks.
+		 */
+		private Integer maxCookies;
+
+		/**
+		 * Set this to true if you want the server to decode percent encoded slash
+		 * characters. This is probably a bad idea, as it can have security implications,
+		 * due to different servers interpreting the slash differently. Only enable this
+		 * if you have a legacy application that requires it.
+		 */
+		private Boolean allowEncodedSlash;
+
+		/**
+		 * If the URL should be decoded. If this is not set to true then percent encoded
+		 * characters in the URL will be left as is.
+		 */
+		private Boolean decodeUrl;
+
+		/**
+		 * The charset to decode the URL to.
+		 */
+		private String urlCharset;
+
+		/**
+		 * If the 'Connection: keep-alive' header should be added to all responses, even
+		 * if not required by spec.
+		 */
+		private Boolean alwaysSetKeepAlive;
+
 		private final Accesslog accesslog = new Accesslog();
 
 		public DataSize getMaxHttpPostSize() {
@@ -1162,6 +1207,62 @@ public class ServerProperties {
 
 		public void setEagerFilterInit(boolean eagerFilterInit) {
 			this.eagerFilterInit = eagerFilterInit;
+		}
+
+		public Integer getMaxParameters() {
+			return this.maxParameters;
+		}
+
+		public void setMaxParameters(Integer maxParameters) {
+			this.maxParameters = maxParameters;
+		}
+
+		public Integer getMaxHeaders() {
+			return this.maxHeaders;
+		}
+
+		public void setMaxHeaders(Integer maxHeaders) {
+			this.maxHeaders = maxHeaders;
+		}
+
+		public Integer getMaxCookies() {
+			return this.maxCookies;
+		}
+
+		public void setMaxCookies(Integer maxCookies) {
+			this.maxCookies = maxCookies;
+		}
+
+		public Boolean isAllowEncodedSlash() {
+			return this.allowEncodedSlash;
+		}
+
+		public void setAllowEncodedSlash(Boolean allowEncodedSlash) {
+			this.allowEncodedSlash = allowEncodedSlash;
+		}
+
+		public Boolean isDecodeUrl() {
+			return this.decodeUrl;
+		}
+
+		public void setDecodeUrl(Boolean decodeUrl) {
+			this.decodeUrl = decodeUrl;
+		}
+
+		public String getUrlCharset() {
+			return this.urlCharset;
+		}
+
+		public void setUrlCharset(String urlCharset) {
+			this.urlCharset = urlCharset;
+		}
+
+		public Boolean isAlwaysSetKeepAlive() {
+			return this.alwaysSetKeepAlive;
+		}
+
+		public void setAlwaysSetKeepAlive(Boolean alwaysSetKeepAlive) {
+			this.alwaysSetKeepAlive = alwaysSetKeepAlive;
 		}
 
 		public Accesslog getAccesslog() {
