@@ -17,14 +17,12 @@
 package sample.test.service;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * Properties for the service.
  *
  * @author Phillip Webb
  */
-@Component
 @ConfigurationProperties
 public class ServiceProperties {
 
