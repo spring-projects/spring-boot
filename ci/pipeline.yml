@@ -424,17 +424,6 @@ jobs:
       BINTRAY_REPO: ((bintray-repo))
       BINTRAY_USERNAME: ((bintray-username))
       BINTRAY_API_KEY: ((bintray-api-key))
-  - task: generate-release-notes
-    file: git-repo/ci/tasks/generate-release-notes.yml
-    params:
-      RELEASE_TYPE: RELEASE
-      GITHUB_USERNAME: ((github-username))
-      GITHUB_TOKEN: ((github-release-notes-access-token))
-  - put: github-release
-    params:
-      name: generated-release-notes/tag
-      tag: generated-release-notes/tag
-      body: generated-release-notes/release-notes.md
 - name: sync-to-maven-central
   serial: true
   plan:
@@ -455,6 +444,17 @@ jobs:
       SONATYPE_PASSWORD_TOKEN: ((sonatype-user-token-password))
       BINTRAY_SUBJECT: ((bintray-subject))
       BINTRAY_REPO: ((bintray-repo))
+  - task: generate-release-notes
+    file: git-repo/ci/tasks/generate-release-notes.yml
+    params:
+      RELEASE_TYPE: RELEASE
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
+  - put: github-release
+    params:
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
 groups:
 - name: "Build"
   jobs: ["build", "jdk11-build"]
