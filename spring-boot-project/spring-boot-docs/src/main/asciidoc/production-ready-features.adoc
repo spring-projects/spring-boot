@@ -1136,6 +1136,10 @@ the following example:
 	management.server.port=8081
 ----
 
+NOTE: On Cloud Foundry, applications only receive requests on port 8080 for both HTTP and TCP
+routing, by default. If you want to use a custom management port on Cloud Foundry, you will need
+to explicitly set up the application's routes to forward traffic to the custom port.
+
 
 
 [[production-ready-management-specific-ssl]]
