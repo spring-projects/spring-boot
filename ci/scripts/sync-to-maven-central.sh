@@ -17,3 +17,4 @@ echo "Syncing ${buildName}/${buildNumber} to Maven Central"
 			-X \
 			POST "https://api.bintray.com/maven_central_sync/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/${groupId}/versions/${version}" > /dev/null || { echo "Failed to sync" >&2; exit 1; }
 echo "Sync complete"
+echo $version > version/version
