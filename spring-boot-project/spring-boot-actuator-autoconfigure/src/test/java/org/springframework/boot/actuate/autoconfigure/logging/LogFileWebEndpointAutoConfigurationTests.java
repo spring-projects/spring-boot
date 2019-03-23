@@ -89,7 +89,16 @@ public class LogFileWebEndpointAutoConfigurationTests {
 				.withPropertyValues("logging.file.name:test.log",
 						"management.endpoint.logfile.enabled:false")
 				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+						.doesNotHaveBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	public void logFileWebEndpointCanBeExcluded() {
+		this.contextRunner
+				.withPropertyValues("logging.file.name:test.log",
+						"management.endpoints.web.exposure.exclude=logfile")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test

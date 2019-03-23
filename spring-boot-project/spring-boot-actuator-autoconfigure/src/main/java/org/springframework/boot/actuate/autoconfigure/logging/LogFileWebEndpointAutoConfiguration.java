@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.logging;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -40,6 +42,8 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnEnabledEndpoint(endpoint = LogFileWebEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = LogFileWebEndpoint.class)
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
 
