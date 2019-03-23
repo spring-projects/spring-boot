@@ -93,6 +93,15 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	public void logFileWebEndpointCanBeExcluded() {
+		this.contextRunner
+				.withPropertyValues("logging.file.name:test.log",
+						"management.endpoints.web.exposure.exclude=logfile")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
 	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
 		File file = this.temp.newFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
