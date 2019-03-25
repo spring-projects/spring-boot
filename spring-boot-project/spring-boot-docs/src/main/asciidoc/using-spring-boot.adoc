@@ -770,7 +770,7 @@ apply to you (i.e. if you run your application from a container), consider exclu
 devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
 
 TIP: Flagging the dependency as optional in Maven or using a custom `developmentOnly`
-configuration in Gradle  (as shown above) is a best practice that prevents devtools from
+configuration in Gradle (as shown above) is a best practice that prevents devtools from
 being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default. If you want to use a

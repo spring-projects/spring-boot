@@ -75,7 +75,7 @@ import org.springframework.util.StringUtils;
  * properties from well known file locations. By default properties will be loaded from
  * 'application.properties' and/or 'application.yml' files in the following locations:
  * <ul>
- * <li>file:./config/:</li>
+ * <li>file:./config/</li>
  * <li>file:./</li>
  * <li>classpath:config/</li>
  * <li>classpath:</li>
