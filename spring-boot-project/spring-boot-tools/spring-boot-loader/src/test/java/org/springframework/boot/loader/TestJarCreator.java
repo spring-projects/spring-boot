@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,7 @@ public abstract class TestJarCreator {
 			writeEntry(jarOutputStream, "META-INF/versions/9/multi-release.dat", 9);
 			writeEntry(jarOutputStream, "META-INF/versions/10/multi-release.dat", 10);
 			writeEntry(jarOutputStream, "META-INF/versions/11/multi-release.dat", 11);
+			writeEntry(jarOutputStream, "META-INF/versions/12/multi-release.dat", 12);
 		}
 		else {
 			writeEntry(jarOutputStream, "3.dat", 3);
