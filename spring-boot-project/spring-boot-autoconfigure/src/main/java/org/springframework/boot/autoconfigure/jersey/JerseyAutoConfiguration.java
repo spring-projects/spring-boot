@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.ws.rs.ext.ContextResolver;
+import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -201,17 +203,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	}
 
+	@Configuration
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
-	@Configuration
 	static class JacksonResourceConfigCustomizer {
-
-		private static final String JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME = "com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector";
 
 		@Bean
 		public ResourceConfigCustomizer resourceConfigCustomizer(
 				final ObjectMapper objectMapper) {
-			addJaxbAnnotationIntrospectorIfPresent(objectMapper);
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper),
@@ -219,16 +218,12 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			};
 		}
 
-		private void addJaxbAnnotationIntrospectorIfPresent(ObjectMapper objectMapper) {
-			if (ClassUtils.isPresent(JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME,
-					getClass().getClassLoader())) {
-				new ObjectMapperCustomizer().addJaxbAnnotationIntrospector(objectMapper);
-			}
-		}
+		@Configuration
+		@ConditionalOnClass({ JaxbAnnotationIntrospector.class, XmlElement.class })
+		static class JaxbObjectMapperCustomizer {
 
-		private static final class ObjectMapperCustomizer {
-
-			private void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
+			@Autowired
+			public void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
 				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(
