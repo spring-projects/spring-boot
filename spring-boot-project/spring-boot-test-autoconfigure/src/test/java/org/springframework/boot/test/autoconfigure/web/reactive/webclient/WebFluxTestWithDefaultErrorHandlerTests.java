@@ -21,6 +21,8 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -51,6 +53,20 @@ public class WebFluxTestWithDefaultErrorHandlerTests {
 					.jsonPath("$.path").isEqualTo("/one/error")
 					.jsonPath("$.message").isEqualTo("foo");
 		// @formatter:on
+	}
+
+	/**
+	 * Registers an exception handler with the default priority, so the default handler
+	 * provided by Spring Boot will be called first.
+	 */
+	@TestConfiguration
+	static class TestConfig {
+
+		@Bean
+		ExampleWebExceptionHandler exampleWebExceptionHandler() {
+			return new ExampleWebExceptionHandler();
+		}
+
 	}
 
 }
