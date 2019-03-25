@@ -39,10 +39,10 @@ import org.springframework.util.StringUtils;
  */
 final class ConfigurationPropertiesBeanDefinitionRegistrar {
 
+	private static final boolean KOTLIN_PRESENT = KotlinDetector.isKotlinPresent();
+
 	private ConfigurationPropertiesBeanDefinitionRegistrar() {
 	}
-
-	private static final boolean KOTLIN_PRESENT = KotlinDetector.isKotlinPresent();
 
 	public static void register(BeanDefinitionRegistry registry,
 			ConfigurableListableBeanFactory beanFactory, Class<?> type) {

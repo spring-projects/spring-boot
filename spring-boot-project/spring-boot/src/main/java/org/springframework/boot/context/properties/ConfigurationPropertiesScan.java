@@ -33,7 +33,6 @@ import org.springframework.core.annotation.AliasFor;
  *
  * @author Madhura Bhave
  * @since 2.2.0
- * @see ConfigurationPropertiesScanRegistrar
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

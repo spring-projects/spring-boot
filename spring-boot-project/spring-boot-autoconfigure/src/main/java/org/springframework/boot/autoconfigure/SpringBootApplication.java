@@ -53,10 +53,10 @@ import org.springframework.core.annotation.AliasFor;
 @Inherited
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ConfigurationPropertiesScan
 @ComponentScan(excludeFilters = {
 		@Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
 		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
+@ConfigurationPropertiesScan
 public @interface SpringBootApplication {
 
 	/**
