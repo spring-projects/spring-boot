@@ -106,7 +106,23 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private boolean isUnbound(ConfigurationPropertyName name,
 			ConfigurationPropertyName candidate) {
-		return name.isAncestorOf(candidate) && !this.boundNames.contains(candidate);
+		if (name.isAncestorOf(candidate)) {
+			if (!this.boundNames.contains(candidate)
+					&& !isOverriddenCollectionElement(candidate)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isOverriddenCollectionElement(ConfigurationPropertyName candidate) {
+		int length = candidate.getNumberOfElements();
+		if (candidate.isNumericIndex(length - 1)) {
+			ConfigurationPropertyName propertyName = candidate
+					.chop(candidate.getNumberOfElements() - 1);
+			return this.boundNames.contains(propertyName);
+		}
+		return false;
 	}
 
 }
