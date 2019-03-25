@@ -49,36 +49,71 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
-		this.contextRunner.withPropertyValues("logging.file.name:test.log").run(
-				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+	public void runWithOnlyExposedShouldNotHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	public void runWhenLoggingFileIsSetAndNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("logging.file.name:test.log")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	public void runWhenLoggingFileIsSetAndExposedShouldHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("logging.file.name:test.log",
+						"management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	@Deprecated
-	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSetWithDeprecatedProperty() {
-		this.contextRunner.withPropertyValues("logging.file:test.log").run(
-				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+	public void runWhenLoggingFileIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("logging.file:test.log",
+						"management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSet() {
-		this.contextRunner.withPropertyValues("logging.file.path:test/logs").run(
-				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+	public void runWhenLoggingPathIsSetAndNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("logging.file.path:test/logs")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LogFileWebEndpoint.class));
+	}
+
+	@Test
+	public void runWhenLoggingPathIsSetAndExposedShouldHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("logging.file.path:test/logs",
+						"management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	@Deprecated
-	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSetWithDeprecatedProperty() {
-		this.contextRunner.withPropertyValues("logging.path:test/logs").run(
-				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+	public void runWhenLoggingPathIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("logging.path:test/logs",
+						"management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
 		this.contextRunner
 				.withPropertyValues(
-						"management.endpoint.logfile.external-file:external.log")
+						"management.endpoint.logfile.external-file:external.log",
+						"management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LogFileWebEndpoint.class));
 	}
@@ -93,19 +128,11 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void logFileWebEndpointCanBeExcluded() {
-		this.contextRunner
-				.withPropertyValues("logging.file.name:test.log",
-						"management.endpoints.web.exposure.exclude=logfile")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LogFileWebEndpoint.class));
-	}
-
-	@Test
 	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
 		File file = this.temp.newFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
 		this.contextRunner.withPropertyValues(
+				"management.endpoints.web.exposure.include=logfile",
 				"management.endpoint.logfile.external-file:" + file.getAbsolutePath())
 				.run((context) -> {
 					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
