@@ -7,7 +7,7 @@
   myxml-hl.xml - konfigurace zvyraznovace XML, ktera zvlast zvyrazni
                  HTML elementy a XSL elementy
 
-  This file has been customized for the Asciidoctor project (http://asciidoctor.org).
+  This file has been customized for the Asciidoctor project (https://asciidoctor.org).
 -->
 <highlighters>
   <highlighter type="xml">

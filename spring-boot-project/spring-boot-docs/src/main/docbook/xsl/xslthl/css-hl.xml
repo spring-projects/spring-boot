@@ -4,7 +4,7 @@
 Syntax highlighting definition for CSS files
 
 xslthl - XSLT Syntax Highlighting
-http://sourceforge.net/projects/xslthl/
+https://sourceforge.net/projects/xslthl/
 Copyright (C) 2011-2012 Martin Hujer, Michiel Hendriks
 
 This software is provided 'as-is', without any express or implied
@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 Martin Hujer <mhujer at users.sourceforge.net>
 Michiel Hendriks <elmuerte at users.sourceforge.net>
 
-Reference: http://www.w3.org/TR/CSS21/propidx.html
+Reference: https://www.w3.org/TR/CSS21/propidx.html
 
 -->
 <highlighters>
