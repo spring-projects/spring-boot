@@ -80,7 +80,7 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void serializeNulls() {
+	public void serializeNullsTrue() {
 		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:true")
 				.run((context) -> {
 					Gson gson = context.getBean(Gson.class);
@@ -89,7 +89,7 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void serializeNulls() {
+	public void serializeNullsFalse() {
 		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:false")
 				.run((context) -> {
 					Gson gson = context.getBean(Gson.class);
