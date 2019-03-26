@@ -413,23 +413,25 @@ public class WebFluxAutoConfigurationTests {
 
 	@Test
 	public void cachePeriod() {
+		Assertions.setExtractBareNamePropertyMethods(false);
 		this.contextRunner.withPropertyValues("spring.resources.cache.period:5")
 				.run((context) -> {
 					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
 						if (handler instanceof ResourceWebHandler) {
-							Assertions.setExtractBareNamePropertyMethods(false);
 							assertThat(((ResourceWebHandler) handler).getCacheControl())
 									.isEqualToComparingFieldByField(
 											CacheControl.maxAge(5, TimeUnit.SECONDS));
 						}
 					}
 				});
+		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
 	@Test
 	public void cacheControl() {
+		Assertions.setExtractBareNamePropertyMethods(false);
 		this.contextRunner
 				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
@@ -438,7 +440,6 @@ public class WebFluxAutoConfigurationTests {
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
 						if (handler instanceof ResourceWebHandler) {
-							Assertions.setExtractBareNamePropertyMethods(false);
 							assertThat(((ResourceWebHandler) handler).getCacheControl())
 									.isEqualToComparingFieldByField(
 											CacheControl.maxAge(5, TimeUnit.SECONDS)
@@ -446,6 +447,7 @@ public class WebFluxAutoConfigurationTests {
 						}
 					}
 				});
+		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
