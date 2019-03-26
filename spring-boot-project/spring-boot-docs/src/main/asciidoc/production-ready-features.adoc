@@ -1514,7 +1514,7 @@ using the following property:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.elastic.host=http://elastic.example.com:8086
+	management.metrics.export.elastic.host=https://elastic.example.com:8086
 ----
 
 
@@ -1636,7 +1636,7 @@ server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.kairos.uri=http://kairosdb.example.com:8080/api/v1/datapoints
+	management.metrics.export.kairos.uri=https://kairosdb.example.com:8080/api/v1/datapoints
 ----
 
 

@@ -271,23 +271,23 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getClientName()).isEqualTo(issuer);
 		assertThat(adapted.getScopes()).containsOnly("user");
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(providerDetails.getAuthorizationUri())
-				.isEqualTo("http://example.com/auth");
-		assertThat(providerDetails.getTokenUri()).isEqualTo("http://example.com/token");
-		assertThat(providerDetails.getJwkSetUri()).isEqualTo("http://example.com/jwk");
+				.isEqualTo("https://example.com/auth");
+		assertThat(providerDetails.getTokenUri()).isEqualTo("https://example.com/token");
+		assertThat(providerDetails.getJwkSetUri()).isEqualTo("https://example.com/jwk");
 		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
-		assertThat(userInfoEndpoint.getUri()).isEqualTo("http://example.com/info");
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/info");
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 	}
 
 	private Provider createProvider() {
 		Provider provider = new Provider();
-		provider.setAuthorizationUri("http://example.com/auth");
-		provider.setTokenUri("http://example.com/token");
-		provider.setUserInfoUri("http://example.com/info");
+		provider.setAuthorizationUri("https://example.com/auth");
+		provider.setTokenUri("https://example.com/token");
+		provider.setUserInfoUri("https://example.com/info");
 		provider.setUserNameAttribute("sub");
-		provider.setJwkSetUri("http://example.com/jwk");
+		provider.setJwkSetUri("https://example.com/jwk");
 		return provider;
 	}
 
@@ -297,7 +297,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
 		registration.setClientAuthenticationMethod("post");
-		registration.setRedirectUri("http://example.com/redirect");
+		registration.setRedirectUri("https://example.com/redirect");
 		registration.setScope(Collections.singleton("user"));
 		registration.setAuthorizationGrantType("authorization_code");
 		return registration;
