@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  * referenced column name.
  *
  * @author Phillip Webb
- * @see "http://stackoverflow.com/questions/7689206/ejb3namingstrategy-vs-improvednamingstrategy-foreign-key-naming"
+ * @see "https://stackoverflow.com/questions/7689206/ejb3namingstrategy-vs-improvednamingstrategy-foreign-key-naming"
  * @since 1.2.0
  */
 @SuppressWarnings("serial")

@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"security.oauth2.resource.userInfoUri:http://example.com",
+		"security.oauth2.resource.userInfoUri:https://example.com",
 		"security.oauth2.client.clientId=foo" })
 @DirtiesContext
 public class UserInfoTokenServicesRefreshTokenTests {

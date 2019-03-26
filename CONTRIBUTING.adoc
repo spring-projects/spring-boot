@@ -14,8 +14,8 @@ unacceptable behavior to spring-code-of-conduct@pivotal.io.
 
 == Using GitHub issues
 We use GitHub issues to track bugs and enhancements. If you have a general usage question
-please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
-broader community monitor the http://stackoverflow.com/tags/spring-boot[`spring-boot`]
+please ask on https://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
+broader community monitor the https://stackoverflow.com/tags/spring-boot[`spring-boot`]
 tag.
 
 If you are reporting a bug, please help to speed up problem diagnosis by providing as much
@@ -43,7 +43,7 @@ added after the original pull request but before a merge.
   the '`Importing into eclipse`' instructions below you should get project specific
   formatting automatically. You can also import formatter settings using the
   `eclipse-code-formatter.xml` file from the `eclipse` folder. If using IntelliJ IDEA, you
-  can use the http://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter Plugin]
+  can use the https://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter Plugin]
   to import the same file.
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
@@ -56,7 +56,7 @@ added after the original pull request but before a merge.
 * A few unit tests would help a lot as well -- someone has to do it.
 * If no-one else is using your branch, please rebase it against the current master (or
   other target branch in the main project).
-* When writing a commit message please follow http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
+* When writing a commit message please follow https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
   if you are fixing an existing issue please add `Fixes gh-XXXX` at the end of the commit
   message (where `XXXX` is the issue number).
 
@@ -65,15 +65,15 @@ added after the original pull request but before a merge.
 == Working with the code
 If you don't have an IDE preference we would recommend that you use
 https://spring.io/tools/sts[Spring Tools Suite] or
-http://eclipse.org[Eclipse] when working with the code. We use the
-http://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
+https://eclipse.org[Eclipse] when working with the code. We use the
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.
 
 
 
 === Building from source
 To build the source you will need to install
-http://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
+https://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
 
 
 
@@ -153,7 +153,7 @@ Spring Boot includes a `.setup` files which can be used with the Eclipse Install
 provision a new environment. To use the installer:
 
 * Download and run the latest Eclipse Installer from
-  http://www.eclipse.org/downloads/[eclipse.org/downloads/].
+  https://www.eclipse.org/downloads/[eclipse.org/downloads/].
 * Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
   install and click "`next`".
@@ -175,7 +175,7 @@ easier to navigate.
 
 ==== Manual installation with m2eclipse
 If you prefer to install Eclipse yourself we recommend that you use the
-http://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
 installed it is available from the "Eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these

@@ -551,7 +551,7 @@ public class MetricFilterAutoConfigurationTests {
 						throws ServletException, IOException {
 			// send redirect before filter chain is executed, like Spring Security sending
 			// us back to a login page
-			response.sendRedirect("http://example.com");
+			response.sendRedirect("https://example.com");
 		}
 
 	}
