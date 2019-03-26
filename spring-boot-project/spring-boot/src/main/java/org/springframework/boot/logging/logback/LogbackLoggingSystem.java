@@ -53,7 +53,7 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link LoggingSystem} for <a href="http://logback.qos.ch">logback</a>.
+ * {@link LoggingSystem} for <a href="https://logback.qos.ch">logback</a>.
  *
  * @author Phillip Webb
  * @author Dave Syer

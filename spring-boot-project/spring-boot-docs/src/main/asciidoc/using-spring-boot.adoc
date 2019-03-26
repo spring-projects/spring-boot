@@ -61,7 +61,7 @@ your own pom.
 * Sensible
 https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource
 filtering].
-* Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
+* Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin],
 https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and
 https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml`

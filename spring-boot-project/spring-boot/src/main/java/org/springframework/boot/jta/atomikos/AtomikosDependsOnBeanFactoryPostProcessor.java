@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link BeanFactoryPostProcessor} to automatically setup the recommended
  * {@link BeanDefinition#setDependsOn(String[]) dependsOn} settings for
- * <a href="http://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
+ * <a href="https://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
  * ordering</a>.
  *
  * @author Phillip Webb

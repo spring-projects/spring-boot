@@ -20,7 +20,7 @@ under the License.
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-		xmlns:xslthl="http://xslthl.sf.net"
+		xmlns:xslthl="http://xslthl.sourceforge.net/"
 		xmlns:d="http://docbook.org/ns/docbook"
 		exclude-result-prefixes="xslthl d"
 		version='1.0'>
