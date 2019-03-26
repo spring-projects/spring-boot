@@ -14,6 +14,7 @@
 	<description>Spring Boot Actuator AutoConfigure</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
@@ -636,6 +637,24 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-doc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
+									<unpack>true</unpack>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<dependencies>
@@ -732,7 +751,18 @@
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
-									<backend>html</backend>
+									<backend>html5</backend>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>spring.css</stylesheet>
+									</attributes>
 								</configuration>
 							</execution>
 							<execution>
@@ -747,7 +777,8 @@
 							</execution>
 						</executions>
 						<configuration>
-							<sourceDocumentName>index.adoc</sourceDocumentName>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
 							<attributes>
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>
@@ -761,6 +792,28 @@
 								<version>1.5.0-alpha.11</version>
 							</dependency>
 						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-asciidoc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/asciidoc</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
