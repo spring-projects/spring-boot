@@ -56,7 +56,7 @@ public class MultipleResourceServerConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DoubleResourceConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.resource.tokenInfoUri:https://example.com",
 				"security.oauth2.client.clientId=acme");
 		this.context.refresh();
 		assertThat(this.context

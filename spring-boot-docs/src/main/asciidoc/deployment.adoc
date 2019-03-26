@@ -312,7 +312,7 @@ option : AWS Elastic Beanstalk.
 
 
 ==== AWS Elastic Beanstalk
-As described in the official http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
+As described in the official https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
 Beanstalk Java guide], there are two main options to deploy a Java application; You can
 either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
@@ -356,7 +356,7 @@ binaries instead, add the following to your `.elasticbeanstalk/config.yml` file:
 ====== Reduce costs by setting the environment type
 By default an Elastic Beanstalk environment is load balanced. The load balancer has a cost
 perspective, to avoid it, set the environment type to "`Single instance`" as described
-http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[in the Amazon documentation].
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[in the Amazon documentation].
 Single instance environments can be created using the CLI as well using the following
 command:
 

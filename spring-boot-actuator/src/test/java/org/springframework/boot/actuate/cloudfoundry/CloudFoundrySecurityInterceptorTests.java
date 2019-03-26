@@ -74,7 +74,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	@Test
 	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() throws Exception {
 		this.request.setMethod("OPTIONS");
-		this.request.addHeader(HttpHeaders.ORIGIN, "http://example.com");
+		this.request.addHeader(HttpHeaders.ORIGIN, "https://example.com");
 		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
 		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
 				this.handlerMethod);
