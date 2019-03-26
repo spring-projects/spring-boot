@@ -47,7 +47,7 @@ public class ResourceServerPropertiesTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void json() throws Exception {
-		this.properties.getJwt().setKeyUri("http://example.com/token_key");
+		this.properties.getJwt().setKeyUri("https://example.com/token_key");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(this.properties);
 		Map<String, Object> value = mapper.readValue(json, Map.class);

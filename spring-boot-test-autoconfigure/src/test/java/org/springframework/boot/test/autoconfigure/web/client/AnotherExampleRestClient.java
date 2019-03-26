@@ -31,7 +31,7 @@ public class AnotherExampleRestClient {
 	private RestTemplate restTemplate;
 
 	public AnotherExampleRestClient(RestTemplateBuilder builder) {
-		this.restTemplate = builder.rootUri("http://example.com").build();
+		this.restTemplate = builder.rootUri("https://example.com").build();
 	}
 
 	protected RestTemplate getRestTemplate() {

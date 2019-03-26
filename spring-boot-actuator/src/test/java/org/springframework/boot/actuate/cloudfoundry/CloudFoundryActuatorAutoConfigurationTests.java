@@ -115,7 +115,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				"cloudFoundrySecurityService");
 		String cloudControllerUrl = (String) ReflectionTestUtils
 				.getField(interceptorSecurityService, "cloudControllerUrl");
-		assertThat(cloudControllerUrl).isEqualTo("http://my-cloud-controller.com");
+		assertThat(cloudControllerUrl).isEqualTo("https://my-cloud-controller.com");
 	}
 
 	@Test
@@ -189,7 +189,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	private CloudFoundryEndpointHandlerMapping getHandlerMapping() {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
 				"vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:http://my-cloud-controller.com");
+				"vcap.application.cf_api:https://my-cloud-controller.com");
 		this.context.refresh();
 		return this.context.getBean("cloudFoundryEndpointHandlerMapping",
 				CloudFoundryEndpointHandlerMapping.class);

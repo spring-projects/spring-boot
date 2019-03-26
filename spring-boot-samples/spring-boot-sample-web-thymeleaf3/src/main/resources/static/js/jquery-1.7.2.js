@@ -1,13 +1,13 @@
 /*!
  * jQuery JavaScript Library v1.7.2
- * http://jquery.com/
+ * https://jquery.com/
  *
  * Copyright 2011, John Resig
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
+ * https://jquery.org/license
  *
  * Includes Sizzle.js
- * http://sizzlejs.com/
+ * https://sizzlejs.com/
  * Copyright 2011, The Dojo Foundation
  * Released under the MIT, BSD, and GPL Licenses.
  *
@@ -565,7 +565,7 @@ jQuery.extend({
     }
 
     // Make sure the incoming data is actual JSON
-    // Logic borrowed from http://json.org/json2.js
+    // Logic borrowed from https://json.org/json2.js
     if ( rvalidchars.test( data.replace( rvalidescape, "@" )
       .replace( rvalidtokens, "]" )
       .replace( rvalidbraces, "")) ) {
@@ -604,7 +604,7 @@ jQuery.extend({
 
   // Evaluates a script in a global context
   // Workarounds based on findings by Jim Driscoll
-  // http://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context
+  // https://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context
   globalEval: function( data ) {
     if ( data && rnotwhite.test( data ) ) {
       // We use execScript on Internet Explorer
@@ -880,7 +880,7 @@ jQuery.extend({
   },
 
   // Use of jQuery.browser is frowned upon.
-  // More details: http://docs.jquery.com/Utilities/jQuery.browser
+  // More details: https://docs.jquery.com/Utilities/jQuery.browser
   uaMatch: function( ua ) {
     ua = ua.toLowerCase();
 
@@ -2159,7 +2159,7 @@ jQuery.fn.extend({
     });
   },
   // Based off of the plugin by Clint Helfers, with permission.
-  // http://blindsignals.com/index.php/2009/07/jquery-delay/
+  // http://blindsignals.com
   delay: function( time, type ) {
     time = jQuery.fx ? jQuery.fx.speeds[ time ] || time : time;
     type = type || "fx";
@@ -2688,7 +2688,7 @@ jQuery.extend({
     tabIndex: {
       get: function( elem ) {
         // elem.tabIndex doesn't always return the correct value when it hasn't been explicitly set
-        // http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
+        // https://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
         var attributeNode = elem.getAttributeNode("tabindex");
 
         return attributeNode && attributeNode.specified ?
@@ -3551,7 +3551,7 @@ function returnTrue() {
 }
 
 // jQuery.Event is based on DOM3 Events as specified by the ECMAScript Language Binding
-// http://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
+// https://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
 jQuery.Event.prototype = {
   preventDefault: function() {
     this.isDefaultPrevented = returnTrue;
@@ -3941,7 +3941,7 @@ jQuery.each( ("blur focus focusin focusout load resize scroll unload click dblcl
  * Sizzle CSS Selector Engine
  *  Copyright 2011, The Dojo Foundation
  *  Released under the MIT, BSD, and GPL Licenses.
- *  More information: http://sizzlejs.com/
+ *  More information: https://sizzlejs.com/
  */
 (function(){
 
@@ -6298,7 +6298,7 @@ function findInputs( elem ) {
   }
 }
 
-// Derived From: http://www.iecss.com/shimprove/javascript/shimprove.1-0-1.js
+// Derived From: https://www.iecss.com/shimprove/javascript/shimprove.1-0-1.js
 function shimCloneNode( elem ) {
   var div = document.createElement( "div" );
   safeFragment.appendChild( div );
@@ -6735,7 +6735,7 @@ if ( document.defaultView && document.defaultView.getComputedStyle ) {
 
     // A tribute to the "awesome hack by Dean Edwards"
     // WebKit uses "computed value (percentage if specified)" instead of "used value" for margins
-    // which is against the CSSOM draft spec: http://dev.w3.org/csswg/cssom/#resolved-values
+    // which is against the CSSOM draft spec: https://dev.w3.org/csswg/cssom/#resolved-values
     if ( !jQuery.support.pixelMargin && computedStyle && rmargin.test( name ) && rnumnonpx.test( ret ) ) {
       width = style.width;
       style.width = ret;
@@ -8250,7 +8250,7 @@ if ( jQuery.support.ajax ) {
 
             // Firefox throws exceptions when accessing properties
             // of an xhr when a network error occured
-            // http://helpful.knobs-dials.com/index.php/Component_returned_failure_code:_0x80040111_(NS_ERROR_NOT_AVAILABLE)
+            // https://helpful.knobs-dials.com/index.php/Component_returned_failure_code:_0x80040111_(NS_ERROR_NOT_AVAILABLE)
             try {
 
               // Was never called and is aborted or complete

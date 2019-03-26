@@ -75,7 +75,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 		mapping.setSecurityInterceptor(securityInterceptor);
 		mapping.afterPropertiesSet();
 		MockHttpServletRequest request = request("POST", "/a");
-		request.addHeader("Origin", "http://example.com");
+		request.addHeader("Origin", "https://example.com");
 		assertThat(mapping.getHandler(request).getInterceptors().length).isEqualTo(3);
 		assertThat(mapping.getHandler(request).getInterceptors()[2])
 				.isEqualTo(securityInterceptor);

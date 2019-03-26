@@ -164,7 +164,7 @@ public class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<String, Object>();
 		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
 		grapeEngine
-				.addResolver(createResolver("restlet.org", "http://maven.restlet.org"));
+				.addResolver(createResolver("restlet.org", "https://maven.restlet.org"));
 		grapeEngine.grab(args, createDependency("org.restlet", "org.restlet", "1.1.6"));
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}
