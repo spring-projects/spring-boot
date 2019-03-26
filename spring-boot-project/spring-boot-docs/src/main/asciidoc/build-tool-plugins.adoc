@@ -33,7 +33,7 @@ section of your `pom.xml`, as shown in the following example:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 		<!-- ... -->
 		<build>
@@ -108,7 +108,7 @@ the usual `packaging` element, as shown in the following example:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<!-- ... -->
 		<packaging>jar</packaging>
 		<!-- ... -->
@@ -137,7 +137,7 @@ following example:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<!-- ... -->
 		<packaging>war</packaging>
 		<!-- ... -->
@@ -366,7 +366,7 @@ If your archive already includes libraries, you can use `Libraries.NONE`.
 [[build-tool-plugins-find-a-main-class]]
 === Finding a Main Class
 If you do not use `Repackager.setMainClass()` to specify a main class, the repackager
-uses http://asm.ow2.org/[ASM] to read class files and tries to find a suitable class with
+uses https://asm.ow2.org/[ASM] to read class files and tries to find a suitable class with
 a `public static void main(String[] args)` method. An exception is thrown if more than one
 candidate is found.
 

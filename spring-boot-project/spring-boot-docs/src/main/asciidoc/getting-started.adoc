@@ -129,7 +129,7 @@ The following listing shows a typical `pom.xml` file:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -257,7 +257,7 @@ classpath is set correctly).
 ==== Installation with SDKMAN!
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions
 of various binary SDKs, including Groovy and the Spring Boot CLI.
-Get SDKMAN! from http://sdkman.io and install Spring Boot by using the following
+Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following
 commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -305,7 +305,7 @@ You can see it by running the following command:
 
 [[getting-started-homebrew-cli-installation]]
 ==== OSX Homebrew Installation
-If you are on a Mac and use http://brew.sh/[Homebrew], you can install the Spring Boot
+If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot
 CLI by using the following commands:
 
 [indent=0]
@@ -323,7 +323,7 @@ that case, run `brew update` and try again.
 
 [[getting-started-macports-cli-installation]]
 ==== MacPorts Installation
-If you are on a Mac and use http://www.macports.org/[MacPorts], you can install the
+If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the
 Spring Boot CLI by using the following command:
 
 [indent=0]
@@ -358,7 +358,7 @@ completion scripts are automatically registered with your shell.
 
 [[getting-started-scoop-cli-installation]]
 ==== Windows Scoop Installation
-If you are on a Windows and use http://scoop.sh/[Scoop], you can install the Spring Boot
+If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot
 CLI by using the following commands:
 
 [indent=0]
@@ -499,7 +499,7 @@ used to build your project. Open your favorite text editor and add the following
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>

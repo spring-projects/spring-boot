@@ -84,7 +84,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -108,7 +108,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 					mockMvc.perform(get("/cloudfoundryapplication"))
@@ -122,7 +122,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -139,7 +139,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -150,7 +150,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 					String cloudControllerUrl = (String) ReflectionTestUtils
 							.getField(interceptorSecurityService, "cloudControllerUrl");
 					assertThat(cloudControllerUrl)
-							.isEqualTo("http://my-cloud-controller.com");
+							.isEqualTo("https://my-cloud-controller.com");
 				});
 	}
 
@@ -159,7 +159,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.cloudfoundry.skip-ssl-validation:true")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
@@ -229,7 +229,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -247,7 +247,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.endpoints.web.path-mapping.test=custom")
 				.withUserConfiguration(TestConfiguration.class).run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
@@ -271,7 +271,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.withConfiguration(
 						AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
 				.run((context) -> {

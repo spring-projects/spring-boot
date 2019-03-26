@@ -34,7 +34,7 @@ do as they were designed before this was clarified.
 | https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
-| http://www.axonframework.org/[Axon Framework]
+| https://axoniq.io[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
 
 | https://azure.microsoft.com/[Azure]
@@ -70,7 +70,7 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
-| http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
+| https://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
 
 | https://www.grpc.io/[gRPC]
@@ -100,7 +100,7 @@ do as they were designed before this was clarified.
 | JSF integration for various libraries
 | https://github.com/joinfaces/joinfaces
 
-| http://www.liquigraph.org/[Liquigraph]
+| https://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 
 | https://logback.qos.ch/access.html[Logback-access]
@@ -122,7 +122,7 @@ do as they were designed before this was clarified.
 | https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
 
 | https://resteasy.jboss.org/[RESTEasy]
-| https://github.com/paypal/resteasy-spring-boot
+| https://github.com/resteasy/resteasy-spring-boot
 
 | https://github.com/rollbar/rollbar-java/[Rollbar]
 | https://github.com/olmero/rollbar-spring-boot-starter

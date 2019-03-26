@@ -61,7 +61,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	@Test
 	public void preHandleWhenRequestIsPreFlightShouldBeOk() {
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest
-				.options("/a").header(HttpHeaders.ORIGIN, "http://example.com")
+				.options("/a").header(HttpHeaders.ORIGIN, "https://example.com")
 				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeNextWith(
 				(response) -> assertThat(response.getStatus()).isEqualTo(HttpStatus.OK))
