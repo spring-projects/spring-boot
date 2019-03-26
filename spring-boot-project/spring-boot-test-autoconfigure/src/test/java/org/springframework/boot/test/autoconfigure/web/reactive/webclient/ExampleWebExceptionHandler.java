@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
 
@@ -28,6 +29,7 @@ import org.springframework.web.server.WebExceptionHandler;
  * @author Madhura Bhave
  * @author Ali Dehghani
  */
+@Component
 public class ExampleWebExceptionHandler implements WebExceptionHandler {
 
 	@Override

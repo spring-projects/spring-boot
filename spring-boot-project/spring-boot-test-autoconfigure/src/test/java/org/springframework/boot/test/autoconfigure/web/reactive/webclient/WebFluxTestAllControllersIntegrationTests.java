@@ -21,10 +21,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -33,7 +29,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * Tests for {@link WebFluxTest} when no explicit controller is defined.
  *
  * @author Stephane Nicoll
- * @author Ali Dehghani
  */
 @RunWith(SpringRunner.class)
 @WithMockUser
@@ -63,21 +58,6 @@ public class WebFluxTestAllControllersIntegrationTests {
 	@Test
 	public void shouldFindJsonController() {
 		this.webClient.get().uri("/json").exchange().expectStatus().isOk();
-	}
-
-	/**
-	 * A test configuration to register a custom exception handler. Since the registered
-	 * handler has the highest possible priority, the default exception handler provided
-	 * by the Spring Boot will not get a chance to handle exceptions.
-	 */
-	@TestConfiguration
-	static class TestConfig {
-
-		@Bean
-		@Order(Ordered.HIGHEST_PRECEDENCE)
-		ExampleWebExceptionHandler exampleWebExceptionHandler() {
-			return new ExampleWebExceptionHandler();
-		}
 	}
 
 }
