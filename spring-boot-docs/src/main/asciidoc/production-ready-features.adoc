@@ -187,9 +187,9 @@ For example, to mark _all_ endpoints as sensitive except `info`:
 
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints
-If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
+If https://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
 through the `spring-boot-starter-hateoas` or if you are using
-http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
+https://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
 from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
 with links to all the endpoints. The "`discovery page`" is available on `/actuator` by
 default. It is implemented as an endpoint, allowing properties to be used to configure
@@ -209,8 +209,8 @@ an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 
 [[production-ready-endpoint-cors]]
 === CORS support
-http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
-(CORS) is a http://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
+https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a https://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
 flexible way what kind of cross domain requests are authorized. Actuator's MVC endpoints
 can be configured to support such scenarios.
 
@@ -220,7 +220,7 @@ CORS support is disabled by default and is only enabled once the
 
 [source,properties,indent=0]
 ----
-	endpoints.cors.allowed-origins=http://example.com
+	endpoints.cors.allowed-origins=https://example.com
 	endpoints.cors.allowed-methods=GET,POST
 ----
 
@@ -802,7 +802,7 @@ authentication will be applied and you should see a message like this:
 ----
 
 Linux and OSX users can use `ssh` to connect to the remote shell, Windows users can
-download and install http://www.putty.org/[PuTTY].
+download and install https://www.putty.org/[PuTTY].
 
 [indent=0,subs="attributes"]
 ----
@@ -900,7 +900,7 @@ In addition to new commands, it is also possible to extend other CRaSH shell fea
 All Spring Beans that extend `org.crsh.plugin.CRaSHPlugin` will be automatically
 registered with the shell.
 
-For more information please refer to the http://www.crashub.org/[CRaSH reference
+For more information please refer to the https://www.crashub.org/[CRaSH reference
 documentation].
 
 
@@ -1076,7 +1076,7 @@ Here is a simple example that counts the number of times that a method is invoke
 
 TIP: You can use any string as a metric name but you should follow guidelines of your chosen
 store/graphing technology. Some good guidelines for Graphite are available on
-http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/[Matt Aimonetti's Blog].
+https://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/[Matt Aimonetti's Blog].
 
 
 
@@ -1461,7 +1461,7 @@ customize the file name and path via the `Writer` constructor.
 == What to read next
 If you want to explore some of the concepts discussed in this chapter, you can take a
 look at the actuator {github-code}/spring-boot-samples[sample applications]. You also
-might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
+might want to read about graphing tools such as https://graphite.wikidot.com/[Graphite].
 
 Otherwise, you can continue on, to read about <<deployment.adoc#deployment,
 '`deployment options`'>> or jump ahead

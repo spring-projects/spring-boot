@@ -242,7 +242,7 @@ spring.devtools.remote.restart.enabled=false
 </build>
 ---
 
-  Such setup can now use the {{{http://maven.apache.org/surefire/maven-failsafe-plugin/}failsafe-plugin}} to
+  Such setup can now use the {{{https://maven.apache.org/surefire/maven-failsafe-plugin/}failsafe-plugin}} to
   run your integration tests as you would expect.
 
   For more detailed examples of how to configure this goal see:

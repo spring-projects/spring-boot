@@ -536,10 +536,10 @@ for details.
 
 [[boot-features-external-config-yaml]]
 === Using YAML instead of Properties
-http://yaml.org[YAML] is a superset of JSON, and as such is a very convenient format
+https://yaml.org[YAML] is a superset of JSON, and as such is a very convenient format
 for specifying hierarchical configuration data. The `SpringApplication` class will
 automatically support YAML as an alternative to properties whenever you have the
-http://www.snakeyaml.org/[SnakeYAML] library on your classpath.
+https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
 
 NOTE: If you use '`starter POMs`' SnakeYAML will be automatically provided via
 `spring-boot-starter`.
@@ -558,10 +558,10 @@ For example, the following YAML document:
 ----
 	environments:
 		dev:
-			url: http://dev.bar.com
+			url: https://dev.bar.com
 			name: Developer Setup
 		prod:
-			url: http://foo.bar.com
+			url: https://foo.bar.com
 			name: My Cool App
 ----
 
@@ -569,9 +569,9 @@ Would be transformed into these properties:
 
 [source,properties,indent=0]
 ----
-	environments.dev.url=http://dev.bar.com
+	environments.dev.url=https://dev.bar.com
 	environments.dev.name=Developer Setup
-	environments.prod.url=http://foo.bar.com
+	environments.prod.url=https://foo.bar.com
 	environments.prod.name=My Cool App
 ----
 
@@ -1005,12 +1005,12 @@ See _<<boot-features-external-config-profile-specific-properties>>_ for details.
 
 [[boot-features-logging]]
 == Logging
-Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all internal
+Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal
 logging, but leaves the underlying log implementation open. Default configurations are
 provided for
-http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html[Java Util Logging],
-http://logging.apache.org/log4j/[Log4J], http://logging.apache.org/log4j/2.x/[Log4J2] and
-http://logback.qos.ch/[Logback]. In each case loggers are pre-configured to use console
+https://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html[Java Util Logging],
+https://logging.apache.org/log4j/[Log4J], https://logging.apache.org/log4j/2.x/[Log4J2] and
+https://logback.qos.ch/[Logback]. In each case loggers are pre-configured to use console
 output with optional file output also available.
 
 By default, If you use the '`Starter POMs`', Logback will be used for logging. Appropriate
@@ -1396,7 +1396,7 @@ Here is a typical example `@RestController` to serve JSON data:
 
 Spring MVC is part of the core Spring Framework and detailed information is available in
 the  {spring-reference}#mvc[reference documentation]. There are also several guides
-available at http://spring.io/guides that cover Spring MVC.
+available at https://spring.io/guides that cover Spring MVC.
 
 
 
@@ -1489,7 +1489,7 @@ default welcome page detection will switch to your custom locations, so if there
 application.
 
 In addition to the '`standard`' static resource locations above, a special case is made
-for http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+`
+for https://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+`
 will be served from jar files if they are packaged in the Webjars format.
 
 TIP: Do not use the `src/main/webapp` directory if your application will be packaged as a
@@ -1562,11 +1562,11 @@ and JSPs. Many other templating engines also ship their own Spring MVC integrati
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * http://freemarker.org/docs/[FreeMarker]
+ * https://freemarker.apache.org/docs[FreeMarker]
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
- * http://www.thymeleaf.org[Thymeleaf]
- * http://velocity.apache.org[Velocity]
- * http://mustache.github.io/[Mustache]
+ * https://www.thymeleaf.org[Thymeleaf]
+ * https://velocity.apache.org[Velocity]
+ * https://mustache.github.io/[Mustache]
 
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
@@ -1710,9 +1710,9 @@ described above.
 [[boot-features-cors]]
 ==== CORS support
 
-http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
-(CORS) is a http://www.w3.org/TR/cors/[W3C specification] implemented by
-http://caniuse.com/#feat=cors[most browsers] that allows you to specify in a flexible
+https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by
+https://caniuse.com/#feat=cors[most browsers] that allows you to specify in a flexible
 way what kind of cross domain requests are authorized, instead of using some less secure
 and less powerful approaches like IFRAME or JSONP.
 
@@ -2295,8 +2295,8 @@ data when your application ends.
 TIP: The '`How-to`' section includes a _<<howto.adoc#howto-database-initialization,
 section on how to initialize a database>>_
 
-Spring Boot can auto-configure embedded http://www.h2database.com[H2],
-http://hsqldb.org/[HSQL] and http://db.apache.org/derby/[Derby] databases. You don't need
+Spring Boot can auto-configure embedded https://www.h2database.com[H2],
+http://hsqldb.org/[HSQL] and https://db.apache.org/derby/[Derby] databases. You don't need
 to provide any connection URLs, simply include a build dependency to the embedded database
 that you want to use.
 
@@ -2377,7 +2377,7 @@ using the `+spring.datasource.*+` prefix, refer to the documentation of the conn
 implementation you are using for more details.
 
 For instance, if you are using the
-http://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat connection pool]
+https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat connection pool]
 you could customize many additional settings:
 
 
@@ -2453,9 +2453,9 @@ started. It provides the following key dependencies:
 * Spring ORMs -- Core ORM support from the Spring Framework.
 
 TIP: We won't go into too many details of JPA or Spring Data here. You can follow the
-http://spring.io/guides/gs/accessing-data-jpa/['`Accessing Data with JPA`'] guide from
-http://spring.io and read the http://projects.spring.io/spring-data-jpa/[Spring Data JPA]
-and  http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
+https://spring.io/guides/gs/accessing-data-jpa/['`Accessing Data with JPA`'] guide from
+https://spring.io and read the https://projects.spring.io/spring-data-jpa/[Spring Data JPA]
+and  https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 
 
 
@@ -2555,7 +2555,7 @@ Here is a typical Spring Data repository:
 ----
 
 TIP: We have barely scratched the surface of Spring Data JPA. For complete details check
-their http://projects.spring.io/spring-data-jpa/[reference documentation].
+their https://projects.spring.io/spring-data-jpa/[reference documentation].
 
 
 
@@ -2591,8 +2591,8 @@ Hibernate autoconfig is active because the `ddl-auto` settings are more fine-gra
 
 [[boot-features-sql-h2-console]]
 === Using H2's web console
-The http://www.h2database.com[H2 database] provides a
-http://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that
+The https://www.h2database.com[H2 database] provides a
+https://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that
 Spring Boot can auto-configure for you. The console will be auto-configured when the
 following conditions are met:
 
@@ -2630,8 +2630,8 @@ the security configuration:
 
 [[boot-features-jooq]]
 == Using jOOQ
-Java Object Oriented Querying (http://www.jooq.org/[jOOQ]) is a popular product from
-http://www.datageekery.com/[Data Geekery] which generates Java code from your
+Java Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from
+https://www.datageekery.com/[Data Geekery] which generates Java code from your
 database, and lets you build type safe SQL queries through its fluent API. Both the
 commercial and open source editions can be used with Spring Boot.
 
@@ -2640,7 +2640,7 @@ commercial and open source editions can be used with Spring Boot.
 === Code Generation
 In order to use jOOQ type-safe queries, you need to generate Java classes from your
 database schema. You can follow the instructions in the
-http://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
+https://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
 If you are using the `jooq-codegen-maven` plugin (and you also use the
 `spring-boot-starter-parent` "`parent POM`") you can safely omit the plugin's `<version>`
 tag. You can also use Spring Boot defined version variables (e.g. `h2.version`) to
@@ -2740,24 +2740,24 @@ complete control of the jOOQ configuration.
 == Working with NoSQL technologies
 Spring Data provides additional projects that help you access a variety of NoSQL
 technologies including
-http://projects.spring.io/spring-data-mongodb/[MongoDB],
-http://projects.spring.io/spring-data-neo4j/[Neo4J],
+https://projects.spring.io/spring-data-mongodb/[MongoDB],
+https://projects.spring.io/spring-data-neo4j/[Neo4J],
 https://github.com/spring-projects/spring-data-elasticsearch/[Elasticsearch],
-http://projects.spring.io/spring-data-solr/[Solr],
-http://projects.spring.io/spring-data-redis/[Redis],
-http://projects.spring.io/spring-data-gemfire/[Gemfire],
-http://projects.spring.io/spring-data-couchbase/[Couchbase] and
-http://projects.spring.io/spring-data-cassandra/[Cassandra].
+https://projects.spring.io/spring-data-solr/[Solr],
+https://projects.spring.io/spring-data-redis/[Redis],
+https://projects.spring.io/spring-data-gemfire/[Gemfire],
+https://projects.spring.io/spring-data-couchbase/[Couchbase] and
+https://projects.spring.io/spring-data-cassandra/[Cassandra].
 Spring Boot provides auto-configuration for Redis, MongoDB, Elasticsearch, Solr and
 Cassandra; you can make use of the other projects, but you will need to configure them
 yourself. Refer to the appropriate reference documentation at
-http://projects.spring.io/spring-data[projects.spring.io/spring-data].
+https://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 
 
 [[boot-features-redis]]
 === Redis
-http://redis.io/[Redis] is a cache, message broker and richly-featured key-value store.
+https://redis.io/[Redis] is a cache, message broker and richly-featured key-value store.
 Spring Boot offers basic auto-configuration for the
 https://github.com/xetorthio/jedis/[Jedis] client library and abstractions on top of it
 provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis]. There
@@ -2798,7 +2798,7 @@ pooled connection factory by default.
 
 [[boot-features-mongodb]]
 === MongoDB
-http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
+https://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
 JSON-like schema instead of traditional table-based relational data. Spring Boot offers
 several conveniences for working with MongoDB, including the
 `spring-boot-starter-data-mongodb` '`Starter POM`'.
@@ -2927,7 +2927,7 @@ is now a Mongo data class rather than a JPA `@Entity`, it will work in the same 
 ----
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping
-technologies, refer to their http://projects.spring.io/spring-data-mongodb/[reference
+technologies, refer to their https://projects.spring.io/spring-data-mongodb/[reference
 documentation].
 
 
@@ -2956,7 +2956,7 @@ Mongo instance's configuration and logging routing.
 === Gemfire
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
 convenient Spring-friendly tools for accessing the
-http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
+https://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
 platform. There is a `spring-boot-starter-data-gemfire` '`Starter POM`' for collecting the
 dependencies in a convenient way. There is currently no auto-configuration support for
 Gemfire, but you can enable Spring Data Repositories with a
@@ -2966,7 +2966,7 @@ https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java
 
 [[boot-features-solr]]
 === Solr
-http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
+https://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
 auto-configuration for the Solr 4 client library and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There is
 a `spring-boot-starter-data-solr` '`Starter POM`' for collecting the dependencies in a
@@ -3015,13 +3015,13 @@ so you could take the JPA example from earlier and, assuming that `City` is now 
 `@SolrDocument` class rather than a JPA `@Entity`, it will work in the same way.
 
 TIP: For complete details of Spring Data Solr, refer to their
-http://projects.spring.io/spring-data-solr/[reference documentation].
+https://projects.spring.io/spring-data-solr/[reference documentation].
 
 
 
 [[boot-features-elasticsearch]]
 === Elasticsearch
-http://www.elasticsearch.org/[Elasticsearch] is an open source, distributed,
+https://www.elastic.co/[Elasticsearch] is an open source, distributed,
 real-time search and analytics engine. Spring Boot offers basic auto-configuration for
 the Elasticsearch and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
@@ -3072,13 +3072,13 @@ infrastructure; so you could take the JPA example from earlier and, assuming tha
 work in the same way.
 
 TIP: For complete details of Spring Data Elasticsearch, refer to their
-http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
+https://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 
 
 [[boot-features-cassandra]]
 === Cassandra
-http://cassandra.apache.org/[Cassandra] is an open source, distributed database management
+https://cassandra.apache.org/[Cassandra] is an open source, distributed database management
 system designed to handle large amounts of data across many commodity servers. Spring Boot
 offers auto-configuration for Cassandra and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-cassandra[Spring Data Cassandra].
@@ -3129,7 +3129,7 @@ limited than the JPA repositories discussed earlier, and will need to annotate f
 methods with `@Query`.
 
 TIP: For complete details of Spring Data Cassandra, refer to their
-http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
 
@@ -3609,7 +3609,7 @@ RabbitMQ configuration is controlled by external configuration properties in
 See {sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
 for more of the supported options.
 
-TIP: Check http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ]
+TIP: Check https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ]
 for more details.
 
 
@@ -3738,7 +3738,7 @@ details.
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources using
-either an http://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix]
+either an https://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix]
 embedded transaction manager. JTA transactions are also supported when deploying to a
 suitable Java EE Application Server.
 
@@ -3881,7 +3881,7 @@ You could also specify the `hazelcast.xml` configuration file to use via configu
 Otherwise, Spring Boot tries to find the Hazelcast configuration from the default
 locations, that is `hazelcast.xml` in the working directory or at the root of the
 classpath. We also check if the `hazelcast.config` system property is set. Check the
-http://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for
+https://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for
 more details.
 
 NOTE: Spring Boot also has an
@@ -4165,7 +4165,7 @@ public class MyTest {
 
 	@Test
 	public void testRequest() throws Exception {
-		HttpHeaders headers = template.getForEntity("http://myhost.com", String.class).getHeaders();
+		HttpHeaders headers = template.getForEntity("https://myhost.com", String.class).getHeaders();
 		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
 	}
 
@@ -4249,7 +4249,7 @@ code by annotating `@Configuration` classes or individual `@Bean` methods.
 ==== Class conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations allows
 configuration to be included based on the presence or absence of specific classes. Due to
-the fact that annotation metadata is parsed using http://asm.ow2.org/[ASM] you can
+the fact that annotation metadata is parsed using https://asm.ow2.org/[ASM] you can
 actually use the `value` attribute to refer to the real class, even though that class
 might not actually appear on the running application classpath. You can also use the
 `name` attribute if you prefer to specify the class name using a `String` value.

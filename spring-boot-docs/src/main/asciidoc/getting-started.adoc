@@ -36,7 +36,7 @@ diverge from the defaults.
 
 [[getting-started-system-requirements]]
 == System Requirements
-By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
+By default, Spring Boot {spring-boot-version} requires https://www.java.com[Java 7] and
 Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
 additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
 build support is provided for Maven (3.2+) and Gradle (1.12 or 2.x). Gradle 3 is not
@@ -79,7 +79,7 @@ You can also deploy Spring Boot applications to any Servlet 3.0+ compatible cont
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command
-line tool. Regardless, you will need http://www.java.com[Java SDK v1.6] or higher. You
+line tool. Regardless, you will need https://www.java.com[Java SDK v1.6] or higher. You
 should check your current Java installation before you begin:
 
 [indent=0]
@@ -112,7 +112,7 @@ build tool that supports dependency management (such as Maven or Gradle).
 [[getting-started-maven-installation]]
 ==== Maven installation
 Spring Boot is compatible with Apache Maven 3.2 or above. If you don't already have Maven
-installed you can follow the instructions at http://maven.apache.org.
+installed you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems Maven can be installed via a package manager. If you're an
 OSX Homebrew user try `brew install maven`. Ubuntu users can run
@@ -131,7 +131,7 @@ Here is a typical `pom.xml` file:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -169,22 +169,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -203,7 +203,7 @@ scope.
 ==== Gradle installation
 Spring Boot is compatible with Gradle 1.12 or 2.x. 2.14.1 is recommended. Gradle 3 is not
 supported. If you don't already have Gradle installed you can follow the instructions at
-http://www.gradle.org/.
+https://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
@@ -226,8 +226,8 @@ Here is a typical `build.gradle` file:
 		repositories {
 			jcenter()
 ifndef::release[]
-			maven { url "http://repo.spring.io/snapshot" }
-			maven { url "http://repo.spring.io/milestone" }
+			maven { url "https://repo.spring.io/snapshot" }
+			maven { url "https://repo.spring.io/milestone" }
 endif::release[]
 		}
 		dependencies {
@@ -246,8 +246,8 @@ endif::release[]
 	repositories {
 		jcenter()
 ifndef::release[]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
 endif::release[]
 	}
 
@@ -262,7 +262,7 @@ endif::release[]
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
-prototype with Spring. It allows you to run http://groovy.codehaus.org/[Groovy] scripts,
+prototype with Spring. It allows you to run https://groovy.codehaus.org/[Groovy] scripts,
 which means that you have a familiar Java-like syntax, without so much boilerplate code.
 
 You don't need to use the CLI to work with Spring Boot but it's definitely the quickest
@@ -274,10 +274,10 @@ way to get a Spring application off the ground.
 ==== Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 
-Cutting edge http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions]
+Cutting edge https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions]
 are also available.
 
 Once downloaded, follow the {github-raw}/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt]
@@ -292,7 +292,7 @@ classpath is set correctly).
 ==== Installation with SDKMAN!
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of
 various binary SDKs, including Groovy and the Spring Boot CLI.
-Get SDKMAN! from http://sdkman.io and install Spring Boot with
+Get SDKMAN! from https://sdkman.io and install Spring Boot with
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -339,7 +339,7 @@ You can see it by doing this:
 
 [[getting-started-homebrew-cli-installation]]
 ==== OSX Homebrew installation
-If you are on a Mac and using http://brew.sh/[Homebrew], all you need to do to install
+If you are on a Mac and using https://brew.sh/[Homebrew], all you need to do to install
 the Spring Boot CLI is:
 
 [indent=0]
@@ -357,7 +357,7 @@ Just execute `brew update` and try again.
 
 [[getting-started-macports-cli-installation]]
 ==== MacPorts installation
-If you are on a Mac and using http://www.macports.org/[MacPorts], all you need to do to
+If you are on a Mac and using https://www.macports.org/[MacPorts], all you need to do to
 install the Spring Boot CLI is:
 
 [indent=0]
@@ -370,8 +370,8 @@ install the Spring Boot CLI is:
 [[getting-started-cli-command-line-completion]]
 ==== Command-line completion
 Spring Boot CLI ships with scripts that provide command completion for
-http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
-http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
+https://en.wikipedia.org/wiki/Bash_%2528Unix_shell%2529[BASH] and
+https://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
 `spring`) in any shell, or put it in your personal or system-wide bash completion
 initialization. On a Debian system the system-wide scripts are in `/shell-completion/bash`
 and all scripts in that directory are executed when a new shell starts. To run the script
@@ -448,7 +448,7 @@ support it.
 
 [TIP]
 ====
-The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
+The https://spring.io[spring.io] web site contains many "`Getting Started`" guides
 that use Spring Boot. If you're looking to solve a specific problem; check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the
@@ -491,7 +491,7 @@ will be used to build your project. Open your favorite text editor and add the f
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -511,22 +511,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -803,12 +803,12 @@ As before, to gracefully exit the application hit `ctrl-c`.
 == What to read next
 Hopefully this section has provided you with some of the Spring Boot basics, and got you
 on your way to writing your own applications. If you're a task-oriented type of
-developer you might want to jump over to http://spring.io and check out some of the
-http://spring.io/guides/[getting started] guides that solve specific
+developer you might want to jump over to https://spring.io and check out some of the
+https://spring.io/guides/[getting started] guides that solve specific
 "`How do I do that with Spring`" problems; we also have Spring Boot-specific
 _<<howto.adoc#howto, How-to>>_ reference documentation.
 
-The http://github.com/{github-repo}[Spring Boot repository] has also a
+The https://github.com/{github-repo}[Spring Boot repository] has also a
 {github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
 independent of the rest of the code (that is you don't need to build the rest to run
 or use the samples).

@@ -36,7 +36,7 @@ public class ResourceServerPropertiesTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void json() throws Exception {
-		this.properties.getJwt().setKeyUri("http://example.com/token_key");
+		this.properties.getJwt().setKeyUri("https://example.com/token_key");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(this.properties);
 		Map<String, Object> value = mapper.readValue(json, Map.class);
@@ -46,7 +46,7 @@ public class ResourceServerPropertiesTests {
 
 	@Test
 	public void tokenKeyDerived() throws Exception {
-		this.properties.setUserInfoUri("http://example.com/userinfo");
+		this.properties.setUserInfoUri("https://example.com/userinfo");
 		assertNotNull("Wrong properties: " + this.properties,
 				this.properties.getJwt().getKeyUri());
 	}
