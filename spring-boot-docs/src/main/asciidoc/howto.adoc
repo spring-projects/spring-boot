@@ -8,7 +8,7 @@ that often arise when using Spring Boot. This is by no means an exhaustive list,
 does cover quite a lot.
 
 If you are having a specific problem that we don't cover here, you might want to check out
-http://stackoverflow.com/tags/spring-boot[stackoverflow.com] to see if someone has
+https://stackoverflow.com/tags/spring-boot[stackoverflow.com] to see if someone has
 already provided an answer; this is also a great place to ask new questions (please use
 the `spring-boot` tag).
 
@@ -209,7 +209,7 @@ token of the `maven-resources-plugins` has been changed from `+${*}+` to `@` (i.
 `@maven.token@` instead of `${maven.token}`) to prevent conflicts with Spring-style
 placeholders. If you have enabled maven filtering for the `application.properties`
 directly, you may want to also change the default filter token to use
-http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
+https://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
 
 NOTE: In this specific case the port binding will work in a PaaS environment like Heroku
 and Cloud Foundry, since in those two platforms the `PORT` environment variable is set
@@ -1238,7 +1238,7 @@ have been applied from the auto-configuration:
 == Logging
 
 Spring Boot has no mandatory logging dependency, except for the `commons-logging` API, of
-which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
+which there are many implementations to choose from. To use https://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
 simplest way to do that is through the starter poms which all depend on
 `spring-boot-starter-logging`. For a web application you only need
@@ -1342,8 +1342,8 @@ You also need to add `logging.file` to your `application.properties`:
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for logging
-Spring Boot also supports either http://logging.apache.org/log4j/1.2[Log4j] or
-http://logging.apache.org/log4j/2.x[Log4j 2] for logging configuration, but only if one
+Spring Boot also supports either https://logging.apache.org/log4j/1.2[Log4j] or
+https://logging.apache.org/log4j/2.x[Log4j 2] for logging configuration, but only if one
 of them is on the classpath. If you are using the starter poms for assembling
 dependencies that means you have to exclude Logback and then include your chosen version
 of Log4j instead. If you aren't using the starter poms then you need to provide
@@ -1731,8 +1731,8 @@ initialization explicitly using `spring.batch.initializer.enabled=false`.
 
 [[howto-use-a-higher-level-database-migration-tool]]
 === Use a higher level database migration tool
-Spring Boot works fine with higher level migration tools http://flywaydb.org/[Flyway]
-(SQL-based) and http://www.liquibase.org/[Liquibase] (XML). In general we prefer
+Spring Boot works fine with higher level migration tools https://flywaydb.org/[Flyway]
+(SQL-based) and https://www.liquibase.org/[Liquibase] (XML). In general we prefer
 Flyway because it is easier on the eyes, and it isn't very common to need platform
 independence: usually only one or at most couple of platforms is needed.
 
@@ -1749,7 +1749,7 @@ addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
 that can be used to disable the migrations, or switch off the location checking.
 
-TIP: If you want to make use of http://flywaydb.org/documentation/callbacks.html[Flyway
+TIP: If you want to make use of https://flywaydb.org/documentation/callbacks.html[Flyway
 callbacks], those scripts should also live in the `classpath:db/migration` folder.
 
 By default Flyway will autowire the (`@Primary`) `DataSource` in your context and
@@ -1880,7 +1880,7 @@ for details of available settings) and `SECURITY` section of
 === Change the AuthenticationManager and add user accounts
 If you provide a `@Bean` of type `AuthenticationManager` the default one will not be
 created, so you have the full feature set of Spring Security available (e.g.
-http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-authentication[various authentication options]).
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-authentication[various authentication options]).
 
 Spring Security also provides a convenient `AuthenticationManagerBuilder` which can be
 used to build an `AuthenticationManager` with common options. The recommended way to
@@ -2024,7 +2024,7 @@ for other Velocity customization options.
 [[howto-reload-fast-restart]]
 === Fast application restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
-Whilst not as fast a technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
+Whilst not as fast a technologies such as https://zeroturnaround.com/software/jrebel/[JRebel]
 or https://github.com/spring-projects/spring-loaded[Spring Loaded] it's usually
 significantly faster than a "`cold start`". You should probably give it a try before
 investigating some of the more complex reload options discussed below.
@@ -2577,7 +2577,7 @@ For a non-web application it should be easy (throw away the code that creates yo
 `ApplicationContext` and replace it with calls to `SpringApplication` or
 `SpringApplicationBuilder`). Spring MVC web applications are generally amenable to first
 creating a deployable war application, and then migrating it later to an executable war
-and/or jar. Useful reading is in the http://spring.io/guides/gs/convert-jar-to-war/[Getting
+and/or jar. Useful reading is in the https://spring.io/guides/gs/convert-jar-to-war/[Getting
 Started Guide on Converting a jar to a war].
 
 Create a deployable war by extending `SpringBootServletInitializer` (e.g. in a class
@@ -2692,9 +2692,9 @@ rather than the version that pre-installed with the server. You can do this by a
 		xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-			http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+			https://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
 			http://xmlns.oracle.com/weblogic/weblogic-web-app
-			http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+			https://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
 		<wls:container-descriptor>
 			<wls:prefer-application-packages>
 				<wls:package-name>org.slf4j</wls:package-name>
@@ -2722,7 +2722,7 @@ but the rest of it is normal for a Spring application in Servlet 2.5. Example:
 	<?xml version="1.0" encoding="UTF-8"?>
 	<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 		<context-param>
 			<param-name>contextConfigLocation</param-name>

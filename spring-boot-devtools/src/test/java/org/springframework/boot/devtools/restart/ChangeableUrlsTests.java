@@ -61,7 +61,7 @@ public class ChangeableUrlsTests {
 
 	@Test
 	public void httpUrl() throws Exception {
-		URL url = new URL("http://spring.io");
+		URL url = new URL("https://spring.io");
 		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
 	}
 

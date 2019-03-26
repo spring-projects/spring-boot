@@ -57,8 +57,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @TestPropertySource(properties = { "security.oauth2.client.clientId=client",
 		"security.oauth2.client.clientSecret=secret",
-		"security.oauth2.client.authorizationUri=http://example.com/oauth/authorize",
-		"security.oauth2.client.tokenUri=http://example.com/oauth/token",
+		"security.oauth2.client.authorizationUri=https://example.com/oauth/authorize",
+		"security.oauth2.client.tokenUri=https://example.com/oauth/token",
 		"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
 public class CustomOAuth2SsoConfigurationTests {
 

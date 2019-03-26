@@ -44,7 +44,7 @@ import org.eclipse.aether.util.filter.DependencyFilterUtils;
 
 /**
  * A {@link GrapeEngine} implementation that uses
- * <a href="http://eclipse.org/aether">Aether</a>, the dependency resolution system used
+ * <a href="https://eclipse.org/aether">Aether</a>, the dependency resolution system used
  * by Maven.
  *
  * @author Andy Wilkinson

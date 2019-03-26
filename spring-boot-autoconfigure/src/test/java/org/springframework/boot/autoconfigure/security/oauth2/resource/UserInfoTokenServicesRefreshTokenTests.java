@@ -63,7 +63,7 @@ import static org.junit.Assert.assertEquals;
 @SpringApplicationConfiguration(classes = Application.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebIntegrationTest({ "server.port=0",
-		"security.oauth2.resource.userInfoUri:http://example.com",
+		"security.oauth2.resource.userInfoUri:https://example.com",
 		"security.oauth2.client.clientId=foo" })
 @DirtiesContext
 public class UserInfoTokenServicesRefreshTokenTests {

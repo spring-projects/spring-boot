@@ -116,7 +116,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		}, "user.home:" + userHome);
 
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
-				"http://maven.example.com").build();
+				"https://maven.example.com").build();
 
 		assertMirrorSelectorConfiguration(session, repository);
 		assertProxySelectorConfiguration(session, repository);
