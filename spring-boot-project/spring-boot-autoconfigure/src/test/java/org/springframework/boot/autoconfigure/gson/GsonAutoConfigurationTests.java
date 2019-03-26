@@ -89,6 +89,15 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
+	public void serializeNulls() {
+		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:false")
+				.run((context) -> {
+					Gson gson = context.getBean(Gson.class);
+					assertThat(gson.serializeNulls()).isFalse();
+				});
+	}
+
+	@Test
 	public void enableComplexMapKeySerialization() {
 		this.contextRunner
 				.withPropertyValues(

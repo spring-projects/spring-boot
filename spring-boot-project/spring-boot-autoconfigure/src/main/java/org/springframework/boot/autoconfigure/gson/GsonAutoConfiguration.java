@@ -84,7 +84,7 @@ public class GsonAutoConfiguration {
 					.toCall(builder::generateNonExecutableJson);
 			map.from(properties::getExcludeFieldsWithoutExposeAnnotation)
 					.toCall(builder::excludeFieldsWithoutExposeAnnotation);
-			map.from(properties::getSerializeNulls).toCall(builder::serializeNulls);
+			map.from(properties::getSerializeNulls).whenTrue().toCall(builder::serializeNulls);
 			map.from(properties::getEnableComplexMapKeySerialization)
 					.toCall(builder::enableComplexMapKeySerialization);
 			map.from(properties::getDisableInnerClassSerialization)
