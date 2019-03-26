@@ -46,9 +46,9 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-rest-docs: https://projects.spring.io/spring-restdocs/
 :spring-integration: https://projects.spring.io/spring-integration/
 :spring-session: https://projects.spring.io/spring-session/
-:spring-framework: http://projects.spring.io/spring-framework/
-:spring-security: http://projects.spring.io/spring-security/
-:spring-data-jpa: http://projects.spring.io/spring-data-jpa/
+:spring-framework: https://projects.spring.io/spring-framework/
+:spring-security: https://projects.spring.io/spring-security/
+:spring-data-jpa: https://projects.spring.io/spring-data-jpa/
 :spring-security-reference: https://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
 :spring-security-oauth2-reference: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-webservices-reference: https://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/
@@ -62,7 +62,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-data: https://projects.spring.io/spring-data/
 :spring-data-rest-javadoc: https://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
 :gradle-userguide: https://www.gradle.org/docs/current/userguide
-:ant-manual: http://ant.apache.org/manual
+:ant-manual: https://ant.apache.org/manual
 :code-examples: ../java/org/springframework/boot/docs
 :test-examples: ../../test/java/org/springframework/boot/docs
 :gradle-user-guide: https://docs.gradle.org/4.2.1/userguide
@@ -70,7 +70,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
 :jooq-manual: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :micrometer-concepts-documentation: https://micrometer.io/docs/concepts
-:micrometer-registry-documentation: http://micrometer.io/docs/registry
+:micrometer-registry-documentation: https://micrometer.io/docs/registry
 :tomcat-documentation: https://tomcat.apache.org/tomcat-8.5-doc
 :kotlin-documentation: https://kotlinlang.org/docs/reference/
 :junit5-documentation: https://junit.org/junit5/docs/current/user-guide

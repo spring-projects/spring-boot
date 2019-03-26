@@ -255,7 +255,7 @@ public class ReactiveTokenValidatorTests {
 	public void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
 		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://other-uaa.com"));
+				.willReturn(Mono.just("https://other-uaa.com"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\", \"scope\": [\"actuator.read\"]}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"foo.bar\"]}";
 		StepVerifier

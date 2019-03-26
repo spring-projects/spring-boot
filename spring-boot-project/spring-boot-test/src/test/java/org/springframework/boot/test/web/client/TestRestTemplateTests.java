@@ -125,14 +125,14 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void getRootUriRootUriSetViaRestTemplateBuilder() {
-		String rootUri = "http://example.com";
+		String rootUri = "https://example.com";
 		RestTemplateBuilder delegate = new RestTemplateBuilder().rootUri(rootUri);
 		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
 	}
 
 	@Test
 	public void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
-		String rootUri = "http://example.com";
+		String rootUri = "https://example.com";
 		TestRestTemplate template = new TestRestTemplate();
 		LocalHostUriTemplateHandler templateHandler = mock(
 				LocalHostUriTemplateHandler.class);

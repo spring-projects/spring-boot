@@ -101,23 +101,23 @@ public class WebClientAutoConfigurationTests {
 					WebClient.Builder firstBuilder = context
 							.getBean(WebClient.Builder.class);
 					firstBuilder.clientConnector(firstConnector)
-							.baseUrl("http://first.example.org");
+							.baseUrl("https://first.example.org");
 					ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
 					given(secondConnector.connect(any(), any(), any()))
 							.willReturn(Mono.just(response));
 					WebClient.Builder secondBuilder = context
 							.getBean(WebClient.Builder.class);
 					secondBuilder.clientConnector(secondConnector)
-							.baseUrl("http://second.example.org");
+							.baseUrl("https://second.example.org");
 					assertThat(firstBuilder).isNotEqualTo(secondBuilder);
 					firstBuilder.build().get().uri("/foo").exchange()
 							.block(Duration.ofSeconds(30));
 					secondBuilder.build().get().uri("/foo").exchange()
 							.block(Duration.ofSeconds(30));
 					verify(firstConnector).connect(eq(HttpMethod.GET),
-							eq(URI.create("http://first.example.org/foo")), any());
+							eq(URI.create("https://first.example.org/foo")), any());
 					verify(secondConnector).connect(eq(HttpMethod.GET),
-							eq(URI.create("http://second.example.org/foo")), any());
+							eq(URI.create("https://second.example.org/foo")), any());
 					WebClientCustomizer customizer = context
 							.getBean("webClientCustomizer", WebClientCustomizer.class);
 					verify(customizer, times(1)).customize(any(WebClient.Builder.class));
