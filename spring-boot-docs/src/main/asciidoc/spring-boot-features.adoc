@@ -1587,7 +1587,7 @@ it's loaded too early. You need to either use `logback-spring.xml` or define a
 `logging.config` property.
 
 WARNING: The extensions cannot be used with Logback's
-http://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
+https://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
 attempt to do so, making changes to the configuration file will result in an error similar
 to once of the following being logged:
 
@@ -1766,7 +1766,7 @@ of converters. You can also override default converters that way.
 ==== Custom JSON Serializers and Deserializers
 If you're using Jackson to serialize and deserialize JSON data, you might want to write
 your own `JsonSerializer` and `JsonDeserializer` classes. Custom serializers are usually
-http://wiki.fasterxml.com/JacksonHowToCustomDeserializers[registered with Jackson via a Module],
+https://wiki.fasterxml.com/JacksonHowToCustomDeserializers[registered with Jackson via a Module],
 but Spring Boot provides an alternative `@JsonComponent` annotation which makes it easier
 to directly register Spring Beans.
 
@@ -3449,7 +3449,7 @@ Mongo instance's configuration and logging routing.
 
 [[boot-features-neo4j]]
 === Neo4j
-http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
+https://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
 model of nodes related by first class relationships which is better suited for connected
 big data than traditional rdbms approaches. Spring Boot offers several conveniences for
 working with Neo4j, including the `spring-boot-starter-data-neo4j` '`Starter`'.
@@ -3560,7 +3560,7 @@ following two annotations to your Spring configuration:
 ----
 
 TIP: For complete details of Spring Data Neo4j, including its rich object mapping
-technologies, refer to their http://projects.spring.io/spring-data-neo4j/[reference
+technologies, refer to their https://projects.spring.io/spring-data-neo4j/[reference
 documentation].
 
 
@@ -3648,7 +3648,7 @@ configured:
 
 [source,properties,indent=0]
 ----
-	spring.elasticsearch.jest.uris=http://search.example.com:9200
+	spring.elasticsearch.jest.uris=https://search.example.com:9200
 	spring.elasticsearch.jest.read-timeout=10000
 	spring.elasticsearch.jest.username=user
 	spring.elasticsearch.jest.password=secret
@@ -3775,7 +3775,7 @@ https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 [[boot-features-couchbase]]
 === Couchbase
-http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
+https://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
 document-oriented database that is optimized for interactive applications. Spring Boot
 offers auto-configuration for Couchbase and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
@@ -3824,7 +3824,7 @@ Check the `spring.couchbase.env.*` properties for more details.
 ==== Spring Data Couchbase repositories
 Spring Data includes repository support for Couchbase. For complete details of Spring
 Data Couchbase, refer to their
-http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
+https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
 other Spring Bean as long as a _default_ `CouchbaseConfigurer` is available (that
@@ -5023,13 +5023,13 @@ If you use the
 `spring-boot-starter-test` '`Starter`' (in the `test` `scope`), you will find
 the following provided libraries:
 
-* http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
+* https://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
 * {spring-reference}/#integration-testing[Spring Test] & Spring Boot Test --
   Utilities and integration test support for Spring Boot applications.
-* http://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
+* https://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
 * http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
   as constraints or predicates).
-* http://mockito.org/[Mockito] -- A Java mocking framework.
+* https://mockito.github.io[Mockito] -- A Java mocking framework.
 * https://github.com/skyscreamer/JSONassert[JSONassert] -- An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath] -- XPath for JSON.
 
@@ -5763,7 +5763,7 @@ public class MyTest {
 
 	@Test
 	public void testRequest() throws Exception {
-		HttpHeaders headers = template.getForEntity("http://myhost.com", String.class).getHeaders();
+		HttpHeaders headers = template.getForEntity("https://myhost.com", String.class).getHeaders();
 		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
 	}
 

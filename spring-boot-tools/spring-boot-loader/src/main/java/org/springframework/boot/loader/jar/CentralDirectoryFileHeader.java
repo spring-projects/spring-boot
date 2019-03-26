@@ -27,7 +27,7 @@ import org.springframework.boot.loader.data.RandomAccessData;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Zip_%2528file_format%2529">Zip File Format</a>
  */
 
 final class CentralDirectoryFileHeader implements FileHeader {

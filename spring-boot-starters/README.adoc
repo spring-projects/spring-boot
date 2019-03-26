@@ -46,7 +46,7 @@ do as they were designed before this was clarified.
 | https://code.google.com/p/wro4j/[WRO4J]
 | https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
 
-| http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
+| https://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
@@ -70,13 +70,13 @@ do as they were designed before this was clarified.
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
 
-| http://www.grpc.io/[gRPC]
+| https://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
 
 | https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
 | https://github.com/bigdullrock/nifty-spring-boot-starter
 
-| http://www.couchbase.com/[Couchbase] HTTP session
+| https://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
 | https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
@@ -91,16 +91,16 @@ do as they were designed before this was clarified.
 | http://ff4j.org/[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
 
-| http://resteasy.jboss.org/[RESTEasy]
+| https://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
-| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
+| JSF (https://primefaces.org/[PrimeFaces], https://primefaces-extensions.github.io/[PrimeFaces Extensions], https://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], https://omnifaces.org/[OmniFaces], https://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and https://myfaces.apache.org[MyFaces])
 | http://joinfaces.org
 
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
 
-| http://www.wiremock.org[WireMock] and Spring REST Docs
+| http://wiremock.org/[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
@@ -109,13 +109,13 @@ do as they were designed before this was clarified.
 | LDAP
 | https://github.com/eddumelendez/ldap-spring-boot
 
-| http://infinispan.org/[Infinispan]
+| https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
-| http://restfb.com/[RestFB] Messenger
+| https://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
 
-| http://square.github.io/okhttp/[OkHttp]
+| https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
 |===
