@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
 
 /**
  * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the
- * <a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
+ * <a href="https://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
  * Synchronous HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with
  * HTTP requests held open until a response is available. A typical traffic pattern would
  * be as follows:

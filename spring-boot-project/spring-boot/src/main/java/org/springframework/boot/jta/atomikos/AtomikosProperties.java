@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Bean friendly variant of
- * <a href="http://www.atomikos.com/Documentation/JtaProperties">Atomikos configuration
+ * <a href="https://www.atomikos.com/Documentation/JtaProperties">Atomikos configuration
  * properties</a>. Allows for setter based configuration and is amiable to relaxed data
  * binding.
  *
@@ -191,10 +191,10 @@ public class AtomikosProperties {
 	 * address. If you plan to run more than one transaction manager against one database
 	 * you must set this property to a unique value or you might run into duplicate
 	 * transaction ID (XID) problems that can be quite subtle (example:
-	 * {@literal http://fogbugz.atomikos.com/default.asp?community.6.2225.7}). If multiple
-	 * instances need to use the same properties file then the easiest way to ensure
-	 * uniqueness for this property is by referencing a system property specified at VM
-	 * startup.
+	 * {@literal https://fogbugz.atomikos.com/default.asp?community.6.2225.7}). If
+	 * multiple instances need to use the same properties file then the easiest way to
+	 * ensure uniqueness for this property is by referencing a system property specified
+	 * at VM startup.
 	 * @param uniqueName the unique name
 	 */
 	public void setTransactionManagerUniqueName(String uniqueName) {

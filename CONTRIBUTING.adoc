@@ -66,7 +66,7 @@ added after the original pull request but before a merge.
 * A few unit tests would help a lot as well -- someone has to do it.
 * If no-one else is using your branch, please rebase it against the current master (or
   other target branch in the main project).
-* When writing a commit message please follow http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
+* When writing a commit message please follow https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
   if you are fixing an existing issue please add `Fixes gh-XXXX` at the end of the commit
   message (where `XXXX` is the issue number).
 
@@ -75,15 +75,15 @@ added after the original pull request but before a merge.
 == Working with the Code
 If you don't have an IDE preference we would recommend that you use
 https://spring.io/tools/sts[Spring Tools Suite] or
-http://eclipse.org[Eclipse] when working with the code. We use the
-http://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
+https://eclipse.org[Eclipse] when working with the code. We use the
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.
 
 
 
 === Building from Source
-Spring Boot source can be build from the command line using
-http://maven.apache.org/run-maven/index.html[Apache Maven] on JDK 1.8 or above.
+Spring Boot source can be built from the command line using
+https://maven.apache.org/run-maven/index.html[Apache Maven] on JDK 1.8 or above.
 We include '`Maven Wrapper`' scripts (`./mvnw` or `mvnw.bat`) that you can run rather
 than needing to install Maven locally.
 
@@ -148,7 +148,7 @@ Spring Boot includes a `.setup` files which can be used with the Eclipse Install
 provision a new environment. To use the installer:
 
 * Download and run the latest Eclipse Installer from
-  http://www.eclipse.org/downloads/[eclipse.org/downloads/] (under "Get Eclipse").
+  https://www.eclipse.org/downloads/[eclipse.org/downloads/] (under "Get Eclipse").
 * Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
   install and click "`next`".
@@ -170,7 +170,7 @@ easier to navigate.
 
 ==== Manual Installation with M2Eclipse
 If you prefer to install Eclipse yourself you should use the
-http://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
 installed it is available from the "Eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these

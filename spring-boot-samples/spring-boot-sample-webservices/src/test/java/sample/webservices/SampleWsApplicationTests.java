@@ -55,7 +55,7 @@ public class SampleWsApplicationTests {
 
 	@Test
 	public void testSendingHolidayRequest() {
-		final String request = "<hr:HolidayRequest xmlns:hr=\"http://mycompany.com/hr/schemas\">"
+		final String request = "<hr:HolidayRequest xmlns:hr=\"https://company.example.com/hr/schemas\">"
 				+ "   <hr:Holiday>" + "      <hr:StartDate>2013-10-20</hr:StartDate>"
 				+ "      <hr:EndDate>2013-11-22</hr:EndDate>" + "   </hr:Holiday>"
 				+ "   <hr:Employee>" + "      <hr:Number>1</hr:Number>"

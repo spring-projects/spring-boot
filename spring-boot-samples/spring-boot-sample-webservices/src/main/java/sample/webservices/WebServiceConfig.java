@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 		DefaultWsdl11Definition wsdl = new DefaultWsdl11Definition();
 		wsdl.setPortTypeName("HumanResource");
 		wsdl.setLocationUri("/holidayService/");
-		wsdl.setTargetNamespace("http://mycompany.com/hr/definitions");
+		wsdl.setTargetNamespace("https://company.example.com/hr/definitions");
 		wsdl.setSchema(countriesSchema);
 		return wsdl;
 	}
