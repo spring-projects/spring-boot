@@ -239,7 +239,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void customUserInfoRestTemplateFactory() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com");
+				"security.oauth2.resource.userInfoUri:https://example.com");
 		this.context = new SpringApplicationBuilder(
 				CustomUserInfoRestTemplateFactory.class, ResourceConfiguration.class)
 						.environment(this.environment).web(false).run();
@@ -420,7 +420,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 		@Bean
 		public TokenStore tokenStore() {
-			return new JwkTokenStore("http://my.key-set.uri");
+			return new JwkTokenStore("https://my.key-set.uri");
 		}
 
 	}

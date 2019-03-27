@@ -122,8 +122,8 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	/**
-	 * Decode MS-DOS Date Time details. See
-	 * <a href="https://docs.microsoft.com/en-gb/windows/desktop/api/winbase/nf-winbase-dosdatetimetofiletime">
+	 * Decode MS-DOS Date Time details. See <a href=
+	 * "https://docs.microsoft.com/en-gb/windows/desktop/api/winbase/nf-winbase-dosdatetimetofiletime">
 	 * Microsoft's documentation</a> for more details of the format.
 	 * @param date the date part
 	 * @param time the time part

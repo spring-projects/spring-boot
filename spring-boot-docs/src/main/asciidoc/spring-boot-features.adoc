@@ -3590,7 +3590,7 @@ persistence for the embedded mode:
 ====
 The Neo4j OGM embedded driver does not provide the Neo4j kernel. Users are expected to
 provide this dependency manually, see
-http://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the documentation]
+https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the documentation]
 for more details.
 ====
 
@@ -4015,7 +4015,7 @@ If you need to customize connection settings you can use the `spring.ldap.base` 
 ==== Spring Data LDAP repositories
 Spring Data includes repository support for LDAP. For complete details of Spring
 Data LDAP, refer to their
-http://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
 
 You can also inject an auto-configured `LdapTemplate` instance as you would with any
 other Spring Bean.
@@ -4828,7 +4828,7 @@ reached.
 
 [[boot-features-kafka]]
 === Apache Kafka Support
-http://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of the
+https://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of the
 `spring-kafka` project.
 
 Kafka configuration is controlled by external configuration properties in

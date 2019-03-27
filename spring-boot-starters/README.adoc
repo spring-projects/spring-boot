@@ -31,7 +31,7 @@ do as they were designed before this was clarified.
 | https://qpid.apache.org/components/jms/[Apache Qpid]
 | https://github.com/amqphub/amqp-10-jms-spring-boot
 
-| http://wicket.apache.org/[Apache Wicket]
+| https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
 | https://camunda.org/[Camunda BPM]
@@ -82,7 +82,7 @@ do as they were designed before this was clarified.
 | JSF (https://primefaces.org/[PrimeFaces], https://primefaces-extensions.github.io/[PrimeFaces Extensions], https://bootsfaces.net/[BootsFaces], https://github.com/ButterFaces/ButterFaces[ButterFaces], https://omnifaces.org/[OmniFaces], https://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and https://myfaces.apache.org[MyFaces])
 | https://github.com/joinfaces/joinfaces
 
-| http://log4jdbc.brunorozendo.com/[Log4jdbc]
+| https://log4jdbc.brunorozendo.com/[Log4jdbc]
 | https://github.com/candrews/log4jdbc-spring-boot-starter
 
 | https://logback.qos.ch/access.html[Logback-access]
@@ -109,7 +109,7 @@ do as they were designed before this was clarified.
 | https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
-| http://orika-mapper.github.io/orika-docs/[Orika]
+| https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
 | https://resteasy.jboss.org/[RESTEasy]
@@ -127,7 +127,7 @@ do as they were designed before this was clarified.
 | https://github.com/StripesFramework/stripes[Stripes]
 | https://github.com/juanpablo-santos/stripes-spring-boot
 
-| http://teiid.org/[Teiid]
+| https://teiid.github.io/teiid.io/[Teiid]
 | https://github.com/teiid/teiid-spring-boot
 
 | https://vaadin.com/[Vaadin]
