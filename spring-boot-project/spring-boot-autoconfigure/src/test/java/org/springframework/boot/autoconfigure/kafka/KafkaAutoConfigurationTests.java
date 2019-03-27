@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -68,6 +69,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link KafkaAutoConfiguration}.
@@ -402,6 +405,29 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	public void streamsWithSeveralStreamsBuilderFactoryBeans() {
+		this.contextRunner
+				.withUserConfiguration(EnableKafkaStreamsConfiguration.class,
+						TestStreamsBuilderFactoryBeanConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.streams.auto-startup=false")
+				.run((context) -> {
+					Properties configs = context.getBean(
+							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
+							KafkaStreamsConfiguration.class).asProperties();
+					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
+							.isEqualTo("localhost:9092, localhost:9093");
+					verify(context.getBean("&firstStreamsBuilderFactoryBean",
+							StreamsBuilderFactoryBean.class), never())
+									.setAutoStartup(false);
+					verify(context.getBean("&secondStreamsBuilderFactoryBean",
+							StreamsBuilderFactoryBean.class), never())
+									.setAutoStartup(false);
+				});
+	}
+
+	@Test
 	public void streamsApplicationIdIsMandatory() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
 				.run((context) -> {
@@ -635,6 +661,21 @@ public class KafkaAutoConfigurationTests {
 			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-id");
 
 			return new KafkaStreamsConfiguration(streamsProperties);
+		}
+
+	}
+
+	@Configuration
+	protected static class TestStreamsBuilderFactoryBeanConfiguration {
+
+		@Bean
+		public StreamsBuilderFactoryBean firstStreamsBuilderFactoryBean() {
+			return mock(StreamsBuilderFactoryBean.class);
+		}
+
+		@Bean
+		public StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
+			return mock(StreamsBuilderFactoryBean.class);
 		}
 
 	}
