@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Rafiullah Hamedy
  * @since 1.4.0
  */
 public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
@@ -325,6 +326,17 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (StringUtils.hasText(definition.getName())) {
 			return definition.getName();
 		}
+
+		// Ensures that @Qualifier with bean name is considered
+		for (String bean : existingBeans) {
+			if (definition.getQualifier() != null) {
+				if (definition.getQualifier().matches(
+						(ConfigurableListableBeanFactory) this.beanFactory, bean)) {
+					return bean;
+				}
+			}
+		}
+
 		if (existingBeans.length == 1) {
 			return existingBeans[0];
 		}
