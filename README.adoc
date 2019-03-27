@@ -102,11 +102,7 @@ Boot applications can run on Java 1.6).
 ----
 
 If you want to build with the regular `mvn` command, you will need
-<<<<<<< HEAD
-http://maven.apache.org/run-maven/index.html[Maven v3.2.1 or above].
-=======
-https://maven.apache.org/run-maven/index.html[Maven v3.0.5 or above].
->>>>>>> 1.3.x
+https://maven.apache.org/run-maven/index.html[Maven v3.2.1 or above].
 
 NOTE: You may need to increase the amount of memory available to Maven by setting
 a `MAVEN_OPTS` environment variable with the value `-Xmx512m`. Remember
