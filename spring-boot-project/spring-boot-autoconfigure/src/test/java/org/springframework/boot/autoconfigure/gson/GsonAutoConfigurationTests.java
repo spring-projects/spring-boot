@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,11 +81,20 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void serializeNulls() {
+	public void serializeNullsTrue() {
 		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:true")
 				.run((context) -> {
 					Gson gson = context.getBean(Gson.class);
 					assertThat(gson.serializeNulls()).isTrue();
+				});
+	}
+
+	@Test
+	public void serializeNullsFalse() {
+		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:false")
+				.run((context) -> {
+					Gson gson = context.getBean(Gson.class);
+					assertThat(gson.serializeNulls()).isFalse();
 				});
 	}
 
