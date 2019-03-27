@@ -72,6 +72,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<>();
 
+	private List<TomcatProtocolHandlerCustomizer> tomcatProtocolHandlerCustomizers = new ArrayList<>();
+
 	private String protocol = DEFAULT_PROTOCOL;
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
@@ -168,6 +170,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
+
+		this.tomcatProtocolHandlerCustomizers.forEach(
+				(customizer) -> customizer.customize(connector.getProtocolHandler()));
+
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
@@ -273,6 +279,42 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {
 		return this.tomcatConnectorCustomizers;
+	}
+
+	/**
+	 * Set {@link TomcatProtocolHandlerCustomizer}s that should be applied to the Tomcat
+	 * {@link Connector}. Calling this method will replace any existing customizers.
+	 * @param tomcatProtocolHandlerCustomizers the customizers to set
+	 */
+	public void setTomcatProtocolHandlerCustomizers(
+			Collection<? extends TomcatProtocolHandlerCustomizer> tomcatProtocolHandlerCustomizers) {
+		Assert.notNull(tomcatProtocolHandlerCustomizers,
+				"TomcatProtocolHandlerCustomizers must not be null");
+		this.tomcatProtocolHandlerCustomizers = new ArrayList<>(
+				tomcatProtocolHandlerCustomizers);
+	}
+
+	/**
+	 * Add {@link TomcatProtocolHandlerCustomizer}s that should be added to the Tomcat
+	 * {@link Connector}.
+	 * @param tomcatProtocolHandlerCustomizers the customizers to add
+	 */
+	@Override
+	public void addProtocolHandlerCustomizers(
+			TomcatProtocolHandlerCustomizer... tomcatProtocolHandlerCustomizers) {
+		Assert.notNull(tomcatProtocolHandlerCustomizers,
+				"TomcatProtocolHandlerCustomizers must not be null");
+		this.tomcatProtocolHandlerCustomizers
+				.addAll(Arrays.asList(tomcatProtocolHandlerCustomizers));
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link TomcatProtocolHandlerCustomizer}s that
+	 * will be applied to the Tomcat {@link Connector}.
+	 * @return the customizers that will be applied
+	 */
+	public Collection<TomcatProtocolHandlerCustomizer> getTomcatProtocolHandlerCustomizers() {
+		return this.tomcatProtocolHandlerCustomizers;
 	}
 
 	@Override

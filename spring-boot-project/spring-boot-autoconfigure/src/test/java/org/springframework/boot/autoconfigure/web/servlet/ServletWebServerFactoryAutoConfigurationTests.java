@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -170,6 +171,21 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	public void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								TomcatProtocolHandlerCustomizerConfiguration.class);
+		runner.run((context) -> {
+			TomcatServletWebServerFactory factory = context
+					.getBean(TomcatServletWebServerFactory.class);
+			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
+		});
+	}
+
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
 		return this::verifyContext;
 	}
@@ -303,6 +319,17 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		@Bean
 		public TomcatContextCustomizer contextCustomizer() {
 			return (context) -> {
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TomcatProtocolHandlerCustomizerConfiguration {
+
+		@Bean
+		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
+			return (protocolHandler) -> {
 			};
 		}
 

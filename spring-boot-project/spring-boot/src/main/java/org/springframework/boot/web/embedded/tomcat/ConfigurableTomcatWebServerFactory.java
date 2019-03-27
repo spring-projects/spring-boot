@@ -69,6 +69,14 @@ public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServe
 	void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers);
 
 	/**
+	 * Add {@link TomcatProtocolHandlerCustomizer}s that should be added to the Tomcat
+	 * {@link Connector}.
+	 * @param tomcatProtocolHandlerCustomizers the customizers to add
+	 */
+	void addProtocolHandlerCustomizers(
+			TomcatProtocolHandlerCustomizer... tomcatProtocolHandlerCustomizers);
+
+	/**
 	 * Set the character encoding to use for URL decoding. If not specified 'UTF-8' will
 	 * be used.
 	 * @param uriEncoding the uri encoding to set
