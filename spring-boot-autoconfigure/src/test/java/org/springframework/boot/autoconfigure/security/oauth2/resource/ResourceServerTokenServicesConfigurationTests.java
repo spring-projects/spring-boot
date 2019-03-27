@@ -96,7 +96,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void useRemoteTokenServices() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.resource.tokenInfoUri:https://example.com",
 				"security.oauth2.resource.clientId=acme");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
@@ -107,7 +107,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void switchToUserInfo() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com");
+				"security.oauth2.resource.userInfoUri:https://example.com");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
@@ -118,7 +118,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void userInfoWithAuthorities() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com");
+				"security.oauth2.resource.userInfoUri:https://example.com");
 		this.context = new SpringApplicationBuilder(AuthoritiesConfiguration.class)
 				.environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
@@ -132,7 +132,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	public void userInfoWithClient() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.client.client-id=acme",
-				"security.oauth2.resource.userInfoUri:http://example.com",
+				"security.oauth2.resource.userInfoUri:https://example.com",
 				"server.port=-1", "debug=true");
 		this.context = new SpringApplicationBuilder(ResourceNoClientConfiguration.class)
 				.environment(this.environment).web(true).run();
@@ -144,8 +144,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void preferUserInfo() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com",
-				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.resource.userInfoUri:https://example.com",
+				"security.oauth2.resource.tokenInfoUri:https://example.com",
 				"security.oauth2.resource.preferTokenInfo:false");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
@@ -157,8 +157,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void userInfoWithCustomizer() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com",
-				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.resource.userInfoUri:https://example.com",
+				"security.oauth2.resource.tokenInfoUri:https://example.com",
 				"security.oauth2.resource.preferTokenInfo:false");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
 				Customizer.class).environment(this.environment).web(false).run();
@@ -190,7 +190,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void springSocialUserInfo() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com",
+				"security.oauth2.resource.userInfoUri:https://example.com",
 				"spring.social.facebook.app-id=foo",
 				"spring.social.facebook.app-secret=bar");
 		this.context = new SpringApplicationBuilder(SocialResourceConfiguration.class)

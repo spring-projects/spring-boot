@@ -11,7 +11,7 @@
 	<div class="container">
 		<div class="navbar">
 			<div class="navbar-inner">
-				<a class="brand" href="http://www.thymeleaf.org"> Freemarker -
+				<a class="brand" href="https://www.thymeleaf.org"> Freemarker -
 					Plain </a>
 				<ul class="nav">
 					<li><a href="${home}"> Home </a></li>
