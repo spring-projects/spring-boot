@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class ResourceServerPropertiesTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void json() throws Exception {
-		this.properties.getJwt().setKeyUri("http://example.com/token_key");
+		this.properties.getJwt().setKeyUri("https://example.com/token_key");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(this.properties);
 		Map<String, Object> value = mapper.readValue(json, Map.class);
@@ -47,16 +47,16 @@ public class ResourceServerPropertiesTests {
 
 	@Test
 	public void tokenKeyDerivedFromUserInfoUri() throws Exception {
-		this.properties.setUserInfoUri("http://example.com/userinfo");
+		this.properties.setUserInfoUri("https://example.com/userinfo");
 		assertThat(this.properties.getJwt().getKeyUri())
-				.isEqualTo("http://example.com/token_key");
+				.isEqualTo("https://example.com/token_key");
 	}
 
 	@Test
 	public void tokenKeyDerivedFromTokenInfoUri() throws Exception {
-		this.properties.setTokenInfoUri("http://example.com/check_token");
+		this.properties.setTokenInfoUri("https://example.com/check_token");
 		assertThat(this.properties.getJwt().getKeyUri())
-				.isEqualTo("http://example.com/token_key");
+				.isEqualTo("https://example.com/token_key");
 	}
 
 }

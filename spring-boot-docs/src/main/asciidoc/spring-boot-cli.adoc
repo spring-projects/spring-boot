@@ -247,7 +247,7 @@ You can use `@DependencyManagementBom` anywhere that you can use `@Grab`, howeve
 ensure consistent ordering of the dependency management, you can only use
 `@DependencyManagementBom` at most once in your application. A useful source of
 dependency management (that is a superset of Spring Boot's dependency management) is the
-http://platform.spring.io/[Spring IO Platform], e.g.
+https://platform.spring.io/[Spring IO Platform], e.g.
 `@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
 
 
@@ -457,7 +457,7 @@ To uninstall all additional dependencies you can use the `--all` option. For exa
 [[cli-groovy-beans-dsl]]
 == Developing application with the Groovy beans DSL
 Spring Framework 4.0 has native support for a `beans{}` "`DSL`" (borrowed from
-http://grails.org/[Grails]),  and you can embed bean definitions in your Groovy
+https://grails.org/[Grails]),  and you can embed bean definitions in your Groovy
 application scripts using the same format. This is sometimes a good way to include
 external features like middleware declarations. For example:
 

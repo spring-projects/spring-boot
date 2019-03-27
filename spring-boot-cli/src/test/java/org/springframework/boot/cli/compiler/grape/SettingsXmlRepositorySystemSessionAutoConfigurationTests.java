@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		}, "user.home:" + userHome);
 
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
-				"http://maven.example.com").build();
+				"https://maven.example.com").build();
 		assertMirrorSelectorConfiguration(session, repository);
 		assertProxySelectorConfiguration(session, repository);
 		assertAuthenticationSelectorConfiguration(session, repository);

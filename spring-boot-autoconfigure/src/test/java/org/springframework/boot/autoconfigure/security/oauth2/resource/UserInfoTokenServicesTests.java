@@ -51,7 +51,7 @@ public class UserInfoTokenServicesTests {
 	public ExpectedException expected = ExpectedException.none();
 
 	private UserInfoTokenServices services = new UserInfoTokenServices(
-			"http://example.com", "foo");
+			"https://example.com", "foo");
 
 	private BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
 

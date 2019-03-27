@@ -102,7 +102,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * artifact. If this is not given (default), it will replace the main artifact and
 	 * only the repackaged artifact will be deployed. Attaching the artifact allows to
 	 * deploy it alongside to the original one, see <a href=
-	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
+	 * "https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
 	 * @since 1.0
 	 */

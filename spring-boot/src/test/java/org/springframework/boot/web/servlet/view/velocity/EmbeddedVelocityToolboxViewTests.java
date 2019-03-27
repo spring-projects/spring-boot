@@ -81,7 +81,7 @@ public class EmbeddedVelocityToolboxViewTests {
 		@Bean
 		public EmbeddedVelocityToolboxView view() {
 			EmbeddedVelocityToolboxView view = new EmbeddedVelocityToolboxView();
-			view.setUrl("http://example.com");
+			view.setUrl("https://example.com");
 			return view;
 		}
 

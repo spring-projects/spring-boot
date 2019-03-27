@@ -52,7 +52,7 @@ public class AetherGrapeEngineTests {
 			RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
 		repositoryConfigurations.add(new RepositoryConfiguration("central",
-				URI.create("http://repo1.maven.org/maven2"), false));
+				URI.create("https://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
 				repositoryConfigurations, new DependencyResolutionContext());
@@ -160,7 +160,7 @@ public class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<String, Object>();
 		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
 		grapeEngine
-				.addResolver(createResolver("restlet.org", "http://maven.restlet.org"));
+				.addResolver(createResolver("restlet.org", "https://maven.restlet.org"));
 		grapeEngine.grab(args, createDependency("org.restlet", "org.restlet", "1.1.6"));
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}
