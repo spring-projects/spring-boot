@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.boot.loader.data.RandomAccessData;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */
 
 final class CentralDirectoryFileHeader implements FileHeader {
@@ -123,8 +123,8 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	/**
 	 * Decode MS-DOS Date Time details. See
-	 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
-	 * more details of the format.
+	 * <a href="https://docs.microsoft.com/en-gb/windows/desktop/api/winbase/nf-winbase-dosdatetimetofiletime">
+	 * Microsoft's documentation</a> for more details of the format.
 	 * @param date the date part
 	 * @param time the time part
 	 * @return a {@link Calendar} containing the decoded date.

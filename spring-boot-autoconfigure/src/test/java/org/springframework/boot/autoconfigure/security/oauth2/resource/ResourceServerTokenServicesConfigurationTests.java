@@ -128,7 +128,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void userInfoWithPrincipal() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.userInfoUri:http://example.com");
+				"security.oauth2.resource.userInfoUri:https://example.com");
 		this.context = new SpringApplicationBuilder(PrincipalConfiguration.class)
 				.environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
