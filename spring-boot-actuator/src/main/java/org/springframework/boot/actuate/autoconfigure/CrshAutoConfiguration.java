@@ -107,7 +107,7 @@ import org.springframework.util.StringUtils;
  * context.
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at
- * <a href="http://www.crashub.org">crashub.org</a>. By default Boot will search for
+ * <a href="https://www.crashub.org">crashub.org</a>. By default Boot will search for
  * commands using the following classpath scanning pattern {@code classpath*:/commands/**}
  * . To add different locations or override the default use
  * {@code management.shell.command-path-patterns} in your application configuration.

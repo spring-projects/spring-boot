@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class ResourceServerPropertiesTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void json() throws Exception {
-		this.properties.getJwt().setKeyUri("http://example.com/token_key");
+		this.properties.getJwt().setKeyUri("https://example.com/token_key");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(this.properties);
 		Map<String, Object> value = mapper.readValue(json, Map.class);
@@ -65,8 +65,8 @@ public class ResourceServerPropertiesTests {
 
 	@Test
 	public void validateWhenBothJwtAndJwkKeyUrisPresentShouldFail() throws Exception {
-		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
-		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");
+		this.properties.getJwk().setKeySetUri("https://example.com/token_keys");
+		this.properties.getJwt().setKeyUri("https://example.com/token_key");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verify(this.errors).reject("ambiguous.keyUri",
@@ -76,7 +76,7 @@ public class ResourceServerPropertiesTests {
 	@Test
 	public void validateWhenBothJwtKeyValueAndJwkKeyUriPresentShouldFail()
 			throws Exception {
-		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
+		this.properties.getJwk().setKeySetUri("https://example.com/token_keys");
 		this.properties.getJwt().setKeyValue("my-key");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
@@ -86,7 +86,7 @@ public class ResourceServerPropertiesTests {
 
 	@Test
 	public void validateWhenJwkKeySetUriProvidedShouldSucceed() throws Exception {
-		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
+		this.properties.getJwk().setKeySetUri("https://example.com/token_keys");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verifyZeroInteractions(this.errors);
@@ -104,7 +104,7 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenKeysUriOrValuePresentAndUserInfoAbsentShouldNotFail()
 			throws Exception {
 		this.properties = new ResourceServerProperties("client", "");
-		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
+		this.properties.getJwk().setKeySetUri("https://example.com/token_keys");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verifyZeroInteractions(this.errors);
@@ -121,7 +121,7 @@ public class ResourceServerPropertiesTests {
 
 	@Test
 	public void validateWhenTokenUriConfiguredShouldNotFail() throws Exception {
-		this.properties.setTokenInfoUri("http://my-auth-server/userinfo");
+		this.properties.setTokenInfoUri("https://example.com/userinfo");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verifyZeroInteractions(this.errors);
@@ -129,7 +129,7 @@ public class ResourceServerPropertiesTests {
 
 	@Test
 	public void validateWhenUserInfoUriConfiguredShouldNotFail() throws Exception {
-		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
+		this.properties.setUserInfoUri("https://example.com/userinfo");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verifyZeroInteractions(this.errors);
@@ -139,8 +139,8 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenTokenUriPreferredAndClientSecretAbsentShouldFail()
 			throws Exception {
 		this.properties = new ResourceServerProperties("client", "");
-		this.properties.setTokenInfoUri("http://my-auth-server/check_token");
-		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
+		this.properties.setTokenInfoUri("https://example.com/check_token");
+		this.properties.setUserInfoUri("https://example.com/userinfo");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verify(this.errors).rejectValue("clientSecret", "missing.clientSecret",
@@ -151,7 +151,7 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenTokenUriAbsentAndClientSecretAbsentShouldNotFail()
 			throws Exception {
 		this.properties = new ResourceServerProperties("client", "");
-		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
+		this.properties.setUserInfoUri("https://example.com/userinfo");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verifyZeroInteractions(this.errors);
@@ -162,8 +162,8 @@ public class ResourceServerPropertiesTests {
 			throws Exception {
 		this.properties = new ResourceServerProperties("client", "");
 		this.properties.setPreferTokenInfo(false);
-		this.properties.setTokenInfoUri("http://my-auth-server/check_token");
-		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
+		this.properties.setTokenInfoUri("https://example.com/check_token");
+		this.properties.setUserInfoUri("https://example.com/userinfo");
 		setListableBeanFactory();
 		this.properties.validate(this.properties, this.errors);
 		verifyZeroInteractions(this.errors);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class AetherGrapeEngineTests {
 			RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
 		repositoryConfigurations.add(new RepositoryConfiguration("central",
-				URI.create("https://repo.maven.apache.org/maven2"), false));
+				URI.create("https://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
 		dependencyResolutionContext.addDependencyManagement(
@@ -164,7 +164,7 @@ public class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<String, Object>();
 		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
 		grapeEngine
-				.addResolver(createResolver("restlet.org", "http://maven.restlet.org"));
+				.addResolver(createResolver("restlet.org", "https://maven.restlet.org"));
 		grapeEngine.grab(args, createDependency("org.restlet", "org.restlet", "1.1.6"));
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}

@@ -54,7 +54,7 @@ public class RootUriRequestExpectationManagerTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private String uri = "http://example.com";
+	private String uri = "https://example.com";
 
 	@Mock
 	private RequestExpectationManager delegate;
@@ -97,7 +97,7 @@ public class RootUriRequestExpectationManagerTests {
 	public void validateRequestWhenUriDoesNotStartWithRootUriShouldDelegateToExpectationManager()
 			throws Exception {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
-		given(request.getURI()).willReturn(new URI("http://spring.io/test"));
+		given(request.getURI()).willReturn(new URI("https://spring.io/test"));
 		this.manager.validateRequest(request);
 		verify(this.delegate).validateRequest(request);
 	}
@@ -121,9 +121,9 @@ public class RootUriRequestExpectationManagerTests {
 		given(request.getURI()).willReturn(new URI(this.uri + "/hello"));
 		given(this.delegate.validateRequest((ClientHttpRequest) any()))
 				.willThrow(new AssertionError(
-						"Request URI expected:</hello> was:<http://example.com/bad>"));
+						"Request URI expected:</hello> was:<https://example.com/bad>"));
 		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("Request URI expected:<http://example.com/hello>");
+		this.thrown.expectMessage("Request URI expected:<https://example.com/hello>");
 		this.manager.validateRequest(request);
 	}
 
@@ -172,7 +172,7 @@ public class RootUriRequestExpectationManagerTests {
 	@Test
 	public void boundRestTemplateShouldPrefixRootUri() {
 		RestTemplate restTemplate = new RestTemplateBuilder()
-				.rootUri("http://example.com").build();
+				.rootUri("https://example.com").build();
 		MockRestServiceServer server = RootUriRequestExpectationManager
 				.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
@@ -182,14 +182,14 @@ public class RootUriRequestExpectationManagerTests {
 	@Test
 	public void boundRestTemplateWhenUrlIncludesDomainShouldNotPrefixRootUri() {
 		RestTemplate restTemplate = new RestTemplateBuilder()
-				.rootUri("http://example.com").build();
+				.rootUri("https://example.com").build();
 		MockRestServiceServer server = RootUriRequestExpectationManager
 				.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
 		this.thrown.expect(AssertionError.class);
 		this.thrown.expectMessage(
-				"expected:<http://example.com/hello> but was:<http://spring.io/hello>");
-		restTemplate.getForEntity("http://spring.io/hello", String.class);
+				"expected:<https://example.com/hello> but was:<https://spring.io/hello>");
+		restTemplate.getForEntity("https://spring.io/hello", String.class);
 	}
 
 }
