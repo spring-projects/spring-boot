@@ -5027,8 +5027,8 @@ the following provided libraries:
 * {spring-reference}/#integration-testing[Spring Test] & Spring Boot Test --
   Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
-* http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
-  as constraints or predicates).
+* https://github.com/hamcrest/JavaHamcrest[Hamcrest] -- A library of matcher objects
+  (also known as constraints or predicates).
 * https://mockito.github.io[Mockito] -- A Java mocking framework.
 * https://github.com/skyscreamer/JSONassert[JSONassert] -- An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath] -- XPath for JSON.

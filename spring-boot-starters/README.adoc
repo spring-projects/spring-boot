@@ -88,19 +88,19 @@ do as they were designed before this was clarified.
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
-| http://ff4j.org/[Feature Flipping For Java (FF4J)]
+| https://ff4j.github.io[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
 
 | https://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
-| JSF (https://primefaces.org/[PrimeFaces], https://primefaces-extensions.github.io/[PrimeFaces Extensions], https://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], https://omnifaces.org/[OmniFaces], https://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and https://myfaces.apache.org[MyFaces])
-| http://joinfaces.org
+| JSF (https://primefaces.org/[PrimeFaces], https://primefaces-extensions.github.io/[PrimeFaces Extensions], https://bootsfaces.net/[BootsFaces], https://github.com/ButterFaces/ButterFaces[ButterFaces], https://omnifaces.org/[OmniFaces], https://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and https://myfaces.apache.org[MyFaces])
+| https://github.com/joinfaces/joinfaces
 
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
 
-| http://wiremock.org/[WireMock] and Spring REST Docs
+| https://github.com/tomakehurst/wiremock[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
