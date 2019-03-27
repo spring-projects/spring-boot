@@ -26,6 +26,8 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -122,6 +124,24 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
+	public void setNullProtocolHandlerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
+				.withMessageContaining(
+						"TomcatProtocolHandlerCustomizers must not be null");
+	}
+
+	@Test
+	public void addNullProtocolHandlerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory
+				.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
+				.withMessageContaining(
+						"TomcatProtocolHandlerCustomizers must not be null");
+	}
+
+	@Test
 	public void tomcatConnectorCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
@@ -133,6 +153,22 @@ public class TomcatReactiveWebServerFactoryTests
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatConnectorCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Connector.class));
+		}
+	}
+
+	@Test
+	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		HttpHandler handler = mock(HttpHandler.class);
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol>[] listeners = new TomcatProtocolHandlerCustomizer[4];
+		Arrays.setAll(listeners, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
+		factory.setTomcatProtocolHandlerCustomizers(
+				Arrays.asList(listeners[0], listeners[1]));
+		factory.addProtocolHandlerCustomizers(listeners[2], listeners[3]);
+		this.webServer = factory.getWebServer(handler);
+		InOrder ordered = inOrder((Object[]) listeners);
+		for (TomcatProtocolHandlerCustomizer listener : listeners) {
+			ordered.verify(listener).customize(any(ProtocolHandler.class));
 		}
 	}
 

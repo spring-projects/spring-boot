@@ -28,6 +28,7 @@ import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -76,12 +77,16 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		@Bean
 		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
-				ObjectProvider<TomcatContextCustomizer> contextCustomizers) {
+				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
+				ObjectProvider<TomcatProtocolHandlerCustomizer> protocolHandlerCustomizers) {
 			TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 			factory.getTomcatConnectorCustomizers().addAll(
 					connectorCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getTomcatContextCustomizers().addAll(
 					contextCustomizers.orderedStream().collect(Collectors.toList()));
+			factory.getTomcatProtocolHandlerCustomizers()
+					.addAll(protocolHandlerCustomizers.orderedStream()
+							.collect(Collectors.toList()));
 			return factory;
 		}
 
