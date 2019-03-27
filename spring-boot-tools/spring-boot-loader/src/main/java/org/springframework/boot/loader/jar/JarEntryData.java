@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,8 +156,8 @@ public final class JarEntryData {
 
 	/**
 	 * Decode MS-DOS Date Time details. See
-	 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
-	 * more details of the format.
+	 * <a href="https://docs.microsoft.com/en-gb/windows/desktop/api/winbase/nf-winbase-dosdatetimetofiletime">
+	 * Microsoft's documentation</a> for more details of the format.
 	 * @param date the date part
 	 * @param time the time part
 	 * @return a {@link Calendar} containing the decoded date.

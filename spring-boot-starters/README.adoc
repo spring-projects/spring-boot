@@ -25,10 +25,10 @@ do as they were designed before this was clarified.
 | Central Authentication Service (CAS) client
 | https://github.com/Unicon/cas-client-autoconfig-support
 
-| http://modelmapper.org/[ModelMapper]
+| https://github.com/modelmapper/modelmapper/[ModelMapper]
 | https://github.com/jmnarloch/modelmapper-spring-boot-starter
 
-| https://secondmarket.github.io/mongeez/[Mongeez]
+| https://github.com/mongeez/mongeez[Mongeez]
 | https://github.com/hzpz/mongeez-spring-boot-starter/
 
 | https://ha-jdbc.github.io/[HA JDBC]
@@ -58,7 +58,7 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
-| http://www.mybatis.org/mybatis-3/[Mybatis]
+| https://github.com/mybatis/mybatis-3[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
 | https://wicket.apache.org/[Apache Wicket]

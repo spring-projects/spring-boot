@@ -45,7 +45,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 		DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
 		wsdl11Definition.setPortTypeName("HumanResource");
 		wsdl11Definition.setLocationUri("/holidayService/");
-		wsdl11Definition.setTargetNamespace("http://mycompany.com/hr/definitions");
+		wsdl11Definition.setTargetNamespace("https://company.example.com/hr/definitions");
 		wsdl11Definition.setSchema(countriesSchema);
 		return wsdl11Definition;
 	}

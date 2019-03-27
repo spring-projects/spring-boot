@@ -279,6 +279,6 @@ alternatives could be considered:
 
 * https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
-* http://one-jar.sourceforge.net[OneJar]
+* https://sourceforge.net/projects/one-jar/[OneJar]
 
 

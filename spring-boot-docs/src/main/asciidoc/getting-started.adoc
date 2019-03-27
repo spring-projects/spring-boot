@@ -262,8 +262,8 @@ endif::release[]
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
-prototype with Spring. It allows you to run https://groovy.codehaus.org/[Groovy] scripts,
-which means that you have a familiar Java-like syntax, without so much boilerplate code.
+prototype with Spring. It allows you to run http://groovy-lang.org[Groovy] scripts, which
+means that you have a familiar Java-like syntax, without so much boilerplate code.
 
 You don't need to use the CLI to work with Spring Boot but it's definitely the quickest
 way to get a Spring application off the ground.
@@ -370,7 +370,7 @@ install the Spring Boot CLI is:
 [[getting-started-cli-command-line-completion]]
 ==== Command-line completion
 Spring Boot CLI ships with scripts that provide command completion for
-https://en.wikipedia.org/wiki/Bash_%2528Unix_shell%2529[BASH] and
+https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
 https://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
 `spring`) in any shell, or put it in your personal or system-wide bash completion
 initialization. On a Debian system the system-wide scripts are in `/shell-completion/bash`

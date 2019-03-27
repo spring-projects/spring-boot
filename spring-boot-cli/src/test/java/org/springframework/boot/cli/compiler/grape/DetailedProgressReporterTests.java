@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
  */
 public final class DetailedProgressReporterTests {
 
-	private static final String REPOSITORY = "http://my.repository.com/";
+	private static final String REPOSITORY = "https://repo.example.com/";
 
 	private static final String ARTIFACT = "org/alpha/bravo/charlie/1.2.3/charlie-1.2.3.jar";
 

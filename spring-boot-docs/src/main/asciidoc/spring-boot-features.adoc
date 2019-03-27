@@ -558,10 +558,10 @@ For example, the following YAML document:
 ----
 	environments:
 		dev:
-			url: https://dev.bar.com
+			url: http://dev.example.com
 			name: Developer Setup
 		prod:
-			url: https://foo.bar.com
+			url: http://another.example.com
 			name: My Cool App
 ----
 
@@ -569,9 +569,9 @@ Would be transformed into these properties:
 
 [source,properties,indent=0]
 ----
-	environments.dev.url=https://dev.bar.com
+	environments.dev.url=http://dev.example.com
 	environments.dev.name=Developer Setup
-	environments.prod.url=https://foo.bar.com
+	environments.prod.url=http://another.example.com
 	environments.prod.name=My Cool App
 ----
 
@@ -582,16 +582,16 @@ for example this YAML:
 ----
 	 my:
 		servers:
-			- dev.bar.com
-			- foo.bar.com
+			- dev.example.com
+			- another.example.com
 ----
 
 Would be transformed into these properties:
 
 [source,properties,indent=0]
 ----
-	my.servers[0]=dev.bar.com
-	my.servers[1]=foo.bar.com
+	my.servers[0]=dev.example.com
+	my.servers[1]=another.example.com
 ----
 
 To bind to properties like that using the Spring `DataBinder` utilities (which is what
