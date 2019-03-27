@@ -2922,9 +2922,10 @@ JAX-RS resources are packaged as nested jars, you may need to do the same.
 [[boot-features-embedded-container]]
 === Embedded Servlet Container Support
 Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat],
-https://www.eclipse.org/jetty/[Jetty], and http://undertow.io/[Undertow] servers. Most
-developers use the appropriate "`Starter`" to obtain a fully configured instance. By
-default, the embedded server listens for HTTP requests on port `8080`.
+https://www.eclipse.org/jetty/[Jetty], and
+https://github.com/undertow-io/undertow[Undertow] servers. Most developers use the
+appropriate "`Starter`" to obtain a fully configured instance. By default, the embedded
+server listens for HTTP requests on port `8080`.
 
 WARNING: If you choose to use Tomcat on https://www.centos.org/[CentOS], be aware that, by
 default, a temporary directory is used to store compiled JSPs, file uploads, and so on.
@@ -5838,11 +5839,12 @@ property with a different value for each instance of your application.
 
 [[boot-features-jta-narayana]]
 === Using a Narayana Transaction Manager
-http://narayana.io/[Narayana] is a popular open source JTA transaction manager
-implementation supported by JBoss. You can use the `spring-boot-starter-jta-narayana`
-starter to add the appropriate Narayana dependencies to your project. As with Atomikos and
-Bitronix, Spring Boot automatically configures Narayana and post-processes your beans to
-ensure that startup and shutdown ordering is correct.
+https://github.com/jbosstm/narayana[Narayana] is a popular open source JTA transaction
+manager implementation supported by JBoss. You can use the
+`spring-boot-starter-jta-narayana` starter to add the appropriate Narayana dependencies
+to your project. As with Atomikos and Bitronix, Spring Boot automatically configures
+Narayana and post-processes your beans to ensure that startup and shutdown ordering is
+correct.
 
 By default, Narayana transaction logs are written to a `transaction-logs` directory in
 your application home directory (the directory in which your application jar file
@@ -6150,8 +6152,8 @@ the following provided libraries:
 * {spring-reference}testing.html#integration-testing[Spring Test] & Spring Boot Test:
 Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
-* http://hamcrest.org/JavaHamcrest/[Hamcrest]: A library of matcher objects (also known
-as constraints or predicates).
+* https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also
+known as constraints or predicates).
 * https://mockito.github.io[Mockito]: A Java mocking framework.
 * https://github.com/skyscreamer/JSONassert[JSONassert]: An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath]: XPath for JSON.

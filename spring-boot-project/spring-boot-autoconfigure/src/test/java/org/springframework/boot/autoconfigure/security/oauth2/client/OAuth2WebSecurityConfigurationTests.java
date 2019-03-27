@@ -183,7 +183,8 @@ public class OAuth2WebSecurityConfigurationTests {
 		@Bean
 		public ClientRegistrationRepository clientRegistrationRepository() {
 			List<ClientRegistration> registrations = new ArrayList<>();
-			registrations.add(getClientRegistration("first", "https://user-info-uri.com"));
+			registrations
+					.add(getClientRegistration("first", "https://user-info-uri.com"));
 			registrations.add(getClientRegistration("second", "http://other-user-info"));
 			return new InMemoryClientRegistrationRepository(registrations);
 		}
