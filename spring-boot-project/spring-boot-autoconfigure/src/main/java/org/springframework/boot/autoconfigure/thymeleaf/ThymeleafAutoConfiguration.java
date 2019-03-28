@@ -77,7 +77,7 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
-@ConditionalOnClass(TemplateMode.class)
+@ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
 public class ThymeleafAutoConfiguration {
 
