@@ -34,7 +34,7 @@ do as they were designed before this was clarified.
 | https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
-| http://arangodb.com/[ArangoDB]
+| https://arangodb.com/[ArangoDB]
 | https://github.com/arangodb/spring-boot-starter
 
 | https://axoniq.io[Axon Framework]
@@ -121,7 +121,7 @@ do as they were designed before this was clarified.
 | https://github.com/mybatis/mybatis-3[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
-| http://narayana.io/[Narayana]
+| https://github.com/jbosstm/narayana[Narayana]
 | https://github.com/snowdrop/narayana-spring-boot
 
 | https://github.com/nutzam/nutz[Nutz]
