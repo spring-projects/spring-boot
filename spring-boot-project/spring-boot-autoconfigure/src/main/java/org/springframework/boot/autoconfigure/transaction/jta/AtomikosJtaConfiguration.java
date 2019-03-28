@@ -46,7 +46,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
- * JTA Configuration for <A href="http://www.atomikos.com/">Atomikos</a>.
+ * JTA Configuration for <A href="https://www.atomikos.com/">Atomikos</a>.
  *
  * @author Josh Long
  * @author Phillip Webb

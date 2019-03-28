@@ -22,7 +22,7 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
-| http://camel.apache.org/spring-boot.html[Apache Camel]
+| https://camel.apache.org/spring-boot.html[Apache Camel]
 | https://github.com/apache/camel/tree/master/components/camel-spring-boot
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
@@ -31,13 +31,13 @@ do as they were designed before this was clarified.
 | https://qpid.apache.org/components/jms/[Apache Qpid]
 | https://github.com/amqphub/amqp-10-jms-spring-boot
 
-| http://wicket.apache.org/[Apache Wicket]
+| https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
 | http://arangodb.com/[ArangoDB]
 | https://github.com/arangodb/spring-boot-starter
 
-| http://www.axonframework.org/[Axon Framework]
+| https://axoniq.io[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
 
 | https://azure.microsoft.com/[Azure]
@@ -55,7 +55,7 @@ do as they were designed before this was clarified.
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
 
-| http://www.couchbase.com/[Couchbase] HTTP session
+| https://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
@@ -76,25 +76,25 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
-| http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
+| https://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
 
-| http://www.grpc.io/[gRPC]
+| https://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
 
-| http://ha-jdbc.github.io/[HA JDBC]
+| https://ha-jdbc.github.io/[HA JDBC]
 | https://github.com/lievendoclo/hajdbc-spring-boot
 
 | https://github.com/jknack/handlebars.java[Handlebars]
 | https://github.com/allegro/handlebars-spring-boot-starter
 
-| http://hdiv.org/[HDIV]
+| https://hdiv.org/[HDIV]
 | https://github.com/hdiv/spring-boot-starter-hdiv
 
 | Hiatus for Spring Boot
 | https://github.com/jihor/hiatus-spring-boot
 
-| http://infinispan.org/[Infinispan]
+| https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
@@ -110,15 +110,15 @@ do as they were designed before this was clarified.
 | https://github.com/sbraconnier/jodconverter
 
 | JSF integration for various libraries
-| http://joinfaces.org
+| https://github.com/joinfaces/joinfaces
 
-| http://www.liquigraph.org/[Liquigraph]
+| https://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 
 | https://logback.qos.ch/access.html[Logback-access]
 | https://github.com/akihyro/logback-access-spring-boot-starter
 
-| http://mybatis.org/mybatis-3/[MyBatis]
+| https://github.com/mybatis/mybatis-3[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
 | http://narayana.io/[Narayana]
@@ -127,19 +127,19 @@ do as they were designed before this was clarified.
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
-| http://square.github.io/okhttp/[OkHttp]
+| https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
 | https://developer.okta.com/[Okta]
 | https://github.com/okta/okta-spring-boot
 
-| http://orika-mapper.github.io/orika-docs/[Orika]
+| https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
 | https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
 | https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
 
-| http://resteasy.jboss.org/[RESTEasy]
+| https://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
 
 | https://github.com/rollbar/rollbar-java/[Rollbar]
@@ -178,10 +178,10 @@ do as they were designed before this was clarified.
 | https://github.com/valiktor/valiktor[Valiktor]
 | https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter
 
-| http://www.wiremock.org[WireMock] and Spring REST Docs
+| https://github.com/tomakehurst/wiremock[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
-| http://alexo.github.io/wro4j/[Wro4j]
+| https://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
 |===

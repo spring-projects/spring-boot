@@ -25,9 +25,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link VehicleIdentificationNumber}.
  *
  * @author Phillip Webb
- * @see <a href="http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html">
+ * @see <a href="https://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html">
  * Naming standards for unit tests</a>
- * @see <a href="http://joel-costigliola.github.io/assertj/">AssertJ</a>
+ * @see <a href="https://joel-costigliola.github.io/assertj/">AssertJ</a>
  */
 public class VehicleIdentificationNumberTests {
 

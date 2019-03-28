@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class CloudFoundrySecurityServiceTests {
 
-	private static final String CLOUD_CONTROLLER = "http://my-cloud-controller.com";
+	private static final String CLOUD_CONTROLLER = "https://my-cloud-controller.com";
 
 	private static final String CLOUD_CONTROLLER_PERMISSIONS = CLOUD_CONTROLLER
 			+ "/v2/apps/my-app-id/permissions";
 
-	private static final String UAA_URL = "http://my-uaa.com";
+	private static final String UAA_URL = "https://my-uaa.com";
 
 	private CloudFoundrySecurityService securityService;
 
@@ -148,7 +148,7 @@ public class CloudFoundrySecurityServiceTests {
 	@Test
 	public void fetchTokenKeysWhenSuccessfulShouldReturnListOfKeysFromUAA() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER + "/info"))
-				.andRespond(withSuccess("{\"token_endpoint\":\"http://my-uaa.com\"}",
+				.andRespond(withSuccess("{\"token_endpoint\":\"https://my-uaa.com\"}",
 						MediaType.APPLICATION_JSON));
 		String tokenKeyValue = "-----BEGIN PUBLIC KEY-----\n"
 				+ "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0m59l2u9iDnMbrXHfqkO\n"

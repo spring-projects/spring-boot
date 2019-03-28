@@ -65,7 +65,7 @@ Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there i
 default `ehcache.xml` configuration file at the root of the classpath,
 it is automatically used to configure the underlying `CacheManager`.
 Note that EhCache 3 uses a different format and doesn't default to `ehcache.xml`
-anymore. Check http://www.ehcache.org/documentation/3.0/xml.html[the documentation]
+anymore. Check https://www.ehcache.org/documentation/3.0/xml.html[the documentation]
 for more details.
 
 TIP: Run sample cache application using EhCache with

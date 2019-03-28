@@ -74,14 +74,14 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		ClientRegistration adapted = registrations.get("registration");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri())
-				.isEqualTo("http://example.com/auth");
-		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
+				.isEqualTo("https://example.com/auth");
+		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://example.com/token");
 		UserInfoEndpoint userInfoEndpoint = adaptedProvider.getUserInfoEndpoint();
-		assertThat(userInfoEndpoint.getUri()).isEqualTo("http://example.com/info");
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/info");
 		assertThat(userInfoEndpoint.getAuthenticationMethod()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthenticationMethod.FORM);
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
-		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
+		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("https://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
@@ -90,7 +90,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("user");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
@@ -162,7 +162,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("user");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}

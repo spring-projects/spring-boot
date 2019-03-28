@@ -1,7 +1,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		xmlns:hr="http://mycompany.com/hr/schemas"
+		xmlns:hr="https://company.example.com/hr/schemas"
 		elementFormDefault="qualified"
-		targetNamespace="http://mycompany.com/hr/schemas">
+		targetNamespace="https://company.example.com/hr/schemas">
 	<xs:element name="HolidayRequest">
 		<xs:complexType>
 			<xs:all>
