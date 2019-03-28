@@ -121,7 +121,7 @@ do as they were designed before this was clarified.
 | https://github.com/mybatis/mybatis-3[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
-| http://narayana.io/[Narayana]
+| https://github.com/jbosstm/narayana[Narayana]
 | https://github.com/snowdrop/narayana-spring-boot
 
 | https://github.com/nutzam/nutz[Nutz]

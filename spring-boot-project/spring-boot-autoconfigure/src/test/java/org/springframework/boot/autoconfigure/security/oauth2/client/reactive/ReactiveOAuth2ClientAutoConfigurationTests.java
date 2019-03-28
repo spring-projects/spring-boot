@@ -168,7 +168,8 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 		@Bean
 		public ReactiveClientRegistrationRepository clientRegistrationRepository() {
 			List<ClientRegistration> registrations = new ArrayList<>();
-			registrations.add(getClientRegistration("first", "https://user-info-uri.com"));
+			registrations
+					.add(getClientRegistration("first", "https://user-info-uri.com"));
 			registrations.add(getClientRegistration("second", "http://other-user-info"));
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
 		}

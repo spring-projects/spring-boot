@@ -121,7 +121,8 @@ public class RootUriRequestExpectationManagerTests {
 						"Request URI expected:</hello> was:<https://example.com/bad>"));
 		assertThatExceptionOfType(AssertionError.class)
 				.isThrownBy(() -> this.manager.validateRequest(request))
-				.withMessageContaining("Request URI expected:<https://example.com/hello>");
+				.withMessageContaining(
+						"Request URI expected:<https://example.com/hello>");
 	}
 
 	@Test
