@@ -38,6 +38,7 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.rule.OutputCapture;
@@ -77,6 +78,14 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ThymeleafAutoConfiguration.class));
+
+	@Test
+	public void autoConfigurationBackOffWithoutThymeleafSpring() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader("org.thymeleaf.spring5"))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(TemplateEngine.class));
+	}
 
 	@Test
 	public void createFromConfigClass() {
