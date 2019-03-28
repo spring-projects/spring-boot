@@ -209,7 +209,7 @@ public class FlywayAutoConfigurationTests {
 					assertThat(context).getFailure()
 							.isInstanceOf(BeanCreationException.class);
 					assertThat(context).getFailure()
-							.hasMessageContaining("Cannot find migrations location in");
+							.hasMessageContaining("Cannot find migration scripts in");
 				});
 	}
 
