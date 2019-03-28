@@ -474,7 +474,7 @@ configuration permits `GET` and `POST` calls from the `example.com` domain:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.web.cors.allowed-origins=http://example.com
+	management.endpoints.web.cors.allowed-origins=https://example.com
 	management.endpoints.web.cors.allowed-methods=GET,POST
 ----
 
@@ -1401,7 +1401,7 @@ https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.atlas.uri=http://atlas.example.com:7101/api/v1/publish
+	management.metrics.export.atlas.uri=https://atlas.example.com:7101/api/v1/publish
 ----
 
 
@@ -1478,7 +1478,7 @@ server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.influx.uri=http://influx.example.com:8086
+	management.metrics.export.influx.uri=https://influx.example.com:8086
 ----
 
 
@@ -2049,7 +2049,7 @@ include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[
 == What to Read Next
 If you want to explore some of the concepts discussed in this chapter, you can take a
 look at the actuator {github-code}/spring-boot-samples[sample applications]. You also
-might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
+might want to read about graphing tools such as https://graphite.wikidot.com/[Graphite].
 
 Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment
 options`'>> or jump ahead for some in-depth information about Spring Boot's

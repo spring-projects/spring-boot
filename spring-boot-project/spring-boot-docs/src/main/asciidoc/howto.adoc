@@ -1447,7 +1447,7 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 
 Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which
 is typically provided by Spring Framework's `spring-jcl` module. To use
-http://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
+https://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
 The simplest way to do that is through the starters, which all depend on
 `spring-boot-starter-logging`. For a web application, you need only
 `spring-boot-starter-web`, since it depends transitively on the logging starter. If you
@@ -1551,7 +1551,7 @@ following example:
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for Logging
-Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
+Spring Boot supports https://logging.apache.org/log4j/2.x[Log4j 2] for logging
 configuration if it is on the classpath. If you use the starters for
 assembling dependencies, you have to exclude Logback and then include log4j 2
 instead. If you do not use the starters, you need to provide (at least) `spring-jcl` in
@@ -2201,7 +2201,7 @@ You can also switch off the initialization explicitly by setting
 [[howto-use-a-higher-level-database-migration-tool]]
 === Use a Higher-level Database Migration Tool
 Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Flyway]
-and http://www.liquibase.org/[Liquibase].
+and https://www.liquibase.org/[Liquibase].
 
 [[howto-execute-flyway-database-migrations-on-startup]]
 ==== Execute Flyway Database Migrations on Startup
@@ -2591,7 +2591,7 @@ for other Groovy customization options.
 === Fast Application Restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
 While not as fast as technologies such as
-http://zeroturnaround.com/software/jrebel/[JRebel] it is usually significantly faster than
+https://zeroturnaround.com/software/jrebel/[JRebel] it is usually significantly faster than
 a "`cold start`". You should probably give it a try before investigating some of the more
 complex reload options discussed later in this document.
 
@@ -3227,9 +3227,9 @@ rather than the version that was pre-installed with the server. You can do so by
 		xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-			http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+			https://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
 			http://xmlns.oracle.com/weblogic/weblogic-web-app
-			http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+			https://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
 		<wls:container-descriptor>
 			<wls:prefer-application-packages>
 				<wls:package-name>org.slf4j</wls:package-name>

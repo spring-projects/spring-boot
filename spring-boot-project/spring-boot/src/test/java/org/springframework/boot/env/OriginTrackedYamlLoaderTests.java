@@ -99,7 +99,7 @@ public class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue bar2 = getValue("example.foo[0].bar[1].bar2");
 		assertThat(name.toString()).isEqualTo("springboot");
 		assertThat(getLocation(name)).isEqualTo("22:15");
-		assertThat(url.toString()).isEqualTo("http://springboot.com");
+		assertThat(url.toString()).isEqualTo("https://springboot.example.com/");
 		assertThat(getLocation(url)).isEqualTo("23:14");
 		assertThat(bar1.toString()).isEqualTo("baz");
 		assertThat(getLocation(bar1)).isEqualTo("25:19");

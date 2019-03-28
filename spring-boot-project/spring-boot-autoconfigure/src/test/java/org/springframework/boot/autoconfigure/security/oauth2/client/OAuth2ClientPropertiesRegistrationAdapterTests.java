@@ -47,18 +47,18 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Provider provider = new Provider();
-		provider.setAuthorizationUri("http://example.com/auth");
-		provider.setTokenUri("http://example.com/token");
-		provider.setUserInfoUri("http://example.com/info");
+		provider.setAuthorizationUri("https://example.com/auth");
+		provider.setTokenUri("https://example.com/token");
+		provider.setUserInfoUri("https://example.com/info");
 		provider.setUserNameAttribute("sub");
-		provider.setJwkSetUri("http://example.com/jwk");
+		provider.setJwkSetUri("https://example.com/jwk");
 		Registration registration = new Registration();
 		registration.setProvider("provider");
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
 		registration.setClientAuthenticationMethod("post");
 		registration.setAuthorizationGrantType("authorization_code");
-		registration.setRedirectUriTemplate("http://example.com/redirect");
+		registration.setRedirectUriTemplate("https://example.com/redirect");
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");
 		properties.getProvider().put("provider", provider);
@@ -68,13 +68,13 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		ClientRegistration adapted = registrations.get("registration");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri())
-				.isEqualTo("http://example.com/auth");
-		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
+				.isEqualTo("https://example.com/auth");
+		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://example.com/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
-				.isEqualTo("http://example.com/info");
+				.isEqualTo("https://example.com/info");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
 				.isEqualTo("sub");
-		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
+		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("https://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
@@ -83,7 +83,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("scope");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
@@ -132,7 +132,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientSecret("clientSecret");
 		registration.setClientAuthenticationMethod("post");
 		registration.setAuthorizationGrantType("authorization_code");
-		registration.setRedirectUriTemplate("http://example.com/redirect");
+		registration.setRedirectUriTemplate("https://example.com/redirect");
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");
 		properties.getRegistration().put("registration", registration);
@@ -158,7 +158,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("scope");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
