@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
@@ -30,10 +31,15 @@ import javax.naming.NamingException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -63,8 +69,18 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerExcepti
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.SocketUtils;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -537,6 +553,49 @@ public class TomcatEmbeddedServletContainerFactoryTests
 			assertThat(tomcatReference.get().getServer().getState())
 					.isEqualTo(LifecycleState.STOPPED);
 		}
+	}
+
+	@Test
+	public void nonExistentUploadDirectoryIsCreatedUponMultipartUpload()
+			throws IOException, URISyntaxException {
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
+				0);
+		AtomicReference<ServletContext> servletContextReference = new AtomicReference<>();
+		factory.addInitializers(new ServletContextInitializer() {
+
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContextReference.set(servletContext);
+				Dynamic servlet = servletContext.addServlet("upload", new HttpServlet() {
+
+					@Override
+					protected void doPost(HttpServletRequest req,
+							HttpServletResponse resp)
+							throws ServletException, IOException {
+						req.getParts();
+					}
+
+				});
+				servlet.addMapping("/upload");
+				servlet.setMultipartConfig(new MultipartConfigElement((String) null));
+			}
+
+		});
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		File temp = (File) servletContextReference.get()
+				.getAttribute(ServletContext.TEMPDIR);
+		FileSystemUtils.deleteRecursively(temp);
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add("file", new ByteArrayResource(new byte[1024 * 1024]));
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,
+				headers);
+		ResponseEntity<String> response = restTemplate
+				.postForEntity(getLocalUrl("/upload"), requestEntity, String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Override

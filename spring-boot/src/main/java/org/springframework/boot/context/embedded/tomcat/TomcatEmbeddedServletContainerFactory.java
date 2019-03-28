@@ -206,6 +206,12 @@ public class TomcatEmbeddedServletContainerFactory
 		catch (NoSuchMethodError ex) {
 			// Tomcat is < 8.0.30. Continue
 		}
+		try {
+			context.setCreateUploadTargets(true);
+		}
+		catch (NoSuchMethodError ex) {
+			// Tomcat is < 8.5.39. Continue.
+		}
 		SkipPatternJarScanner.apply(context, this.tldSkipPatterns);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
