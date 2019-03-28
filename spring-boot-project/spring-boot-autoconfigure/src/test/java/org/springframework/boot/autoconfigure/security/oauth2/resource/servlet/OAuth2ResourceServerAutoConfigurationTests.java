@@ -87,7 +87,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	public void autoConfigurationShouldMatchDefaultJwsAlgorithm() {
 		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 					assertThat(jwtDecoder).hasFieldOrPropertyWithValue("jwsAlgorithm",
@@ -98,7 +98,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	public void autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm() {
 		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com",
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
 				"spring.security.oauth2.resourceserver.jwt.jws-algorithm=HS512")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);

@@ -170,7 +170,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 			List<ClientRegistration> registrations = new ArrayList<>();
 			registrations
 					.add(getClientRegistration("first", "https://user-info-uri.com"));
-			registrations.add(getClientRegistration("second", "http://other-user-info"));
+			registrations.add(getClientRegistration("second", "https://other-user-info"));
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
 		}
 

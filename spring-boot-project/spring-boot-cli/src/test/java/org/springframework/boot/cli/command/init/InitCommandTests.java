@@ -72,19 +72,19 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	@Test
 	public void listServiceCapabilitiesText() throws Exception {
 		mockSuccessfulMetadataTextGet();
-		this.command.run("--list", "--target=http://fake-service");
+		this.command.run("--list", "--target=https://fake-service");
 	}
 
 	@Test
 	public void listServiceCapabilities() throws Exception {
 		mockSuccessfulMetadataGet(true);
-		this.command.run("--list", "--target=http://fake-service");
+		this.command.run("--list", "--target=https://fake-service");
 	}
 
 	@Test
 	public void listServiceCapabilitiesV2() throws Exception {
 		mockSuccessfulMetadataGetV2(true);
-		this.command.run("--list", "--target=http://fake-service");
+		this.command.run("--list", "--target=https://fake-service");
 	}
 
 	@Test
@@ -357,7 +357,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	public void userAgent() throws Exception {
-		this.command.run("--list", "--target=http://fake-service");
+		this.command.run("--list", "--target=https://fake-service");
 		verify(this.http).execute(this.requestCaptor.capture());
 		Header agent = this.requestCaptor.getValue().getHeaders("User-Agent")[0];
 		assertThat(agent.getValue()).startsWith("SpringBootCli/");
