@@ -1,4 +1,4 @@
-# http://docs.ansible.com/ansible/YAMLSyntax.html
+# https://docs.ansible.com/ansible/YAMLSyntax.html
 
 name: Martin D'vloper
 job: Developer
@@ -20,7 +20,7 @@ education: |
 example:
     foo:
       - name: springboot
-        url: http://springboot.com
+        url: https://springboot.example.com/
         bar:
           - bar1: baz
           - bar2: bling

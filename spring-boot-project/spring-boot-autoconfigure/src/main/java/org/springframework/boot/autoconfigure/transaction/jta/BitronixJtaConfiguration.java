@@ -45,7 +45,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
- * JTA Configuration for <A href="http://docs.codehaus.org/display/BTM/Home">Bitronix</A>.
+ * JTA Configuration for <A href="https://github.com/bitronix/btm">Bitronix</A>.
  *
  * @author Josh Long
  * @author Phillip Webb

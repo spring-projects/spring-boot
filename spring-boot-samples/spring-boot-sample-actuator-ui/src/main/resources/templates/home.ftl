@@ -11,7 +11,7 @@
 	<div class="container">
 		<div class="navbar">
 			<div class="navbar-inner">
-				<a class="brand" href="http://freemarker.org/"> FreeMarker -
+				<a class="brand" href="https://freemarker.apache.org/"> FreeMarker -
 					Plain </a>
 				<ul class="nav">
 					<li><a href="${home}"> Home </a></li>

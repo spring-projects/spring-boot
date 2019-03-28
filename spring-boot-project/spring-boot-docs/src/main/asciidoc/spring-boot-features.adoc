@@ -700,10 +700,10 @@ https://www.vaultproject.io/[HashiCorp Vault].
 
 [[boot-features-external-config-yaml]]
 === Using YAML Instead of Properties
-http://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for
+https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for
 specifying hierarchical configuration data. The `SpringApplication` class automatically
 supports YAML as an alternative to properties whenever you have the
-http://www.snakeyaml.org/[SnakeYAML] library on your classpath.
+https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
 
 NOTE: If you use "`Starters`", SnakeYAML is automatically provided by
 `spring-boot-starter`.
@@ -722,10 +722,10 @@ For example, consider the following YAML document:
 ----
 	environments:
 		dev:
-			url: http://dev.example.com
+			url: https://dev.example.com
 			name: Developer Setup
 		prod:
-			url: http://another.example.com
+			url: https://another.example.com
 			name: My Cool App
 ----
 
@@ -733,9 +733,9 @@ The preceding example would be transformed into the following properties:
 
 [source,properties,indent=0]
 ----
-	environments.dev.url=http://dev.example.com
+	environments.dev.url=https://dev.example.com
 	environments.dev.name=Developer Setup
-	environments.prod.url=http://another.example.com
+	environments.prod.url=https://another.example.com
 	environments.prod.name=My Cool App
 ----
 
@@ -1705,12 +1705,12 @@ See "<<boot-features-external-config-profile-specific-properties>>" for details.
 
 [[boot-features-logging]]
 == Logging
-Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all internal
+Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal
 logging but leaves the underlying log implementation open. Default configurations are
 provided for
 {java-javadoc}/java/util/logging/package-summary.html[Java Util
-Logging], http://logging.apache.org/log4j/2.x/[Log4J2], and
-http://logback.qos.ch/[Logback]. In each case, loggers are pre-configured to use console
+Logging], https://logging.apache.org/log4j/2.x/[Log4J2], and
+https://logback.qos.ch/[Logback]. In each case, loggers are pre-configured to use console
 output with optional file output also available.
 
 By default, if you use the "`Starters`", Logback is used for logging. Appropriate Logback
@@ -2081,7 +2081,7 @@ cannot use extensions in it. You need to either use `logback-spring.xml` or defi
 `logging.config` property.
 
 WARNING: The extensions cannot be used with Logback's
-http://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
+https://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
 attempt to do so, making changes to the configuration file results in an error similar to
 one of the following being logged:
 
@@ -2578,7 +2578,7 @@ Spring Boot includes auto-configuration support for the following templating eng
 
  * https://freemarker.apache.org/docs/[FreeMarker]
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
- * http://www.thymeleaf.org[Thymeleaf]
+ * https://www.thymeleaf.org[Thymeleaf]
  * https://mustache.github.io/[Mustache]
 
 TIP: If possible, JSPs should be avoided. There are several
@@ -2793,7 +2793,7 @@ described earlier.
 ==== CORS Support
 
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
-(CORS) is a http://www.w3.org/TR/cors/[W3C specification] implemented by
+(CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by
 https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible
 way what kind of cross-domain requests are authorized, instead of using some less secure
 and less powerful approaches such as IFRAME or JSONP.
@@ -2831,7 +2831,7 @@ defined by registering a `WebMvcConfigurer` bean with a customized
 
 Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
 Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous and
-non-blocking, and implements the http://www.reactive-streams.org/[Reactive Streams]
+non-blocking, and implements the https://www.reactive-streams.org/[Reactive Streams]
 specification through https://projectreactor.io/[the Reactor project].
 
 Spring WebFlux comes in two flavors: functional and annotation-based. The
@@ -3008,8 +3008,8 @@ Thymeleaf, FreeMarker, and Mustache.
 Spring Boot includes auto-configuration support for the following templating engines:
 
  * https://freemarker.apache.org/docs/[FreeMarker]
- * http://www.thymeleaf.org[Thymeleaf]
- * http://mustache.github.io/[Mustache]
+ * https://www.thymeleaf.org[Thymeleaf]
+ * https://mustache.github.io/[Mustache]
 
 When you use one of these templating engines with the default configuration, your
 templates are picked up automatically from `src/main/resources/templates`.
@@ -3130,7 +3130,7 @@ does so, the orders shown in the following table will be used:
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the
 available implementations instead of Spring MVC. https://jersey.github.io/[Jersey] and
-http://cxf.apache.org/[Apache CXF] work quite well out of the box. CXF requires you to
+https://cxf.apache.org/[Apache CXF] work quite well out of the box. CXF requires you to
 register its `Servlet` or `Filter` as a `@Bean` in your application context. Jersey has
 some native Spring support, so we also provide auto-configuration support for it in
 Spring Boot, together with a starter.
@@ -3201,10 +3201,11 @@ that you can see how to set things up.
 
 [[boot-features-embedded-container]]
 === Embedded Servlet Container Support
-Spring Boot includes support for embedded http://tomcat.apache.org/[Tomcat],
-https://www.eclipse.org/jetty/[Jetty], and http://undertow.io/[Undertow] servers. Most
-developers use the appropriate "`Starter`" to obtain a fully configured instance. By
-default, the embedded server listens for HTTP requests on port `8080`.
+Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat],
+https://www.eclipse.org/jetty/[Jetty], and
+https://github.com/undertow-io/undertow[Undertow] servers. Most developers use the
+appropriate "`Starter`" to obtain a fully configured instance. By default, the embedded
+server listens for HTTP requests on port `8080`.
 
 WARNING: If you choose to use Tomcat on https://www.centos.org/[CentOS], be aware that, by
 default, a temporary directory is used to store compiled JSPs, file uploads, and so on.
@@ -3558,7 +3559,7 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
 	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-1.scope=user
-	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=https://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
 
@@ -3567,7 +3568,7 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
 	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-2.scope=email
-	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=https://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
 
@@ -3740,8 +3741,8 @@ application ends.
 TIP: The "`How-to`" section includes a <<howto.adoc#howto-database-initialization,
 section on how to initialize a database>>.
 
-Spring Boot can auto-configure embedded http://www.h2database.com[H2],
-http://hsqldb.org/[HSQL], and http://db.apache.org/derby/[Derby] databases. You need not
+Spring Boot can auto-configure embedded https://www.h2database.com[H2],
+http://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases. You need not
 provide any connection URLs. You need only include a build dependency to the embedded
 database that you want to use.
 
@@ -3835,7 +3836,7 @@ settings by using their respective prefix (`+spring.datasource.hikari.*+`,
 documentation of the connection pool implementation you are using for more details.
 
 For instance, if you use the
-http://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat
+https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat
 connection pool], you could customize many additional settings, as shown in the following
 example:
 
@@ -4101,8 +4102,8 @@ https://projects.spring.io/spring-data-jdbc/[reference documentation].
 
 [[boot-features-sql-h2-console]]
 === Using H2's Web Console
-The http://www.h2database.com[H2 database] provides a
-http://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that
+The https://www.h2database.com[H2 database] provides a
+https://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that
 Spring Boot can auto-configure for you. The console is auto-configured when the following
 conditions are met:
 
@@ -4129,8 +4130,8 @@ path by using the `spring.h2.console.path` property.
 
 [[boot-features-jooq]]
 === Using jOOQ
-Java Object Oriented Querying (http://www.jooq.org/[jOOQ]) is a popular product from
-http://www.datageekery.com/[Data Geekery] which generates Java code from your
+Java Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from
+https://www.datageekery.com/[Data Geekery] which generates Java code from your
 database and lets you build type-safe SQL queries through its fluent API. Both the
 commercial and open source editions can be used with Spring Boot.
 
@@ -4263,7 +4264,7 @@ https://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 [[boot-features-redis]]
 === Redis
-http://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
+https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
 Spring Boot offers basic auto-configuration for the
 https://github.com/lettuce-io/lettuce-core/[Lettuce] and
 https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top
@@ -4317,7 +4318,7 @@ get a pooled connection factory.
 
 [[boot-features-mongodb]]
 === MongoDB
-http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
+https://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
 JSON-like schema instead of traditional table-based relational data. Spring Boot offers
 several conveniences for working with MongoDB, including the
 `spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive`
@@ -4489,7 +4490,7 @@ customized by declaring a `DownloadConfigBuilderCustomizer` bean.
 
 [[boot-features-neo4j]]
 === Neo4j
-http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
+https://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
 model of nodes connected by first class relationships, which is better suited for
 connected big data than traditional RDBMS approaches. Spring Boot offers several
 conveniences for working with Neo4j, including the `spring-boot-starter-data-neo4j`
@@ -4646,7 +4647,7 @@ https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java
 
 [[boot-features-solr]]
 === Solr
-http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
+https://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
 auto-configuration for the Solr 5 client library and the abstractions on top of it
 provided by https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There
 is a `spring-boot-starter-data-solr` "`Starter`" for collecting the dependencies in a
@@ -4710,7 +4711,6 @@ The transport client is still being used by
 https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch],
 which you can start using with the `spring-boot-starter-data-elasticsearch` "`Starter`".
 
-
 [[boot-features-connecting-to-elasticsearch-rest]]
 ==== Connecting to Elasticsearch by REST clients
 Elasticsearch ships
@@ -4724,7 +4724,7 @@ You can further tune how `RestClient` is configured, as shown in the following e
 
 [source,properties,indent=0]
 ----
-	spring.elasticsearch.rest.uris=http://search.example.com:9200
+	spring.elasticsearch.rest.uris=https://search.example.com:9200
 	spring.elasticsearch.rest.username=user
 	spring.elasticsearch.rest.password=secret
 ----
@@ -4746,7 +4746,7 @@ configured, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	spring.elasticsearch.jest.uris=http://search.example.com:9200
+	spring.elasticsearch.jest.uris=https://search.example.com:9200
 	spring.elasticsearch.jest.read-timeout=10000
 	spring.elasticsearch.jest.username=user
 	spring.elasticsearch.jest.password=secret
@@ -4817,7 +4817,7 @@ https://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 [[boot-features-cassandra]]
 === Cassandra
-http://cassandra.apache.org/[Cassandra] is an open source, distributed database
+https://cassandra.apache.org/[Cassandra] is an open source, distributed database
 management system designed to handle large amounts of data across many commodity servers.
 Spring Boot offers auto-configuration for Cassandra and the abstractions on top of it
 provided by https://github.com/spring-projects/spring-data-cassandra[Spring Data
@@ -4878,7 +4878,7 @@ https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 [[boot-features-couchbase]]
 === Couchbase
-http://www.couchbase.com/[Couchbase] is an open-source, distributed, multi-model NoSQL
+https://www.couchbase.com/[Couchbase] is an open-source, distributed, multi-model NoSQL
 document-oriented database that is optimized for interactive applications. Spring Boot
 offers auto-configuration for Couchbase and the abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase]. There are
@@ -5122,7 +5122,7 @@ example:
 
 [source,properties,indent=0]
 ----
-	spring.influx.url=http://172.0.0.1:8086
+	spring.influx.url=https://172.0.0.1:8086
 ----
 
 If the connection to InfluxDB requires a user and password, you can set the
@@ -5305,7 +5305,7 @@ abstraction expects. No further customization is applied to it.
 
 [[boot-features-caching-provider-ehcache2]]
 ==== EhCache 2.x
-http://www.ehcache.org/[EhCache] 2.x is used if a file named `ehcache.xml` can be found at
+https://www.ehcache.org/[EhCache] 2.x is used if a file named `ehcache.xml` can be found at
 the root of the classpath. If EhCache 2.x is found, the `EhCacheCacheManager` provided by
 the `spring-boot-starter-cache` "`Starter`" is used to bootstrap the cache manager. An
 alternate configuration file can be provided as well, as shown in the following example:
@@ -5328,7 +5328,7 @@ Spring Boot has <<boot-features-hazelcast,general support for Hazelcast>>. If a
 
 [[boot-features-caching-provider-infinispan]]
 ==== Infinispan
-http://infinispan.org/[Infinispan] has no default configuration file location, so it must
+https://infinispan.org/[Infinispan] has no default configuration file location, so it must
 be specified explicitly. Otherwise, the default bootstrap is used.
 
 [source,properties,indent=0]
@@ -5404,7 +5404,7 @@ auto-configuration.
 
 [[boot-features-caching-provider-redis]]
 ==== Redis
-If http://redis.io/[Redis] is available and configured, a `RedisCacheManager` is
+If https://redis.io/[Redis] is available and configured, a `RedisCacheManager` is
 auto-configured. It is possible to create additional caches on startup by setting the
 `spring.cache.cache-names` property and cache defaults can be configured by using
 `spring.cache.redis.*` properties. For instance, the following configuration creates
@@ -5516,7 +5516,7 @@ infrastructure to send and receive messages.
 
 [[boot-features-activemq]]
 ==== ActiveMQ Support
-When http://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can
+When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can
 also configure a `ConnectionFactory`. If the broker is present, an embedded broker is
 automatically started and configured (provided no broker URL is specified through
 configuration).
@@ -5568,7 +5568,7 @@ are resolved against their provided names.
 [[boot-features-artemis]]
 ==== Artemis Support
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that
-http://activemq.apache.org/artemis/[Artemis] is available on the classpath. If the broker
+https://activemq.apache.org/artemis/[Artemis] is available on the classpath. If the broker
 is present, an embedded broker is automatically started and configured (unless the mode
 property has been explicitly set). The supported modes are `embedded` (to make explicit
 that an embedded broker is required and that an error should occur if the broker is not
@@ -5936,7 +5936,7 @@ delivery attempts is reached.
 
 [[boot-features-kafka]]
 === Apache Kafka Support
-http://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of
+https://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of
 the `spring-kafka` project.
 
 Kafka configuration is controlled by external configuration properties in
@@ -6189,7 +6189,7 @@ The following code shows a typical example:
 		private final WebClient webClient;
 
 		public MyService(WebClient.Builder webClientBuilder) {
-			this.webClient = webClientBuilder.baseUrl("http://example.org").build();
+			this.webClient = webClientBuilder.baseUrl("https://example.org").build();
 		}
 
 		public Mono<Details> someRestCall(String name) {
@@ -6317,7 +6317,7 @@ When a `jndi-name` is set, it takes precedence over all other Session-related se
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources by using
-either an http://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix]
+either an https://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix]
 embedded transaction manager. JTA transactions are also supported when deploying to a
 suitable Java EE Application Server.
 
@@ -6466,7 +6466,7 @@ configuration, as shown in the following example:
 Otherwise, Spring Boot tries to find the Hazelcast configuration from the default
 locations: `hazelcast.xml` in the working directory or at the root of the classpath. We
 also check if the `hazelcast.config` system property is set. See the
-http://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for
+https://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for
 more details.
 
 If `hazelcast-client` is present on the classpath, Spring Boot first attempts to create a
@@ -6487,7 +6487,7 @@ implementation.
 [[boot-features-quartz]]
 == Quartz Scheduler
 Spring Boot offers several conveniences for working with the
-http://www.quartz-scheduler.org/[Quartz scheduler], including the
+https://www.quartz-scheduler.org/[Quartz scheduler], including the
 `spring-boot-starter-quartz` "`Starter`". If Quartz is available, a `Scheduler` is
 auto-configured (through the `SchedulerFactoryBean` abstraction).
 
@@ -6718,13 +6718,13 @@ libraries.
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains
 the following provided libraries:
 
-* http://junit.org[JUnit]: The de-facto standard for unit testing Java applications.
+* https://junit.org[JUnit]: The de-facto standard for unit testing Java applications.
 * {spring-reference}testing.html#integration-testing[Spring Test] & Spring Boot Test:
 Utilities and integration test support for Spring Boot applications.
-* http://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
-* http://hamcrest.org/JavaHamcrest/[Hamcrest]: A library of matcher objects (also known
-as constraints or predicates).
-* http://mockito.org/[Mockito]: A Java mocking framework.
+* https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
+* https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also
+known as constraints or predicates).
+* https://mockito.github.io[Mockito]: A Java mocking framework.
 * https://github.com/skyscreamer/JSONassert[JSONassert]: An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath]: XPath for JSON.
 
@@ -8157,7 +8157,7 @@ the following example:
 		@Test
 		public void testRequest() throws Exception {
 			HttpHeaders headers = this.template.getForEntity(
-					"http://myhost.example.com/example", String.class).getHeaders();
+					"https://myhost.example.com/example", String.class).getHeaders();
 			assertThat(headers.getLocation()).hasHost("other.example.com");
 		}
 
@@ -8358,7 +8358,7 @@ annotations include:
 ==== Class Conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let
 `@Configuration` classes be included based on the presence or absence of specific classes.
-Due to the fact that annotation metadata is parsed by using http://asm.ow2.org/[ASM], you
+Due to the fact that annotation metadata is parsed by using https://asm.ow2.org/[ASM], you
 can use the `value` attribute to refer to the real class, even though that class might not
 actually appear on the running application classpath. You can also use the `name`
 attribute if you prefer to specify the class name by using a `String` value.
@@ -8674,7 +8674,7 @@ The easiest way to start with Spring Boot and Kotlin is to follow
 https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial]. You
 can create new Kotlin projects via
 https://start.spring.io/#!language=kotlin[start.spring.io]. Feel free to join the #spring
-channel of http://slack.kotlinlang.org/[Kotlin Slack] or ask a question with the `spring`
+channel of https://slack.kotlinlang.org/[Kotlin Slack] or ask a question with the `spring`
 and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack
 Overflow] if you need support.
 
@@ -8709,7 +8709,7 @@ deals with `null` values at compile time rather than deferring the problem to ru
 encountering a `NullPointerException`. This helps to eliminate a common source of bugs
 without paying the cost of wrappers like `Optional`. Kotlin also allows using functional
 constructs with nullable values as described in this
-http://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
+https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
 Although Java does not allow one to express null-safety in its type system, Spring
 Framework, Spring Data, and Reactor now provide null-safety of their API via
@@ -8852,7 +8852,7 @@ provides similar `@MockkBean` and `@SpykBean` annotations.
 [[boot-features-kotlin-resources-further-reading]]
 ==== Further reading
 * {kotlin-documentation}[Kotlin language reference]
-* http://slack.kotlinlang.org/[Kotlin Slack] (with a dedicated #spring channel)
+* https://slack.kotlinlang.org/[Kotlin Slack] (with a dedicated #spring channel)
 * https://stackoverflow.com/questions/tagged/spring+kotlin[Stackoverflow with `spring` and `kotlin` tags]
 * https://try.kotlinlang.org/[Try Kotlin in your browser]
 * https://blog.jetbrains.com/kotlin/[Kotlin blog]

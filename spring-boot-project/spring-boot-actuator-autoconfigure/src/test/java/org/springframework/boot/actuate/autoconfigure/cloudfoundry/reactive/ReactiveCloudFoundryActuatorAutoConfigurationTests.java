@@ -107,7 +107,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -131,7 +131,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					WebTestClient webTestClient = WebTestClient
 							.bindToApplicationContext(context).build();
@@ -145,7 +145,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -162,7 +162,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -173,7 +173,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					String cloudControllerUrl = (String) ReflectionTestUtils
 							.getField(interceptorSecurityService, "cloudControllerUrl");
 					assertThat(cloudControllerUrl)
-							.isEqualTo("http://my-cloud-controller.com");
+							.isEqualTo("https://my-cloud-controller.com");
 				});
 	}
 
@@ -198,7 +198,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					WebFilterChainProxy chainProxy = context
 							.getBean(WebFilterChainProxy.class);
@@ -245,7 +245,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -263,7 +263,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -287,7 +287,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 						AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(
 							context).getEndpoints();
@@ -322,7 +322,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 						AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.cloudfoundry.skip-ssl-validation:true")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
@@ -345,7 +345,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 						AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(
 							context);
