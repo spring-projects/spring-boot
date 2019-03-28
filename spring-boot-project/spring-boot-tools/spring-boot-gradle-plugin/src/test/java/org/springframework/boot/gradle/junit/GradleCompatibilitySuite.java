@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
 public final class GradleCompatibilitySuite extends Suite {
 
 	private static final List<String> GRADLE_VERSIONS = Arrays.asList("default", "4.5.1",
-			"4.6", "4.7", "4.8.1", "4.9", "4.10.3", "5.0", "5.1.1", "5.2.1");
+			"4.6", "4.7", "4.8.1", "4.9", "4.10.3", "5.0", "5.1.1", "5.2.1", "5.3");
 
 	public GradleCompatibilitySuite(Class<?> clazz) throws InitializationError {
 		super(clazz, createRunners(clazz));

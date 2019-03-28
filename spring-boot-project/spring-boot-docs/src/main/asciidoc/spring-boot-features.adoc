@@ -978,13 +978,14 @@ name of the bean is used.
 The bean name in the example above is `acme-com.example.AcmeProperties`.
 ====
 
-Even if the preceding configuration creates a regular bean for `AcmeProperties`, we
-recommend that `@ConfigurationProperties` only deal with the environment and, in
-particular, does not inject other beans from the context. Having said that, the
+The preceding configuration creates a regular bean for `AcmeProperties`. We recommend that
+`@ConfigurationProperties` only deal with the environment and, in particular, does not
+inject other beans from the context. Keep in mind that the
 `@EnableConfigurationProperties` annotation is _also_ automatically applied to your
 project so that any _existing_ bean annotated with `@ConfigurationProperties` is
-configured from the `Environment`. You could shortcut `MyConfiguration` by making sure
-`AcmeProperties` is already a bean, as shown in the following example:
+configured from the `Environment`. Instead of annotating `MyConfiguration` with
+`@EnableConfigurationProperties(AcmeProperties.class)`, you could make `AcmeProperties`
+a bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -2172,7 +2173,7 @@ If you need to add or customize converters, you can use Spring Boot's
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+	import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 	import org.springframework.context.annotation.*;
 	import org.springframework.http.converter.*;
 
@@ -3331,8 +3332,8 @@ The basic features you get by default in a web application are:
 bean with in-memory store and a single user with a generated password (see
 {dc-spring-boot}/autoconfigure/security/SecurityProperties.User.html[`SecurityProperties.User`]
 for the properties of the user).
-* Form-based login or HTTP Basic security (depending on Content-Type) for the entire
-application (including actuator endpoints if actuator is on the classpath).
+* Form-based login or HTTP Basic security (depending on the `Accept` header in the request) for
+the entire application (including actuator endpoints if actuator is on the classpath).
 * A `DefaultAuthenticationEventPublisher` for publishing authentication events.
 
 You can provide a different `AuthenticationEventPublisher` by adding a bean for it.
@@ -6612,8 +6613,8 @@ specific slices>> of an application.
 
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to
 your test, otherwise the annotations will be ignored. If you are using JUnit 5, there's no
-need to add the equivalent `@ExtendWith(SpringExtension)` as `@SpringBootTest` and the
-other `@…Test` annotations are already annotated with it.
+need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and
+the other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server. You can use the `webEnvironment`
 attribute of `@SpringBootTest` to further refine how your tests run:
@@ -6982,6 +6983,19 @@ NOTE: JSON helper classes can also be used directly in standard unit tests. To d
 call the `initFields` method of the helper in your `@Before` method if you do not use
 `@JsonTest`.
 
+If you're using Spring Boot's AssertJ-based helpers to assert on a number value
+at a given JSON path, you might not be able to use `isEqualTo` depending on the type.
+Instead, you can use AssertJ's `satisfies` to assert that the value matches the given
+condition. For instance, the following example asserts that the actual number is a float
+value close to `0.15` within an offset of `0.01`.
+
+[source,java,indent=0]
+----
+assertThat(json.write(message))
+    .extractingJsonPathNumberValue("@.test.numberValue")
+    .satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
+----
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests]]
@@ -7170,6 +7184,10 @@ mocked web application only works with WebFlux at the moment.
 NOTE: `@WebFluxTest` cannot detect routes registered via the functional web framework. For
 testing `RouterFunction` beans in the context, consider importing your `RouterFunction`
 yourself via `@Import` or using `@SpringBootTest`.
+
+NOTE: `@WebFluxTest` cannot detect custom security configuration registered via a `@Bean`
+of type `SecurityWebFilterChain`. To include that in your test, you will need to import
+the configuration that registers the bean via `@Import` or use `@SpringBootTest`.
 
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run
 <<boot-features-testing-spring-boot-applications-testing-with-running-server,
@@ -7695,6 +7713,28 @@ generate the default snippets. The following example shows a
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-web-test-client]]
+===== Auto-configured Spring REST Docs Tests with WebTestClient
+`@AutoConfigureRestDocs` can also be used with `WebTestClient`. You can inject it by using
+`@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and
+Spring REST Docs, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/webclient/UsersDocumentationTests.java[tag=source]
+----
+
+If you require more control over Spring REST Docs configuration than offered by the
+attributes of `@AutoConfigureRestDocs`, you can use a
+`RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/webclient/AdvancedConfigurationExample.java[tag=configuration]
+----
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-rest-assured]]
 ===== Auto-configured Spring REST Docs Tests with REST Assured
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring
@@ -7776,6 +7816,34 @@ NOTE: Depending on the complexity of your application, you may either have a sin
 `@Configuration` class for your customizations or one class per domain area. The latter
 approach lets you enable it in one of your tests, if necessary, with the `@Import`
 annotation.
+
+Test slices exclude `@Configuration` classes from scanning. For example, for a `@WebMvcTest`,
+the following configuration will not include the given `WebMvcConfigurer` bean in the application
+context loaded by the test slice:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class WebConfiguration {
+		@Bean
+		public WebMvcConfigurer testConfigurer() {
+			return new WebMvcConfigurer() {
+				...
+			};
+		}
+	}
+----
+
+The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded
+by the test slice.
+
+[source,java,indent=0]
+----
+	@Component
+	public class TestWebMvcConfigurer extends WebMvcConfigurer {
+		...
+	}
+----
 
 Another source of confusion is classpath scanning. Assume that, while you structured your
 code in a sensible way, you need to scan an additional package. Your application may
@@ -8076,8 +8144,8 @@ published jar. The file should list your configuration classes under the
 ====
 Auto-configurations must be loaded that way _only_. Make sure that they are defined in
 a specific package space and that they are never the target of component scanning.
-Futhermore, auto-configuration classes should not enable component scanning to find
-additional components. Specific `@Import`s should be used instead.
+Furthermore, auto-configuration classes should not enable component scanning to find
+additional components. Specific ``@Import``s should be used instead.
 ====
 
 You can use the
@@ -8610,7 +8678,7 @@ documentation] for more details. You also need to
 {junit5-documentation}/#writing-tests-test-instance-lifecycle-changing-default[switch test
 instance lifecycle to "per-class"].
 
-To mock Kotlin classes, https://mockk.io/[Mockk] is recommended. If you need the `Mockk`
+To mock Kotlin classes, https://mockk.io/[MockK] is recommended. If you need the `Mockk`
 equivalent of the Mockito specific
 <<boot-features-testing-spring-boot-applications-mocking-beans,`@MockBean` and `@SpyBean`
 annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which

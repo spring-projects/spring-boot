@@ -4,6 +4,6 @@ RUN yum install -y wget && \
     yum install -y system-config-services && \
     yum install -y curl && \
     wget --output-document jdk.rpm \
-        http://cdn.azul.com/zulu/bin/zulu8.21.0.1-jdk8.0.131-linux.x86_64.rpm && \
+        https://cdn.azul.com/zulu/bin/zulu8.21.0.1-jdk8.0.131-linux.x86_64.rpm && \
     yum --nogpg localinstall -y jdk.rpm && \
     rm -f jdk.rpm

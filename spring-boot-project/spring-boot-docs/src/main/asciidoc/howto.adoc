@@ -1166,9 +1166,9 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
-used, with the additional requirement of having `MyThing` annotated as
-`@XmlRootElement`, as shown in the following example:
+If Jackson's XML extension is not available and JAXB is available, XML can be rendered
+with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as
+shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1179,7 +1179,18 @@ used, with the additional requirement of having `MyThing` annotated as
 	}
 ----
 
-To get the server to render XML instead of JSON, you might have to send an
+JAXB is only available out of the box with Java 8. If you're using a more recent Java
+generation, add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.glassfish.jaxb</groupId>
+		<artifactId>jaxb-runtime</artifactId>
+	</dependency>
+----
+
+NOTE: To get the server to render XML instead of JSON, you might have to send an
 `Accept: text/xml` header (or use a browser).
 
 
@@ -2615,7 +2626,7 @@ There are several options for hot reloading. The recommended approach is to use
 additional development-time features, such as support for fast application restarts
 and LiveReload as well as sensible development-time configuration (such as template
 caching). Devtools works by monitoring the classpath for changes. This means that static
-resource changes must be "built" for the change to take affect. By default, this happens
+resource changes must be "built" for the change to take effect. By default, this happens
 automatically in Eclipse when you save your changes. In IntelliJ IDEA, the Make Project
 command triggers the necessary build. Due to the
 <<using-spring-boot.adoc#using-boot-devtools-restart-exclude, default restart

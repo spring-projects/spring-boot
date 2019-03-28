@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -128,6 +128,10 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		catch (NestedServletException ex) {
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			record(timingContext, response, request, ex.getCause());
+			throw ex;
+		}
+		catch (ServletException | IOException | RuntimeException ex) {
+			record(timingContext, response, request, ex);
 			throw ex;
 		}
 	}

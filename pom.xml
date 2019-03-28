@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
@@ -24,7 +24,7 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.6</spring-javaformat.version>
+				<spring-javaformat.version>0.0.7</spring-javaformat.version>
 			</properties>
 			<build>
 				<plugins>
@@ -36,7 +36,7 @@
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>8.12</version>
+								<version>8.18</version>
 							</dependency>
 							<dependency>
 								<groupId>io.spring.javaformat</groupId>

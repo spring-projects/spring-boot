@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -532,7 +532,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.isEqualTo("test");
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate()
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
@@ -547,7 +547,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-		getResponse(getLocalUrl("https", "/test.txt"), requestFactory);
+		String localUrl = getLocalUrl("https", "/test.txt");
+		assertThatIOException().isThrownBy(() -> getResponse(localUrl, requestFactory));
 	}
 
 	@Test
