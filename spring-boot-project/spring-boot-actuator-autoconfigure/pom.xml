@@ -724,16 +724,7 @@
 									<target>
 										<zip
 											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
-											<zipfileset
-												dir="${project.build.directory}/generated-docs"
-												includes="index.html" prefix="html" />
-											<mappedresources>
-												<fileset
-													dir="${project.build.directory}/generated-docs"
-													includes="index.pdf" />
-												<globmapper from="index.pdf"
-													to="pdf/spring-boot-actuator-web-api.pdf" />
-											</mappedresources>
+											<fileset dir="${project.build.directory}/generated-docs" />
 										</zip>
 									</target>
 								</configuration>
@@ -752,6 +743,7 @@
 								</goals>
 								<configuration>
 									<backend>html5</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
 									<sourceHighlighter>highlight.js</sourceHighlighter>
 									<doctype>book</doctype>
 									<attributes>
@@ -773,12 +765,12 @@
 								</goals>
 								<configuration>
 									<backend>pdf</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/pdf</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
 						<configuration>
 							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
-							<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
 							<attributes>
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>
