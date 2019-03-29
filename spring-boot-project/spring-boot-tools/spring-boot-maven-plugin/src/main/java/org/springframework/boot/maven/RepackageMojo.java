@@ -263,7 +263,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		return new File(this.outputDirectory, this.finalName + classifier + "."
+		String finalName = this.project.getBuild().getFinalName();
+		return new File(this.outputDirectory, finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
