@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScra
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -41,6 +43,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class PrometheusMetricsExportAutoConfigurationTests {
+
+	@Rule
+	public final OutputCapture output = new OutputCapture();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations
@@ -152,9 +157,28 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues(
 						"management.metrics.export.prometheus.pushgateway.enabled=true")
-				.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> hasGatewayURL(context,
-						"http://localhost:9091/metrics/job/"));
+				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+					assertThat(this.output.toString())
+							.doesNotContain("Invalid PushGateway base url");
+					hasGatewayURL(context, "http://localhost:9091/metrics/job/");
+				});
+	}
+
+	@Test
+	@Deprecated
+	public void withCustomLegacyPushGatewayURL() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+				.withPropertyValues(
+						"management.metrics.export.prometheus.pushgateway.enabled=true",
+						"management.metrics.export.prometheus.pushgateway.base-url=localhost:9090")
+				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+					assertThat(this.output.toString())
+							.contains("Invalid PushGateway base url")
+							.contains("localhost:9090");
+					hasGatewayURL(context, "http://localhost:9090/metrics/job/");
+				});
 	}
 
 	@Test
@@ -164,10 +188,10 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 						AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues(
 						"management.metrics.export.prometheus.pushgateway.enabled=true",
-						"management.metrics.export.prometheus.pushgateway.base-url=https://localhost:8080/push")
+						"management.metrics.export.prometheus.pushgateway.base-url=https://example.com:8080")
 				.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> hasGatewayURL(context,
-						"https://localhost:8080/push/metrics/job/"));
+						"https://example.com:8080/metrics/job/"));
 	}
 
 	private void hasGatewayURL(AssertableApplicationContext context, String url) {

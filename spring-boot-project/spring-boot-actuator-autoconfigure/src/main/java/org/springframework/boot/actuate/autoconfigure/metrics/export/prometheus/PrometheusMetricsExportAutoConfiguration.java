@@ -26,6 +26,8 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
@@ -107,6 +109,9 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled")
 	public static class PrometheusPushGatewayConfiguration {
 
+		private static final Log logger = LogFactory
+				.getLog(PrometheusPushGatewayConfiguration.class);
+
 		/**
 		 * The fallback job name. We use 'spring' since there's a history of Prometheus
 		 * spring integration defaulting to that name from when Prometheus integration
@@ -135,6 +140,9 @@ public class PrometheusMetricsExportAutoConfiguration {
 				return new PushGateway(new URL(url));
 			}
 			catch (MalformedURLException ex) {
+				logger.warn(String.format(
+						"Invalid PushGateway base url '%s': update your configuration to a valid URL",
+						url));
 				return new PushGateway(url);
 			}
 		}
