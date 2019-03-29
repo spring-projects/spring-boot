@@ -3207,13 +3207,6 @@ https://github.com/undertow-io/undertow[Undertow] servers. Most developers use t
 appropriate "`Starter`" to obtain a fully configured instance. By default, the embedded
 server listens for HTTP requests on port `8080`.
 
-WARNING: If you choose to use Tomcat on https://www.centos.org/[CentOS], be aware that, by
-default, a temporary directory is used to store compiled JSPs, file uploads, and so on.
-This directory may be deleted by `tmpwatch` while your application is running, leading to
-failures. To avoid this behavior, you may want to customize your `tmpwatch` configuration
-such that `tomcat.*` directories are not deleted or configure `server.tomcat.basedir` such
-that embedded Tomcat uses a different location.
-
 
 
 [[boot-features-embedded-container-servlets-filters-listeners]]
