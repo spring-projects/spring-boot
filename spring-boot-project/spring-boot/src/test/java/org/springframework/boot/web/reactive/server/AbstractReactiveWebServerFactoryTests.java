@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,16 @@ import java.io.FileInputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.X509KeyManager;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -169,10 +173,22 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
-		return new ReactorClientHttpConnector((options) -> options.sslSupport(
-				(sslContextBuilder) -> sslContextBuilder.sslProvider(SslProvider.JDK)
-						.trustManager(InsecureTrustManagerFactory.INSTANCE)
-						.keyManager(clientKeyManagerFactory)));
+		for (KeyManager keyManager : clientKeyManagerFactory.getKeyManagers()) {
+			if (keyManager instanceof X509KeyManager) {
+				X509KeyManager x509KeyManager = (X509KeyManager) keyManager;
+				PrivateKey privateKey = x509KeyManager.getPrivateKey("spring-boot");
+				if (privateKey != null) {
+					X509Certificate[] certificateChain = x509KeyManager
+							.getCertificateChain("spring-boot");
+					return new ReactorClientHttpConnector((options) -> options
+							.sslSupport((sslContextBuilder) -> sslContextBuilder
+									.sslProvider(SslProvider.JDK)
+									.trustManager(InsecureTrustManagerFactory.INSTANCE)
+									.keyManager(privateKey, certificateChain)));
+				}
+			}
+		}
+		throw new IllegalStateException("Key with alias 'spring-boot' not found");
 	}
 
 	protected void testClientAuthSuccess(Ssl sslConfiguration,
