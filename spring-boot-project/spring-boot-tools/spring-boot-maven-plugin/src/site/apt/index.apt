@@ -46,6 +46,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/repackage-classifier.html}Custom repackage classifier}}
 
+  * {{{./examples/repackage-name.html}Custom repackage name}}
+
   * {{{./examples/repackage-disable-attach.html}Local repackaged artifact}}
 
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}

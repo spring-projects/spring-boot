@@ -8,6 +8,7 @@
 		</menu>
 		<menu name="Examples">
 			<item name="Custom repackage classifier" href="examples/repackage-classifier.html"/>
+			<item name="Custom repackage name" href="examples/repackage-name.html"/>
 			<item name="Local repackaged artifact" href="examples/repackage-disable-attach.html"/>
 			<item name="Exclude a dependency" href="examples/exclude-dependency.html"/>
 			<item name="Debug the application" href="examples/run-debug.html"/>
