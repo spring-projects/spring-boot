@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import org.apache.catalina.Context;
@@ -49,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rob Tompkins
  * @author Artsiom Yudovin
  * @author Stephane Nicoll
+ * @author Andrew McGhie
  */
 public class TomcatWebServerFactoryCustomizerTests {
 
@@ -325,12 +327,98 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void accessLogConditionCanBeSpecified() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.conditionIf=foo",
+				"server.tomcat.accesslog.conditionUnless=bar");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getConditionIf()).isEqualTo("foo");
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getConditionUnless()).isEqualTo("bar");
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getCondition()).describedAs(
+						"value of condition should equal conditionUnless - provided for backwards compatibility")
+						.isEqualTo("bar");
+	}
+
+	@Test
+	public void accessLogEncodingIsNullWhenNotSpecified() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getEncoding()).isNull();
+	}
+
+	@Test
+	public void accessLogEncodingCanBeSpecified() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.encoding=UTF-8");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getEncoding()).isEqualTo("UTF-8");
+	}
+
+	@Test
+	public void accessLogWithDefaultLocale() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getLocale()).isEqualTo(Locale.getDefault().toString());
+	}
+
+	@Test
+	public void accessLogLocaleCanBeSpecified() {
+		String locale = "en_AU".equals(Locale.getDefault().toString()) ? "en_US"
+				: "en_AU";
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.locale=" + locale);
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getLocale()).isEqualTo(locale);
+	}
+
+	@Test
+	public void accessLogCheckExistsDefault() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.isCheckExists()).isFalse();
+	}
+
+	@Test
+	public void accessLogCheckExistsSpecified() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.check-exists=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.isCheckExists()).isTrue();
+	}
+
+	@Test
 	public void accessLogMaxDaysCanBeRedefined() {
 		bind("server.tomcat.accesslog.enabled=true",
 				"server.tomcat.accesslog.max-days=20");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
 				.getMaxDays()).isEqualTo(20);
+	}
+
+	@Test
+	public void accessLogDoesNotUseIpv6CanonicalFormatByDefault() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getIpv6Canonical()).isFalse();
+	}
+
+	@Test
+	public void accessLogwithIpv6CanonicalSet() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.ipv6-canonical=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getIpv6Canonical()).isTrue();
 	}
 
 	private void bind(String... inlinedProperties) {
