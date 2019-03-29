@@ -21,11 +21,15 @@ import java.io.FileInputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.Arrays;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.X509KeyManager;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -171,13 +175,24 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
-		SslContextBuilder builder = SslContextBuilder.forClient()
-				.sslProvider(SslProvider.JDK)
-				.trustManager(InsecureTrustManagerFactory.INSTANCE)
-				.keyManager(clientKeyManagerFactory);
-		HttpClient client = HttpClient.create().wiretap(true)
-				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
-		return new ReactorClientHttpConnector(client);
+		for (KeyManager keyManager : clientKeyManagerFactory.getKeyManagers()) {
+			if (keyManager instanceof X509KeyManager) {
+				X509KeyManager x509KeyManager = (X509KeyManager) keyManager;
+				PrivateKey privateKey = x509KeyManager.getPrivateKey("spring-boot");
+				if (privateKey != null) {
+					X509Certificate[] certificateChain = x509KeyManager
+							.getCertificateChain("spring-boot");
+					SslContextBuilder builder = SslContextBuilder.forClient()
+							.sslProvider(SslProvider.JDK)
+							.trustManager(InsecureTrustManagerFactory.INSTANCE)
+							.keyManager(privateKey, certificateChain);
+					HttpClient client = HttpClient.create().wiretap(true).secure(
+							(sslContextSpec) -> sslContextSpec.sslContext(builder));
+					return new ReactorClientHttpConnector(client);
+				}
+			}
+		}
+		throw new IllegalStateException("Key with alias 'spring-boot' not found");
 	}
 
 	protected void testClientAuthSuccess(Ssl sslConfiguration,
