@@ -327,32 +327,6 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogMaxDaysCanBeRedefined() {
-		bind("server.tomcat.accesslog.enabled=true",
-				"server.tomcat.accesslog.max-days=20");
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
-				.getMaxDays()).isEqualTo(20);
-	}
-
-	@Test
-	public void accessLogCheckExistsDefault() {
-		bind("server.tomcat.accesslog.enabled=true");
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
-				.isCheckExists()).isFalse();
-	}
-
-	@Test
-	public void accessLogCheckExistsSpecified() {
-		bind("server.tomcat.accesslog.enabled=true",
-				"server.tomcat.accesslog.checkExists=true");
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
-				.isCheckExists()).isTrue();
-	}
-
-	@Test
 	public void accessLogConditionCanBeSpecified() {
 		bind("server.tomcat.accesslog.enabled=true",
 				"server.tomcat.accesslog.conditionIf=foo",
@@ -386,23 +360,6 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogDoesNotUseIpv6CanonicalFormatByDefault() {
-		bind("server.tomcat.accesslog.enabled=true");
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
-				.getIpv6Canonical()).isFalse();
-	}
-
-	@Test
-	public void accessLogwithIpv6CanonicalSet() {
-		bind("server.tomcat.accesslog.enabled=true",
-				"server.tomcat.accesslog.ipv6Canonical=true");
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
-				.getIpv6Canonical()).isTrue();
-	}
-
-	@Test
 	public void accessLogWithDefaultLocale() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
@@ -419,6 +376,49 @@ public class TomcatWebServerFactoryCustomizerTests {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
 				.getLocale()).isEqualTo(locale);
+	}
+
+	@Test
+	public void accessLogCheckExistsDefault() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.isCheckExists()).isFalse();
+	}
+
+	@Test
+	public void accessLogCheckExistsSpecified() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.check-exists=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.isCheckExists()).isTrue();
+	}
+
+	@Test
+	public void accessLogMaxDaysCanBeRedefined() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.max-days=20");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getMaxDays()).isEqualTo(20);
+	}
+
+	@Test
+	public void accessLogDoesNotUseIpv6CanonicalFormatByDefault() {
+		bind("server.tomcat.accesslog.enabled=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getIpv6Canonical()).isFalse();
+	}
+
+	@Test
+	public void accessLogwithIpv6CanonicalSet() {
+		bind("server.tomcat.accesslog.enabled=true",
+				"server.tomcat.accesslog.ipv6-canonical=true");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
+				.getIpv6Canonical()).isTrue();
 	}
 
 	private void bind(String... inlinedProperties) {

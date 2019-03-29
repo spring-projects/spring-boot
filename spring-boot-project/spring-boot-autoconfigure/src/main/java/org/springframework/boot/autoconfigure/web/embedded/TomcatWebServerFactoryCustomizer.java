@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
@@ -247,23 +248,25 @@ public class TomcatWebServerFactoryCustomizer implements
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		AccessLogValve valve = new AccessLogValve();
-		valve.setPattern(tomcatProperties.getAccesslog().getPattern());
-		valve.setDirectory(tomcatProperties.getAccesslog().getDirectory());
-		valve.setPrefix(tomcatProperties.getAccesslog().getPrefix());
-		valve.setSuffix(tomcatProperties.getAccesslog().getSuffix());
-		valve.setRenameOnRotate(tomcatProperties.getAccesslog().isRenameOnRotate());
-		valve.setMaxDays(tomcatProperties.getAccesslog().getMaxDays());
-		valve.setFileDateFormat(tomcatProperties.getAccesslog().getFileDateFormat());
-		valve.setRequestAttributesEnabled(
-				tomcatProperties.getAccesslog().isRequestAttributesEnabled());
-		valve.setRotatable(tomcatProperties.getAccesslog().isRotate());
-		valve.setBuffered(tomcatProperties.getAccesslog().isBuffered());
-		valve.setCheckExists(tomcatProperties.getAccesslog().isCheckExists());
-		valve.setConditionIf(tomcatProperties.getAccesslog().getConditionIf());
-		valve.setConditionUnless(tomcatProperties.getAccesslog().getConditionUnless());
-		valve.setEncoding(tomcatProperties.getAccesslog().getEncoding());
-		valve.setIpv6Canonical(tomcatProperties.getAccesslog().isIpv6Canonical());
-		valve.setLocale(tomcatProperties.getAccesslog().getLocale());
+		PropertyMapper map = PropertyMapper.get();
+		Accesslog accessLogConfig = tomcatProperties.getAccesslog();
+		map.from(accessLogConfig.getConditionIf()).to(valve::setConditionIf);
+		map.from(accessLogConfig.getConditionUnless()).to(valve::setConditionUnless);
+		map.from(accessLogConfig.getPattern()).to(valve::setPattern);
+		map.from(accessLogConfig.getDirectory()).to(valve::setDirectory);
+		map.from(accessLogConfig.getPrefix()).to(valve::setPrefix);
+		map.from(accessLogConfig.getSuffix()).to(valve::setSuffix);
+		map.from(accessLogConfig.getEncoding()).whenHasText().to(valve::setEncoding);
+		map.from(accessLogConfig.getLocale()).whenHasText().to(valve::setLocale);
+		map.from(accessLogConfig.isCheckExists()).to(valve::setCheckExists);
+		map.from(accessLogConfig.isRotate()).to(valve::setRotatable);
+		map.from(accessLogConfig.isRenameOnRotate()).to(valve::setRenameOnRotate);
+		map.from(accessLogConfig.getMaxDays()).to(valve::setMaxDays);
+		map.from(accessLogConfig.getFileDateFormat()).to(valve::setFileDateFormat);
+		map.from(accessLogConfig.isIpv6Canonical()).to(valve::setIpv6Canonical);
+		map.from(accessLogConfig.isRequestAttributesEnabled())
+				.to(valve::setRequestAttributesEnabled);
+		map.from(accessLogConfig.isBuffered()).to(valve::setBuffered);
 		factory.addEngineValves(valve);
 	}
 
