@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -560,7 +560,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 			throws IOException, URISyntaxException {
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
 				0);
-		AtomicReference<ServletContext> servletContextReference = new AtomicReference<>();
+		final AtomicReference<ServletContext> servletContextReference = new AtomicReference<ServletContext>();
 		factory.addInitializers(new ServletContextInitializer() {
 
 			@Override
@@ -588,11 +588,11 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		FileSystemUtils.deleteRecursively(temp);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
-		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
 		body.add("file", new ByteArrayResource(new byte[1024 * 1024]));
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,
-				headers);
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<MultiValueMap<String, Object>>(
+				body, headers);
 		ResponseEntity<String> response = restTemplate
 				.postForEntity(getLocalUrl("/upload"), requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
