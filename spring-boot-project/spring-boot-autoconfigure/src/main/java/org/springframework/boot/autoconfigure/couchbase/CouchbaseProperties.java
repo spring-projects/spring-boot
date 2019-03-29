@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.time.Duration;
@@ -73,7 +72,7 @@ public class CouchbaseProperties {
 		/**
 		 * Username of the bucket.
 		 */
-		private String userName="";
+		private String userName = "";
 
 		public String getName() {
 			return this.name;
@@ -92,12 +91,13 @@ public class CouchbaseProperties {
 		}
 
 		public String getUserName() {
-			return userName;
+			return this.userName;
 		}
 
 		public void setUserName(String userName) {
 			this.userName = userName;
 		}
+
 	}
 
 	public static class Env {

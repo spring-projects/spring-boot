@@ -57,7 +57,8 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Cluster couchbaseCluster() {
-		CouchbaseCluster couchbaseCluster = CouchbaseCluster.create(couchbaseEnvironment(), determineBootstrapHosts());
+		CouchbaseCluster couchbaseCluster = CouchbaseCluster
+				.create(couchbaseEnvironment(), determineBootstrapHosts());
 		CouchbaseProperties.Bucket bucket = this.properties.getBucket();
 		return couchbaseCluster.authenticate(bucket.getUserName(), bucket.getPassword());
 	}
