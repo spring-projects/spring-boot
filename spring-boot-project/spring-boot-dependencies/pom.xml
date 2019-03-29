@@ -34,7 +34,7 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<!-- Dependency versions -->
-		<activemq.version>5.15.8</activemq.version>
+		<activemq.version>5.15.9</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.71</appengine-sdk.version>
 		<artemis.version>2.6.4</artemis.version>
@@ -71,7 +71,7 @@
 		<hazelcast.version>3.11.2</hazelcast.version>
 		<hazelcast-hibernate5.version>1.2.3</hazelcast-hibernate5.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
-		<hibernate-validator.version>6.0.15.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.0.16.Final</hibernate-validator.version>
 		<hikaricp.version>3.2.0</hikaricp.version>
 		<hsqldb.version>2.4.1</hsqldb.version>
 		<htmlunit.version>2.33</htmlunit.version>
@@ -139,13 +139,13 @@
 		<mysql.version>8.0.15</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.8</neo4j-ogm.version>
-		<netty.version>4.1.33.Final</netty.version>
+		<netty.version>4.1.34.Final</netty.version>
 		<netty-tcnative.version>2.0.22.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<pooled-jms.version>1.0.4</pooled-jms.version>
 		<postgresql.version>42.2.5</postgresql.version>
 		<prometheus-pushgateway.version>0.5.0</prometheus-pushgateway.version>
-		<quartz.version>2.3.0</quartz.version>
+		<quartz.version>2.3.1</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.4.3</rabbit-amqp-client.version>
 		<reactor-bom.version>Californium-SR5</reactor-bom.version>
@@ -165,7 +165,7 @@
 		<spring.version>5.1.5.RELEASE</spring.version>
 		<spring-amqp.version>2.1.4.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.1.1.RELEASE</spring-batch.version>
-		<spring-cloud-connectors.version>2.0.4.RELEASE</spring-cloud-connectors.version>
+		<spring-cloud-connectors.version>2.0.5.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Lovelace-SR5</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
 		<spring-hateoas.version>0.25.1.RELEASE</spring-hateoas.version>
@@ -186,9 +186,9 @@
 		<thymeleaf-extras-springsecurity.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
-		<thymeleaf-extras-java8time.version>3.0.3.RELEASE</thymeleaf-extras-java8time.version>
+		<thymeleaf-extras-java8time.version>3.0.4.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>9.0.17</tomcat.version>
-		<unboundid-ldapsdk.version>4.0.9</unboundid-ldapsdk.version>
+		<unboundid-ldapsdk.version>4.0.10</unboundid-ldapsdk.version>
 		<undertow.version>2.0.19.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.35</webjars-locator-core.version>
