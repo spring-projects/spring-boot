@@ -70,6 +70,8 @@ public class CouchbaseProperties {
 		 */
 		private String password = "";
 
+		private String userName="";
+
 		public String getName() {
 			return this.name;
 		}
@@ -86,6 +88,13 @@ public class CouchbaseProperties {
 			this.password = password;
 		}
 
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
 	}
 
 	public static class Env {
