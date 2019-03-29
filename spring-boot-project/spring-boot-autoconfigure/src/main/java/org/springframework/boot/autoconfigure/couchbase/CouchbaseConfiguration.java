@@ -57,7 +57,14 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Cluster couchbaseCluster() {
-		return CouchbaseCluster.create(couchbaseEnvironment(), determineBootstrapHosts());
+		CouchbaseCluster couchbaseCluster = CouchbaseCluster
+				.create(couchbaseEnvironment(), determineBootstrapHosts());
+		if (this.properties.getUsername().isEmpty()
+				|| this.properties.getPassword().isEmpty()) {
+			return couchbaseCluster;
+		}
+		return couchbaseCluster.authenticate(this.properties.getUsername(),
+				this.properties.getPassword());
 	}
 
 	/**
@@ -79,8 +86,12 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Bucket couchbaseClient() {
-		return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
-				this.properties.getBucket().getPassword());
+		if (this.properties.getUsername().isEmpty()
+				|| this.properties.getPassword().isEmpty()) {
+			return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
+					this.properties.getBucket().getPassword());
+		}
+		return couchbaseCluster().openBucket(this.properties.getBucket().getName());
 	}
 
 	/**

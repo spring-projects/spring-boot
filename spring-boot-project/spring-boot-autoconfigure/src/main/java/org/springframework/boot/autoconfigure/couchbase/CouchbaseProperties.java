@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.time.Duration;
@@ -42,6 +41,16 @@ public class CouchbaseProperties {
 
 	private final Env env = new Env();
 
+	/**
+	 * Password of the cluster on RBA(role base access).
+	 */
+	private String password = "";
+
+	/**
+	 * Username of the cluster on RBA(role base access).
+	 */
+	private String username = "";
+
 	public List<String> getBootstrapHosts() {
 		return this.bootstrapHosts;
 	}
@@ -56,6 +65,22 @@ public class CouchbaseProperties {
 
 	public Env getEnv() {
 		return this.env;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public static class Bucket {
