@@ -70,6 +70,9 @@ public class CouchbaseProperties {
 		 */
 		private String password = "";
 
+		/**
+		 * Username of the bucket.
+		 */
 		private String userName="";
 
 		public String getName() {
