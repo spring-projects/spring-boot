@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.core.Ordered;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -29,16 +29,24 @@ import org.springframework.web.server.WebExceptionHandler;
  * Example {@link WebExceptionHandler} used with {@link WebFluxTest} tests.
  *
  * @author Madhura Bhave
- * @author Ali Dehghani
  */
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(-2)
 public class ExampleWebExceptionHandler implements WebExceptionHandler {
+
+	private final ErrorWebExceptionHandler fallback;
+
+	public ExampleWebExceptionHandler(ErrorWebExceptionHandler fallback) {
+		this.fallback = fallback;
+	}
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-		exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
-		return exchange.getResponse().setComplete();
+		if (ex instanceof RuntimeException && "foo".equals(ex.getMessage())) {
+			exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+			return exchange.getResponse().setComplete();
+		}
+		return this.fallback.handle(exchange, ex);
 	}
 
 }
