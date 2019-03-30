@@ -74,6 +74,11 @@ public class CouchbaseProperties {
 		 */
 		private String userName = "";
 
+		/**
+		 * RoleBaseAccessEnable for support Couchbase bucket after version 5.0.
+		 */
+		private boolean roleBaseAccessEnabled = false;
+
 		public String getName() {
 			return this.name;
 		}
@@ -96,6 +101,14 @@ public class CouchbaseProperties {
 
 		public void setUserName(String userName) {
 			this.userName = userName;
+		}
+
+		public boolean isRoleBaseAccessEnabled() {
+			return this.roleBaseAccessEnabled;
+		}
+
+		public void setRoleBaseAccessEnabled(boolean roleBaseAccessEnabled) {
+			this.roleBaseAccessEnabled = roleBaseAccessEnabled;
 		}
 
 	}

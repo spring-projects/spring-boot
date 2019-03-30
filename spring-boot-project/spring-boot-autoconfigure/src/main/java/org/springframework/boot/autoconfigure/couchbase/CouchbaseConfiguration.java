@@ -60,7 +60,11 @@ public class CouchbaseConfiguration {
 		CouchbaseCluster couchbaseCluster = CouchbaseCluster
 				.create(couchbaseEnvironment(), determineBootstrapHosts());
 		CouchbaseProperties.Bucket bucket = this.properties.getBucket();
-		return couchbaseCluster.authenticate(bucket.getUserName(), bucket.getPassword());
+		if (bucket.isRoleBaseAccessEnabled()) {
+			return couchbaseCluster.authenticate(bucket.getUserName(),
+					bucket.getPassword());
+		}
+		return couchbaseCluster;
 	}
 
 	/**
