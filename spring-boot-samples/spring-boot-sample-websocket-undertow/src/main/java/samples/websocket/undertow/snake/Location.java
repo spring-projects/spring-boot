@@ -1,12 +1,11 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2012-2018 the original author or authors.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +18,15 @@ package samples.websocket.undertow.snake;
 
 public class Location {
 
+	/**
+	 * The X location.
+	 */
 	public int x;
+
+	/**
+	 * The Y location.
+	 */
 	public int y;
-	public static final int GRID_SIZE = 10;
-	public static final int PLAYFIELD_HEIGHT = 480;
-	public static final int PLAYFIELD_WIDTH = 640;
 
 	public Location(int x, int y) {
 		this.x = x;
@@ -33,13 +36,13 @@ public class Location {
 	public Location getAdjacentLocation(Direction direction) {
 		switch (direction) {
 		case NORTH:
-			return new Location(this.x, this.y - Location.GRID_SIZE);
+			return new Location(this.x, this.y - SnakeUtils.GRID_SIZE);
 		case SOUTH:
-			return new Location(this.x, this.y + Location.GRID_SIZE);
+			return new Location(this.x, this.y + SnakeUtils.GRID_SIZE);
 		case EAST:
-			return new Location(this.x + Location.GRID_SIZE, this.y);
+			return new Location(this.x + SnakeUtils.GRID_SIZE, this.y);
 		case WEST:
-			return new Location(this.x - Location.GRID_SIZE, this.y);
+			return new Location(this.x - SnakeUtils.GRID_SIZE, this.y);
 		case NONE:
 			// fall through
 		default:
@@ -55,16 +58,13 @@ public class Location {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-
 		Location location = (Location) o;
-
 		if (this.x != location.x) {
 			return false;
 		}
 		if (this.y != location.y) {
 			return false;
 		}
-
 		return true;
 	}
 
@@ -74,4 +74,5 @@ public class Location {
 		result = 31 * result + this.y;
 		return result;
 	}
+
 }

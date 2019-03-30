@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SampleSimpleApplicationTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public final OutputCapture output = new OutputCapture();
 
 	private String profiles;
 
@@ -56,15 +56,15 @@ public class SampleSimpleApplicationTests {
 	@Test
 	public void testDefaultSettings() throws Exception {
 		SampleSimpleApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
+		String output = this.output.toString();
 		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
 	public void testCommandLineOverrides() throws Exception {
-		SampleSimpleApplication.main(new String[] { "--name=Gordon" });
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Hello Gordon");
+		SampleSimpleApplication.main(new String[] { "--name=Gordon", "--duration=1m" });
+		String output = this.output.toString();
+		assertThat(output).contains("Hello Gordon for 60 seconds");
 	}
 
 }

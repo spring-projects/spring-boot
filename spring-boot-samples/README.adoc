@@ -38,6 +38,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-cache[spring-boot-sample-cache]
 | Web application that uses Spring's cache abstraction
 
+| link:spring-boot-sample-custom-layout[spring-boot-sample-custom-layout]
+| Creates custom Jar Layout
+
 | link:spring-boot-sample-data-cassandra[spring-boot-sample-data-cassandra]
 | Stores data using Spring Data Cassandra
 
@@ -47,11 +50,14 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-elasticsearch[spring-boot-sample-data-elasticsearch]
 | Stores data using Spring Data Elasticsearch
 
-| link:spring-boot-sample-data-gemfire[spring-boot-sample-data-gemfire]
-| Stores data using Spring Data GemFire
+| link:spring-boot-sample-data-jdbc[spring-boot-sample-data-jdbc]
+| Stores data using Spring Data JDBC
 
 | link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
 | Stores data using Spring Data JPA with Hibernate
+
+| link:spring-boot-sample-data-ldap[spring-boot-sample-data-ldap]
+| Stores data using Spring Data LDAP
 
 | link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
 | Stores data using Spring Data MongoDB
@@ -77,35 +83,10 @@ The following sample applications are provided:
 | link:spring-boot-sample-hateoas[spring-boot-sample-hateoas]
 | RESTful API built using Spring Hateoas
 
-| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate4]
-| Demonstrates how to use Hibernate 4
-
-| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate52]
-| Demonstrates how to use Hibernate 5.2
-
-| link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
-| Message-oriented application using HornetQ
-
-| link:spring-boot-sample-hypermedia[spring-boot-sample-hypermedia]
-| Demonstrates Actuator's hypermedia support, including HAL Browser
-
-| link:spring-boot-sample-hypermedia-gson[spring-boot-sample-hypermedia-gson]
-| Demonstrates Actuator's hypermedia support using GSON in place of Jackson
-
-| link:spring-boot-sample-hypermedia-jpa[spring-boot-sample-hypermedia-jpa]
-| Demonstrates Actuator's hypermedia support alongside Spring Data JPA and Spring Data
-  REST
-
-| link:spring-boot-sample-hypermedia-ui[spring-boot-sample-hypermedia-ui]
-| Demonstrates Actuator's hypermedia support alongside a static web UI
-
 | link:spring-boot-sample-integration[spring-boot-sample-integration]
 | Integration application built using Spring Integration and its Java DSL
 
 | link:spring-boot-sample-jersey[spring-boot-sample-jersey]
-| RESTful service built using Jersey 2
-
-| link:spring-boot-sample-jersey1[spring-boot-sample-jersey1]
 | RESTful service built using Jersey
 
 | link:spring-boot-sample-jetty[spring-boot-sample-jetty]
@@ -116,15 +97,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-jetty-jsp[spring-boot-sample-jetty-jsp]
 | Web application that uses JSP templates with Jetty
-
-| link:spring-boot-sample-jetty8[spring-boot-sample-jetty8]
-| Embedded Jetty 8
-
-| link:spring-boot-sample-jetty8-ssl[spring-boot-sample-jetty8-ssl]
-| Embedded Jetty 8 SSL
-
-| link:spring-boot-sample-jetty92[spring-boot-sample-jetty92]
-| Embedded Jetty 9.2
 
 | link:spring-boot-sample-jooq[spring-boot-sample-jooq]
 | Stores data using jOOQ
@@ -141,8 +113,11 @@ The following sample applications are provided:
 | link:spring-boot-sample-jta-jndi[spring-boot-sample-jta-jndi]
 | JTA transactions using a `TransactionManager` and `DataSource` from JNDI
 
-| link:spring-boot-sample-jta-narayana[spring-boot-sample-jta-narayana]
-| JTA transactions with Narayana
+| link:spring-boot-sample-junit-jupiter[spring-boot-sample-junit-jupiter]
+| Demonstrates JUnit Jupiter-based testing
+
+| link:spring-boot-sample-kafka[spring-boot-sample-kafka]
+| Consumer and producer using Apache Kafka
 
 | link:spring-boot-sample-liquibase[spring-boot-sample-liquibase]
 | Database migrations with Liquibase
@@ -159,6 +134,18 @@ The following sample applications are provided:
 | link:spring-boot-sample-metrics-redis[spring-boot-sample-metrics-redis]
 | Exports metrics to Redis
 
+| link:spring-boot-sample-oauth2-client[spring-boot-sample-oauth2-client]
+| Configure an OAuth2 login client
+
+| link:spring-boot-sample-reactive-oauth2-client[spring-boot-sample-reactive-oauth2-client]
+| Configure a Reactive OAuth2 login client
+
+| link:spring-boot-sample-oauth2-resource-server[spring-boot-sample-oauth2-resource-server]
+| Configure an OAuth2 resource server
+
+| link:spring-boot-sample-reactive-oauth2-resource-server[spring-boot-sample-reactive-oauth2-resource-server]
+| Configure a Reactive OAuth2 resource server
+
 | link:spring-boot-sample-parent-context[spring-boot-sample-parent-context]
 | Application that uses an `ApplicationContext` with a parent
 
@@ -171,17 +158,11 @@ The following sample applications are provided:
 | link:spring-boot-sample-secure[spring-boot-sample-secure]
 | Non-web application that uses Spring Security
 
-| link:spring-boot-sample-secure-oauth2[spring-boot-sample-secure-oauth2]
-| RESTful service secured using OAuth2
-
-| link:spring-boot-sample-secure-oauth2-resource[spring-boot-sample-secure-oauth2-resource]
-| OAuth2 resource server
-
 | link:spring-boot-sample-servlet[spring-boot-sample-servlet]
 | Web application with a "raw" `Servlet` returning plain text content
 
-| link:spring-boot-sample-session-redis[spring-boot-sample-session-redis]
-| Web Application that uses Spring Session to store session data in Redis
+| link:spring-boot-sample-session[spring-boot-sample-session]
+| Web Application that uses Spring Session to manage session data
 
 | link:spring-boot-sample-simple[spring-boot-sample-simple]
 | Simple command line application
@@ -204,15 +185,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-tomcat-ssl[spring-boot-sample-tomcat-ssl]
 | Web application that uses Tomcat configured with SSL
 
-| link:spring-boot-sample-tomcat7-jsp[spring-boot-sample-tomcat7-jsp]
-| Web application that uses JSP templates with Tomcat 7
-
-| link:spring-boot-sample-tomcat7-ssl[spring-boot-sample-tomcat7-ssl]
-| Web application that uses Tomcat 7 configured with SSL
-
-| link:spring-boot-sample-tomcat80-ssl[spring-boot-sample-tomcat80-ssl]
-| Web application that uses Tomcat 8.0 configured with SSL
-
 | link:spring-boot-sample-traditional[spring-boot-sample-traditional]
 | Traditional WAR packaging  (but also executable using `java -jar`)
 
@@ -221,9 +193,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-undertow-ssl[spring-boot-sample-undertow-ssl]
 | Embedded Undertow configured to use SSL
-
-| link:spring-boot-sample-velocity[spring-boot-sample-velocity]
-| Non-web application that uses Velocity templates
 
 | link:spring-boot-sample-war[spring-boot-sample-war]
 | Web application packaged as a war file
@@ -249,9 +218,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-web-secure-custom[spring-boot-sample-web-secure-custom]
 | Web application with custom Spring Security configuration
 
-| link:spring-boot-sample-web-secure-github[spring-boot-sample-web-secure-github]
-| Web application with Spring Security configured to authenticate with GitHub using OAuth2
-
 | link:spring-boot-sample-web-secure-jdbc[spring-boot-sample-web-secure-jdbc]
 | Web application with Spring Security configured to use JDBC authentication
 
@@ -260,9 +226,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
 | Web application with a basic UI built using Bootstrap and JQuery
-
-| link:spring-boot-sample-web-velocity[spring-boot-sample-web-velocity]
-| Web application that uses Velocity templates
 
 | link:spring-boot-sample-webservices[spring-boot-sample-webservices]
 | Simple contract-first SOAP web service with Spring Web Services

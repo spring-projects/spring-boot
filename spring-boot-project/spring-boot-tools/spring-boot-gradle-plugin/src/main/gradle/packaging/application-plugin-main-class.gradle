@@ -1,0 +1,9 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.springframework.boot' version '{version}'
+}
+
+// tag::main-class[]
+mainClassName = 'com.example.ExampleApplication'
+// end::main-class[]

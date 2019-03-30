@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
-		<relativePath>../spring-boot-starters/spring-boot-starter-parent</relativePath>
+		<version>${revision}</version>
+		<relativePath>../spring-boot-project/spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-samples</artifactId>
 	<packaging>pom</packaging>
 	<name>Spring Boot Samples</name>
 	<description>Spring Boot Samples</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<java.version>1.8</java.version>
+		<disable.checks>false</disable.checks>
 	</properties>
 	<modules>
 		<module>spring-boot-sample-ant</module>
@@ -27,16 +24,20 @@
 		<module>spring-boot-sample-actuator-log4j2</module>
 		<module>spring-boot-sample-actuator-noweb</module>
 		<module>spring-boot-sample-actuator-ui</module>
+		<module>spring-boot-sample-actuator-custom-security</module>
 		<module>spring-boot-sample-amqp</module>
+		<module>spring-boot-sample-animated-banner</module>
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-cache</module>
+		<module>spring-boot-sample-custom-layout</module>
 		<module>spring-boot-sample-data-cassandra</module>
 		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
-		<module>spring-boot-sample-data-gemfire</module>
+		<module>spring-boot-sample-data-jdbc</module>
 		<module>spring-boot-sample-data-jpa</module>
+		<module>spring-boot-sample-data-ldap</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-neo4j</module>
 		<module>spring-boot-sample-data-redis</module>
@@ -45,55 +46,44 @@
 		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
-		<module>spring-boot-sample-hibernate4</module>
-		<module>spring-boot-sample-hibernate52</module>
-		<module>spring-boot-sample-hornetq</module>
-		<module>spring-boot-sample-hypermedia</module>
-		<module>spring-boot-sample-hypermedia-gson</module>
-		<module>spring-boot-sample-hypermedia-jpa</module>
-		<module>spring-boot-sample-hypermedia-ui</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
-		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-jetty-jsp</module>
 		<module>spring-boot-sample-jetty-ssl</module>
-		<module>spring-boot-sample-jetty8</module>
-		<module>spring-boot-sample-jetty8-ssl</module>
-		<module>spring-boot-sample-jetty92</module>
 		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
-		<module>spring-boot-sample-jta-narayana</module>
 		<module>spring-boot-sample-jta-jndi</module>
+		<module>spring-boot-sample-junit-jupiter</module>
+		<module>spring-boot-sample-kafka</module>
 		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-logback</module>
-		<module>spring-boot-sample-metrics-dropwizard</module>
-		<module>spring-boot-sample-metrics-opentsdb</module>
-		<module>spring-boot-sample-metrics-redis</module>
+		<module>spring-boot-sample-oauth2-client</module>
+		<module>spring-boot-sample-oauth2-resource-server</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>
+		<module>spring-boot-sample-quartz</module>
+		<module>spring-boot-sample-reactive-oauth2-client</module>
+		<module>spring-boot-sample-reactive-oauth2-resource-server</module>
 		<module>spring-boot-sample-secure</module>
-		<module>spring-boot-sample-secure-oauth2</module>
-		<module>spring-boot-sample-secure-oauth2-resource</module>
+		<module>spring-boot-sample-secure-webflux</module>
 		<module>spring-boot-sample-servlet</module>
-		<module>spring-boot-sample-session-redis</module>
+		<module>spring-boot-sample-session</module>
+		<module>spring-boot-sample-session-webflux</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-test</module>
+		<module>spring-boot-sample-test-nomockito</module>
 		<module>spring-boot-sample-testng</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-tomcat-jsp</module>
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
-		<module>spring-boot-sample-tomcat7-jsp</module>
-		<module>spring-boot-sample-tomcat7-ssl</module>
-		<module>spring-boot-sample-tomcat80-ssl</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>
-		<module>spring-boot-sample-velocity</module>
 		<module>spring-boot-sample-war</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
@@ -102,12 +92,10 @@
 		<module>spring-boot-sample-web-mustache</module>
 		<module>spring-boot-sample-web-secure</module>
 		<module>spring-boot-sample-web-secure-custom</module>
-		<module>spring-boot-sample-web-secure-github</module>
 		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
-		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
-		<module>spring-boot-sample-web-velocity</module>
+		<module>spring-boot-sample-webflux</module>
 		<module>spring-boot-sample-websocket-jetty</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
@@ -117,44 +105,26 @@
 	<!-- No dependencies - otherwise the samples won't work if you change the
 		parent -->
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<useProjectReferences>false</useProjectReferences>
-					<additionalConfig>
-						<file>
-							<name>.settings/org.eclipse.jdt.ui.prefs</name>
-							<location>${main.basedir}/eclipse/org.eclipse.jdt.ui.prefs</location>
-						</file>
-						<file>
-							<name>.settings/org.eclipse.jdt.core.prefs</name>
-							<location>${main.basedir}/eclipse/org.eclipse.jdt.core.prefs</location>
-						</file>
-					</additionalConfig>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/*Tests.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/Abstract*.java</exclude>
-					</excludes>
-					<systemPropertyVariables>
-						<java.security.egd>file:/dev/./urandom</java.security.egd>
-						<java.awt.headless>true</java.awt.headless>
-					</systemPropertyVariables>
-				</configuration>
-			</plugin>
-		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<inherited>true</inherited>
+					<executions>
+						<execution>
+							<id>flatten</id>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>flatten</goal>
+							</goals>
+							<configuration>
+								<updatePomFile>true</updatePomFile>
+								<flattenMode>oss</flattenMode>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -162,6 +132,25 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-enforcer-plugin
+										</artifactId>
+										<versionRange>
+											[1.3.1,)
+										</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
@@ -187,49 +176,74 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*Tests.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/Abstract*.java</exclude>
+					</excludes>
+					<systemPropertyVariables>
+						<java.security.egd>file:/dev/./urandom</java.security.egd>
+						<java.awt.headless>true</java.awt.headless>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-rules</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<bannedDependencies>
+									<excludes>
+										<exclude>commons-logging:*:*</exclude>
+									</excludes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<inherited>true</inherited>
+			</plugin>
+		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>http://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>http://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>http://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>http://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-releases</id>
-			<name>Spring Releases</name>
-			<url>http://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+	<profiles>
+		<profile>
+			<id>fast</id>
+			<activation>
+				<property>
+					<name>fast</name>
+				</property>
+			</activation>
+			<properties>
+				<disable.checks>true</disable.checks>
+			</properties>
+		</profile>
+	</profiles>
 </project>

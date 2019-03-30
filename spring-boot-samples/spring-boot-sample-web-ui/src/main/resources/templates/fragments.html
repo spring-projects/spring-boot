@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+	<head th:fragment="head (title)">
+		<title th:text="${title}">Fragments</title>
+		<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+			href="../../css/bootstrap.min.css" />
+	</head>
+	<body>
+		<div class="container">
+			<nav th:fragment="navbar" class="navbar navbar-dark bg-primary">
+				<a class="navbar-brand" href="https://www.thymeleaf.org/" th:text="#{navbar.thymeleaf}">Thymeleaf</a>
+				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+					<li class="nav-item"><a class="nav-link" th:href="@{/}" href="messages.html" th:text="#{navbar.messages}">Messages</a></li>
+				</ul>
+			</nav>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,30 @@
+bomr:
+  bom: spring-boot-project/spring-boot-dependencies/pom.xml
+  upgrade:
+    github:
+      organization: spring-projects
+      repository: spring-boot
+      issue-labels:
+        - 'type: dependency-upgrade'
+    policy: same-major-version
+    prohibited:
+      - project: couchbase-client
+        versions:
+          # Jar contains dependencies' classes resulting in duplicates
+          - '[2.7.3]'
+      - project: maven-invoker-plugin
+        versions:
+          # NPE in InstallMojo.installProjectPom (InstallMojo.java:387)
+          - '[3.2.0]'
+  verify:
+    ignored-dependencies:
+      # Avoid confliciting transitive requirements for
+      # io.grpc:grpc-core:jar:[1.0.1,1.0.1] (Jetty) and
+      # io.grpc:grpc-core:jar:[1.14.0,1.14.0] (Micrometer's Azure Registry)
+      - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
+      - 'org.eclipse.jetty:jetty-home'
+    repositories:
+      # Caffeine Simulator's dependencies
+      - 'https://maven.imagej.net/content/repositories/public/'
+      # Spring Data GemFire's GemFire dependencies
+      - 'https://repo.spring.io/gemstone-release-pivotal-cache'

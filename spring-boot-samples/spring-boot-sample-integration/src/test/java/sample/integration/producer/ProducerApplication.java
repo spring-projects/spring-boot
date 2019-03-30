@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,20 +19,32 @@ package sample.integration.producer;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.springframework.boot.CommandLineRunner;
+import sample.integration.ServiceProperties;
+
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class ProducerApplication implements CommandLineRunner {
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(ServiceProperties.class)
+public class ProducerApplication implements ApplicationRunner {
+
+	private final ServiceProperties serviceProperties;
+
+	public ProducerApplication(ServiceProperties serviceProperties) {
+		this.serviceProperties = serviceProperties;
+	}
 
 	@Override
-	public void run(String... args) throws Exception {
-		new File("target/input").mkdirs();
-		if (args.length > 0) {
+	public void run(ApplicationArguments args) throws Exception {
+		this.serviceProperties.getInputDir().mkdirs();
+		if (args.getNonOptionArgs().size() > 0) {
 			FileOutputStream stream = new FileOutputStream(
-					"target/input/data" + System.currentTimeMillis() + ".txt");
-			for (String arg : args) {
+					new File(this.serviceProperties.getInputDir(),
+							"data" + System.currentTimeMillis() + ".txt"));
+			for (String arg : args.getNonOptionArgs()) {
 				stream.write(arg.getBytes());
 			}
 			stream.flush();
@@ -40,7 +52,7 @@ public class ProducerApplication implements CommandLineRunner {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(ProducerApplication.class, args);
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,7 @@ public class CityRepositoryIntegrationTests {
 
 	@Test
 	public void findsFirstPageOfCities() {
-
-		Page<City> cities = this.repository.findAll(new PageRequest(0, 10));
+		Page<City> cities = this.repository.findAll(PageRequest.of(0, 10));
 		assertThat(cities.getTotalElements()).isGreaterThan(20L);
 	}
 
@@ -60,7 +59,8 @@ public class CityRepositoryIntegrationTests {
 	public void findContaining() {
 		Page<City> cities = this.repository
 				.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
-						new PageRequest(0, 10));
+						PageRequest.of(0, 10));
 		assertThat(cities.getTotalElements()).isEqualTo(3L);
 	}
+
 }

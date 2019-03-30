@@ -1,1 +1,0 @@
-provides: jta, jdbc, jms, jboss-transaction-spi

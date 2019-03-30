@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,16 +16,17 @@
 
 package sample.ant;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.util.FileCopyUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for {@code SampleAntApplication}.
@@ -47,10 +48,12 @@ public class SampleAntApplicationIT {
 
 		});
 		assertThat(jarFiles).hasSize(1);
-		Process process = new JavaExecutable().processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
+		Process process = new JavaExecutable()
+				.processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
 		process.waitFor(5, TimeUnit.MINUTES);
 		assertThat(process.exitValue()).isEqualTo(0);
-		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));
+		String output = FileCopyUtils
+				.copyToString(new InputStreamReader(process.getInputStream()));
 		assertThat(output).contains("Spring Boot Ant Example");
 	}
 

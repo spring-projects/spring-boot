@@ -1,0 +1,11 @@
+== Spring Boot Quartz Sample
+
+This sample demonstrates the Quartz auto-configuration support.
+
+The sample uses Maven. It can be built and run from the command line:
+
+----
+$ mvn spring-boot:run
+----
+
+Console log will now show "Hello World!" from `SampleJob` every 2 seconds.

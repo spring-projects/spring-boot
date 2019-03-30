@@ -1,0 +1,59 @@
+ -----
+ Use a custom layout
+ -----
+ Dave Syer
+ -----
+ 2016-10-30
+ -----
+
+  Spring Boot repackages the jar file for this project using a custom layout factory
+  defined in the additional jar file, provided as a dependency to the build plugin:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <layoutFactory implementation="com.example.CustomLayoutFactory">
+                <customProperty>value</customProperty>
+              </layoutFactory>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>custom-layout</artifactId>
+            <version>0.0.1.BUILD-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  The layout factory is provided as an implementation of <<<LayoutFactory>>> (from
+  spring-boot-loader-tools) explicitly specified in the pom. If there is only one custom
+  <<<LayoutFactory>>> on the plugin classpath and it is listed in
+  <<<META-INF/spring.factories>>> then it is unnecessary to explicitly set it in the
+  plugin configuration.
+
+  Layout factories are always ignored if an explicit <<layout>> is set.

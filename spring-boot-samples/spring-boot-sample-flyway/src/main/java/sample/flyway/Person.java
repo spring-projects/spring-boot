@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,13 +19,18 @@ package sample.flyway;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class Person {
+
 	@Id
-	@GeneratedValue
+	@SequenceGenerator(name = "person_generator", sequenceName = "person_sequence", allocationSize = 1)
+	@GeneratedValue(generator = "person_generator")
 	private Long id;
+
 	private String firstName;
+
 	private String lastName;
 
 	public String getFirstName() {
@@ -49,4 +54,5 @@ public class Person {
 		return "Person [firstName=" + this.firstName + ", lastName=" + this.lastName
 				+ "]";
 	}
+
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class City implements Serializable {
@@ -29,7 +30,8 @@ public class City implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
+	@SequenceGenerator(name = "city_generator", sequenceName = "city_sequence", initialValue = 23)
+	@GeneratedValue(generator = "city_generator")
 	private Long id;
 
 	@Column(nullable = false)
@@ -48,7 +50,6 @@ public class City implements Serializable {
 	}
 
 	public City(String name, String country) {
-		super();
 		this.name = name;
 		this.country = country;
 	}
@@ -73,4 +74,5 @@ public class City implements Serializable {
 	public String toString() {
 		return getName() + "," + getState() + "," + getCountry();
 	}
+
 }

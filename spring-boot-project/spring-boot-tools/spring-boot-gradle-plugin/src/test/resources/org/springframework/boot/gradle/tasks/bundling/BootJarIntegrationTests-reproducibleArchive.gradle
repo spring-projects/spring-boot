@@ -1,0 +1,10 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClassName = 'com.example.Application'
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
+}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,10 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * @author Rob Winch
- * @author Doo-Hwan Kwak
- */
 @Controller
 @RequestMapping("/")
 public class MessageController {
@@ -68,7 +64,7 @@ public class MessageController {
 			return new ModelAndView("messages/form", "formErrors", result.getAllErrors());
 		}
 		message = this.messageRepository.save(message);
-		redirect.addFlashAttribute("globalMessage", "Successfully created a new message");
+		redirect.addFlashAttribute("globalMessage", "view.success");
 		return new ModelAndView("redirect:/{message.id}", "message.id", message.getId());
 	}
 
@@ -77,14 +73,14 @@ public class MessageController {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
-	@GetMapping(value = "delete/{id}")
+	@GetMapping("delete/{id}")
 	public ModelAndView delete(@PathVariable("id") Long id) {
 		this.messageRepository.deleteMessage(id);
 		Iterable<Message> messages = this.messageRepository.findAll();
 		return new ModelAndView("messages/list", "messages", messages);
 	}
 
-	@GetMapping(value = "modify/{id}")
+	@GetMapping("modify/{id}")
 	public ModelAndView modifyForm(@PathVariable("id") Message message) {
 		return new ModelAndView("messages/form", "message", message);
 	}

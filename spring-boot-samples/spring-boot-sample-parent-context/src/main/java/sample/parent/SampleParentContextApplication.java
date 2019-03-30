@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,33 +16,43 @@
 
 package sample.parent;
 
-import java.io.File;
+import java.util.function.Consumer;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.dsl.SourcePollingChannelAdapterSpec;
-import org.springframework.integration.dsl.core.Pollers;
-import org.springframework.integration.dsl.support.Consumer;
 import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.integration.file.FileWritingMessageHandler;
 
 @SpringBootApplication
-@EnableConfigurationProperties(ServiceProperties.class)
 public class SampleParentContextApplication {
 
+	public static void main(String[] args) throws Exception {
+		new SpringApplicationBuilder(Parent.class)
+				.child(SampleParentContextApplication.class).run(args);
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	protected static class Parent {
+
+		private final ServiceProperties serviceProperties;
+
+		public Parent(ServiceProperties serviceProperties) {
+			this.serviceProperties = serviceProperties;
+		}
 
 		@Bean
 		public FileReadingMessageSource fileReader() {
 			FileReadingMessageSource reader = new FileReadingMessageSource();
-			reader.setDirectory(new File("target/input"));
+			reader.setDirectory(this.serviceProperties.getInputDir());
 			return reader;
 		}
 
@@ -59,7 +69,7 @@ public class SampleParentContextApplication {
 		@Bean
 		public FileWritingMessageHandler fileWriter() {
 			FileWritingMessageHandler writer = new FileWritingMessageHandler(
-					new File("target/output"));
+					this.serviceProperties.getOutputDir());
 			writer.setExpectReply(false);
 			return writer;
 		}
@@ -81,11 +91,6 @@ public class SampleParentContextApplication {
 
 		}
 
-	}
-
-	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(Parent.class)
-				.child(SampleParentContextApplication.class).run(args);
 	}
 
 }

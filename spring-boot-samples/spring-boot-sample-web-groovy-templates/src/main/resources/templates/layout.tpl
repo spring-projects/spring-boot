@@ -8,7 +8,7 @@ html {
       div(class:'navbar') {
         div(class:'navbar-inner') {
           a(class:'brand',
-              href:'http://beta.groovy-lang.org/docs/groovy-2.3.0/html/documentation/markup-template-engine.html') {
+              href:'http://docs.groovy-lang.org/docs/latest/html/documentation/markup-template-engine.html') {
               yield 'Groovy - Layout'
           }
           ul(class:'nav') {

@@ -1,0 +1,50 @@
+ -----
+ Local repackaged artifact
+ -----
+ Stephane Nicoll
+ -----
+ 2016-03-01
+ -----
+
+  By default, the <<<repackage>>> goal will replace the original artifact with the
+  executable one. If you need to only deploy the original jar and yet be able to
+  run your app with the regular file name, configure the plugin as follows:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <attach>false</attach>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  This configuration will generate two artifacts: the original one and the executable counter
+  part produced by the repackage goal. Only the original one will be installed/deployed.
+
+
+
+
