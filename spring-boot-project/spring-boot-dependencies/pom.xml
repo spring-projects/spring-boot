@@ -163,20 +163,20 @@
 		<solr.version>7.7.1</solr.version>
 		<!-- deprecated in favor of "spring-framework.version" -->
 		<spring.version>5.1.6.RELEASE</spring.version>
-		<spring-amqp.version>2.1.4.RELEASE</spring-amqp.version>
+		<spring-amqp.version>2.1.5.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-batch.version>4.1.1.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.5.RELEASE</spring-cloud-connectors.version>
-		<spring-data-releasetrain.version>Lovelace-SR5</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Lovelace-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
 		<spring-hateoas.version>0.25.1.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.1.3.RELEASE</spring-integration.version>
-		<spring-kafka.version>2.2.4.RELEASE</spring-kafka.version>
+		<spring-integration.version>5.1.4.BUILD-SNAPSHOT</spring-integration.version>
+		<spring-kafka.version>2.2.5.BUILD-SNAPSHOT</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
-		<spring-security.version>5.1.4.RELEASE</spring-security.version>
-		<spring-session-bom.version>Bean-SR3</spring-session-bom.version>
+		<spring-security.version>5.1.5.BUILD-SNAPSHOT</spring-security.version>
+		<spring-session-bom.version>Bean-BUILD-SNAPSHOT</spring-session-bom.version>
 		<spring-ws.version>3.0.7.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
