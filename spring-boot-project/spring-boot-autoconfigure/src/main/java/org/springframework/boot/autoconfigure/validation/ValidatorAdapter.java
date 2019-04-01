@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.ValidationException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -135,7 +137,13 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 
 	private static Validator create() {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
-		validator.setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+		try {
+			validator
+					.setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+		}
+		catch (ValidationException ex) {
+			// Ignore
+		}
 		return wrap(validator, false);
 	}
 
