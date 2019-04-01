@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +32,7 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
  * necessary.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(CouchbaseConfigurer.class)
@@ -37,16 +41,21 @@ class CouchbaseConfigurerAdapterConfiguration {
 
 	private final CouchbaseConfiguration configuration;
 
-	CouchbaseConfigurerAdapterConfiguration(CouchbaseConfiguration configuration) {
+	private final CouchbaseEnvironment couchbaseEnvironment;
+
+	private final Cluster cluster;
+
+	CouchbaseConfigurerAdapterConfiguration(CouchbaseConfiguration configuration,
+			CouchbaseEnvironment couchbaseEnvironment, Cluster cluster) {
 		this.configuration = configuration;
+		this.couchbaseEnvironment = couchbaseEnvironment;
+		this.cluster = cluster;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public CouchbaseConfigurer springBootCouchbaseConfigurer() throws Exception {
-		return new SpringBootCouchbaseConfigurer(
-				this.configuration.couchbaseEnvironment(),
-				this.configuration.couchbaseCluster(),
+		return new SpringBootCouchbaseConfigurer(this.couchbaseEnvironment, this.cluster,
 				this.configuration.couchbaseClusterInfo(),
 				this.configuration.couchbaseClient());
 	}

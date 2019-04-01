@@ -45,7 +45,8 @@ public class CouchbaseAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class, type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
-	@Import(CouchbaseConfiguration.class)
+	@Import({ CouchbaseConfiguration.class, CouchbaseEnvironmentConfiguration.class,
+			CouchbaseClusterConfiguration.class })
 	static class DefaultCouchbaseConfiguration {
 
 	}

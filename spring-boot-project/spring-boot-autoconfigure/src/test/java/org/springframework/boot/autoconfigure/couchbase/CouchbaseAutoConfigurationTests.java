@@ -40,6 +40,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 public class CouchbaseAutoConfigurationTests {
 
@@ -163,7 +164,7 @@ public class CouchbaseAutoConfigurationTests {
 				.withPropertyValues(environment).run((context) -> {
 					CouchbaseProperties properties = context
 							.getBean(CouchbaseProperties.class);
-					DefaultCouchbaseEnvironment env = new CouchbaseConfiguration(
+					DefaultCouchbaseEnvironment env = new CouchbaseEnvironmentConfiguration(
 							properties).initializeEnvironmentBuilder(properties).build();
 					environmentConsumer.accept(env);
 				});
@@ -171,11 +172,15 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void customizeEnvWithCustomCouchbaseConfiguration() {
-		this.contextRunner.withUserConfiguration(CustomCouchbaseConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomCouchbaseEnvironmentConfiguration.class,
+						CustomCouchbaseClusterConfiguration.class,
+						CustomCouchbaseConfiguration.class)
 				.withPropertyValues("spring.couchbase.bootstrap-hosts=localhost",
 						"spring.couchbase.env.timeouts.connect=100")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(CouchbaseConfiguration.class);
+					assertThat(context)
+							.hasSingleBean(CouchbaseEnvironmentConfiguration.class);
 					DefaultCouchbaseEnvironment env = context
 							.getBean(DefaultCouchbaseEnvironment.class);
 					assertThat(env.socketConnectTimeout()).isEqualTo(5000);
@@ -184,9 +189,10 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomCouchbaseConfiguration extends CouchbaseConfiguration {
+	static class CustomCouchbaseEnvironmentConfiguration
+			extends CouchbaseEnvironmentConfiguration {
 
-		CustomCouchbaseConfiguration(CouchbaseProperties properties) {
+		CustomCouchbaseEnvironmentConfiguration(CouchbaseProperties properties) {
 			super(properties);
 		}
 
@@ -197,9 +203,14 @@ public class CouchbaseAutoConfigurationTests {
 					.socketConnectTimeout(5000).connectTimeout(2000);
 		}
 
-		@Override
-		public Cluster couchbaseCluster() {
-			return mock(Cluster.class);
+	}
+
+	@Configuration
+	static class CustomCouchbaseConfiguration extends CouchbaseConfiguration {
+
+		CustomCouchbaseConfiguration(CouchbaseProperties properties,
+				Cluster couchbaseCluster) {
+			super(properties, couchbaseCluster);
 		}
 
 		@Override
@@ -210,6 +221,22 @@ public class CouchbaseAutoConfigurationTests {
 		@Override
 		public Bucket couchbaseClient() {
 			return mock(CouchbaseBucket.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomCouchbaseClusterConfiguration
+			extends CouchbaseClusterConfiguration {
+
+		CustomCouchbaseClusterConfiguration(CouchbaseProperties couchbaseProperties,
+				DefaultCouchbaseEnvironment couchbaseEnvironment) {
+			super(couchbaseProperties, couchbaseEnvironment);
+		}
+
+		@Override
+		public Cluster couchbaseCluster() {
+			return mock(Cluster.class);
 		}
 
 	}
