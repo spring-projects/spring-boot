@@ -22,7 +22,7 @@ case "$1" in
 		 COMPONENTS=1
 	;;
 	java9)
-		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_linux_hotspot_9.0.4_11.tar.gz
+		 JDK_URL=https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9%2B181/OpenJDK9U-jdk_x64_linux_hotspot_9_181.tar.gz
 		 COMPONENTS=2
 	;;
 	java10)
