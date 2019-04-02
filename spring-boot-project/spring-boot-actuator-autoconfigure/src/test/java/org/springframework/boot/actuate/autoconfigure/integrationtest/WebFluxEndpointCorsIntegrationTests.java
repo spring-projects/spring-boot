@@ -63,8 +63,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 		createWebTestClient().options().uri("/actuator/beans")
 				.header("Origin", "spring.example.org")
 				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").exchange()
-				.expectStatus().isForbidden().expectHeader()
-				.doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+				.expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
 	}
 
 	@Test
