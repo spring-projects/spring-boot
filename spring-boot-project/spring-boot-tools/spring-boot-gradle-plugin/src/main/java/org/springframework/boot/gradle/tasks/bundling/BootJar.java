@@ -74,7 +74,8 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName());
+		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/",
+				"BOOT-INF/lib/");
 		super.copy();
 	}
 

@@ -32,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	public BootWarTests() {
-		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib",
-				"WEB-INF/classes");
+		super(BootWar.class, "org.springframework.boot.loader.WarLauncher",
+				"WEB-INF/lib/", "WEB-INF/classes/");
 	}
 
 	@Test
