@@ -66,7 +66,8 @@ public class ProjectInfoAutoConfiguration {
 				this.properties.getGit().getEncoding()));
 	}
 
-	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
+	@ConditionalOnResource(
+			resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {

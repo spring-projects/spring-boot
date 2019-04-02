@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {
-		"app.datasource.jdbc-url=jdbc:h2:mem:simple;DB_CLOSE_DELAY=-1",
-		"app.datasource.maximum-pool-size=42" })
+@SpringBootTest(
+		properties = { "app.datasource.jdbc-url=jdbc:h2:mem:simple;DB_CLOSE_DELAY=-1",
+				"app.datasource.maximum-pool-size=42" })
 @Import(SimpleDataSourceExample.SimpleDataSourceConfiguration.class)
 public class SimpleDataSourceExampleTests {
 

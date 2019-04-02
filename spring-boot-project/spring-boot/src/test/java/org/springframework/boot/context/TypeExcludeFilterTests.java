@@ -63,7 +63,9 @@ public class TypeExcludeFilterTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackageClasses = SampleTypeExcludeFilter.class, excludeFilters = @Filter(type = FilterType.CUSTOM, classes = SampleTypeExcludeFilter.class))
+	@ComponentScan(basePackageClasses = SampleTypeExcludeFilter.class,
+			excludeFilters = @Filter(type = FilterType.CUSTOM,
+					classes = SampleTypeExcludeFilter.class))
 	static class Config {
 
 	}

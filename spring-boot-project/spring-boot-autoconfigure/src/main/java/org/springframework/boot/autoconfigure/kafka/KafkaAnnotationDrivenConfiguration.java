@@ -104,7 +104,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafka
-	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	@ConditionalOnMissingBean(
+			name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableKafkaConfiguration {
 
 	}

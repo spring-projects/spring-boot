@@ -52,7 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  */
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.application-path=/api")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.jersey.application-path=/api")
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class JerseyAutoConfigurationWithoutApplicationPathTests {

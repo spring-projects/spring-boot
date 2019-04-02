@@ -76,7 +76,8 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled",
+		matchIfMissing = true)
 @AutoConfigureAfter({ ServletManagementContextAutoConfiguration.class,
 		HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

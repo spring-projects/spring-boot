@@ -45,7 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.jersey.servlet.load-on-startup=5")
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class JerseyAutoConfigurationCustomLoadOnStartupTests {

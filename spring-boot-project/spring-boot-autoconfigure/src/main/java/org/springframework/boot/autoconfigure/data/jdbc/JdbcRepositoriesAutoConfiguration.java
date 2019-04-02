@@ -47,7 +47,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @ConditionalOnBean(NamedParameterJdbcOperations.class)
 @ConditionalOnClass({ NamedParameterJdbcOperations.class,
 		AbstractJdbcConfiguration.class })
-@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration.class)
 public class JdbcRepositoriesAutoConfiguration {
 

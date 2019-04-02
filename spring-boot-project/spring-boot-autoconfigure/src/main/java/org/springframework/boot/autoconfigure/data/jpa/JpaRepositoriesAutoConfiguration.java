@@ -64,7 +64,8 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class,
 		JpaRepositoryConfigExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class,
 		TaskExecutionAutoConfiguration.class })
@@ -98,12 +99,14 @@ public class JpaRepositoriesAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories",
+				name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
 		static class DeferredBootstrapMode {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories",
+				name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
 		static class LazyBootstrapMode {
 
 		}

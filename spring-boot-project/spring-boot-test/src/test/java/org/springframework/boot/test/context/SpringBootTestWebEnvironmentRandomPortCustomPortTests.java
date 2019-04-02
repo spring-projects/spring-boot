@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"server.port=12345" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "server.port=12345" })
 public class SpringBootTestWebEnvironmentRandomPortCustomPortTests {
 
 	@Autowired

@@ -32,8 +32,8 @@ import org.springframework.web.reactive.config.EnableWebFlux;
  * @author Stephane Nicoll
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"spring.main.webApplicationType=reactive", "value=123" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "spring.main.webApplicationType=reactive", "value=123" })
 @RunWith(SpringRunner.class)
 public class SpringBootTestReactiveWebEnvironmentRandomPortTests
 		extends AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {

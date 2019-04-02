@@ -55,7 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/")
+@TestPropertySource(
+		properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/")
 public class EnvironmentEndpointDocumentationTests
 		extends MockMvcEndpointDocumentationTests {
 

@@ -70,7 +70,8 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CouchbaseAutoConfigurationTests.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
-	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
+	@EnableReactiveCouchbaseRepositories(
+			basePackageClasses = ReactiveCityRepository.class)
 	protected static class ImperativeAndReactiveConfiguration {
 
 	}

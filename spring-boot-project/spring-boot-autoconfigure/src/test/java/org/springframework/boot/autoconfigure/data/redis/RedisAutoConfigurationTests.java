@@ -256,7 +256,7 @@ public class RedisAutoConfigurationTests {
 						context.getBean(LettuceConnectionFactory.class).getPassword())
 								.isEqualTo("password")
 
-		);
+				);
 	}
 
 	private LettucePoolingClientConfiguration getPoolingClientConfiguration(

@@ -55,7 +55,8 @@ public class ServletManagementContextAutoConfiguration {
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "management.server", name = "add-application-context-header", havingValue = "true")
+	@ConditionalOnProperty(prefix = "management.server",
+			name = "add-application-context-header", havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean

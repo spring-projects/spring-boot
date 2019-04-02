@@ -50,7 +50,8 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean(name = AbstractApplicationContext.MESSAGE_SOURCE_BEAN_NAME, search = SearchStrategy.CURRENT)
+@ConditionalOnMissingBean(name = AbstractApplicationContext.MESSAGE_SOURCE_BEAN_NAME,
+		search = SearchStrategy.CURRENT)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
