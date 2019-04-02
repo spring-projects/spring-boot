@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +78,11 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
-	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class,
+			search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	protected static class IntegrationJmxConfiguration
 			implements EnvironmentAware, BeanFactoryAware {
 
@@ -119,7 +121,9 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationManagement.class)
-	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
+			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
+			search = SearchStrategy.CURRENT)
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,7 +214,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnClass(WebMvcConfigurer.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })
-	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view",
+			havingValue = "true", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
 		// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when

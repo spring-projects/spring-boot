@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,7 +157,8 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HttpPutFormContentFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.putfilter", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.putfilter", name = "enabled",
+			matchIfMissing = true)
 	public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
 		return new OrderedHttpPutFormContentFilter();
 	}
@@ -258,7 +259,8 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ViewResolver.class)
-		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
+		@ConditionalOnMissingBean(name = "viewResolver",
+				value = ContentNegotiatingViewResolver.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(
@@ -394,7 +396,8 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Configuration
-		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
+		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled",
+				matchIfMissing = true)
 		public static class FaviconConfiguration implements ResourceLoaderAware {
 
 			private final ResourceProperties resourceProperties;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,14 +56,16 @@ public class AuditAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
+	@ConditionalOnClass(
+			name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
 	@ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
 	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
 		return new AuthenticationAuditListener();
 	}
 
 	@Bean
-	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
+	@ConditionalOnClass(
+			name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();

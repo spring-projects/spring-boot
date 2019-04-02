@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,8 @@ import org.springframework.web.client.RestTemplate;
  * @see AutoConfigureMockRestServiceServer
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled")
+@ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver",
+		name = "enabled")
 public class MockRestServiceServerAutoConfiguration {
 
 	@Bean

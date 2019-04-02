@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,9 +97,13 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class, excludeFilters = {
-			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
-			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
+	@EnableJpaRepositories(
+			basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class,
+			excludeFilters = {
+					@Filter(type = FilterType.ASSIGNABLE_TYPE,
+							value = CityMongoDbRepository.class),
+					@Filter(type = FilterType.ASSIGNABLE_TYPE,
+							value = CitySolrRepository.class) })
 	@TestAutoConfigurationPackage(City.class)
 	protected static class CustomConfiguration {
 

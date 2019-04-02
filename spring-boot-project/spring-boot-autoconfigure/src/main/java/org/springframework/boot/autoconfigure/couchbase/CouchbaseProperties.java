@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,8 @@ public class CouchbaseProperties {
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice.max-endpoints")
+		@DeprecatedConfigurationProperty(
+				replacement = "spring.couchbase.env.endpoints.queryservice.max-endpoints")
 		public Integer getQuery() {
 			return this.query;
 		}
@@ -162,7 +163,8 @@ public class CouchbaseProperties {
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice.max-endpoints")
+		@DeprecatedConfigurationProperty(
+				replacement = "spring.couchbase.env.endpoints.viewservice.max-endpoints")
 		public Integer getView() {
 			return this.view;
 		}

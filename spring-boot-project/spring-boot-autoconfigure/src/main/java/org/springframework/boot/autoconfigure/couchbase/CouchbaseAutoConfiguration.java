@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ import org.springframework.context.annotation.Primary;
 public class CouchbaseAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class, type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class,
+			type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 	public static class CouchbaseConfiguration {
 
 		private final CouchbaseProperties properties;
@@ -183,7 +184,8 @@ public class CouchbaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+		@ConditionalOnBean(
+				type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 		static class CouchbaseConfigurerAvailable {
 
 		}

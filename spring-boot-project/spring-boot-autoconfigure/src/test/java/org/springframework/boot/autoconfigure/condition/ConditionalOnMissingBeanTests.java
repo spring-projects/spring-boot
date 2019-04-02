@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -344,13 +344,17 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanConfiguration.class))
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+					classes = ScannedFactoryBeanConfiguration.class))
 	protected static class ComponentScannedFactoryBeanBeanMethodConfiguration {
 
 	}
 
 	@Configuration
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+					classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
 	protected static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
 
 	}
@@ -475,7 +479,8 @@ public class ConditionalOnMissingBeanTests {
 	protected static class ConditionalOnIgnoredSubclass {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class, ignored = CustomExampleBean.class)
+		@ConditionalOnMissingBean(value = ExampleBean.class,
+				ignored = CustomExampleBean.class)
 		public ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
@@ -486,7 +491,8 @@ public class ConditionalOnMissingBeanTests {
 	protected static class ConditionalOnIgnoredSubclassByName {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class, ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
+		@ConditionalOnMissingBean(value = ExampleBean.class,
+				ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
 		public ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
