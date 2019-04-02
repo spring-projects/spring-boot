@@ -45,8 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 // Enable JMX so we can test the MBeans (you can't do this in a properties file)
-@SpringBootTest(properties = { "spring.jmx.enabled:true",
-		"spring.datasource.jmx-enabled:true" })
+@SpringBootTest(
+		properties = { "spring.jmx.enabled:true", "spring.datasource.jmx-enabled:true" })
 @ActiveProfiles("scratch")
 // Separate profile for web tests to avoid clashing databases
 public class SampleDataJpaApplicationTests {

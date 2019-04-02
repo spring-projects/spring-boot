@@ -39,7 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "server.servlet.session.timeout:2", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = "server.servlet.session.timeout:2",
+		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort

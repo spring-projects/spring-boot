@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link SampleCassandraApplication}.
  */
-@TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
-		OrderedCassandraTestExecutionListener.class })
+@TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS,
+		listeners = { OrderedCassandraTestExecutionListener.class })
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")

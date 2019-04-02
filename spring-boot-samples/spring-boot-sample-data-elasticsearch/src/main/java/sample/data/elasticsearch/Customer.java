@@ -19,7 +19,8 @@ package sample.data.elasticsearch;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-@Document(indexName = "customer", type = "customer", shards = 1, replicas = 0, refreshInterval = "-1")
+@Document(indexName = "customer", type = "customer", shards = 1, replicas = 0,
+		refreshInterval = "-1")
 public class Customer {
 
 	@Id
