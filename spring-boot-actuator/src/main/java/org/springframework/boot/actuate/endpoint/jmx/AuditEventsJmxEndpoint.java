@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,21 +48,24 @@ public class AuditEventsJmxEndpoint extends AbstractJmxEndpoint {
 		this.auditEventRepository = auditEventRepository;
 	}
 
-	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
+	@ManagedOperation(
+			description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String dateAfter) {
 		List<AuditEvent> auditEvents = this.auditEventRepository
 				.find(parseDate(dateAfter));
 		return convert(auditEvents);
 	}
 
-	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
+	@ManagedOperation(
+			description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String dateAfter, String principal) {
 		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal,
 				parseDate(dateAfter));
 		return convert(auditEvents);
 	}
 
-	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
+	@ManagedOperation(
+			description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String principal, String dateAfter, String type) {
 		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal,
 				parseDate(dateAfter), type);

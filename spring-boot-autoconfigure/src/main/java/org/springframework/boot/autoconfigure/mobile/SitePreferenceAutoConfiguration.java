@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
 		SitePreferenceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.mobile.sitepreference", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.mobile.sitepreference", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @ConditionalOnWebApplication
 public class SitePreferenceAutoConfiguration {
 

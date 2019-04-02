@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,8 @@ public class CrshAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = AUTH_PREFIX, name = "type", havingValue = "simple", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = AUTH_PREFIX, name = "type",
+				havingValue = "simple", matchIfMissing = true)
 		@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
 		public SimpleAuthenticationProperties simpleAuthenticationProperties() {
 			return new SimpleAuthenticationProperties();
@@ -172,7 +173,8 @@ public class CrshAutoConfiguration {
 	 * Class to configure CRaSH to authenticate against Spring Security.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = AUTH_PREFIX, name = "type", havingValue = "spring", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = AUTH_PREFIX, name = "type", havingValue = "spring",
+			matchIfMissing = true)
 	@ConditionalOnBean(AuthenticationManager.class)
 	@Deprecated
 	public static class AuthenticationManagerAdapterConfiguration {

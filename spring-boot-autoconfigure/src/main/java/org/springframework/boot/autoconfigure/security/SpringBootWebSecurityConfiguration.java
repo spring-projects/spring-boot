@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,7 +222,8 @@ public class SpringBootWebSecurityConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
+	@ConditionalOnProperty(prefix = "security.basic", name = "enabled",
+			havingValue = "false")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
@@ -240,7 +241,8 @@ public class SpringBootWebSecurityConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "security.basic", name = "enabled",
+			matchIfMissing = true)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {

@@ -46,7 +46,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class HypermediaHttpMessageConverterConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.hateoas", name = "use-hal-as-default-json-media-type", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.hateoas",
+			name = "use-hal-as-default-json-media-type", matchIfMissing = true)
 	public static HalMessageConverterSupportedMediaTypesCustomizer halMessageConverterSupportedMediaTypeCustomizer() {
 		return new HalMessageConverterSupportedMediaTypesCustomizer();
 	}

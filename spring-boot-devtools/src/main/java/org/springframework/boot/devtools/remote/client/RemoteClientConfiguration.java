@@ -134,7 +134,8 @@ public class RemoteClientConfiguration {
 	 * LiveReload configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled",
+			matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		@Autowired
@@ -181,7 +182,8 @@ public class RemoteClientConfiguration {
 	 * Client configuration for remote update and restarts.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled",
+			matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
 		@Autowired
@@ -245,7 +247,8 @@ public class RemoteClientConfiguration {
 	 * Client configuration for remote debug HTTP tunneling.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.debug", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.debug", name = "enabled",
+			matchIfMissing = true)
 	@ConditionalOnClass(Filter.class)
 	@Conditional(LocalDebugPortAvailableCondition.class)
 	static class RemoteDebugTunnelClientConfiguration {

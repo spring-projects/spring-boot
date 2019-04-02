@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,8 @@ public class SpringApplicationHierarchyTests {
 			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 			MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class }, excludeName = {
+			RedisRepositoriesAutoConfiguration.class },
+			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 
@@ -81,7 +82,8 @@ public class SpringApplicationHierarchyTests {
 			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 			MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class }, excludeName = {
+			RedisRepositoriesAutoConfiguration.class },
+			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 

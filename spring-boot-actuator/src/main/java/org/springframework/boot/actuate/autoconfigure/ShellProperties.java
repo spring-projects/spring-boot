@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @deprecated as of 1.5 since CRaSH is not actively maintained
  */
-@ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX,
+		ignoreUnknownFields = true)
 @Deprecated
 public class ShellProperties {
 
@@ -378,8 +379,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for JAAS authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.jaas", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.jaas",
+			ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -408,8 +409,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for key authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.key", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.key",
+			ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -440,8 +441,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for simple authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.simple", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.simple",
+			ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -517,8 +518,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for Spring authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.spring", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.spring",
+			ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 

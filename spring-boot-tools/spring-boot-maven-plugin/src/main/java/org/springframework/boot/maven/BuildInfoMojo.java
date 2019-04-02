@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
+@Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
+		threadSafe = true)
 public class BuildInfoMojo extends AbstractMojo {
 
 	@Component
@@ -55,7 +56,8 @@ public class BuildInfoMojo extends AbstractMojo {
 	/**
 	 * The location of the generated build-info.properties.
 	 */
-	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
+	@Parameter(
+			defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
 
 	/**

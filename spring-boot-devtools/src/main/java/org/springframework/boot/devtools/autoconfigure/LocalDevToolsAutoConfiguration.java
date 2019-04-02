@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,8 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled",
+			matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		private LiveReloadServer liveReloadServer;
@@ -104,7 +105,8 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local Restart Configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled",
+			matchIfMissing = true)
 	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;

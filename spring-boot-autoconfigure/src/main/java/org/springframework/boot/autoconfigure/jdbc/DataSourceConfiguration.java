@@ -49,7 +49,8 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.datasource.type",
+			havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
 	static class Tomcat {
 
 		@Bean
@@ -76,7 +77,8 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.datasource.type",
+			havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
 	static class Hikari {
 
 		@Bean
@@ -95,7 +97,9 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.datasource.type",
+			havingValue = "org.apache.commons.dbcp.BasicDataSource",
+			matchIfMissing = true)
 	@Deprecated
 	static class Dbcp {
 
@@ -123,7 +127,9 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.datasource.type",
+			havingValue = "org.apache.commons.dbcp2.BasicDataSource",
+			matchIfMissing = true)
 	static class Dbcp2 {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,7 +202,8 @@ public class CacheProperties {
 		 */
 		private Resource config;
 
-		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config", reason = "Use general hazelcast auto-configuration instead.")
+		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config",
+				reason = "Use general hazelcast auto-configuration instead.")
 		@Deprecated
 		public Resource getConfig() {
 			return this.config;
@@ -282,7 +283,9 @@ public class CacheProperties {
 		private String spec;
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "Caffeine will supersede the Guava support in Spring Boot 2.0", replacement = "spring.cache.caffeine.spec")
+		@DeprecatedConfigurationProperty(
+				reason = "Caffeine will supersede the Guava support in Spring Boot 2.0",
+				replacement = "spring.cache.caffeine.spec")
 		public String getSpec() {
 			return this.spec;
 		}

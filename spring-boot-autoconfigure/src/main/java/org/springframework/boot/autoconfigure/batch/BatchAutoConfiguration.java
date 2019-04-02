@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,8 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled",
+			havingValue = "true", matchIfMissing = true)
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
 			JobLauncher jobLauncher, JobExplorer jobExplorer) {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
@@ -137,7 +138,8 @@ public class BatchAutoConfiguration {
 	}
 
 	@EnableConfigurationProperties(BatchProperties.class)
-	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
+	@ConditionalOnClass(value = PlatformTransactionManager.class,
+			name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnMissingBean(BatchConfigurer.class)
 	@Configuration
 	protected static class JpaBatchConfiguration {

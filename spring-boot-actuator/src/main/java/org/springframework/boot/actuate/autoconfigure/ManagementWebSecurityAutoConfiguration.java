@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,7 +188,8 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
-	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.security", name = "enabled",
+			matchIfMissing = true)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,8 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class,
+			search = SearchStrategy.CURRENT)
 	public static class EmbeddedTomcat {
 
 		@Bean
@@ -87,7 +88,8 @@ public class EmbeddedServletContainerAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class,
 			WebAppContext.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class,
+			search = SearchStrategy.CURRENT)
 	public static class EmbeddedJetty {
 
 		@Bean
@@ -102,7 +104,8 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class,
+			search = SearchStrategy.CURRENT)
 	public static class EmbeddedUndertow {
 
 		@Bean

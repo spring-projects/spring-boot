@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(WebServlet.class)
-@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled",
+		havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class H2ConsoleAutoConfiguration {
@@ -78,7 +79,8 @@ public class H2ConsoleAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 	@ConditionalOnBean(ObjectPostProcessor.class)
-	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "security.basic", name = "enabled",
+			matchIfMissing = true)
 	static class H2ConsoleSecurityConfiguration {
 
 		@Bean

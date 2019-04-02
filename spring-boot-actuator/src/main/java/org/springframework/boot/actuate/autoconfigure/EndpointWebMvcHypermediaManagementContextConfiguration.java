@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@Bean
 	@ConditionalOnBean(DocsMvcEndpoint.class)
 	@ConditionalOnMissingBean(CurieProvider.class)
-	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled",
+			matchIfMissing = false)
 	public DefaultCurieProvider curieProvider(ServerProperties server,
 			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
@@ -140,7 +141,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint("docs")
-		@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
+		@ConditionalOnResource(
+				resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
 		public DocsMvcEndpoint docsMvcEndpoint(
 				ManagementServletContext managementServletContext) {
 			return new DocsMvcEndpoint(managementServletContext);
@@ -225,7 +227,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	 * could not be enhanced (e.g. "/env/{name}") because their values are "primitive" are
 	 * ignored.
 	 */
-	@ConditionalOnProperty(prefix = "endpoints.hypermedia", name = "enabled", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "endpoints.hypermedia", name = "enabled",
+			matchIfMissing = false)
 	@ControllerAdvice(assignableTypes = MvcEndpoint.class)
 	static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
