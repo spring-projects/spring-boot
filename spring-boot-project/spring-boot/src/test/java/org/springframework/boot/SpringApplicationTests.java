@@ -62,6 +62,7 @@ import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWeb
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -97,7 +98,6 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -318,8 +318,8 @@ public class SpringApplicationTests {
 	@Test
 	public void specificWebApplicationContextClassDetectWebApplicationType() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application
-				.setApplicationContextClass(AnnotationConfigWebApplicationContext.class);
+		application.setApplicationContextClass(
+				AnnotationConfigServletWebApplicationContext.class);
 		assertThat(application.getWebApplicationType())
 				.isEqualTo(WebApplicationType.SERVLET);
 	}

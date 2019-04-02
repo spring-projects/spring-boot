@@ -24,13 +24,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -54,7 +54,7 @@ public class ConditionalOnWebApplicationTests {
 
 	@Test
 	public void testWebApplicationWithServletContext() {
-		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		AnnotationConfigServletWebApplicationContext ctx = new AnnotationConfigServletWebApplicationContext();
 		ctx.register(AnyWebApplicationConfiguration.class,
 				ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);

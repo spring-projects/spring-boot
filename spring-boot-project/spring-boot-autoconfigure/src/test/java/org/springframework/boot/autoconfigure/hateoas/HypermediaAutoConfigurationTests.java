@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.client.LinkDiscoverer;
@@ -40,7 +41,6 @@ import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2Http
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HypermediaAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigServletWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -65,7 +65,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void linkDiscoverersCreated() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
@@ -78,7 +78,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void entityLinksCreated() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
@@ -88,7 +88,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EnableHypermediaSupportConfig.class, BaseConfig.class);
 		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
@@ -100,7 +100,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void supportedMediaTypesOfTypeConstrainedConvertersIsCustomized() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
@@ -116,7 +116,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void customizationOfSupportedMediaTypesCanBeDisabled() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		TestPropertyValues.of("spring.hateoas.use-hal-as-default-json-media-type:false")

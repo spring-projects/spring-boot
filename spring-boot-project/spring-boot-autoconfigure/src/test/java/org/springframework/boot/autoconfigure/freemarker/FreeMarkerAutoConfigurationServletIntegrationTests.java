@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
@@ -57,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigServletWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -206,7 +206,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	private void load(Class<?> config, String... env) {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		TestPropertyValues.of(env).applyTo(this.context);
 		this.context.register(config);
