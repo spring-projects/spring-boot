@@ -274,7 +274,17 @@
 									<target>
 										<zip
 											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
-											<fileset dir="${project.build.directory}/generated-docs" />
+											<zipfileset
+												src="build/libs/${project.artifactId}-${project.version}-javadoc.jar"
+												prefix="api" />
+											<zipfileset dir="${project.build.directory}/generated-docs/reference/html"
+												prefix="reference/html" />
+											<mappedresources>
+												<fileset dir="${project.build.directory}/generated-docs/reference/pdf"
+													includes="index.pdf" />
+												<globmapper from="index.pdf"
+													to="reference/pdf/spring-boot-gradle-plugin-reference.pdf" />
+											</mappedresources>
 										</zip>
 									</target>
 								</configuration>
@@ -321,6 +331,7 @@
 						</executions>
 						<configuration>
 							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
 								<github-tag>${github-tag}</github-tag>
 								<version-type>${version-type}</version-type>

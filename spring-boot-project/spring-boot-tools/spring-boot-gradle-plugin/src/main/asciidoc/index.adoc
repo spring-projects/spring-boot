@@ -32,6 +32,7 @@ Andy Wilkinson
 :github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
 
 
+
 [[introduction]]
 == Introduction
 
