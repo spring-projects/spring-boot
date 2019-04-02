@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 /**
  * @author Christoph Strobl
  */
-@SolrDocument(solrCoreName = "collection1")
+@SolrDocument(collection = "collection1")
 public class City {
 
 	@Id
