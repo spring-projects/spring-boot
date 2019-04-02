@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.catalina.Context;
@@ -67,8 +66,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<Valve> engineValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>(
-			Collections.singleton(new AprLifecycleListener()));
+	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
@@ -93,6 +91,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public TomcatReactiveWebServerFactory(int port) {
 		super(port);
+	}
+
+	private static List<LifecycleListener> getDefaultLifecycleListeners() {
+		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
+		return AprLifecycleListener.isAprAvailable()
+				? new ArrayList<>(Arrays.asList(aprLifecycleListener))
+				: new ArrayList<>();
 	}
 
 	@Override
