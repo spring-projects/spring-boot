@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
@@ -29,7 +26,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
-import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -58,9 +55,6 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties({ WebEndpointProperties.class,
 		ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
-
-	private static final Log logger = LogFactory
-			.getLog(ManagementContextAutoConfiguration.class);
 
 	@Configuration
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
@@ -122,7 +116,7 @@ public class ManagementContextAutoConfiguration {
 	@Configuration
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	static class DifferentManagementContextConfiguration
-			implements SmartInitializingSingleton {
+			implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -135,10 +129,8 @@ public class ManagementContextAutoConfiguration {
 		}
 
 		@Override
-		public void afterSingletonsInstantiated() {
-			if (this.applicationContext instanceof WebServerApplicationContext
-					&& ((WebServerApplicationContext) this.applicationContext)
-							.getWebServer() != null) {
+		public void onApplicationEvent(WebServerInitializedEvent event) {
+			if (event.getApplicationContext().equals(this.applicationContext)) {
 				ConfigurableWebServerApplicationContext managementContext = this.managementContextFactory
 						.createManagementContext(this.applicationContext,
 								EnableChildManagementContextConfiguration.class,
@@ -149,11 +141,6 @@ public class ManagementContextAutoConfiguration {
 				CloseManagementContextListener.addIfPossible(this.applicationContext,
 						managementContext);
 				managementContext.refresh();
-			}
-			else {
-				logger.warn("Could not start embedded management container on "
-						+ "different port (management endpoints are still available "
-						+ "through JMX)");
 			}
 		}
 
