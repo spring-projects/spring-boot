@@ -27,10 +27,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
-		"YAHOO-CLIENT-ID=my-google-client-id",
-		"YAHOO-CLIENT-SECRET=my-google-client-secret" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
+				"YAHOO-CLIENT-ID=my-google-client-id",
+				"YAHOO-CLIENT-SECRET=my-google-client-secret" })
 public class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Autowired

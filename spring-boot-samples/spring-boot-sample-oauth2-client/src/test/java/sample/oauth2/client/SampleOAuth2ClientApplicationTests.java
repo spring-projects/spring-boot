@@ -32,10 +32,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
-		"YAHOO-CLIENT-ID=my-yahoo-client-id",
-		"YAHOO-CLIENT-SECRET=my-yahoo-client-secret" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
+				"YAHOO-CLIENT-ID=my-yahoo-client-id",
+				"YAHOO-CLIENT-SECRET=my-yahoo-client-secret" })
 public class SampleOAuth2ClientApplicationTests {
 
 	@LocalServerPort

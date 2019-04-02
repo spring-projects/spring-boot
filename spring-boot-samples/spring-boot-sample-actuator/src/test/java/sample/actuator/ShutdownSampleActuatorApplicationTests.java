@@ -41,9 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {
-		ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
-		SampleActuatorApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+		classes = { ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
+				SampleActuatorApplication.class },
+		webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ShutdownSampleActuatorApplicationTests {
 
 	@Autowired

@@ -38,9 +38,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "management.server.address=127.0.0.1",
-		"management.server.servlet.context-path:/admin" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "management.server.address=127.0.0.1",
+				"management.server.servlet.context-path:/admin" })
 public class ManagementAddressActuatorApplicationTests {
 
 	@LocalServerPort

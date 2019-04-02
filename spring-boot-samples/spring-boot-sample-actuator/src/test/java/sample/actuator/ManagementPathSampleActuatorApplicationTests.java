@@ -37,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.endpoints.web.base-path=/admin" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "management.endpoints.web.base-path=/admin" })
 public class ManagementPathSampleActuatorApplicationTests {
 
 	@Autowired
