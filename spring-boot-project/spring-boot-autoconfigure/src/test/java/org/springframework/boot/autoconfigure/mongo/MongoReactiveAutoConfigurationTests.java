@@ -91,17 +91,17 @@ public class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	public void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
-		AtomicReference<EventLoopGroup> capture = new AtomicReference<>();
+		AtomicReference<EventLoopGroup> eventLoopGroupReference = new AtomicReference<>();
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MongoClient.class);
 			StreamFactoryFactory factory = getSettings(context).getStreamFactoryFactory();
 			assertThat(factory).isInstanceOf(NettyStreamFactoryFactory.class);
-			capture.set((EventLoopGroup) ReflectionTestUtils.getField(factory,
-					"eventLoopGroup"));
-			assertThat(capture.get()).isNotNull();
-			assertThat(capture.get().isShutdown()).isFalse();
+			EventLoopGroup eventLoopGroup = (EventLoopGroup) ReflectionTestUtils
+					.getField(factory, "eventLoopGroup");
+			assertThat(eventLoopGroup.isShutdown()).isFalse();
+			eventLoopGroupReference.set(eventLoopGroup);
 		});
-		assertThat(capture.get().isShutdown()).isTrue();
+		assertThat(eventLoopGroupReference.get().isShutdown()).isTrue();
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,19 +86,19 @@ public class MongoReactiveAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		public MongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
+		public NettyDriverMongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
 				ObjectProvider<MongoClientSettings> settings) {
-			return new EventLoopGroupMongoClientSettingsBuilderCustomizer(settings);
+			return new NettyDriverMongoClientSettingsBuilderCustomizer(settings);
 		}
 
-		private static final class EventLoopGroupMongoClientSettingsBuilderCustomizer
+		private static final class NettyDriverMongoClientSettingsBuilderCustomizer
 				implements MongoClientSettingsBuilderCustomizer, DisposableBean {
 
 			private final ObjectProvider<MongoClientSettings> settings;
 
-			private EventLoopGroup eventLoopGroup;
+			private volatile EventLoopGroup eventLoopGroup;
 
-			private EventLoopGroupMongoClientSettingsBuilderCustomizer(
+			private NettyDriverMongoClientSettingsBuilderCustomizer(
 					ObjectProvider<MongoClientSettings> settings) {
 				this.settings = settings;
 			}
