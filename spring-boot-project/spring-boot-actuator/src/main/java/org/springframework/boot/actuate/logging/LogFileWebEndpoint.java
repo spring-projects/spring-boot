@@ -55,7 +55,7 @@ public class LogFileWebEndpoint {
 		this(environment, null);
 	}
 
-	@ReadOperation(produces = "text/plain")
+	@ReadOperation(produces = "text/plain; charset=UTF-8")
 	public Resource logFile() {
 		Resource logFileResource = getLogFileResource();
 		if (logFileResource == null || !logFileResource.isReadable()) {
