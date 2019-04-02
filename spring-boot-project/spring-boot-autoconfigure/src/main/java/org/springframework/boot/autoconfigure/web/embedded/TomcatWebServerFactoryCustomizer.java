@@ -133,9 +133,12 @@ public class TomcatWebServerFactoryCustomizer implements
 
 	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory,
 			int processorCache) {
-		factory.addConnectorCustomizers((
-				connector) -> ((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
-						.setProcessorCache(processorCache));
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractProtocol) {
+				((AbstractProtocol<?>) handler).setProcessorCache(processorCache);
+			}
+		});
 	}
 
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,

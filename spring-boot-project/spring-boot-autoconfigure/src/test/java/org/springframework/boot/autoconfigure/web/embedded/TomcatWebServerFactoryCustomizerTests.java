@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.unit.DataSize;
@@ -419,6 +420,16 @@ public class TomcatWebServerFactoryCustomizerTests {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
 				.getIpv6Canonical()).isTrue();
+	}
+
+	@Test
+	public void ajpConnectorCanBeCustomized() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
+		factory.setProtocol("AJP/1.3");
+		this.customizer.customize(factory);
+		WebServer server = factory.getWebServer();
+		server.start();
+		server.stop();
 	}
 
 	private void bind(String... inlinedProperties) {
