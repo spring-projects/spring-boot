@@ -701,9 +701,9 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 							"spring.cache.cacheNames[0]=foo",
 							"spring.cache.cacheNames[1]=bar")
 					.run((context) ->
-			// see customizer
-			assertThat(getCacheManager(context, JCacheCacheManager.class).getCacheNames())
-					.containsOnly("foo", "custom1"));
+					// see customizer
+					assertThat(getCacheManager(context, JCacheCacheManager.class)
+							.getCacheNames()).containsOnly("foo", "custom1"));
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderClassName).close();

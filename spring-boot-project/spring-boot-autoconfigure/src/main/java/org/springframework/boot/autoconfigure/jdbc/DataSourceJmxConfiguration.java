@@ -42,7 +42,8 @@ import org.springframework.jmx.export.MBeanExporter;
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 class DataSourceJmxConfiguration {
 
 	private static final Log logger = LogFactory.getLog(DataSourceJmxConfiguration.class);

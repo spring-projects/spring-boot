@@ -162,8 +162,8 @@ public class LongTaskTimingHandlerInterceptorTests {
 		private CyclicBarrier callableBarrier;
 
 		@Timed
-		@Timed(value = "my.long.request", extraTags = { "region",
-				"test" }, longTask = true)
+		@Timed(value = "my.long.request", extraTags = { "region", "test" },
+				longTask = true)
 		@GetMapping("/callable/{id}")
 		public Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
 			this.callableBarrier.await();

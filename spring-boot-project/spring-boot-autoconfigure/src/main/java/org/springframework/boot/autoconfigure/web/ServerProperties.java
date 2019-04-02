@@ -368,7 +368,8 @@ public class ServerProperties {
 
 		/**
 		 * Maximum number of idle processors that will be retained in the cache and reused
-		 * with a subsequent request.
+		 * with a subsequent request. When set to -1 the cache will be unlimited with a
+		 * theoretical maximum size equal to the maximum number of connections.
 		 */
 		private int processorCache = 200;
 

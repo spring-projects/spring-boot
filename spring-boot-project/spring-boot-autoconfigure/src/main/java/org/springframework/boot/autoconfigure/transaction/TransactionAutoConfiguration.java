@@ -80,14 +80,16 @@ public class TransactionAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = false)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class",
+				havingValue = "false", matchIfMissing = false)
 		public static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = true)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class",
+				havingValue = "true", matchIfMissing = true)
 		public static class CglibAutoProxyConfiguration {
 
 		}

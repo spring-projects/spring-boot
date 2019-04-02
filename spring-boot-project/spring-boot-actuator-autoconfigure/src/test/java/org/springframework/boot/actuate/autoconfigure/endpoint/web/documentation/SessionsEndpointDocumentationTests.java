@@ -53,7 +53,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
+@TestPropertySource(
+		properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
 public class SessionsEndpointDocumentationTests
 		extends MockMvcEndpointDocumentationTests {
 

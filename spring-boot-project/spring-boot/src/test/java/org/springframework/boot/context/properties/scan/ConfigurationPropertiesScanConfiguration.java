@@ -35,7 +35,9 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConfigurationPropertiesScan(basePackages = "org.springframework.boot.context.properties.scan.a", basePackageClasses = BScanConfiguration.class)
+	@ConfigurationPropertiesScan(
+			basePackages = "org.springframework.boot.context.properties.scan.a",
+			basePackageClasses = BScanConfiguration.class)
 	public static class DifferentPackageConfiguration {
 
 	}

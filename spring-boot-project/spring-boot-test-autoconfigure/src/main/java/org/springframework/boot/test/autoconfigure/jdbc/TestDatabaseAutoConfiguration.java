@@ -58,14 +58,16 @@ import org.springframework.util.ObjectUtils;
 public class TestDatabaseAutoConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace",
+			havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(Environment environment) {
 		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace",
+			havingValue = "ANY", matchIfMissing = true)
 	public static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor() {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor();
 	}

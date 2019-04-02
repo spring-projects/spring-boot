@@ -48,7 +48,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(AppOpticsMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.appoptics", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.appoptics", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(AppOpticsProperties.class)
 public class AppOpticsMetricsExportAutoConfiguration {
 

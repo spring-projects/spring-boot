@@ -75,9 +75,11 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
-	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class,
+			search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	protected static class IntegrationJmxConfiguration {
 
 		@Bean
@@ -101,7 +103,9 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EnableIntegrationManagement.class)
-	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
+			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
+			search = SearchStrategy.CURRENT)
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)

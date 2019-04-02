@@ -140,7 +140,8 @@ public class WebMvcTypeExcludeFilterTests {
 
 	}
 
-	@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = Controller1.class))
+	@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+			classes = Controller1.class))
 	static class WithExcludeFilter {
 
 	}

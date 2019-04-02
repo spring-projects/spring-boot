@@ -61,7 +61,8 @@ public class ErrorWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class,
+			search = SearchStrategy.CURRENT)
 	@Order(-1)
 	public ErrorWebExceptionHandler errorWebExceptionHandler(
 			ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
@@ -79,7 +80,8 @@ public class ErrorWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ErrorAttributes.class,
+			search = SearchStrategy.CURRENT)
 	public DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes(
 				this.serverProperties.getError().isIncludeException());

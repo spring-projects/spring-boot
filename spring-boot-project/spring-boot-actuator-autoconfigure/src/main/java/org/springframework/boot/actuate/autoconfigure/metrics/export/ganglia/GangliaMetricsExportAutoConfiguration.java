@@ -46,7 +46,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(GangliaMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.ganglia", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.ganglia", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(GangliaProperties.class)
 public class GangliaMetricsExportAutoConfiguration {
 

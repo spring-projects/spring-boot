@@ -83,7 +83,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Jon Schneider
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class, properties = "management.metrics.use-global-registry=false")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		classes = MetricsIntegrationTests.MetricsApp.class,
+		properties = "management.metrics.use-global-registry=false")
 @RunWith(SpringRunner.class)
 public class MetricsIntegrationTests {
 

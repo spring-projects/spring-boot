@@ -68,7 +68,8 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName());
+		this.support.configureManifest(this, getMainClassName(), "WEB-INF/classes/",
+				"WEB-INF/lib/");
 		super.copy();
 	}
 

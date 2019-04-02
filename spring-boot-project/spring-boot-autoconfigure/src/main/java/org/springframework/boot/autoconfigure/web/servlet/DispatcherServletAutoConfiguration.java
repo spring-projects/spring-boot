@@ -118,7 +118,8 @@ public class DispatcherServletAutoConfiguration {
 	protected static class DispatcherServletRegistrationConfiguration {
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		@ConditionalOnBean(value = DispatcherServlet.class,
+				name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServletRegistrationBean dispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet, WebMvcProperties webMvcProperties,
 				ObjectProvider<MultipartConfigElement> multipartConfig) {

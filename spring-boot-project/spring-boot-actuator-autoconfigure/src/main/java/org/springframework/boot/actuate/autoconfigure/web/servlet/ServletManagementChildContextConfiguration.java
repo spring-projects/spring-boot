@@ -96,7 +96,8 @@ class ServletManagementChildContextConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
+	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN,
+			search = SearchStrategy.ANCESTORS)
 	static class ServletManagementContextSecurityConfiguration {
 
 		@Bean

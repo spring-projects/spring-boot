@@ -119,8 +119,8 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = {
-			Session.class }, type = FilterType.ASSIGNABLE_TYPE))
+	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = { Session.class },
+			type = FilterType.ASSIGNABLE_TYPE))
 	static class TestExcludeConfiguration {
 
 	}

@@ -44,8 +44,8 @@ import org.springframework.core.env.Environment;
 public class MongoAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(type = { "com.mongodb.MongoClient",
-			"com.mongodb.client.MongoClient" })
+	@ConditionalOnMissingBean(
+			type = { "com.mongodb.MongoClient", "com.mongodb.client.MongoClient" })
 	public MongoClient mongo(MongoProperties properties,
 			ObjectProvider<MongoClientOptions> options, Environment environment) {
 		return new MongoClientFactory(properties, environment)

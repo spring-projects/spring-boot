@@ -83,7 +83,8 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
+	@ServletComponentScan(
+			basePackages = "org.springframework.boot.web.servlet.testcomponents")
 	static class TestConfiguration {
 
 		@Bean

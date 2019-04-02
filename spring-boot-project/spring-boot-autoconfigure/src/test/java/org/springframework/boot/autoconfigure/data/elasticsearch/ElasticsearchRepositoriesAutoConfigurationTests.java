@@ -104,7 +104,8 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
-	@EnableElasticsearchRepositories(basePackageClasses = CityElasticsearchDbRepository.class)
+	@EnableElasticsearchRepositories(
+			basePackageClasses = CityElasticsearchDbRepository.class)
 	protected static class CustomizedConfiguration {
 
 	}

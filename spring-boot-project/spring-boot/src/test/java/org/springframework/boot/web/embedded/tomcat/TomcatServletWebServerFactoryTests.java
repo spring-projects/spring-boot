@@ -134,8 +134,13 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void defaultTomcatListeners() {
 		TomcatServletWebServerFactory factory = getFactory();
-		assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
-				.isInstanceOf(AprLifecycleListener.class);
+		if (AprLifecycleListener.isAprAvailable()) {
+			assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
+					.isInstanceOf(AprLifecycleListener.class);
+		}
+		else {
+			assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		}
 	}
 
 	@Test
