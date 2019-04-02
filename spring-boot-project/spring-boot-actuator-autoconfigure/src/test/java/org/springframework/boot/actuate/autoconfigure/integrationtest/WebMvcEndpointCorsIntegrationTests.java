@@ -138,7 +138,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 				.of("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/actuator/health")
+				.perform(options("/actuator/beans")
 						.header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
 				.andExpect(status().isForbidden());
