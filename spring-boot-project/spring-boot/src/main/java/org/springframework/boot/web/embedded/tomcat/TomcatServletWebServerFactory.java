@@ -111,8 +111,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<Valve> contextValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>(
-			Collections.singleton(new AprLifecycleListener()));
+	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
@@ -153,6 +152,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	public TomcatServletWebServerFactory(String contextPath, int port) {
 		super(contextPath, port);
+	}
+
+	private static List<LifecycleListener> getDefaultLifecycleListeners() {
+		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
+		return AprLifecycleListener.isAprAvailable()
+				? new ArrayList<>(Arrays.asList(aprLifecycleListener))
+				: new ArrayList<>();
 	}
 
 	@Override
