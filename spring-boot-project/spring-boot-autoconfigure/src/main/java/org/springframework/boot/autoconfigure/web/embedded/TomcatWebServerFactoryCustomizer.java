@@ -110,7 +110,7 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
-		propertyMapper.from(tomcatProperties::getProcessorCache).when(this::isPositive)
+		propertyMapper.from(tomcatProperties::getProcessorCache)
 				.to((processorCache) -> customizeProcessorCache(factory, processorCache));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);

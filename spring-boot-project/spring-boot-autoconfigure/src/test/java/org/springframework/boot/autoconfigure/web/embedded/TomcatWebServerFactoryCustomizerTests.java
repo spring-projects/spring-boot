@@ -89,7 +89,17 @@ public class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	public void customProcessorCache() {
 		bind("server.tomcat.processor-cache=100");
-		assertThat(this.serverProperties.getTomcat().getProcessorCache()).isEqualTo(100);
+		customizeAndRunServer((server) -> assertThat(((AbstractProtocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
+						.isEqualTo(100));
+	}
+
+	@Test
+	public void unlimitedProcessorCache() {
+		bind("server.tomcat.processor-cache=-1");
+		customizeAndRunServer((server) -> assertThat(((AbstractProtocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
+						.isEqualTo(-1));
 	}
 
 	@Test
