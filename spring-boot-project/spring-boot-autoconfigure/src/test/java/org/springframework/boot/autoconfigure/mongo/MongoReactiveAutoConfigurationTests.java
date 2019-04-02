@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadPreference;
@@ -25,6 +26,7 @@ import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
+import io.netty.channel.EventLoopGroup;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -89,11 +91,17 @@ public class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	public void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
+		AtomicReference<EventLoopGroup> eventLoopGroupReference = new AtomicReference<>();
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MongoClient.class);
-			assertThat(getSettings(context).getStreamFactoryFactory())
-					.isInstanceOf(NettyStreamFactoryFactory.class);
+			StreamFactoryFactory factory = getSettings(context).getStreamFactoryFactory();
+			assertThat(factory).isInstanceOf(NettyStreamFactoryFactory.class);
+			EventLoopGroup eventLoopGroup = (EventLoopGroup) ReflectionTestUtils
+					.getField(factory, "eventLoopGroup");
+			assertThat(eventLoopGroup.isShutdown()).isFalse();
+			eventLoopGroupReference.set(eventLoopGroup);
 		});
+		assertThat(eventLoopGroupReference.get().isShutdown()).isTrue();
 	}
 
 	@Test
