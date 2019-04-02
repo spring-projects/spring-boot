@@ -6865,6 +6865,11 @@ implementation:
 	}
 ----
 
+NOTE: `@MockBean` cannot be used to mock the behavior of a bean that's exercised during
+application context refresh. By the time the test is executed, the application context refresh
+has completed and it is too late to configure the mocked behavior. We recommend using a `@Bean`
+method to create and configure the mock in this situation.
+
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`. See
 the {dc-spring-boot-test}/mock/mockito/SpyBean.{dc-ext}[Javadoc] for full details.
 
