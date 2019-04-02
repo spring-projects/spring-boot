@@ -171,12 +171,14 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@EndpointExtension(endpoint = FooEndpointEnabledByDefaultTrue.class, filter = TestFilter.class)
+	@EndpointExtension(endpoint = FooEndpointEnabledByDefaultTrue.class,
+			filter = TestFilter.class)
 	static class FooEndpointExtensionEnabledByDefaultTrue {
 
 	}
 
-	@EndpointExtension(endpoint = FooEndpointEnabledByDefaultFalse.class, filter = TestFilter.class)
+	@EndpointExtension(endpoint = FooEndpointEnabledByDefaultFalse.class,
+			filter = TestFilter.class)
 	static class FooEndpointExtensionEnabledByDefaultFalse {
 
 	}

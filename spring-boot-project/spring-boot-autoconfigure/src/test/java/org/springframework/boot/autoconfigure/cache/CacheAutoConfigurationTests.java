@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -701,9 +701,9 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 							"spring.cache.cacheNames[0]=foo",
 							"spring.cache.cacheNames[1]=bar")
 					.run((context) ->
-			// see customizer
-			assertThat(getCacheManager(context, JCacheCacheManager.class).getCacheNames())
-					.containsOnly("foo", "custom1"));
+					// see customizer
+					assertThat(getCacheManager(context, JCacheCacheManager.class)
+							.getCacheNames()).containsOnly("foo", "custom1"));
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderClassName).close();

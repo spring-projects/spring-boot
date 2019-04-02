@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -303,12 +303,14 @@ public class AutoConfigurationImportSelectorTests {
 
 	}
 
-	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
+	@EnableAutoConfiguration(
+			excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
 	private class EnableAutoConfigurationWithClassNameExclusions {
 
 	}
 
-	@EnableAutoConfiguration(exclude = MustacheAutoConfiguration.class, excludeName = "org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration")
+	@EnableAutoConfiguration(exclude = MustacheAutoConfiguration.class,
+			excludeName = "org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration")
 	private class EnableAutoConfigurationWithClassAndClassNameExclusions {
 
 	}
@@ -318,17 +320,20 @@ public class AutoConfigurationImportSelectorTests {
 
 	}
 
-	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration")
+	@EnableAutoConfiguration(
+			excludeName = "org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration")
 	private class EnableAutoConfigurationWithFaultyClassNameExclude {
 
 	}
 
-	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.DoesNotExist1")
+	@EnableAutoConfiguration(
+			excludeName = "org.springframework.boot.autoconfigure.DoesNotExist1")
 	private class EnableAutoConfigurationWithAbsentClassNameExclude {
 
 	}
 
-	@SpringBootApplication(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
+	@SpringBootApplication(
+			excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
 	private class SpringBootApplicationWithClassNameExclusions {
 
 	}

@@ -132,7 +132,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type",
+			havingValue = "filter")
 	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(
 			JerseyApplicationPath applicationPath) {
 		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<>();
@@ -157,7 +158,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type",
+			havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(
 			JerseyApplicationPath applicationPath) {
 		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(

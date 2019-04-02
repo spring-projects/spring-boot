@@ -57,7 +57,8 @@ import org.springframework.core.env.Environment;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusMetricsExportAutoConfiguration {
 
@@ -100,7 +101,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(PushGateway.class)
-	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled")
+	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway",
+			name = "enabled")
 	public static class PrometheusPushGatewayConfiguration {
 
 		/**

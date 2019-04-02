@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,8 @@ public class RemoteClientConfiguration implements InitializingBean {
 	 * LiveReload configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled",
+			matchIfMissing = true)
 	static class LiveReloadConfiguration
 			implements ApplicationListener<ClassPathChangedEvent> {
 
@@ -178,7 +179,8 @@ public class RemoteClientConfiguration implements InitializingBean {
 	 * Client configuration for remote update and restarts.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled",
+			matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
 		@Autowired

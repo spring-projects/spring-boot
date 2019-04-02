@@ -61,7 +61,8 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled",
+			matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		private final DevToolsProperties properties;
@@ -96,7 +97,8 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local Restart Configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled",
+			matchIfMissing = true)
 	static class RestartConfiguration
 			implements ApplicationListener<ClassPathChangedEvent> {
 
@@ -142,7 +144,8 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.devtools.restart",
+				name = "log-condition-evaluation-delta", matchIfMissing = true)
 		public ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
 			return new ConditionEvaluationDeltaLoggingListener();
 		}

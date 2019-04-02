@@ -39,7 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = DataNeo4jTestPropertiesIntegrationTests.Initializer.class)
+@ContextConfiguration(
+		initializers = DataNeo4jTestPropertiesIntegrationTests.Initializer.class)
 @DataNeo4jTest(properties = "spring.profiles.active=test")
 public class DataNeo4jTestPropertiesIntegrationTests {
 

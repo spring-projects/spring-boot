@@ -42,7 +42,8 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
  */
 @Configuration
 @ConditionalOnClass(StreamsBuilder.class)
-@ConditionalOnBean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME)
+@ConditionalOnBean(
+		name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME)
 class KafkaStreamsAnnotationDrivenConfiguration {
 
 	private final KafkaProperties properties;

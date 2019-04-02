@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,8 @@ public class Neo4jDataAutoConfiguration {
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass({ WebMvcConfigurer.class, OpenSessionInViewInterceptor.class })
 	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view",
+			havingValue = "true", matchIfMissing = true)
 	protected static class Neo4jWebConfiguration {
 
 		@Configuration

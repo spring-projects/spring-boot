@@ -36,7 +36,9 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestRestTemplateContextCustomizerWithFactoryBeanTests.TestClassWithFactoryBean.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+		classes = TestRestTemplateContextCustomizerWithFactoryBeanTests.TestClassWithFactoryBean.class,
+		webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class TestRestTemplateContextCustomizerWithFactoryBeanTests {
 

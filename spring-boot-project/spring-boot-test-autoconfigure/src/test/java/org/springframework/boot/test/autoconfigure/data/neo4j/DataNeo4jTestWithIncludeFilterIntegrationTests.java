@@ -40,7 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Simons
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
+@ContextConfiguration(
+		initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 

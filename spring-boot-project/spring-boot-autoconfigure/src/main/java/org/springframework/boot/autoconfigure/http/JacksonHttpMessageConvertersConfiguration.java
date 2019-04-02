@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,13 +41,16 @@ class JacksonHttpMessageConvertersConfiguration {
 	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
-	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jackson", matchIfMissing = true)
+	@ConditionalOnProperty(
+			name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+			havingValue = "jackson", matchIfMissing = true)
 	protected static class MappingJackson2HttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(value = MappingJackson2HttpMessageConverter.class, ignoredType = {
-				"org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter",
-				"org.springframework.data.rest.webmvc.alps.AlpsJsonHttpMessageConverter" })
+		@ConditionalOnMissingBean(value = MappingJackson2HttpMessageConverter.class,
+				ignoredType = {
+						"org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter",
+						"org.springframework.data.rest.webmvc.alps.AlpsJsonHttpMessageConverter" })
 		public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 				ObjectMapper objectMapper) {
 			return new MappingJackson2HttpMessageConverter(objectMapper);
