@@ -159,7 +159,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(
-					jarFile.getEntry(this.classesPath + "/com/example/Application.class"))
+					jarFile.getEntry(this.classesPath + "com/example/Application.class"))
 							.isNotNull();
 			assertThat(jarFile.getEntry("com/example/Application.class")).isNull();
 			assertThat(jarFile.getEntry("module-info.class")).isNotNull();
