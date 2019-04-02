@@ -64,7 +64,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
 	 */
 	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
-			Arrays.asList("ClientAbortException", "EOFException", "EofException"));
+			Arrays.asList("AbortedException", "ClientAbortException", "EOFException",
+					"EofException"));
 
 	private static final Log logger = HttpLogging
 			.forLogName(AbstractErrorWebExceptionHandler.class);
@@ -268,8 +269,12 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	private boolean isDisconnectedClientError(Throwable ex) {
 		String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
-		if (message != null && message.toLowerCase().contains("broken pipe")) {
-			return true;
+		if (message != null) {
+			String text = message.toLowerCase();
+			if (text.contains("broken pipe")
+					|| text.contains("connection reset by peer")) {
+				return true;
+			}
 		}
 		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName());
 	}
