@@ -55,8 +55,6 @@
   <setupTask
       xsi:type="setup.p2:P2Task">
     <requirement
-        name="epp.package.java"/>
-    <requirement
         name="org.eclipse.platform.feature.group"/>
     <requirement
         name="org.eclipse.jdt.feature.group"/>
@@ -77,15 +75,9 @@
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <repository
-        url="https://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
-    <repository
-        url="https://download.eclipse.org/releases/oxygen/"/>
-    <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
-        url="https://download.eclipse.org/egit/github/updates/"/>
-    <repository
-        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
