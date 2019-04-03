@@ -121,7 +121,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new ArrayList<>();
 
-	private List<Connector> additionalTomcatConnectors = new ArrayList<>();
+	private final List<Connector> additionalTomcatConnectors = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
 
@@ -717,7 +717,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			if (event.getType().equals(Lifecycle.START_EVENT)) {
 				Context context = (Context) event.getLifecycle();
 				Manager manager = context.getManager();
-				if (manager != null && manager instanceof StandardManager) {
+				if (manager instanceof StandardManager) {
 					((StandardManager) manager).setPathname(null);
 				}
 			}

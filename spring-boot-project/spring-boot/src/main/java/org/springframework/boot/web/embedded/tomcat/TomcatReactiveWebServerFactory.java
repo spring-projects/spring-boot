@@ -66,7 +66,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private File baseDirectory;
 
-	private List<Valve> engineValves = new ArrayList<>();
+	private final List<Valve> engineValves = new ArrayList<>();
 
 	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
 
