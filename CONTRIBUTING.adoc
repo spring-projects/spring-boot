@@ -83,9 +83,9 @@ should also work without issue.
 
 === Building from Source
 Spring Boot source can be built from the command line using
-https://maven.apache.org/run-maven/index.html[Apache Maven] on JDK 1.8 or above.
-We include '`Maven Wrapper`' scripts (`./mvnw` or `mvnw.bat`) that you can run rather
-than needing to install Maven locally.
+https://maven.apache.org/run-maven/index.html[Apache Maven] on JDK 1.8 or above. We
+include '`Maven Wrapper`' scripts (`./mvnw` or `mvnw.bat`) that you can run rather than
+needing to install Maven locally.
 
 
 
