@@ -117,7 +117,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<>();
 
-	private List<Connector> additionalTomcatConnectors = new ArrayList<>();
+	private final List<Connector> additionalTomcatConnectors = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
 
