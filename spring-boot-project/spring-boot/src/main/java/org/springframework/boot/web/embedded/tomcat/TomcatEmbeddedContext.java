@@ -55,7 +55,7 @@ class TomcatEmbeddedContext extends StandardContext {
 	@Override
 	public void setManager(Manager manager) {
 		if (manager instanceof ManagerBase) {
-			((ManagerBase) manager).setSessionIdGenerator(new LazySessionIdGenerator());
+			manager.setSessionIdGenerator(new LazySessionIdGenerator());
 		}
 		super.setManager(manager);
 	}
