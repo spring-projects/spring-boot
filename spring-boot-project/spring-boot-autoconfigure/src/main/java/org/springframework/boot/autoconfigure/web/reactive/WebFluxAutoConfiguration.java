@@ -211,7 +211,7 @@ public class WebFluxAutoConfiguration {
 	/**
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class EnableWebFluxConfiguration
 			extends DelegatingWebFluxConfiguration {
 
