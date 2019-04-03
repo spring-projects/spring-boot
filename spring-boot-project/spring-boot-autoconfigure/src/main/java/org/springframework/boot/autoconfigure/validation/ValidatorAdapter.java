@@ -138,8 +138,8 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	private static Validator create() {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
 		try {
-			validator
-					.setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+			MessageInterpolatorFactory factory = new MessageInterpolatorFactory();
+			validator.setMessageInterpolator(factory.getObject());
 		}
 		catch (ValidationException ex) {
 			// Ignore

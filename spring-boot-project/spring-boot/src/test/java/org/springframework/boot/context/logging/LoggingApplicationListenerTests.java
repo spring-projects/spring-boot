@@ -263,7 +263,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseDebugArgExpandGroups() {
+	public void parseDebugArgExpandsGroups() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
