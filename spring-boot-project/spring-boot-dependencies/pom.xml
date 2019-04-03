@@ -76,7 +76,7 @@
 		<hsqldb.version>2.4.1</hsqldb.version>
 		<htmlunit.version>2.33</htmlunit.version>
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
-		<httpclient.version>4.5.7</httpclient.version>
+		<httpclient.version>4.5.8</httpclient.version>
 		<httpcore.version>4.4.11</httpcore.version>
 		<infinispan.version>9.4.11.Final</infinispan.version>
 		<influxdb-java.version>2.14</influxdb-java.version>
