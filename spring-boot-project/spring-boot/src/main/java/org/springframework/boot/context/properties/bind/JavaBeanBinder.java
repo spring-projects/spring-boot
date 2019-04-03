@@ -45,7 +45,7 @@ class JavaBeanBinder implements DataObjectBinder {
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			DataObjectPropertyBinder propertyBinder) {
-		boolean hasKnownBindableProperties = hasKnownBindableProperties(name, context);
+		boolean hasKnownBindableProperties = target.getValue() != null && hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;
