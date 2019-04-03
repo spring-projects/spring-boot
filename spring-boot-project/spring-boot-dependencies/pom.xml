@@ -37,7 +37,7 @@
 		<activemq.version>5.15.9</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.73</appengine-sdk.version>
-		<artemis.version>2.6.4</artemis.version>
+		<artemis.version>2.7.0</artemis.version>
 		<aspectj.version>1.9.2</aspectj.version>
 		<assertj.version>3.12.1</assertj.version>
 		<atomikos.version>4.0.6</atomikos.version>
@@ -1524,11 +1524,6 @@
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>artemis-journal</artifactId>
-				<version>${artemis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>artemis-native</artifactId>
 				<version>${artemis.version}</version>
 			</dependency>
 			<dependency>
