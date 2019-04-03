@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ public class Review implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name = "review_generator", sequenceName = "review_sequence", initialValue = 64)
+	@SequenceGenerator(name = "review_generator", sequenceName = "review_sequence",
+			initialValue = 64)
 	@GeneratedValue(generator = "review_generator")
 	private Long id;
 

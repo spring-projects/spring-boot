@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,10 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SampleJettyWebSocketsApplication.class,
-		CustomContainerConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+		classes = { SampleJettyWebSocketsApplication.class,
+				CustomContainerConfiguration.class },
+		webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CustomContainerWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory
