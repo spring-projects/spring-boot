@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,17 @@ class ProjectGenerator {
 	private void extractFromStream(ZipInputStream zipStream, boolean overwrite,
 			File outputFolder) throws IOException {
 		ZipEntry entry = zipStream.getNextEntry();
+		String canonicalOutputPath = outputFolder.getCanonicalPath() + File.separator;
 		while (entry != null) {
 			File file = new File(outputFolder, entry.getName());
+			String canonicalEntryPath = file.getCanonicalPath();
+			if (!canonicalEntryPath.startsWith(canonicalOutputPath)) {
+				throw new ReportableException("Entry '" + entry.getName()
+						+ "' would be written to '" + canonicalEntryPath
+						+ "'. This is outside the output location of '"
+						+ canonicalOutputPath
+						+ "'. Verify your target server configuration.");
+			}
 			if (file.exists() && !overwrite) {
 				throw new ReportableException((file.isDirectory() ? "Directory" : "File")
 						+ " '" + file.getName()
