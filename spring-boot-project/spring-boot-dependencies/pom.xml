@@ -179,7 +179,7 @@
 		<!-- deprecated in favor of "spring-framework.version" -->
 		<spring.version>5.2.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.1.5.RELEASE</spring-amqp.version>
-		<spring-batch.version>4.1.1.RELEASE</spring-batch.version>
+		<spring-batch.version>4.1.2.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.5.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Moore-M2</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
