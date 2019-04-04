@@ -68,7 +68,7 @@ class ServletWebServerFactoryConfiguration {
 		public TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
-				ObjectProvider<TomcatProtocolHandlerCustomizer> protocolHandlerCustomizers) {
+				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.getTomcatConnectorCustomizers().addAll(
 					connectorCustomizers.orderedStream().collect(Collectors.toList()));

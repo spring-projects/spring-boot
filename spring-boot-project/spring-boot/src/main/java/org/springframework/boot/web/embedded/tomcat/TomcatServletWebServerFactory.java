@@ -58,9 +58,11 @@ import org.apache.catalina.webresources.AbstractResourceSet;
 import org.apache.catalina.webresources.EmptyResource;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServer;
@@ -117,7 +119,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<>();
 
-	private List<TomcatProtocolHandlerCustomizer> tomcatProtocolHandlerCustomizers = new ArrayList<>();
+	private List<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new ArrayList<>();
 
 	private List<Connector> additionalTomcatConnectors = new ArrayList<>();
 
@@ -305,10 +307,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
-
-		this.tomcatProtocolHandlerCustomizers.forEach(
-				(customizer) -> customizer.customize(connector.getProtocolHandler()));
-
+		invokeProtocolHandlerCustomizers(connector);
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
@@ -329,6 +328,15 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		if (getAddress() != null) {
 			protocol.setAddress(getAddress());
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void invokeProtocolHandlerCustomizers(Connector connector) {
+		ProtocolHandler protocolHandler = connector.getProtocolHandler();
+		LambdaSafe
+				.callbacks(TomcatProtocolHandlerCustomizer.class,
+						this.tomcatProtocolHandlerCustomizers, protocolHandler)
+				.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
 	private void customizeSsl(Connector connector) {
@@ -631,7 +639,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param tomcatProtocolHandlerCustomizer the customizers to set
 	 */
 	public void setTomcatProtocolHandlerCustomizers(
-			Collection<? extends TomcatProtocolHandlerCustomizer> tomcatProtocolHandlerCustomizer) {
+			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizer) {
 		Assert.notNull(tomcatProtocolHandlerCustomizer,
 				"TomcatProtocolHandlerCustomizers must not be null");
 		this.tomcatProtocolHandlerCustomizers = new ArrayList<>(
@@ -645,7 +653,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	@Override
 	public void addProtocolHandlerCustomizers(
-			TomcatProtocolHandlerCustomizer... tomcatProtocolHandlerCustomizers) {
+			TomcatProtocolHandlerCustomizer<?>... tomcatProtocolHandlerCustomizers) {
 		Assert.notNull(tomcatProtocolHandlerCustomizers,
 				"TomcatProtocolHandlerCustomizers must not be null");
 		this.tomcatProtocolHandlerCustomizers
@@ -657,7 +665,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * will be applied to the Tomcat {@link Connector}.
 	 * @return the customizers that will be applied
 	 */
-	public Collection<TomcatProtocolHandlerCustomizer> getTomcatProtocolHandlerCustomizers() {
+	public Collection<TomcatProtocolHandlerCustomizer<?>> getTomcatProtocolHandlerCustomizers() {
 		return this.tomcatProtocolHandlerCustomizers;
 	}
 

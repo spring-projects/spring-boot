@@ -78,7 +78,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
-				ObjectProvider<TomcatProtocolHandlerCustomizer> protocolHandlerCustomizers) {
+				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
 			TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 			factory.getTomcatConnectorCustomizers().addAll(
 					connectorCustomizers.orderedStream().collect(Collectors.toList()));
