@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @author Artsiom Yudovin
  */
 public class MongoPropertiesTests {
 
@@ -153,6 +154,17 @@ public class MongoPropertiesTests {
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
+	}
+
+	@Test
+	public void canBindAutoIndexCreation() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.data.mongodb.autoIndexCreation:true")
+				.applyTo(context);
+		context.register(Config.class);
+		context.refresh();
+		MongoProperties properties = context.getBean(MongoProperties.class);
+		assertThat(properties.isAutoIndexCreation()).isEqualTo(Boolean.TRUE);
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
