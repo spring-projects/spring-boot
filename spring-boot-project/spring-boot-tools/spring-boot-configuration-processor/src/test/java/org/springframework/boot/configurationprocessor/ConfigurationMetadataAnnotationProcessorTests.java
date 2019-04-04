@@ -46,8 +46,10 @@ import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SpecificEndpoint;
 import org.springframework.boot.configurationsample.endpoint.incremental.IncrementalEndpoint;
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
+import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
 import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
+import org.springframework.boot.configurationsample.generic.UpperBoundGenericPojo;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
@@ -521,6 +523,21 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 						"java.util.Map<java.lang.Integer,java.time.Duration>")
 				.fromSource(SimpleGenericProperties.class)
 				.withDescription("Generic mappings.").withDefaultValue(null));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	public void complexGenericProperties() {
+		ConfigurationMetadata metadata = compile(ComplexGenericProperties.class);
+		assertThat(metadata).has(
+				Metadata.withGroup("generic").fromSource(ComplexGenericProperties.class));
+		assertThat(metadata).has(
+				Metadata.withGroup("generic.test").ofType(UpperBoundGenericPojo.class)
+						.fromSource(ComplexGenericProperties.class));
+		assertThat(metadata).has(Metadata
+				.withProperty("generic.test.mappings",
+						"java.util.Map<java.lang.Enum<T>,java.lang.String>")
+				.fromSource(UpperBoundGenericPojo.class));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
