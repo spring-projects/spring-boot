@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -37,6 +38,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -65,7 +67,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -153,6 +157,40 @@ public class HibernateJpaAutoConfigurationTests
 				.withConfiguration(
 						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void hibernateDialectIsNotSetByDefault() {
+		contextRunner().run(assertJpaVendorAdapter(
+				(adapter) -> assertThat(adapter.getJpaPropertyMap())
+						.doesNotContainKeys("hibernate.dialect")));
+	}
+
+	@Test
+	public void hibernateDialectIsSetWhenDatabaseIsSet() {
+		contextRunner().withPropertyValues("spring.jpa.database=H2")
+				.run(assertJpaVendorAdapter(
+						(adapter) -> assertThat(adapter.getJpaPropertyMap()).contains(
+								entry("hibernate.dialect", H2Dialect.class.getName()))));
+	}
+
+	@Test
+	public void hibernateDialectIsSetWhenDatabasePlatformIsSet() {
+		String databasePlatform = TestH2Dialect.class.getName();
+		contextRunner()
+				.withPropertyValues("spring.jpa.database-platform=" + databasePlatform)
+				.run(assertJpaVendorAdapter(
+						(adapter) -> assertThat(adapter.getJpaPropertyMap())
+								.contains(entry("hibernate.dialect", databasePlatform))));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertJpaVendorAdapter(
+			Consumer<HibernateJpaVendorAdapter> adapter) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(JpaVendorAdapter.class);
+			assertThat(context).hasSingleBean(HibernateJpaVendorAdapter.class);
+			adapter.accept(context.getBean(HibernateJpaVendorAdapter.class));
+		};
 	}
 
 	@Test
@@ -594,6 +632,10 @@ public class HibernateJpaAutoConfigurationTests
 				ThreadPoolTaskExecutor executor) {
 			return (builder) -> builder.setBootstrapExecutor(executor);
 		}
+
+	}
+
+	public static class TestH2Dialect extends H2Dialect {
 
 	}
 

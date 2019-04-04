@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,25 +43,6 @@ public class HibernateDefaultDdlAutoProviderTests {
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode:never");
-
-	@Test
-	public void defaultDdlAutoForMysql() {
-		// Set up environment so we get a MySQL database but don't require server to be
-		// running...
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.type:"
-						+ org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
-				"spring.datasource.database:mysql",
-				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-				"spring.jpa.database:MYSQL").run((context) -> {
-					HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
-							Collections.emptyList());
-					assertThat(ddlAutoProvider
-							.getDefaultDdlAuto(context.getBean(DataSource.class)))
-									.isEqualTo("none");
-
-				});
-	}
 
 	@Test
 	public void defaultDDlAutoForEmbedded() {

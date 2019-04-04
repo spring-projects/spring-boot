@@ -298,7 +298,6 @@ public class FlywayAutoConfiguration {
 
 			public FlywayInitializerJdbcOperationsDependencyConfiguration() {
 				super("flywayInitializer");
-
 			}
 
 		}

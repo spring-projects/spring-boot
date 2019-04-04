@@ -105,8 +105,12 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
 		adapter.setShowSql(this.properties.isShowSql());
-		adapter.setDatabase(this.properties.determineDatabase(this.dataSource));
-		adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
+		if (this.properties.getDatabase() != null) {
+			adapter.setDatabase(this.properties.getDatabase());
+		}
+		if (this.properties.getDatabasePlatform() != null) {
+			adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
+		}
 		adapter.setGenerateDdl(this.properties.isGenerateDdl());
 		return adapter;
 	}

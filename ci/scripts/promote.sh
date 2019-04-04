@@ -30,7 +30,16 @@ curl \
 	-d "{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"${targetRepo}\"}"  \
 	-f \
 	-X \
-	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
+	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || {
+		result=$( curl -s -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}  -f  "${ARTIFACTORY_SERVER}/api/build/${buildName}/${buildNumber}" )
+		resultRepo=$( echo $result | jq -r '.buildInfo.statuses[0].repository' )
+		if [[ $resultRepo = "libs-release-local" ]]; then
+			echo "Already promoted"
+		else
+			echo "Failed to promote" >&2
+			exit 1
+		fi
+	}
 
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	curl \
@@ -45,20 +54,25 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 		POST "${ARTIFACTORY_SERVER}/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to distribute" >&2; exit 1; }
 
 	echo "Waiting for artifacts to be published"
-	ARTIFACTS_PUBLISHED=false
-	WAIT_TIME=10
-	COUNTER=0
-	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 120 ]; do
-		result=$( curl -s https://api.bintray.com/packages/"${BINTRAY_SUBJECT}"/"${BINTRAY_REPO}"/"${groupId}" )
-		versions=$( echo "$result" | jq -r '.versions' )
-		exists=$( echo "$versions" | grep "$version" -o || true )
-		if [ "$exists" = "$version" ]; then
-			ARTIFACTS_PUBLISHED=true
+
+	WAIT_TIME=20
+	WAIT_ATTEMPTS=120
+
+	artifacts_published=false
+	retry_counter=0
+	while [ $artifacts_published == "false" ] && [ $retry_counter -lt $WAIT_ATTEMPTS ]; do
+		result=$( curl -s -f -u ${BINTRAY_USERNAME}:${BINTRAY_API_KEY} https://api.bintray.com/packages/"${BINTRAY_SUBJECT}"/"${BINTRAY_REPO}"/"${groupId}" )
+		if [ $? -eq 0 ]; then
+			versions=$( echo "$result" | jq -r '.versions' )
+			exists=$( echo "$versions" | grep "$version" -o || true )
+			if [ "$exists" = "$version" ]; then
+				artifacts_published=true
+			fi
 		fi
-		COUNTER=$(( COUNTER + 1 ))
+		retry_counter=$(( retry_counter + 1 ))
 		sleep $WAIT_TIME
 	done
-	if [[ $ARTIFACTS_PUBLISHED = "false" ]]; then
+	if [[ $artifacts_published = "false" ]]; then
 		echo "Failed to publish"
 		exit 1
 	else

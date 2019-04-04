@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Path to agent jar. NOTE: the use of agents means that processes will be started by
 	 * forking a new JVM.
 	 * @since 1.0
-	 * @deprecated since version 2.2. Use agents instead.
+	 * @deprecated since 2.2.0 in favor of {@code agents}
 	 */
 	@Deprecated
 	@Parameter(property = "spring-boot.run.agent")

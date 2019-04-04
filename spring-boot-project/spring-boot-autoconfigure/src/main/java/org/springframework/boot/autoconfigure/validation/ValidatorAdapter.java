@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,8 +138,8 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	private static Validator create() {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
 		try {
-			validator
-					.setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+			MessageInterpolatorFactory factory = new MessageInterpolatorFactory();
+			validator.setMessageInterpolator(factory.getObject());
 		}
 		catch (ValidationException ex) {
 			// Ignore
