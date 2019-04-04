@@ -30,7 +30,16 @@ curl \
 	-d "{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"${targetRepo}\"}"  \
 	-f \
 	-X \
-	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
+	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || {
+		result=$( curl -s -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}  -f  "${ARTIFACTORY_SERVER}/api/build/${buildName}/${buildNumber}" )
+		resultRepo=$( echo $result | jq -r '.buildInfo.statuses[0].repository' )
+		if [[ $resultRepo = "libs-release-local" ]]; then
+			echo "Already promoted"
+		else
+			echo "Failed to promote" >&2
+			exit 1
+		fi
+	}
 
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	curl \
