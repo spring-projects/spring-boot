@@ -51,7 +51,7 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 
 	artifacts_published=false
 	retry_counter=0
-	while [ $artifacts_published == "false" ] && [ $retry_counter -lt WAIT_ATTEMPTS ]; do
+	while [ $artifacts_published == "false" ] && [ $retry_counter -lt $WAIT_ATTEMPTS ]; do
 		result=$( curl -s -f -u ${BINTRAY_USERNAME}:${BINTRAY_API_KEY} https://api.bintray.com/packages/"${BINTRAY_SUBJECT}"/"${BINTRAY_REPO}"/"${groupId}" )
 		if [ $? -eq 0 ]; then
 			versions=$( echo "$result" | jq -r '.versions' )
