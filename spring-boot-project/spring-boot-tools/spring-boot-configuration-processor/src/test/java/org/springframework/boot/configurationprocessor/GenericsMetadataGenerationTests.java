@@ -21,9 +21,11 @@ import org.junit.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
+import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
 import org.springframework.boot.configurationsample.generic.GenericConfig;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
 import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
+import org.springframework.boot.configurationsample.generic.UpperBoundGenericPojo;
 import org.springframework.boot.configurationsample.generic.WildcardConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +51,21 @@ public class GenericsMetadataGenerationTests extends AbstractMetadataGenerationT
 						"java.util.Map<java.lang.Integer,java.time.Duration>")
 				.fromSource(SimpleGenericProperties.class)
 				.withDescription("Generic mappings.").withDefaultValue(null));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	public void complexGenericProperties() {
+		ConfigurationMetadata metadata = compile(ComplexGenericProperties.class);
+		assertThat(metadata).has(
+				Metadata.withGroup("generic").fromSource(ComplexGenericProperties.class));
+		assertThat(metadata).has(
+				Metadata.withGroup("generic.test").ofType(UpperBoundGenericPojo.class)
+						.fromSource(ComplexGenericProperties.class));
+		assertThat(metadata).has(Metadata
+				.withProperty("generic.test.mappings",
+						"java.util.Map<java.lang.Enum<T>,java.lang.String>")
+				.fromSource(UpperBoundGenericPojo.class));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
