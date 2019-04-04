@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 
 /**
- * Qualifier for beans that are needed to converters for {@link Endpoint}.
+ * Qualifier for beans that are needed to be converters for {@link Endpoint}.
  *
  * @author Chao Chang
  */
