@@ -60,7 +60,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	/**
 	 * The class name of default protocol used.
 	 */
-	private static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
+	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
 	private File baseDirectory;
 
