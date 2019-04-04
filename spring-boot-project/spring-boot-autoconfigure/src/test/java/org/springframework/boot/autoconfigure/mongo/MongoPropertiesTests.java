@@ -158,7 +158,6 @@ public class MongoPropertiesTests {
 
 	@Test
 	public void canBindAutoIndexCreation() {
-		// gh-1572
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.data.mongodb.autoIndexCreation:true")
 				.applyTo(context);
