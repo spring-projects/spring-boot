@@ -279,7 +279,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	}
 
 	private boolean isDisconnectedClientErrorMessage(String message) {
-		message = message != null ? message.toLowerCase() : "";
+		message = (message != null) ? message.toLowerCase() : "";
 		return (message.contains("broken pipe")
 				|| message.contains("connection reset by peer"));
 	}
