@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -131,6 +132,21 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	public void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								TomcatProtocolHandlerCustomizerConfiguration.class);
+		runner.run((context) -> {
+			TomcatReactiveWebServerFactory factory = context
+					.getBean(TomcatReactiveWebServerFactory.class);
+			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class HttpHandlerConfiguration {
 
@@ -188,6 +204,17 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 		@Bean
 		public TomcatContextCustomizer contextCustomizer() {
 			return (context) -> {
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TomcatProtocolHandlerCustomizerConfiguration {
+
+		@Bean
+		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
+			return (protocolHandler) -> {
 			};
 		}
 
