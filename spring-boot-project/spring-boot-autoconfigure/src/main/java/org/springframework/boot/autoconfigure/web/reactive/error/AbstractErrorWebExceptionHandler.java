@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -63,9 +62,15 @@ public abstract class AbstractErrorWebExceptionHandler
 	/**
 	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
 	 */
-	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
-			Arrays.asList("AbortedException", "ClientAbortException", "EOFException",
-					"EofException"));
+	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS;
+	static {
+		Set<String> exceptions = new HashSet<>();
+		exceptions.add("AbortedException");
+		exceptions.add("ClientAbortException");
+		exceptions.add("EOFException");
+		exceptions.add("EofException");
+		DISCONNECTED_CLIENT_EXCEPTIONS = Collections.unmodifiableSet(exceptions);
+	}
 
 	private static final Log logger = HttpLogging
 			.forLogName(AbstractErrorWebExceptionHandler.class);
@@ -268,15 +273,15 @@ public abstract class AbstractErrorWebExceptionHandler
 	}
 
 	private boolean isDisconnectedClientError(Throwable ex) {
-		String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
-		if (message != null) {
-			String text = message.toLowerCase();
-			if (text.contains("broken pipe")
-					|| text.contains("connection reset by peer")) {
-				return true;
-			}
-		}
-		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName());
+		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
+				|| isDisconnectedClientErrorMessage(
+						NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
+	}
+
+	private boolean isDisconnectedClientErrorMessage(String message) {
+		message = message != null ? message.toLowerCase() : "";
+		return (message.contains("broken pipe")
+				|| message.contains("connection reset by peer"));
 	}
 
 	private void logError(ServerRequest request, ServerResponse response,

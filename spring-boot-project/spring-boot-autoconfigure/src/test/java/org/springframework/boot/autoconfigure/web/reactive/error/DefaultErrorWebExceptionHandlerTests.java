@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package samples.websocket.tomcat.snake;
-
-import java.io.IOException;
+package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.mock;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
-public class SnakeTimerTests {
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests for {@link AbstractErrorWebExceptionHandler}.
+ *
+ * @author Phillip Webb
+ */
+public class DefaultErrorWebExceptionHandlerTests {
 
 	@Test
-	public void removeDysfunctionalSnakes() throws Exception {
-		Snake snake = mock(Snake.class);
-		willThrow(new IOException()).given(snake).sendMessage(anyString());
-		SnakeTimer.addSnake(snake);
-		SnakeTimer.broadcast("");
-		assertThat(SnakeTimer.getSnakes()).hasSize(0);
+	public void disconnectedClientExceptionsMatchesFramework() {
+		Object errorHandlers = ReflectionTestUtils.getField(
+				AbstractErrorWebExceptionHandler.class, "DISCONNECTED_CLIENT_EXCEPTIONS");
+		Object webHandlers = ReflectionTestUtils.getField(HttpWebHandlerAdapter.class,
+				"DISCONNECTED_CLIENT_EXCEPTIONS");
+		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);
 	}
 
 }

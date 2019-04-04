@@ -112,12 +112,7 @@ public class AppOpticsMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public AppOpticsConfig customConfig() {
-			return (key) -> {
-				if ("appoptics.apiToken".equals(key)) {
-					return "abcde";
-				}
-				return null;
-			};
+			return (key) -> "appoptics.apiToken".equals(key) ? "abcde" : null;
 		}
 
 	}
