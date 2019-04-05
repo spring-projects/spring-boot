@@ -19,7 +19,9 @@ package org.springframework.boot.web.servlet.context;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -28,32 +30,34 @@ import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
- * {@link ServletWebServerApplicationContext} that accepts annotated classes as input - in
- * particular {@link org.springframework.context.annotation.Configuration @Configuration}
- * -annotated classes, but also plain {@link Component @Component} classes and JSR-330
- * compliant classes using {@code javax.inject} annotations. Allows for registering
- * classes one by one (specifying class names as config location) as well as for classpath
- * scanning (specifying base packages as config location).
+ * {@link GenericWebApplicationContext}that accepts annotated classes as input - in
+ * particular {@link Configuration @Configuration}-annotated classes, but also plain
+ * {@link Component @Component} classes and JSR-330 compliant classes using
+ * {@code javax.inject} annotations. Allows for registering classes one by one (specifying
+ * class names as config location) as well as for classpath scanning (specifying base
+ * packages as config location).
  * <p>
  * Note: In case of multiple {@code @Configuration} classes, later {@code @Bean}
  * definitions will override ones defined in earlier loaded files. This can be leveraged
  * to deliberately override certain bean definitions via an extra Configuration class.
  *
- * @author Phillip Webb
+ * @author Stephane Nicoll
+ * @since 2.2.0
  * @see #register(Class...)
  * @see #scan(String...)
- * @see ServletWebServerApplicationContext
- * @see AnnotationConfigServletWebApplicationContext
  */
-public class AnnotationConfigServletWebServerApplicationContext
-		extends ServletWebServerApplicationContext implements AnnotationConfigRegistry {
+public class AnnotationConfigServletWebApplicationContext
+		extends GenericWebApplicationContext implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -64,22 +68,22 @@ public class AnnotationConfigServletWebServerApplicationContext
 	private String[] basePackages;
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} that needs
-	 * to be populated through {@link #register} calls and then manually
-	 * {@linkplain #refresh refreshed}.
+	 * Create a new {@link AnnotationConfigServletWebApplicationContext} that needs to be
+	 * populated through {@link #register} calls and then manually {@linkplain #refresh
+	 * refreshed}.
 	 */
-	public AnnotationConfigServletWebServerApplicationContext() {
+	public AnnotationConfigServletWebApplicationContext() {
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} with the
-	 * given {@code DefaultListableBeanFactory}. The context needs to be populated through
+	 * Create a new {@link AnnotationConfigServletWebApplicationContext} with the given
+	 * {@code DefaultListableBeanFactory}. The context needs to be populated through
 	 * {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
-	public AnnotationConfigServletWebServerApplicationContext(
+	public AnnotationConfigServletWebApplicationContext(
 			DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
@@ -87,26 +91,24 @@ public class AnnotationConfigServletWebServerApplicationContext
 	}
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, deriving
-	 * bean definitions from the given annotated classes and automatically refreshing the
+	 * Create a new {@link AnnotationConfigServletWebApplicationContext}, deriving bean
+	 * definitions from the given annotated classes and automatically refreshing the
 	 * context.
 	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
 	 * classes
 	 */
-	public AnnotationConfigServletWebServerApplicationContext(
-			Class<?>... annotatedClasses) {
+	public AnnotationConfigServletWebApplicationContext(Class<?>... annotatedClasses) {
 		this();
 		register(annotatedClasses);
 		refresh();
 	}
 
 	/**
-	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, scanning
-	 * for bean definitions in the given packages and automatically refreshing the
-	 * context.
+	 * Create a new {@link AnnotationConfigServletWebApplicationContext}, scanning for
+	 * bean definitions in the given packages and automatically refreshing the context.
 	 * @param basePackages the packages to check for annotated classes
 	 */
-	public AnnotationConfigServletWebServerApplicationContext(String... basePackages) {
+	public AnnotationConfigServletWebApplicationContext(String... basePackages) {
 		this();
 		scan(basePackages);
 		refresh();
@@ -202,12 +204,18 @@ public class AnnotationConfigServletWebServerApplicationContext
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
-		if (this.basePackages != null && this.basePackages.length > 0) {
+		if (!ObjectUtils.isEmpty(this.basePackages)) {
 			this.scanner.scan(this.basePackages);
 		}
 		if (!this.annotatedClasses.isEmpty()) {
 			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
+	}
+
+	@Override
+	public <T> void registerBean(String beanName, Class<T> beanClass,
+			Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
+		this.reader.registerBean(beanClass, beanName, supplier, customizers);
 	}
 
 }
