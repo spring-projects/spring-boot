@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MongoReactiveDataAutoConfiguration}.
  *
  * @author Mark Paluch
+ * @author Artsiom Yudovin
  */
 public class MongoReactiveDataAutoConfigurationTests {
 
@@ -53,6 +54,12 @@ public class MongoReactiveDataAutoConfigurationTests {
 								MongoReactiveDataAutoConfiguration.class));
 		runner.run((context) -> assertThat(context)
 				.doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
+	}
+
+	@Test
+	public void gridFsTemplateExists() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(ReactiveMongoTemplate.class));
 	}
 
 }

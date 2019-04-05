@@ -37,6 +37,7 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive mongo
@@ -49,6 +50,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  * to the {@literal test} database.
  *
  * @author Mark Paluch
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -83,6 +85,14 @@ public class MongoReactiveDataAutoConfiguration {
 				NoOpDbRefResolver.INSTANCE, context);
 		mappingConverter.setCustomConversions(conversions);
 		return mappingConverter;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ReactiveGridFsTemplate reactiveGridFsTemplate(
+			ReactiveMongoDatabaseFactory reactiveMongoDbFactory,
+			MappingMongoConverter mappingMongoConverter) {
+		return new ReactiveGridFsTemplate(reactiveMongoDbFactory, mappingMongoConverter);
 	}
 
 }
