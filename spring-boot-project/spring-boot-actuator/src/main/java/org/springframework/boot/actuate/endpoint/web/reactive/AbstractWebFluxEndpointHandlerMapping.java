@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
@@ -65,6 +66,7 @@ import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
@@ -210,6 +212,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	protected RequestMappingInfo getMappingForMethod(Method method,
 			Class<?> handlerType) {
 		return null;
+	}
+
+	@Override
+	protected Set<PathPattern> getMappingPathPatterns(RequestMappingInfo mapping) {
+		return mapping.getPatternsCondition().getPatterns();
 	}
 
 	/**
