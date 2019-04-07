@@ -49,9 +49,10 @@ public class CompoundKeyEntryTests {
 		StringBuilder builder = new StringBuilder();
 		entry.writeAsciidoc(builder);
 
-		assertThat(builder.toString()).isEqualTo("|`+++spring.test.first" + NEWLINE
-				+ "spring.test.second" + NEWLINE + "spring.test.third" + NEWLINE + "+++`"
-				+ NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo(
+				"|`+spring.test.first+` +" + NEWLINE + "`+spring.test.second+` +"
+						+ NEWLINE + "`+spring.test.third+` +" + NEWLINE + NEWLINE + "|"
+						+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 }

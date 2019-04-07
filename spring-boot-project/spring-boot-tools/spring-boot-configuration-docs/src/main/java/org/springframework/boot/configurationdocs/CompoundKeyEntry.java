@@ -46,9 +46,10 @@ class CompoundKeyEntry extends AbstractConfigurationEntry {
 
 	@Override
 	public void writeAsciidoc(StringBuilder builder) {
-		builder.append("|`+++");
-		this.configurationKeys.forEach((key) -> builder.append(key).append(NEWLINE));
-		builder.append("+++`").append(NEWLINE).append("|").append(NEWLINE).append("|+++")
+		builder.append("|");
+		this.configurationKeys.forEach((key) -> builder.append("`+").append(key)
+				.append("+`").append(" +").append(NEWLINE));
+		builder.append(NEWLINE).append("|").append(NEWLINE).append("|+++")
 				.append(this.description).append("+++").append(NEWLINE);
 	}
 
