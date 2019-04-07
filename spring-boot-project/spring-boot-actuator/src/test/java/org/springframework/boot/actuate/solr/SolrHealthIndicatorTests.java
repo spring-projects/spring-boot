@@ -19,7 +19,9 @@ package org.springframework.boot.actuate.solr;
 import java.io.IOException;
 
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.util.NamedList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link SolrHealthIndicator}
@@ -51,23 +53,83 @@ class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	void solrIsUp() throws Exception {
+	void solrIsUpWithBaseUrlPointsToRoot() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("status")).isEqualTo(0);
+		assertThat(health.getDetails().get("detectedPathType"))
+				.isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verifyNoMoreInteractions(solrClient);
 	}
 
 	@Test
-	void solrIsUpAndRequestFailed() throws Exception {
+	void solrIsUpWithBaseUrlPointsToParticularCore() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
+		given(solrClient.ping()).willReturn(mockPingResponse(0));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("status")).isEqualTo(0);
+		assertThat(health.getDetails().get("detectedPathType"))
+				.isEqualTo(SolrHealthIndicator.PathType.PARTICULAR_CORE.toString());
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verify(solrClient, times(1)).ping();
+		verifyNoMoreInteractions(solrClient);
+	}
+
+	@Test
+	void pathTypeIsRememberedForConsecutiveChecks() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
+		given(solrClient.ping()).willReturn(mockPingResponse(0));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		healthIndicator.health();
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verify(solrClient, times(1)).ping();
+		verifyNoMoreInteractions(solrClient);
+		reset(solrClient);
+		healthIndicator.health();
+		verify(solrClient, times(1)).ping();
+		verifyNoMoreInteractions(solrClient);
+	}
+
+	@Test
+	void solrIsUpAndRequestFailedWithBaseUrlPointsToRoot() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("status")).isEqualTo(400);
+		assertThat(health.getDetails().get("detectedPathType"))
+				.isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verifyNoMoreInteractions(solrClient);
+	}
+
+	@Test
+	void solrIsUpAndRequestFailedWithBaseUrlPointsToParticularCore()
+			throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
+		given(solrClient.ping()).willReturn(mockPingResponse(400));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("status")).isEqualTo(400);
+		assertThat(health.getDetails().get("detectedPathType"))
+				.isEqualTo(SolrHealthIndicator.PathType.PARTICULAR_CORE.toString());
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verify(solrClient, times(1)).ping();
+		verifyNoMoreInteractions(solrClient);
 	}
 
 	@Test
@@ -79,6 +141,8 @@ class SolrHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verifyNoMoreInteractions(solrClient);
 	}
 
 	private NamedList<Object> mockResponse(int status) {
@@ -87,6 +151,12 @@ class SolrHealthIndicatorTests {
 		headers.add("status", status);
 		response.add("responseHeader", headers);
 		return response;
+	}
+
+	private SolrPingResponse mockPingResponse(int status) {
+		SolrPingResponse pingResponse = new SolrPingResponse();
+		pingResponse.setResponse(mockResponse(status));
+		return pingResponse;
 	}
 
 }
