@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.solr;
 
+import java.io.IOException;
+
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -28,8 +30,6 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.http.HttpStatus;
-
-import java.io.IOException;
 
 /**
  * {@link HealthIndicator} for Apache Solr.
@@ -53,10 +53,10 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		int statusCode;
 
-		if (detectedPathType == PathType.ROOT) {
+		if (this.detectedPathType == PathType.ROOT) {
 			statusCode = doCoreAdminCheck();
 		}
-		else if (detectedPathType == PathType.PARTICULAR_CORE) {
+		else if (this.detectedPathType == PathType.PARTICULAR_CORE) {
 			statusCode = doPingCheck();
 		}
 		else {
@@ -69,30 +69,30 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 				// valid response, we can assume that this
 				// SolrClient is configured with a baseUrl
 				// pointing to the root path of the Solr instance
-				detectedPathType = PathType.ROOT;
+				this.detectedPathType = PathType.ROOT;
 			}
-			catch (HttpSolrClient.RemoteSolrException e) {
+			catch (HttpSolrClient.RemoteSolrException ex) {
 				// CoreAdmin requests to not work with
 				// SolrClients configured with a baseUrl pointing to
 				// a particular core and a 404 response indicates
 				// that this might be the case.
-				if (e.code() == HttpStatus.NOT_FOUND.value()) {
+				if (ex.code() == HttpStatus.NOT_FOUND.value()) {
 					statusCode = doPingCheck();
 					// When the SolrPing returns with a valid
 					// response, we can assume that the baseUrl
 					// of this SolrClient points to a particular core
-					detectedPathType = PathType.PARTICULAR_CORE;
+					this.detectedPathType = PathType.PARTICULAR_CORE;
 				}
 				else {
 					// Rethrow every other response code leaving us
 					// in the dark about the type of the baseUrl
-					throw e;
+					throw ex;
 				}
 			}
 		}
-		Status status = statusCode != 0 ? Status.DOWN : Status.UP;
+		Status status = (statusCode != 0) ? Status.DOWN : Status.UP;
 		builder.status(status).withDetail("status", statusCode)
-				.withDetail("detectedPathType", detectedPathType.toString());
+				.withDetail("detectedPathType", this.detectedPathType.toString());
 	}
 
 	private int doCoreAdminCheck() throws IOException, SolrServerException {
