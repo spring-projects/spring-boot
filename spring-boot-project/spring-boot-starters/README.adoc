@@ -67,6 +67,9 @@ do as they were designed before this was clarified.
 | https://dozermapper.github.io/[Dozer]
 | https://github.com/DozerMapper/dozer
 
+| Elegant Error Handling for Spring Boot
+| https://github.com/alimate/errors-spring-boot-starter
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
