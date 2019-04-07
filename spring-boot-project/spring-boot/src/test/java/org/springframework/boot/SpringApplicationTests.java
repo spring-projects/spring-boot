@@ -75,6 +75,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -1186,6 +1187,14 @@ public class SpringApplicationTests {
 				.getBean(AtomicInteger.class)).hasValue(0);
 	}
 
+	@Test
+	public void lazyInitializationShouldNotApplyToBeansThatAreExplicitlyNotLazy() {
+		assertThat(new SpringApplication(NotLazyInitializationConfig.class)
+				.run("--spring.main.web-application-type=none",
+						"--spring.main.lazy-initialization=true")
+				.getBean(AtomicInteger.class)).hasValue(1);
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final Class<?> propertySourceClass, final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
@@ -1469,6 +1478,30 @@ public class SpringApplicationTests {
 
 			LazyBean(AtomicInteger counter) {
 				counter.incrementAndGet();
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotLazyInitializationConfig {
+
+		@Bean
+		public AtomicInteger counter() {
+			return new AtomicInteger(0);
+		}
+
+		@Bean
+		@Lazy(false)
+		public NotLazyBean NotLazyBean(AtomicInteger counter) {
+			return new NotLazyBean(counter);
+		}
+
+		static class NotLazyBean {
+
+			NotLazyBean(AtomicInteger counter) {
+				counter.getAndIncrement();
 			}
 
 		}

@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.tests;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -46,6 +47,24 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 				createApplicationClassPath(), "com.example.DevToolsTestApplication",
 				serverPortFile.getAbsolutePath(), "--server.port=0",
 				"--spring.devtools.remote.secret=secret");
+		int port = awaitServerPort(applicationJvm.getStandardOut(), serverPortFile);
+		BiFunction<Integer, File, Process> remoteRestarter = getRemoteRestarter(
+				javaLauncher);
+		return new LaunchedApplication(getDirectories().getRemoteAppDirectory(),
+				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
+				applicationJvm.getProcess(), remoteRestarter.apply(port, null),
+				remoteRestarter);
+	}
+
+	@Override
+	public LaunchedApplication launchApplication(JvmLauncher javaLauncher,
+			File serverPortFile, String... additionalArgs) throws Exception {
+		List<String> args = new ArrayList<>(Arrays.asList(
+				"com.example.DevToolsTestApplication", serverPortFile.getAbsolutePath(),
+				"--server.port=0", "--spring.devtools.remote.secret=secret"));
+		args.addAll(Arrays.asList(additionalArgs));
+		LaunchedJvm applicationJvm = javaLauncher.launch("app",
+				createApplicationClassPath(), args.toArray(new String[] {}));
 		int port = awaitServerPort(applicationJvm.getStandardOut(), serverPortFile);
 		BiFunction<Integer, File, Process> remoteRestarter = getRemoteRestarter(
 				javaLauncher);

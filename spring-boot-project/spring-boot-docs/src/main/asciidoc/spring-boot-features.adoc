@@ -119,6 +119,10 @@ on `SpringApplicationBuilder` or the `setLazyInitialization` method on
 	spring.main.lazy-initialization=true
 ----
 
+TIP: If you want to disable lazy initialization for certain beans while using lazy
+initialization for the rest of the application, you can explicitly set their lazy attribute
+to false using the `@Lazy(false)` annotation.
+
 
 
 [[boot-features-banner]]
