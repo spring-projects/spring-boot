@@ -82,8 +82,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
-					assertThat(context.getBean(ReactiveJwtDecoder.class))
-							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 				});
 	}
@@ -101,23 +100,51 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
 								+ this.server.getHostName() + ":" + this.server.getPort())
 				.run((context) -> {
-					assertThat(context.getBean(ReactiveJwtDecoder.class))
-							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 				});
 	}
 
 	@Test
-	public void autoConfigurationWhenBothSetUriAndIssuerUriPresentShouldUseSetUri() {
+	public void autoConfigurationShouldConfigureResourceServerUsingPublicKeyValue() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
+					assertFilterConfiguredWithJwtAuthenticationManager(context);
+				});
+	}
+
+	@Test
+	public void autoConfigurationWhenSetUriKeyLocationIssuerUriPresentShouldUseSetUri() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
 				"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
 				.run((context) -> {
-					assertThat(context.getBean(ReactiveJwtDecoder.class))
-							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 					assertThat(context.containsBean("jwtDecoder")).isTrue();
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isFalse();
+				});
+	}
+
+	@Test
+	public void autoConfigurationWhenKeyLocationAndIssuerUriPresentShouldUseIssuerUri()
+			throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+						+ this.server.getHostName() + ":" + this.server.getPort(),
+				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
+					assertFilterConfiguredWithJwtAuthenticationManager(context);
+					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
 	}
 

@@ -3657,6 +3657,12 @@ as shown in the following examples:
 	spring.security.oauth2.resourceserver.jwt.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
 ----
 
+NOTE: If the authorization server does not support a JWK Set URI, you can configure the
+resource server with the Public Key used for verifying the signature of the JWT. This can
+be done using the `spring.security.oauth2.resourceserver.jwt.public-key-location` property,
+where the value needs to point to a file containing the public key in the PEM-encoded x509
+format.
+
 The same properties are applicable for both servlet and reactive applications.
 
 Alternatively, you can define your own `JwtDecoder` bean for servlet applications
