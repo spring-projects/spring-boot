@@ -24,8 +24,6 @@ import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicat
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +38,8 @@ import static org.mockito.Mockito.mock;
 public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(CassandraMockConfiguration.class)
+			.withBean(ReactiveCassandraOperations.class,
+					() -> mock(ReactiveCassandraOperations.class))
 			.withConfiguration(AutoConfigurations.of(
 					CassandraReactiveHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
@@ -59,16 +58,6 @@ public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(CassandraReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	protected static class CassandraMockConfiguration {
-
-		@Bean
-		public ReactiveCassandraOperations cassandraOperations() {
-			return mock(ReactiveCassandraOperations.class);
-		}
-
 	}
 
 }

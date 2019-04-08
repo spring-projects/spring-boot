@@ -22,10 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAuto
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.ldap.LdapHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +37,8 @@ import static org.mockito.Mockito.mock;
 public class LdapHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(LdapConfiguration.class).withConfiguration(
+			.withBean(LdapOperations.class, () -> mock(LdapOperations.class))
+			.withConfiguration(
 					AutoConfigurations.of(LdapHealthIndicatorAutoConfiguration.class,
 							HealthIndicatorAutoConfiguration.class));
 
@@ -57,17 +55,6 @@ public class LdapHealthIndicatorAutoConfigurationTests {
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(LdapHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@AutoConfigureBefore(LdapHealthIndicatorAutoConfiguration.class)
-	protected static class LdapConfiguration {
-
-		@Bean
-		public LdapOperations ldapOperations() {
-			return mock(LdapOperations.class);
-		}
-
 	}
 
 }

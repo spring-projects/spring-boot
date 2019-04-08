@@ -22,8 +22,6 @@ import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -42,7 +40,7 @@ public class CachesEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(CacheConfiguration.class)
+		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
 				.withPropertyValues("management.endpoints.web.exposure.include=caches")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(CachesEndpoint.class));
@@ -58,27 +56,18 @@ public class CachesEndpointAutoConfigurationTests {
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(CacheConfiguration.class).run(
-				(context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
+		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.caches.enabled:false")
 				.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.withUserConfiguration(CacheConfiguration.class)
+				.withBean(CacheManager.class, () -> mock(CacheManager.class))
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(CachesEndpoint.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CacheConfiguration {
-
-		@Bean
-		public CacheManager cacheManager() {
-			return mock(CacheManager.class);
-		}
-
 	}
 
 }

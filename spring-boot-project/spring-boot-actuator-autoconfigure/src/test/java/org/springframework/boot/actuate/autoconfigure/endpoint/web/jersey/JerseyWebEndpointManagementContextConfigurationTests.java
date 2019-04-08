@@ -29,8 +29,6 @@ import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +43,7 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class,
 					JerseyWebEndpointManagementContextConfiguration.class))
-			.withUserConfiguration(WebEndpointsSupplierConfig.class);
+			.withBean(WebEndpointsSupplier.class, () -> Collections::emptyList);
 
 	@Test
 	public void resourceConfigCustomizerForEndpointsIsAutoConfigured() {
@@ -67,16 +65,6 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 		this.runner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(JerseySameManagementContextConfiguration.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class WebEndpointsSupplierConfig {
-
-		@Bean
-		public WebEndpointsSupplier webEndpointsSupplier() {
-			return Collections::emptyList;
-		}
-
 	}
 
 }

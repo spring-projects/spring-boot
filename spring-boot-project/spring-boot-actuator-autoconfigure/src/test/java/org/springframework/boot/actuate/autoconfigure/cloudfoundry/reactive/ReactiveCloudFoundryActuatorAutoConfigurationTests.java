@@ -242,7 +242,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebIncludes() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com")
@@ -260,7 +260,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void endpointPathCustomizationIsNotApplied() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com")
@@ -378,16 +378,6 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		}
 		throw new IllegalStateException("No operation found with request path "
 				+ requestPath + " from " + endpoint.getOperations());
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		public TestEndpoint testEndpoint() {
-			return new TestEndpoint();
-		}
-
 	}
 
 	@Endpoint(id = "test")
