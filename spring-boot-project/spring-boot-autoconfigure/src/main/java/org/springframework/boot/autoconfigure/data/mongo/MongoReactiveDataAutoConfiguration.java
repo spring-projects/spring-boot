@@ -29,6 +29,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
@@ -91,8 +93,16 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(
 			ReactiveMongoDatabaseFactory reactiveMongoDbFactory,
-			MappingMongoConverter mappingMongoConverter) {
-		return new ReactiveGridFsTemplate(reactiveMongoDbFactory, mappingMongoConverter);
+			MappingMongoConverter mappingMongoConverter,
+			DataBufferFactory dataBufferFactory) {
+		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDbFactory,
+				mappingMongoConverter, null);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DataBufferFactory dataBufferFactory() {
+		return new DefaultDataBufferFactory();
 	}
 
 }
