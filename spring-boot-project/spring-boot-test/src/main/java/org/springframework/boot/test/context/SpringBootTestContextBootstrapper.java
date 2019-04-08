@@ -71,6 +71,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Lorenzo Dee
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration
@@ -153,11 +154,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
 			if (webApplicationType == WebApplicationType.SERVLET
 					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
-				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
-						.findMergedAnnotation(mergedConfig.getTestClass(), WebAppConfiguration.class);
-				String resourceBasePath = (webAppConfiguration != null) ? webAppConfiguration.value()
-						: "src/main/webapp";
-				mergedConfig = new WebMergedContextConfiguration(mergedConfig, resourceBasePath);
+				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
+						getServletResourceBasePath(mergedConfig));
 			}
 			else if (webApplicationType == WebApplicationType.REACTIVE
 					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
@@ -187,6 +185,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return WebApplicationType.SERVLET;
+	}
+
+	protected String getServletResourceBasePath(MergedContextConfiguration configuration) {
+		WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
+				.findMergedAnnotation(configuration.getTestClass(), WebAppConfiguration.class);
+		return (webAppConfiguration != null) ? webAppConfiguration.value() : "src/main/webapp";
 	}
 
 	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
