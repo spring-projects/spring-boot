@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.unit.DataSize;
@@ -88,7 +89,17 @@ public class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	public void customProcessorCache() {
 		bind("server.tomcat.processor-cache=100");
-		assertThat(this.serverProperties.getTomcat().getProcessorCache()).isEqualTo(100);
+		customizeAndRunServer((server) -> assertThat(((AbstractProtocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
+						.isEqualTo(100));
+	}
+
+	@Test
+	public void unlimitedProcessorCache() {
+		bind("server.tomcat.processor-cache=-1");
+		customizeAndRunServer((server) -> assertThat(((AbstractProtocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
+						.isEqualTo(-1));
 	}
 
 	@Test
@@ -419,6 +430,16 @@ public class TomcatWebServerFactoryCustomizerTests {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next())
 				.getIpv6Canonical()).isTrue();
+	}
+
+	@Test
+	public void ajpConnectorCanBeCustomized() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
+		factory.setProtocol("AJP/1.3");
+		this.customizer.customize(factory);
+		WebServer server = factory.getWebServer();
+		server.start();
+		server.stop();
 	}
 
 	private void bind(String... inlinedProperties) {

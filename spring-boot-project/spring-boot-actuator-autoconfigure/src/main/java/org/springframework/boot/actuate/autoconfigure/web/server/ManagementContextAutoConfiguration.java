@@ -16,10 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -29,13 +30,14 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
-import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -58,9 +60,6 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties({ WebEndpointProperties.class,
 		ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
-
-	private static final Log logger = LogFactory
-			.getLog(ManagementContextAutoConfiguration.class);
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
@@ -122,7 +121,7 @@ public class ManagementContextAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	static class DifferentManagementContextConfiguration
-			implements SmartInitializingSingleton {
+			implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -135,14 +134,16 @@ public class ManagementContextAutoConfiguration {
 		}
 
 		@Override
-		public void afterSingletonsInstantiated() {
-			if (this.applicationContext instanceof WebServerApplicationContext
-					&& ((WebServerApplicationContext) this.applicationContext)
-							.getWebServer() != null) {
+		public void onApplicationEvent(WebServerInitializedEvent event) {
+			if (event.getApplicationContext().equals(this.applicationContext)) {
 				ConfigurableWebServerApplicationContext managementContext = this.managementContextFactory
 						.createManagementContext(this.applicationContext,
 								EnableChildManagementContextConfiguration.class,
 								PropertyPlaceholderAutoConfiguration.class);
+				if (isLazyInitialization()) {
+					managementContext.addBeanFactoryPostProcessor(
+							new LazyInitializationBeanFactoryPostProcessor());
+				}
 				managementContext.setServerNamespace("management");
 				managementContext.setId(this.applicationContext.getId() + ":management");
 				setClassLoaderIfPossible(managementContext);
@@ -150,11 +151,14 @@ public class ManagementContextAutoConfiguration {
 						managementContext);
 				managementContext.refresh();
 			}
-			else {
-				logger.warn("Could not start embedded management container on "
-						+ "different port (management endpoints are still available "
-						+ "through JMX)");
-			}
+		}
+
+		protected boolean isLazyInitialization() {
+			AbstractApplicationContext context = (AbstractApplicationContext) this.applicationContext;
+			List<BeanFactoryPostProcessor> postProcessors = context
+					.getBeanFactoryPostProcessors();
+			return postProcessors.stream().anyMatch((
+					postProcessor) -> postProcessor instanceof LazyInitializationBeanFactoryPostProcessor);
 		}
 
 		private void setClassLoaderIfPossible(ConfigurableApplicationContext child) {

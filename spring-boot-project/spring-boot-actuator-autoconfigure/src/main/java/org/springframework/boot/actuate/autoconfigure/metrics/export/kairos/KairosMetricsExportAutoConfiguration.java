@@ -48,7 +48,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(KairosMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.kairos", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.kairos", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(KairosProperties.class)
 public class KairosMetricsExportAutoConfiguration {
 

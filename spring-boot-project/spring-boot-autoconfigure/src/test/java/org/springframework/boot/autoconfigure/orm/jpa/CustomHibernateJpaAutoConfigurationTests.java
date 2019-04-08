@@ -110,14 +110,14 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultDatabaseForH2() {
+	public void defaultDatabaseIsSet() {
 		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb",
 				"spring.datasource.initialization-mode:never").run((context) -> {
 					HibernateJpaVendorAdapter bean = context
 							.getBean(HibernateJpaVendorAdapter.class);
 					Database database = (Database) ReflectionTestUtils.getField(bean,
 							"database");
-					assertThat(database).isEqualTo(Database.H2);
+					assertThat(database).isEqualTo(Database.DEFAULT);
 				});
 	}
 

@@ -16,6 +16,7 @@
 		<gradle.executable>./gradlew</gradle.executable>
 		<gradle.task>build</gradle.task>
 		<skip.gradle.build>false</skip.gradle.build>
+		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -39,6 +40,24 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-doc-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
+							<unpack>true</unpack>
+							<outputDirectory>${refdocs.build.directory}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -65,6 +84,28 @@
 						<configuration>
 							<includeScope>test</includeScope>
 							<outputDirectory>${project.build.directory}/dependencies/test</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-asciidoc-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${refdocs.build.directory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/asciidoc</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -236,10 +277,10 @@
 											<zipfileset
 												src="build/libs/${project.artifactId}-${project.version}-javadoc.jar"
 												prefix="api" />
-											<zipfileset dir="${project.build.directory}/generated-docs"
-												includes="index.html" prefix="reference/html" />
+											<zipfileset dir="${project.build.directory}/generated-docs/reference/html"
+												prefix="reference/html" />
 											<mappedresources>
-												<fileset dir="${project.build.directory}/generated-docs"
+												<fileset dir="${project.build.directory}/generated-docs/reference/pdf"
 													includes="index.pdf" />
 												<globmapper from="index.pdf"
 													to="reference/pdf/spring-boot-gradle-plugin-reference.pdf" />
@@ -261,7 +302,19 @@
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
-									<backend>html</backend>
+									<backend>html5</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>style.css</stylesheet>
+									</attributes>
 								</configuration>
 							</execution>
 							<execution>
@@ -272,10 +325,12 @@
 								</goals>
 								<configuration>
 									<backend>pdf</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/pdf</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
 						<configuration>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
 							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
 								<github-tag>${github-tag}</github-tag>

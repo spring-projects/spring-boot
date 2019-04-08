@@ -64,8 +64,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	@ComponentScan(basePackageClasses = { SampleController.class,
-			HelloWorldService.class })
+	@ComponentScan(
+			basePackageClasses = { SampleController.class, HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {
 
 		public static void main(String[] args) {

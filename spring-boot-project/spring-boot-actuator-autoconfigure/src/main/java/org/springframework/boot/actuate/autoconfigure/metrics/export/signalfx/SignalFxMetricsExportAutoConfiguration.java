@@ -47,7 +47,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(SignalFxMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.signalfx", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.signalfx", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(SignalFxProperties.class)
 public class SignalFxMetricsExportAutoConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import java.util.function.Supplier;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a Servlet
@@ -45,12 +45,12 @@ public final class WebApplicationContextRunner extends
 
 	/**
 	 * Create a new {@link WebApplicationContextRunner} instance using an
-	 * {@link AnnotationConfigWebApplicationContext} with a {@link MockServletContext} as
-	 * the underlying source.
+	 * {@link AnnotationConfigServletWebApplicationContext} with a
+	 * {@link MockServletContext} as the underlying source.
 	 * @see #withMockServletContext(Supplier)
 	 */
 	public WebApplicationContextRunner() {
-		this(withMockServletContext(AnnotationConfigWebApplicationContext::new));
+		this(withMockServletContext(AnnotationConfigServletWebApplicationContext::new));
 	}
 
 	/**

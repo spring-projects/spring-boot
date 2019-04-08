@@ -35,7 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class, initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class,
+		initializers = ConfigFileApplicationContextInitializer.class)
 public class ConfigFileApplicationContextInitializerTests {
 
 	@Autowired

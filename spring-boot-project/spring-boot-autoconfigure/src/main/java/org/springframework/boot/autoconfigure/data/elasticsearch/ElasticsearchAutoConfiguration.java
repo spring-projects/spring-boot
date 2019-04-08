@@ -40,7 +40,8 @@ import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Client.class, TransportClientFactoryBean.class })
-@ConditionalOnProperty(prefix = "spring.data.elasticsearch", name = "cluster-nodes", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.data.elasticsearch", name = "cluster-nodes",
+		matchIfMissing = false)
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchAutoConfiguration {
 

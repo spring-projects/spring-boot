@@ -37,7 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @JdbcTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED, connection = EmbeddedDatabaseConnection.HSQL)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED,
+		connection = EmbeddedDatabaseConnection.HSQL)
 public class JdbcTestWithAutoConfigureTestDatabaseReplaceAutoConfiguredIntegrationTests {
 
 	@Autowired

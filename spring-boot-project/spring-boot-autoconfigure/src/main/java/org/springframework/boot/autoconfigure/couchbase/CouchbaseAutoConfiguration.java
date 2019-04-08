@@ -44,7 +44,8 @@ import org.springframework.context.annotation.Import;
 public class CouchbaseAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class, type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class,
+			type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 	@Import(CouchbaseConfiguration.class)
 	static class DefaultCouchbaseConfiguration {
 
@@ -69,7 +70,8 @@ public class CouchbaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+		@ConditionalOnBean(
+				type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 		static class CouchbaseConfigurerAvailable {
 
 		}

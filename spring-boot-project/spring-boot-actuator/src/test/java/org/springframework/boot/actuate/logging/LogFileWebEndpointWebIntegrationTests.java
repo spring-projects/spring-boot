@@ -69,6 +69,7 @@ public class LogFileWebEndpointWebIntegrationTests {
 		TestPropertyValues.of("logging.file.name:" + this.logFile.getAbsolutePath())
 				.applyTo(context);
 		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
+				.expectHeader().contentType("text/plain; charset=UTF-8")
 				.expectBody(String.class).isEqualTo("--TEST--");
 	}
 
@@ -77,7 +78,9 @@ public class LogFileWebEndpointWebIntegrationTests {
 		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
 				.applyTo(context);
 		client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange()
-				.expectStatus().isOk().expectBody(String.class).isEqualTo("--TEST--");
+				.expectStatus().isOk().expectHeader()
+				.contentType("text/plain; charset=UTF-8").expectBody(String.class)
+				.isEqualTo("--TEST--");
 	}
 
 	@Configuration(proxyBeanMethods = false)

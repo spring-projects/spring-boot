@@ -61,7 +61,9 @@ public class AutoConfigurationExcludeFilterTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackageClasses = ExampleConfiguration.class, excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = TestAutoConfigurationExcludeFilter.class))
+	@ComponentScan(basePackageClasses = ExampleConfiguration.class,
+			excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM,
+					classes = TestAutoConfigurationExcludeFilter.class))
 	static class Config {
 
 	}

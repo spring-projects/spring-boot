@@ -109,7 +109,8 @@ public class Neo4jDataAutoConfiguration {
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass({ WebMvcConfigurer.class, OpenSessionInViewInterceptor.class })
 	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view",
+			havingValue = "true", matchIfMissing = true)
 	protected static class Neo4jWebConfiguration {
 
 		private static final Log logger = LogFactory.getLog(Neo4jWebConfiguration.class);

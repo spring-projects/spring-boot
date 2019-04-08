@@ -61,7 +61,8 @@ public class JmxAutoConfiguration {
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = MBeanExporter.class,
+			search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy,
 			BeanFactory beanFactory) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
@@ -76,7 +77,8 @@ public class JmxAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class,
+			search = SearchStrategy.CURRENT)
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(
 				new AnnotationJmxAttributeSource());

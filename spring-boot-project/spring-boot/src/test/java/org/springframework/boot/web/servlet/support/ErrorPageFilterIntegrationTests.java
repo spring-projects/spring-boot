@@ -65,7 +65,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@ContextConfiguration(classes = ErrorPageFilterIntegrationTests.TomcatConfig.class, loader = EmbeddedWebContextLoader.class)
+@ContextConfiguration(classes = ErrorPageFilterIntegrationTests.TomcatConfig.class,
+		loader = EmbeddedWebContextLoader.class)
 public class ErrorPageFilterIntegrationTests {
 
 	@Autowired

@@ -48,7 +48,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(WavefrontMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.wavefront", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.wavefront", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontMetricsExportAutoConfiguration {
 

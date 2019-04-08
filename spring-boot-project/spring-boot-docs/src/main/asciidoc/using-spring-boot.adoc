@@ -562,8 +562,8 @@ where the application is located (see <<using-boot-structuring-your-code,the bes
 configuration classes
 
 The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
-`@EnableAutoConfiguration`, @ComponentScan`, and `@ConfigurationPropertiesScan` with their default
-attributes, as shown in the following example:
+`@EnableAutoConfiguration`, `@ComponentScan`, and `@ConfigurationPropertiesScan` with
+their default attributes, as shown in the following example:
 
 
 [source,java,indent=0]

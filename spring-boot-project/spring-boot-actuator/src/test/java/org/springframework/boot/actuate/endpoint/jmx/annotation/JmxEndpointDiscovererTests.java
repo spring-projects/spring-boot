@@ -470,8 +470,8 @@ public class JmxEndpointDiscovererTests {
 
 		@ReadOperation
 		@ManagedOperation(description = "Get something based on a timeUnit")
-		@ManagedOperationParameters({
-				@ManagedOperationParameter(name = "unitMs", description = "Number of milliseconds") })
+		@ManagedOperationParameters({ @ManagedOperationParameter(name = "unitMs",
+				description = "Number of milliseconds") })
 		public String getSomething(Long timeUnit) {
 			return null;
 		}
@@ -487,8 +487,8 @@ public class JmxEndpointDiscovererTests {
 
 		@DeleteOperation
 		@ManagedOperation(description = "Delete something based on a timeUnit")
-		@ManagedOperationParameters({
-				@ManagedOperationParameter(name = "unitMs", description = "Number of milliseconds") })
+		@ManagedOperationParameters({ @ManagedOperationParameter(name = "unitMs",
+				description = "Number of milliseconds") })
 		public void deleteSomething(Long timeUnit) {
 
 		}

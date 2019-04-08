@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,7 +225,10 @@ public class DefinitionsParserTests {
 
 	}
 
-	@MockBean(name = "Name", classes = ExampleService.class, extraInterfaces = ExampleExtraInterface.class, answer = Answers.RETURNS_SMART_NULLS, serializable = true, reset = MockReset.NONE)
+	@MockBean(name = "Name", classes = ExampleService.class,
+			extraInterfaces = ExampleExtraInterface.class,
+			answer = Answers.RETURNS_SMART_NULLS, serializable = true,
+			reset = MockReset.NONE)
 	static class MockBeanAttributes {
 
 	}
@@ -244,8 +247,8 @@ public class DefinitionsParserTests {
 
 	}
 
-	@MockBean(name = "name", classes = { ExampleService.class,
-			ExampleServiceCaller.class })
+	@MockBean(name = "name",
+			classes = { ExampleService.class, ExampleServiceCaller.class })
 	static class MockBeanMultipleClassesWithName {
 
 	}
@@ -292,8 +295,8 @@ public class DefinitionsParserTests {
 
 	}
 
-	@SpyBean(name = "name", classes = { RealExampleService.class,
-			ExampleServiceCaller.class })
+	@SpyBean(name = "name",
+			classes = { RealExampleService.class, ExampleServiceCaller.class })
 	static class SpyBeanMultipleClassesWithName {
 
 	}

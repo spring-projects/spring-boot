@@ -724,7 +724,16 @@
 									<target>
 										<zip
 											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
-											<fileset dir="${project.build.directory}/generated-docs" />
+											<zipfileset
+													dir="${project.build.directory}/generated-docs/reference/html"
+													prefix="html" />
+											<mappedresources>
+												<fileset
+														dir="${project.build.directory}/generated-docs/reference/pdf"
+														includes="index.pdf" />
+												<globmapper from="index.pdf"
+															to="pdf/spring-boot-actuator-web-api.pdf" />
+											</mappedresources>
 										</zip>
 									</target>
 								</configuration>
@@ -771,6 +780,7 @@
 						</executions>
 						<configuration>
 							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.test.context;
 
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 
 import org.junit.Test;
 
@@ -77,6 +79,46 @@ public class FilteredClassLoaderTests {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				(resourceName) -> false)) {
 			final URL loaded = classLoader.getResource(TEST_RESOURCE.getPath());
+			assertThat(loaded).isNotNull();
+		}
+	}
+
+	@Test
+	public void loadResourcesWhenFilteredOnResourceShouldReturnNotFound()
+			throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(TEST_RESOURCE)) {
+			final Enumeration<URL> loaded = classLoader
+					.getResources(TEST_RESOURCE.getPath());
+			assertThat(loaded.hasMoreElements()).isFalse();
+		}
+	}
+
+	@Test
+	public void loadResourcesWhenNotFilteredShouldLoadResource() throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				(resourceName) -> false)) {
+			final Enumeration<URL> loaded = classLoader
+					.getResources(TEST_RESOURCE.getPath());
+			assertThat(loaded.hasMoreElements()).isTrue();
+		}
+	}
+
+	@Test
+	public void loadResourceAsStreamWhenFilteredOnResourceShouldReturnNotFound()
+			throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(TEST_RESOURCE)) {
+			final InputStream loaded = classLoader
+					.getResourceAsStream(TEST_RESOURCE.getPath());
+			assertThat(loaded).isNull();
+		}
+	}
+
+	@Test
+	public void loadResourceAsStreamWhenNotFilteredShouldLoadResource() throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				(resourceName) -> false)) {
+			final InputStream loaded = classLoader
+					.getResourceAsStream(TEST_RESOURCE.getPath());
 			assertThat(loaded).isNotNull();
 		}
 	}

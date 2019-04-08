@@ -38,7 +38,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
-@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled",
+		matchIfMissing = true)
 @EnableConfigurationProperties(HttpTraceProperties.class)
 public class HttpTraceAutoConfiguration {
 
