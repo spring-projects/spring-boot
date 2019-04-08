@@ -17,8 +17,10 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 /**
@@ -31,8 +33,15 @@ class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
 			MergedContextConfiguration mergedConfig) {
-		return new WebMergedContextConfiguration(
-				super.processMergedContextConfiguration(mergedConfig), "");
+		MergedContextConfiguration processedMergedConfiguration = super.processMergedContextConfiguration(
+				mergedConfig);
+		WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
+				.findMergedAnnotation(mergedConfig.getTestClass(),
+						WebAppConfiguration.class);
+		String resourceBasePath = (webAppConfiguration != null)
+				? webAppConfiguration.value() : "src/main/webapp";
+		return new WebMergedContextConfiguration(processedMergedConfiguration,
+				resourceBasePath);
 	}
 
 }
