@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
@@ -43,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LogFileWebEndpointAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(LogFileWebEndpointAutoConfiguration.class);
+			.withConfiguration(
+					AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
 
 	@Rule
 	public final TemporaryFolder temp = new TemporaryFolder();
