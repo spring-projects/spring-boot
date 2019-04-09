@@ -60,7 +60,8 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
+			havingValue = "false", matchIfMissing = true)
 	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(
 			ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {

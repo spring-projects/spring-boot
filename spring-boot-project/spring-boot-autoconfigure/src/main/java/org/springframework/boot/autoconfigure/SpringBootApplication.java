@@ -55,7 +55,8 @@ import org.springframework.core.annotation.AliasFor;
 @EnableAutoConfiguration
 @ComponentScan(excludeFilters = {
 		@Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
-		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
+		@Filter(type = FilterType.CUSTOM,
+				classes = AutoConfigurationExcludeFilter.class) })
 @ConfigurationPropertiesScan
 public @interface SpringBootApplication {
 

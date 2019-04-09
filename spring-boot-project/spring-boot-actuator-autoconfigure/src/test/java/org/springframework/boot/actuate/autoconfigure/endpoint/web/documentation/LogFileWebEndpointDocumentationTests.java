@@ -34,7 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = "logging.file.name=src/test/resources/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/sample.log")
+@TestPropertySource(
+		properties = "logging.file.name=src/test/resources/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/sample.log")
 public class LogFileWebEndpointDocumentationTests
 		extends MockMvcEndpointDocumentationTests {
 

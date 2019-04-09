@@ -458,7 +458,8 @@ public class ConditionalOnBeanTests {
 	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnBean(value = CustomExampleBean.class, parameterizedContainer = TestParameterizedContainer.class)
+		@ConditionalOnBean(value = CustomExampleBean.class,
+				parameterizedContainer = TestParameterizedContainer.class)
 		public CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}

@@ -47,7 +47,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(AtlasMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.atlas", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.atlas", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(AtlasProperties.class)
 public class AtlasMetricsExportAutoConfiguration {
 

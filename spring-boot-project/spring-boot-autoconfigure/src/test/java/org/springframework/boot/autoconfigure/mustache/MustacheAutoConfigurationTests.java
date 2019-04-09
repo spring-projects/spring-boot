@@ -21,11 +21,11 @@ import org.junit.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext webContext;
+	private AnnotationConfigServletWebApplicationContext webContext;
 
 	private AnnotationConfigReactiveWebApplicationContext reactiveWebContext;
 
@@ -91,7 +91,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	private void loadWithServlet(Class<?> config) {
-		this.webContext = new AnnotationConfigWebApplicationContext();
+		this.webContext = new AnnotationConfigServletWebApplicationContext();
 		TestPropertyValues.of("spring.mustache.prefix=classpath:/mustache-templates/")
 				.applyTo(this.webContext);
 		if (config != null) {

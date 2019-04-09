@@ -42,6 +42,7 @@ import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDesc
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -133,7 +133,7 @@ public class MappingsEndpointTests {
 		given((Map<String, ServletRegistration>) servletContext.getServletRegistrations())
 				.willReturn(Collections.singletonMap("testServlet", servletRegistration));
 		return () -> {
-			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+			AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 			context.setServletContext(servletContext);
 			return context;
 		};

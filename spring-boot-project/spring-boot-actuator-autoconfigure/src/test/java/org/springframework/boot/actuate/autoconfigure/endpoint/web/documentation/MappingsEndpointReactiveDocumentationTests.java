@@ -61,7 +61,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.main.web-application-type=reactive")
 @RunWith(SpringRunner.class)
 public class MappingsEndpointReactiveDocumentationTests
 		extends AbstractEndpointDocumentationTests {
@@ -204,8 +205,10 @@ public class MappingsEndpointReactiveDocumentationTests
 	@RestController
 	private static class ExampleController {
 
-		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE,
-				"!application/xml" }, produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
+		@PostMapping(path = "/",
+				consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
+				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo",
+				params = "a!=alpha")
 		public String example() {
 			return "Hello World";
 		}

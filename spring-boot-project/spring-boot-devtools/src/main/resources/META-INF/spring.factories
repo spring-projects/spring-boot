@@ -9,7 +9,6 @@ org.springframework.boot.devtools.logger.DevToolsLogFactory.Listener
 
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.springframework.boot.devtools.autoconfigure.EagerInitializationAutoConfiguration,\
 org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration,\
 org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration,\
 org.springframework.boot.devtools.autoconfigure.RemoteDevToolsAutoConfiguration

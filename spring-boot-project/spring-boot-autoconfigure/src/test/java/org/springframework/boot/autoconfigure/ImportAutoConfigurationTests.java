@@ -102,8 +102,8 @@ public class ImportAutoConfigurationTests {
 
 	}
 
-	@ImportAutoConfiguration(classes = { ConfigD.class,
-			ConfigB.class }, exclude = ConfigC.class)
+	@ImportAutoConfiguration(classes = { ConfigD.class, ConfigB.class },
+			exclude = ConfigC.class)
 	@MetaImportAutoConfiguration
 	static class ExcludingConfig {
 

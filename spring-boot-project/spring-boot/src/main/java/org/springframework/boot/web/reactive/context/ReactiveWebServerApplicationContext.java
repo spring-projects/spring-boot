@@ -124,7 +124,7 @@ public class ReactiveWebServerApplicationContext
 	 * reactive web server. By default this method searches for a suitable bean in the
 	 * context itself.
 	 * @return a {@link ReactiveWebServerFactory} (never {@code null})
-	 * @deprecated since 2.2 in favor of {@link #getWebServerFactoryBeanName()} and
+	 * @deprecated since 2.2.0 in favor of {@link #getWebServerFactoryBeanName()} and
 	 * {@link #getWebServerFactory(String)}
 	 */
 	@Deprecated

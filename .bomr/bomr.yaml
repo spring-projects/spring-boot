@@ -16,6 +16,10 @@ bomr:
         versions:
           # NPE in InstallMojo.installProjectPom (InstallMojo.java:387)
           - '[3.2.0]'
+      - project: derby
+        versions:
+          # 10.15 requires Java 9
+          - '[10.15,)'
   verify:
     ignored-dependencies:
       # Avoid confliciting transitive requirements for

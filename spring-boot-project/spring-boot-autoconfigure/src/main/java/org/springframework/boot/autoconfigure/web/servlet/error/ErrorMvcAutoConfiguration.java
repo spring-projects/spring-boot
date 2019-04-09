@@ -96,14 +96,16 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ErrorAttributes.class,
+			search = SearchStrategy.CURRENT)
 	public DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes(
 				this.serverProperties.getError().isIncludeException());
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ErrorController.class,
+			search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
 			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
 		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
@@ -145,7 +147,8 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled",
+			matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 

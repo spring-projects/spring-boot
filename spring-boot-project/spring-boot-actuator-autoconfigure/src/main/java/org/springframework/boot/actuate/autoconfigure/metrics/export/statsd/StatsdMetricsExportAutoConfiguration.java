@@ -47,7 +47,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(StatsdMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.statsd", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.statsd", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(StatsdProperties.class)
 public class StatsdMetricsExportAutoConfiguration {
 

@@ -66,7 +66,8 @@ import org.springframework.util.Assert;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled",
+		matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {

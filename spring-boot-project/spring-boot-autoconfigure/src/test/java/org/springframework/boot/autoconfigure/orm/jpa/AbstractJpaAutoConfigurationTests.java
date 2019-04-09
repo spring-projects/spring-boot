@@ -186,7 +186,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void openEntityManagerInViewInterceptorISNotRegisteredWhenExplicitlyOff() {
+	public void openEntityManagerInViewInterceptorIsNotRegisteredWhenExplicitlyOff() {
 		new WebApplicationContextRunner()
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.jpa.open-in-view=false")

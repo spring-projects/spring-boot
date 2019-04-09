@@ -119,6 +119,10 @@ on `SpringApplicationBuilder` or the `setLazyInitialization` method on
 	spring.main.lazy-initialization=true
 ----
 
+TIP: If you want to disable lazy initialization for certain beans while using lazy
+initialization for the rest of the application, you can explicitly set their lazy attribute
+to false using the `@Lazy(false)` annotation.
+
 
 
 [[boot-features-banner]]
@@ -3653,6 +3657,12 @@ as shown in the following examples:
 	spring.security.oauth2.resourceserver.jwt.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
 ----
 
+NOTE: If the authorization server does not support a JWK Set URI, you can configure the
+resource server with the Public Key used for verifying the signature of the JWT. This can
+be done using the `spring.security.oauth2.resourceserver.jwt.public-key-location` property,
+where the value needs to point to a file containing the public key in the PEM-encoded x509
+format.
+
 The same properties are applicable for both servlet and reactive applications.
 
 Alternatively, you can define your own `JwtDecoder` bean for servlet applications
@@ -7037,6 +7047,11 @@ implementation:
 
 	}
 ----
+
+NOTE: `@MockBean` cannot be used to mock the behavior of a bean that's exercised during
+application context refresh. By the time the test is executed, the application context refresh
+has completed and it is too late to configure the mocked behavior. We recommend using a `@Bean`
+method to create and configure the mock in this situation.
 
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`. See
 the {dc-spring-boot-test}/mock/mockito/SpyBean.{dc-ext}[Javadoc] for full details.

@@ -48,7 +48,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(DynatraceMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.dynatrace", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.dynatrace", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(DynatraceProperties.class)
 public class DynatraceMetricsExportAutoConfiguration {
 

@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
@@ -61,7 +62,8 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled",
+			matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		@Bean
@@ -89,8 +91,10 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local Restart Configuration.
 	 */
+	@Lazy(false)
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled",
+			matchIfMissing = true)
 	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;
@@ -140,7 +144,8 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.devtools.restart",
+				name = "log-condition-evaluation-delta", matchIfMissing = true)
 		public ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
 			return new ConditionEvaluationDeltaLoggingListener();
 		}

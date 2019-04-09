@@ -55,6 +55,8 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
@@ -134,8 +136,13 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void defaultTomcatListeners() {
 		TomcatServletWebServerFactory factory = getFactory();
-		assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
-				.isInstanceOf(AprLifecycleListener.class);
+		if (AprLifecycleListener.isAprAvailable()) {
+			assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
+					.isInstanceOf(AprLifecycleListener.class);
+		}
+		else {
+			assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		}
 	}
 
 	@Test
@@ -189,6 +196,35 @@ public class TomcatServletWebServerFactoryTests
 		for (TomcatConnectorCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Connector.class));
 		}
+	}
+
+	@Test
+	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
+		TomcatServletWebServerFactory factory = getFactory();
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol>[] listeners = new TomcatProtocolHandlerCustomizer[4];
+		Arrays.setAll(listeners, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
+		factory.setTomcatProtocolHandlerCustomizers(
+				Arrays.asList(listeners[0], listeners[1]));
+		factory.addProtocolHandlerCustomizers(listeners[2], listeners[3]);
+		this.webServer = factory.getWebServer();
+		InOrder ordered = inOrder((Object[]) listeners);
+		for (TomcatProtocolHandlerCustomizer listener : listeners) {
+			ordered.verify(listener).customize(any(ProtocolHandler.class));
+		}
+	}
+
+	@Test
+	public void tomcatProtocolHandlerCanBeCustomized() {
+		TomcatServletWebServerFactory factory = getFactory();
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol> customizer = (
+				protocolHandler) -> protocolHandler.setProcessorCache(250);
+		factory.addProtocolHandlerCustomizers(customizer);
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
+				.get(tomcat.getService())[0];
+		AbstractHttp11Protocol protocolHandler = (AbstractHttp11Protocol) connector
+				.getProtocolHandler();
+		assertThat(protocolHandler.getProcessorCache()).isEqualTo(250);
 	}
 
 	@Test
@@ -273,6 +309,24 @@ public class TomcatServletWebServerFactoryTests
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
 				.withMessageContaining("TomcatConnectorCustomizers must not be null");
+	}
+
+	@Test
+	public void setNullTomcatProtocolHandlerCustomizersThrows() {
+		TomcatServletWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
+				.withMessageContaining(
+						"TomcatProtocolHandlerCustomizers must not be null");
+	}
+
+	@Test
+	public void addNullTomcatProtocolHandlerCustomizersThrows() {
+		TomcatServletWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory
+				.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
+				.withMessageContaining(
+						"TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test

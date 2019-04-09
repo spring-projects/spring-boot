@@ -58,7 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "management.endpoints.web.exposure.include=jolokia")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "management.endpoints.web.exposure.include=jolokia")
 @DirtiesContext
 public class JolokiaEndpointAutoConfigurationIntegrationTests {
 

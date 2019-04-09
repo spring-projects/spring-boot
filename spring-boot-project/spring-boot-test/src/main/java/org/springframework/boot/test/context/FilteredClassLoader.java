@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.test.context;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.function.Predicate;
 
 import org.springframework.core.io.ClassPathResource;
@@ -107,6 +110,26 @@ public class FilteredClassLoader extends URLClassLoader {
 			}
 		}
 		return super.getResource(name);
+	}
+
+	@Override
+	public Enumeration<URL> getResources(String name) throws IOException {
+		for (Predicate<String> filter : this.resourcesFilters) {
+			if (filter.test(name)) {
+				return Collections.emptyEnumeration();
+			}
+		}
+		return super.getResources(name);
+	}
+
+	@Override
+	public InputStream getResourceAsStream(String name) {
+		for (Predicate<String> filter : this.resourcesFilters) {
+			if (filter.test(name)) {
+				return null;
+			}
+		}
+		return super.getResourceAsStream(name);
 	}
 
 	/**

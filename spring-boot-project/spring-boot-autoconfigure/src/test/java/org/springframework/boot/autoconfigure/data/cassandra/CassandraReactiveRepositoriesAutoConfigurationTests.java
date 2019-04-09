@@ -137,14 +137,15 @@ public class CassandraReactiveRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CassandraReactiveRepositoriesAutoConfigurationTests.class)
-	@EnableReactiveCassandraRepositories(basePackageClasses = ReactiveCityCassandraRepository.class)
+	@EnableReactiveCassandraRepositories(
+			basePackageClasses = ReactiveCityCassandraRepository.class)
 	static class CustomizedConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(excludeFilters = @Filter(classes = {
-			ReactiveSession.class }, type = FilterType.ASSIGNABLE_TYPE))
+	@ComponentScan(excludeFilters = @Filter(classes = { ReactiveSession.class },
+			type = FilterType.ASSIGNABLE_TYPE))
 	static class TestExcludeConfiguration {
 
 	}

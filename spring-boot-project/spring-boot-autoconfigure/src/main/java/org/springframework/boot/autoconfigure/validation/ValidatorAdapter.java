@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.validation;
+
+import javax.validation.ValidationException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -135,7 +137,13 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 
 	private static Validator create() {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
-		validator.setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+		try {
+			MessageInterpolatorFactory factory = new MessageInterpolatorFactory();
+			validator.setMessageInterpolator(factory.getObject());
+		}
+		catch (ValidationException ex) {
+			// Ignore
+		}
 		return wrap(validator, false);
 	}
 

@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Olivier Lamy
  * @author Chentao Qu
  * @author Artsiom Yudovin
+ * @author Andrew McGhie
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -367,7 +368,8 @@ public class ServerProperties {
 
 		/**
 		 * Maximum number of idle processors that will be retained in the cache and reused
-		 * with a subsequent request.
+		 * with a subsequent request. When set to -1 the cache will be unlimited with a
+		 * theoretical maximum size equal to the maximum number of connections.
 		 */
 		private int processorCache = 200;
 
@@ -546,6 +548,18 @@ public class ServerProperties {
 			private boolean enabled = false;
 
 			/**
+			 * Whether logging of the request will only be enabled if
+			 * "ServletRequest.getAttribute(conditionIf)" does not yield null.
+			 */
+			private String conditionIf;
+
+			/**
+			 * Whether logging of the request will only be enabled if
+			 * "ServletRequest.getAttribute(conditionUnless)" yield null.
+			 */
+			private String conditionUnless;
+
+			/**
 			 * Format pattern for access logs.
 			 */
 			private String pattern = "common";
@@ -565,6 +579,24 @@ public class ServerProperties {
 			 * Log file name suffix.
 			 */
 			private String suffix = ".log";
+
+			/**
+			 * Character set used by the log file. Default to the system default character
+			 * set.
+			 */
+			private String encoding;
+
+			/**
+			 * Locale used to format timestamps in log entries and in log file name
+			 * suffix. Default to the default locale of the Java process.
+			 */
+			private String locale;
+
+			/**
+			 * Whether to check for log file existence so it can be recreated it if an
+			 * external process has renamed it.
+			 */
+			private boolean checkExists = false;
 
 			/**
 			 * Whether to enable access log rotation.
@@ -588,6 +620,11 @@ public class ServerProperties {
 			private String fileDateFormat = ".yyyy-MM-dd";
 
 			/**
+			 * Whether to use IPv6 canonical representation format as defined by RFC 5952.
+			 */
+			private boolean ipv6Canonical = false;
+
+			/**
 			 * Set request attributes for the IP address, Hostname, protocol, and port
 			 * used for the request.
 			 */
@@ -604,6 +641,22 @@ public class ServerProperties {
 
 			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
+			}
+
+			public String getConditionIf() {
+				return this.conditionIf;
+			}
+
+			public void setConditionIf(String conditionIf) {
+				this.conditionIf = conditionIf;
+			}
+
+			public String getConditionUnless() {
+				return this.conditionUnless;
+			}
+
+			public void setConditionUnless(String conditionUnless) {
+				this.conditionUnless = conditionUnless;
 			}
 
 			public String getPattern() {
@@ -638,6 +691,30 @@ public class ServerProperties {
 				this.suffix = suffix;
 			}
 
+			public String getEncoding() {
+				return this.encoding;
+			}
+
+			public void setEncoding(String encoding) {
+				this.encoding = encoding;
+			}
+
+			public String getLocale() {
+				return this.locale;
+			}
+
+			public void setLocale(String locale) {
+				this.locale = locale;
+			}
+
+			public boolean isCheckExists() {
+				return this.checkExists;
+			}
+
+			public void setCheckExists(boolean checkExists) {
+				this.checkExists = checkExists;
+			}
+
 			public boolean isRotate() {
 				return this.rotate;
 			}
@@ -668,6 +745,14 @@ public class ServerProperties {
 
 			public void setFileDateFormat(String fileDateFormat) {
 				this.fileDateFormat = fileDateFormat;
+			}
+
+			public boolean isIpv6Canonical() {
+				return this.ipv6Canonical;
+			}
+
+			public void setIpv6Canonical(boolean ipv6Canonical) {
+				this.ipv6Canonical = ipv6Canonical;
 			}
 
 			public boolean isRequestAttributesEnabled() {

@@ -67,7 +67,8 @@ public class UserDetailsServiceAutoConfiguration {
 			.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@ConditionalOnMissingBean(type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
+	@ConditionalOnMissingBean(
+			type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
 	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
 			SecurityProperties properties,

@@ -51,7 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.main.web-application-type=reactive")
 public class MustacheAutoConfigurationReactiveIntegrationTests {
 
 	@Autowired

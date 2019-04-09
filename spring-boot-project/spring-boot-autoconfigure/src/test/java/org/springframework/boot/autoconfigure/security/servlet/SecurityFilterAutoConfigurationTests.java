@@ -29,10 +29,10 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAut
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.JacksonModuleBean;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * Tests for {@link SecurityFilterAutoConfiguration}.
@@ -43,7 +43,7 @@ public class SecurityFilterAutoConfigurationTests {
 
 	@Test
 	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() {
-		try (AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext()) {
+		try (AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext()) {
 			context.setServletContext(new MockServletContext());
 			context.register(Config.class);
 			context.refresh();

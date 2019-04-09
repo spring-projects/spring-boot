@@ -168,9 +168,13 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class, excludeFilters = {
-			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
-			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
+	@EnableJpaRepositories(
+			basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class,
+			excludeFilters = {
+					@Filter(type = FilterType.ASSIGNABLE_TYPE,
+							value = CityMongoDbRepository.class),
+					@Filter(type = FilterType.ASSIGNABLE_TYPE,
+							value = CitySolrRepository.class) })
 	@TestAutoConfigurationPackage(City.class)
 	protected static class CustomConfiguration {
 

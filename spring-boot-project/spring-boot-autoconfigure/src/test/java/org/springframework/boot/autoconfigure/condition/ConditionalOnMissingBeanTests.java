@@ -435,13 +435,17 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanConfiguration.class))
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+					classes = ScannedFactoryBeanConfiguration.class))
 	protected static class ComponentScannedFactoryBeanBeanMethodConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+					classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
 	protected static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
 
 	}
@@ -566,7 +570,8 @@ public class ConditionalOnMissingBeanTests {
 	protected static class ConditionalOnIgnoredSubclass {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class, ignored = CustomExampleBean.class)
+		@ConditionalOnMissingBean(value = ExampleBean.class,
+				ignored = CustomExampleBean.class)
 		public ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
@@ -577,7 +582,8 @@ public class ConditionalOnMissingBeanTests {
 	protected static class ConditionalOnIgnoredSubclassByName {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class, ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
+		@ConditionalOnMissingBean(value = ExampleBean.class,
+				ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
 		public ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
@@ -760,7 +766,8 @@ public class ConditionalOnMissingBeanTests {
 	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnMissingBean(value = CustomExampleBean.class, parameterizedContainer = TestParameterizedContainer.class)
+		@ConditionalOnMissingBean(value = CustomExampleBean.class,
+				parameterizedContainer = TestParameterizedContainer.class)
 		public CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}
@@ -771,7 +778,8 @@ public class ConditionalOnMissingBeanTests {
 	static class ParameterizedConditionWithReturnTypeConfig {
 
 		@Bean
-		@ConditionalOnMissingBean(parameterizedContainer = TestParameterizedContainer.class)
+		@ConditionalOnMissingBean(
+				parameterizedContainer = TestParameterizedContainer.class)
 		public CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}
@@ -782,7 +790,8 @@ public class ConditionalOnMissingBeanTests {
 	static class ParameterizedConditionWithReturnRegistrationTypeConfig {
 
 		@Bean
-		@ConditionalOnMissingBean(parameterizedContainer = TestParameterizedContainer.class)
+		@ConditionalOnMissingBean(
+				parameterizedContainer = TestParameterizedContainer.class)
 		public TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
 			return new TestParameterizedContainer<>();
 		}

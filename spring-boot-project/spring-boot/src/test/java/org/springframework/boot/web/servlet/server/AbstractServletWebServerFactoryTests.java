@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -74,6 +75,8 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.PrivateKeyDetails;
+import org.apache.http.ssl.PrivateKeyStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
@@ -423,7 +426,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer(registration);
 		this.webServer.start();
 		TrustStrategy trustStrategy = new SerialNumberValidatingTrustSelfSignedStrategy(
-				"3a3aaec8");
+				"5c7ae101");
 		SSLContext sslContext = new SSLContextBuilder()
 				.loadTrustMaterial(null, trustStrategy).build();
 		HttpClient httpClient = HttpClients.custom()
@@ -499,7 +502,18 @@ public abstract class AbstractServletWebServerFactoryTests {
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
-						.loadKeyMaterial(keyStore, "secret".toCharArray()).build());
+						.loadKeyMaterial(keyStore, "secret".toCharArray(),
+								new PrivateKeyStrategy() {
+
+									@Override
+									public String chooseAlias(
+											Map<String, PrivateKeyDetails> aliases,
+											Socket socket) {
+										return "spring-boot";
+									}
+
+								})
+						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
@@ -523,7 +537,17 @@ public abstract class AbstractServletWebServerFactoryTests {
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
-						.loadKeyMaterial(keyStore, "password".toCharArray()).build());
+						.loadKeyMaterial(keyStore, "password".toCharArray(),
+								new PrivateKeyStrategy() {
+
+									@Override
+									public String chooseAlias(
+											Map<String, PrivateKeyDetails> aliases,
+											Socket socket) {
+										return "spring-boot";
+									}
+								})
+						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
@@ -614,7 +638,17 @@ public abstract class AbstractServletWebServerFactoryTests {
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
-						.loadKeyMaterial(keyStore, "password".toCharArray()).build());
+						.loadKeyMaterial(keyStore, "password".toCharArray(),
+								new PrivateKeyStrategy() {
+
+									@Override
+									public String chooseAlias(
+											Map<String, PrivateKeyDetails> aliases,
+											Socket socket) {
+										return "spring-boot";
+									}
+								})
+						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(

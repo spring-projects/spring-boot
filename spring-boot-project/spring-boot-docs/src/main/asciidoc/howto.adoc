@@ -1926,15 +1926,8 @@ conditions, it has different defaults. If an embedded database is used and no sc
 manager (such as Liquibase or Flyway) is handling the `DataSource`, it defaults to
 `create-drop`. In all other cases, it defaults to `none`.
 
-The dialect to use is also automatically detected based on the current `DataSource`, but
-you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
-check on startup.
-
-NOTE: Specifying a `database` leads to the configuration of a well-defined Hibernate
-dialect. Several databases have more than one `Dialect`, and this may not suit your needs.
-In that case, you can either set `spring.jpa.database` to `default` to let Hibernate
-figure things out or set the dialect by setting the `spring.jpa.database-platform`
-property.
+The dialect to use is detected by the JPA provider. If you prefer to set the dialect
+yourself, set the `spring.jpa.database-platform` property.
 
 The most common options to set are shown in the following example:
 

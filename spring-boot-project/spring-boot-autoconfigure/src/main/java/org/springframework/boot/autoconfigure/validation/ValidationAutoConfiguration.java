@@ -44,7 +44,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(ExecutableValidator.class)
-@ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
+@ConditionalOnResource(
+		resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
 @Import(PrimaryDefaultValidatorPostProcessor.class)
 public class ValidationAutoConfiguration {
 

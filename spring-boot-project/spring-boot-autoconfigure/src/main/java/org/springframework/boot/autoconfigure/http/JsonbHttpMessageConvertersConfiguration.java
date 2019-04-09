@@ -62,7 +62,9 @@ class JsonbHttpMessageConvertersConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jsonb")
+		@ConditionalOnProperty(
+				name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+				havingValue = "jsonb")
 		static class JsonbPreferred {
 
 		}

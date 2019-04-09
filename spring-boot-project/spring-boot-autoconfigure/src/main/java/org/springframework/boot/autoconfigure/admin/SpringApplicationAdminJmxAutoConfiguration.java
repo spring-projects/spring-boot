@@ -41,7 +41,8 @@ import org.springframework.jmx.export.MBeanExporter;
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled",
+		havingValue = "true", matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
