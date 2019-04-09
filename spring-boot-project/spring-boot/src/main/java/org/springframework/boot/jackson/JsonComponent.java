@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
@@ -31,9 +32,9 @@ import org.springframework.stereotype.Component;
 /**
  * {@link Component} that provides {@link JsonSerializer} and/or {@link JsonDeserializer}
  * implementations to be registered with Jackson when {@link JsonComponentModule} is in
- * use. Can be used to annotate {@link JsonSerializer} or {@link JsonDeserializer}
- * implementations directly or a class that contains them as inner-classes. For example:
- * <pre class="code">
+ * use. Can be used to annotate {@link JsonSerializer}, {@link JsonDeserializer}, or
+ * {@link KeyDeserializer} implementations directly or a class that contains them as
+ * inner-classes. For example: <pre class="code">
  * &#064;JsonComponent
  * public class CustomerJsonComponent {
  *
@@ -70,5 +71,38 @@ public @interface JsonComponent {
 	 */
 	@AliasFor(annotation = Component.class)
 	String value() default "";
+
+	/**
+	 * Indicates whether the component should be registered as a type serializer and/or
+	 * deserializer or a key serializer and/or deserializer.
+	 * @return the component's handle type
+	 */
+	Handle handle() default Handle.TYPES;
+
+	/**
+	 * Specify the classes handled by the serialization and/or deserialization of the
+	 * component. Necessary to be specified for a {@link KeyDeserializer}, as the type
+	 * cannot be inferred. On other types can be used to only handle a subset of
+	 * subclasses.
+	 * @return the classes that should be handled by the component
+	 */
+	Class<?>[] handleClasses() default {};
+
+	/**
+	 * An enumeration of possible handling types for the component.
+	 */
+	enum Handle {
+
+		/**
+		 * Register the component as a Type serializer and/or deserializer.
+		 */
+		TYPES,
+
+		/**
+		 * Register the component as a Key serializer and/or deserializer.
+		 */
+		KEYS
+
+	}
 
 }

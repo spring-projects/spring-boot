@@ -16,6 +16,12 @@
 
 package org.springframework.boot.jackson;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
@@ -24,12 +30,14 @@ import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JsonComponentModule}.
  *
  * @author Phillip Webb
  * @author Vladimir Tsanev
+ * @author Paul Aly
  */
 public class JsonComponentModuleTests {
 
@@ -73,6 +81,38 @@ public class JsonComponentModuleTests {
 		context.close();
 	}
 
+	@Test
+	public void moduleShouldRegisterKeySerializers() throws Exception {
+		load(OnlyKeySerializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertKeySerialize(module);
+	}
+
+	@Test
+	public void moduleShouldRegisterKeyDeserializers() throws Exception {
+		load(OnlyKeyDeserializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertKeyDeserialize(module);
+	}
+
+	@Test
+	public void moduleShouldRegisterInnerClassesForKeyHandlers() throws Exception {
+		load(NameAndAgeJsonKeyComponent.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertKeySerialize(module);
+		assertKeyDeserialize(module);
+	}
+
+	@Test
+	public void moduleShouldRegisterOnlyForSpecifiedClasses() throws Exception {
+		load(NameAndCareerJsonComponent.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertSerialize(module, new NameAndCareer("spring", "developer"),
+				"{\"name\":\"spring\"}");
+		assertSerialize(module);
+		assertDeserializeForSpecifiedClasses(module);
+	}
+
 	private void load(Class<?>... configs) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(configs);
@@ -81,11 +121,17 @@ public class JsonComponentModuleTests {
 		this.context = context;
 	}
 
-	private void assertSerialize(Module module) throws Exception {
+	private void assertSerialize(Module module, Name value, String expectedJson)
+			throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		String json = mapper.writeValueAsString(new NameAndAge("spring", 100));
-		assertThat(json).isEqualToIgnoringWhitespace("{\"name\":\"spring\",\"age\":100}");
+		String json = mapper.writeValueAsString(value);
+		assertThat(json).isEqualToIgnoringWhitespace(expectedJson);
+	}
+
+	private void assertSerialize(Module module) throws Exception {
+		assertSerialize(module, new NameAndAge("spring", 100),
+				"{\"name\":\"spring\",\"age\":100}");
 	}
 
 	private void assertDeserialize(Module module) throws Exception {
@@ -95,6 +141,37 @@ public class JsonComponentModuleTests {
 				NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
+	}
+
+	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module)
+			throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(module);
+		assertThatExceptionOfType(JsonMappingException.class).isThrownBy(() -> mapper
+				.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
+		NameAndCareer nameAndCareer = mapper.readValue(
+				"{\"name\":\"spring\",\"career\":\"developer\"}", NameAndCareer.class);
+		assertThat(nameAndCareer.getName()).isEqualTo("spring");
+		assertThat(nameAndCareer.getCareer()).isEqualTo("developer");
+	}
+
+	private void assertKeySerialize(Module module) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(module);
+		Map<NameAndAge, Boolean> map = new HashMap<>();
+		map.put(new NameAndAge("spring", 100), true);
+		String json = mapper.writeValueAsString(map);
+		assertThat(json).isEqualToIgnoringWhitespace("{\"spring is 100\":  true}");
+	}
+
+	private void assertKeyDeserialize(Module module) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(module);
+		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<Map<NameAndAge, Boolean>>() {
+		};
+		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}",
+				typeRef);
+		assertThat(map).containsEntry(new NameAndAge("spring", 100), true);
 	}
 
 	@JsonComponent
@@ -118,6 +195,16 @@ public class JsonComponentModuleTests {
 		static class ConcreteSerializer extends AbstractSerializer {
 
 		}
+
+	}
+
+	@JsonComponent(handle = JsonComponent.Handle.KEYS)
+	static class OnlyKeySerializer extends NameAndAgeJsonKeyComponent.Serializer {
+
+	}
+
+	@JsonComponent(handle = JsonComponent.Handle.KEYS, handleClasses = NameAndAge.class)
+	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
 
 	}
 
