@@ -190,7 +190,7 @@
 		<spring-plugin.version>2.0.0.M1</spring-plugin.version>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
-		<spring-security.version>5.1.5.RELEASE</spring-security.version>
+		<spring-security.version>5.2.0.BUILD-SNAPSHOT</spring-security.version>
 		<spring-session-bom.version>Bean-SR4</spring-session-bom.version>
 		<spring-ws.version>3.0.7.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.27.2</sqlite-jdbc.version>
