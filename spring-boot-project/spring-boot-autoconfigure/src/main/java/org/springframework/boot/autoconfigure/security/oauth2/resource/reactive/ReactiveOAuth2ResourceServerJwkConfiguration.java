@@ -15,7 +15,6 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
-import java.io.InputStreamReader;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -32,8 +31,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
 
 /**
  * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI
@@ -63,10 +60,9 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	@Conditional(KeyValueCondition.class)
 	@ConditionalOnMissingBean
 	public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
-		String keyValue = FileCopyUtils.copyToString(new InputStreamReader(ResourceUtils
-				.getURL(this.properties.getPublicKeyLocation()).openStream()));
 		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(getKeySpec(keyValue)));
+				.generatePublic(new X509EncodedKeySpec(
+						getKeySpec(this.properties.readPublicKey())));
 		return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
 	}
 
