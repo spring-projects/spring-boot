@@ -41,6 +41,16 @@ public class CouchbaseProperties {
 
 	private final Env env = new Env();
 
+	/**
+	 * Password of the cluster on RBA(role base access).
+	 */
+	private String password = "";
+
+	/**
+	 * Username of the cluster on RBA(role base access).
+	 */
+	private String username = "";
+
 	public List<String> getBootstrapHosts() {
 		return this.bootstrapHosts;
 	}
@@ -57,6 +67,22 @@ public class CouchbaseProperties {
 		return this.env;
 	}
 
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public static class Bucket {
 
 		/**
@@ -68,16 +94,6 @@ public class CouchbaseProperties {
 		 * Password of the bucket.
 		 */
 		private String password = "";
-
-		/**
-		 * Username of the bucket.
-		 */
-		private String userName = "";
-
-		/**
-		 * RoleBaseAccessEnable for support Couchbase bucket after version 5.0.
-		 */
-		private boolean roleBaseAccessEnabled = false;
 
 		public String getName() {
 			return this.name;
@@ -93,22 +109,6 @@ public class CouchbaseProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
-		}
-
-		public String getUserName() {
-			return this.userName;
-		}
-
-		public void setUserName(String userName) {
-			this.userName = userName;
-		}
-
-		public boolean isRoleBaseAccessEnabled() {
-			return this.roleBaseAccessEnabled;
-		}
-
-		public void setRoleBaseAccessEnabled(boolean roleBaseAccessEnabled) {
-			this.roleBaseAccessEnabled = roleBaseAccessEnabled;
 		}
 
 	}
