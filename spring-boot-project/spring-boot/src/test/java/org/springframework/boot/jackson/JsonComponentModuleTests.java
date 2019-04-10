@@ -93,6 +93,14 @@ public class JsonComponentModuleTests {
 		assertKeyDeserialize(module);
 	}
 
+	@Test
+	public void moduleShouldRegisterInnerClassesForKeyHandlers() throws Exception {
+		load(NameAndAgeJsonKeyComponent.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertKeySerialize(module);
+		assertKeyDeserialize(module);
+	}
+
 	private void load(Class<?>... configs) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(configs);
