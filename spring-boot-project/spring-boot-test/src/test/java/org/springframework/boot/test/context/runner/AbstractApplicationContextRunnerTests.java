@@ -39,6 +39,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -134,6 +135,45 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	public void runWithConfigurationsShouldRegisterConfigurations() {
 		get().withUserConfiguration(FooConfig.class)
 				.run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	public void runWithUserNamedBeanShouldRegisterBean() {
+		get().withBean("foo", String.class, () -> "foo")
+				.run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	public void runWithUserBeanShouldRegisterBeanWithDefaultName() {
+		get().withBean(String.class, () -> "foo")
+				.run((context) -> assertThat(context).hasBean("string"));
+	}
+
+	@Test
+	public void runWithUserBeanShouldBeRegisteredInOrder() {
+		get().withBean(String.class, () -> "one").withBean(String.class, () -> "two")
+				.withBean(String.class, () -> "three").run((context) -> {
+					assertThat(context).hasBean("string");
+					assertThat(context.getBean("string")).isEqualTo("three");
+				});
+	}
+
+	@Test
+	public void runWithConfigurationsAndUserBeanShouldRegisterUserBeanLast() {
+		get().withUserConfiguration(FooConfig.class)
+				.withBean("foo", String.class, () -> "overridden").run((context) -> {
+					assertThat(context).hasBean("foo");
+					assertThat(context.getBean("foo")).isEqualTo("overridden");
+				});
+	}
+
+	@Test
+	public void runWithUserBeanShouldHaveAccessToContext() {
+		get().withUserConfiguration(FooConfig.class)
+				.withBean(String.class, (context) -> "Result: " + context.getBean("foo"))
+				.run((context) -> assertThat(context.getBeansOfType(String.class))
+						.containsOnly(entry("foo", "foo"),
+								entry("string", "Result: foo")));
 	}
 
 	@Test

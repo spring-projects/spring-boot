@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.liquibase;
 
-import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
@@ -45,14 +44,15 @@ public class LiquibaseEndpointAutoConfigurationTests {
 	public void runShouldHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
-				.withUserConfiguration(LiquibaseConfiguration.class)
+				.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
 				.run((context) -> assertThat(context)
 						.hasSingleBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(LiquibaseConfiguration.class)
+		this.contextRunner
+				.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
 				.withPropertyValues("management.endpoint.liquibase.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(LiquibaseEndpoint.class));
@@ -92,16 +92,6 @@ public class LiquibaseEndpointAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class LiquibaseConfiguration {
-
-		@Bean
-		public SpringLiquibase liquibase() {
-			return mock(SpringLiquibase.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class DataSourceClosingLiquibaseConfiguration {
 
 		@Bean
@@ -121,7 +111,7 @@ public class LiquibaseEndpointAutoConfigurationTests {
 				}
 
 				@Override
-				public void afterPropertiesSet() throws LiquibaseException {
+				public void afterPropertiesSet() {
 					this.propertiesSet = true;
 				}
 

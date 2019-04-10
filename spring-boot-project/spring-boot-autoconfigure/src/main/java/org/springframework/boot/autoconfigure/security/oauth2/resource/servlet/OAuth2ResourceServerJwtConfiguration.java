@@ -15,7 +15,6 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 
-import java.io.InputStreamReader;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -32,8 +31,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
 
 /**
  * Configures a {@link JwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI or Public
@@ -63,10 +60,9 @@ class OAuth2ResourceServerJwtConfiguration {
 	@Conditional(KeyValueCondition.class)
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
-		String keyValue = FileCopyUtils.copyToString(new InputStreamReader(ResourceUtils
-				.getURL(this.properties.getPublicKeyLocation()).openStream()));
 		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(getKeySpec(keyValue)));
+				.generatePublic(new X509EncodedKeySpec(
+						getKeySpec(this.properties.readPublicKey())));
 		return NimbusJwtDecoder.withPublicKey(publicKey).build();
 	}
 

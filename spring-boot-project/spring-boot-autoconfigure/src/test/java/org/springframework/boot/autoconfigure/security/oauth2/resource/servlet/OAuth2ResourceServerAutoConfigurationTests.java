@@ -150,6 +150,15 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationShouldFailIfPublicKeyLocationDoesNotExist() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:does-not-exist")
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasMessageContaining("class path resource [does-not-exist]")
+						.hasMessageContaining("Public key location does not exist"));
+	}
+
+	@Test
 	public void autoConfigurationWhenSetUriKeyLocationAndIssuerUriPresentShouldUseSetUri() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",

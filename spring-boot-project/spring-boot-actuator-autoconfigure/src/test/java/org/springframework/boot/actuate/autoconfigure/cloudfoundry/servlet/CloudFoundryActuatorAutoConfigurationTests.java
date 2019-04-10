@@ -44,8 +44,6 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.config.BeanIds;
@@ -227,7 +225,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com")
@@ -250,7 +248,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 						"vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.endpoints.web.path-mapping.test=custom")
-				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+				.withBean(TestEndpoint.class, TestEndpoint::new).run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping
@@ -307,16 +305,6 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		}
 		throw new IllegalStateException("No operation found with request path "
 				+ requestPath + " from " + endpoint.getOperations());
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		public TestEndpoint testEndpoint() {
-			return new TestEndpoint();
-		}
-
 	}
 
 	@Endpoint(id = "test")

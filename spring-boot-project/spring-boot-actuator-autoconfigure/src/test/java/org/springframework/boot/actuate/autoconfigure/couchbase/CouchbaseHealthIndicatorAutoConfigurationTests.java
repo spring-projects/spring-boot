@@ -24,8 +24,6 @@ import org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicat
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -39,7 +37,7 @@ import static org.mockito.Mockito.mock;
 public class CouchbaseHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(CouchbaseMockConfiguration.class).withConfiguration(
+			.withBean(Cluster.class, () -> mock(Cluster.class)).withConfiguration(
 					AutoConfigurations.of(CouchbaseHealthIndicatorAutoConfiguration.class,
 							HealthIndicatorAutoConfiguration.class));
 
@@ -57,16 +55,6 @@ public class CouchbaseHealthIndicatorAutoConfigurationTests {
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(CouchbaseHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	protected static class CouchbaseMockConfiguration {
-
-		@Bean
-		public Cluster cluster() {
-			return mock(Cluster.class);
-		}
-
 	}
 
 }

@@ -21,14 +21,11 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint.FlywayDescriptor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,57 +38,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FlywayEndpointTests {
 
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withBean("endpoint", FlywayEndpoint.class, FlywayEndpoint::new);
+
 	@Test
 	public void flywayReportIsProduced() {
-		new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.run((context) -> {
-					Map<String, FlywayDescriptor> flywayBeans = context
-							.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
-							.get(context.getId()).getFlywayBeans();
-					assertThat(flywayBeans).hasSize(1);
-					assertThat(flywayBeans.values().iterator().next().getMigrations())
-							.hasSize(3);
-				});
+		this.contextRunner.run((context) -> {
+			Map<String, FlywayDescriptor> flywayBeans = context
+					.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
+					.get(context.getId()).getFlywayBeans();
+			assertThat(flywayBeans).hasSize(1);
+			assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
+		});
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void whenFlywayHasBeenBaselinedFlywayReportIsProduced() {
-		new ApplicationContextRunner()
-				.withUserConfiguration(BaselinedFlywayConfig.class, Config.class)
-				.run((context) -> {
-					Map<String, FlywayDescriptor> flywayBeans = context
-							.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
-							.get(context.getId()).getFlywayBeans();
-					assertThat(flywayBeans).hasSize(1);
-					assertThat(flywayBeans.values().iterator().next().getMigrations())
-							.hasSize(3);
-				});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import({ EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class })
-	public static class Config {
-
-		@Bean
-		public FlywayEndpoint endpoint(ApplicationContext context) {
-			return new FlywayEndpoint(context);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	public static class BaselinedFlywayConfig {
-
-		@SuppressWarnings("deprecation")
-		@Bean
-		public FlywayMigrationStrategy baseliningMigrationStrategy() {
-			return (flyway) -> {
-				flyway.setBaselineVersionAsString("2");
-				flyway.baseline();
-				flyway.migrate();
-			};
-		}
-
+		this.contextRunner.withBean(FlywayMigrationStrategy.class, () -> (flyway) -> {
+			flyway.setBaselineVersionAsString("2");
+			flyway.baseline();
+			flyway.migrate();
+		}).run((context) -> {
+			Map<String, FlywayDescriptor> flywayBeans = context
+					.getBean(FlywayEndpoint.class).flywayBeans().getContexts()
+					.get(context.getId()).getFlywayBeans();
+			assertThat(flywayBeans).hasSize(1);
+			assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
+		});
 	}
 
 }

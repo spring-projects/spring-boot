@@ -24,12 +24,8 @@ import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicat
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchJestHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -61,7 +57,7 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void runWhenUsingJestClientShouldCreateIndicator() {
-		this.contextRunner.withUserConfiguration(JestClientConfiguration.class)
+		this.contextRunner.withBean(JestClient.class, () -> mock(JestClient.class))
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ElasticsearchJestHealthIndicator.class)
@@ -77,17 +73,6 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 						.doesNotHaveBean(ElasticsearchHealthIndicator.class)
 						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@AutoConfigureBefore(JestAutoConfiguration.class)
-	protected static class JestClientConfiguration {
-
-		@Bean
-		public JestClient jestClient() {
-			return mock(JestClient.class);
-		}
-
 	}
 
 }

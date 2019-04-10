@@ -42,7 +42,7 @@ public class KeyValueCondition extends SpringBootCondition {
 				"spring.security.oauth2.resourceserver.jwt.public-key-location");
 		if (!StringUtils.hasText(publicKeyLocation)) {
 			return ConditionOutcome
-					.noMatch(message.didNotFind("issuer-uri property").atAll());
+					.noMatch(message.didNotFind("public-key-location property").atAll());
 		}
 		String issuerUri = environment
 				.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri");
