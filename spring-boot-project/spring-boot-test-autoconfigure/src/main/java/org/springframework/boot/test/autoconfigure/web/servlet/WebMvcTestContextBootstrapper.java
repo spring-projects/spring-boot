@@ -27,6 +27,7 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  * {@link TestContextBootstrapper} for {@link WebMvcTest @WebMvcTest} support.
  *
  * @author Phillip Webb
+ * @author Lorenzo Dee
  */
 class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
