@@ -3,8 +3,8 @@ package org.springframework.boot.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 
 import java.io.IOException;
 
@@ -21,12 +21,17 @@ public class NameAndAgeJsonKeyComponent {
 
 	}
 
-	public static class Deserializer extends KeyDeserializer {
+	public static class Deserializer extends StdKeyDeserializer {
+
+		protected Deserializer() {
+			super(TYPE_CLASS, NameAndAge.class);
+		}
 
 		@Override
 		public NameAndAge deserializeKey(String key, DeserializationContext ctxt)
 				throws IOException {
-			return new NameAndAge(key);
+			String[] keys = key.split("is");
+			return new NameAndAge(keys[0].trim(), Integer.valueOf(keys[1].trim()));
 		}
 
 	}
