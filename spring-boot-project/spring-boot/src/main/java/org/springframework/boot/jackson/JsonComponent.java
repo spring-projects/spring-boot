@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -77,6 +78,8 @@ public @interface JsonComponent {
 	 * @return the component's handle type
 	 */
 	Handle handle() default Handle.TYPES;
+
+	Class<?>[] handleClasses() default {};
 
 	enum Handle {
 
