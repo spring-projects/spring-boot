@@ -25,6 +25,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,6 +38,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a reactive web server.
@@ -60,6 +62,13 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties);
+	}
+
+	@Bean
+	@ConditionalOnProperty(value = "server.forward-headers-strategy",
+			havingValue = "framework")
+	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
+		return new ForwardedHeaderTransformer();
 	}
 
 	/**

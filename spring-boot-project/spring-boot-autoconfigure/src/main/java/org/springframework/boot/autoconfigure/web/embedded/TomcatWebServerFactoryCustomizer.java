@@ -188,11 +188,13 @@ public class TomcatWebServerFactoryCustomizer implements
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {
-		if (this.serverProperties.isUseForwardHeaders() != null) {
-			return this.serverProperties.isUseForwardHeaders();
+		if (this.serverProperties.getForwardHeadersStrategy()
+				.equals(ServerProperties.ForwardHeadersStrategy.NONE)) {
+			CloudPlatform platform = CloudPlatform.getActive(this.environment);
+			return platform != null && platform.isUsingForwardHeaders();
 		}
-		CloudPlatform platform = CloudPlatform.getActive(this.environment);
-		return platform != null && platform.isUsingForwardHeaders();
+		return this.serverProperties.getForwardHeadersStrategy()
+				.equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
 	@SuppressWarnings("rawtypes")

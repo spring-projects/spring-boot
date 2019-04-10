@@ -34,6 +34,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Raheela Aslam
+ * @author Madhura Bhave
  */
 public class ReactiveWebServerFactoryAutoConfigurationTests {
 
@@ -145,6 +147,22 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 					.getBean(TomcatReactiveWebServerFactory.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
 		});
+	}
+
+	@Test
+	public void forwardedHeaderTransformerShouldBeConfigured() {
+		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+				.withPropertyValues("server.forward-headers-strategy=framework")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	public void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
+		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+				.withPropertyValues("server.forward-headers-strategy=native")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

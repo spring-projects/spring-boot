@@ -969,11 +969,11 @@ construct links to itself.
 
 If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most
 proxy servers do so), the absolute links should be rendered correctly, provided
-`server.use-forward-headers` is set to `true` in your `application.properties`.
+`server.forward-headers-strategy` is set to `NATIVE` or `FRAMEWORK` in your `application.properties`.
 
 NOTE: If your application runs in Cloud Foundry or Heroku, the
-`server.use-forward-headers` property defaults to `true`. In all
-other instances, it defaults to `false`.
+`server.forward-headers-strategy` property defaults to `NATIVE`. In all
+other instances, it defaults to `NONE`.
 
 
 
@@ -1006,7 +1006,7 @@ NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but 
 so in production).
 
 You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
-switching the automatic one off (to do so, set `server.use-forward-headers=false`) and
+switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and
 adding a new valve instance in a `TomcatServletWebServerFactory` bean.
 
 

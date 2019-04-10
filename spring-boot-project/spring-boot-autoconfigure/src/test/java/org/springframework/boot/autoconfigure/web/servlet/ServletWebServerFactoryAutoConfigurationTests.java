@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -43,6 +45,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FrameworkServlet;
 
@@ -56,6 +59,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Raheela Aslam
+ * @author Madhura Bhave
  */
 public class ServletWebServerFactoryAutoConfigurationTests {
 
@@ -184,6 +188,24 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 					.getBean(TomcatServletWebServerFactory.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
 		});
+	}
+
+	@Test
+	public void forwardedHeaderFilterShouldBeConfigured() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+					Filter filter = context.getBean(FilterRegistrationBean.class)
+							.getFilter();
+					assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+				});
+	}
+
+	@Test
+	public void forwardedHeaderFilterWhenStrategyNotFilterShouldNotBeConfigured() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(FilterRegistrationBean.class));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
