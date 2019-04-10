@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.beans.BeansException;
@@ -78,8 +79,11 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		if (bean instanceof JsonSerializer) {
 			addSerializerWithDeducedType((JsonSerializer<?>) bean, handle);
 		}
+		if (bean instanceof StdKeyDeserializer) {
+			addKeyDeserializer((StdKeyDeserializer) bean);
+		}
 		if (bean instanceof JsonDeserializer) {
-			addDeserializerWithDeducedType((JsonDeserializer<?>) bean, handle);
+			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (!Modifier.isAbstract(innerClass.getModifiers())
@@ -109,11 +113,15 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <T> void addDeserializerWithDeducedType(JsonDeserializer<T> deserializer,
-			JsonComponent.Handle handle) {
+	private <T> void addDeserializerWithDeducedType(JsonDeserializer<T> deserializer) {
 		ResolvableType type = ResolvableType.forClass(JsonDeserializer.class,
 				deserializer.getClass());
 		addDeserializer((Class<T>) type.resolveGeneric(), deserializer);
+
+	}
+
+	private void addKeyDeserializer(StdKeyDeserializer deserializer) {
+		addKeyDeserializer(deserializer.getKeyClass(), deserializer);
 	}
 
 }
