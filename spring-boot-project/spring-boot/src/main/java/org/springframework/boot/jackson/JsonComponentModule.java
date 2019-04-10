@@ -17,7 +17,6 @@
 package org.springframework.boot.jackson;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -28,8 +27,6 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import kotlin.collections.ArraysKt;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -84,7 +81,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			addSerializerWithDeducedType((JsonSerializer<?>) bean, handle);
 		}
 		if (bean instanceof KeyDeserializer) {
-			addKeyDeserializerForType((KeyDeserializer) bean, annotation.handleClasses());
+			addKeyDeserializerForTypes((KeyDeserializer) bean,
+					annotation.handleClasses());
 		}
 		if (bean instanceof JsonDeserializer) {
 			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
@@ -125,9 +123,9 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	}
 
-	private void addKeyDeserializerForType(KeyDeserializer deserializer,
-			Class<?>[] classes) {
-		for (Class<?> type : classes) {
+	private void addKeyDeserializerForTypes(KeyDeserializer deserializer,
+			Class<?>[] types) {
+		for (Class<?> type : types) {
 			addKeyDeserializer(type, deserializer);
 		}
 	}
