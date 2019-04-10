@@ -66,7 +66,7 @@ public class WebFluxTestAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void freemarkerAutoConfigurationIsImported() {
+	public void freeMarkerAutoConfigurationIsImported() {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(FreeMarkerAutoConfiguration.class));
 	}

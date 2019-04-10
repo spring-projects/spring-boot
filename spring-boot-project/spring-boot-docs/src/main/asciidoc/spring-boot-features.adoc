@@ -8021,7 +8021,7 @@ by the test slice.
 [source,java,indent=0]
 ----
 	@Component
-	public class TestWebMvcConfigurer extends WebMvcConfigurer {
+	public class TestWebMvcConfigurer implements WebMvcConfigurer {
 		...
 	}
 ----
