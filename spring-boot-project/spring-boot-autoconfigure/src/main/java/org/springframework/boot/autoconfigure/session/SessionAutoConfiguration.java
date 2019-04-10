@@ -56,6 +56,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -89,6 +90,14 @@ public class SessionAutoConfiguration {
 			SessionRepositoryFilterConfiguration.class })
 	static class ServletSessionConfiguration {
 
+		private final SpringSessionRememberMeServices springSessionRememberMeServices;
+
+		ServletSessionConfiguration(
+				ObjectProvider<SpringSessionRememberMeServices> springSessionRememberMeServices) {
+			this.springSessionRememberMeServices = springSessionRememberMeServices
+					.getIfAvailable();
+		}
+
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
 		public DefaultCookieSerializer cookieSerializer(
@@ -103,6 +112,10 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer
 					.setCookieMaxAge((int) maxAge.getSeconds()));
+			if (this.springSessionRememberMeServices != null) {
+				cookieSerializer.setRememberMeRequestAttribute(
+						SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+			}
 			return cookieSerializer;
 		}
 

@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
@@ -245,6 +246,19 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
 	}
 
+	@Test
+	public void autoConfiguredCookieSerializerIsConfiguredWithRememberMeRequestAttribute() {
+		this.contextRunner
+				.withUserConfiguration(SpringSessionRememberMeServicesConfiguration.class)
+				.run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue(
+							"rememberMeRequestAttribute",
+							SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+				});
+	}
+
 	@Configuration
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
@@ -305,6 +319,18 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		@Bean
 		public HttpSessionIdResolver httpSessionStrategy() {
 			return mock(HttpSessionIdResolver.class);
+		}
+
+	}
+
+	@Configuration
+	@EnableSpringHttpSession
+	static class SpringSessionRememberMeServicesConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public SpringSessionRememberMeServices rememberMeServices() {
+			return new SpringSessionRememberMeServices();
 		}
 
 	}
