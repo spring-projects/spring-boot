@@ -72,14 +72,16 @@ public @interface JsonComponent {
 	String value() default "";
 
 	/**
-	 * Indicates whether the component should be registered as a type serializer/deserializer
-	 * or a key serializer/deserializer
+	 * Indicates whether the component should be registered as a type
+	 * serializer/deserializer or a key serializer/deserializer
 	 * @return the component's handle type
 	 */
 	Handle handle() default Handle.TYPES;
 
 	enum Handle {
-		TYPES,
-		KEYS
+
+		TYPES, KEYS
+
 	}
+
 }
