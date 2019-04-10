@@ -17,7 +17,9 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -64,6 +66,10 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		if (ObjectUtils.isEmpty(mimeTypes)) {
 			return ALWAYS_COMPRESS;
 		}
+
+		List<MimeType> mimeTypeList = Arrays.stream(mimeTypes).map(MimeTypeUtils::parseMimeType)
+				.collect(Collectors.toList());
+
 		return (request, response) -> {
 			String contentType = response.responseHeaders()
 					.get(HttpHeaderNames.CONTENT_TYPE);
@@ -71,7 +77,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 				return false;
 			}
 			MimeType contentMimeType = MimeTypeUtils.parseMimeType(contentType);
-			return Arrays.stream(mimeTypes).map(MimeTypeUtils::parseMimeType)
+			return mimeTypeList.stream()
 					.anyMatch((candidate) -> candidate.isCompatibleWith(contentMimeType));
 		};
 	}
