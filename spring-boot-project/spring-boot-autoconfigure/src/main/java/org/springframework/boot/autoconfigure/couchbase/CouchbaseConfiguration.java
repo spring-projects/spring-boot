@@ -88,10 +88,10 @@ public class CouchbaseConfiguration {
 	public Bucket couchbaseClient() {
 		if (this.properties.getUsername().isEmpty()
 				|| this.properties.getPassword().isEmpty()) {
-			return couchbaseCluster().openBucket(this.properties.getBucket().getName());
+			return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
+					this.properties.getBucket().getPassword());
 		}
-		return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
-				this.properties.getBucket().getPassword());
+		return couchbaseCluster().openBucket(this.properties.getBucket().getName());
 	}
 
 	/**
