@@ -15,7 +15,7 @@ public class NameAndAgeJsonKeyComponent {
 
 		@Override
 		public void serialize(NameAndAge value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
-			jgen.writeString(value.asKey());
+			jgen.writeFieldName(value.asKey());
 		}
 	}
 

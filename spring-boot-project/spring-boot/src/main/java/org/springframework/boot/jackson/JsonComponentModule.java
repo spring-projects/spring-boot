@@ -32,6 +32,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * Spring Bean and Jackson {@link Module} to register {@link JsonComponent} annotated
@@ -67,23 +68,25 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		Map<String, Object> beans = beanFactory
 				.getBeansWithAnnotation(JsonComponent.class);
 		for (Object bean : beans.values()) {
-			addJsonBean(bean);
+			JsonComponent annotation =
+					AnnotationUtils.findAnnotation(bean.getClass(), JsonComponent.class);
+			addJsonBean(bean, annotation.handle());
 		}
 	}
 
-	private void addJsonBean(Object bean) {
+	private void addJsonBean(Object bean, JsonComponent.Handle handle) {
 		if (bean instanceof JsonSerializer) {
-			addSerializerWithDeducedType((JsonSerializer<?>) bean);
+			addSerializerWithDeducedType((JsonSerializer<?>) bean, handle);
 		}
 		if (bean instanceof JsonDeserializer) {
-			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
+			addDeserializerWithDeducedType((JsonDeserializer<?>) bean, handle);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (!Modifier.isAbstract(innerClass.getModifiers())
 					&& (JsonSerializer.class.isAssignableFrom(innerClass)
 							|| JsonDeserializer.class.isAssignableFrom(innerClass))) {
 				try {
-					addJsonBean(innerClass.newInstance());
+					addJsonBean(innerClass.newInstance(), handle);
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
@@ -93,14 +96,18 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <T> void addSerializerWithDeducedType(JsonSerializer<T> serializer) {
+	private <T> void addSerializerWithDeducedType(JsonSerializer<T> serializer, JsonComponent.Handle handle) {
 		ResolvableType type = ResolvableType.forClass(JsonSerializer.class,
 				serializer.getClass());
-		addSerializer((Class<T>) type.resolveGeneric(), serializer);
+		if (JsonComponent.Handle.KEYS.equals(handle)) {
+			addKeySerializer((Class<T>) type.resolveGeneric(), serializer);
+		} else {
+			addSerializer((Class<T>) type.resolveGeneric(), serializer);
+		}
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <T> void addDeserializerWithDeducedType(JsonDeserializer<T> deserializer) {
+	private <T> void addDeserializerWithDeducedType(JsonDeserializer<T> deserializer, JsonComponent.Handle handle) {
 		ResolvableType type = ResolvableType.forClass(JsonDeserializer.class,
 				deserializer.getClass());
 		addDeserializer((Class<T>) type.resolveGeneric(), deserializer);
