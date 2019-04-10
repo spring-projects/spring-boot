@@ -32,6 +32,12 @@ public final class NameAndAge {
 		this.age = age;
 	}
 
+	public NameAndAge(String nameAndAge) {
+		String[] keys = nameAndAge.split("is");
+		this.name = keys[0].trim();
+		this.age = Integer.valueOf(keys[1].trim());
+	}
+
 	public String getName() {
 		return this.name;
 	}
@@ -40,4 +46,7 @@ public final class NameAndAge {
 		return this.age;
 	}
 
+	public String asKey() {
+		return name + " is " + age;
+	}
 }

@@ -16,12 +16,18 @@
 
 package org.springframework.boot.jackson;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.jackson.JsonComponent.Handle;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,6 +79,20 @@ public class JsonComponentModuleTests {
 		context.close();
 	}
 
+	@Test
+	public void moduleShouldRegisterKeySerializers() throws Exception {
+		load(OnlyKeySerializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertKeySerialize(module);
+	}
+
+	@Test
+	public void moduleShouldRegisterKeyDeserializers() throws Exception {
+		load(OnlyKeyDeserializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertKeyDeserialize(module);
+	}
+
 	private void load(Class<?>... configs) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(configs);
@@ -95,6 +115,23 @@ public class JsonComponentModuleTests {
 				NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
+	}
+
+	private void assertKeySerialize(Module module) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(module);
+		Map<NameAndAge, Boolean> map = new HashMap<>();
+		map.put(new NameAndAge("spring", 100), true);
+		String json = mapper.writeValueAsString(map);
+		assertThat(json).isEqualToIgnoringWhitespace("{\"spring is 100\":  true}");
+	}
+
+	private void assertKeyDeserialize(Module module) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(module);
+		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<Map<NameAndAge, Boolean>>() {};
+		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}", typeRef);
+		assertThat(map).containsEntry(new NameAndAge("spring", 100), true);
 	}
 
 	@JsonComponent
@@ -121,4 +158,13 @@ public class JsonComponentModuleTests {
 
 	}
 
+	@JsonComponent(handle = Handle.KEYS)
+	static class OnlyKeySerializer extends NameAndAgeJsonKeyComponent.Serializer {
+
+	}
+
+	@JsonComponent(handle = Handle.KEYS)
+	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
+
+	}
 }
