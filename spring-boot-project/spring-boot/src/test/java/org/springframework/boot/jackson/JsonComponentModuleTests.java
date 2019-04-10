@@ -173,7 +173,7 @@ public class JsonComponentModuleTests {
 
 	}
 
-	@JsonComponent(handle = Handle.KEYS)
+	@JsonComponent(handle = Handle.KEYS, handleClasses = NameAndAge.class)
 	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
 
 	}

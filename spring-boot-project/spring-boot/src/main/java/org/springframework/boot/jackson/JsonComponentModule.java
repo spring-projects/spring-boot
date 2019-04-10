@@ -17,16 +17,19 @@
 package org.springframework.boot.jackson;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import kotlin.collections.ArraysKt;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -71,16 +74,17 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		for (Object bean : beans.values()) {
 			JsonComponent annotation = AnnotationUtils.findAnnotation(bean.getClass(),
 					JsonComponent.class);
-			addJsonBean(bean, annotation.handle());
+			addJsonBean(bean, annotation);
 		}
 	}
 
-	private void addJsonBean(Object bean, JsonComponent.Handle handle) {
+	private void addJsonBean(Object bean, JsonComponent annotation) {
+		JsonComponent.Handle handle = annotation.handle();
 		if (bean instanceof JsonSerializer) {
 			addSerializerWithDeducedType((JsonSerializer<?>) bean, handle);
 		}
-		if (bean instanceof StdKeyDeserializer) {
-			addKeyDeserializer((StdKeyDeserializer) bean);
+		if (bean instanceof KeyDeserializer) {
+			addKeyDeserializerForType((KeyDeserializer) bean, annotation.handleClasses());
 		}
 		if (bean instanceof JsonDeserializer) {
 			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
@@ -89,9 +93,9 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			if (!Modifier.isAbstract(innerClass.getModifiers())
 					&& (JsonSerializer.class.isAssignableFrom(innerClass)
 							|| JsonDeserializer.class.isAssignableFrom(innerClass)
-							|| StdKeyDeserializer.class.isAssignableFrom(innerClass))) {
+							|| KeyDeserializer.class.isAssignableFrom(innerClass))) {
 				try {
-					addJsonBean(innerClass.newInstance(), handle);
+					addJsonBean(innerClass.newInstance(), annotation);
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
@@ -121,8 +125,11 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	}
 
-	private void addKeyDeserializer(StdKeyDeserializer deserializer) {
-		addKeyDeserializer(deserializer.getKeyClass(), deserializer);
+	private void addKeyDeserializerForType(KeyDeserializer deserializer,
+			Class<?>[] classes) {
+		for (Class<?> type : classes) {
+			addKeyDeserializer(type, deserializer);
+		}
 	}
 
 }
