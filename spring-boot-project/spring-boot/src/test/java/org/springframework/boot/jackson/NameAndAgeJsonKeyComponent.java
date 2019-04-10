@@ -14,15 +14,21 @@ public class NameAndAgeJsonKeyComponent {
 	public static class Serializer extends JsonSerializer<NameAndAge> {
 
 		@Override
-		public void serialize(NameAndAge value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+		public void serialize(NameAndAge value, JsonGenerator jgen,
+				SerializerProvider serializers) throws IOException {
 			jgen.writeFieldName(value.asKey());
 		}
+
 	}
 
 	public static class Deserializer extends KeyDeserializer {
+
 		@Override
-		public NameAndAge deserializeKey(String key, DeserializationContext ctxt) throws IOException {
+		public NameAndAge deserializeKey(String key, DeserializationContext ctxt)
+				throws IOException {
 			return new NameAndAge(key);
 		}
+
 	}
+
 }

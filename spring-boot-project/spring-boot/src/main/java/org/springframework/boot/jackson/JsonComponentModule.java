@@ -68,8 +68,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		Map<String, Object> beans = beanFactory
 				.getBeansWithAnnotation(JsonComponent.class);
 		for (Object bean : beans.values()) {
-			JsonComponent annotation =
-					AnnotationUtils.findAnnotation(bean.getClass(), JsonComponent.class);
+			JsonComponent annotation = AnnotationUtils.findAnnotation(bean.getClass(),
+					JsonComponent.class);
 			addJsonBean(bean, annotation.handle());
 		}
 	}
@@ -96,18 +96,21 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <T> void addSerializerWithDeducedType(JsonSerializer<T> serializer, JsonComponent.Handle handle) {
+	private <T> void addSerializerWithDeducedType(JsonSerializer<T> serializer,
+			JsonComponent.Handle handle) {
 		ResolvableType type = ResolvableType.forClass(JsonSerializer.class,
 				serializer.getClass());
 		if (JsonComponent.Handle.KEYS.equals(handle)) {
 			addKeySerializer((Class<T>) type.resolveGeneric(), serializer);
-		} else {
+		}
+		else {
 			addSerializer((Class<T>) type.resolveGeneric(), serializer);
 		}
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <T> void addDeserializerWithDeducedType(JsonDeserializer<T> deserializer, JsonComponent.Handle handle) {
+	private <T> void addDeserializerWithDeducedType(JsonDeserializer<T> deserializer,
+			JsonComponent.Handle handle) {
 		ResolvableType type = ResolvableType.forClass(JsonDeserializer.class,
 				deserializer.getClass());
 		addDeserializer((Class<T>) type.resolveGeneric(), deserializer);
