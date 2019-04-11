@@ -39,7 +39,6 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -165,15 +164,6 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 					assertThat(context).hasBean("foo");
 					assertThat(context.getBean("foo")).isEqualTo("overridden");
 				});
-	}
-
-	@Test
-	public void runWithUserBeanShouldHaveAccessToContext() {
-		get().withUserConfiguration(FooConfig.class)
-				.withBean(String.class, (context) -> "Result: " + context.getBean("foo"))
-				.run((context) -> assertThat(context.getBeansOfType(String.class))
-						.containsOnly(entry("foo", "foo"),
-								entry("string", "Result: foo")));
 	}
 
 	@Test

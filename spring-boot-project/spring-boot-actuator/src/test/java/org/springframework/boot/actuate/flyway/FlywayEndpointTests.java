@@ -41,7 +41,7 @@ public class FlywayEndpointTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withBean("endpoint", FlywayEndpoint.class, FlywayEndpoint::new);
+			.withBean("endpoint", FlywayEndpoint.class);
 
 	@Test
 	public void flywayReportIsProduced() {

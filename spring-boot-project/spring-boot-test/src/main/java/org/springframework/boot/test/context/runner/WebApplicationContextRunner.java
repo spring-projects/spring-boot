@@ -68,9 +68,10 @@ public final class WebApplicationContextRunner extends
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
+			List<BeanRegistration<?>> beanRegistrations,
 			List<Configurations> configurations) {
 		super(contextFactory, initializers, environmentProperties, systemProperties,
-				classLoader, parent, configurations);
+				classLoader, parent, beanRegistrations, configurations);
 	}
 
 	@Override
@@ -79,10 +80,11 @@ public final class WebApplicationContextRunner extends
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
+			List<BeanRegistration<?>> beanRegistrations,
 			List<Configurations> configurations) {
 		return new WebApplicationContextRunner(contextFactory, initializers,
 				environmentProperties, systemProperties, classLoader, parent,
-				configurations);
+				beanRegistrations, configurations);
 	}
 
 	/**
