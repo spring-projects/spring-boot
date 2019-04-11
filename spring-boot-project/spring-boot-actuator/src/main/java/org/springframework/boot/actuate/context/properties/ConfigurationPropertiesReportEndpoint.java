@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -39,8 +42,10 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,6 +57,7 @@ import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetad
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -80,6 +86,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private ApplicationContext context;
 
 	private ObjectMapper objectMapper;
+
+	private ConversionService conversionService;
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -171,6 +179,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		applyConfigurationPropertiesFilter(mapper);
@@ -191,7 +200,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	private void applySerializationModifier(ObjectMapper mapper) {
 		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier());
+				.withSerializerModifier(new GenericSerializerModifier())
+				.withAdditionalSerializers(new JavaTimeSerializers());
 		mapper.setSerializerFactory(factory);
 	}
 
@@ -479,6 +489,20 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		public Map<String, Object> getProperties() {
 			return this.properties;
+		}
+
+	}
+
+	private static class JavaTimeSerializers extends Serializers.Base {
+
+		@Override
+		public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type,
+				BeanDescription beanDesc) {
+			Class<?> raw = type.getRawClass();
+			if (Duration.class.isAssignableFrom(raw)) {
+				return DurationSerializer.INSTANCE;
+			}
+			return super.findSerializer(config, type, beanDesc);
 		}
 
 	}
