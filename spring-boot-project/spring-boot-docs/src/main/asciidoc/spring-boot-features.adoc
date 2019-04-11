@@ -1311,7 +1311,7 @@ available:
 `@DurationUnit` has been specified)
 * The standard ISO-8601 format
 {java-javadoc}/java/time/Duration.html#parse-java.lang.CharSequence-[used by
-`java.util.Duration`]
+`java.time.Duration`]
 * A more readable format where the value and the unit are coupled (e.g. `10s` means 10
 seconds)
 
