@@ -1419,6 +1419,7 @@
 								<spring-docs-version>${spring.version}</spring-docs-version>
 								<spring-boot-version>${revision}</spring-boot-version>
 								<sources-root>${project.basedir}/src/</sources-root>
+								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
 							</attributes>
 						</configuration>
 						<executions>

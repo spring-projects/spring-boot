@@ -304,19 +304,19 @@ The following application starters are provided by Spring Boot under the
 `org.springframework.boot` group:
 
 .Spring Boot application starters
-include::../../../target/generated-resources/application-starters.adoc[]
+include::{generated-resources-root}/application-starters.adoc[]
 
 In addition to the application starters, the following starters can be used to add
 _<<production-ready-features.adoc#production-ready, production ready>>_ features:
 
 .Spring Boot production starters
-include::../../../target/generated-resources/production-starters.adoc[]
+include::{generated-resources-root}/production-starters.adoc[]
 
 Finally, Spring Boot also includes the following starters that can be used if you want to
 exclude or swap specific technical facets:
 
 .Spring Boot technical starters
-include::../../../target/generated-resources/technical-starters.adoc[]
+include::{generated-resources-root}/technical-starters.adoc[]
 
 TIP: For a list of additional community contributed starters, see the
 {github-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in

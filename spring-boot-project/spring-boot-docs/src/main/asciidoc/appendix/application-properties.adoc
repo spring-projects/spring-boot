@@ -17,60 +17,60 @@ should not consider this an exhaustive list. Also, you can define your own prope
 
 === Core properties
 
-include::../../../target/generated-resources/config-docs/core.adoc[]
+include::{generated-resources-root}/config-docs/core.adoc[]
 
 === Cache properties
 
-include::../../../target/generated-resources/config-docs/cache.adoc[]
+include::{generated-resources-root}/config-docs/cache.adoc[]
 
 === Mail properties
 
-include::../../../target/generated-resources/config-docs/mail.adoc[]
+include::{generated-resources-root}/config-docs/mail.adoc[]
 
 === JSON properties
 
-include::../../../target/generated-resources/config-docs/json.adoc[]
+include::{generated-resources-root}/config-docs/json.adoc[]
 
 === Data properties
 
-include::../../../target/generated-resources/config-docs/data.adoc[]
+include::{generated-resources-root}/config-docs/data.adoc[]
 
 === Transaction properties
 
-include::../../../target/generated-resources/config-docs/transaction.adoc[]
+include::{generated-resources-root}/config-docs/transaction.adoc[]
 
 === Data migration properties
 
-include::../../../target/generated-resources/config-docs/data-migration.adoc[]
+include::{generated-resources-root}/config-docs/data-migration.adoc[]
 
 === Integration properties
 
-include::../../../target/generated-resources/config-docs/integration.adoc[]
+include::{generated-resources-root}/config-docs/integration.adoc[]
 
 === Web properties
 
-include::../../../target/generated-resources/config-docs/web.adoc[]
+include::{generated-resources-root}/config-docs/web.adoc[]
 
 === Templating properties
 
-include::../../../target/generated-resources/config-docs/templating.adoc[]
+include::{generated-resources-root}/config-docs/templating.adoc[]
 
 === Server properties
 
-include::../../../target/generated-resources/config-docs/server.adoc[]
+include::{generated-resources-root}/config-docs/server.adoc[]
 
 === Security properties
 
-include::../../../target/generated-resources/config-docs/security.adoc[]
+include::{generated-resources-root}/config-docs/security.adoc[]
 
 === Actuator properties
 
-include::../../../target/generated-resources/config-docs/actuator.adoc[]
+include::{generated-resources-root}/config-docs/actuator.adoc[]
 
 === Devtools properties
 
-include::../../../target/generated-resources/config-docs/devtools.adoc[]
+include::{generated-resources-root}/config-docs/devtools.adoc[]
 
 === Testing properties
 
-include::../../../target/generated-resources/config-docs/testing.adoc[]
+include::{generated-resources-root}/config-docs/testing.adoc[]
