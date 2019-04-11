@@ -57,7 +57,6 @@ import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetad
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -86,8 +85,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private ApplicationContext context;
 
 	private ObjectMapper objectMapper;
-
-	private ConversionService conversionService;
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
