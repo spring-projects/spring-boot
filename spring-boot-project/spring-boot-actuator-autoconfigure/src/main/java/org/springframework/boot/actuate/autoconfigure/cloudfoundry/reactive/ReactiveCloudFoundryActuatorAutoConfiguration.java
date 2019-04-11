@@ -103,13 +103,11 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(
 			GitProperties properties, ObjectProvider<InfoContributor> infoContributors) {
 		List<InfoContributor> contributors = infoContributors.orderedStream()
-				.map((infoContributor) -> {
-					if (infoContributor instanceof GitInfoContributor) {
-						return new GitInfoContributor(properties,
-								InfoPropertiesInfoContributor.Mode.FULL);
-					}
-					return infoContributor;
-				}).collect(Collectors.toList());
+				.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
+						? new GitInfoContributor(properties,
+								InfoPropertiesInfoContributor.Mode.FULL)
+						: infoContributor)
+				.collect(Collectors.toList());
 		return new CloudFoundryInfoEndpointWebExtension(new InfoEndpoint(contributors));
 	}
 

@@ -48,6 +48,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Prometheus.
@@ -142,7 +143,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 				return new PushGateway(new URL(url));
 			}
 			catch (MalformedURLException ex) {
-				logger.warn(String.format(
+				logger.warn(LogMessage.format(
 						"Invalid PushGateway base url '%s': update your configuration to a valid URL",
 						url));
 				return new PushGateway(url);

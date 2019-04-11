@@ -17,10 +17,10 @@
 package org.springframework.boot.cloud;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.util.StringUtils;
 
 /**
  * Simple detection for well known cloud platforms. For more advanced cloud provider
@@ -73,27 +73,42 @@ public enum CloudPlatform {
 	 * Kubernetes platform.
 	 */
 	KUBERNETES {
+
+		private static final String SERVICE_HOST_SUFFIX = "_SERVICE_HOST";
+
+		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
+
 		@Override
 		public boolean isActive(Environment environment) {
 			if (environment instanceof ConfigurableEnvironment) {
-				MapPropertySource propertySource = (MapPropertySource) ((ConfigurableEnvironment) environment)
-						.getPropertySources()
-						.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
-				if (propertySource != null) {
-					for (String name : propertySource.getPropertyNames()) {
-						if (name.endsWith("_SERVICE_HOST")) {
-							String serviceName = StringUtils.split(name,
-									"_SERVICE_HOST")[0];
-							if (propertySource
-									.getProperty(serviceName + "_SERVICE_PORT") != null) {
-								return true;
-							}
-						}
+				return isActive((ConfigurableEnvironment) environment);
+			}
+			return false;
+		}
+
+		private boolean isActive(ConfigurableEnvironment environment) {
+			PropertySource<?> environmentPropertySource = environment.getPropertySources()
+					.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+			if (environmentPropertySource instanceof EnumerablePropertySource) {
+				return isActive((EnumerablePropertySource<?>) environmentPropertySource);
+			}
+			return false;
+		}
+
+		private boolean isActive(EnumerablePropertySource<?> environmentPropertySource) {
+			for (String propertyName : environmentPropertySource.getPropertyNames()) {
+				if (propertyName.endsWith(SERVICE_HOST_SUFFIX)) {
+					String serviceName = propertyName.substring(0,
+							propertyName.length() - SERVICE_HOST_SUFFIX.length());
+					if (environmentPropertySource
+							.getProperty(serviceName + SERVICE_PORT_SUFFIX) != null) {
+						return true;
 					}
 				}
 			}
 			return false;
 		}
+
 	};
 
 	/**

@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
 
 /**
@@ -39,8 +38,21 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepos
  */
 public class ConfigurationMetadataDocumentWriter {
 
-	public void writeDocument(Path outputDirPath, DocumentOptions options,
-			InputStream... metadataInput) throws IOException {
+	public void writeDocument(Path outputDirectory, DocumentOptions options,
+			InputStream... metadata) throws IOException {
+		assertValidOutputDirectory(outputDirectory);
+		if (!Files.exists(outputDirectory)) {
+			Files.createDirectory(outputDirectory);
+		}
+		assertMetadata(metadata);
+		List<ConfigurationTable> tables = createConfigTables(
+				getMetadataProperties(metadata), options);
+		for (ConfigurationTable table : tables) {
+			writeConfigurationTable(table, outputDirectory);
+		}
+	}
+
+	private void assertValidOutputDirectory(Path outputDirPath) {
 		if (outputDirPath == null) {
 			throw new IllegalArgumentException("output path should not be null");
 		}
@@ -48,64 +60,33 @@ public class ConfigurationMetadataDocumentWriter {
 			throw new IllegalArgumentException(
 					"output path already exists and is not a directory");
 		}
-		else if (!Files.exists(outputDirPath)) {
-			Files.createDirectory(outputDirPath);
-		}
-		if (metadataInput == null || metadataInput.length < 1) {
+	}
+
+	private void assertMetadata(InputStream... metadata) {
+		if (metadata == null || metadata.length < 1) {
 			throw new IllegalArgumentException("missing input metadata");
-		}
-
-		ConfigurationMetadataRepository configRepository = ConfigurationMetadataRepositoryJsonBuilder
-				.create(metadataInput).build();
-		Map<String, ConfigurationMetadataProperty> allProperties = configRepository
-				.getAllProperties();
-
-		List<ConfigurationTable> tables = createConfigTables(allProperties, options);
-
-		for (ConfigurationTable table : tables) {
-			Path outputFilePath = outputDirPath.resolve(table.getId() + ".adoc");
-			Files.deleteIfExists(outputFilePath);
-			Files.createFile(outputFilePath);
-			try (OutputStream outputStream = Files.newOutputStream(outputFilePath)) {
-				outputStream
-						.write(table.toAsciidocTable().getBytes(StandardCharsets.UTF_8));
-			}
 		}
 	}
 
+	private Map<String, ConfigurationMetadataProperty> getMetadataProperties(
+			InputStream... metadata) throws IOException {
+		ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder
+				.create(metadata);
+		return builder.build().getAllProperties();
+	}
+
 	private List<ConfigurationTable> createConfigTables(
-			Map<String, ConfigurationMetadataProperty> allProperties,
+			Map<String, ConfigurationMetadataProperty> metadataProperties,
 			DocumentOptions options) {
-
-		final List<ConfigurationTable> tables = new ArrayList<>();
-		final List<String> unmappedKeys = allProperties.values().stream()
-				.filter((prop) -> !prop.isDeprecated()).map((prop) -> prop.getId())
-				.collect(Collectors.toList());
-
-		final Map<String, CompoundKeyEntry> overrides = getOverrides(allProperties,
-				unmappedKeys, options);
-
-		options.getMetadataSections().forEach((id, keyPrefixes) -> {
-			ConfigurationTable table = new ConfigurationTable(id);
-			tables.add(table);
-			for (String keyPrefix : keyPrefixes) {
-				List<String> matchingOverrides = overrides.keySet().stream()
-						.filter((overrideKey) -> overrideKey.startsWith(keyPrefix))
-						.collect(Collectors.toList());
-				matchingOverrides
-						.forEach((match) -> table.addEntry(overrides.remove(match)));
-			}
-			List<String> matchingKeys = unmappedKeys.stream()
-					.filter((key) -> keyPrefixes.stream().anyMatch(key::startsWith))
-					.collect(Collectors.toList());
-			for (String matchingKey : matchingKeys) {
-				ConfigurationMetadataProperty property = allProperties.get(matchingKey);
-				table.addEntry(new SingleKeyEntry(property));
-
-			}
-			unmappedKeys.removeAll(matchingKeys);
-		});
-
+		List<ConfigurationTable> tables = new ArrayList<>();
+		List<String> unmappedKeys = metadataProperties.values().stream()
+				.filter((property) -> !property.isDeprecated())
+				.map(ConfigurationMetadataProperty::getId).collect(Collectors.toList());
+		Map<String, CompoundConfigurationTableEntry> overrides = getOverrides(
+				metadataProperties, unmappedKeys, options);
+		options.getMetadataSections().forEach(
+				(id, keyPrefixes) -> tables.add(createConfigTable(metadataProperties,
+						unmappedKeys, overrides, id, keyPrefixes)));
 		if (!unmappedKeys.isEmpty()) {
 			throw new IllegalStateException(
 					"The following keys were not written to the documentation: "
@@ -116,27 +97,59 @@ public class ConfigurationMetadataDocumentWriter {
 					"The following keys  were not written to the documentation: "
 							+ String.join(", ", overrides.keySet()));
 		}
-
 		return tables;
 	}
 
-	private Map<String, CompoundKeyEntry> getOverrides(
-			Map<String, ConfigurationMetadataProperty> allProperties,
+	private Map<String, CompoundConfigurationTableEntry> getOverrides(
+			Map<String, ConfigurationMetadataProperty> metadataProperties,
 			List<String> unmappedKeys, DocumentOptions options) {
-		final Map<String, CompoundKeyEntry> overrides = new HashMap<>();
-
+		Map<String, CompoundConfigurationTableEntry> overrides = new HashMap<>();
 		options.getOverrides().forEach((keyPrefix, description) -> {
-			final CompoundKeyEntry entry = new CompoundKeyEntry(keyPrefix, description);
+			CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry(
+					keyPrefix, description);
 			List<String> matchingKeys = unmappedKeys.stream()
 					.filter((key) -> key.startsWith(keyPrefix))
 					.collect(Collectors.toList());
 			for (String matchingKey : matchingKeys) {
-				entry.addConfigurationKeys(allProperties.get(matchingKey));
+				entry.addConfigurationKeys(metadataProperties.get(matchingKey));
 			}
 			overrides.put(keyPrefix, entry);
 			unmappedKeys.removeAll(matchingKeys);
 		});
 		return overrides;
+	}
+
+	private ConfigurationTable createConfigTable(
+			Map<String, ConfigurationMetadataProperty> metadataProperties,
+			List<String> unmappedKeys,
+			Map<String, CompoundConfigurationTableEntry> overrides, String id,
+			List<String> keyPrefixes) {
+		ConfigurationTable table = new ConfigurationTable(id);
+		for (String keyPrefix : keyPrefixes) {
+			List<String> matchingOverrides = overrides.keySet().stream()
+					.filter((overrideKey) -> overrideKey.startsWith(keyPrefix))
+					.collect(Collectors.toList());
+			matchingOverrides.forEach((match) -> table.addEntry(overrides.remove(match)));
+		}
+		List<String> matchingKeys = unmappedKeys.stream()
+				.filter((key) -> keyPrefixes.stream().anyMatch(key::startsWith))
+				.collect(Collectors.toList());
+		for (String matchingKey : matchingKeys) {
+			ConfigurationMetadataProperty property = metadataProperties.get(matchingKey);
+			table.addEntry(new SingleConfigurationTableEntry(property));
+		}
+		unmappedKeys.removeAll(matchingKeys);
+		return table;
+	}
+
+	private void writeConfigurationTable(ConfigurationTable table, Path outputDirectory)
+			throws IOException {
+		Path outputFilePath = outputDirectory.resolve(table.getId() + ".adoc");
+		Files.deleteIfExists(outputFilePath);
+		Files.createFile(outputFilePath);
+		try (OutputStream outputStream = Files.newOutputStream(outputFilePath)) {
+			outputStream.write(table.toAsciidocTable().getBytes(StandardCharsets.UTF_8));
+		}
 	}
 
 }

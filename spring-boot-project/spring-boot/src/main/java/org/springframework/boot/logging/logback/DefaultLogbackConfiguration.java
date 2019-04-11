@@ -174,17 +174,15 @@ class DefaultLogbackConfiguration {
 
 	private DataSize getDataSize(String property, DataSize defaultSize) {
 		String value = this.patterns.getProperty(property);
-		if (value != null) {
-			try {
-				return DataSize.parse(value);
-			}
-			catch (IllegalArgumentException ex) {
-				FileSize fileSize = FileSize.valueOf(value);
-				return DataSize.ofBytes(fileSize.getSize());
-			}
-		}
-		else {
+		if (value == null) {
 			return defaultSize;
+		}
+		try {
+			return DataSize.parse(value);
+		}
+		catch (IllegalArgumentException ex) {
+			FileSize fileSize = FileSize.valueOf(value);
+			return DataSize.ofBytes(fileSize.getSize());
 		}
 	}
 

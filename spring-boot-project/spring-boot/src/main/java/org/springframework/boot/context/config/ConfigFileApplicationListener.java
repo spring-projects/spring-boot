@@ -116,6 +116,9 @@ public class ConfigFileApplicationListener
 
 	private static final Bindable<String[]> STRING_ARRAY = Bindable.of(String[].class);
 
+	private static final Bindable<List<String>> STRING_LIST = Bindable
+			.listOf(String.class);
+
 	/**
 	 * The "active profiles" property name.
 	 */
@@ -701,18 +704,6 @@ public class ConfigFileApplicationListener
 			return new LinkedHashSet<>(list);
 		}
 
-		/**
-		 * This ensures that the order of active profiles in the {@link Environment}
-		 * matches the order in which the profiles were processed.
-		 * @param processedProfiles the processed profiles
-		 */
-		private void resetEnvironmentProfiles(List<Profile> processedProfiles) {
-			String[] names = processedProfiles.stream()
-					.filter((profile) -> profile != null && !profile.isDefaultProfile())
-					.map(Profile::getName).toArray(String[]::new);
-			this.environment.setActiveProfiles(names);
-		}
-
 		private void addLoadedPropertySources() {
 			MutablePropertySources destination = this.environment.getPropertySources();
 			List<MutablePropertySources> loaded = new ArrayList<>(this.loaded.values());
@@ -773,8 +764,7 @@ public class ConfigFileApplicationListener
 		}
 
 		private List<String> getDefaultProfiles(Binder binder, String property) {
-			return Arrays
-					.asList(binder.bind(property, STRING_ARRAY).orElse(new String[] {}));
+			return binder.bind(property, STRING_LIST).orElse(Collections.emptyList());
 		}
 
 	}

@@ -56,7 +56,6 @@ public class ManagementContextAutoConfigurationTests {
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run(
 				(context) -> assertThat(tomcatStartedOccurencesIn(this.output.toString()))
 						.isEqualTo(2));
-
 	}
 
 	private int tomcatStartedOccurencesIn(String output) {

@@ -77,6 +77,8 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
 
+	private static final String[] NO_ARGS = new String[0];
+
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config)
 			throws Exception {
@@ -155,7 +157,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	protected String[] getArgs(MergedContextConfiguration config) {
 		SpringBootTest annotation = AnnotatedElementUtils
 				.findMergedAnnotation(config.getTestClass(), SpringBootTest.class);
-		return (annotation != null) ? annotation.args() : new String[0];
+		return (annotation != null) ? annotation.args() : NO_ARGS;
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment,

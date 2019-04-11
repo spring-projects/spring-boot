@@ -23,6 +23,8 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link ConfigurationTable}.
+ *
  * @author Brian Clozel
  */
 public class ConfigurationTableTests {
@@ -32,22 +34,18 @@ public class ConfigurationTableTests {
 	@Test
 	public void simpleTable() {
 		ConfigurationTable table = new ConfigurationTable("test");
-
 		ConfigurationMetadataProperty first = new ConfigurationMetadataProperty();
 		first.setId("spring.test.prop");
 		first.setDefaultValue("something");
 		first.setDescription("This is a description.");
 		first.setType("java.lang.String");
-
 		ConfigurationMetadataProperty second = new ConfigurationMetadataProperty();
 		second.setId("spring.test.other");
 		second.setDefaultValue("other value");
 		second.setDescription("This is another description.");
 		second.setType("java.lang.String");
-
-		table.addEntry(new SingleKeyEntry(first));
-		table.addEntry(new SingleKeyEntry(second));
-
+		table.addEntry(new SingleConfigurationTableEntry(first));
+		table.addEntry(new SingleConfigurationTableEntry(second));
 		assertThat(table.toAsciidocTable())
 				.isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="
 						+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE

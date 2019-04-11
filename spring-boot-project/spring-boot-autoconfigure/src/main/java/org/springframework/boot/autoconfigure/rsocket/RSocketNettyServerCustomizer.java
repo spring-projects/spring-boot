@@ -43,7 +43,7 @@ class RSocketNettyServerCustomizer implements NettyServerCustomizer {
 
 	@Override
 	public HttpServer apply(HttpServer httpServer) {
-		final ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive()
+		ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive()
 				.acceptor(this.messageHandlerAcceptor).toConnectionAcceptor();
 		return httpServer.route((routes) -> routes.ws(this.mappingPath,
 				WebsocketRouteTransport.newHandler(acceptor)));

@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -61,28 +62,34 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 	private Object getDefaultValueFromAnnotation(
 			MetadataGenerationEnvironment environment, Element element) {
-		AnnotationMirror defaultValueAnnotation = environment
-				.getDefaultValueAnnotation(element);
-		if (defaultValueAnnotation != null) {
-			List<String> defaultValue = (List<String>) environment
-					.getAnnotationElementValues(defaultValueAnnotation).get("value");
-			if (defaultValue != null) {
-				try {
-					TypeMirror specificType = determineSpecificType(environment);
-					if (defaultValue.size() == 1) {
-						return coerceValue(specificType, defaultValue.get(0));
-					}
-					return defaultValue.stream()
-							.map((value) -> coerceValue(specificType, value))
-							.collect(Collectors.toList());
+		AnnotationMirror annotation = environment.getDefaultValueAnnotation(element);
+		List<String> defaultValue = getDefaultValue(environment, annotation);
+		if (defaultValue != null) {
+			try {
+				TypeMirror specificType = determineSpecificType(environment);
+				if (defaultValue.size() == 1) {
+					return coerceValue(specificType, defaultValue.get(0));
 				}
-				catch (IllegalArgumentException ex) {
-					environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(),
-							element, defaultValueAnnotation);
-				}
+				return defaultValue.stream()
+						.map((value) -> coerceValue(specificType, value))
+						.collect(Collectors.toList());
+			}
+			catch (IllegalArgumentException ex) {
+				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(),
+						element, annotation);
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<String> getDefaultValue(MetadataGenerationEnvironment environment,
+			AnnotationMirror annotation) {
+		if (annotation == null) {
+			return null;
+		}
+		Map<String, Object> values = environment.getAnnotationElementValues(annotation);
+		return (List<String>) values.get("value");
 	}
 
 	private TypeMirror determineSpecificType(MetadataGenerationEnvironment environment) {

@@ -74,41 +74,44 @@ public class MongoReactiveAutoConfiguration {
 			return new NettyDriverMongoClientSettingsBuilderCustomizer(settings);
 		}
 
-		private static final class NettyDriverMongoClientSettingsBuilderCustomizer
-				implements MongoClientSettingsBuilderCustomizer, DisposableBean {
+	}
 
-			private final ObjectProvider<MongoClientSettings> settings;
+	/**
+	 * {@link MongoClientSettingsBuilderCustomizer} to apply Mongo client settings.
+	 */
+	private static final class NettyDriverMongoClientSettingsBuilderCustomizer
+			implements MongoClientSettingsBuilderCustomizer, DisposableBean {
 
-			private volatile EventLoopGroup eventLoopGroup;
+		private final ObjectProvider<MongoClientSettings> settings;
 
-			private NettyDriverMongoClientSettingsBuilderCustomizer(
-					ObjectProvider<MongoClientSettings> settings) {
-				this.settings = settings;
+		private volatile EventLoopGroup eventLoopGroup;
+
+		private NettyDriverMongoClientSettingsBuilderCustomizer(
+				ObjectProvider<MongoClientSettings> settings) {
+			this.settings = settings;
+		}
+
+		@Override
+		public void customize(Builder builder) {
+			if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
+				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+				this.eventLoopGroup = eventLoopGroup;
+				builder.streamFactoryFactory(NettyStreamFactoryFactory.builder()
+						.eventLoopGroup(eventLoopGroup).build());
 			}
+		}
 
-			@Override
-			public void customize(Builder builder) {
-				if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
-					NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-					this.eventLoopGroup = eventLoopGroup;
-					builder.streamFactoryFactory(NettyStreamFactoryFactory.builder()
-							.eventLoopGroup(eventLoopGroup).build());
-				}
+		@Override
+		public void destroy() {
+			EventLoopGroup eventLoopGroup = this.eventLoopGroup;
+			if (eventLoopGroup != null) {
+				eventLoopGroup.shutdownGracefully().awaitUninterruptibly();
+				this.eventLoopGroup = null;
 			}
+		}
 
-			@Override
-			public void destroy() {
-				EventLoopGroup eventLoopGroup = this.eventLoopGroup;
-				if (eventLoopGroup != null) {
-					eventLoopGroup.shutdownGracefully().awaitUninterruptibly();
-					this.eventLoopGroup = null;
-				}
-			}
-
-			private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
-				return settings != null && settings.getStreamFactoryFactory() != null;
-			}
-
+		private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
+			return settings != null && settings.getStreamFactoryFactory() != null;
 		}
 
 	}

@@ -91,11 +91,9 @@ final class ConfigurationPropertiesBeanDefinitionRegistrar {
 		if (canBindAtCreationTime(type)) {
 			return ConfigurationPropertiesBeanDefinition.from(beanFactory, name, type);
 		}
-		else {
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(type);
-			return definition;
-		}
+		GenericBeanDefinition definition = new GenericBeanDefinition();
+		definition.setBeanClass(type);
+		return definition;
 	}
 
 	private static boolean canBindAtCreationTime(Class<?> type) {

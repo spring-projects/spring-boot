@@ -164,9 +164,8 @@ class TypeUtils {
 				return this.types.getDeclaredType(this.env.getElementUtils()
 						.getTypeElement(Object.class.getName()));
 			}
-			else { // return type argument to Collection<...>
-				return declaredType.getTypeArguments().get(0);
-			}
+			// return type argument to Collection<...>
+			return declaredType.getTypeArguments().get(0);
 		}
 
 		// recursively walk the supertypes, looking for Collection<...>

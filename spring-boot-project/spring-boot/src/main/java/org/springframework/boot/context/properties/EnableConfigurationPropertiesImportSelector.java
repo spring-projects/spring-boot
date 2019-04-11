@@ -77,9 +77,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		}
 
 		private List<Class<?>> collectClasses(List<?> values) {
-			return values.stream().flatMap((value) -> Arrays.stream((Object[]) value))
-					.map((o) -> (Class<?>) o).filter((type) -> void.class != type)
-					.collect(Collectors.toList());
+			return values.stream().flatMap((value) -> Arrays.stream((Class<?>[]) value))
+					.filter((type) -> void.class != type).collect(Collectors.toList());
 		}
 
 	}

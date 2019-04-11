@@ -157,8 +157,8 @@ public class ManagementContextAutoConfiguration {
 			AbstractApplicationContext context = (AbstractApplicationContext) this.applicationContext;
 			List<BeanFactoryPostProcessor> postProcessors = context
 					.getBeanFactoryPostProcessors();
-			return postProcessors.stream().anyMatch((
-					postProcessor) -> postProcessor instanceof LazyInitializationBeanFactoryPostProcessor);
+			return postProcessors.stream().anyMatch(
+					LazyInitializationBeanFactoryPostProcessor.class::isInstance);
 		}
 
 		private void setClassLoaderIfPossible(ConfigurableApplicationContext child) {

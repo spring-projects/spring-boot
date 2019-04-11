@@ -72,18 +72,24 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 		scanner.addIncludeFilter(new AnnotationTypeFilter(ConfigurationProperties.class));
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
-				for (BeanDefinition candidate : scanner
-						.findCandidateComponents(basePackage)) {
-					String beanClassName = candidate.getBeanClassName();
-					try {
-						Class<?> type = ClassUtils.forName(beanClassName, null);
-						ConfigurationPropertiesBeanDefinitionRegistrar.register(registry,
-								beanFactory, type);
-					}
-					catch (ClassNotFoundException ex) {
-						// Ignore
-					}
-				}
+				scan(beanFactory, registry, scanner, basePackage);
+			}
+		}
+	}
+
+	private void scan(ConfigurableListableBeanFactory beanFactory,
+			BeanDefinitionRegistry registry,
+			ClassPathScanningCandidateComponentProvider scanner, String basePackage)
+			throws LinkageError {
+		for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
+			String beanClassName = candidate.getBeanClassName();
+			try {
+				Class<?> type = ClassUtils.forName(beanClassName, null);
+				ConfigurationPropertiesBeanDefinitionRegistrar.register(registry,
+						beanFactory, type);
+			}
+			catch (ClassNotFoundException ex) {
+				// Ignore
 			}
 		}
 	}

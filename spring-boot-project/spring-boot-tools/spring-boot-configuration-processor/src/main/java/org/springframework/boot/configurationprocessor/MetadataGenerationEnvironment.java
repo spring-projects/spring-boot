@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,7 +50,24 @@ class MetadataGenerationEnvironment {
 
 	private static final String NULLABLE_ANNOTATION = "org.springframework.lang.Nullable";
 
-	private final Set<String> typeExcludes;
+	private static final Set<String> TYPE_EXCLUDES;
+	static {
+		Set<String> excludes = new HashSet<>();
+		excludes.add("com.zaxxer.hikari.IConnectionCustomizer");
+		excludes.add("groovy.text.markup.MarkupTemplateEngine");
+		excludes.add("java.io.Writer");
+		excludes.add("java.io.PrintWriter");
+		excludes.add("java.lang.ClassLoader");
+		excludes.add("java.util.concurrent.ThreadFactory");
+		excludes.add("javax.jms.XAConnectionFactory");
+		excludes.add("javax.sql.DataSource");
+		excludes.add("javax.sql.XADataSource");
+		excludes.add("org.apache.tomcat.jdbc.pool.PoolConfiguration");
+		excludes.add("org.apache.tomcat.jdbc.pool.Validator");
+		excludes.add("org.flywaydb.core.api.callback.FlywayCallback");
+		excludes.add("org.flywaydb.core.api.resolver.MigrationResolver");
+		TYPE_EXCLUDES = Collections.unmodifiableSet(excludes);
+	}
 
 	private final TypeUtils typeUtils;
 
@@ -79,7 +97,6 @@ class MetadataGenerationEnvironment {
 			String deprecatedConfigurationPropertyAnnotation,
 			String defaultValueAnnotation, String endpointAnnotation,
 			String readOperationAnnotation) {
-		this.typeExcludes = determineTypeExcludes();
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -90,24 +107,6 @@ class MetadataGenerationEnvironment {
 		this.defaultValueAnnotation = defaultValueAnnotation;
 		this.endpointAnnotation = endpointAnnotation;
 		this.readOperationAnnotation = readOperationAnnotation;
-	}
-
-	private static Set<String> determineTypeExcludes() {
-		Set<String> excludes = new HashSet<>();
-		excludes.add("com.zaxxer.hikari.IConnectionCustomizer");
-		excludes.add("groovy.text.markup.MarkupTemplateEngine");
-		excludes.add("java.io.Writer");
-		excludes.add("java.io.PrintWriter");
-		excludes.add("java.lang.ClassLoader");
-		excludes.add("java.util.concurrent.ThreadFactory");
-		excludes.add("javax.jms.XAConnectionFactory");
-		excludes.add("javax.sql.DataSource");
-		excludes.add("javax.sql.XADataSource");
-		excludes.add("org.apache.tomcat.jdbc.pool.PoolConfiguration");
-		excludes.add("org.apache.tomcat.jdbc.pool.Validator");
-		excludes.add("org.flywaydb.core.api.callback.FlywayCallback");
-		excludes.add("org.flywaydb.core.api.resolver.MigrationResolver");
-		return excludes;
 	}
 
 	private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
@@ -147,7 +146,7 @@ class MetadataGenerationEnvironment {
 		if (typeName.endsWith("[]")) {
 			typeName = typeName.substring(0, typeName.length() - 2);
 		}
-		return this.typeExcludes.contains(typeName);
+		return TYPE_EXCLUDES.contains(typeName);
 	}
 
 	public boolean isDeprecated(Element element) {
