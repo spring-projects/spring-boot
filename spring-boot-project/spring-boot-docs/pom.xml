@@ -316,6 +316,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-transport-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.prometheus</groupId>
 			<artifactId>simpleclient_pushgateway</artifactId>
 			<optional>true</optional>
