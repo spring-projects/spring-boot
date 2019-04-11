@@ -44,6 +44,7 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
  * <li>trace - The exception stack trace</li>
  * <li>path - The URL path when the exception was raised</li>
+ * <li>requestId - Unique Id associated with the current request</li>
  * </ul>
  *
  * @author Brian Clozel
@@ -86,7 +87,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
 		errorAttributes.put("message", determineMessage(error));
-		errorAttributes.put("logPrefix", request.exchange().getLogPrefix());
+		errorAttributes.put("requestId", request.exchange().getRequest().getId());
 		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}

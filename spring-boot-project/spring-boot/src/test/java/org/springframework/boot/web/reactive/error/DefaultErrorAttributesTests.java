@@ -212,8 +212,8 @@ public class DefaultErrorAttributesTests {
 		ServerRequest serverRequest = buildServerRequest(request, NOT_FOUND);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(serverRequest, false);
-		assertThat(attributes.get("logPrefix"))
-				.isEqualTo(serverRequest.exchange().getLogPrefix());
+		assertThat(attributes.get("requestId"))
+				.isEqualTo(serverRequest.exchange().getRequest().getId());
 	}
 
 	@Test

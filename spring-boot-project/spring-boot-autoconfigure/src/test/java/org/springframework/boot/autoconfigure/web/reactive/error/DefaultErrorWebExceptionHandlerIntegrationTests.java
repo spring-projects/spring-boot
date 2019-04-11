@@ -83,7 +83,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 					.jsonPath("path").isEqualTo(("/")).jsonPath("message")
 					.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
-					.jsonPath("trace").doesNotExist().jsonPath("logPrefix")
+					.jsonPath("trace").doesNotExist().jsonPath("requestId")
 					.isEqualTo(this.logIdFilter.getLogId());
 			this.outputCapture.expect(Matchers.allOf(
 					containsString("500 Server Error for HTTP GET \"/\""),
@@ -99,7 +99,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.expectBody().jsonPath("status").isEqualTo("404").jsonPath("error")
 					.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase()).jsonPath("path")
 					.isEqualTo(("/notFound")).jsonPath("exception").doesNotExist()
-					.jsonPath("logPrefix").isEqualTo(this.logIdFilter.getLogId());
+					.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 		});
 	}
 
@@ -128,7 +128,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path")
 					.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
 					.jsonPath("errors").isArray().jsonPath("message").isNotEmpty()
-					.jsonPath("logPrefix").isEqualTo(this.logIdFilter.getLogId());
+					.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 		});
 	}
 
@@ -145,7 +145,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(IllegalStateException.class.getName())
-							.jsonPath("trace").exists().jsonPath("logPrefix")
+							.jsonPath("trace").exists().jsonPath("requestId")
 							.isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
@@ -161,7 +161,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(IllegalStateException.class.getName())
-							.jsonPath("trace").exists().jsonPath("logPrefix")
+							.jsonPath("trace").exists().jsonPath("requestId")
 							.isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
@@ -177,7 +177,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(IllegalStateException.class.getName())
-							.jsonPath("trace").doesNotExist().jsonPath("logPrefix")
+							.jsonPath("trace").doesNotExist().jsonPath("requestId")
 							.isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
@@ -193,7 +193,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(ResponseStatusException.class.getName())
-							.jsonPath("logPrefix").isEqualTo(this.logIdFilter.getLogId());
+							.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
 
@@ -326,7 +326,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 		@Override
 		public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-			this.logId = exchange.getLogPrefix();
+			this.logId = exchange.getRequest().getId();
 			return chain.filter(exchange);
 		}
 
