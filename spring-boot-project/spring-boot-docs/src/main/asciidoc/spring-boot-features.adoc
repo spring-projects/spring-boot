@@ -3437,6 +3437,83 @@ both clients and servers.
 You can learn more about the resource configuration on the client side in the
 <<boot-features-webclient-runtime, WebClient Runtime section>>.
 
+[[boot-features-rsocket]]
+== RSocket
+
+https://rsocket.io[RSocket] is a binary protocol for use on byte stream transports.
+It enables symmetric interaction models via async message passing over a single connection.
+
+Spring Framework, with the Spring Messaging module supports RSocket both on the server and
+the client side. On the server side, it lets you create special `@Controller` beans
+to handle incoming RSocket messages.
+Methods in your controller are mapped to RSocket routes by using `@MessageMapping` annotations.
+
+The following code shows a typical `@Controller`:
+
+[source,java,indent=0]
+----
+	@Controller
+	public class MyRSocketController {
+
+		@MessageMapping("chat.room.{name}")
+		public Flux<ChatMessages> enterChatRoom(@DestinationVariable String chatRoom,
+				Flux<ChatMessages> messages) {
+			// ...
+		}
+
+		@MessageMapping("users.{user}.info")
+		Mono<ChatUserInfo> getUserInfo(@DestinationVariable String user) {
+			// ...
+		}
+
+	}
+----
+
+[[boot-features-rsocket-server-auto-configuration]]
+=== RSocket server Auto-configuration
+Spring Boot provides auto-configuration for RSocket servers. The required dependencies
+are provided by the `spring-boot-starter-rsocket`.
+
+Spring Boot will start an RSocket server as a new embedded server in your application,
+or will plug the RSocket infrastructure into an existing reactive Web server. This
+depends on the type of application and its configuration.
+
+In case of a WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), the
+RSocket server will be plugged into the existing Web Server only if the following
+properties match:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.rsocket.server.mapping-path=/rsocket # a mapping path is defined
+	spring.rsocket.server.transport=websocket # websocket is chosen as a transport
+	#spring.rsocket.server.port= # no port is defined
+----
+
+The only other way to create an RSocket server is to start an independent, embedded
+RSocket server. Besides the dependency requirements, the only required configuration
+is to define a port for that server:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.rsocket.server.port=9898 # the only required configuration
+	spring.rsocket.server.transport=tcp # you're free to configure other properties
+----
+
+
+
+[[boot-features-rsocket-messaging]]
+=== Spring Messaging RSocket support
+Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
+
+An `RSocketStrategies` bean is created to provide encoding and decoding support
+for RSocket messages. By default, Spring Boot will try to auto-configure JSON
+support with Jackson for `application/json` and `"application/*+json"` media types.
+Check out the <<boot-features-json-jackson,Jackson support section>> to know more
+about customization possibilities.
+
+Developers can create `RSocketStrategiesCustomizer` beans to add other strategies,
+assuming there are `Encoder` and `Decoder` implementations available.
+
 
 
 [[boot-features-security]]

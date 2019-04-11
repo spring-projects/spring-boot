@@ -113,6 +113,21 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-transport-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.searchbox</groupId>
+			<artifactId>jest</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.json.bind</groupId>
 			<artifactId>jakarta.json.bind-api</artifactId>
 			<optional>true</optional>
@@ -125,11 +140,6 @@
 		<dependency>
 			<groupId>javax.money</groupId>
 			<artifactId>money-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>io.searchbox</groupId>
-			<artifactId>jest</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

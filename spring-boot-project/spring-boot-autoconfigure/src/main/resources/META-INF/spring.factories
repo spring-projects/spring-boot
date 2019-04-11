@@ -99,6 +99,9 @@ org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\

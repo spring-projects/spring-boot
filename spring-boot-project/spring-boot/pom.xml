@@ -82,6 +82,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-transport-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.undertow</groupId>
 			<artifactId>undertow-servlet</artifactId>
 			<optional>true</optional>
@@ -256,6 +266,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
