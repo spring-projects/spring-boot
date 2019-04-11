@@ -393,7 +393,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 		}
 
 		public Duration getDuration() {
-			return duration;
+			return this.duration;
 		}
 
 		public void setDuration(Duration duration) {
