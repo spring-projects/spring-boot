@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  * {@link Source#toInstance(Function) new instance}.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public final class PropertyMapper {
@@ -289,7 +290,7 @@ public final class PropertyMapper {
 		 */
 		public Source<T> whenNot(Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
-			return new Source<>(this.supplier, predicate.negate());
+			return when(predicate.negate());
 		}
 
 		/**
@@ -300,7 +301,13 @@ public final class PropertyMapper {
 		 */
 		public Source<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
-			return new Source<>(this.supplier, predicate);
+
+			if (Objects.nonNull(this.predicate)) {
+				return new Source<>(this.supplier, this.predicate.and(predicate));
+			}
+			else {
+				return new Source<>(this.supplier, predicate);
+			}
 		}
 
 		/**

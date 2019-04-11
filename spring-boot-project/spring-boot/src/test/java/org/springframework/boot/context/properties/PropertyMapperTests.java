@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link PropertyMapper}.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 public class PropertyMapperTests {
 
@@ -199,6 +200,18 @@ public class PropertyMapperTests {
 	@Test
 	public void alwaysApplyingWhenNonNullShouldAlwaysApplyNonNullToSource() {
 		this.map.alwaysApplyingWhenNonNull().from(() -> null).toCall(Assert::fail);
+	}
+
+	@Test
+	public void whenWhenValueNotMatchesShouldCheckTwoWhen() {
+		this.map.from("123").when("456"::equals).when("123"::equals).toCall(Assert::fail);
+	}
+
+	@Test
+	public void whenWhenValueMatchesShouldCheckTwoWhen() {
+		String result = this.map.from("123").when((s) -> s.contains("2"))
+				.when("123"::equals).toInstance(String::new);
+		assertThat(result).isEqualTo("123");
 	}
 
 	private static class Count<T> implements Supplier<T> {
