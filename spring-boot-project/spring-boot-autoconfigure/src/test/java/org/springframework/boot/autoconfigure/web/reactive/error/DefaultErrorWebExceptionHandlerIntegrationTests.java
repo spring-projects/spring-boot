@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -57,6 +60,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
+	private final LogIdFilter logIdFilter = new LogIdFilter();
+
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					ReactiveWebServerFactoryAutoConfiguration.class,
@@ -71,15 +76,15 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	public void jsonError() {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-					.build();
+			WebTestClient client = getWebClient(context);
 			client.get().uri("/").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
 					.jsonPath("status").isEqualTo("500").jsonPath("error")
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 					.jsonPath("path").isEqualTo(("/")).jsonPath("message")
 					.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
-					.jsonPath("trace").doesNotExist();
+					.jsonPath("trace").doesNotExist().jsonPath("logPrefix")
+					.isEqualTo(this.logIdFilter.getLogId());
 			this.outputCapture.expect(Matchers.allOf(
 					containsString("500 Server Error for HTTP GET \"/\""),
 					containsString("java.lang.IllegalStateException: Expected!")));
@@ -89,20 +94,19 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	public void notFound() {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-					.build();
+			WebTestClient client = getWebClient(context);
 			client.get().uri("/notFound").exchange().expectStatus().isNotFound()
 					.expectBody().jsonPath("status").isEqualTo("404").jsonPath("error")
 					.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase()).jsonPath("path")
-					.isEqualTo(("/notFound")).jsonPath("exception").doesNotExist();
+					.isEqualTo(("/notFound")).jsonPath("exception").doesNotExist()
+					.jsonPath("logPrefix").isEqualTo(this.logIdFilter.getLogId());
 		});
 	}
 
 	@Test
 	public void htmlError() {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-					.build();
+			WebTestClient client = getWebClient(context);
 			String body = client.get().uri("/").accept(MediaType.TEXT_HTML).exchange()
 					.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 					.expectHeader().contentType(MediaType.TEXT_HTML)
@@ -117,14 +121,14 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	public void bindingResultError() {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-					.build();
+			WebTestClient client = getWebClient(context);
 			client.post().uri("/bind").contentType(MediaType.APPLICATION_JSON)
 					.syncBody("{}").exchange().expectStatus().isBadRequest().expectBody()
 					.jsonPath("status").isEqualTo("400").jsonPath("error")
 					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path")
 					.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
-					.jsonPath("errors").isArray().jsonPath("message").isNotEmpty();
+					.jsonPath("errors").isArray().jsonPath("message").isNotEmpty()
+					.jsonPath("logPrefix").isEqualTo(this.logIdFilter.getLogId());
 		});
 	}
 
@@ -134,31 +138,31 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.withPropertyValues("server.error.include-exception=true",
 						"server.error.include-stacktrace=on-trace-param")
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					client.get().uri("/?trace=true").exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
 							.jsonPath("status").isEqualTo("500").jsonPath("error")
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(IllegalStateException.class.getName())
-							.jsonPath("trace").exists();
+							.jsonPath("trace").exists().jsonPath("logPrefix")
+							.isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
 
 	@Test
-	public void alwaysIncludeStackTrace() throws Exception {
+	public void alwaysIncludeStackTrace() {
 		this.contextRunner.withPropertyValues("server.error.include-exception=true",
 				"server.error.include-stacktrace=always").run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					client.get().uri("/?trace=false").exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
 							.jsonPath("status").isEqualTo("500").jsonPath("error")
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(IllegalStateException.class.getName())
-							.jsonPath("trace").exists();
+							.jsonPath("trace").exists().jsonPath("logPrefix")
+							.isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
 
@@ -166,16 +170,15 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	public void neverIncludeStackTrace() {
 		this.contextRunner.withPropertyValues("server.error.include-exception=true",
 				"server.error.include-stacktrace=never").run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					client.get().uri("/?trace=true").exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
 							.jsonPath("status").isEqualTo("500").jsonPath("error")
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(IllegalStateException.class.getName())
-							.jsonPath("trace").doesNotExist();
-
+							.jsonPath("trace").doesNotExist().jsonPath("logPrefix")
+							.isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
 
@@ -183,14 +186,14 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	public void statusException() {
 		this.contextRunner.withPropertyValues("server.error.include-exception=true")
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					client.get().uri("/badRequest").exchange().expectStatus()
 							.isBadRequest().expectBody().jsonPath("status")
 							.isEqualTo("400").jsonPath("error")
 							.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase())
 							.jsonPath("exception")
-							.isEqualTo(ResponseStatusException.class.getName());
+							.isEqualTo(ResponseStatusException.class.getName())
+							.jsonPath("logPrefix").isEqualTo(this.logIdFilter.getLogId());
 				});
 	}
 
@@ -200,14 +203,14 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/",
 						"server.error.include-stacktrace=always")
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/").accept(MediaType.TEXT_HTML)
 							.exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader()
 							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
+							.contains(this.logIdFilter.getLogId())
 							.contains("<div>Expected!</div>").contains(
 									"<div style='white-space:pre-wrap;'>java.lang.IllegalStateException");
 				});
@@ -218,14 +221,14 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/")
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/html").accept(MediaType.TEXT_HTML)
 							.exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader()
 							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
+							.contains(this.logIdFilter.getLogId())
 							.doesNotContain("<script>").contains("&lt;script&gt;");
 				});
 	}
@@ -235,13 +238,13 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/")
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/notfound")
 							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
 							.isNotFound().expectHeader().contentType(MediaType.TEXT_HTML)
 							.expectBody(String.class).returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
+							.contains(this.logIdFilter.getLogId())
 							.contains("type=Not Found, status=404");
 				});
 	}
@@ -249,8 +252,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	public void responseCommitted() {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-					.build();
+			WebTestClient client = getWebClient(context);
 			assertThatExceptionOfType(RuntimeException.class)
 					.isThrownBy(
 							() -> client.get().uri("/commit").exchange().expectStatus())
@@ -263,8 +265,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	public void whitelabelDisabled() {
 		this.contextRunner.withPropertyValues("server.error.whitelabel.enabled=false",
 				"spring.mustache.prefix=classpath:/unknown/").run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					client.get().uri("/notfound").accept(MediaType.TEXT_HTML).exchange()
 							.expectStatus().isNotFound().expectBody().isEmpty();
 				});
@@ -276,8 +277,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.withPropertyValues("server.error.whitelabel.enabled=false",
 						"spring.mustache.prefix=" + getErrorTemplatesLocation())
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/notfound")
 							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
 							.isNotFound().expectBody(String.class).returnResult()
@@ -292,8 +292,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.withPropertyValues("server.error.whitelabel.enabled=false",
 						"spring.mustache.prefix=" + getErrorTemplatesLocation())
 				.run((context) -> {
-					WebTestClient client = WebTestClient.bindToApplicationContext(context)
-							.build();
+					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/badRequest")
 							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
 							.isBadRequest().expectBody(String.class).returnResult()
@@ -302,19 +301,39 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				});
 	}
 
+	@Test
+	public void invalidAcceptMediaType() {
+		this.contextRunner.run((context) -> {
+			WebTestClient client = getWebClient(context);
+			client.get().uri("/notfound").header("Accept", "v=3.0").exchange()
+					.expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
+		});
+	}
+
 	private String getErrorTemplatesLocation() {
 		String packageName = getClass().getPackage().getName();
 		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
 	}
 
-	@Test
-	public void invalidAcceptMediaType() {
-		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-					.build();
-			client.get().uri("/notfound").header("Accept", "v=3.0").exchange()
-					.expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
-		});
+	private WebTestClient getWebClient(AssertableReactiveWebApplicationContext context) {
+		return WebTestClient.bindToApplicationContext(context).webFilter(this.logIdFilter)
+				.build();
+	}
+
+	private static final class LogIdFilter implements WebFilter {
+
+		private String logId;
+
+		@Override
+		public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+			this.logId = exchange.getLogPrefix();
+			return chain.filter(exchange);
+		}
+
+		String getLogId() {
+			return this.logId;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
