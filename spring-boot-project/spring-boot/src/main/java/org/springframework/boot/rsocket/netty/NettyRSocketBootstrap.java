@@ -16,13 +16,14 @@
 
 package org.springframework.boot.rsocket.netty;
 
+import io.rsocket.SocketAcceptor;
+
 import org.springframework.boot.rsocket.context.RSocketServerInitializedEvent;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.SmartLifecycle;
-import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 
 /**
  * Bootstrap an {@link RSocketServer} and start it with the application context.
@@ -38,8 +39,8 @@ public class NettyRSocketBootstrap
 	private ApplicationEventPublisher applicationEventPublisher;
 
 	public NettyRSocketBootstrap(RSocketServerFactory serverFactoryProvider,
-			MessageHandlerAcceptor messageHandlerAcceptorProvider) {
-		this.rSocketServer = serverFactoryProvider.create(messageHandlerAcceptorProvider);
+			SocketAcceptor socketAcceptor) {
+		this.rSocketServer = serverFactoryProvider.create(socketAcceptor);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.RSocketFactory;
+import io.rsocket.SocketAcceptor;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -106,9 +107,8 @@ public class RSocketServerAutoConfiguration {
 		@Bean
 		public NettyRSocketBootstrap nettyRSocketBootstrap(
 				RSocketServerFactory rSocketServerFactory,
-				MessageHandlerAcceptor messageHandlerAcceptor) {
-			return new NettyRSocketBootstrap(rSocketServerFactory,
-					messageHandlerAcceptor);
+				SocketAcceptor socketAcceptor) {
+			return new NettyRSocketBootstrap(rSocketServerFactory, socketAcceptor);
 		}
 
 	}
