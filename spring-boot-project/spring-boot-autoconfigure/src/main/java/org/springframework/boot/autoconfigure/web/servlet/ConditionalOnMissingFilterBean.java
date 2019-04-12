@@ -37,7 +37,24 @@ import org.springframework.core.annotation.AliasFor;
  * {@link FilterRegistrationBean}.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of
- * the factory method:
+ * the factory method or the type of the {@link Filter} if the bean is a
+ * {@link FilterRegistrationBean}:
+ *
+ * <pre class="code">
+ * &#064;Configuration
+ * public class MyAutoConfiguration {
+ *
+ *     &#064;ConditionalOnMissingFilterBean
+ *     &#064;Bean
+ *     public MyFilter myFilter() {
+ *         ...
+ *     }
+ *
+ * }</pre>
+ * <p>
+ * In the sample above the condition will match if no bean of type {@code MyFilter} or
+ * {@code FilterRegistrationBean<MyFilter>} is already contained in the
+ * {@link BeanFactory}.
  *
  * @author Phillip Webb
  * @since 2.1.0
