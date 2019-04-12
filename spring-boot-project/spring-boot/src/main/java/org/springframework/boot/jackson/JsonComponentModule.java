@@ -91,7 +91,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 					annotation.handleClasses());
 		}
 		if (bean instanceof JsonDeserializer) {
-			addDeserializerWithDeducedType((JsonDeserializer<?>) bean);
+			addDeserializerForTypes((JsonDeserializer<?>) bean,
+					currentAnnotation.handleClasses());
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (!Modifier.isAbstract(innerClass.getModifiers())
@@ -118,17 +119,29 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		if (ArrayUtils.isEmpty(types)) {
 			ResolvableType type = ResolvableType.forClass(JsonSerializer.class,
 					serializer.getClass());
-			addSerializerWithType(serializer, handle,
-					(Class<T>) type.resolveGeneric());
+			addSerializerWithType(serializer, handle, (Class<T>) type.resolveGeneric());
 		}
 	}
 
 	private <T> void addSerializerWithType(JsonSerializer<T> serializer,
-										   JsonComponent.Handle handle, Class<? extends T> type) {
+			JsonComponent.Handle handle, Class<? extends T> type) {
 		if (JsonComponent.Handle.KEYS.equals(handle)) {
 			addKeySerializer(type, serializer);
-		} else {
+		}
+		else {
 			addSerializer(type, serializer);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	private <T> void addDeserializerForTypes(JsonDeserializer<T> deserializer,
+			Class<?>[] types) {
+		for (Class<?> type : types) {
+			addDeserializer((Class<T>) type, deserializer);
+		}
+
+		if (ArrayUtils.isEmpty(types)) {
+			addDeserializerWithDeducedType(deserializer);
 		}
 	}
 
