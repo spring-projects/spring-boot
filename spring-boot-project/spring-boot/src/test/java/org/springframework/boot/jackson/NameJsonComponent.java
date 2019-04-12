@@ -9,7 +9,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
-@JsonComponent
+@JsonComponent(handle = JsonComponent.Handle.KEYS,
+		handleClasses = { Name.class, NameAndCareer.class, NameAndAge.class })
 public class NameJsonComponent {
 
 	@JsonComponent(handleClasses = NameAndCareer.class)
