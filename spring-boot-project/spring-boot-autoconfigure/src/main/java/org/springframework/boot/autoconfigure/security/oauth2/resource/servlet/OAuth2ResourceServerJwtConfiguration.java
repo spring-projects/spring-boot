@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -53,7 +54,8 @@ class OAuth2ResourceServerJwtConfiguration {
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoderByJwkKeySetUri() {
 		return NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-				.jwsAlgorithm(this.properties.getJwsAlgorithm()).build();
+				.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm()))
+				.build();
 	}
 
 	@Bean
