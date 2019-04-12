@@ -17,4 +17,5 @@ public class NameAndCareer extends Name {
 	public String getCareer() {
 		return career;
 	}
+
 }
