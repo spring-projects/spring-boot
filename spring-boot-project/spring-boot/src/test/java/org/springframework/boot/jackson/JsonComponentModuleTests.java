@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.jackson.JsonComponent.Handle;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
@@ -198,13 +197,14 @@ public class JsonComponentModuleTests {
 
 	}
 
-	@JsonComponent(handle = Handle.KEYS)
+	@JsonComponent(handle = JsonComponent.Handle.KEYS)
 	static class OnlyKeySerializer extends NameAndAgeJsonKeyComponent.Serializer {
 
 	}
 
-	@JsonComponent(handle = Handle.KEYS, handleClasses = NameAndAge.class)
+	@JsonComponent(handle = JsonComponent.Handle.KEYS, handleClasses = NameAndAge.class)
 	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
 
 	}
+
 }

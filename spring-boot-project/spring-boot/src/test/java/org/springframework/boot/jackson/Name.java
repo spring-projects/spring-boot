@@ -6,6 +6,7 @@ package org.springframework.boot.jackson;
  * @author Paul Aly
  */
 public class Name {
+
 	protected final String name;
 
 	public Name(String name) {
