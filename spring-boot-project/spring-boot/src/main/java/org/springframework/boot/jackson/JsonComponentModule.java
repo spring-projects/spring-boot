@@ -78,13 +78,9 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	private void addJsonBean(Object bean, JsonComponent annotation) {
-		JsonComponent currentAnnotation = Optional.ofNullable(
-				AnnotationUtils.findAnnotation(bean.getClass(), JsonComponent.class))
-				.orElse(annotation);
-
 		if (bean instanceof JsonSerializer) {
-			addSerializerForTypes((JsonSerializer<?>) bean, currentAnnotation.handle(),
-					currentAnnotation.handleClasses());
+			addSerializerForTypes((JsonSerializer<?>) bean, annotation.handle(),
+					annotation.handleClasses());
 		}
 		if (bean instanceof KeyDeserializer) {
 			addKeyDeserializerForTypes((KeyDeserializer) bean,
@@ -92,7 +88,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		}
 		if (bean instanceof JsonDeserializer) {
 			addDeserializerForTypes((JsonDeserializer<?>) bean,
-					currentAnnotation.handleClasses());
+					annotation.handleClasses());
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (!Modifier.isAbstract(innerClass.getModifiers())
