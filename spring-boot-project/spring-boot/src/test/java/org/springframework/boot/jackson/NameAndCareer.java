@@ -1,5 +1,10 @@
 package org.springframework.boot.jackson;
 
+/**
+ * Sample object used for tests.
+ *
+ * @author Paul Aly
+ */
 public class NameAndCareer extends Name {
 
 	private final String career;
