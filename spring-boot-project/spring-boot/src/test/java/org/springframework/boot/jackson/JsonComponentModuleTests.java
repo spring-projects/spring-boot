@@ -103,24 +103,8 @@ public class JsonComponentModuleTests {
 	}
 
 	@Test
-	public void moduleShouldRegisterSerializersForSpecifiedClasses() throws Exception {
-		load(NameJsonComponent.NameSerializer.class);
-		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
-		assertSerialize(module, new NameAndCareer("spring", "developer"),
-				"{\"name\":\"spring\"}");
-		assertSerialize(module);
-	}
-
-	@Test
-	public void moduleShouldRegisterDeserializersForSpecifiedClasses() throws Exception {
-		load(NameJsonComponent.NameDeserializer.class);
-		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
-		assertDeserializeForSpecifiedClasses(module);
-	}
-
-	@Test
-	public void moduleShouldRespectAnnotationsOnInnerClasses() throws Exception {
-		load(NameJsonComponent.class);
+	public void moduleShouldRegisterOnlyForSpecifiedClasses() throws Exception {
+		load(NameAndCareerJsonComponent.class);
 		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertSerialize(module, new NameAndCareer("spring", "developer"),
 				"{\"name\":\"spring\"}");
@@ -222,5 +206,4 @@ public class JsonComponentModuleTests {
 	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
 
 	}
-
 }

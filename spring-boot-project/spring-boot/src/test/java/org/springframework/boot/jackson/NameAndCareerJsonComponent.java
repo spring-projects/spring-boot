@@ -9,12 +9,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
-@JsonComponent(handle = JsonComponent.Handle.KEYS,
-		handleClasses = { Name.class, NameAndCareer.class, NameAndAge.class })
-public class NameJsonComponent {
+@JsonComponent(handleClasses = NameAndCareer.class)
+public class NameAndCareerJsonComponent {
 
-	@JsonComponent(handleClasses = NameAndCareer.class)
-	public static class NameSerializer extends JsonObjectSerializer<Name> {
+	public static class Serializer extends JsonObjectSerializer<Name> {
 
 		@Override
 		protected void serializeObject(Name value, JsonGenerator jgen,
@@ -24,8 +22,7 @@ public class NameJsonComponent {
 
 	}
 
-	@JsonComponent(handleClasses = NameAndCareer.class)
-	public static class NameDeserializer extends JsonObjectDeserializer<Name> {
+	public static class Deserializer extends JsonObjectDeserializer<Name> {
 
 		@Override
 		protected Name deserializeObject(JsonParser jsonParser,
