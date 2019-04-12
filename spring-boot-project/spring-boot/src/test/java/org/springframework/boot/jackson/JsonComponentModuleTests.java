@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.jackson.JsonComponent.Handle;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -101,6 +100,14 @@ public class JsonComponentModuleTests {
 		assertKeyDeserialize(module);
 	}
 
+	@Test
+	public void moduleShouldRegisterSerializersForSpecifiedClasses() throws Exception {
+		load(NameJsonComponent.NameSerializer.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertSerialize(module, new NameAndCareer("spring", "developer"), "{\"name\":\"spring\"}");
+		assertSerialize(module);
+	}
+
 	private void load(Class<?>... configs) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(configs);
@@ -109,11 +116,16 @@ public class JsonComponentModuleTests {
 		this.context = context;
 	}
 
-	private void assertSerialize(Module module) throws Exception {
+	private void assertSerialize(Module module, Name value, String expectedJson)
+			throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		String json = mapper.writeValueAsString(new NameAndAge("spring", 100));
-		assertThat(json).isEqualToIgnoringWhitespace("{\"name\":\"spring\",\"age\":100}");
+		String json = mapper.writeValueAsString(value);
+		assertThat(json).isEqualToIgnoringWhitespace(expectedJson);
+	}
+
+	private void assertSerialize(Module module) throws Exception {
+		assertSerialize(module, new NameAndAge("spring", 100), "{\"name\":\"spring\",\"age\":100}");
 	}
 
 	private void assertDeserialize(Module module) throws Exception {
