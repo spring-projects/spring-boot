@@ -18,6 +18,7 @@ package org.springframework.boot.jackson;
 
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -76,9 +78,13 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	private void addJsonBean(Object bean, JsonComponent annotation) {
-		JsonComponent.Handle handle = annotation.handle();
+		JsonComponent currentAnnotation = Optional.ofNullable(
+				AnnotationUtils.findAnnotation(bean.getClass(), JsonComponent.class))
+				.orElse(annotation);
+
 		if (bean instanceof JsonSerializer) {
-			addSerializerWithDeducedType((JsonSerializer<?>) bean, handle);
+			addSerializerForTypes((JsonSerializer<?>) bean, currentAnnotation.handle(),
+					currentAnnotation.handleClasses());
 		}
 		if (bean instanceof KeyDeserializer) {
 			addKeyDeserializerForTypes((KeyDeserializer) bean,
@@ -103,15 +109,26 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <T> void addSerializerWithDeducedType(JsonSerializer<T> serializer,
-			JsonComponent.Handle handle) {
-		ResolvableType type = ResolvableType.forClass(JsonSerializer.class,
-				serializer.getClass());
-		if (JsonComponent.Handle.KEYS.equals(handle)) {
-			addKeySerializer((Class<T>) type.resolveGeneric(), serializer);
+	private <T> void addSerializerForTypes(JsonSerializer<T> serializer,
+			JsonComponent.Handle handle, Class<?>[] types) {
+		for (Class<?> type : types) {
+			addSerializerWithType(serializer, handle, (Class<T>) type);
 		}
-		else {
-			addSerializer((Class<T>) type.resolveGeneric(), serializer);
+
+		if (ArrayUtils.isEmpty(types)) {
+			ResolvableType type = ResolvableType.forClass(JsonSerializer.class,
+					serializer.getClass());
+			addSerializerWithType(serializer, handle,
+					(Class<T>) type.resolveGeneric());
+		}
+	}
+
+	private <T> void addSerializerWithType(JsonSerializer<T> serializer,
+										   JsonComponent.Handle handle, Class<? extends T> type) {
+		if (JsonComponent.Handle.KEYS.equals(handle)) {
+			addKeySerializer(type, serializer);
+		} else {
+			addSerializer(type, serializer);
 		}
 	}
 

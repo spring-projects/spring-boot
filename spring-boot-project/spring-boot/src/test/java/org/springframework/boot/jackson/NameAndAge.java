@@ -23,19 +23,13 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  */
-public final class NameAndAge {
-
-	private final String name;
+public final class NameAndAge extends Name {
 
 	private final int age;
 
 	public NameAndAge(String name, int age) {
-		this.name = name;
+		super(name);
 		this.age = age;
-	}
-
-	public String getName() {
-		return this.name;
 	}
 
 	public int getAge() {
