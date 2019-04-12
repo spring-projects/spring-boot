@@ -79,6 +79,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy",
 			havingValue = "framework")
 	public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {

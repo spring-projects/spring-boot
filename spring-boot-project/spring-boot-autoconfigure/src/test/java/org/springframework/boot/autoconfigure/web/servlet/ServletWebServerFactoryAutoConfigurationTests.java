@@ -208,6 +208,14 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 						.doesNotHaveBean(FilterRegistrationBean.class));
 	}
 
+	@Test
+	public void forwardedHeaderFilterWhenFilterAlreadyRegisteredShouldBackOff() {
+		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
+				.withPropertyValues("server.forward-headers-strategy=framework")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(FilterRegistrationBean.class));
+	}
+
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
 		return this::verifyContext;
 	}
@@ -353,6 +361,17 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
 			return (protocolHandler) -> {
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderFilterConfiguration {
+
+		@Bean
+		public FilterRegistrationBean<ForwardedHeaderFilter> testForwardedHeaderFilter() {
+			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
+			return new FilterRegistrationBean<>(filter);
 		}
 
 	}

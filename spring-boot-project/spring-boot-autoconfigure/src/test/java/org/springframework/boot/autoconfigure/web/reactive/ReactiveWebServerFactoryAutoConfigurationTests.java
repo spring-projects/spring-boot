@@ -165,6 +165,16 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 						.doesNotHaveBean(ForwardedHeaderTransformer.class));
 	}
 
+	@Test
+	public void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
+		this.contextRunner
+				.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class,
+						HttpHandlerConfiguration.class)
+				.withPropertyValues("server.forward-headers-strategy=framework")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class HttpHandlerConfiguration {
 
@@ -234,6 +244,16 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
 			return (protocolHandler) -> {
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderTransformerConfiguration {
+
+		@Bean
+		public ForwardedHeaderTransformer testForwardedHeaderTransformer() {
+			return new ForwardedHeaderTransformer();
 		}
 
 	}
