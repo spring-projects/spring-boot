@@ -9,6 +9,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
+/**
+ * Sample {@link JsonComponent} used for tests.
+ *
+ * @author Paul Aly
+ */
 @JsonComponent(handleClasses = NameAndCareer.class)
 public class NameAndCareerJsonComponent {
 

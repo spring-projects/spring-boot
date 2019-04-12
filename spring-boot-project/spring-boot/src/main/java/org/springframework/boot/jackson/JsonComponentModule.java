@@ -42,6 +42,7 @@ import org.springframework.core.annotation.AnnotationUtils;
  * beans.
  *
  * @author Phillip Webb
+ * @author Paul Aly
  * @since 1.4.0
  * @see JsonComponent
  */

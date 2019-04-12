@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  * @author Vladimir Tsanev
+ * @author Paul Aly
  */
 public class JsonComponentModuleTests {
 
