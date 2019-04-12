@@ -1,5 +1,3 @@
-package org.springframework.boot.jackson;
-
 /*
  * Copyright 2012-2017 the original author or authors.
  *
@@ -16,13 +14,15 @@ package org.springframework.boot.jackson;
  * limitations under the License.
  */
 
+package org.springframework.boot.jackson;
+
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-
-import java.io.IOException;
 
 /**
  * Sample {@link JsonComponent} used for tests.

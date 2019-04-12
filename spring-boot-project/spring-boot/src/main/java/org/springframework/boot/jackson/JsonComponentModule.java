@@ -18,7 +18,6 @@ package org.springframework.boot.jackson;
 
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -113,7 +111,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			addSerializerWithType(serializer, handle, (Class<T>) type);
 		}
 
-		if (ArrayUtils.isEmpty(types)) {
+		if (types.length == 0) {
 			ResolvableType type = ResolvableType.forClass(JsonSerializer.class,
 					serializer.getClass());
 			addSerializerWithType(serializer, handle, (Class<T>) type.resolveGeneric());
@@ -137,7 +135,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			addDeserializer((Class<T>) type, deserializer);
 		}
 
-		if (ArrayUtils.isEmpty(types)) {
+		if (types.length == 0) {
 			addDeserializerWithDeducedType(deserializer);
 		}
 	}

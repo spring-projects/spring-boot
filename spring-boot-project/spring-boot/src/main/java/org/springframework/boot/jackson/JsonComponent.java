@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
-
 import com.fasterxml.jackson.databind.KeyDeserializer;
+
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +74,7 @@ public @interface JsonComponent {
 
 	/**
 	 * Indicates whether the component should be registered as a type serializer and/or
-	 * deserializer or a key serializer and/or deserializer
+	 * deserializer or a key serializer and/or deserializer.
 	 * @return the component's handle type
 	 */
 	Handle handle() default Handle.TYPES;
@@ -89,17 +89,17 @@ public @interface JsonComponent {
 	Class<?>[] handleClasses() default {};
 
 	/**
-	 * An enumeration of possible handling types for the component
+	 * An enumeration of possible handling types for the component.
 	 */
 	enum Handle {
 
 		/**
-		 * Register the component as a Type serializer and/or deserializer
+		 * Register the component as a Type serializer and/or deserializer.
 		 */
 		TYPES,
 
 		/**
-		 * Register the component as a Key serializer and/or deserializer
+		 * Register the component as a Key serializer and/or deserializer.
 		 */
 		KEYS
 
