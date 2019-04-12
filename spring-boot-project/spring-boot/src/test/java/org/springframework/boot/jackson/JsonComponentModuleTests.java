@@ -29,7 +29,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JsonComponentModule}.
@@ -119,7 +120,12 @@ public class JsonComponentModuleTests {
 
 	@Test
 	public void moduleShouldRespectAnnotationsOnInnerClasses() throws Exception {
-
+		load(NameJsonComponent.class);
+		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
+		assertSerialize(module, new NameAndCareer("spring", "developer"),
+				"{\"name\":\"spring\"}");
+		assertSerialize(module);
+		assertDeserializeForSpecifiedClasses(module);
 	}
 
 	private void load(Class<?>... configs) {
@@ -152,12 +158,14 @@ public class JsonComponentModuleTests {
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
 	}
 
-	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module) throws IOException {
+	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module)
+			throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
 		assertThatExceptionOfType(JsonMappingException.class).isThrownBy(() -> mapper
 				.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
-		NameAndCareer nameAndCareer = mapper.readValue("{\"name\":\"spring\",\"career\":\"developer\"}", NameAndCareer.class);
+		NameAndCareer nameAndCareer = mapper.readValue(
+				"{\"name\":\"spring\",\"career\":\"developer\"}", NameAndCareer.class);
 		assertThat(nameAndCareer.getName()).isEqualTo("spring");
 		assertThat(nameAndCareer.getCareer()).isEqualTo("developer");
 	}
