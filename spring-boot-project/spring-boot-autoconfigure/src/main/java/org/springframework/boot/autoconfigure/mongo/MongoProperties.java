@@ -92,7 +92,7 @@ public class MongoProperties {
 	private Class<?> fieldNamingStrategy;
 
 	/**
-	 * Enables/disables auto-index creation.
+	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
 
