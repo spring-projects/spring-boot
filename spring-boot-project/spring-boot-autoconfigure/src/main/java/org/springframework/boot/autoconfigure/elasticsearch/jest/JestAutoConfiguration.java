@@ -42,11 +42,13 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @since 1.4.0
+ * @deprecated since 2.2.0 in favor of other auto-configured Elasticsearch clients
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JestClient.class)
 @EnableConfigurationProperties(JestProperties.class)
 @AutoConfigureAfter(GsonAutoConfiguration.class)
+@Deprecated
 public class JestAutoConfiguration {
 
 	@Bean(destroyMethod = "shutdownClient")

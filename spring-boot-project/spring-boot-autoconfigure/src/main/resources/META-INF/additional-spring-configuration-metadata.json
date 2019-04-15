@@ -306,6 +306,30 @@
       }
     },
     {
+      "name": "spring.data.elasticsearch.cluster-name",
+      "type": "java.lang.String",
+      "description": "Elasticsearch cluster name.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-nodes",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of cluster node addresses.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.properties",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional properties used to configure the client.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
       "name": "spring.data.elasticsearch.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Elasticsearch repositories.",
@@ -389,7 +413,10 @@
       "name": "spring.elasticsearch.jest.uris",
       "defaultValue": [
         "http://localhost:9200"
-      ]
+      ],
+      "deprecation": {
+        "reason": "The Jest client support is deprecated. Use other supported clients instead."
+      }
     },
     {
       "name": "spring.elasticsearch.rest.uris",

@@ -4782,17 +4782,18 @@ https://www.elastic.co/products/elasticsearch[Elasticsearch] is an open source,
 distributed, RESTful search and analytics engine. Spring Boot offers basic
 auto-configuration for Elasticsearch.
 
-Spring Boot supports several HTTP clients:
+Spring Boot supports several clients:
 
 * The official Java "Low Level" and "High Level" REST clients
 * https://github.com/searchbox-io/Jest[Jest]
 
-The transport client is still being used by
-https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch],
-which you can start using with the `spring-boot-starter-data-elasticsearch` "`Starter`".
+The transport client is still available but its support has been deprecated in
+https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch]
+and will be removed in a future release. Spring Boot provides a dedicated "`Starter`",
+`spring-boot-starter-data-elasticsearch`.
 
 [[boot-features-connecting-to-elasticsearch-rest]]
-==== Connecting to Elasticsearch by REST clients
+==== Connecting to Elasticsearch using REST clients
 Elasticsearch ships
 https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients]
 that you can use to query a cluster: the "Low Level" client and the "High Level" client.
@@ -4819,7 +4820,10 @@ any existing `RestClient` bean, reusing its HTTP configuration.
 
 
 [[boot-features-connecting-to-elasticsearch-jest]]
-==== Connecting to Elasticsearch by Using Jest
+==== Connecting to Elasticsearch using Jest
+Now that Spring Boot supports the official `RestHighLevelClient`, Jest support is
+deprecated.
+
 If you have `Jest` on the classpath, you can inject an auto-configured `JestClient` that
 by default targets `http://localhost:9200`. You can further tune how the client is
 configured, as shown in the following example:
