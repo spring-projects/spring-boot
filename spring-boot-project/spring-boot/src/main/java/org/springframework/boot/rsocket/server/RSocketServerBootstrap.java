@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.rsocket.netty;
+package org.springframework.boot.rsocket.server;
 
 import io.rsocket.SocketAcceptor;
 
 import org.springframework.boot.rsocket.context.RSocketServerInitializedEvent;
-import org.springframework.boot.rsocket.server.RSocketServer;
-import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.SmartLifecycle;
@@ -31,14 +29,14 @@ import org.springframework.context.SmartLifecycle;
  * @author Brian Clozel
  * @since 2.2.0
  */
-public class NettyRSocketBootstrap
+public class RSocketServerBootstrap
 		implements ApplicationEventPublisherAware, SmartLifecycle {
 
 	private final RSocketServer rSocketServer;
 
 	private ApplicationEventPublisher applicationEventPublisher;
 
-	public NettyRSocketBootstrap(RSocketServerFactory serverFactoryProvider,
+	public RSocketServerBootstrap(RSocketServerFactory serverFactoryProvider,
 			SocketAcceptor socketAcceptor) {
 		this.rSocketServer = serverFactoryProvider.create(socketAcceptor);
 	}

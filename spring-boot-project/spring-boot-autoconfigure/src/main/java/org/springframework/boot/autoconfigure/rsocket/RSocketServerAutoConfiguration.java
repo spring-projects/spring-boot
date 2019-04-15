@@ -18,9 +18,10 @@ package org.springframework.boot.autoconfigure.rsocket;
 
 import java.util.stream.Collectors;
 
-import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.RSocketFactory;
 import io.rsocket.SocketAcceptor;
+import io.rsocket.transport.netty.server.TcpServerTransport;
+import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -33,7 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.rsocket.netty.NettyRSocketBootstrap;
+import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
@@ -57,8 +58,8 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketFactory.class, RSocketStrategies.class,
-		PooledByteBufAllocator.class })
+@ConditionalOnClass({ RSocketFactory.class, RSocketStrategies.class, HttpServer.class,
+		TcpServerTransport.class })
 @ConditionalOnBean(MessageHandlerAcceptor.class)
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 @EnableConfigurationProperties(RSocketProperties.class)
@@ -105,10 +106,10 @@ public class RSocketServerAutoConfiguration {
 		}
 
 		@Bean
-		public NettyRSocketBootstrap nettyRSocketBootstrap(
+		public RSocketServerBootstrap nettyRSocketBootstrap(
 				RSocketServerFactory rSocketServerFactory,
 				SocketAcceptor socketAcceptor) {
-			return new NettyRSocketBootstrap(rSocketServerFactory, socketAcceptor);
+			return new RSocketServerBootstrap(rSocketServerFactory, socketAcceptor);
 		}
 
 	}

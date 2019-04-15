@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.rsocket.netty.NettyRSocketBootstrap;
+import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -46,7 +46,7 @@ public class RSocketServerAutoConfigurationTests {
 		contextRunner.run((context) -> assertThat(context)
 				.doesNotHaveBean(WebServerFactoryCustomizer.class)
 				.doesNotHaveBean(RSocketServerFactory.class)
-				.doesNotHaveBean(NettyRSocketBootstrap.class));
+				.doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class RSocketServerAutoConfigurationTests {
 		contextRunner.run((context) -> assertThat(context)
 				.doesNotHaveBean(WebServerFactoryCustomizer.class)
 				.doesNotHaveBean(RSocketServerFactory.class)
-				.doesNotHaveBean(NettyRSocketBootstrap.class));
+				.doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class RSocketServerAutoConfigurationTests {
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(WebServerFactoryCustomizer.class)
 						.doesNotHaveBean(RSocketServerFactory.class)
-						.doesNotHaveBean(NettyRSocketBootstrap.class));
+						.doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class RSocketServerAutoConfigurationTests {
 		contextRunner.withPropertyValues("spring.rsocket.server.port=0")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(RSocketServerFactory.class)
-						.hasSingleBean(NettyRSocketBootstrap.class));
+						.hasSingleBean(RSocketServerBootstrap.class));
 	}
 
 	private ApplicationContextRunner createContextRunner() {
