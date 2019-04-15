@@ -2798,12 +2798,6 @@
 				<groupId>org.springframework.amqp</groupId>
 				<artifactId>spring-rabbit</artifactId>
 				<version>${spring-amqp.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.rabbitmq</groupId>
-						<artifactId>http-client</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.amqp</groupId>
