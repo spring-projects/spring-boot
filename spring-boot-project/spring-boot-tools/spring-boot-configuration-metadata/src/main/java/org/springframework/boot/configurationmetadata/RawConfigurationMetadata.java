@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationmetadata;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -48,13 +49,16 @@ class RawConfigurationMetadata {
 		return this.sources;
 	}
 
-	public ConfigurationMetadataSource getSource(String type) {
-		for (ConfigurationMetadataSource source : this.sources) {
-			if (type.equals(source.getType())) {
-				return source;
-			}
+	public ConfigurationMetadataSource getSource(ConfigurationMetadataItem item) {
+		if (item.getSourceType() == null) {
+			return null;
 		}
-		return null;
+		return this.sources.stream()
+				.filter((candidate) -> item.getSourceType().equals(candidate.getType())
+						&& item.getId().startsWith(candidate.getGroupId()))
+				.max(Comparator
+						.comparingInt((candidate) -> candidate.getGroupId().length()))
+				.orElse(null);
 	}
 
 	public List<ConfigurationMetadataItem> getItems() {
@@ -72,10 +76,7 @@ class RawConfigurationMetadata {
 	 */
 	private void resolveName(ConfigurationMetadataItem item) {
 		item.setName(item.getId()); // fallback
-		if (item.getSourceType() == null) {
-			return;
-		}
-		ConfigurationMetadataSource source = getSource(item.getSourceType());
+		ConfigurationMetadataSource source = getSource(item);
 		if (source != null) {
 			String groupId = source.getGroupId();
 			String dottedPrefix = groupId + ".";
