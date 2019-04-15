@@ -27,7 +27,7 @@ import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CompressionConnectorCustomizerTest {
+public class CompressionConnectorCustomizerTests {
 
 	private static final int MIN_SIZE = 100;
 
