@@ -133,6 +133,18 @@ public class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
+	public void customAutoIndexCreation() {
+		this.contextRunner
+				.withPropertyValues("spring.data.mongodb.autoIndexCreation:false")
+				.run((context) -> {
+					MongoMappingContext mappingContext = context
+							.getBean(MongoMappingContext.class);
+					assertThat(mappingContext.isAutoIndexCreation())
+							.isEqualTo(Boolean.FALSE);
+				});
+	}
+
+	@Test
 	public void interfaceFieldNamingStrategy() {
 		this.contextRunner
 				.withPropertyValues("spring.data.mongodb.field-naming-strategy:"
