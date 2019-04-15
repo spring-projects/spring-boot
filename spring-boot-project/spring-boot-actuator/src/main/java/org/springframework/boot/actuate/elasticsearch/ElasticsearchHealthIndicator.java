@@ -35,7 +35,9 @@ import org.springframework.util.StringUtils;
  * @author Binwei Yang
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated the transport client support is deprecated in favor of other clients
  */
+@Deprecated
 public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
 	private static final String[] ALL_INDICES = { "_all" };
