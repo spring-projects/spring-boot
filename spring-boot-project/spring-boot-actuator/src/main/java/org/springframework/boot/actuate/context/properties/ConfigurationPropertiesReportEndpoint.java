@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.context.properties;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,8 +26,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -42,10 +39,9 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -181,6 +177,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		applyConfigurationPropertiesFilter(mapper);
 		applySerializationModifier(mapper);
+		mapper.registerModule(new JavaTimeModule());
 	}
 
 	private ObjectMapper getObjectMapper() {
@@ -197,8 +194,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	private void applySerializationModifier(ObjectMapper mapper) {
 		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier())
-				.withAdditionalSerializers(new JavaTimeSerializers());
+				.withSerializerModifier(new GenericSerializerModifier());
 		mapper.setSerializerFactory(factory);
 	}
 
@@ -486,20 +482,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		public Map<String, Object> getProperties() {
 			return this.properties;
-		}
-
-	}
-
-	private static class JavaTimeSerializers extends Serializers.Base {
-
-		@Override
-		public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type,
-				BeanDescription beanDesc) {
-			Class<?> raw = type.getRawClass();
-			if (Duration.class.isAssignableFrom(raw)) {
-				return DurationSerializer.INSTANCE;
-			}
-			return super.findSerializer(config, type, beanDesc);
 		}
 
 	}
