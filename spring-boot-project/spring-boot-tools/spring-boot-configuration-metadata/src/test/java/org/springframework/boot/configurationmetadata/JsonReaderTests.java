@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,6 +197,25 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 				.isEqualTo("spring.server.name");
 		assertThat(item5.getDeprecation().getLevel())
 				.isEqualTo(Deprecation.Level.WARNING);
+	}
+
+	@Test
+	public void multiGroupsMetadata() throws IOException {
+		RawConfigurationMetadata rawMetadata = readFor("multi-groups");
+		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
+		assertThat(items).hasSize(3);
+
+		ConfigurationMetadataItem item = items.get(0);
+		assertThat(item.getName()).isEqualTo("enabled");
+		assertThat(item.getSourceType()).isEqualTo("com.example.Retry");
+
+		ConfigurationMetadataItem item2 = items.get(1);
+		assertThat(item2.getName()).isEqualTo("enabled");
+		assertThat(item2.getSourceType()).isEqualTo("com.example.Retry");
+
+		ConfigurationMetadataItem item3 = items.get(2);
+		assertThat(item3.getName()).isEqualTo("enabled");
+		assertThat(item3.getSourceType()).isEqualTo("com.example.Retry");
 	}
 
 	RawConfigurationMetadata readFor(String path) throws IOException {
