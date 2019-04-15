@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,16 +61,26 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		out.close();
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
 		assertThat(environment.getProperty("abc")).isEqualTo("def");
 	}
 
 	@Test
-	public void ignoresMissingHomeProperties() {
+	public void ignoresMissingHomeProperties() throws Exception {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
 		assertThat(environment.getProperty("abc")).isNull();
+	}
+
+	protected void runPostProcessor(Runnable runnable) throws Exception {
+		CountDownLatch latch = new CountDownLatch(1);
+		Thread thread = new Thread(() -> {
+			runnable.run();
+			latch.countDown();
+		});
+		thread.start();
+		thread.join();
 	}
 
 	private class MockDevToolHomePropertiesPostProcessor

@@ -20,6 +20,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -49,18 +52,18 @@ import static org.mockito.Mockito.verify;
 public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
-	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				SingleDataSourceConfiguration.class);
+	public void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
+		ConfigurableApplicationContext context = getContext(
+				() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
 		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
-	public void multipleDataSourcesAreIgnored() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				MultipleDataSourcesConfiguration.class);
+	public void multipleDataSourcesAreIgnored() throws Exception {
+		ConfigurableApplicationContext context = getContext(
+				() -> createContext(MultipleDataSourcesConfiguration.class));
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class)
 				.values();
 		for (DataSource dataSource : dataSources) {
@@ -88,6 +91,20 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		doReturn(connection).when(dataSource).getConnection();
 		given(connection.createStatement()).willReturn(statement);
 		return statement;
+	}
+
+	protected ConfigurableApplicationContext getContext(
+			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
+		CountDownLatch latch = new CountDownLatch(1);
+		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
+		Thread thread = new Thread(() -> {
+			ConfigurableApplicationContext context = supplier.get();
+			latch.countDown();
+			atomicReference.getAndSet(context);
+		});
+		thread.start();
+		thread.join();
+		return atomicReference.get();
 	}
 
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {

@@ -55,7 +55,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @since 1.3.3
  */
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@Conditional(DevToolsDataSourceCondition.class)
+@Conditional({ OnEnabledDevtoolsCondition.class, DevToolsDataSourceCondition.class })
 @Configuration(proxyBeanMethods = false)
 public class DevToolsDataSourceAutoConfiguration {
 
