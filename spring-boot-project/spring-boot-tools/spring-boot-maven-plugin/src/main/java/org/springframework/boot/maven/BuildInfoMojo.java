@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.time.Instant;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -73,7 +74,7 @@ public class BuildInfoMojo extends AbstractMojo {
 					.writeBuildProperties(new ProjectDetails(this.project.getGroupId(),
 							this.project.getArtifactId(), this.project.getVersion(),
 							this.project.getName(), Instant.now(),
-							this.additionalProperties));
+							getNullFreeAdditionalProperties()));
 			this.buildContext.refresh(this.outputFile);
 		}
 		catch (NullAdditionalPropertyValueException ex) {
@@ -85,4 +86,17 @@ public class BuildInfoMojo extends AbstractMojo {
 		}
 	}
 
+	/**
+	 * Since maven does not support default properties during placeholder resolution,
+	 * there might be null property bypassed to additionalProperties parameter.
+	 *
+	 * @return additionalProperties without null values, or null if additionalProperties was not defined
+	 */
+	private Map<String, String> getNullFreeAdditionalProperties() {
+		return this.additionalProperties == null
+				? null
+				: this.additionalProperties.entrySet().stream()
+				.filter(entry -> entry.getValue() != null)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
 }

@@ -27,6 +27,7 @@
 								<foo>bar</foo>
 								<encoding>${project.build.sourceEncoding}</encoding>
 								<java.source>1.8</java.source>
+								<nullProperty>${unknown.property}</nullProperty>
 							</additionalProperties>
 						</configuration>
 					</execution>
