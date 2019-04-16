@@ -29,6 +29,8 @@ bomr:
       - 'io.micrometer:micrometer-registry-azure-monitor'
       - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
       - 'org.eclipse.jetty:jetty-home'
+      # Removed in Moore-M3 but accidentally left in the bom
+      - 'org.springframework.data:spring-data-mongodb-cross-store'
     repositories:
       # Caffeine Simulator's dependencies
       - 'https://maven.imagej.net/content/repositories/public/'
