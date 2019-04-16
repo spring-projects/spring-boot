@@ -77,7 +77,8 @@ class HazelcastServerConfiguration {
 
 		ConfigAvailableCondition() {
 			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml",
-					"classpath:/hazelcast.xml");
+					"classpath:/hazelcast.xml", "file:./hazelcast.yaml",
+					"classpath:/hazelcast.yaml");
 		}
 
 	}
