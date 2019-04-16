@@ -25,11 +25,14 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +48,7 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
  *
  * @author Brian Clozel
  * @author Raheela Aslam
+ * @author Sergey Serdyuk
  */
 abstract class ReactiveWebServerFactoryConfiguration {
 
@@ -105,8 +109,11 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(
-				JettyResourceFactory resourceFactory) {
+				JettyResourceFactory resourceFactory,
+				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
+			serverFactory.getServerCustomizers().addAll(
+					serverCustomizers.orderedStream().collect(Collectors.toList()));
 			serverFactory.setResourceFactory(resourceFactory);
 			return serverFactory;
 		}
@@ -119,8 +126,15 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedUndertow {
 
 		@Bean
-		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory() {
-			return new UndertowReactiveWebServerFactory();
+		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory(
+				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
+				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
+			UndertowReactiveWebServerFactory factory = new UndertowReactiveWebServerFactory();
+			factory.getDeploymentInfoCustomizers().addAll(deploymentInfoCustomizers
+					.orderedStream().collect(Collectors.toList()));
+			factory.getBuilderCustomizers().addAll(
+					builderCustomizers.orderedStream().collect(Collectors.toList()));
+			return factory;
 		}
 
 	}

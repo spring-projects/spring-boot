@@ -32,11 +32,14 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +57,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Raheela Asalm
+ * @author Sergey Serdyuk
  */
 @Configuration(proxyBeanMethods = false)
 class ServletWebServerFactoryConfiguration {
@@ -93,8 +97,12 @@ class ServletWebServerFactoryConfiguration {
 	public static class EmbeddedJetty {
 
 		@Bean
-		public JettyServletWebServerFactory JettyServletWebServerFactory() {
-			return new JettyServletWebServerFactory();
+		public JettyServletWebServerFactory JettyServletWebServerFactory(
+				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
+			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
+			factory.getServerCustomizers().addAll(
+					serverCustomizers.orderedStream().collect(Collectors.toList()));
+			return factory;
 		}
 
 	}
@@ -109,8 +117,15 @@ class ServletWebServerFactoryConfiguration {
 	public static class EmbeddedUndertow {
 
 		@Bean
-		public UndertowServletWebServerFactory undertowServletWebServerFactory() {
-			return new UndertowServletWebServerFactory();
+		public UndertowServletWebServerFactory undertowServletWebServerFactory(
+				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
+				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
+			UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
+			factory.getDeploymentInfoCustomizers().addAll(deploymentInfoCustomizers
+					.orderedStream().collect(Collectors.toList()));
+			factory.getBuilderCustomizers().addAll(
+					builderCustomizers.orderedStream().collect(Collectors.toList()));
+			return factory;
 		}
 
 	}
