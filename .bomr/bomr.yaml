@@ -31,8 +31,10 @@ bomr:
   verify:
     ignored-dependencies:
       # Avoid confliciting transitive requirements for
-      # io.grpc:grpc-core:jar:[1.0.1,1.0.1] (Jetty) and
-      # io.grpc:grpc-core:jar:[1.14.0,1.14.0] (Micrometer's Azure Registry)
+      # io.grpc:grpc-core:jar:[1.0.1,1.0.1] (Jetty),
+      # io.grpc:grpc-core:jar:[1.14.0,1.14.0] (Micrometer's Azure Registry), and
+      # io.grpc:grpc-core:jar:[1.15.0,1.15.0] (Micrometer's Stackdriver Registry)
+      - 'io.micrometer:micrometer-registry-azure-monitor'
       - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
       - 'org.eclipse.jetty:jetty-home'
     repositories:
