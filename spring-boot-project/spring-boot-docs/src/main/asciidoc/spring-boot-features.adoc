@@ -1013,7 +1013,7 @@ the following example:
 	import java.util.List;
 
 	import org.springframework.boot.context.properties.ConfigurationProperties;
-	import org.springframework.boot.context.properties.ConfigurationPropertyDefaultValue;
+	import org.springframework.boot.context.properties.DefaultValue;
 
 	@ConfigurationProperties("acme")
 	public class AcmeProperties {
@@ -1045,7 +1045,7 @@ the following example:
 			private final List<String> roles;
 
 			public Security(String username, String password,
-					@ConfigurationPropertyDefaultValue("USER") List<String> roles) {
+					@DefaultValue("USER") List<String> roles) {
 				this.username = username;
 				this.password = password;
 				this.roles = roles;
@@ -1065,9 +1065,8 @@ the following example:
 In this setup one, and only one constructor must be defined with the list of properties
 that you wish to bind and not other properties than the ones in the constructor are bound.
 
-Default values can be specified using `@ConfigurationPropertyDefaultValue` and the same
-conversion service will be applied to coerce the `String` value to the target type of a
-missing property.
+Default values can be specified using `@DefaultValue` and the same conversion service will
+be applied to coerce the `String` value to the target type of a missing property.
 
 
 
