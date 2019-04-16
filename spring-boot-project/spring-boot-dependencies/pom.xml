@@ -1815,11 +1815,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.solr</groupId>
-				<artifactId>solr-uima</artifactId>
-				<version>${solr.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-velocity</artifactId>
 				<version>${solr.version}</version>
 			</dependency>
