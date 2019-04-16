@@ -22,7 +22,7 @@ under the License.
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 				xmlns:d="http://docbook.org/ns/docbook"
 				xmlns:fo="http://www.w3.org/1999/XSL/Format"
-				xmlns:xslthl="http://xslthl.sourceforge.net/"
+				xmlns:xslthl="http://xslthl.sf.net"
 				xmlns:xlink='http://www.w3.org/1999/xlink'
 				xmlns:exsl="http://exslt.org/common"
 				exclude-result-prefixes="exsl xslthl d xlink"
