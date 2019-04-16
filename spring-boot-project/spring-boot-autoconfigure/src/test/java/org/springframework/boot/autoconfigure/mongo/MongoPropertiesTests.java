@@ -164,7 +164,7 @@ public class MongoPropertiesTests {
 		context.register(Config.class);
 		context.refresh();
 		MongoProperties properties = context.getBean(MongoProperties.class);
-		assertThat(properties.isAutoIndexCreation()).isEqualTo(Boolean.TRUE);
+		assertThat(properties.isAutoIndexCreation()).isTrue();
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
