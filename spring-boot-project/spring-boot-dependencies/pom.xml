@@ -1080,6 +1080,26 @@
 			</dependency>
 			<dependency>
 				<groupId>io.rsocket</groupId>
+				<artifactId>rsocket-load-balancer</artifactId>
+				<version>${rsocket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rsocket</groupId>
+				<artifactId>rsocket-micrometer</artifactId>
+				<version>${rsocket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rsocket</groupId>
+				<artifactId>rsocket-test</artifactId>
+				<version>${rsocket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rsocket</groupId>
+				<artifactId>rsocket-transport-local</artifactId>
+				<version>${rsocket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rsocket</groupId>
 				<artifactId>rsocket-transport-netty</artifactId>
 				<version>${rsocket.version}</version>
 			</dependency>
