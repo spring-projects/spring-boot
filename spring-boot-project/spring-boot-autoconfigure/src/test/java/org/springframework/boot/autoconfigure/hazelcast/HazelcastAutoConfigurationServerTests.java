@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
@@ -59,39 +60,56 @@ public class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	public void systemProperty() {
-		this.contextRunner
-				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
-						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getQueueConfigs().keySet()).containsOnly("foobar");
-				});
+	public void systemPropertyWithXml() {
+		systemProperty(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml");
 	}
 
 	@Test
-	public void explicitConfigFile() {
-		this.contextRunner.withPropertyValues(
+	public void systemPropertyWithYaml() {
+		systemProperty(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml");
+	}
+
+	private void systemProperty(String systemProperties) {
+		this.contextRunner.withSystemProperties(systemProperties)
+				.run((context) -> assertHazelcastSpecific(context));
+	}
+
+	@Test
+	public void explicitConfigFileWithXml() {
+		propertyValues(
 				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
-						+ "hazelcast-specific.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getConfigurationFile())
-							.isEqualTo(new ClassPathResource(
-									"org/springframework/boot/autoconfigure/hazelcast"
-											+ "/hazelcast-specific.xml").getFile());
-				});
+						+ "hazelcast-specific.xml");
 	}
 
 	@Test
-	public void explicitConfigUrl() {
-		this.contextRunner
-				.withPropertyValues("spring.hazelcast.config=hazelcast-default.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getConfigurationUrl()).isEqualTo(
-							new ClassPathResource("hazelcast-default.xml").getURL());
-				});
+	public void explicitConfigFileWithYaml() {
+		propertyValues(
+				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-specific.yaml");
+	}
+
+	@Test
+	public void explicitConfigUrlWithXml() {
+		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-specific.xml");
+	}
+
+	@Test
+	public void explicitConfigUrlWithYaml() {
+		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-specific.yaml");
+	}
+
+	private void propertyValues(String propertyValues) {
+		this.contextRunner.withPropertyValues(propertyValues)
+				.run((context) -> assertHazelcastSpecific(context));
+	}
+
+	private static void assertHazelcastSpecific(AssertableApplicationContext context) {
+		Config config = context.getBean(HazelcastInstance.class).getConfig();
+		assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
 	}
 
 	@Test

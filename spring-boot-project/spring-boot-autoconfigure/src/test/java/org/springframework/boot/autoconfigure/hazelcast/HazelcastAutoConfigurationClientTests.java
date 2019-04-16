@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,35 +64,58 @@ public class HazelcastAutoConfigurationClientTests {
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
-	public void systemProperty() {
-		this.contextRunner
-				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
-						+ "hazelcast-client-specific.xml")
-				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastInstance.class)
-						.has(nameStartingWith("hz.client_")));
+	public void systemPropertyWithXml() {
+		systemProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
+				+ "hazelcast-client-specific.xml");
 	}
 
 	@Test
-	public void explicitConfigFile() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-								+ "hazelcast/hazelcast-client-specific.xml")
-				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class)
-						.has(nameStartingWith("hz.client_")));
+	public void systemPropertyWithYaml() {
+		systemProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
+				+ "hazelcast-client-specific.yaml");
+	}
+
+	private void systemProperty(String systemProperty) {
+		this.contextRunner.withSystemProperties(systemProperty)
+				.run((context) -> assertHazelcastClientSpecific(context));
 	}
 
 	@Test
-	public void explicitConfigUrl() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.hazelcast.config=hazelcast-client-default.xml")
-				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class)
-						.has(nameStartingWith("hz.client_")));
+	public void explicitConfigFileWithXml() {
+		propertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+				+ "hazelcast/hazelcast-client-specific.xml");
+	}
+
+	@Test
+	public void explicitConfigFileWithYaml() {
+		propertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+				+ "hazelcast/hazelcast-client-specific.yaml");
+	}
+
+	@Test
+	public void explicitConfigUrlWithXml() {
+		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+	}
+
+	@Test
+	public void explicitConfigUrlWithYaml() {
+		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
+				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml");
+	}
+
+	private void propertyValues(String propertyValues) {
+		this.contextRunner.withPropertyValues(propertyValues)
+				.run((context) -> assertHazelcastClientSpecific(context));
+	}
+
+	private static void assertHazelcastClientSpecific(
+			AssertableApplicationContext context) {
+		assertThat(context).getBean(HazelcastInstance.class)
+				.isInstanceOf(HazelcastInstance.class)
+				.has(labelEqualTo("configured-client"));
 	}
 
 	@Test
@@ -111,9 +135,10 @@ public class HazelcastAutoConfigurationClientTests {
 						.isInstanceOf(HazelcastClientProxy.class));
 	}
 
-	private Condition<HazelcastInstance> nameStartingWith(String prefix) {
-		return new Condition<>((o) -> o.getName().startsWith(prefix),
-				"Name starts with " + prefix);
+	private static Condition<HazelcastInstance> labelEqualTo(String label) {
+		return new Condition<>((o) -> ((HazelcastClientProxy) o).getClientConfig()
+				.getLabels().stream().anyMatch((e) -> e.equals(label)),
+				"Label equals to " + label);
 	}
 
 	@Configuration(proxyBeanMethods = false)

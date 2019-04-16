@@ -21,6 +21,7 @@ import java.net.URL;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.config.YamlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
@@ -61,7 +62,16 @@ public class HazelcastInstanceFactory {
 
 	private Config getConfig(Resource configLocation) throws IOException {
 		URL configUrl = configLocation.getURL();
-		Config config = new XmlConfigBuilder(configUrl).build();
+		String configFileName = configUrl.getFile();
+
+		Config config;
+		if (configFileName.endsWith(".xml")) {
+			config = new XmlConfigBuilder(configUrl).build();
+		}
+		else { // yaml config available in the classpath
+			config = new YamlConfigBuilder(configUrl).build();
+		}
+
 		if (ResourceUtils.isFileURL(configUrl)) {
 			config.setConfigurationFile(configLocation.getFile());
 		}
