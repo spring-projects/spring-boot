@@ -127,7 +127,6 @@ public class JsonTestersAutoConfiguration {
 		JsonTesterFactoryBean(Class<?> objectType, M marshaller) {
 			this.objectType = objectType;
 			this.marshaller = marshaller;
-
 		}
 
 		@Override
