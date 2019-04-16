@@ -20,16 +20,26 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -146,6 +156,48 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 			TomcatReactiveWebServerFactory factory = context
 					.getBean(TomcatReactiveWebServerFactory.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void jettyServerCustomizerBeanIsAddedToFactory() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(JettyServerCustomizer.class);
+		runner.run((context) -> {
+			JettyReactiveWebServerFactory factory = context
+					.getBean(JettyReactiveWebServerFactory.class);
+			assertThat(factory.getServerCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowDeploymentInfoCustomizer.class);
+		runner.run((context) -> {
+			UndertowReactiveWebServerFactory factory = context
+					.getBean(UndertowReactiveWebServerFactory.class);
+			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void undertowBuilderCustomizerBeanIsAddedToFactory() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowBuilderCustomizer.class);
+		runner.run((context) -> {
+			UndertowReactiveWebServerFactory factory = context
+					.getBean(UndertowReactiveWebServerFactory.class);
+			assertThat(factory.getBuilderCustomizers()).hasSize(1);
 		});
 	}
 
