@@ -55,6 +55,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
@@ -582,6 +583,39 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	public void concurrentKafkaListenerContainerFactoryInBatchModeShouldUseBatchErrorHandler() {
+		this.contextRunner.withUserConfiguration(BatchErrorHandlerConfiguration.class)
+				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(KafkaTestUtils.getPropertyValue(factory, "errorHandler"))
+							.isSameAs(context.getBean("batchErrorHandler"));
+				});
+	}
+
+	@Test
+	public void concurrentKafkaListenerContainerFactoryInBatchModeWhenBatchErrorHandlerNotAvailableShouldBeNull() {
+		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch")
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(KafkaTestUtils.getPropertyValue(factory, "errorHandler"))
+							.isNull();
+				});
+	}
+
+	@Test
+	public void concurrentKafkaListenerContainerFactoryInBatchModeAndSimpleErrorHandlerShouldBeNull() {
+		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch")
+				.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(KafkaTestUtils.getPropertyValue(factory, "errorHandler"))
+							.isNull();
+				});
+	}
+
+	@Test
 	public void testConcurrentKafkaListenerContainerFactoryWithDefaultTransactionManager() {
 		this.contextRunner
 				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
@@ -656,6 +690,16 @@ public class KafkaAutoConfigurationTests {
 		@Bean
 		public SeekToCurrentErrorHandler errorHandler() {
 			return new SeekToCurrentErrorHandler();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class BatchErrorHandlerConfiguration {
+
+		@Bean
+		public SeekToCurrentBatchErrorHandler batchErrorHandler() {
+			return new SeekToCurrentBatchErrorHandler();
 		}
 
 	}

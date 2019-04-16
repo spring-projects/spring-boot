@@ -24,6 +24,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.support.converter.MessageConverter;
@@ -47,6 +48,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private KafkaAwareTransactionManager<Object, Object> transactionManager;
 
 	private ErrorHandler errorHandler;
+
+	private BatchErrorHandler batchErrorHandler;
 
 	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
@@ -92,6 +95,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link BatchErrorHandler} to use.
+	 * @param batchErrorHandler the error handler
+	 */
+	public void setBatchErrorHandler(BatchErrorHandler batchErrorHandler) {
+		this.batchErrorHandler = batchErrorHandler;
+	}
+
+	/**
 	 * Set the {@link AfterRollbackProcessor} to use.
 	 * @param afterRollbackProcessor the after rollback processor
 	 */
@@ -124,8 +135,13 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.replyTemplate).to(factory::setReplyTemplate);
 		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH)
 				.toCall(() -> factory.setBatchListener(true));
-		map.from(this.errorHandler).to(factory::setErrorHandler);
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
+		if (properties.getType().equals(Listener.Type.BATCH)) {
+			factory.setBatchErrorHandler(this.batchErrorHandler);
+		}
+		else {
+			factory.setErrorHandler(this.errorHandler);
+		}
 	}
 
 	private void configureContainer(ContainerProperties container) {
