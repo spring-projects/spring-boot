@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +60,7 @@ public class MongoReactiveDataAutoConfigurationTests {
 	@Test
 	public void gridFsTemplateExists() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveMongoTemplate.class));
+				.hasSingleBean(ReactiveGridFsTemplate.class));
 	}
 
 }
