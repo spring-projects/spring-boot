@@ -91,7 +91,7 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DataBufferFactory dataBufferFactory() {
+	public DefaultDataBufferFactory dataBufferFactory() {
 		return new DefaultDataBufferFactory();
 	}
 
