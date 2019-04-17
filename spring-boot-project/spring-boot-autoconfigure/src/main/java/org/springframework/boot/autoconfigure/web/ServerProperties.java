@@ -948,6 +948,17 @@ public class ServerProperties {
 			 */
 			private boolean logLatency;
 
+			/**
+			 * Whether to log IP address from the "X-Forwarded-For" header rather than the
+			 * one from the connection.
+			 */
+			private boolean preferProxiedForAddress = false;
+
+			/**
+			 * Request paths that should not be logged.
+			 */
+			private List<String> ignorePaths;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1042,6 +1053,22 @@ public class ServerProperties {
 
 			public void setLogLatency(boolean logLatency) {
 				this.logLatency = logLatency;
+			}
+
+			public boolean isPreferProxiedForAddress() {
+				return this.preferProxiedForAddress;
+			}
+
+			public void setPreferProxiedForAddress(boolean preferProxiedForAddress) {
+				this.preferProxiedForAddress = preferProxiedForAddress;
+			}
+
+			public List<String> getIgnorePaths() {
+				return this.ignorePaths;
+			}
+
+			public void setIgnorePaths(List<String> ignorePaths) {
+				this.ignorePaths = ignorePaths;
 			}
 
 		}
