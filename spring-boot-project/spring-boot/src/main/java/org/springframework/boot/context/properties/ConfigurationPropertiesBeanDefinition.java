@@ -46,6 +46,7 @@ final class ConfigurationPropertiesBeanDefinition extends GenericBeanDefinition 
 	private static <T> Supplier<T> createBean(ConfigurableListableBeanFactory beanFactory,
 			String beanName, Class<T> type) {
 		return () -> {
+			// FIXME review
 			ConfigurationProperties annotation = getAnnotation(type,
 					ConfigurationProperties.class);
 			Validated validated = getAnnotation(type, Validated.class);

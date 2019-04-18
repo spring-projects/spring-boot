@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.MethodIntrospector.MetadataLookup;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 
 /**
  * Factory to create an {@link Operation} for annotated methods on an
@@ -84,13 +84,13 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 
 	private O createOperation(EndpointId endpointId, Object target, Method method,
 			OperationType operationType, Class<? extends Annotation> annotationType) {
-		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(method, annotationType);
-		if (annotationAttributes == null) {
+		MergedAnnotation<?> annotation = MergedAnnotations.from(method)
+				.get(annotationType);
+		if (!annotation.isPresent()) {
 			return null;
 		}
 		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method,
-				operationType, annotationAttributes);
+				operationType, annotation.asAnnotationAttributes());
 		OperationInvoker invoker = new ReflectiveOperationInvoker(target, operationMethod,
 				this.parameterValueMapper);
 		invoker = applyAdvisors(endpointId, operationMethod, invoker);

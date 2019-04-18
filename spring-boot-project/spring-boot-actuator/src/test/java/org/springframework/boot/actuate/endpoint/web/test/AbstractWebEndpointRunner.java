@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ import org.junit.runners.model.Statement;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -181,7 +182,8 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 		}
 
 		private boolean isConfiguration(Class<?> candidate) {
-			return AnnotationUtils.findAnnotation(candidate, Configuration.class) != null;
+			return MergedAnnotations.from(candidate, SearchStrategy.EXHAUSTIVE)
+					.isPresent(Configuration.class);
 		}
 
 		private WebTestClient createWebTestClient() {

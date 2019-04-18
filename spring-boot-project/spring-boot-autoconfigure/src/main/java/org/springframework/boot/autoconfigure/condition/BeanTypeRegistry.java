@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.StandardMethodMetadata;
 import org.springframework.util.Assert;
@@ -117,8 +117,10 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	public Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
 		return this.beanTypes.entrySet().stream()
-				.filter((entry) -> entry.getValue() != null && AnnotationUtils
-						.findAnnotation(entry.getValue().resolve(), annotation) != null)
+				.filter((entry) -> entry.getValue() != null && MergedAnnotations
+						.from(entry.getValue().resolve(),
+								MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+						.isPresent(annotation))
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,9 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -429,17 +430,16 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		private Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
 		EndpointBean(String beanName, Object bean) {
-			AnnotationAttributes attributes = AnnotatedElementUtils
-					.findMergedAnnotationAttributes(bean.getClass(), Endpoint.class, true,
-							true);
-			String id = attributes.getString("id");
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations
+					.from(bean.getClass(), SearchStrategy.EXHAUSTIVE).get(Endpoint.class);
+			String id = annotation.getString("id");
 			Assert.state(StringUtils.hasText(id),
 					() -> "No @Endpoint id attribute specified for "
 							+ bean.getClass().getName());
 			this.beanName = beanName;
 			this.bean = bean;
 			this.id = EndpointId.of(id);
-			this.enabledByDefault = (Boolean) attributes.get("enableByDefault");
+			this.enabledByDefault = annotation.getBoolean("enableByDefault");
 			this.filter = getFilter(this.bean.getClass());
 		}
 
@@ -452,12 +452,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 		private Class<?> getFilter(Class<?> type) {
-			AnnotationAttributes attributes = AnnotatedElementUtils
-					.getMergedAnnotationAttributes(type, FilteredEndpoint.class);
-			if (attributes == null) {
-				return null;
-			}
-			return attributes.getClass("value");
+			return MergedAnnotations.from(type).get(FilteredEndpoint.class)
+					.getValue(MergedAnnotation.VALUE, Class.class).orElse(null);
 		}
 
 		public String getBeanName() {
@@ -498,17 +494,15 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		ExtensionBean(String beanName, Object bean) {
 			this.bean = bean;
 			this.beanName = beanName;
-			AnnotationAttributes attributes = AnnotatedElementUtils
-					.getMergedAnnotationAttributes(bean.getClass(),
-							EndpointExtension.class);
-			Class<?> endpointType = attributes.getClass("endpoint");
-			AnnotationAttributes endpointAttributes = AnnotatedElementUtils
-					.findMergedAnnotationAttributes(endpointType, Endpoint.class, true,
-							true);
-			Assert.state(endpointAttributes != null, () -> "Extension "
+			MergedAnnotation<EndpointExtension> extensionAnnotation = MergedAnnotations
+					.from(bean.getClass()).get(EndpointExtension.class);
+			Class<?> endpointType = extensionAnnotation.getClass("endpoint");
+			MergedAnnotation<Endpoint> endpointAnnotation = MergedAnnotations
+					.from(endpointType, SearchStrategy.EXHAUSTIVE).get(Endpoint.class);
+			Assert.state(endpointAnnotation.isPresent(), () -> "Extension "
 					+ endpointType.getName() + " does not specify an endpoint");
-			this.endpointId = EndpointId.of(endpointAttributes.getString("id"));
-			this.filter = attributes.getClass("filter");
+			this.endpointId = EndpointId.of(endpointAnnotation.getString("id"));
+			this.filter = extensionAnnotation.getClass("filter");
 		}
 
 		public String getBeanName() {
