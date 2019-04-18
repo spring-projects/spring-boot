@@ -162,14 +162,15 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void tomcatCustomizers() {
 		TomcatServletWebServerFactory factory = getFactory();
-		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
-		Arrays.setAll(listeners, (i) -> mock(TomcatContextCustomizer.class));
-		factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
-		factory.addContextCustomizers(listeners[2], listeners[3]);
+		TomcatContextCustomizer[] customizers = new TomcatContextCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatContextCustomizer.class));
+		factory.setTomcatContextCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
+		factory.addContextCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer();
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatContextCustomizer listener : listeners) {
-			ordered.verify(listener).customize(any(Context.class));
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatContextCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(Context.class));
 		}
 	}
 
@@ -187,29 +188,30 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void tomcatConnectorCustomizers() {
 		TomcatServletWebServerFactory factory = getFactory();
-		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
-		Arrays.setAll(listeners, (i) -> mock(TomcatConnectorCustomizer.class));
-		factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
-		factory.addConnectorCustomizers(listeners[2], listeners[3]);
+		TomcatConnectorCustomizer[] customizers = new TomcatConnectorCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatConnectorCustomizer.class));
+		factory.setTomcatConnectorCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
+		factory.addConnectorCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer();
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatConnectorCustomizer listener : listeners) {
-			ordered.verify(listener).customize(any(Connector.class));
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatConnectorCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(Connector.class));
 		}
 	}
 
 	@Test
 	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
 		TomcatServletWebServerFactory factory = getFactory();
-		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol>[] listeners = new TomcatProtocolHandlerCustomizer[4];
-		Arrays.setAll(listeners, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol>[] customizers = new TomcatProtocolHandlerCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
 		factory.setTomcatProtocolHandlerCustomizers(
-				Arrays.asList(listeners[0], listeners[1]));
-		factory.addProtocolHandlerCustomizers(listeners[2], listeners[3]);
+				Arrays.asList(customizers[0], customizers[1]));
+		factory.addProtocolHandlerCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer();
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatProtocolHandlerCustomizer listener : listeners) {
-			ordered.verify(listener).customize(any(ProtocolHandler.class));
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatProtocolHandlerCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(ProtocolHandler.class));
 		}
 	}
 
@@ -230,14 +232,14 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void tomcatAdditionalConnectors() {
 		TomcatServletWebServerFactory factory = getFactory();
-		Connector[] listeners = new Connector[4];
-		Arrays.setAll(listeners, (i) -> new Connector());
-		factory.addAdditionalTomcatConnectors(listeners);
+		Connector[] connectors = new Connector[4];
+		Arrays.setAll(connectors, (i) -> new Connector());
+		factory.addAdditionalTomcatConnectors(connectors);
 		this.webServer = factory.getWebServer();
-		Map<Service, Connector[]> connectors = ((TomcatWebServer) this.webServer)
+		Map<Service, Connector[]> connectorsByService = ((TomcatWebServer) this.webServer)
 				.getServiceConnectors();
-		assertThat(connectors.values().iterator().next().length)
-				.isEqualTo(listeners.length + 1);
+		assertThat(connectorsByService.values().iterator().next().length)
+				.isEqualTo(connectors.length + 1);
 	}
 
 	@Test
