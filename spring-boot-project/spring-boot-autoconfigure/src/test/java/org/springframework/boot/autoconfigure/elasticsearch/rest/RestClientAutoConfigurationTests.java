@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,6 +34,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -72,6 +75,40 @@ public class RestClientAutoConfigurationTests {
 					assertThat(restClient)
 							.hasFieldOrPropertyWithValue("maxRetryTimeoutMillis", 42L);
 				});
+	}
+
+	@Test
+	public void configureWithNoTimeoutsApplyDefaults() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertTimeouts(restClient,
+					Duration.ofMillis(RestClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
+					Duration.ofMillis(RestClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS));
+		});
+	}
+
+	@Test
+	public void configureWithCustomTimeouts() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
+						"spring.elasticsearch.rest.read-timeout=1m")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RestClient.class);
+					RestClient restClient = context.getBean(RestClient.class);
+					assertTimeouts(restClient, Duration.ofSeconds(15),
+							Duration.ofMinutes(1));
+				});
+	}
+
+	private static void assertTimeouts(RestClient restClient, Duration connectTimeout,
+			Duration readTimeout) {
+		Object client = ReflectionTestUtils.getField(restClient, "client");
+		Object config = ReflectionTestUtils.getField(client, "defaultConfig");
+		assertThat(config).hasFieldOrPropertyWithValue("socketTimeout",
+				Math.toIntExact(readTimeout.toMillis()));
+		assertThat(config).hasFieldOrPropertyWithValue("connectTimeout",
+				Math.toIntExact(connectTimeout.toMillis()));
 	}
 
 	@Test
