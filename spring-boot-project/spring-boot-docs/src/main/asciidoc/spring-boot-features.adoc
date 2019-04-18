@@ -4805,6 +4805,7 @@ You can further tune how `RestClient` is configured, as shown in the following e
 [source,properties,indent=0]
 ----
 	spring.elasticsearch.rest.uris=https://search.example.com:9200
+	spring.elasticsearch.rest.read-timeout=10s
 	spring.elasticsearch.rest.username=user
 	spring.elasticsearch.rest.password=secret
 ----
