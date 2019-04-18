@@ -89,45 +89,45 @@ public class UndertowWebServerFactoryCustomizer implements
 
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
 				.asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpHeaderSize) -> customizeProperties(factory,
+				.to((maxHttpHeaderSize) -> customizeServerOption(factory,
 						UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
 
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
-				.asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpPostSize) -> customizeProperties(factory,
-						UndertowOptions.MAX_HEADER_SIZE, maxHttpPostSize));
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize).as(DataSize::toBytes)
+				.when(this::isPositive)
+				.to((maxHttpPostSize) -> customizeServerOption(factory,
+						UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 
 		propertyMapper.from(properties::getConnectionTimeout)
-				.to((connectionTimeout) -> customizeProperties(factory,
+				.to((connectionTimeout) -> customizeServerOption(factory,
 						UndertowOptions.NO_REQUEST_TIMEOUT,
 						(int) connectionTimeout.toMillis()));
 
 		propertyMapper.from(undertowProperties::getMaxParameters)
-				.to((maxParameters) -> customizeProperties(factory,
+				.to((maxParameters) -> customizeServerOption(factory,
 						UndertowOptions.MAX_PARAMETERS, maxParameters));
 
 		propertyMapper.from(undertowProperties::getMaxHeaders)
-				.to((maxHeaders) -> customizeProperties(factory,
+				.to((maxHeaders) -> customizeServerOption(factory,
 						UndertowOptions.MAX_HEADERS, maxHeaders));
 
 		propertyMapper.from(undertowProperties::getMaxCookies)
-				.to((maxCookies) -> customizeProperties(factory,
+				.to((maxCookies) -> customizeServerOption(factory,
 						UndertowOptions.MAX_COOKIES, maxCookies));
 
 		propertyMapper.from(undertowProperties::isAllowEncodedSlash)
-				.to((allowEncodedSlash) -> customizeProperties(factory,
+				.to((allowEncodedSlash) -> customizeServerOption(factory,
 						UndertowOptions.ALLOW_ENCODED_SLASH, allowEncodedSlash));
 
 		propertyMapper.from(undertowProperties::isDecodeUrl)
-				.to((isDecodeUrl) -> customizeProperties(factory,
+				.to((isDecodeUrl) -> customizeServerOption(factory,
 						UndertowOptions.DECODE_URL, isDecodeUrl));
 
 		propertyMapper.from(undertowProperties::getUrlCharset)
-				.to((urlCharset) -> customizeProperties(factory,
-						UndertowOptions.URL_CHARSET, urlCharset));
+				.to((urlCharset) -> customizeServerOption(factory,
+						UndertowOptions.URL_CHARSET, urlCharset.name()));
 
 		propertyMapper.from(undertowProperties::isAlwaysSetKeepAlive)
-				.to((alwaysSetKeepAlive) -> customizeProperties(factory,
+				.to((alwaysSetKeepAlive) -> customizeServerOption(factory,
 						UndertowOptions.ALWAYS_SET_KEEP_ALIVE, alwaysSetKeepAlive));
 
 		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
@@ -138,10 +138,10 @@ public class UndertowWebServerFactoryCustomizer implements
 		return value.longValue() > 0;
 	}
 
-	private <T> void customizeProperties(ConfigurableUndertowWebServerFactory factory,
-			Option<T> propType, T prop) {
+	private <T> void customizeServerOption(ConfigurableUndertowWebServerFactory factory,
+			Option<T> option, T value) {
 		factory.addBuilderCustomizers(
-				(builder) -> builder.setServerOption(propType, prop));
+				(builder) -> builder.setServerOption(option, value));
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {

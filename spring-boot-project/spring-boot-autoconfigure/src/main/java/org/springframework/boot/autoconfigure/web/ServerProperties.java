@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import io.undertow.UndertowOptions;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -1117,47 +1119,47 @@ public class ServerProperties {
 		private boolean eagerFilterInit = true;
 
 		/**
-		 * The maximum number of query or path parameters that are allowed. This limit
-		 * exists to prevent hash collision based DOS attacks.
+		 * Maximum number of query or path parameters that are allowed. This limit exists
+		 * to prevent hash collision based DOS attacks.
 		 */
-		private Integer maxParameters;
+		private int maxParameters = UndertowOptions.DEFAULT_MAX_PARAMETERS;
 
 		/**
-		 * The maximum number of headers that are allowed. This limit exists to prevent
-		 * hash collision based DOS attacks.
+		 * Maximum number of headers that are allowed. This limit exists to prevent hash
+		 * collision based DOS attacks.
 		 */
-		private Integer maxHeaders;
+		private int maxHeaders = UndertowOptions.DEFAULT_MAX_HEADERS;
 
 		/**
-		 * The maximum number of cookies that are allowed. This limit exists to prevent
-		 * hash collision based DOS attacks.
+		 * Maximum number of cookies that are allowed. This limit exists to prevent hash
+		 * collision based DOS attacks.
 		 */
-		private Integer maxCookies;
+		private int maxCookies = 200;
 
 		/**
-		 * Set this to true if you want the server to decode percent encoded slash
-		 * characters. This is probably a bad idea, as it can have security implications,
-		 * due to different servers interpreting the slash differently. Only enable this
-		 * if you have a legacy application that requires it.
+		 * Whether the server should decode percent encoded slash characters. Enabling
+		 * encoded slashes can have security implications due to different servers
+		 * interpreting the slash differently. Only enable this if you have a legacy
+		 * application that requires it.
 		 */
-		private Boolean allowEncodedSlash;
+		private boolean allowEncodedSlash = false;
 
 		/**
-		 * If the URL should be decoded. If this is not set to true then percent encoded
-		 * characters in the URL will be left as is.
+		 * Whether the URL should be decoded. When disabled, percent-encoded characters in
+		 * the URL will be left as-is.
 		 */
-		private Boolean decodeUrl;
+		private boolean decodeUrl = true;
 
 		/**
-		 * The charset to decode the URL to.
+		 * Charset used to decode URLs.
 		 */
-		private String urlCharset;
+		private Charset urlCharset = StandardCharsets.UTF_8;
 
 		/**
-		 * If the 'Connection: keep-alive' header should be added to all responses, even
-		 * if not required by spec.
+		 * Whether the 'Connection: keep-alive' header should be added to all responses,
+		 * even if not required by the HTTP specification.
 		 */
-		private Boolean alwaysSetKeepAlive;
+		private boolean alwaysSetKeepAlive = true;
 
 		private final Accesslog accesslog = new Accesslog();
 
@@ -1209,7 +1211,7 @@ public class ServerProperties {
 			this.eagerFilterInit = eagerFilterInit;
 		}
 
-		public Integer getMaxParameters() {
+		public int getMaxParameters() {
 			return this.maxParameters;
 		}
 
@@ -1217,11 +1219,11 @@ public class ServerProperties {
 			this.maxParameters = maxParameters;
 		}
 
-		public Integer getMaxHeaders() {
+		public int getMaxHeaders() {
 			return this.maxHeaders;
 		}
 
-		public void setMaxHeaders(Integer maxHeaders) {
+		public void setMaxHeaders(int maxHeaders) {
 			this.maxHeaders = maxHeaders;
 		}
 
@@ -1233,15 +1235,15 @@ public class ServerProperties {
 			this.maxCookies = maxCookies;
 		}
 
-		public Boolean isAllowEncodedSlash() {
+		public boolean isAllowEncodedSlash() {
 			return this.allowEncodedSlash;
 		}
 
-		public void setAllowEncodedSlash(Boolean allowEncodedSlash) {
+		public void setAllowEncodedSlash(boolean allowEncodedSlash) {
 			this.allowEncodedSlash = allowEncodedSlash;
 		}
 
-		public Boolean isDecodeUrl() {
+		public boolean isDecodeUrl() {
 			return this.decodeUrl;
 		}
 
@@ -1249,19 +1251,19 @@ public class ServerProperties {
 			this.decodeUrl = decodeUrl;
 		}
 
-		public String getUrlCharset() {
+		public Charset getUrlCharset() {
 			return this.urlCharset;
 		}
 
-		public void setUrlCharset(String urlCharset) {
+		public void setUrlCharset(Charset urlCharset) {
 			this.urlCharset = urlCharset;
 		}
 
-		public Boolean isAlwaysSetKeepAlive() {
+		public boolean isAlwaysSetKeepAlive() {
 			return this.alwaysSetKeepAlive;
 		}
 
-		public void setAlwaysSetKeepAlive(Boolean alwaysSetKeepAlive) {
+		public void setAlwaysSetKeepAlive(boolean alwaysSetKeepAlive) {
 			this.alwaysSetKeepAlive = alwaysSetKeepAlive;
 		}
 
