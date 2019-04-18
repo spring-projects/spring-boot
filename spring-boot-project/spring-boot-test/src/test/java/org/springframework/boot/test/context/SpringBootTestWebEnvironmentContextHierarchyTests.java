@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties = {
-		"server.port=0", "value=123" })
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT,
+		properties = { "server.port=0", "value=123" })
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfiguration.class),
 		@ContextConfiguration(classes = ChildConfiguration.class) })
 @RunWith(SpringRunner.class)
@@ -60,12 +60,12 @@ public class SpringBootTestWebEnvironmentContextHierarchyTests {
 		assertThat(parent).isNotInstanceOf(WebApplicationContext.class);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ParentConfiguration extends AbstractConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@RestController
 	protected static class ChildConfiguration extends AbstractConfig {

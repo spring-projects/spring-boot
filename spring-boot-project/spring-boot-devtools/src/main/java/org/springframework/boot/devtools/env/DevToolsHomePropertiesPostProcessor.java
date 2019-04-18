@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.devtools.DevtoolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -43,18 +44,20 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		File home = getHomeFolder();
-		File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
-		if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
-			FileSystemResource resource = new FileSystemResource(propertyFile);
-			Properties properties;
-			try {
-				properties = PropertiesLoaderUtils.loadProperties(resource);
-				environment.getPropertySources().addFirst(
-						new PropertiesPropertySource("devtools-local", properties));
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Unable to load " + FILE_NAME, ex);
+		if (DevtoolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
+			File home = getHomeFolder();
+			File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
+			if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
+				FileSystemResource resource = new FileSystemResource(propertyFile);
+				Properties properties;
+				try {
+					properties = PropertiesLoaderUtils.loadProperties(resource);
+					environment.getPropertySources().addFirst(
+							new PropertiesPropertySource("devtools-local", properties));
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException("Unable to load " + FILE_NAME, ex);
+				}
 			}
 		}
 	}

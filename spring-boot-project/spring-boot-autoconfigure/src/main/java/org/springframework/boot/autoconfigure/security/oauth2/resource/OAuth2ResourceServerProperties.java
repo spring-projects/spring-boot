@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,15 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
 
 /**
  * OAuth 2.0 resource server properties.
@@ -50,6 +58,11 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private String issuerUri;
 
+		/**
+		 * Location of the file containing the public key used to verify a JWT.
+		 */
+		private Resource publicKeyLocation;
+
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
@@ -72,6 +85,26 @@ public class OAuth2ResourceServerProperties {
 
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
+		}
+
+		public Resource getPublicKeyLocation() {
+			return this.publicKeyLocation;
+		}
+
+		public void setPublicKeyLocation(Resource publicKeyLocation) {
+			this.publicKeyLocation = publicKeyLocation;
+		}
+
+		public String readPublicKey() throws IOException {
+			String key = "spring.security.oauth2.resourceserver.public-key-location";
+			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
+			if (!this.publicKeyLocation.exists()) {
+				throw new InvalidConfigurationPropertyValueException(key,
+						this.publicKeyLocation, "Public key location does not exist");
+			}
+			try (InputStream inputStream = this.publicKeyLocation.getInputStream()) {
+				return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+			}
 		}
 
 	}

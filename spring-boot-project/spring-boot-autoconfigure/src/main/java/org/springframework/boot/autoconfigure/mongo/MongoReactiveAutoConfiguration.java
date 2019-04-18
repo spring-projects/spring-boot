@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,15 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.stream.Collectors;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import reactor.core.publisher.Flux;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,7 +46,7 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoClient.class, Flux.class })
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoReactiveAutoConfiguration {
@@ -59,20 +63,51 @@ public class MongoReactiveAutoConfiguration {
 		return factory.createMongoClient(settings.getIfAvailable());
 	}
 
-	@Configuration
-	@ConditionalOnClass(SocketChannel.class)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ SocketChannel.class, NioEventLoopGroup.class })
 	static class NettyDriverConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		public MongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
+		public NettyDriverMongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
 				ObjectProvider<MongoClientSettings> settings) {
-			return (builder) -> {
-				if (!isStreamFactoryFactoryDefined(settings.getIfAvailable())) {
-					builder.streamFactoryFactory(
-							NettyStreamFactoryFactory.builder().build());
-				}
-			};
+			return new NettyDriverMongoClientSettingsBuilderCustomizer(settings);
+		}
+
+	}
+
+	/**
+	 * {@link MongoClientSettingsBuilderCustomizer} to apply Mongo client settings.
+	 */
+	private static final class NettyDriverMongoClientSettingsBuilderCustomizer
+			implements MongoClientSettingsBuilderCustomizer, DisposableBean {
+
+		private final ObjectProvider<MongoClientSettings> settings;
+
+		private volatile EventLoopGroup eventLoopGroup;
+
+		private NettyDriverMongoClientSettingsBuilderCustomizer(
+				ObjectProvider<MongoClientSettings> settings) {
+			this.settings = settings;
+		}
+
+		@Override
+		public void customize(Builder builder) {
+			if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
+				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+				this.eventLoopGroup = eventLoopGroup;
+				builder.streamFactoryFactory(NettyStreamFactoryFactory.builder()
+						.eventLoopGroup(eventLoopGroup).build());
+			}
+		}
+
+		@Override
+		public void destroy() {
+			EventLoopGroup eventLoopGroup = this.eventLoopGroup;
+			if (eventLoopGroup != null) {
+				eventLoopGroup.shutdownGracefully().awaitUninterruptibly();
+				this.eventLoopGroup = null;
+			}
 		}
 
 		private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {

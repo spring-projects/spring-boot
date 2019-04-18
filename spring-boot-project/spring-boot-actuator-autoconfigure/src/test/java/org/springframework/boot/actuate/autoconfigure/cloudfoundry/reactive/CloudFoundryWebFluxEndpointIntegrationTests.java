@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -112,9 +112,9 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 		this.contextRunner.run(withWebTestClient((client) -> client.options()
 				.uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
 				.header("Access-Control-Request-Method", "POST")
-				.header("Origin", "http://example.com").exchange().expectStatus().isOk()
+				.header("Origin", "https://example.com").exchange().expectStatus().isOk()
 				.expectHeader()
-				.valueEquals("Access-Control-Allow-Origin", "http://example.com")
+				.valueEquals("Access-Control-Allow-Origin", "https://example.com")
 				.expectHeader().valueEquals("Access-Control-Allow-Methods", "GET,POST")));
 	}
 
@@ -182,7 +182,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 				+ Base64Utils.encodeToString("signature".getBytes());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CloudFoundryReactiveConfiguration {
 
 		@Bean
@@ -203,7 +203,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 				EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
+			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
 			return new CloudFoundryWebFluxEndpointHandlerMapping(
 					new EndpointMapping("/cfApplication"),
@@ -276,7 +276,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CloudFoundryReactiveConfiguration.class)
 	protected static class TestEndpointConfiguration {
 

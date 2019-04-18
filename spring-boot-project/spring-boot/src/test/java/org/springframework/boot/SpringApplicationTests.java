@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.After;
 import org.junit.Before;
@@ -63,6 +62,7 @@ import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWeb
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -75,6 +75,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -98,7 +99,6 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -185,9 +185,9 @@ public class SpringApplicationTests {
 
 	@Test
 	public void sourcesMustBeAccessible() {
-		assertThatIllegalStateException().isThrownBy(
+		assertThatIllegalArgumentException().isThrownBy(
 				() -> new SpringApplication(InaccessibleConfiguration.class).run())
-				.withMessageContaining("Cannot load configuration");
+				.withMessageContaining("No visible constructors");
 	}
 
 	@Test
@@ -319,8 +319,8 @@ public class SpringApplicationTests {
 	@Test
 	public void specificWebApplicationContextClassDetectWebApplicationType() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application
-				.setApplicationContextClass(AnnotationConfigWebApplicationContext.class);
+		application.setApplicationContextClass(
+				AnnotationConfigServletWebApplicationContext.class);
 		assertThat(application.getWebApplicationType())
 				.isEqualTo(WebApplicationType.SERVLET);
 	}
@@ -1080,7 +1080,7 @@ public class SpringApplicationTests {
 				ExampleConfig.class);
 		application.addListeners(
 				(ApplicationListener<ApplicationEnvironmentPreparedEvent>) (event) -> {
-					Assertions.assertThat(event.getEnvironment())
+					assertThat(event.getEnvironment())
 							.isInstanceOf(StandardServletEnvironment.class);
 					TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
 							event.getEnvironment(), "foo=bar");
@@ -1185,6 +1185,14 @@ public class SpringApplicationTests {
 				.run("--spring.main.web-application-type=none",
 						"--spring.main.lazy-initialization=true")
 				.getBean(AtomicInteger.class)).hasValue(0);
+	}
+
+	@Test
+	public void lazyInitializationShouldNotApplyToBeansThatAreExplicitlyNotLazy() {
+		assertThat(new SpringApplication(NotLazyInitializationConfig.class)
+				.run("--spring.main.web-application-type=none",
+						"--spring.main.lazy-initialization=true")
+				.getBean(AtomicInteger.class)).hasValue(1);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
@@ -1294,7 +1302,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExampleConfig {
 
 		@Bean
@@ -1304,7 +1312,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OverrideConfig {
 
 		@Bean
@@ -1314,7 +1322,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BrokenPostConstructConfig {
 
 		@Bean
@@ -1333,7 +1341,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ListenerConfig {
 
 		@Bean
@@ -1343,7 +1351,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Multicaster {
 
 		@Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)
@@ -1353,7 +1361,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExampleWebConfig {
 
 		@Bean
@@ -1363,7 +1371,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExampleReactiveWebConfig {
 
 		@Bean
@@ -1378,7 +1386,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FailingConfig {
 
 		@Bean
@@ -1388,7 +1396,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CommandLineRunConfig {
 
 		@Bean
@@ -1409,7 +1417,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExitCodeCommandLineRunConfig {
 
 		@Bean
@@ -1421,7 +1429,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MappedExitCodeCommandLineRunConfig {
 
 		@Bean
@@ -1443,7 +1451,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RefreshFailureConfig {
 
 		@PostConstruct
@@ -1453,7 +1461,7 @@ public class SpringApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class LazyInitializationConfig {
 
 		@Bean
@@ -1470,6 +1478,30 @@ public class SpringApplicationTests {
 
 			LazyBean(AtomicInteger counter) {
 				counter.incrementAndGet();
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotLazyInitializationConfig {
+
+		@Bean
+		public AtomicInteger counter() {
+			return new AtomicInteger(0);
+		}
+
+		@Bean
+		@Lazy(false)
+		public NotLazyBean NotLazyBean(AtomicInteger counter) {
+			return new NotLazyBean(counter);
+		}
+
+		static class NotLazyBean {
+
+			NotLazyBean(AtomicInteger counter) {
+				counter.getAndIncrement();
 			}
 
 		}

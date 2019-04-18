@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,11 +27,9 @@ import java.util.TreeSet;
  */
 class ConfigurationTable {
 
-	private static final String NEWLINE = System.lineSeparator();
-
 	private final String id;
 
-	private final Set<AbstractConfigurationEntry> entries;
+	private final Set<ConfigurationTableEntry> entries;
 
 	ConfigurationTable(String id) {
 		this.id = id;
@@ -42,20 +40,21 @@ class ConfigurationTable {
 		return this.id;
 	}
 
-	void addEntry(AbstractConfigurationEntry... entries) {
+	void addEntry(ConfigurationTableEntry... entries) {
 		this.entries.addAll(Arrays.asList(entries));
 	}
 
 	String toAsciidocTable() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("[cols=\"1,1,2\", options=\"header\"]").append(NEWLINE);
-		builder.append("|===").append(NEWLINE).append("|Key|Default Value|Description")
-				.append(NEWLINE).append(NEWLINE);
+		AsciidocBuilder builder = new AsciidocBuilder();
+		builder.appendln("[cols=\"1,1,2\", options=\"header\"]");
+		builder.appendln("|===");
+		builder.appendln("|Key|Default Value|Description");
+		builder.appendln();
 		this.entries.forEach((entry) -> {
-			entry.writeAsciidoc(builder);
-			builder.append(NEWLINE);
+			entry.write(builder);
+			builder.appendln();
 		});
-		return builder.append("|===").append(NEWLINE).toString();
+		return builder.appendln("|===").toString();
 	}
 
 }

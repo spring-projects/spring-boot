@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,29 +27,30 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
  *
  * @author Brian Clozel
  */
-class CompoundKeyEntry extends AbstractConfigurationEntry {
+class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 
 	private Set<String> configurationKeys;
 
 	private String description;
 
-	CompoundKeyEntry(String key, String description) {
+	CompoundConfigurationTableEntry(String key, String description) {
 		this.key = key;
 		this.description = description;
 		this.configurationKeys = new TreeSet<>();
 	}
 
 	void addConfigurationKeys(ConfigurationMetadataProperty... properties) {
-		Stream.of(properties)
-				.forEach((property) -> this.configurationKeys.add(property.getId()));
+		Stream.of(properties).map(ConfigurationMetadataProperty::getId)
+				.forEach(this.configurationKeys::add);
 	}
 
 	@Override
-	public void writeAsciidoc(StringBuilder builder) {
+	public void write(AsciidocBuilder builder) {
 		builder.append("|`+++");
-		this.configurationKeys.forEach((key) -> builder.append(key).append(NEWLINE));
-		builder.append("+++`").append(NEWLINE).append("|").append(NEWLINE).append("|+++")
-				.append(this.description).append("+++").append(NEWLINE);
+		this.configurationKeys.forEach(builder::appendln);
+		builder.appendln("+++`");
+		builder.appendln("|");
+		builder.appendln("|+++", this.description, "+++");
 	}
 
 }

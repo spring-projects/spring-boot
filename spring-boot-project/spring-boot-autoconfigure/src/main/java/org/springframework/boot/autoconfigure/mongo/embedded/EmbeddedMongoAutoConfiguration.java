@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,7 +79,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @author Mark Paluch
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, MongodStarter.class })
@@ -190,7 +190,7 @@ public class EmbeddedMongoAutoConfiguration {
 		return (Map<String, Object>) propertySource.getSource();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Logger.class)
 	@ConditionalOnMissingBean(IRuntimeConfig.class)
 	static class RuntimeConfigConfiguration {
@@ -229,7 +229,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
 	 * {@code embeddedMongoServer} bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
 	protected static class EmbeddedMongoDependencyConfiguration
 			extends MongoClientDependsOnBeanFactoryPostProcessor {
@@ -244,7 +244,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
 	 * {@code embeddedMongoServer} bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
 			ReactiveMongoClientFactoryBean.class })
 	protected static class EmbeddedReactiveMongoDependencyConfiguration

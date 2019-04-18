@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,9 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = {
 		"boot-test-inlined=foo", "b=boot-test-inlined", "c=boot-test-inlined" })
-@TestPropertySource(properties = { "property-source-inlined=bar",
-		"a=property-source-inlined",
-		"c=property-source-inlined" }, locations = "classpath:/test-property-source-annotation.properties")
+@TestPropertySource(
+		properties = { "property-source-inlined=bar", "a=property-source-inlined",
+				"c=property-source-inlined" },
+		locations = "classpath:/test-property-source-annotation.properties")
 public class SpringBootTestWithTestPropertySourceTests {
 
 	@Autowired
@@ -82,7 +83,7 @@ public class SpringBootTestWithTestPropertySourceTests {
 				.isEqualTo("property-source-inlined");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Value("${boot-test-inlined}")

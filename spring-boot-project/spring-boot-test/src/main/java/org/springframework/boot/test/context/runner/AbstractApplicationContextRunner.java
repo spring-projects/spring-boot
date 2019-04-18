@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,9 +19,13 @@ package org.springframework.boot.test.context.runner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
+import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -32,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -110,6 +115,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 	private final ApplicationContext parent;
 
+	private final List<BeanRegistration<?>> beanRegistrations;
+
 	private final List<Configurations> configurations;
 
 	/**
@@ -118,7 +125,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
 		this(contextFactory, Collections.emptyList(), TestPropertyValues.empty(),
-				TestPropertyValues.empty(), null, null, Collections.emptyList());
+				TestPropertyValues.empty(), null, null, Collections.emptyList(),
+				Collections.emptyList());
 	}
 
 	/**
@@ -129,12 +137,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param systemProperties the system properties
 	 * @param classLoader the class loader
 	 * @param parent the parent
+	 * @param beanRegistrations the bean registrations
 	 * @param configurations the configuration
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
 			List<ApplicationContextInitializer<? super C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
+			List<BeanRegistration<?>> beanRegistrations,
 			List<Configurations> configurations) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
@@ -147,6 +157,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		this.systemProperties = systemProperties;
 		this.classLoader = classLoader;
 		this.parent = parent;
+		this.beanRegistrations = Collections.unmodifiableList(beanRegistrations);
 		this.configurations = Collections.unmodifiableList(configurations);
 	}
 
@@ -156,12 +167,11 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param initializer the initializer to add
 	 * @return a new instance with the updated initializers
 	 */
-	public SELF withInitializer(
-			ApplicationContextInitializer<? super ConfigurableApplicationContext> initializer) {
+	public SELF withInitializer(ApplicationContextInitializer<? super C> initializer) {
 		Assert.notNull(initializer, "Initializer must not be null");
 		return newInstance(this.contextFactory, add(this.initializers, initializer),
 				this.environmentProperties, this.systemProperties, this.classLoader,
-				this.parent, this.configurations);
+				this.parent, this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -177,7 +187,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	public SELF withPropertyValues(String... pairs) {
 		return newInstance(this.contextFactory, this.initializers,
 				this.environmentProperties.and(pairs), this.systemProperties,
-				this.classLoader, this.parent, this.configurations);
+				this.classLoader, this.parent, this.beanRegistrations,
+				this.configurations);
 	}
 
 	/**
@@ -193,7 +204,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	public SELF withSystemProperties(String... pairs) {
 		return newInstance(this.contextFactory, this.initializers,
 				this.environmentProperties, this.systemProperties.and(pairs),
-				this.classLoader, this.parent, this.configurations);
+				this.classLoader, this.parent, this.beanRegistrations,
+				this.configurations);
 	}
 
 	/**
@@ -206,7 +218,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	public SELF withClassLoader(ClassLoader classLoader) {
 		return newInstance(this.contextFactory, this.initializers,
 				this.environmentProperties, this.systemProperties, classLoader,
-				this.parent, this.configurations);
+				this.parent, this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -218,7 +230,91 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	public SELF withParent(ApplicationContext parent) {
 		return newInstance(this.contextFactory, this.initializers,
 				this.environmentProperties, this.systemProperties, this.classLoader,
-				parent, this.configurations);
+				parent, this.beanRegistrations, this.configurations);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. The bean name
+	 * is generated from the configured {@link BeanNameGenerator} on the underlying
+	 * context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param type the type of the bean
+	 * @param constructorArgs custom argument values to be fed into Spring's constructor
+	 * resolution algorithm, resolving either all arguments or just specific ones, with
+	 * the rest to be resolved through regular autowiring (may be {@code null} or empty)
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(Class<T> type, Object... constructorArgs) {
+		return withBean(null, type, constructorArgs);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param name the bean name or {@code null} to use a generated name
+	 * @param type the type of the bean
+	 * @param constructorArgs custom argument values to be fed into Spring's constructor
+	 * resolution algorithm, resolving either all arguments or just specific ones, with
+	 * the rest to be resolved through regular autowiring (may be {@code null} or empty)
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(String name, Class<T> type, Object... constructorArgs) {
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader,
+				this.parent,
+				add(this.beanRegistrations,
+						new BeanRegistration<>(name, type, constructorArgs)),
+				this.configurations);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. The bean name
+	 * is generated from the configured {@link BeanNameGenerator} on the underlying
+	 * context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param type the type of the bean
+	 * @param supplier a supplier for the bean
+	 * @param customizers one or more callbacks for customizing the factory's
+	 * {@link BeanDefinition}, e.g. setting a lazy-init or primary flag
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(Class<T> type, Supplier<T> supplier,
+			BeanDefinitionCustomizer... customizers) {
+		return withBean(null, type, supplier, customizers);
+	}
+
+	/**
+	 * Register the specified user bean with the {@link ApplicationContext}. The bean name
+	 * is generated from the configured {@link BeanNameGenerator} on the underlying
+	 * context.
+	 * <p>
+	 * Such beans are registered after regular {@linkplain #withUserConfiguration(Class[])
+	 * user configurations} in the order of registration.
+	 * @param name the bean name or {@code null} to use a generated name
+	 * @param type the type of the bean
+	 * @param supplier a supplier for the bean
+	 * @param customizers one or more callbacks for customizing the factory's
+	 * {@link BeanDefinition}, e.g. setting a lazy-init or primary flag
+	 * @param <T> the type of the bean
+	 * @return a new instance with the updated bean
+	 */
+	public <T> SELF withBean(String name, Class<T> type, Supplier<T> supplier,
+			BeanDefinitionCustomizer... customizers) {
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader,
+				this.parent,
+				add(this.beanRegistrations,
+						new BeanRegistration<>(name, type, supplier, customizers)),
+				this.configurations);
 	}
 
 	/**
@@ -240,7 +336,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		Assert.notNull(configurations, "Configurations must not be null");
 		return newInstance(this.contextFactory, this.initializers,
 				this.environmentProperties, this.systemProperties, this.classLoader,
-				this.parent, add(this.configurations, configurations));
+				this.parent, this.beanRegistrations,
+				add(this.configurations, configurations));
 	}
 
 	/**
@@ -263,6 +360,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			List<ApplicationContextInitializer<? super C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
+			List<BeanRegistration<?>> beanRegistrations,
 			List<Configurations> configurations);
 
 	/**
@@ -337,6 +435,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
 		}
+		this.beanRegistrations.forEach((registration) -> registration.apply(context));
 		this.initializers.forEach((initializer) -> initializer.initialize(context));
 		context.refresh();
 	}
@@ -353,6 +452,33 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	@SuppressWarnings("unchecked")
 	private <E extends Throwable> void rethrow(Throwable e) throws E {
 		throw (E) e;
+	}
+
+	/**
+	 * A Bean registration to be applied when the context loaded.
+	 *
+	 * @param <T> the bean type
+	 */
+	protected final class BeanRegistration<T> {
+
+		Consumer<GenericApplicationContext> registrar;
+
+		public BeanRegistration(String name, Class<T> type, Object... constructorArgs) {
+			this.registrar = (context) -> context.registerBean(name, type,
+					constructorArgs);
+		}
+
+		public BeanRegistration(String name, Class<T> type, Supplier<T> supplier,
+				BeanDefinitionCustomizer... customizers) {
+			this.registrar = (context) -> context.registerBean(name, type, supplier,
+					customizers);
+		}
+
+		public void apply(ConfigurableApplicationContext context) {
+			Assert.isInstanceOf(GenericApplicationContext.class, context);
+			this.registrar.accept(((GenericApplicationContext) context));
+		}
+
 	}
 
 }

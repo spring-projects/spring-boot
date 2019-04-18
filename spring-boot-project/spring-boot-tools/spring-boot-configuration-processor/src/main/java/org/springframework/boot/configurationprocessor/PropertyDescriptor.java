@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @param <S> the type of the source element that determines the property
  * @author Stephane Nicoll
  */
-abstract class PropertyDescriptor<S> {
+abstract class PropertyDescriptor<S extends Element> {
 
 	private final TypeElement ownerElement;
 
@@ -97,6 +97,9 @@ abstract class PropertyDescriptor<S> {
 	}
 
 	protected abstract boolean isProperty(MetadataGenerationEnvironment environment);
+
+	protected abstract Object resolveDefaultValue(
+			MetadataGenerationEnvironment environment);
 
 	protected ItemDeprecation resolveItemDeprecation(
 			MetadataGenerationEnvironment environment) {
@@ -162,10 +165,6 @@ abstract class PropertyDescriptor<S> {
 
 	private String resolveDescription(MetadataGenerationEnvironment environment) {
 		return environment.getTypeUtils().getJavaDoc(getField());
-	}
-
-	private Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
-		return environment.getDefaultValue(getOwnerElement(), getName());
 	}
 
 	private boolean isCyclePresent(Element returnType, Element element) {

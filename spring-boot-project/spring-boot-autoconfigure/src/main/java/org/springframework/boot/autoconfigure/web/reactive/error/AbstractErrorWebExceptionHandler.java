@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -63,8 +62,15 @@ public abstract class AbstractErrorWebExceptionHandler
 	/**
 	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
 	 */
-	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
-			Arrays.asList("ClientAbortException", "EOFException", "EofException"));
+	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS;
+	static {
+		Set<String> exceptions = new HashSet<>();
+		exceptions.add("AbortedException");
+		exceptions.add("ClientAbortException");
+		exceptions.add("EOFException");
+		exceptions.add("EofException");
+		DISCONNECTED_CLIENT_EXCEPTIONS = Collections.unmodifiableSet(exceptions);
+	}
 
 	private static final Log logger = HttpLogging
 			.forLogName(AbstractErrorWebExceptionHandler.class);
@@ -209,10 +215,12 @@ public abstract class AbstractErrorWebExceptionHandler
 		Date timestamp = (Date) error.get("timestamp");
 		Object message = error.get("message");
 		Object trace = error.get("trace");
+		Object requestId = error.get("requestId");
 		builder.append("<html><body><h1>Whitelabel Error Page</h1>").append(
 				"<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
 				.append("<div id='created'>").append(timestamp).append("</div>")
-				.append("<div>There was an unexpected error (type=")
+				.append("<div>[").append(requestId)
+				.append("] There was an unexpected error (type=")
 				.append(htmlEscape(error.get("error"))).append(", status=")
 				.append(htmlEscape(error.get("status"))).append(").</div>");
 		if (message != null) {
@@ -267,11 +275,15 @@ public abstract class AbstractErrorWebExceptionHandler
 	}
 
 	private boolean isDisconnectedClientError(Throwable ex) {
-		String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
-		if (message != null && message.toLowerCase().contains("broken pipe")) {
-			return true;
-		}
-		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName());
+		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
+				|| isDisconnectedClientErrorMessage(
+						NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
+	}
+
+	private boolean isDisconnectedClientErrorMessage(String message) {
+		message = (message != null) ? message.toLowerCase() : "";
+		return (message.contains("broken pipe")
+				|| message.contains("connection reset by peer"));
 	}
 
 	private void logError(ServerRequest request, ServerResponse response,

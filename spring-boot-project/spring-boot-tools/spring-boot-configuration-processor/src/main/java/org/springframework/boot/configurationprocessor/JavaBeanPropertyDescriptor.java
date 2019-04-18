@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,6 +39,11 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor<ExecutableElement> {
 		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
 		return !env.isExcluded(getType()) && getGetter() != null
 				&& (getSetter() != null || isCollection);
+	}
+
+	@Override
+	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
+		return environment.getFieldDefaultValue(getOwnerElement(), getName());
 	}
 
 }

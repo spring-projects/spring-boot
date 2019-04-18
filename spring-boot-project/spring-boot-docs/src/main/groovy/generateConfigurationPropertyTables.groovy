@@ -40,6 +40,8 @@ def generateConfigMetadataDocumentation() {
 						"spring.mvc", "spring.resources", "spring.webflux")
 				.addSection("json")
 					.withKeyPrefixes("spring.jackson", "spring.gson")
+				.addSection("rsocket")
+					.withKeyPrefixes("spring.rsocket")
 				.addSection("templating")
 					.withKeyPrefixes("spring.freemarker", "spring.groovy", "spring.mustache", "spring.thymeleaf")
 				.addOverride("spring.groovy.template.configuration", "See GroovyMarkupConfigurer")

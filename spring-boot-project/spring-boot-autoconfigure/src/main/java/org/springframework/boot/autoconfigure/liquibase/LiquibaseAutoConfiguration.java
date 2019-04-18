@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,10 +63,11 @@ import org.springframework.util.Assert;
  * @author Dan Zheng
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled",
+		matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
@@ -77,7 +78,7 @@ public class LiquibaseAutoConfiguration {
 		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class,
 			LiquibaseProperties.class })
@@ -180,7 +181,7 @@ public class LiquibaseAutoConfiguration {
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans depend
 	 * on the liquibase bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	protected static class LiquibaseJpaDependencyConfiguration
@@ -196,7 +197,7 @@ public class LiquibaseAutoConfiguration {
 	 * Additional configuration to ensure that {@link JdbcOperations} beans depend on the
 	 * liquibase bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JdbcOperations.class)
 	@ConditionalOnBean(JdbcOperations.class)
 	protected static class LiquibaseJdbcOperationsDependencyConfiguration
@@ -212,7 +213,7 @@ public class LiquibaseAutoConfiguration {
 	 * Additional configuration to ensure that {@link NamedParameterJdbcOperations} beans
 	 * depend on the liquibase bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(NamedParameterJdbcOperations.class)
 	@ConditionalOnBean(NamedParameterJdbcOperations.class)
 	protected static class LiquibaseNamedParameterJdbcOperationsDependencyConfiguration

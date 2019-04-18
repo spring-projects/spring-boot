@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -174,17 +174,15 @@ class DefaultLogbackConfiguration {
 
 	private DataSize getDataSize(String property, DataSize defaultSize) {
 		String value = this.patterns.getProperty(property);
-		if (value != null) {
-			try {
-				return DataSize.parse(value);
-			}
-			catch (IllegalArgumentException ex) {
-				FileSize fileSize = FileSize.valueOf(value);
-				return DataSize.ofBytes(fileSize.getSize());
-			}
-		}
-		else {
+		if (value == null) {
 			return defaultSize;
+		}
+		try {
+			return DataSize.parse(value);
+		}
+		catch (IllegalArgumentException ex) {
+			FileSize fileSize = FileSize.valueOf(value);
+			return DataSize.ofBytes(fileSize.getSize());
 		}
 	}
 

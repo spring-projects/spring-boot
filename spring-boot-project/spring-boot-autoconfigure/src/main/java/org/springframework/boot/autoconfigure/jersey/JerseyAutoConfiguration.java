@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.ws.rs.ext.ContextResolver;
+import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -76,7 +78,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -130,7 +132,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type",
+			havingValue = "filter")
 	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(
 			JerseyApplicationPath applicationPath) {
 		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<>();
@@ -155,7 +158,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type",
+			havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(
 			JerseyApplicationPath applicationPath) {
 		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(
@@ -201,17 +205,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
-	@Configuration
 	static class JacksonResourceConfigCustomizer {
-
-		private static final String JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME = "com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector";
 
 		@Bean
 		public ResourceConfigCustomizer resourceConfigCustomizer(
 				final ObjectMapper objectMapper) {
-			addJaxbAnnotationIntrospectorIfPresent(objectMapper);
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper),
@@ -219,16 +220,12 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			};
 		}
 
-		private void addJaxbAnnotationIntrospectorIfPresent(ObjectMapper objectMapper) {
-			if (ClassUtils.isPresent(JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME,
-					getClass().getClassLoader())) {
-				new ObjectMapperCustomizer().addJaxbAnnotationIntrospector(objectMapper);
-			}
-		}
+		@Configuration
+		@ConditionalOnClass({ JaxbAnnotationIntrospector.class, XmlElement.class })
+		static class JaxbObjectMapperCustomizer {
 
-		private static final class ObjectMapperCustomizer {
-
-			private void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
+			@Autowired
+			public void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
 				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(

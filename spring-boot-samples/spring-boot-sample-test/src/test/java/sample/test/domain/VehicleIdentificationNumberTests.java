@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,9 +25,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link VehicleIdentificationNumber}.
  *
  * @author Phillip Webb
- * @see <a href="http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html">
+ * @see <a href="https://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html">
  * Naming standards for unit tests</a>
- * @see <a href="http://joel-costigliola.github.io/assertj/">AssertJ</a>
+ * @see <a href="https://joel-costigliola.github.io/assertj/">AssertJ</a>
  */
 public class VehicleIdentificationNumberTests {
 

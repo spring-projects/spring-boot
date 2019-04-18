@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -32,7 +32,7 @@
 		<spring-doc-resources.version>0.1.0.RELEASE</spring-doc-resources.version>
 	</properties>
 	<scm>
-		<url>http://github.com/spring-projects/spring-boot</url>
+		<url>https://github.com/spring-projects/spring-boot</url>
 		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
 	</scm>
@@ -63,7 +63,7 @@
 			<dependency>
 				<groupId>io.mockk</groupId>
 				<artifactId>mockk</artifactId>
-				<version>1.9.1.kotlin12</version>
+				<version>1.9.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
@@ -287,8 +287,6 @@
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
-						<apiVersion>1.1</apiVersion>
-						<languageVersion>1.1</languageVersion>
 						<javaParameters>true</javaParameters>
 					</configuration>
 				</plugin>
@@ -296,6 +294,13 @@
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
 					<version>1.5.7.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj</artifactId>
+							<version>1.5.8</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -575,6 +580,18 @@
 						</goals>
 						<configuration>
 							<rules>
+								<bannedDependencies>
+									<excludes>
+										<exclude>javax.*:*:*</exclude>
+									</excludes>
+									<includes>
+										<include>javax.batch:*:*</include>
+										<include>javax.cache:*:*</include>
+										<include>javax.inject:*:*</include>
+										<include>javax.money:*:*</include>
+									</includes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
 								<requireJavaVersion>
 									<version>[1.8,)</version>
 								</requireJavaVersion>

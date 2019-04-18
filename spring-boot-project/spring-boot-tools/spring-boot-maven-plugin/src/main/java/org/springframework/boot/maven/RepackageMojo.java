@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,10 @@ import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningL
  * @author Stephane Nicoll
  * @author Björn Lindström
  */
-@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true,
+		threadSafe = true,
+		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private static final Pattern WHITE_SPACE_PATTERN = Pattern.compile("\\s+");
@@ -87,13 +90,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private File outputDirectory;
 
 	/**
-	 * Name of the generated archive.
-	 * @since 1.0
-	 */
-	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
-	private String finalName;
-
-	/**
 	 * Skip the execution.
 	 * @since 1.2
 	 */
@@ -108,7 +104,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * the main artifact will be used as source and the repackaged archive will be
 	 * attached as a supplemental artifact with that classifier. Attaching the artifact
 	 * allows to deploy it alongside to the original one, see <a href=
-	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
+	 * "https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
 	 * @since 1.0
 	 */
@@ -263,7 +259,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		return new File(this.outputDirectory, this.finalName + classifier + "."
+		String finalName = this.project.getBuild().getFinalName();
+		return new File(this.outputDirectory, finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 

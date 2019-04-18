@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -162,14 +162,15 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 						.doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ReactiveClientRepositoryConfiguration {
 
 		@Bean
 		public ReactiveClientRegistrationRepository clientRegistrationRepository() {
 			List<ClientRegistration> registrations = new ArrayList<>();
-			registrations.add(getClientRegistration("first", "http://user-info-uri.com"));
-			registrations.add(getClientRegistration("second", "http://other-user-info"));
+			registrations
+					.add(getClientRegistration("first", "https://user-info-uri.com"));
+			registrations.add(getClientRegistration("second", "https://other-user-info"));
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
 		}
 
@@ -180,16 +181,16 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 					org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.scope("read").clientSecret("secret")
-					.redirectUriTemplate("http://redirect-uri.com")
-					.authorizationUri("http://authorization-uri.com")
-					.tokenUri("http://token-uri.com").userInfoUri(userInfoUri)
+					.redirectUriTemplate("https://redirect-uri.com")
+					.authorizationUri("https://authorization-uri.com")
+					.tokenUri("https://token-uri.com").userInfoUri(userInfoUri)
 					.userNameAttributeName("login");
 			return builder.build();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ReactiveClientRepositoryConfiguration.class)
 	static class ReactiveOAuth2AuthorizedClientServiceConfiguration {
 
@@ -202,7 +203,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
 	static class ReactiveOAuth2AuthorizedClientRepositoryConfiguration {
 

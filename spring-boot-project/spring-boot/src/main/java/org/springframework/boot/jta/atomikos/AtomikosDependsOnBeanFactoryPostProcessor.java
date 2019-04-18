@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link BeanFactoryPostProcessor} to automatically setup the recommended
  * {@link BeanDefinition#setDependsOn(String[]) dependsOn} settings for
- * <a href="http://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
+ * <a href="https://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
  * ordering</a>.
  *
  * @author Phillip Webb

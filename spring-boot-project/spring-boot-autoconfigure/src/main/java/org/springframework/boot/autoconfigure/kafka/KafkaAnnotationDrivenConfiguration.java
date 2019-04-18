@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
@@ -42,7 +43,7 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  * @author Eddú Meléndez
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableKafka.class)
 class KafkaAnnotationDrivenConfiguration {
 
@@ -58,6 +59,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final ErrorHandler errorHandler;
 
+	private final BatchErrorHandler batchErrorHandler;
+
 	private final AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
@@ -66,6 +69,7 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
 			ObjectProvider<ErrorHandler> errorHandler,
+			ObjectProvider<BatchErrorHandler> batchErrorHandler,
 			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor) {
 		this.properties = properties;
 		this.messageConverter = messageConverter.getIfUnique();
@@ -74,6 +78,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.errorHandler = errorHandler.getIfUnique();
+		this.batchErrorHandler = batchErrorHandler.getIfUnique();
 		this.afterRollbackProcessor = afterRollbackProcessor.getIfUnique();
 	}
 
@@ -88,6 +93,7 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setReplyTemplate(this.kafkaTemplate);
 		configurer.setTransactionManager(this.transactionManager);
 		configurer.setErrorHandler(this.errorHandler);
+		configurer.setBatchErrorHandler(this.batchErrorHandler);
 		configurer.setAfterRollbackProcessor(this.afterRollbackProcessor);
 		return configurer;
 	}
@@ -102,9 +108,10 @@ class KafkaAnnotationDrivenConfiguration {
 		return factory;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableKafka
-	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	@ConditionalOnMissingBean(
+			name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableKafkaConfiguration {
 
 	}

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class DataNeo4jTestIntegrationTests {
 
 	@ClassRule
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
+	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
 			() -> new Neo4jContainer<>().withAdminPassword(null));
 
 	@Autowired

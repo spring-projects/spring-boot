@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,9 +110,10 @@ public class Neo4jPropertiesTests {
 	@Test
 	public void credentialsAreSetFromUri() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
+				"spring.data.neo4j.uri=https://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://my-server:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
+				"https://my-server:7474");
 		assertCredentials(configuration, "user", "secret");
 	}
 
@@ -199,7 +200,7 @@ public class Neo4jPropertiesTests {
 		return this.context.getBean(Neo4jProperties.class);
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class TestConfiguration {
 

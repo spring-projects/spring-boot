@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
+
+import java.time.Duration;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -41,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestClient.class)
 @EnableConfigurationProperties(RestClientProperties.class)
 public class RestClientAutoConfiguration {
@@ -68,12 +70,20 @@ public class RestClientAutoConfiguration {
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> httpClientBuilder
 					.setDefaultCredentialsProvider(credentialsProvider));
 		});
+		builder.setRequestConfigCallback((requestConfigBuilder) -> {
+			map.from(properties::getConnectionTimeout).whenNonNull()
+					.as(Duration::toMillis).asInt(Math::toIntExact)
+					.to(requestConfigBuilder::setConnectTimeout);
+			map.from(properties::getReadTimeout).whenNonNull().as(Duration::toMillis)
+					.asInt(Math::toIntExact).to(requestConfigBuilder::setSocketTimeout);
+			return requestConfigBuilder;
+		});
 		builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RestHighLevelClient.class)
 	public static class RestHighLevelClientConfiguration {
 

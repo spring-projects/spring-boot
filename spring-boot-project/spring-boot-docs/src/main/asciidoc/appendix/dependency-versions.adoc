@@ -6,4 +6,4 @@ by Spring Boot in its CLI (Command Line Interface), Maven dependency management,
 Gradle plugin. When you declare a dependency on one of these artifacts without declaring
 a version, the version listed in the table is used.
 
-include::../../../target/generated-resources/effective-pom.adoc[]
+include::{generated-resources-root}/effective-pom.adoc[]

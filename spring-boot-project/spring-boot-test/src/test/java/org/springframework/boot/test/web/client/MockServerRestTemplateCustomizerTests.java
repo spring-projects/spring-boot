@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ public class MockServerRestTemplateCustomizerTests {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(
-				new RestTemplateBuilder().rootUri("http://example.com").build());
+				new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(RootUriRequestExpectationManager.class);
 	}
@@ -83,7 +83,7 @@ public class MockServerRestTemplateCustomizerTests {
 	public void setDetectRootUriShouldDisableRootUriDetection() {
 		this.customizer.setDetectRootUri(false);
 		this.customizer.customize(
-				new RestTemplateBuilder().rootUri("http://example.com").build());
+				new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
 

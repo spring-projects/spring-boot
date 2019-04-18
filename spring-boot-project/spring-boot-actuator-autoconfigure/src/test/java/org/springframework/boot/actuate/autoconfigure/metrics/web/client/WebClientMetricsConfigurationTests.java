@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -106,7 +106,7 @@ public class WebClientMetricsConfigurationTests {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
 		for (int i = 0; i < 3; i++) {
-			webClient.get().uri("http://example.org/projects/" + i).exchange()
+			webClient.get().uri("https://example.org/projects/" + i).exchange()
 					.block(Duration.ofSeconds(30));
 		}
 		return registry;
@@ -115,7 +115,7 @@ public class WebClientMetricsConfigurationTests {
 	private void validateWebClient(WebClient.Builder builder, MeterRegistry registry) {
 		WebClient webClient = mockWebClient(builder);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
-		webClient.get().uri("http://example.org/projects/{project}", "spring-boot")
+		webClient.get().uri("https://example.org/projects/{project}", "spring-boot")
 				.exchange().block(Duration.ofSeconds(30));
 		assertThat(registry.find("http.client.requests")
 				.tags("uri", "/projects/{project}").meter()).isNotNull();
@@ -128,7 +128,7 @@ public class WebClientMetricsConfigurationTests {
 		return builder.clientConnector(connector).build();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTagsProviderConfig {
 
 		@Bean

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,9 +110,9 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void rootUriShouldApply() {
-		RestTemplate restTemplate = this.builder.rootUri("http://example.com").build();
+		RestTemplate restTemplate = this.builder.rootUri("https://example.com").build();
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-		server.expect(requestTo("http://example.com/hello")).andRespond(withSuccess());
+		server.expect(requestTo("https://example.com/hello")).andRespond(withSuccess());
 		restTemplate.getForEntity("/hello", String.class);
 		server.verify();
 	}
@@ -121,11 +121,11 @@ public class RestTemplateBuilderTests {
 	public void rootUriShouldApplyAfterUriTemplateHandler() {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
 		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler)
-				.rootUri("http://example.com").build();
+				.rootUri("https://example.com").build();
 		UriTemplateHandler handler = template.getUriTemplateHandler();
 		handler.expand("/hello");
 		assertThat(handler).isInstanceOf(RootUriTemplateHandler.class);
-		verify(uriTemplateHandler).expand("http://example.com/hello");
+		verify(uriTemplateHandler).expand("https://example.com/hello");
 	}
 
 	@Test

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -191,7 +191,7 @@ public class MappingsEndpointServletDocumentationTests
 		return fieldWithPath("*.[].details.requestMappingConditions" + path);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
@@ -232,8 +232,10 @@ public class MappingsEndpointServletDocumentationTests
 	@RestController
 	private static class ExampleController {
 
-		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE,
-				"!application/xml" }, produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
+		@PostMapping(path = "/",
+				consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
+				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo",
+				params = "a!=alpha")
 		public String example() {
 			return "Hello World";
 		}

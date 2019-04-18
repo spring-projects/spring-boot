@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,12 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Simons
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
+@ContextConfiguration(
+		initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
+	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
 			() -> new Neo4jContainer<>().withAdminPassword(null));
 
 	@Autowired

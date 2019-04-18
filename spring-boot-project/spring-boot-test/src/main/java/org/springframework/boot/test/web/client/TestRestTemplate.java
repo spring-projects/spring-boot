@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -38,6 +39,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.BeanUtils;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -822,7 +826,7 @@ public class TestRestTemplate {
 	 * {@link ParameterizedTypeReference} is used to pass generic type information:
 	 * <pre class="code">
 	 * ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt;() {};
-	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;http://example.com&quot;,HttpMethod.GET, null, myBean);
+	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
 	 * @param method the HTTP method (GET, POST, etc)
@@ -850,7 +854,7 @@ public class TestRestTemplate {
 	 * {@link ParameterizedTypeReference} is used to pass generic type information:
 	 * <pre class="code">
 	 * ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt;() {};
-	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;http://example.com&quot;,HttpMethod.GET, null, myBean);
+	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
 	 * @param method the HTTP method (GET, POST, etc)
@@ -878,7 +882,7 @@ public class TestRestTemplate {
 	 * {@link ParameterizedTypeReference} is used to pass generic type information:
 	 * <pre class="code">
 	 * ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyBean&gt;&gt;() {};
-	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;http://example.com&quot;,HttpMethod.GET, null, myBean);
+	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
 	 * @param method the HTTP method (GET, POST, etc)
@@ -904,7 +908,7 @@ public class TestRestTemplate {
 	 * response as {@link ResponseEntity}. Typically used in combination with the static
 	 * builder methods on {@code RequestEntity}, for instance: <pre class="code">
 	 * MyRequest body = ...
-	 * RequestEntity request = RequestEntity.post(new URI(&quot;http://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
+	 * RequestEntity request = RequestEntity.post(new URI(&quot;https://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
 	 * ResponseEntity&lt;MyResponse&gt; response = template.exchange(request, MyResponse.class);
 	 * </pre>
 	 * @param requestEntity the entity to write to the request
@@ -925,7 +929,7 @@ public class TestRestTemplate {
 	 * response as {@link ResponseEntity}. The given {@link ParameterizedTypeReference} is
 	 * used to pass generic type information: <pre class="code">
 	 * MyRequest body = ...
-	 * RequestEntity request = RequestEntity.post(new URI(&quot;http://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
+	 * RequestEntity request = RequestEntity.post(new URI(&quot;https://example.com/foo&quot;)).accept(MediaType.APPLICATION_JSON).body(body);
 	 * ParameterizedTypeReference&lt;List&lt;MyResponse&gt;&gt; myBean = new ParameterizedTypeReference&lt;List&lt;MyResponse&gt;&gt;() {};
 	 * ResponseEntity&lt;List&lt;MyResponse&gt;&gt; response = template.exchange(request, myBean);
 	 * </pre>
@@ -1023,7 +1027,8 @@ public class TestRestTemplate {
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
 	 * except that it will send basic authorization headers using the given
-	 * {@code username} and {@code password}.
+	 * {@code username} and {@code password}. The request factory used is a new instance
+	 * of the underlying {@link RestTemplate}'s request factory type (when possible).
 	 * @param username the username
 	 * @param password the password
 	 * @return the new template
@@ -1031,14 +1036,24 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
 		RestTemplate restTemplate = new RestTemplateBuilder()
+				.requestFactory(getRequestFactorySupplier())
 				.messageConverters(getRestTemplate().getMessageConverters())
 				.interceptors(getRestTemplate().getInterceptors())
 				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler()).build();
-		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
-				password, this.httpClientOptions);
-		testRestTemplate.getRestTemplate()
-				.setErrorHandler(getRestTemplate().getErrorHandler());
-		return testRestTemplate;
+		return new TestRestTemplate(restTemplate, username, password,
+				this.httpClientOptions);
+	}
+
+	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier() {
+		return () -> {
+			try {
+				return BeanUtils
+						.instantiateClass(getRequestFactoryClass(getRestTemplate()));
+			}
+			catch (BeanInstantiationException ex) {
+				return new ClientHttpRequestFactorySupplier().get();
+			}
+		};
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

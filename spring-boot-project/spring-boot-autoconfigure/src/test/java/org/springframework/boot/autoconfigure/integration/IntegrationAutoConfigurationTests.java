@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,31 +101,30 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void jmxIntegrationEnabledByDefault() {
-		this.contextRunner.run((context) -> {
-			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			assertThat(mBeanServer.getDomains()).contains(
-					"org.springframework.integration",
-					"org.springframework.integration.monitor");
-			assertThat(context)
-					.hasBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
-		});
-	}
-
-	@Test
-	public void disableJmxIntegration() {
-		this.contextRunner.withPropertyValues("spring.jmx.enabled=false")
+	public void enableJmxIntegration() {
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
 				.run((context) -> {
-					assertThat(context).doesNotHaveBean(MBeanServer.class);
-					assertThat(context)
-							.hasSingleBean(IntegrationManagementConfigurer.class);
+					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+					assertThat(mBeanServer.getDomains()).contains(
+							"org.springframework.integration",
+							"org.springframework.integration.monitor");
+					assertThat(context).hasBean(
+							IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
 				});
 	}
 
 	@Test
+	public void jmxIntegrationIsDisabledByDefault() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(MBeanServer.class);
+			assertThat(context).hasSingleBean(IntegrationManagementConfigurer.class);
+		});
+	}
+
+	@Test
 	public void customizeJmxDomain() {
-		this.contextRunner.withPropertyValues("spring.jmx.default_domain=org.foo")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true",
+				"spring.jmx.default_domain=org.foo").run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					assertThat(mBeanServer.getDomains()).contains("org.foo")
 							.doesNotContain("org.springframework.integration",
@@ -135,8 +134,8 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void primaryExporterIsAllowed() {
-		this.contextRunner.withUserConfiguration(CustomMBeanExporter.class)
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
+				.withUserConfiguration(CustomMBeanExporter.class).run((context) -> {
 					assertThat(context).getBeans(MBeanExporter.class).hasSize(2);
 					assertThat(context.getBean(MBeanExporter.class))
 							.isSameAs(context.getBean("myMBeanExporter"));
@@ -217,7 +216,7 @@ public class IntegrationAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
 		@Bean
@@ -228,7 +227,7 @@ public class IntegrationAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@IntegrationComponentScan
 	static class CustomIntegrationComponentScanConfiguration {
 
@@ -239,7 +238,7 @@ public class IntegrationAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MessageSourceConfiguration {
 
 		@Bean

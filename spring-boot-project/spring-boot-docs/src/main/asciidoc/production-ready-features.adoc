@@ -394,7 +394,7 @@ A typical Spring Security configuration might look something like the following 
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
@@ -430,7 +430,7 @@ following example:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
@@ -491,7 +491,7 @@ configuration permits `GET` and `POST` calls from the `example.com` domain:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.web.cors.allowed-origins=http://example.com
+	management.endpoints.web.cors.allowed-origins=https://example.com
 	management.endpoints.web.cors.allowed-methods=GET,POST
 ----
 
@@ -1137,6 +1137,10 @@ the following example:
 	management.server.port=8081
 ----
 
+NOTE: On Cloud Foundry, applications only receive requests on port 8080 for both HTTP and TCP
+routing, by default. If you want to use a custom management port on Cloud Foundry, you will need
+to explicitly set up the application's routes to forward traffic to the custom port.
+
 
 
 [[production-ready-management-specific-ssl]]
@@ -1217,8 +1221,9 @@ following example:
 [[production-ready-jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
-applications. By default, Spring Boot exposes management endpoints as JMX MBeans under
-the `org.springframework.boot` domain.
+applications. By default, this feature is not enabled and can be turned on with
+the configuration property `spring.jmx.enabled=true`.  Spring Boot exposes
+management endpoints as JMX MBeans under the  `org.springframework.boot` domain by default.
 
 
 
@@ -1456,7 +1461,7 @@ https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.atlas.uri=http://atlas.example.com:7101/api/v1/publish
+	management.metrics.export.atlas.uri=https://atlas.example.com:7101/api/v1/publish
 ----
 
 
@@ -1511,7 +1516,7 @@ using the following property:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.elastic.host=http://elastic.example.com:8086
+	management.metrics.export.elastic.host=https://elastic.example.com:8086
 ----
 
 
@@ -1590,7 +1595,7 @@ server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.influx.uri=http://influx.example.com:8086
+	management.metrics.export.influx.uri=https://influx.example.com:8086
 ----
 
 
@@ -1633,7 +1638,7 @@ server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.kairos.uri=http://kairosdb.example.com:8080/api/v1/datapoints
+	management.metrics.export.kairos.uri=https://kairosdb.example.com:8080/api/v1/datapoints
 ----
 
 
@@ -2333,7 +2338,7 @@ include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[
 == What to Read Next
 If you want to explore some of the concepts discussed in this chapter, you can take a
 look at the actuator {github-code}/spring-boot-samples[sample applications]. You also
-might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
+might want to read about graphing tools such as https://graphite.wikidot.com/[Graphite].
 
 Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment
 options`'>> or jump ahead for some in-depth information about Spring Boot's

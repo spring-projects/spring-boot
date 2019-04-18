@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -137,6 +137,36 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
+	public void runWithUserNamedBeanShouldRegisterBean() {
+		get().withBean("foo", String.class, () -> "foo")
+				.run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	public void runWithUserBeanShouldRegisterBeanWithDefaultName() {
+		get().withBean(String.class, () -> "foo")
+				.run((context) -> assertThat(context).hasBean("string"));
+	}
+
+	@Test
+	public void runWithUserBeanShouldBeRegisteredInOrder() {
+		get().withBean(String.class, () -> "one").withBean(String.class, () -> "two")
+				.withBean(String.class, () -> "three").run((context) -> {
+					assertThat(context).hasBean("string");
+					assertThat(context.getBean("string")).isEqualTo("three");
+				});
+	}
+
+	@Test
+	public void runWithConfigurationsAndUserBeanShouldRegisterUserBeanLast() {
+		get().withUserConfiguration(FooConfig.class)
+				.withBean("foo", String.class, () -> "overridden").run((context) -> {
+					assertThat(context).hasBean("foo");
+					assertThat(context.getBean("foo")).isEqualTo("overridden");
+				});
+	}
+
+	@Test
 	public void runWithMultipleConfigurationsShouldRegisterAllConfigurations() {
 		get().withUserConfiguration(FooConfig.class)
 				.withConfiguration(UserConfigurations.of(BarConfig.class))
@@ -178,7 +208,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		throw new IOException(message);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FailingConfig {
 
 		@Bean
@@ -188,7 +218,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooConfig {
 
 		@Bean
@@ -198,7 +228,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BarConfig {
 
 		@Bean
@@ -208,7 +238,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(FilteredClassLoaderCondition.class)
 	static class ConditionalConfig {
 

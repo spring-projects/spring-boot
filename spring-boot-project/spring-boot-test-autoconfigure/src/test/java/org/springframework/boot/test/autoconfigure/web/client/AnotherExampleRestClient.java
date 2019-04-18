@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ public class AnotherExampleRestClient {
 	private RestTemplate restTemplate;
 
 	public AnotherExampleRestClient(RestTemplateBuilder builder) {
-		this.restTemplate = builder.rootUri("http://example.com").build();
+		this.restTemplate = builder.rootUri("https://example.com").build();
 	}
 
 	protected RestTemplate getRestTemplate() {

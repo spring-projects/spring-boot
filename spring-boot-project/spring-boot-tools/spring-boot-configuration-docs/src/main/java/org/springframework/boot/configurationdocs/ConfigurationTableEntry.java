@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,17 +16,12 @@
 
 package org.springframework.boot.configurationdocs;
 
-import java.util.Objects;
-
 /**
  * Abstract class for entries in {@link ConfigurationTable}.
  *
  * @author Brian Clozel
  */
-abstract class AbstractConfigurationEntry
-		implements Comparable<AbstractConfigurationEntry> {
-
-	protected static final String NEWLINE = System.lineSeparator();
+abstract class ConfigurationTableEntry implements Comparable<ConfigurationTableEntry> {
 
 	protected String key;
 
@@ -34,27 +29,27 @@ abstract class AbstractConfigurationEntry
 		return this.key;
 	}
 
-	public abstract void writeAsciidoc(StringBuilder builder);
+	public abstract void write(AsciidocBuilder builder);
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		AbstractConfigurationEntry that = (AbstractConfigurationEntry) o;
-		return this.key.equals(that.key);
+		ConfigurationTableEntry other = (ConfigurationTableEntry) obj;
+		return this.key.equals(other.key);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.key);
+		return this.key.hashCode();
 	}
 
 	@Override
-	public int compareTo(AbstractConfigurationEntry other) {
+	public int compareTo(ConfigurationTableEntry other) {
 		return this.key.compareTo(other.getKey());
 	}
 

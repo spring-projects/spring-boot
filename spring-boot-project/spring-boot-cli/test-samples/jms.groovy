@@ -3,7 +3,7 @@
 import java.util.concurrent.CountDownLatch
 
 @Log
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableJms
 class JmsExample implements CommandLineRunner {
 

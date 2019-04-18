@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,6 +43,7 @@ import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.HttpRestartServerHandler;
 import org.springframework.boot.devtools.restart.server.SourceFolderUrlFilter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 
@@ -54,7 +55,8 @@ import org.springframework.http.server.ServerHttpRequest;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@Conditional(OnEnabledDevtoolsCondition.class)
 @ConditionalOnProperty(prefix = "spring.devtools.remote", name = "secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
 @EnableConfigurationProperties({ ServerProperties.class, DevToolsProperties.class })
@@ -100,8 +102,9 @@ public class RemoteDevToolsAutoConfiguration {
 	/**
 	 * Configuration for remote update and restarts.
 	 */
-	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled",
+			matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 
 		@Bean

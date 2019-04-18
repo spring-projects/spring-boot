@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
@@ -49,6 +50,7 @@ import org.springframework.util.unit.DataSize;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Chentao Qu
+ * @author Andrew McGhie
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -108,7 +110,7 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
-		propertyMapper.from(tomcatProperties::getProcessorCache).when(this::isPositive)
+		propertyMapper.from(tomcatProperties::getProcessorCache)
 				.to((processorCache) -> customizeProcessorCache(factory, processorCache));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
@@ -131,9 +133,12 @@ public class TomcatWebServerFactoryCustomizer implements
 
 	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory,
 			int processorCache) {
-		factory.addConnectorCustomizers((
-				connector) -> ((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
-						.setProcessorCache(processorCache));
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractProtocol) {
+				((AbstractProtocol<?>) handler).setProcessorCache(processorCache);
+			}
+		});
 	}
 
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,
@@ -183,11 +188,13 @@ public class TomcatWebServerFactoryCustomizer implements
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {
-		if (this.serverProperties.isUseForwardHeaders() != null) {
-			return this.serverProperties.isUseForwardHeaders();
+		if (this.serverProperties.getForwardHeadersStrategy()
+				.equals(ServerProperties.ForwardHeadersStrategy.NONE)) {
+			CloudPlatform platform = CloudPlatform.getActive(this.environment);
+			return platform != null && platform.isUsingForwardHeaders();
 		}
-		CloudPlatform platform = CloudPlatform.getActive(this.environment);
-		return platform != null && platform.isUsingForwardHeaders();
+		return this.serverProperties.getForwardHeadersStrategy()
+				.equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -246,17 +253,25 @@ public class TomcatWebServerFactoryCustomizer implements
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		AccessLogValve valve = new AccessLogValve();
-		valve.setPattern(tomcatProperties.getAccesslog().getPattern());
-		valve.setDirectory(tomcatProperties.getAccesslog().getDirectory());
-		valve.setPrefix(tomcatProperties.getAccesslog().getPrefix());
-		valve.setSuffix(tomcatProperties.getAccesslog().getSuffix());
-		valve.setRenameOnRotate(tomcatProperties.getAccesslog().isRenameOnRotate());
-		valve.setMaxDays(tomcatProperties.getAccesslog().getMaxDays());
-		valve.setFileDateFormat(tomcatProperties.getAccesslog().getFileDateFormat());
-		valve.setRequestAttributesEnabled(
-				tomcatProperties.getAccesslog().isRequestAttributesEnabled());
-		valve.setRotatable(tomcatProperties.getAccesslog().isRotate());
-		valve.setBuffered(tomcatProperties.getAccesslog().isBuffered());
+		PropertyMapper map = PropertyMapper.get();
+		Accesslog accessLogConfig = tomcatProperties.getAccesslog();
+		map.from(accessLogConfig.getConditionIf()).to(valve::setConditionIf);
+		map.from(accessLogConfig.getConditionUnless()).to(valve::setConditionUnless);
+		map.from(accessLogConfig.getPattern()).to(valve::setPattern);
+		map.from(accessLogConfig.getDirectory()).to(valve::setDirectory);
+		map.from(accessLogConfig.getPrefix()).to(valve::setPrefix);
+		map.from(accessLogConfig.getSuffix()).to(valve::setSuffix);
+		map.from(accessLogConfig.getEncoding()).whenHasText().to(valve::setEncoding);
+		map.from(accessLogConfig.getLocale()).whenHasText().to(valve::setLocale);
+		map.from(accessLogConfig.isCheckExists()).to(valve::setCheckExists);
+		map.from(accessLogConfig.isRotate()).to(valve::setRotatable);
+		map.from(accessLogConfig.isRenameOnRotate()).to(valve::setRenameOnRotate);
+		map.from(accessLogConfig.getMaxDays()).to(valve::setMaxDays);
+		map.from(accessLogConfig.getFileDateFormat()).to(valve::setFileDateFormat);
+		map.from(accessLogConfig.isIpv6Canonical()).to(valve::setIpv6Canonical);
+		map.from(accessLogConfig.isRequestAttributesEnabled())
+				.to(valve::setRequestAttributesEnabled);
+		map.from(accessLogConfig.isBuffered()).to(valve::setBuffered);
 		factory.addEngineValves(valve);
 	}
 

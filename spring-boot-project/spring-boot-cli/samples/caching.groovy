@@ -2,7 +2,7 @@ package org.test
 
 import java.util.concurrent.atomic.AtomicLong
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableCaching
 class Sample {
 
@@ -18,9 +18,9 @@ class Sample {
 		@Autowired
 		MyClient(MyService myService) {
 			this.myService = myService
-		} 
+		}
 
-		void run(String... args) { 
+		void run(String... args) {
 			long counter = myService.get('someKey')
 			long counter2 = myService.get('someKey')
 			if (counter == counter2) {

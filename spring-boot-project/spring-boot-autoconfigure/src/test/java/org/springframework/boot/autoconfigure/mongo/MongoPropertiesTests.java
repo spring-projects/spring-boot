@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @author Artsiom Yudovin
  */
 public class MongoPropertiesTests {
 
@@ -155,13 +156,24 @@ public class MongoPropertiesTests {
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
 	}
 
+	@Test
+	public void canBindAutoIndexCreation() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.data.mongodb.autoIndexCreation:true")
+				.applyTo(context);
+		context.register(Config.class);
+		context.refresh();
+		MongoProperties properties = context.getBean(MongoProperties.class);
+		assertThat(properties.isAutoIndexCreation()).isTrue();
+	}
+
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
 			int expectedPort) {
 		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
 		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(MongoProperties.class)
 	static class Config {
 

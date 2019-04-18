@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -210,7 +210,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void configLocationsWithNoExtraDependencies() {
 		assertThat(this.loggingSystem.getStandardConfigLocations())
-				.contains("log4j2.xml");
+				.contains("log4j2.properties", "log4j2.xml");
 	}
 
 	@Test
@@ -240,7 +240,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).isEqualTo(new String[] { "log4j2-spring.xml" });
+		assertThat(locations).containsExactly("log4j2-spring.properties",
+				"log4j2-spring.xml");
 	}
 
 	@Test

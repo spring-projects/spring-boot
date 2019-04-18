@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,6 +44,7 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
  * <li>trace - The exception stack trace</li>
  * <li>path - The URL path when the exception was raised</li>
+ * <li>requestId - Unique Id associated with the current request</li>
  * </ul>
  *
  * @author Brian Clozel
@@ -86,6 +87,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
 		errorAttributes.put("message", determineMessage(error));
+		errorAttributes.put("requestId", request.exchange().getRequest().getId());
 		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ public class MetricsWebClientFilterFunctionTests {
 	@Test
 	public void filterShouldRecordTimer() {
 		ClientRequest request = ClientRequest.create(HttpMethod.GET,
-				URI.create("http://example.com/projects/spring-boot")).build();
+				URI.create("https://example.com/projects/spring-boot")).build();
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(30));
 		assertThat(this.registry.get("http.client.requests")
@@ -83,7 +83,7 @@ public class MetricsWebClientFilterFunctionTests {
 	public void filterWhenUriTemplatePresentShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET,
-						URI.create("http://example.com/projects/spring-boot"))
+						URI.create("https://example.com/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(30));
@@ -95,7 +95,7 @@ public class MetricsWebClientFilterFunctionTests {
 	@Test
 	public void filterWhenIoExceptionThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest.create(HttpMethod.GET,
-				URI.create("http://example.com/projects/spring-boot")).build();
+				URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction errorExchange = (r) -> Mono.error(new IOException());
 		this.filterFunction.filter(request, errorExchange)
 				.onErrorResume(IOException.class, (t) -> Mono.empty())
@@ -110,7 +110,7 @@ public class MetricsWebClientFilterFunctionTests {
 	@Test
 	public void filterWhenExceptionThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest.create(HttpMethod.GET,
-				URI.create("http://example.com/projects/spring-boot")).build();
+				URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException());
 		this.filterFunction.filter(request, exchange)
 				.onErrorResume(IllegalArgumentException.class, (t) -> Mono.empty())
@@ -124,7 +124,7 @@ public class MetricsWebClientFilterFunctionTests {
 	@Test
 	public void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
 		ClientRequest request = ClientRequest.create(HttpMethod.GET,
-				URI.create("http://example.com/projects/spring-boot")).build();
+				URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException())
 				.delaySubscription(Duration.ofMillis(300)).cast(ClientResponse.class);
 		this.filterFunction.filter(request, exchange).retry(1)

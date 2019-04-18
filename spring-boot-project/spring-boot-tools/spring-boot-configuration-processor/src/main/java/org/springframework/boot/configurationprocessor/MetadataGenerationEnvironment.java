@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,14 +16,19 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -45,43 +50,8 @@ class MetadataGenerationEnvironment {
 
 	private static final String NULLABLE_ANNOTATION = "org.springframework.lang.Nullable";
 
-	private final Set<String> typeExcludes;
-
-	private final TypeUtils typeUtils;
-
-	private final Elements elements;
-
-	private final FieldValuesParser fieldValuesParser;
-
-	private final Map<TypeElement, Map<String, Object>> defaultValues = new HashMap<>();
-
-	private final String configurationPropertiesAnnotation;
-
-	private final String nestedConfigurationPropertyAnnotation;
-
-	private final String deprecatedConfigurationPropertyAnnotation;
-
-	private final String endpointAnnotation;
-
-	private final String readOperationAnnotation;
-
-	MetadataGenerationEnvironment(ProcessingEnvironment environment,
-			String configurationPropertiesAnnotation,
-			String nestedConfigurationPropertyAnnotation,
-			String deprecatedConfigurationPropertyAnnotation, String endpointAnnotation,
-			String readOperationAnnotation) {
-		this.typeExcludes = determineTypeExcludes();
-		this.typeUtils = new TypeUtils(environment);
-		this.elements = environment.getElementUtils();
-		this.fieldValuesParser = resolveFieldValuesParser(environment);
-		this.configurationPropertiesAnnotation = configurationPropertiesAnnotation;
-		this.nestedConfigurationPropertyAnnotation = nestedConfigurationPropertyAnnotation;
-		this.deprecatedConfigurationPropertyAnnotation = deprecatedConfigurationPropertyAnnotation;
-		this.endpointAnnotation = endpointAnnotation;
-		this.readOperationAnnotation = readOperationAnnotation;
-	}
-
-	private static Set<String> determineTypeExcludes() {
+	private static final Set<String> TYPE_EXCLUDES;
+	static {
 		Set<String> excludes = new HashSet<>();
 		excludes.add("com.zaxxer.hikari.IConnectionCustomizer");
 		excludes.add("groovy.text.markup.MarkupTemplateEngine");
@@ -96,7 +66,47 @@ class MetadataGenerationEnvironment {
 		excludes.add("org.apache.tomcat.jdbc.pool.Validator");
 		excludes.add("org.flywaydb.core.api.callback.FlywayCallback");
 		excludes.add("org.flywaydb.core.api.resolver.MigrationResolver");
-		return excludes;
+		TYPE_EXCLUDES = Collections.unmodifiableSet(excludes);
+	}
+
+	private final TypeUtils typeUtils;
+
+	private final Elements elements;
+
+	private final Messager messager;
+
+	private final FieldValuesParser fieldValuesParser;
+
+	private final Map<TypeElement, Map<String, Object>> defaultValues = new HashMap<>();
+
+	private final String configurationPropertiesAnnotation;
+
+	private final String nestedConfigurationPropertyAnnotation;
+
+	private final String deprecatedConfigurationPropertyAnnotation;
+
+	private final String defaultValueAnnotation;
+
+	private final String endpointAnnotation;
+
+	private final String readOperationAnnotation;
+
+	MetadataGenerationEnvironment(ProcessingEnvironment environment,
+			String configurationPropertiesAnnotation,
+			String nestedConfigurationPropertyAnnotation,
+			String deprecatedConfigurationPropertyAnnotation,
+			String defaultValueAnnotation, String endpointAnnotation,
+			String readOperationAnnotation) {
+		this.typeUtils = new TypeUtils(environment);
+		this.elements = environment.getElementUtils();
+		this.messager = environment.getMessager();
+		this.fieldValuesParser = resolveFieldValuesParser(environment);
+		this.configurationPropertiesAnnotation = configurationPropertiesAnnotation;
+		this.nestedConfigurationPropertyAnnotation = nestedConfigurationPropertyAnnotation;
+		this.deprecatedConfigurationPropertyAnnotation = deprecatedConfigurationPropertyAnnotation;
+		this.defaultValueAnnotation = defaultValueAnnotation;
+		this.endpointAnnotation = endpointAnnotation;
+		this.readOperationAnnotation = readOperationAnnotation;
 	}
 
 	private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
@@ -112,7 +122,18 @@ class MetadataGenerationEnvironment {
 		return this.typeUtils;
 	}
 
-	public Object getDefaultValue(TypeElement type, String name) {
+	public Messager getMessager() {
+		return this.messager;
+	}
+
+	/**
+	 * Return the default value of the field with the specified {@code name}.
+	 * @param type the type to consider
+	 * @param name the name of the field
+	 * @return the default value or {@code null} if the field does not exist or no default
+	 * value has been detected
+	 */
+	public Object getFieldDefaultValue(TypeElement type, String name) {
 		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues)
 				.get(name);
 	}
@@ -125,7 +146,7 @@ class MetadataGenerationEnvironment {
 		if (typeName.endsWith("[]")) {
 			typeName = typeName.substring(0, typeName.length() - 2);
 		}
-		return this.typeExcludes.contains(typeName);
+		return TYPE_EXCLUDES.contains(typeName);
 	}
 
 	public boolean isDeprecated(Element element) {
@@ -171,8 +192,19 @@ class MetadataGenerationEnvironment {
 	public Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
 		annotation.getElementValues().forEach((name, value) -> values
-				.put(name.getSimpleName().toString(), value.getValue()));
+				.put(name.getSimpleName().toString(), getAnnotationValue(value)));
 		return values;
+	}
+
+	private Object getAnnotationValue(AnnotationValue annotationValue) {
+		Object value = annotationValue.getValue();
+		if (value instanceof List) {
+			List<Object> values = new ArrayList<>();
+			((List<?>) value)
+					.forEach((v) -> values.add(((AnnotationValue) v).getValue()));
+			return values;
+		}
+		return value;
 	}
 
 	public TypeElement getConfigurationPropertiesAnnotationElement() {
@@ -185,6 +217,10 @@ class MetadataGenerationEnvironment {
 
 	public AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
 		return getAnnotation(element, this.nestedConfigurationPropertyAnnotation);
+	}
+
+	public AnnotationMirror getDefaultValueAnnotation(Element element) {
+		return getAnnotation(element, this.defaultValueAnnotation);
 	}
 
 	public TypeElement getEndpointAnnotationElement() {

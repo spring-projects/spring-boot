@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,15 +43,16 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * @see EnableJdbcRepositories
  */
 @SuppressWarnings("deprecation")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(NamedParameterJdbcOperations.class)
 @ConditionalOnClass({ NamedParameterJdbcOperations.class,
 		AbstractJdbcConfiguration.class })
-@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration.class)
 public class JdbcRepositoriesAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JdbcRepositoryConfigExtension.class)
 	@Import(JdbcRepositoriesAutoConfigureRegistrar.class)
 	static class JdbcRepositoriesConfiguration {

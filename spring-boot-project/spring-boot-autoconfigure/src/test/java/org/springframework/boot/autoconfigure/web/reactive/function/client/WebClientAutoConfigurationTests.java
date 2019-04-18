@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,23 +101,23 @@ public class WebClientAutoConfigurationTests {
 					WebClient.Builder firstBuilder = context
 							.getBean(WebClient.Builder.class);
 					firstBuilder.clientConnector(firstConnector)
-							.baseUrl("http://first.example.org");
+							.baseUrl("https://first.example.org");
 					ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
 					given(secondConnector.connect(any(), any(), any()))
 							.willReturn(Mono.just(response));
 					WebClient.Builder secondBuilder = context
 							.getBean(WebClient.Builder.class);
 					secondBuilder.clientConnector(secondConnector)
-							.baseUrl("http://second.example.org");
+							.baseUrl("https://second.example.org");
 					assertThat(firstBuilder).isNotEqualTo(secondBuilder);
 					firstBuilder.build().get().uri("/foo").exchange()
 							.block(Duration.ofSeconds(30));
 					secondBuilder.build().get().uri("/foo").exchange()
 							.block(Duration.ofSeconds(30));
 					verify(firstConnector).connect(eq(HttpMethod.GET),
-							eq(URI.create("http://first.example.org/foo")), any());
+							eq(URI.create("https://first.example.org/foo")), any());
 					verify(secondConnector).connect(eq(HttpMethod.GET),
-							eq(URI.create("http://second.example.org/foo")), any());
+							eq(URI.create("https://second.example.org/foo")), any());
 					WebClientCustomizer customizer = context
 							.getBean("webClientCustomizer", WebClientCustomizer.class);
 					verify(customizer, times(1)).customize(any(WebClient.Builder.class));
@@ -133,7 +133,7 @@ public class WebClientAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CodecConfiguration {
 
 		@Bean
@@ -143,7 +143,7 @@ public class WebClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WebClientCustomizerConfig {
 
 		@Bean
@@ -153,7 +153,7 @@ public class WebClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomWebClientBuilderConfig {
 
 		@Bean

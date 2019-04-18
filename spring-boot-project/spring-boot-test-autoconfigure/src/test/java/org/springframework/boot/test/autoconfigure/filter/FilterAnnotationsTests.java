@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,7 +96,8 @@ public class FilterAnnotationsTests {
 
 	}
 
-	@Filters(@Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ExampleWithoutAnnotation.class))
+	@Filters(@Filter(type = FilterType.ASSIGNABLE_TYPE,
+			classes = ExampleWithoutAnnotation.class))
 	static class FilterByType {
 
 	}
@@ -106,7 +107,8 @@ public class FilterAnnotationsTests {
 
 	}
 
-	@Filters(@Filter(type = FilterType.ASPECTJ, pattern = "(*..*ExampleWithoutAnnotation)"))
+	@Filters(@Filter(type = FilterType.ASPECTJ,
+			pattern = "(*..*ExampleWithoutAnnotation)"))
 	static class FilterByAspectJ {
 
 	}

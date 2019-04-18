@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -142,6 +142,41 @@ class TypeUtils {
 		return type.accept(this.typeExtractor, createTypeDescriptor(element));
 	}
 
+	/**
+	 * Extract the target element type from the specified container type or {@code null}
+	 * if no element type was found.
+	 * @param type a type, potentially wrapping an element type
+	 * @return the element type or {@code null} if no specific type was found
+	 */
+	public TypeMirror extractElementType(TypeMirror type) {
+		if (!this.env.getTypeUtils().isAssignable(type, this.collectionType)) {
+			return null;
+		}
+		return getCollectionElementType(type);
+	}
+
+	private TypeMirror getCollectionElementType(TypeMirror type) {
+		if (((TypeElement) this.types.asElement(type)).getQualifiedName()
+				.contentEquals(Collection.class.getName())) {
+			DeclaredType declaredType = (DeclaredType) type;
+			// raw type, just "Collection"
+			if (declaredType.getTypeArguments().size() == 0) {
+				return this.types.getDeclaredType(this.env.getElementUtils()
+						.getTypeElement(Object.class.getName()));
+			}
+			// return type argument to Collection<...>
+			return declaredType.getTypeArguments().get(0);
+		}
+
+		// recursively walk the supertypes, looking for Collection<...>
+		for (TypeMirror superType : this.env.getTypeUtils().directSupertypes(type)) {
+			if (this.types.isAssignable(superType, this.collectionType)) {
+				return getCollectionElementType(superType);
+			}
+		}
+		return null;
+	}
+
 	public boolean isCollectionOrMap(TypeMirror type) {
 		return this.env.getTypeUtils().isAssignable(type, this.collectionType)
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
@@ -154,6 +189,19 @@ class TypeUtils {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
 		return "".equals(javadoc) ? null : javadoc;
+	}
+
+	/**
+	 * Return the {@link PrimitiveType} of the specified type or {@code null} if the type
+	 * does not represent a valid wrapper type.
+	 * @param typeMirror a type
+	 * @return the primitive type or {@code null} if the type is not a wrapper type
+	 */
+	public PrimitiveType getPrimitiveType(TypeMirror typeMirror) {
+		if (getPrimitiveFor(typeMirror) != null) {
+			return this.types.unboxedType(typeMirror);
+		}
+		return null;
 	}
 
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
@@ -256,15 +304,28 @@ class TypeUtils {
 			TypeMirror typeMirror = descriptor.resolveGeneric(t);
 			if (typeMirror != null) {
 				if (typeMirror instanceof TypeVariable) {
-					// Still unresolved, let's use upper bound
-					return visit(((TypeVariable) typeMirror).getUpperBound(), descriptor);
+					TypeVariable typeVariable = (TypeVariable) typeMirror;
+					// Still unresolved, let's use the upper bound, checking first if
+					// a cycle may exist
+					if (!hasCycle(typeVariable)) {
+						return visit(typeVariable.getUpperBound(), descriptor);
+					}
 				}
 				else {
 					return visit(typeMirror, descriptor);
 				}
 			}
-			// Unresolved generics, use upper bound
-			return visit(t.getUpperBound(), descriptor);
+			// Fallback to simple representation of the upper bound
+			return defaultAction(t.getUpperBound(), descriptor);
+		}
+
+		private boolean hasCycle(TypeVariable variable) {
+			TypeMirror upperBound = variable.getUpperBound();
+			if (upperBound instanceof DeclaredType) {
+				return ((DeclaredType) upperBound).getTypeArguments().stream()
+						.anyMatch((candidate) -> candidate.equals(variable));
+			}
+			return false;
 		}
 
 		@Override

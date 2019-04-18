@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
 
 /**
  * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the
- * <a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
+ * <a href="https://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
  * Synchronous HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with
  * HTTP requests held open until a response is available. A typical traffic pattern would
  * be as follows:

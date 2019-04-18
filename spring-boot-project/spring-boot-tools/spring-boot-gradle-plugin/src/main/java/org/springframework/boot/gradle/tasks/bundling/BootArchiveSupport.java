@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,10 +79,20 @@ class BootArchiveSupport {
 		configureExclusions();
 	}
 
-	void configureManifest(Jar jar, String mainClassName) {
+	void configureManifest(Jar jar, String mainClassName, String springBootClasses,
+			String springBootLib) {
 		Attributes attributes = jar.getManifest().getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
 		attributes.putIfAbsent("Start-Class", mainClassName);
+		attributes.computeIfAbsent("Spring-Boot-Version",
+				(key) -> determineSpringBootVersion());
+		attributes.putIfAbsent("Spring-Boot-Classes", springBootClasses);
+		attributes.putIfAbsent("Spring-Boot-Lib", springBootLib);
+	}
+
+	private String determineSpringBootVersion() {
+		String implementationVersion = getClass().getPackage().getImplementationVersion();
+		return (implementationVersion != null) ? implementationVersion : "unknown";
 	}
 
 	CopyAction createCopyAction(Jar jar) {

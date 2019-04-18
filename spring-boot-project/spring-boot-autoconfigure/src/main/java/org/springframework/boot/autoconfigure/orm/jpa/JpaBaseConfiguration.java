@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Kazuki Shimizu
  * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
@@ -105,8 +105,12 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
 		adapter.setShowSql(this.properties.isShowSql());
-		adapter.setDatabase(this.properties.determineDatabase(this.dataSource));
-		adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
+		if (this.properties.getDatabase() != null) {
+			adapter.setDatabase(this.properties.getDatabase());
+		}
+		if (this.properties.getDatabasePlatform() != null) {
+			adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
+		}
 		adapter.setGenerateDdl(this.properties.isGenerateDdl());
 		return adapter;
 	}
@@ -202,45 +206,46 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass(WebMvcConfigurer.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })
 	@ConditionalOnMissingFilterBean(OpenEntityManagerInViewFilter.class)
-	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view",
+			havingValue = "true", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
-		// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when
-		// not on the classpath
-		@Configuration
-		protected static class JpaWebMvcConfiguration implements WebMvcConfigurer {
+		private static final Log logger = LogFactory.getLog(JpaWebConfiguration.class);
 
-			private static final Log logger = LogFactory
-					.getLog(JpaWebMvcConfiguration.class);
+		private final JpaProperties jpaProperties;
 
-			private final JpaProperties jpaProperties;
+		protected JpaWebConfiguration(JpaProperties jpaProperties) {
+			this.jpaProperties = jpaProperties;
+		}
 
-			protected JpaWebMvcConfiguration(JpaProperties jpaProperties) {
-				this.jpaProperties = jpaProperties;
+		@Bean
+		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+			if (this.jpaProperties.getOpenInView() == null) {
+				logger.warn("spring.jpa.open-in-view is enabled by default. "
+						+ "Therefore, database queries may be performed during view "
+						+ "rendering. Explicitly configure "
+						+ "spring.jpa.open-in-view to disable this warning");
 			}
+			return new OpenEntityManagerInViewInterceptor();
+		}
 
-			@Bean
-			public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
-				if (this.jpaProperties.getOpenInView() == null) {
-					logger.warn("spring.jpa.open-in-view is enabled by default. "
-							+ "Therefore, database queries may be performed during view "
-							+ "rendering. Explicitly configure "
-							+ "spring.jpa.open-in-view to disable this warning");
+		@Bean
+		public WebMvcConfigurer openEntityManagerInViewInterceptorConfigurer(
+				OpenEntityManagerInViewInterceptor interceptor) {
+			return new WebMvcConfigurer() {
+
+				@Override
+				public void addInterceptors(InterceptorRegistry registry) {
+					registry.addWebRequestInterceptor(interceptor);
 				}
-				return new OpenEntityManagerInViewInterceptor();
-			}
 
-			@Override
-			public void addInterceptors(InterceptorRegistry registry) {
-				registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
-			}
-
+			};
 		}
 
 	}
