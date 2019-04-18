@@ -69,4 +69,11 @@ public class RunningDocumentationTests {
 						.contains(new File("src/main/resources").getPath());
 	}
 
+	@TestTemplate
+	public void bootRunDisableOptimizedLaunch() throws IOException {
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/running/boot-run-disable-optimized-launch")
+				.build("optimizedLaunch").getOutput()).contains("false");
+	}
+
 }

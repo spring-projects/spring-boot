@@ -8,11 +8,10 @@ To run your application without first building an archive use the `bootRun` task
 	$ ./gradlew bootRun
 ----
 
-The `bootRun` task is an instance of
-{boot-run-javadoc}[`BootRun`] which is a `JavaExec` subclass. As such, all of the
-{gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing
-a Java process in Gradle are available to you. The task is automatically configured to use
-the runtime classpath of the main source set.
+The `bootRun` task is an instance of {boot-run-javadoc}[`BootRun`] which is a `JavaExec`
+subclass. As such, all of the {gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual
+configuration options] for executing a Java process in Gradle are available to you. The
+task is automatically configured to use the runtime classpath of the main source set.
 
 By default, the main class will be configured automatically by looking for a class with a
 `public static void main(String[])` method in directories on the task's classpath.
@@ -45,6 +44,23 @@ include::../gradle/running/spring-boot-dsl-main-class-name.gradle[tags=main-clas
 .Kotlin
 ----
 include::../gradle/running/spring-boot-dsl-main-class-name.gradle.kts[tags=main-class]
+----
+
+
+By default, `bootRun` will configure the JVM to optimize its launch for faster startup
+during development. This behavior can be disabled by using the `optimizedLaunch` property,
+as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/boot-run-disable-optimized-launch.gradle[tags=launch]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
 ----
 
 

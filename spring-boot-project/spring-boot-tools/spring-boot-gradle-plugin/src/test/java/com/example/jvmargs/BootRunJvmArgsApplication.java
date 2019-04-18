@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.example;
+package com.example.jvmargs;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 
 /**
- * Very basic application used for testing {@code BootRun}.
+ * Application used for testing {@code BootRun}'s JVM argument handling.
  *
  * @author Andy Wilkinson
  */
-public class BootRunApplication {
+public class BootRunJvmArgsApplication {
 
-	protected BootRunApplication() {
+	protected BootRunJvmArgsApplication() {
 
 	}
 
 	public static void main(String[] args) {
 		int i = 1;
-		for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
-				.split(File.pathSeparator)) {
+		for (String entry : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
 			System.out.println(i++ + ". " + entry);
 		}
 	}
