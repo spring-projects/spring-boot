@@ -25,8 +25,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -85,12 +88,26 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 			String beanClassName = candidate.getBeanClassName();
 			try {
 				Class<?> type = ClassUtils.forName(beanClassName, null);
+				validateScanConfiguration(type);
 				ConfigurationPropertiesBeanDefinitionRegistrar.register(registry,
 						beanFactory, type);
 			}
 			catch (ClassNotFoundException ex) {
 				// Ignore
 			}
+		}
+	}
+
+	private void validateScanConfiguration(Class<?> type) {
+		MergedAnnotation<Component> component = MergedAnnotations
+				.from(type, MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+				.get(Component.class);
+		if (component.isPresent()) {
+			MergedAnnotation<?> parent = component;
+			while (parent.getParent() != null) {
+				parent = parent.getParent();
+			}
+			throw new InvalidConfigurationPropertiesException(type, parent.getType());
 		}
 	}
 
