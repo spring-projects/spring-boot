@@ -102,7 +102,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
 				.withPropertyValues(
-						"management.metrics.web.server.auto-time-requests=false")
+						"management.metrics.web.server.request.auto-time.enabled=false")
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.find("http.server.requests").meter()).isNull();

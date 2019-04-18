@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.AutoTime;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -79,9 +80,10 @@ public class WebMvcMetricsAutoConfiguration {
 	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(
 			MeterRegistry registry, WebMvcTagsProvider tagsProvider) {
 		Server serverProperties = this.properties.getWeb().getServer();
+		AutoTime autotime = serverProperties.getRequest().getAutoTime();
 		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(registry, tagsProvider,
-				serverProperties.getRequestsMetricName(),
-				serverProperties.isAutoTimeRequests());
+				serverProperties.getRequest().getMetricName(), autotime.isEnabled(),
+				autotime.getDefaultPercentiles(), autotime.isDefaultHistogram());
 		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
 				filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
@@ -92,7 +94,8 @@ public class WebMvcMetricsAutoConfiguration {
 	@Bean
 	@Order(0)
 	public MeterFilter metricsHttpServerUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
+		String metricName = this.properties.getWeb().getServer().getRequest()
+				.getMetricName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
 				.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,11 +51,49 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private final String metricName;
 
+	private final boolean autoTimeRequests;
+
+	private final double[] percentiles;
+
+	private final boolean histogram;
+
+	/**
+	 * Create a new {@code MetricsClientHttpRequestInterceptor}.
+	 * @param meterRegistry the registry to which metrics are recorded
+	 * @param tagProvider provider for metrics tags
+	 * @param metricName name of the metric to record
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #MetricsClientHttpRequestInterceptor(MeterRegistry, RestTemplateExchangeTagsProvider, String, boolean, List, boolean)}
+	 */
 	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
+		this(meterRegistry, tagProvider, metricName, true, null, false);
+	}
+
+	/**
+	 * Create a new {@code MetricsClientHttpRequestInterceptor}.
+	 * @param meterRegistry the registry to which metrics are recorded
+	 * @param tagProvider provider for metrics tags
+	 * @param metricName name of the metric to record
+	 * @param autoTimeRequests if requests should be automatically timed
+	 * @param percentileList percentiles for auto time requests
+	 * @param histogram histogram or not for auto time requests
+	 * @since 2.2.0
+	 */
+	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
+			RestTemplateExchangeTagsProvider tagProvider, String metricName,
+			boolean autoTimeRequests, List<Double> percentileList, boolean histogram) {
+
+		double[] percentiles = (percentileList != null)
+				? percentileList.stream().mapToDouble(Double::doubleValue).toArray()
+				: null;
+
 		this.tagProvider = tagProvider;
 		this.meterRegistry = meterRegistry;
 		this.metricName = metricName;
+		this.autoTimeRequests = autoTimeRequests;
+		this.percentiles = percentiles;
+		this.histogram = histogram;
 	}
 
 	@Override
@@ -67,8 +106,10 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 			return response;
 		}
 		finally {
-			getTimeBuilder(request, response).register(this.meterRegistry)
-					.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+			if (this.autoTimeRequests) {
+				getTimeBuilder(request, response).register(this.meterRegistry)
+						.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+			}
 			urlTemplate.remove();
 		}
 	}
@@ -93,7 +134,8 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
-		return Timer.builder(this.metricName)
+		return Timer.builder(this.metricName).publishPercentiles(this.percentiles)
+				.publishPercentileHistogram(this.histogram)
 				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
 				.description("Timer of RestTemplate operation");
 	}

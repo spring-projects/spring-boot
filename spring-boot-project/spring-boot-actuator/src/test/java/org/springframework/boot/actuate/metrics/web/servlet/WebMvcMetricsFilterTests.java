@@ -372,7 +372,7 @@ public class WebMvcMetricsFilterTests {
 		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
 				WebApplicationContext ctx) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true);
+					"http.server.requests", true, null, false);
 		}
 
 	}
