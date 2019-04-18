@@ -49,7 +49,7 @@ class WebClientMetricsConfiguration {
 			MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagsProvider,
 			MetricsProperties properties) {
 		return new MetricsWebClientCustomizer(meterRegistry, tagsProvider,
-				properties.getWeb().getClient().getRequestsMetricName());
+				properties.getWeb().getClient().getRequest().getMetricName());
 	}
 
 }

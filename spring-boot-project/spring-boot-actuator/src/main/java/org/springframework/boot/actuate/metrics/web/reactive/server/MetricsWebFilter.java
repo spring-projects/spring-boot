@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -48,12 +50,49 @@ public class MetricsWebFilter implements WebFilter {
 
 	private final boolean autoTimeRequests;
 
+	private final double[] percentiles;
+
+	private final boolean histogram;
+
+	/**
+	 * Create a new {@code MetricsWebFilter}.
+	 * @param registry the registry to which metrics are recorded
+	 * @param tagsProvider provider for metrics tags
+	 * @param metricName name of the metric to record
+	 * @param autoTimeRequests if requests should be automatically timed
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #MetricsWebFilter(MeterRegistry, WebFluxTagsProvider, String, boolean, List, boolean)}
+	 */
+	@Deprecated
 	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
 			String metricName, boolean autoTimeRequests) {
+		this(registry, tagsProvider, metricName, autoTimeRequests, null, false);
+	}
+
+	/**
+	 * Create a new {@code MetricsWebFilter}.
+	 * @param registry the registry to which metrics are recorded
+	 * @param tagsProvider provider for metrics tags
+	 * @param metricName name of the metric to record
+	 * @param autoTimeRequests if requests should be automatically timed
+	 * @param percentileList percentiles for auto time requests
+	 * @param histogram histogram or not for auto time requests
+	 * @since 2.2.0
+	 */
+	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
+			String metricName, boolean autoTimeRequests, List<Double> percentileList,
+			boolean histogram) {
+
+		double[] percentiles = (percentileList != null)
+				? percentileList.stream().mapToDouble(Double::doubleValue).toArray()
+				: null;
+
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
 		this.autoTimeRequests = autoTimeRequests;
+		this.percentiles = percentiles;
+		this.histogram = histogram;
 	}
 
 	@Override
@@ -67,29 +106,25 @@ public class MetricsWebFilter implements WebFilter {
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
 		long start = System.nanoTime();
 		ServerHttpResponse response = exchange.getResponse();
-		return call.doOnSuccess((done) -> success(exchange, start)).doOnError((cause) -> {
-			if (response.isCommitted()) {
-				error(exchange, start, cause);
-			}
-			else {
-				response.beforeCommit(() -> {
-					error(exchange, start, cause);
-					return Mono.empty();
+		return call.doOnSuccess((done) -> record(exchange, start, null))
+				.doOnError((cause) -> {
+					if (response.isCommitted()) {
+						record(exchange, start, cause);
+					}
+					else {
+						response.beforeCommit(() -> {
+							record(exchange, start, cause);
+							return Mono.empty();
+						});
+					}
 				});
-			}
-		});
 	}
 
-	private void success(ServerWebExchange exchange, long start) {
-		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, null);
-		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
-				TimeUnit.NANOSECONDS);
-	}
-
-	private void error(ServerWebExchange exchange, long start, Throwable cause) {
+	private void record(ServerWebExchange exchange, long start, Throwable cause) {
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
-		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
-				TimeUnit.NANOSECONDS);
+		Timer.builder(this.metricName).tags(tags).publishPercentiles(this.percentiles)
+				.publishPercentileHistogram(this.histogram).register(this.registry)
+				.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
 	}
 
 }

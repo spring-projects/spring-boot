@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring
@@ -27,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Jon Schneider
  * @author Alexander Abramov
+ * @author Tadaya Tsuyukubo
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -94,10 +98,7 @@ public class MetricsProperties {
 
 		public static class Client {
 
-			/**
-			 * Name of the metric for sent requests.
-			 */
-			private String requestsMetricName = "http.client.requests";
+			private final ClientRequest request = new ClientRequest();
 
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
@@ -106,12 +107,29 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
+			/**
+			 * Get name of the metric for received requests.
+			 * @return request metric name
+			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
+			 */
+			@DeprecatedConfigurationProperty(
+					replacement = "management.metrics.web.client.request.metric-name")
 			public String getRequestsMetricName() {
-				return this.requestsMetricName;
+				return this.request.getMetricName();
 			}
 
+			/**
+			 * Set name of the metric for received requests.
+			 * @param requestsMetricName request metric name
+			 * @deprecated since 2.2.0 in favor of
+			 * {@link ClientRequest#setMetricName(String)}
+			 */
 			public void setRequestsMetricName(String requestsMetricName) {
-				this.requestsMetricName = requestsMetricName;
+				this.request.setMetricName(requestsMetricName);
+			}
+
+			public ClientRequest getRequest() {
+				return this.request;
 			}
 
 			public int getMaxUriTags() {
@@ -122,9 +140,107 @@ public class MetricsProperties {
 				this.maxUriTags = maxUriTags;
 			}
 
+			public static class ClientRequest {
+
+				/**
+				 * Name of the metric for sent requests.
+				 */
+				private String metricName = "http.client.requests";
+
+				/**
+				 * Automatically time requests.
+				 */
+				private final AutoTime autoTime = new AutoTime();
+
+				public AutoTime getAutoTime() {
+					return this.autoTime;
+				}
+
+				public String getMetricName() {
+					return this.metricName;
+				}
+
+				public void setMetricName(String metricName) {
+					this.metricName = metricName;
+				}
+
+			}
+
 		}
 
 		public static class Server {
+
+			private final ServerRequest request = new ServerRequest();
+
+			/**
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
+			 */
+			private int maxUriTags = 100;
+
+			/**
+			 * Get name of the metric for received requests.
+			 * @return request metric name
+			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
+			 */
+			@DeprecatedConfigurationProperty(
+					replacement = "management.metrics.web.server.request.metric-name")
+			public String getRequestsMetricName() {
+				return this.request.getMetricName();
+			}
+
+			/**
+			 * Set name of the metric for received requests.
+			 * @param requestsMetricName request metric name
+			 * @deprecated since 2.2.0 in favor of
+			 * {@link ServerRequest#setMetricName(String)}
+			 */
+			public void setRequestsMetricName(String requestsMetricName) {
+				this.request.setMetricName(requestsMetricName);
+			}
+
+			public ServerRequest getRequest() {
+				return this.request;
+			}
+
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
+			}
+
+			public static class ServerRequest {
+
+				/**
+				 * Name of the metric for received requests.
+				 */
+				private String metricName = "http.server.requests";
+
+				/**
+				 * Automatically time requests.
+				 */
+				private final AutoTime autoTime = new AutoTime();
+
+				public AutoTime getAutoTime() {
+					return this.autoTime;
+				}
+
+				public String getMetricName() {
+					return this.metricName;
+				}
+
+				public void setMetricName(String metricName) {
+					this.metricName = metricName;
+				}
+
+			}
+
+		}
+
+		public static class AutoTime {
 
 			/**
 			 * Whether requests handled by Spring MVC, WebFlux or Jersey should be
@@ -132,42 +248,44 @@ public class MetricsProperties {
 			 * on account of request mapping timings, disable this and use 'Timed' on a
 			 * per request mapping basis as needed.
 			 */
-			private boolean autoTimeRequests = true;
+			private boolean enabled = true;
 
 			/**
-			 * Name of the metric for received requests.
+			 * Default percentiles when @Timed annotation is not presented on the
+			 * corresponding request handler. Any @Timed annotation presented will have
+			 * precedence.
 			 */
-			private String requestsMetricName = "http.server.requests";
+			private List<Double> defaultPercentiles = new ArrayList<>();
 
 			/**
-			 * Maximum number of unique URI tag values allowed. After the max number of
-			 * tag values is reached, metrics with additional tag values are denied by
-			 * filter.
+			 * Default histogram when @Timed annotation is not presented on the
+			 * corresponding request handler. Any @Timed annotation presented will have
+			 * precedence.
 			 */
-			private int maxUriTags = 100;
+			private boolean defaultHistogram;
 
-			public boolean isAutoTimeRequests() {
-				return this.autoTimeRequests;
+			public boolean isEnabled() {
+				return this.enabled;
 			}
 
-			public void setAutoTimeRequests(boolean autoTimeRequests) {
-				this.autoTimeRequests = autoTimeRequests;
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
 			}
 
-			public String getRequestsMetricName() {
-				return this.requestsMetricName;
+			public List<Double> getDefaultPercentiles() {
+				return this.defaultPercentiles;
 			}
 
-			public void setRequestsMetricName(String requestsMetricName) {
-				this.requestsMetricName = requestsMetricName;
+			public void setDefaultPercentiles(List<Double> defaultPercentiles) {
+				this.defaultPercentiles = defaultPercentiles;
 			}
 
-			public int getMaxUriTags() {
-				return this.maxUriTags;
+			public boolean isDefaultHistogram() {
+				return this.defaultHistogram;
 			}
 
-			public void setMaxUriTags(int maxUriTags) {
-				this.maxUriTags = maxUriTags;
+			public void setDefaultHistogram(boolean defaultHistogram) {
+				this.defaultHistogram = defaultHistogram;
 			}
 
 		}
