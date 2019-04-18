@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import io.undertow.UndertowOptions;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -58,6 +60,8 @@ import org.springframework.util.unit.DataSize;
  * @author Chentao Qu
  * @author Artsiom Yudovin
  * @author Andrew McGhie
+ * @author Rafiullah Hamedy
+ *
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -1114,6 +1118,49 @@ public class ServerProperties {
 		 */
 		private boolean eagerFilterInit = true;
 
+		/**
+		 * Maximum number of query or path parameters that are allowed. This limit exists
+		 * to prevent hash collision based DOS attacks.
+		 */
+		private int maxParameters = UndertowOptions.DEFAULT_MAX_PARAMETERS;
+
+		/**
+		 * Maximum number of headers that are allowed. This limit exists to prevent hash
+		 * collision based DOS attacks.
+		 */
+		private int maxHeaders = UndertowOptions.DEFAULT_MAX_HEADERS;
+
+		/**
+		 * Maximum number of cookies that are allowed. This limit exists to prevent hash
+		 * collision based DOS attacks.
+		 */
+		private int maxCookies = 200;
+
+		/**
+		 * Whether the server should decode percent encoded slash characters. Enabling
+		 * encoded slashes can have security implications due to different servers
+		 * interpreting the slash differently. Only enable this if you have a legacy
+		 * application that requires it.
+		 */
+		private boolean allowEncodedSlash = false;
+
+		/**
+		 * Whether the URL should be decoded. When disabled, percent-encoded characters in
+		 * the URL will be left as-is.
+		 */
+		private boolean decodeUrl = true;
+
+		/**
+		 * Charset used to decode URLs.
+		 */
+		private Charset urlCharset = StandardCharsets.UTF_8;
+
+		/**
+		 * Whether the 'Connection: keep-alive' header should be added to all responses,
+		 * even if not required by the HTTP specification.
+		 */
+		private boolean alwaysSetKeepAlive = true;
+
 		private final Accesslog accesslog = new Accesslog();
 
 		public DataSize getMaxHttpPostSize() {
@@ -1162,6 +1209,62 @@ public class ServerProperties {
 
 		public void setEagerFilterInit(boolean eagerFilterInit) {
 			this.eagerFilterInit = eagerFilterInit;
+		}
+
+		public int getMaxParameters() {
+			return this.maxParameters;
+		}
+
+		public void setMaxParameters(Integer maxParameters) {
+			this.maxParameters = maxParameters;
+		}
+
+		public int getMaxHeaders() {
+			return this.maxHeaders;
+		}
+
+		public void setMaxHeaders(int maxHeaders) {
+			this.maxHeaders = maxHeaders;
+		}
+
+		public Integer getMaxCookies() {
+			return this.maxCookies;
+		}
+
+		public void setMaxCookies(Integer maxCookies) {
+			this.maxCookies = maxCookies;
+		}
+
+		public boolean isAllowEncodedSlash() {
+			return this.allowEncodedSlash;
+		}
+
+		public void setAllowEncodedSlash(boolean allowEncodedSlash) {
+			this.allowEncodedSlash = allowEncodedSlash;
+		}
+
+		public boolean isDecodeUrl() {
+			return this.decodeUrl;
+		}
+
+		public void setDecodeUrl(Boolean decodeUrl) {
+			this.decodeUrl = decodeUrl;
+		}
+
+		public Charset getUrlCharset() {
+			return this.urlCharset;
+		}
+
+		public void setUrlCharset(Charset urlCharset) {
+			this.urlCharset = urlCharset;
+		}
+
+		public boolean isAlwaysSetKeepAlive() {
+			return this.alwaysSetKeepAlive;
+		}
+
+		public void setAlwaysSetKeepAlive(boolean alwaysSetKeepAlive) {
+			this.alwaysSetKeepAlive = alwaysSetKeepAlive;
 		}
 
 		public Accesslog getAccesslog() {
