@@ -83,6 +83,14 @@ public class JacksonTesterIntegrationTests {
 				.isEqualTo(1);
 	}
 
+	@Test
+	public void stringLiteral() throws Exception {
+		String stringWithSpecialCharacters = "myString";
+		assertThat(this.stringJson.write(stringWithSpecialCharacters))
+				.extractingJsonPathStringValue("@")
+				.isEqualTo(stringWithSpecialCharacters);
+	}
+
 	// This test confirms that the handling of special characters is symmetrical between
 	// the serialisation (via the JacksonTester) and the parsing (via json-path). By
 	// default json-path uses SimpleJson as its parser, which has a slightly different
