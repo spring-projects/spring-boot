@@ -16,13 +16,13 @@
 
 package org.springframework.boot.test.json;
 
-import com.google.gson.Gson;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

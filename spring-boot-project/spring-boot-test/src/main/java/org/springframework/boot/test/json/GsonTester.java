@@ -21,8 +21,6 @@ import java.io.Reader;
 
 import com.google.gson.Gson;
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.spi.json.GsonJsonProvider;
-import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -77,9 +75,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @see #initFields(Object, Gson)
 	 */
 	public GsonTester(Class<?> resourceLoadClass, ResolvableType type, Gson gson) {
-		this(resourceLoadClass, type, gson,
-				Configuration.builder().jsonProvider(new GsonJsonProvider())
-						.mappingProvider(new GsonMappingProvider()).build());
+		this(resourceLoadClass, type, gson, Configuration.defaultConfiguration());
 	}
 
 	/**
