@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationPid;
@@ -38,6 +39,10 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 class StartupInfoLogger {
+
+	private static final Log logger = LogFactory.getLog(StartupInfoLogger.class);
+
+	private static final long HOST_NAME_RESOLVE_THRESHOLD = 200;
 
 	private final Class<?> sourceClass;
 
@@ -105,7 +110,20 @@ class StartupInfoLogger {
 	}
 
 	private void appendOn(StringBuilder message) {
+		long startTime = System.currentTimeMillis();
 		append(message, "on ", () -> InetAddress.getLocalHost().getHostName());
+		long resolveTime = System.currentTimeMillis() - startTime;
+		if (resolveTime > HOST_NAME_RESOLVE_THRESHOLD && logger.isWarnEnabled()) {
+			StringBuilder warning = new StringBuilder();
+			warning.append("InetAddress.getLocalHost().getHostName() took ");
+			warning.append(resolveTime);
+			warning.append(" milliseconds to respond.");
+			warning.append(" Please verify your network configuration");
+			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+				warning.append(" (macOS machines may need to add entries to /etc/hosts)");
+			}
+			logger.warn(warning.append("."));
+		}
 	}
 
 	private void appendPid(StringBuilder message) {
