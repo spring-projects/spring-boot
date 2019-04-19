@@ -63,7 +63,7 @@ public class RedisReactiveAutoConfiguration {
 	
 	@Bean
     @ConditionalOnMissingBean
-    public ReactiveStringRedisTemplate reactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
+    public ReactiveStringRedisTemplate reactiveStringRedisTemplate(ReactiveRedisConnectionFactory factory) {
         return new ReactiveStringRedisTemplate(factory);
     }
 
