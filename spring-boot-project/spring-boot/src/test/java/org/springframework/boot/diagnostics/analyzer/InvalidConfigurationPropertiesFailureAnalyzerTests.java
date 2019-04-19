@@ -38,9 +38,9 @@ public class InvalidConfigurationPropertiesFailureAnalyzerTests {
 	public void analysisForInvalidConfigurationOfConfigurationProperties() {
 		FailureAnalysis analysis = performAnalysis();
 		assertThat(analysis.getDescription()).isEqualTo(getDescription());
-		assertThat(analysis.getAction())
-				.isEqualTo("Remove either @ConfigurationProperties or @Component from "
-						+ TestProperties.class);
+		assertThat(analysis.getAction()).isEqualTo("Remove @Component from "
+				+ TestProperties.class.getName()
+				+ " or consider disabling automatic @ConfigurationProperties scanning.");
 	}
 
 	private String getDescription() {

@@ -32,21 +32,21 @@ public class InvalidConfigurationPropertiesFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			InvalidConfigurationPropertiesException cause) {
-		Class<?> configurationProperties = cause.getConfigurationProperties();
+		String configurationProperties = cause.getConfigurationProperties().getName();
 		String component = cause.getComponent().getSimpleName();
 		return new FailureAnalysis(getDescription(configurationProperties, component),
 				getAction(configurationProperties, component), cause);
 	}
 
-	private String getDescription(Class<?> configurationProperties, String component) {
-		return configurationProperties.getName()
+	private String getDescription(String configurationProperties, String component) {
+		return configurationProperties
 				+ " is annotated with @ConfigurationProperties and @" + component
 				+ ". This may cause the @ConfigurationProperties bean to be registered twice.";
 	}
 
-	private String getAction(Class<?> configurationProperties, String component) {
-		return "Remove either @ConfigurationProperties or @" + component + " from "
-				+ configurationProperties;
+	private String getAction(String configurationProperties, String component) {
+		return "Remove @" + component + " from " + configurationProperties
+				+ " or consider disabling automatic @ConfigurationProperties scanning.";
 	}
 
 }
