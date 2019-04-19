@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -91,8 +92,8 @@ public class SessionAutoConfiguration {
 
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		public DefaultCookieSerializer cookieSerializer(
-				ServerProperties serverProperties) {
+		public DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
+				ObjectProvider<SpringSessionRememberMeServices> springSessionRememberMeServices) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -103,6 +104,9 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer
 					.setCookieMaxAge((int) maxAge.getSeconds()));
+			springSessionRememberMeServices.ifAvailable((
+					rememberMeServices) -> cookieSerializer.setRememberMeRequestAttribute(
+							SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR));
 			return cookieSerializer;
 		}
 
