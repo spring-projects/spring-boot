@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
  */
 public class UndertowWebServer implements WebServer {
 
-	private static final Log logger = LogFactory.getLog(UndertowServletWebServer.class);
+	private static final Log logger = LogFactory.getLog(UndertowWebServer.class);
 
 	private final Object monitor = new Object();
 
