@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package org.springframework.boot.test.autoconfigure.jooq;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -29,9 +30,8 @@ class JooqTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		JooqTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				JooqTest.class);
-		return (annotation != null) ? annotation.properties() : null;
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(JooqTest.class).getValue("properties", String[].class).orElse(null);
 	}
 
 }

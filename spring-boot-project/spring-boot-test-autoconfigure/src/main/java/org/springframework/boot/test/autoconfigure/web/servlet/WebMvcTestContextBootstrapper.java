@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
@@ -39,9 +40,9 @@ class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		WebMvcTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebMvcTest.class);
-		return (annotation != null) ? annotation.properties() : null;
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(WebMvcTest.class).getValue("properties", String[].class)
+				.orElse(null);
 	}
 
 }

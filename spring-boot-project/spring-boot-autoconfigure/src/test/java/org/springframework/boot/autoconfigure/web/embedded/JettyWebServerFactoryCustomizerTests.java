@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,9 @@ public class JettyWebServerFactoryCustomizerTests {
 				"server.jetty.accesslog.time-zone=" + timezone,
 				"server.jetty.accesslog.log-cookies=true",
 				"server.jetty.accesslog.log-server=true",
-				"server.jetty.accesslog.log-latency=true");
+				"server.jetty.accesslog.log-latency=true",
+				"server.jetty.accesslog.prefer-proxied-for-address=true",
+				"server.jetty.accesslog.ignore-paths=/a/path,/b/path");
 		JettyWebServer server = customizeAndGetServer();
 		NCSARequestLog requestLog = getNCSARequestLog(server);
 		assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
@@ -115,6 +117,9 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isTrue();
 		assertThat(requestLog.getLogServer()).isTrue();
 		assertThat(requestLog.getLogLatency()).isTrue();
+		assertThat(requestLog.getPreferProxiedForAddress()).isTrue();
+		assertThat(requestLog.getIgnorePaths().length).isEqualTo(2);
+		assertThat(requestLog.getIgnorePaths()).containsExactly("/a/path", "/b/path");
 	}
 
 	@Test
@@ -128,6 +133,8 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isFalse();
 		assertThat(requestLog.getLogServer()).isFalse();
 		assertThat(requestLog.getLogLatency()).isFalse();
+		assertThat(requestLog.getPreferProxiedForAddress()).isFalse();
+		assertThat(requestLog.getIgnorePaths()).isNull();
 	}
 
 	private NCSARequestLog getNCSARequestLog(JettyWebServer server) {

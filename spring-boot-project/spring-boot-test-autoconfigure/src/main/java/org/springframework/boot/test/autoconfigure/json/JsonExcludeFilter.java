@@ -22,9 +22,7 @@ import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -32,7 +30,8 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  */
-class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+class JsonExcludeFilter
+		extends StandardAnnotationCustomizableTypeExcludeFilter<JsonTest> {
 
 	private static final String JACKSON_MODULE = "com.fasterxml.jackson.databind.Module";
 
@@ -49,42 +48,13 @@ class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 
-	private final JsonTest annotation;
-
 	JsonExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				JsonTest.class);
-	}
-
-	@Override
-	protected boolean hasAnnotation() {
-		return this.annotation != null;
-	}
-
-	@Override
-	protected Filter[] getFilters(FilterType type) {
-		switch (type) {
-		case INCLUDE:
-			return this.annotation.includeFilters();
-		case EXCLUDE:
-			return this.annotation.excludeFilters();
-		}
-		throw new IllegalStateException("Unsupported type " + type);
-	}
-
-	@Override
-	protected boolean isUseDefaultFilters() {
-		return this.annotation.useDefaultFilters();
+		super(testClass);
 	}
 
 	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		return DEFAULT_INCLUDES;
-	}
-
-	@Override
-	protected Set<Class<?>> getComponentIncludes() {
-		return Collections.emptySet();
 	}
 
 }

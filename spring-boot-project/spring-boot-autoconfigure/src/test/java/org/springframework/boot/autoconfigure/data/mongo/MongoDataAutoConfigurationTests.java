@@ -139,8 +139,7 @@ public class MongoDataAutoConfigurationTests {
 				.run((context) -> {
 					MongoMappingContext mappingContext = context
 							.getBean(MongoMappingContext.class);
-					assertThat(mappingContext.isAutoIndexCreation())
-							.isEqualTo(Boolean.FALSE);
+					assertThat(mappingContext.isAutoIndexCreation()).isFalse();
 				});
 	}
 

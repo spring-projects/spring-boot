@@ -23,8 +23,10 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -71,17 +73,18 @@ abstract class AbstractEndpointCondition extends SpringBootCondition {
 	}
 
 	AnnotationAttributes getEndpointAttributes(Class<?> type) {
-		AnnotationAttributes attributes = AnnotatedElementUtils
-				.findMergedAnnotationAttributes(type, Endpoint.class, true, true);
-		if (attributes != null) {
-			return attributes;
+		MergedAnnotations annotations = MergedAnnotations.from(type,
+				SearchStrategy.EXHAUSTIVE);
+		MergedAnnotation<Endpoint> endpoint = annotations.get(Endpoint.class);
+		if (endpoint.isPresent()) {
+			return endpoint.asAnnotationAttributes();
 		}
-		attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
-				EndpointExtension.class, false, true);
-		Assert.state(attributes != null,
+		MergedAnnotation<EndpointExtension> extension = annotations
+				.get(EndpointExtension.class);
+		Assert.state(extension.isPresent(),
 				"No endpoint is specified and the return type of the @Bean method is "
 						+ "neither an @Endpoint, nor an @EndpointExtension");
-		return getEndpointAttributes(attributes.getClass("endpoint"));
+		return getEndpointAttributes(extension.getClass("endpoint"));
 	}
 
 }

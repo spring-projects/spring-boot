@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -33,7 +31,10 @@ import org.springframework.util.ClassUtils;
  *
  * @author Stephane Nicoll
  */
-class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+class RestClientExcludeFilter
+		extends StandardAnnotationCustomizableTypeExcludeFilter<RestClientTest> {
+
+	private static final Class<?>[] NO_COMPONENTS = {};
 
 	private static final String DATABIND_MODULE_CLASS_NAME = "com.fasterxml.jackson.databind.Module";
 
@@ -56,32 +57,12 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 
-	private final RestClientTest annotation;
+	private final Class<?>[] components;
 
 	RestClientExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				RestClientTest.class);
-	}
-
-	@Override
-	protected boolean hasAnnotation() {
-		return this.annotation != null;
-	}
-
-	@Override
-	protected Filter[] getFilters(FilterType type) {
-		switch (type) {
-		case INCLUDE:
-			return this.annotation.includeFilters();
-		case EXCLUDE:
-			return this.annotation.excludeFilters();
-		}
-		throw new IllegalStateException("Unsupported type " + type);
-	}
-
-	@Override
-	protected boolean isUseDefaultFilters() {
-		return this.annotation.useDefaultFilters();
+		super(testClass);
+		this.components = getAnnotation().getValue("components", Class[].class)
+				.orElse(NO_COMPONENTS);
 	}
 
 	@Override
@@ -91,7 +72,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<>(Arrays.asList(this.annotation.components()));
+		return new LinkedHashSet<>(Arrays.asList(this.components));
 	}
 
 }

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
+import java.time.Duration;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -67,6 +69,14 @@ public class RestClientAutoConfiguration {
 			credentialsProvider.setCredentials(AuthScope.ANY, credentials);
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> httpClientBuilder
 					.setDefaultCredentialsProvider(credentialsProvider));
+		});
+		builder.setRequestConfigCallback((requestConfigBuilder) -> {
+			map.from(properties::getConnectionTimeout).whenNonNull()
+					.as(Duration::toMillis).asInt(Math::toIntExact)
+					.to(requestConfigBuilder::setConnectTimeout);
+			map.from(properties::getReadTimeout).whenNonNull().as(Duration::toMillis)
+					.asInt(Math::toIntExact).to(requestConfigBuilder::setSocketTimeout);
+			return requestConfigBuilder;
 		});
 		builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(builder));

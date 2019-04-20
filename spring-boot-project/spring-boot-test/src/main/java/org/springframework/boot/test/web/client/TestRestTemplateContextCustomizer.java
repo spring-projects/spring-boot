@@ -29,6 +29,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -37,7 +38,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 
@@ -52,9 +55,11 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
-				mergedContextConfiguration.getTestClass(), SpringBootTest.class);
-		if (annotation.webEnvironment().isEmbedded()) {
+		MergedAnnotation<?> annotation = MergedAnnotations
+				.from(mergedContextConfiguration.getTestClass(),
+						SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(SpringBootTest.class);
+		if (annotation.getEnum("webEnvironment", WebEnvironment.class).isEmbedded()) {
 			registerTestRestTemplate(context);
 		}
 	}

@@ -172,7 +172,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
-		invokeProtocolHandlerCustomizers(connector);
+		invokeProtocolHandlerCustomizers(connector.getProtocolHandler());
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
@@ -190,8 +190,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	@SuppressWarnings("unchecked")
-	private void invokeProtocolHandlerCustomizers(Connector connector) {
-		ProtocolHandler protocolHandler = connector.getProtocolHandler();
+	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
 		LambdaSafe
 				.callbacks(TomcatProtocolHandlerCustomizer.class,
 						this.tomcatProtocolHandlerCustomizers, protocolHandler)

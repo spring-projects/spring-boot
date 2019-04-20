@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
 
 /**
  * Definition of a Spring {@link Qualifier @Qualifier}.
@@ -93,18 +93,20 @@ class QualifierDefinition {
 		Annotation[] candidates = field.getDeclaredAnnotations();
 		Set<Annotation> annotations = new HashSet<>(candidates.length);
 		for (Annotation candidate : candidates) {
-			if (!isMockOrSpyAnnotation(candidate)) {
+			if (!isMockOrSpyAnnotation(candidate.annotationType())) {
 				annotations.add(candidate);
 			}
 		}
 		return annotations;
 	}
 
-	private static boolean isMockOrSpyAnnotation(Annotation candidate) {
-		Class<? extends Annotation> type = candidate.annotationType();
-		return (type.equals(MockBean.class) || type.equals(SpyBean.class)
-				|| AnnotationUtils.isAnnotationMetaPresent(type, MockBean.class)
-				|| AnnotationUtils.isAnnotationMetaPresent(type, SpyBean.class));
+	private static boolean isMockOrSpyAnnotation(Class<? extends Annotation> type) {
+		if (type.equals(MockBean.class) || type.equals(SpyBean.class)) {
+			return true;
+		}
+		MergedAnnotations metaAnnotations = MergedAnnotations.from(type);
+		return metaAnnotations.isPresent(MockBean.class)
+				|| metaAnnotations.isPresent(SpyBean.class);
 	}
 
 }

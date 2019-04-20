@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
@@ -122,8 +123,9 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder = configure(builder);
 		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
-		if (application.getAllSources().isEmpty() && AnnotationUtils
-				.findAnnotation(getClass(), Configuration.class) != null) {
+		if (application.getAllSources().isEmpty()
+				&& MergedAnnotations.from(getClass(), SearchStrategy.EXHAUSTIVE)
+						.isPresent(Configuration.class)) {
 			application.addPrimarySources(Collections.singleton(getClass()));
 		}
 		Assert.state(!application.getAllSources().isEmpty(),

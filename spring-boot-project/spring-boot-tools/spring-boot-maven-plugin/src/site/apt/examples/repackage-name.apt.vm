@@ -6,7 +6,7 @@
  2019-03-29
  -----
 
-  If you need the repackage jar to have a different local name than the one defined by
+  If you need the repackaged jar to have a different local name than the one defined by
   the <<<artifactId>>> attribute of the project, simply use the standard <<<finalName>>>
   as shown in the following example:
 

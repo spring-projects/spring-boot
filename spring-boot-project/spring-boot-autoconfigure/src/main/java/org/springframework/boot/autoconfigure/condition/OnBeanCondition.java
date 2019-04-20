@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
@@ -531,8 +531,9 @@ class OnBeanCondition extends FilteringSpringBootCondition
 		}
 
 		private boolean isBeanMethod(Method method) {
-			return method != null
-					&& AnnotatedElementUtils.hasAnnotation(method, Bean.class);
+			return method != null && MergedAnnotations
+					.from(method, MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+					.isPresent(Bean.class);
 		}
 
 		public TypeExtractor getTypeExtractor(ClassLoader classLoader) {

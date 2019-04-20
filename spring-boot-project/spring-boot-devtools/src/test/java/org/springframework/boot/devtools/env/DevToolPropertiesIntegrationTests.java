@@ -18,6 +18,9 @@ package org.springframework.boot.devtools.env;
 
 import java.net.URL;
 import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import org.junit.After;
 import org.junit.Before;
@@ -61,37 +64,40 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void classPropertyConditionIsAffectedByDevToolProperties() {
+	public void classPropertyConditionIsAffectedByDevToolProperties() throws Exception {
 		SpringApplication application = new SpringApplication(
 				ClassConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run();
+		this.context = getContext(application::run);
 		this.context.getBean(ClassConditionConfiguration.class);
 	}
 
 	@Test
-	public void beanMethodPropertyConditionIsAffectedByDevToolProperties() {
+	public void beanMethodPropertyConditionIsAffectedByDevToolProperties()
+			throws Exception {
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run();
+		this.context = getContext(application::run);
 		this.context.getBean(MyBean.class);
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() {
+	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource()
+			throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run();
+		this.context = getContext(application::run);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() {
+	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource()
+			throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(
@@ -99,19 +105,33 @@ public class DevToolPropertiesIntegrationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setDefaultProperties(
 				Collections.singletonMap("spring.devtools.remote.secret", "donttell"));
-		this.context = application.run();
+		this.context = getContext(application::run);
 		this.context.getBean(MyBean.class);
 	}
 
 	@Test
-	public void postProcessEnablesIncludeStackTraceProperty() {
+	public void postProcessEnablesIncludeStackTraceProperty() throws Exception {
 		SpringApplication application = new SpringApplication(TestConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run();
+		this.context = getContext(application::run);
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		String property = environment.getProperty("server.error.include-stacktrace");
 		assertThat(property)
 				.isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+	}
+
+	protected ConfigurableApplicationContext getContext(
+			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
+		CountDownLatch latch = new CountDownLatch(1);
+		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
+		Thread thread = new Thread(() -> {
+			ConfigurableApplicationContext context = supplier.get();
+			latch.countDown();
+			atomicReference.getAndSet(context);
+		});
+		thread.start();
+		thread.join();
+		return atomicReference.get();
 	}
 
 	@Configuration(proxyBeanMethods = false)

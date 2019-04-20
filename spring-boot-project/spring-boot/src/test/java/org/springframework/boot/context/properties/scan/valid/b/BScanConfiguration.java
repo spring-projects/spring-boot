@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context.properties.scan.a;
+package org.springframework.boot.context.properties.scan.valid.b;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author Madhura Bhave
  */
-public class AScanConfiguration {
+public class BScanConfiguration {
 
-	@ConfigurationProperties(prefix = "a")
-	static class AProperties {
+	@ConfigurationProperties(prefix = "b")
+	static class BProperties {
 
 	}
 

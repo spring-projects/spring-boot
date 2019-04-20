@@ -37,6 +37,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -170,6 +171,10 @@ public class JettyWebServerFactoryCustomizer implements
 			log.setLogCookies(properties.isLogCookies());
 			log.setLogServer(properties.isLogServer());
 			log.setLogLatency(properties.isLogLatency());
+			log.setPreferProxiedForAddress(properties.isPreferProxiedForAddress());
+			if (!CollectionUtils.isEmpty(properties.getIgnorePaths())) {
+				log.setIgnorePaths(properties.getIgnorePaths().toArray(new String[0]));
+			}
 			server.setRequestLog(log);
 		});
 	}

@@ -23,12 +23,10 @@ import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
+import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -45,7 +43,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+class WebMvcTypeExcludeFilter
+		extends StandardAnnotationCustomizableTypeExcludeFilter<WebMvcTest> {
+
+	private static final Class<?>[] NO_CONTROLLERS = {};
 
 	private static final String[] OPTIONAL_INCLUDES = {
 			"org.springframework.security.config.annotation.web.WebSecurityConfigurer" };
@@ -84,37 +85,17 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
 	}
 
-	private final WebMvcTest annotation;
+	private final Class<?>[] controllers;
 
 	WebMvcTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebMvcTest.class);
-	}
-
-	@Override
-	protected boolean hasAnnotation() {
-		return this.annotation != null;
-	}
-
-	@Override
-	protected Filter[] getFilters(FilterType type) {
-		switch (type) {
-		case INCLUDE:
-			return this.annotation.includeFilters();
-		case EXCLUDE:
-			return this.annotation.excludeFilters();
-		}
-		throw new IllegalStateException("Unsupported type " + type);
-	}
-
-	@Override
-	protected boolean isUseDefaultFilters() {
-		return this.annotation.useDefaultFilters();
+		super(testClass);
+		this.controllers = getAnnotation().getValue("controllers", Class[].class)
+				.orElse(NO_CONTROLLERS);
 	}
 
 	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
-		if (ObjectUtils.isEmpty(this.annotation.controllers())) {
+		if (ObjectUtils.isEmpty(this.controllers)) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}
 		return DEFAULT_INCLUDES;
@@ -122,7 +103,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<>(Arrays.asList(this.annotation.controllers()));
+		return new LinkedHashSet<>(Arrays.asList(this.controllers));
 	}
 
 }

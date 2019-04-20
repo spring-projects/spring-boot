@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import io.undertow.Undertow;
@@ -24,6 +25,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
 import org.junit.Before;
 import org.junit.Test;
+import org.xnio.Option;
 import org.xnio.OptionMap;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -48,6 +50,8 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Rafiullah Hamedy
+ *
  */
 public class UndertowWebServerFactoryCustomizerTests {
 
@@ -86,6 +90,78 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customMaxHttpHeaderSize() {
+		bind("server.max-http-header-size=2048");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isEqualTo(2048);
+	}
+
+	@Test
+	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-header-size=-1");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
+	}
+
+	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-header-size=0");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
+	}
+
+	@Test
+	public void customMaxHttpPostSize() {
+		bind("server.undertow.max-http-post-size=256");
+		assertThat(boundServerOption(UndertowOptions.MAX_ENTITY_SIZE)).isEqualTo(256);
+	}
+
+	@Test
+	public void customConnectionTimeout() {
+		bind("server.connectionTimeout=100");
+		assertThat(boundServerOption(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
+	}
+
+	@Test
+	public void customMaxParameters() {
+		bind("server.undertow.max-parameters=4");
+		assertThat(boundServerOption(UndertowOptions.MAX_PARAMETERS)).isEqualTo(4);
+	}
+
+	@Test
+	public void customMaxHeaders() {
+		bind("server.undertow.max-headers=4");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADERS)).isEqualTo(4);
+	}
+
+	@Test
+	public void customMaxCookies() {
+		bind("server.undertow.max-cookies=4");
+		assertThat(boundServerOption(UndertowOptions.MAX_COOKIES)).isEqualTo(4);
+	}
+
+	@Test
+	public void allowEncodedSlashes() {
+		bind("server.undertow.allow-encoded-slash=true");
+		assertThat(boundServerOption(UndertowOptions.ALLOW_ENCODED_SLASH)).isTrue();
+	}
+
+	@Test
+	public void disableUrlDecoding() {
+		bind("server.undertow.decode-url=false");
+		assertThat(boundServerOption(UndertowOptions.DECODE_URL)).isFalse();
+	}
+
+	@Test
+	public void customUrlCharset() {
+		bind("server.undertow.url-charset=UTF-16");
+		assertThat(boundServerOption(UndertowOptions.URL_CHARSET))
+				.isEqualTo(StandardCharsets.UTF_16.name());
+	}
+
+	@Test
+	public void disableAlwaysSetKeepAlive() {
+		bind("server.undertow.always-set-keep-alive=false");
+		assertThat(boundServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	@Test
 	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableUndertowWebServerFactory factory = mock(
@@ -111,49 +187,13 @@ public class UndertowWebServerFactoryCustomizerTests {
 		verify(factory).setUseForwardHeaders(true);
 	}
 
-	@Test
-	public void customizeMaxHttpHeaderSize() {
-		bind("server.max-http-header-size=2048");
+	private <T> T boundServerOption(Option<T> option) {
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
 		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
 				"serverOptions")).getMap();
-		assertThat(map.get(UndertowOptions.MAX_HEADER_SIZE).intValue()).isEqualTo(2048);
-	}
-
-	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
-		bind("server.max-http-header-size=-1");
-		Builder builder = Undertow.builder();
-		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
-		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
-		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
-	}
-
-	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfZero() {
-		bind("server.max-http-header-size=0");
-		Builder builder = Undertow.builder();
-		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
-		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
-		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
-	}
-
-	@Test
-	public void customConnectionTimeout() {
-		bind("server.connection-timeout=100");
-		Builder builder = Undertow.builder();
-		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
-		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
-		assertThat(map.contains(UndertowOptions.NO_REQUEST_TIMEOUT)).isTrue();
-		assertThat(map.get(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
+		return map.get(option);
 	}
 
 	private ConfigurableUndertowWebServerFactory mockFactory(Builder builder) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,9 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 
@@ -178,9 +180,14 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private URL[] processUrls(URL[] urls, Class<?> testClass) throws Exception {
-		ClassPathEntryFilter filter = new ClassPathEntryFilter(testClass);
+		MergedAnnotations annotations = MergedAnnotations.from(testClass,
+				SearchStrategy.EXHAUSTIVE);
+		ClassPathEntryFilter filter = new ClassPathEntryFilter(
+				annotations.get(ClassPathExclusions.class));
 		List<URL> processedUrls = new ArrayList<>();
-		processedUrls.addAll(getAdditionalUrls(testClass));
+		List<URL> additionalUrls = getAdditionalUrls(
+				annotations.get(ClassPathOverrides.class));
+		processedUrls.addAll(additionalUrls);
 		for (URL url : urls) {
 			if (!filter.isExcluded(url)) {
 				processedUrls.add(url);
@@ -189,13 +196,12 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		return processedUrls.toArray(new URL[0]);
 	}
 
-	private List<URL> getAdditionalUrls(Class<?> testClass) throws Exception {
-		ClassPathOverrides overrides = AnnotationUtils.findAnnotation(testClass,
-				ClassPathOverrides.class);
-		if (overrides == null) {
+	private List<URL> getAdditionalUrls(MergedAnnotation<ClassPathOverrides> annotation)
+			throws Exception {
+		if (!annotation.isPresent()) {
 			return Collections.emptyList();
 		}
-		return resolveCoordinates(overrides.value());
+		return resolveCoordinates(annotation.getStringArray(MergedAnnotation.VALUE));
 	}
 
 	private List<URL> resolveCoordinates(String[] coordinates) throws Exception {
@@ -243,13 +249,13 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 		private final AntPathMatcher matcher = new AntPathMatcher();
 
-		private ClassPathEntryFilter(Class<?> testClass) throws Exception {
+		private ClassPathEntryFilter(MergedAnnotation<ClassPathExclusions> annotation)
+				throws Exception {
 			this.exclusions = new ArrayList<>();
 			this.exclusions.add("log4j-*.jar");
-			ClassPathExclusions exclusions = AnnotationUtils.findAnnotation(testClass,
-					ClassPathExclusions.class);
-			if (exclusions != null) {
-				this.exclusions.addAll(Arrays.asList(exclusions.value()));
+			if (annotation.isPresent()) {
+				this.exclusions.addAll(
+						Arrays.asList(annotation.getStringArray(MergedAnnotation.VALUE)));
 			}
 		}
 

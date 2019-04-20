@@ -34,7 +34,8 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
@@ -141,7 +142,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	}
 
 	private Set<Timed> findTimedAnnotations(AnnotatedElement element) {
-		return AnnotationUtils.getDeclaredRepeatableAnnotations(element, Timed.class);
+		return MergedAnnotations.from(element).stream(Timed.class)
+				.collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
 	private void record(TimingContext timingContext, HttpServletResponse response,

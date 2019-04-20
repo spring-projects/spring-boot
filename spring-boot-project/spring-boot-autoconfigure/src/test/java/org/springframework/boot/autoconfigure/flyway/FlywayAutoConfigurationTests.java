@@ -31,6 +31,7 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.callback.FlywayCallback;
+import org.flywaydb.core.internal.license.FlywayProUpgradeRequiredException;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -377,6 +378,95 @@ public class FlywayAutoConfigurationTests {
 							.isTrue();
 					assertThat(flyway.getConfiguration().isIgnorePendingMigrations())
 							.isTrue();
+				});
+	}
+
+	@Test
+	public void batchIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.batch=true").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" batch ");
+				});
+	}
+
+	@Test
+	public void dryRunOutputIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.dryRunOutput=dryrun.sql")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" dryRunOutput ");
+				});
+	}
+
+	@Test
+	public void errorOverridesIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.errorOverrides=D12345")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" errorOverrides ");
+				});
+	}
+
+	@Test
+	public void licenseKeyIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.license-key=<<secret>>")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" licenseKey ");
+				});
+	}
+
+	@Test
+	public void oracleSqlplusIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.oracle-sqlplus=true")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" oracle.sqlplus ");
+				});
+	}
+
+	@Test
+	public void streamIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.stream=true").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" stream ");
+				});
+	}
+
+	@Test
+	public void undoSqlMigrationPrefix() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.undo-sql-migration-prefix=undo")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(
+							FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" undoSqlMigrationPrefix ");
 				});
 	}
 

@@ -36,4 +36,5 @@
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
+	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
 </suppressions>

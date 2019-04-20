@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.context;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,8 +32,10 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
@@ -163,11 +164,11 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			if (webApplicationType == WebApplicationType.SERVLET
 					&& (webEnvironment.isEmbedded()
 							|| webEnvironment == WebEnvironment.MOCK)) {
-				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
-						.findMergedAnnotation(mergedConfig.getTestClass(),
-								WebAppConfiguration.class);
-				String resourceBasePath = (webAppConfiguration != null)
-						? webAppConfiguration.value() : "src/main/webapp";
+				String resourceBasePath = MergedAnnotations
+						.from(mergedConfig.getTestClass(), SearchStrategy.EXHAUSTIVE)
+						.get(WebAppConfiguration.class)
+						.getValue(MergedAnnotation.VALUE, String.class)
+						.orElse("src/main/webapp");
 				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
 						resourceBasePath);
 			}
@@ -251,7 +252,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private boolean containsNonTestComponent(Class<?>[] classes) {
 		for (Class<?> candidate : classes) {
-			if (!AnnotatedElementUtils.isAnnotated(candidate, TestConfiguration.class)) {
+			if (!MergedAnnotations.from(candidate, SearchStrategy.INHERITED_ANNOTATIONS)
+					.isPresent(TestConfiguration.class)) {
 				return true;
 			}
 		}
@@ -330,15 +332,16 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, SpringBootTest.class);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(SpringBootTest.class).synthesize(MergedAnnotation::isPresent)
+				.orElse(null);
 	}
 
 	protected void verifyConfiguration(Class<?> testClass) {
 		SpringBootTest springBootTest = getAnnotation(testClass);
-		if (springBootTest != null
-				&& (springBootTest.webEnvironment() == WebEnvironment.DEFINED_PORT
-						|| springBootTest.webEnvironment() == WebEnvironment.RANDOM_PORT)
-				&& getAnnotation(WebAppConfiguration.class, testClass) != null) {
+		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment())
+				&& MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+						.isPresent(WebAppConfiguration.class)) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
 					+ "mock web environment. Please remove @WebAppConfiguration or "
@@ -346,9 +349,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		}
 	}
 
-	private <T extends Annotation> T getAnnotation(Class<T> annotationType,
-			Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, annotationType);
+	private boolean isListeningOnPort(WebEnvironment webEnvironment) {
+		return webEnvironment == WebEnvironment.DEFINED_PORT
+				|| webEnvironment == WebEnvironment.RANDOM_PORT;
 	}
 
 	/**

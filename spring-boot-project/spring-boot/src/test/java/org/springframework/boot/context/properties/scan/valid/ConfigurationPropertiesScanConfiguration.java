@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context.properties.scan;
+package org.springframework.boot.context.properties.scan.valid;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.scan.b.BScanConfiguration;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration;
 
 /**
  * Used for testing {@link ConfigurationProperties} scanning.
@@ -36,7 +36,7 @@ public class ConfigurationPropertiesScanConfiguration {
 	}
 
 	@ConfigurationPropertiesScan(
-			basePackages = "org.springframework.boot.context.properties.scan.a",
+			basePackages = "org.springframework.boot.context.properties.scan.valid.a",
 			basePackageClasses = BScanConfiguration.class)
 	public static class DifferentPackageConfiguration {
 

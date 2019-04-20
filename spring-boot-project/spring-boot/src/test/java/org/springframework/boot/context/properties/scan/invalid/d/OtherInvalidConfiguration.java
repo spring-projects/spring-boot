@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context.properties.scan.b;
+
+package org.springframework.boot.context.properties.scan.invalid.d;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Madhura Bhave
  */
-public class BScanConfiguration {
+public class OtherInvalidConfiguration {
 
-	@ConfigurationProperties(prefix = "b")
-	static class BProperties {
+	@RestController
+	@ConfigurationProperties(prefix = "c")
+	static class MyControllerProperties {
 
 	}
 

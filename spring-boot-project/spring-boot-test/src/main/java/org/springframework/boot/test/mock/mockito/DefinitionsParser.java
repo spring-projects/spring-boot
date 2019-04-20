@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -63,14 +65,12 @@ class DefinitionsParser {
 	}
 
 	private void parseElement(AnnotatedElement element) {
-		for (MockBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
-				MockBean.class, MockBeans.class)) {
-			parseMockBeanAnnotation(annotation, element);
-		}
-		for (SpyBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
-				SpyBean.class, SpyBeans.class)) {
-			parseSpyBeanAnnotation(annotation, element);
-		}
+		MergedAnnotations annotations = MergedAnnotations.from(element,
+				SearchStrategy.SUPERCLASS);
+		annotations.stream(MockBean.class).map(MergedAnnotation::synthesize)
+				.forEach((annotation) -> parseMockBeanAnnotation(annotation, element));
+		annotations.stream(SpyBean.class).map(MergedAnnotation::synthesize)
+				.forEach((annotation) -> parseSpyBeanAnnotation(annotation, element));
 	}
 
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
