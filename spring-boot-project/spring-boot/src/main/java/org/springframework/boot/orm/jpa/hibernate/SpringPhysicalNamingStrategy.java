@@ -87,7 +87,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	 */
 	protected Identifier getIdentifier(String name, boolean quoted,
 			JdbcEnvironment jdbcEnvironment) {
-		if (isCaseInsensitive(jdbcEnvironment)) {
+		if (isCaseInsensitive(jdbcEnvironment) && !quoted) {
 			name = name.toLowerCase(Locale.ROOT);
 		}
 		return new Identifier(name, quoted);
