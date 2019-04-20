@@ -105,6 +105,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 				this::renderErrorResponse);
 	}
 
+	private static final MediaType HTML_CONTENT_TYPE =  MediaType.valueOf(MediaType.TEXT_HTML_VALUE+";charset=UTF-8");
+
 	/**
 	 * Render the error information as an HTML view.
 	 * @param request the current request
@@ -115,7 +117,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		HttpStatus errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
-				.contentType(MediaType.TEXT_HTML);
+				.contentType(HTML_CONTENT_TYPE);
 		return Flux
 				.just("error/" + errorStatus.value(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
