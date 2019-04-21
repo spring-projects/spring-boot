@@ -106,5 +106,5 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 		return Character.isLowerCase(before) && Character.isUpperCase(current)
 				&& Character.isLowerCase(after);
 	}
-
+ 
 }
