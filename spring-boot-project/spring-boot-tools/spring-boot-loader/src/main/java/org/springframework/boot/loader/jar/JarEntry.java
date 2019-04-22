@@ -56,7 +56,9 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		setComment(header.getComment().toString());
 		setSize(header.getSize());
 		setTime(header.getTime());
-		setExtra(header.getExtra());
+		if (header.hasExtra()) {
+			setExtra(header.getExtra());
+		}
 	}
 
 	AsciiBytes getAsciiBytesName() {
