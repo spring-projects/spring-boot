@@ -22,6 +22,6 @@ new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 	@Override
 	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
 		super.verifyZipEntries(verifier)
-		verifier.assertHasNoEntryNameStartingWith("lib/log4j-api-2.4.1.jar")
+		verifier.assertHasNoEntryNameStartingWith("BOOT-INF/lib/log4j-api-2.4.1.jar")
 	}
 }.verify()
