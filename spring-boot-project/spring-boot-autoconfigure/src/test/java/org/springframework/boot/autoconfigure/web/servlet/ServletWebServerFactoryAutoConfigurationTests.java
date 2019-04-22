@@ -22,19 +22,28 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.startup.Tomcat;
+import org.eclipse.jetty.server.Server;
 import org.junit.Test;
+import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -145,6 +154,56 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 					assertThat(servletContext.getInitParameter("a")).isEqualTo("alpha");
 					assertThat(servletContext.getInitParameter("b")).isEqualTo("bravo");
 				});
+	}
+
+	@Test
+	public void jettyServerCustomizerBeanIsAddedToFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(
+								new FilteredClassLoader(Tomcat.class, HttpServer.class))
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(JettyServerCustomizerConfiguration.class);
+		runner.run((context) -> {
+			JettyServletWebServerFactory factory = context
+					.getBean(JettyServletWebServerFactory.class);
+			assertThat(factory.getServerCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class,
+								HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								UndertowDeploymentInfoCustomizerConfiguration.class);
+		runner.run((context) -> {
+			UndertowServletWebServerFactory factory = context
+					.getBean(UndertowServletWebServerFactory.class);
+			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
+		});
+	}
+
+	@Test
+	public void undertowBuilderCustomizerBeanIsAddedToFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class,
+								HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(
+								UndertowBuilderCustomizerConfiguration.class);
+		runner.run((context) -> {
+			UndertowServletWebServerFactory factory = context
+					.getBean(UndertowServletWebServerFactory.class);
+			assertThat(factory.getBuilderCustomizers()).hasSize(1);
+		});
 	}
 
 	@Test
@@ -360,6 +419,42 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		@Bean
 		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
 			return (protocolHandler) -> {
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JettyServerCustomizerConfiguration {
+
+		@Bean
+		public JettyServerCustomizer protocolHandlerCustomizer() {
+			return (server) -> {
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UndertowBuilderCustomizerConfiguration {
+
+		@Bean
+		public UndertowBuilderCustomizer protocolHandlerCustomizer() {
+			return (builder) -> {
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UndertowDeploymentInfoCustomizerConfiguration {
+
+		@Bean
+		public UndertowDeploymentInfoCustomizer protocolHandlerCustomizer() {
+			return (deploymentInfo) -> {
+
 			};
 		}
 

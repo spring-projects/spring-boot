@@ -16,15 +16,24 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import org.apache.catalina.startup.Tomcat;
+import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 import org.mockito.Mockito;
+import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
@@ -150,6 +159,59 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	public void jettyServerCustomizerBeanIsAddedToFactory() {
+		new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withClassLoader(
+								new FilteredClassLoader(Tomcat.class, HttpServer.class))
+						.withUserConfiguration(JettyServerCustomizerConfiguration.class,
+								HttpHandlerConfiguration.class)
+						.run((context) -> {
+							JettyReactiveWebServerFactory factory = context
+									.getBean(JettyReactiveWebServerFactory.class);
+							assertThat(factory.getServerCustomizers()).hasSize(1);
+						});
+	}
+
+	@Test
+	public void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
+		new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withClassLoader(new FilteredClassLoader(Tomcat.class,
+								HttpServer.class, Server.class))
+						.withUserConfiguration(
+								UndertowDeploymentInfoCustomizerConfiguration.class,
+								HttpHandlerConfiguration.class)
+						.run((context) -> {
+							UndertowReactiveWebServerFactory factory = context
+									.getBean(UndertowReactiveWebServerFactory.class);
+							assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
+						});
+	}
+
+	@Test
+	public void undertowBuilderCustomizerBeanIsAddedToFactory() {
+		new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withClassLoader(new FilteredClassLoader(Tomcat.class,
+								HttpServer.class, Server.class))
+						.withUserConfiguration(
+								UndertowBuilderCustomizerConfiguration.class,
+								HttpHandlerConfiguration.class)
+						.run((context) -> {
+							UndertowReactiveWebServerFactory factory = context
+									.getBean(UndertowReactiveWebServerFactory.class);
+							assertThat(factory.getBuilderCustomizers()).hasSize(1);
+						});
+	}
+
+	@Test
 	public void forwardedHeaderTransformerShouldBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")
@@ -243,6 +305,42 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 		@Bean
 		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
 			return (protocolHandler) -> {
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JettyServerCustomizerConfiguration {
+
+		@Bean
+		public JettyServerCustomizer protocolHandlerCustomizer() {
+			return (server) -> {
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UndertowBuilderCustomizerConfiguration {
+
+		@Bean
+		public UndertowBuilderCustomizer protocolHandlerCustomizer() {
+			return (builder) -> {
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UndertowDeploymentInfoCustomizerConfiguration {
+
+		@Bean
+		public UndertowDeploymentInfoCustomizer protocolHandlerCustomizer() {
+			return (deploymentInfo) -> {
+
 			};
 		}
 
