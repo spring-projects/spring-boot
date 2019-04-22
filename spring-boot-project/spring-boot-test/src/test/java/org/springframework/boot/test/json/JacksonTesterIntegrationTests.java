@@ -47,6 +47,8 @@ public class JacksonTesterIntegrationTests {
 
 	private JacksonTester<Map<String, Integer>> mapJson;
 
+	private JacksonTester<String> stringJson;
+
 	private ObjectMapper objectMapper;
 
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
@@ -79,6 +81,28 @@ public class JacksonTesterIntegrationTests {
 		map.put("b", 2);
 		assertThat(this.mapJson.write(map)).extractingJsonPathNumberValue("@.a")
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void stringLiteral() throws Exception {
+		String stringWithSpecialCharacters = "myString";
+		assertThat(this.stringJson.write(stringWithSpecialCharacters))
+				.extractingJsonPathStringValue("@")
+				.isEqualTo(stringWithSpecialCharacters);
+	}
+
+	// This test confirms that the handling of special characters is symmetrical between
+	// the serialisation (via the JacksonTester) and the parsing (via json-path). By
+	// default json-path uses SimpleJson as its parser, which has a slightly different
+	// behaviour to Jackson and breaks the symmetry. However JacksonTester
+	// configures json-path to use Jackson for evaluating the path expressions and
+	// restores the symmetry.
+	@Test
+	public void parseSpecialCharactersTest() throws Exception {
+		String stringWithSpecialCharacters = "\u0006\u007F";
+		assertThat(this.stringJson.write(stringWithSpecialCharacters))
+				.extractingJsonPathStringValue("@")
+				.isEqualTo(stringWithSpecialCharacters);
 	}
 
 	@Test
