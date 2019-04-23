@@ -16,6 +16,12 @@
 package org.springframework.boot.context.properties.scan.valid.a;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * @author Madhura Bhave
@@ -24,6 +30,29 @@ public class AScanConfiguration {
 
 	@ConfigurationProperties(prefix = "a")
 	static class AProperties {
+
+	}
+
+	@Profile("test")
+	@ConfigurationProperties(prefix = "profile")
+	static class MyProfileProperties {
+
+	}
+
+	@Conditional(TestResourceCondition.class)
+	@ConfigurationProperties(prefix = "resource")
+	static class MyResourceProperties {
+
+	}
+
+	static class TestResourceCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ByteArrayResource resource = (ByteArrayResource) context.getResourceLoader()
+					.getResource("test");
+			return (new String(resource.getByteArray())).equals("test");
+		}
 
 	}
 

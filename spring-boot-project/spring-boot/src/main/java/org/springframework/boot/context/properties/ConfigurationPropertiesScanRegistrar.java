@@ -22,11 +22,15 @@ import java.util.Set;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
@@ -39,7 +43,12 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  */
-class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegistrar {
+class ConfigurationPropertiesScanRegistrar
+		implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
+
+	private Environment environment;
+
+	private ResourceLoader resourceLoader;
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
@@ -72,6 +81,8 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 			BeanDefinitionRegistry registry) {
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
 				false);
+		scanner.setEnvironment(this.environment);
+		scanner.setResourceLoader(this.resourceLoader);
 		scanner.addIncludeFilter(new AnnotationTypeFilter(ConfigurationProperties.class));
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
@@ -109,6 +120,16 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 			}
 			throw new InvalidConfigurationPropertiesException(type, parent.getType());
 		}
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 
 }
