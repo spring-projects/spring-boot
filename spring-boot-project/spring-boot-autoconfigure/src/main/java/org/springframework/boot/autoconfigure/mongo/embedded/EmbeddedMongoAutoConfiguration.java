@@ -48,6 +48,8 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -74,6 +76,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @author Andy Wilkinson
  * @author Yogesh Lonkar
  * @author Mark Paluch
+ * @author Issam El-atif
  * @since 1.3.0
  */
 @Configuration
@@ -230,11 +233,16 @@ public class EmbeddedMongoAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
-	protected static class EmbeddedMongoDependencyConfiguration
-			extends MongoClientDependsOnBeanFactoryPostProcessor {
+	protected static class EmbeddedMongoDependencyConfiguration {
 
-		public EmbeddedMongoDependencyConfiguration() {
-			super("embeddedMongoServer");
+		@Bean
+		public MongoClientDependsOnBeanFactoryPostProcessor mongoClientDependsOnBeanFactoryPostProcessor(
+				ListableBeanFactory listableBeanFactory) {
+			String[] mongoExecutableBeanNames = BeanFactoryUtils
+					.beanNamesForTypeIncludingAncestors(listableBeanFactory,
+							MongodExecutable.class);
+			return new MongoClientDependsOnBeanFactoryPostProcessor(
+					mongoExecutableBeanNames);
 		}
 
 	}
@@ -246,11 +254,16 @@ public class EmbeddedMongoAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
 			ReactiveMongoClientFactoryBean.class })
-	protected static class EmbeddedReactiveMongoDependencyConfiguration
-			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
+	protected static class EmbeddedReactiveMongoDependencyConfiguration {
 
-		public EmbeddedReactiveMongoDependencyConfiguration() {
-			super("embeddedMongoServer");
+		@Bean
+		public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor reactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(
+				ListableBeanFactory listableBeanFactory) {
+			String[] mongoExecutableBeanNames = BeanFactoryUtils
+					.beanNamesForTypeIncludingAncestors(listableBeanFactory,
+							MongodExecutable.class);
+			return new ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(
+					mongoExecutableBeanNames);
 		}
 
 	}
