@@ -153,6 +153,10 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return this.extra;
 	}
 
+	public boolean hasExtra() {
+		return this.extra.length > 0;
+	}
+
 	public AsciiBytes getComment() {
 		return this.comment;
 	}
