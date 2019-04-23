@@ -17,6 +17,7 @@ package org.springframework.boot.context.properties;
 
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -27,6 +28,7 @@ import org.springframework.boot.context.properties.scan.invalid.d.OtherInvalidCo
 import org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,6 +43,11 @@ public class ConfigurationPropertiesScanRegistrarTests {
 	private final ConfigurationPropertiesScanRegistrar registrar = new ConfigurationPropertiesScanRegistrar();
 
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+	@Before
+	public void setup() {
+		this.registrar.setEnvironment(new MockEnvironment());
+	}
 
 	@Test
 	public void registerBeanDefintionsShouldScanForConfigurationProperties()

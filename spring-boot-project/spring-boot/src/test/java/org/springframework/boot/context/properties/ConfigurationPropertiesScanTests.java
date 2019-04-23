@@ -53,7 +53,7 @@ public class ConfigurationPropertiesScanTests {
 
 	@Test
 	public void scanImportBeanRegistrarShouldBeEnvironmentAware() {
-		// this.context.getEnvironment().addActiveProfile("test");
+		this.context.getEnvironment().addActiveProfile("test");
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
 				"profile-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyProfileProperties"))

@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -49,9 +48,7 @@ public class AScanConfiguration {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			ByteArrayResource resource = (ByteArrayResource) context.getResourceLoader()
-					.getResource("test");
-			return (new String(resource.getByteArray())).equals("test");
+			return context.getResourceLoader().getResource("test").exists();
 		}
 
 	}
