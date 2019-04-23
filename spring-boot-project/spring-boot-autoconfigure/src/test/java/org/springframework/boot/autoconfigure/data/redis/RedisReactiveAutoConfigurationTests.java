@@ -41,7 +41,7 @@ public class RedisReactiveAutoConfigurationTests {
 	public void testDefaultRedisConfiguration() {
 		this.contextRunner.run((context) -> {
 			Map<String, ?> beans = context.getBeansOfType(ReactiveRedisTemplate.class);
-			assertThat(beans).containsOnlyKeys("reactiveRedisTemplate");
+			assertThat(beans).containsOnlyKeys("reactiveRedisTemplate","reactiveStringRedisTemplate");
 		});
 	}
 
