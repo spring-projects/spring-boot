@@ -22,10 +22,12 @@ import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
@@ -43,6 +45,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  * Tests for {@link EmbeddedMongoAutoConfiguration}.
@@ -50,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Henryk Konsek
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Issam El-atif
  */
 public class EmbeddedMongoAutoConfigurationTests {
 
@@ -171,6 +175,11 @@ public class EmbeddedMongoAutoConfigurationTests {
 		assertThat(this.context.getBean(MongodExecutable.class).isRegisteredJobKiller()).isFalse();
 	}
 
+	@Test
+	public void customMongoServerConfiguration() {
+		assertThatCode(() -> load(CustomMongoConfiguration.class)).doesNotThrowAnyException();
+	}
+
 	private void assertVersionConfiguration(String configuredVersion, String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.data.mongodb.port=0").applyTo(this.context);
@@ -212,6 +221,17 @@ public class EmbeddedMongoAutoConfigurationTests {
 		@Bean
 		public MongoClient mongoClient(@Value("${local.mongo.port}") int port) {
 			return new MongoClient("localhost", port);
+		}
+
+	}
+
+	@Configuration
+	static class CustomMongoConfiguration {
+
+		@Bean(initMethod = "start", destroyMethod = "stop")
+		public MongodExecutable customMongoServer(IRuntimeConfig runtimeConfig, IMongodConfig mongodConfig) {
+			MongodStarter mongodStarter = MongodStarter.getInstance(runtimeConfig);
+			return mongodStarter.prepare(mongodConfig);
 		}
 
 	}
