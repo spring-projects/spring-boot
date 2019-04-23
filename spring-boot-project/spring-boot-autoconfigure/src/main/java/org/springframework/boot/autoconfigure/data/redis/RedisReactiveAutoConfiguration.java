@@ -60,11 +60,12 @@ public class RedisReactiveAutoConfiguration {
 		return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory,
 				serializationContext);
 	}
-	
+
 	@Bean
-    @ConditionalOnMissingBean
-    public ReactiveStringRedisTemplate reactiveStringRedisTemplate(ReactiveRedisConnectionFactory factory) {
-        return new ReactiveStringRedisTemplate(factory);
-    }
+	@ConditionalOnMissingBean
+	public ReactiveStringRedisTemplate reactiveStringRedisTemplate(
+			ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
+		return new ReactiveStringRedisTemplate(reactiveRedisConnectionFactory);
+	}
 
 }
