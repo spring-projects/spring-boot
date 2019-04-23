@@ -68,8 +68,8 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 	private byte[] getKeySpec(String keyValue) {
 		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "")
-				.replace("-----END PUBLIC KEY-----", "").replace("\n", "");
-		return Base64.getDecoder().decode(keyValue);
+				.replace("-----END PUBLIC KEY-----", "");
+		return Base64.getMimeDecoder().decode(keyValue);
 	}
 
 	@Bean
