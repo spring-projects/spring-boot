@@ -2600,7 +2600,7 @@
 					</exclusion>
 					<exclusion>
 						<groupId>com.zaxxer</groupId>
-						<artifactId>HikariCP-java6</artifactId>
+						<artifactId>*</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>

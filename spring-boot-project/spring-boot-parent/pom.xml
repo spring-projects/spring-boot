@@ -572,6 +572,12 @@
 						</goals>
 						<configuration>
 							<rules>
+								<bannedDependencies>
+									<excludes>
+										<exclude>com.zaxxer:HikariCP-*</exclude>
+									</excludes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
 								<requireJavaVersion>
 									<version>[1.8,)</version>
 								</requireJavaVersion>
