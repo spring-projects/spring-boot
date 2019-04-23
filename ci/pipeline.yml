@@ -21,6 +21,7 @@ resource_types:
 resources:
 - name: git-repo
   type: git
+  icon: github-circle
   source:
     uri: ((github-repo))
     username: ((github-username))
@@ -29,6 +30,7 @@ resources:
     ignore_paths: ["ci/images/*"]
 - name: git-pull-request
   type: pull-request
+  icon: source-pull
   source:
     access_token: ((github-access-token))
     repo: ((github-repo-name))
@@ -36,6 +38,7 @@ resources:
     ignore_paths: ["ci/*"]
 - name: github-pre-release
   type: github-release
+  icon: briefcase-download-outline
   source:
     owner: spring-projects
     repository: spring-boot
@@ -43,6 +46,7 @@ resources:
     pre_release: true
 - name: github-release
   type: github-release
+  icon: briefcase-download
   source:
     owner: spring-projects
     repository: spring-boot
@@ -50,12 +54,14 @@ resources:
     pre_release: false
 - name: ci-images-git-repo
   type: git
+  icon: github-circle
   source:
     uri: ((github-repo))
     branch: ((branch))
     paths: ["ci/images/*"]
 - name: spring-boot-ci-image
   type: docker-image
+  icon: docker
   source:
     repository: ((docker-hub-organization))/spring-boot-ci-image
     username: ((docker-hub-username))
@@ -63,6 +69,7 @@ resources:
     tag: ((branch))
 - name: spring-boot-jdk11-ci-image
   type: docker-image
+  icon: docker
   source:
     repository: ((docker-hub-organization))/spring-boot-jdk11-ci-image
     username: ((docker-hub-username))
@@ -70,6 +77,7 @@ resources:
     tag: ((branch))
 - name: spring-boot-jdk12-ci-image
   type: docker-image
+  icon: docker
   source:
     repository: ((docker-hub-organization))/spring-boot-jdk12-ci-image
     username: ((docker-hub-username))
@@ -77,6 +85,7 @@ resources:
     tag: ((branch))
 - name: artifactory-repo
   type: artifactory-resource
+  icon: package-variant
   source:
     uri: ((artifactory-server))
     username: ((artifactory-username))
@@ -84,6 +93,7 @@ resources:
     build_name: ((build-name))
 - name: repo-status-build
   type: github-status-resource
+  icon: eye-check-outline
   source:
     repository: ((github-repo-name))
     access_token: ((github-access-token))
@@ -91,6 +101,7 @@ resources:
     context: build
 - name: repo-status-jdk11-build
   type: github-status-resource
+  icon: eye-check-outline
   source:
     repository: ((github-repo-name))
     access_token: ((github-access-token))
@@ -98,6 +109,7 @@ resources:
     context: jdk11-build
 - name: repo-status-jdk12-build
   type: github-status-resource
+  icon: eye-check-outline
   source:
     repository: ((github-repo-name))
     access_token: ((github-access-token))
@@ -105,10 +117,12 @@ resources:
     context: jdk12-build
 - name: slack-alert
   type: slack-notification
+  icon: slack
   source:
     url: ((slack-webhook-url))
 - name: every-wednesday
   type: time
+  icon: clock-outline
   source:
     start: 8:00 PM
     stop: 9:00 PM
