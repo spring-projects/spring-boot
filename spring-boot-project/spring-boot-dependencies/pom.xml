@@ -2008,7 +2008,42 @@
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>codemodel</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>codemodel-annotation-compiler</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-jxc</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>jaxb-runtime</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-xjc</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>txw2</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>txwc2</artifactId>
+				<version>${glassfish-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>xsom</artifactId>
 				<version>${glassfish-jaxb.version}</version>
 			</dependency>
 			<dependency>
