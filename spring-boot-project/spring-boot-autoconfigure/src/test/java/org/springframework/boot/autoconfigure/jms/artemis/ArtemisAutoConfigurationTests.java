@@ -29,6 +29,7 @@ import javax.jms.TextMessage;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
+import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
 import org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration;
@@ -36,7 +37,6 @@ import org.apache.activemq.artemis.jms.server.config.TopicConfiguration;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
-import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -61,6 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Issam El-atif
  */
 public class ArtemisAutoConfigurationTests {
 
@@ -172,7 +173,7 @@ public class ArtemisAutoConfigurationTests {
 					ArtemisProperties properties = context
 							.getBean(ArtemisProperties.class);
 					assertThat(properties.getMode()).isEqualTo(ArtemisMode.EMBEDDED);
-					assertThat(context).hasSingleBean(EmbeddedJMS.class);
+					assertThat(context).hasSingleBean(EmbeddedActiveMQ.class);
 					org.apache.activemq.artemis.core.config.Configuration configuration = context
 							.getBean(
 									org.apache.activemq.artemis.core.config.Configuration.class);
@@ -188,7 +189,7 @@ public class ArtemisAutoConfigurationTests {
 		// No mode is specified
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run((context) -> {
-					assertThat(context).hasSingleBean(EmbeddedJMS.class);
+					assertThat(context).hasSingleBean(EmbeddedActiveMQ.class);
 					org.apache.activemq.artemis.core.config.Configuration configuration = context
 							.getBean(
 									org.apache.activemq.artemis.core.config.Configuration.class);
@@ -205,7 +206,7 @@ public class ArtemisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.enabled:false")
 				.run((context) -> {
-					assertThat(context).doesNotHaveBean(EmbeddedJMS.class);
+					assertThat(context).doesNotHaveBean(EmbeddedActiveMQ.class);
 					assertNettyConnectionFactory(
 							getActiveMQConnectionFactory(
 									context.getBean(ConnectionFactory.class)),
@@ -220,7 +221,7 @@ public class ArtemisAutoConfigurationTests {
 				.withPropertyValues("spring.artemis.mode:embedded",
 						"spring.artemis.embedded.enabled:false")
 				.run((context) -> {
-					assertThat(context.getBeansOfType(EmbeddedJMS.class)).isEmpty();
+					assertThat(context.getBeansOfType(EmbeddedActiveMQ.class)).isEmpty();
 					assertInVmConnectionFactory(getActiveMQConnectionFactory(
 							context.getBean(ConnectionFactory.class)));
 				});
