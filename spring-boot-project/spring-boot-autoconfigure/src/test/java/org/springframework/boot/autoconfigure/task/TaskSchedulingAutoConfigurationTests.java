@@ -18,8 +18,10 @@ package org.springframework.boot.autoconfigure.task;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -66,7 +68,7 @@ public class TaskSchedulingAutoConfigurationTests {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TaskExecutor taskExecutor = context.getBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
-					Thread.sleep(15);
+					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue(
 							"waitForTasksToCompleteOnShutdown", true);
 					assertThat(taskExecutor)
@@ -86,7 +88,7 @@ public class TaskSchedulingAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
-					Thread.sleep(15);
+					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
 					assertThat(bean.threadNames)
 							.allMatch((name) -> name.contains("customized-scheduler-"));
 				});
@@ -100,7 +102,7 @@ public class TaskSchedulingAutoConfigurationTests {
 					assertThat(context.getBean(TaskScheduler.class))
 							.isInstanceOf(TestTaskScheduler.class);
 					TestBean bean = context.getBean(TestBean.class);
-					Thread.sleep(15);
+					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
 					assertThat(bean.threadNames).containsExactly("test-1");
 				});
 	}
@@ -112,7 +114,7 @@ public class TaskSchedulingAutoConfigurationTests {
 					assertThat(context).doesNotHaveBean(TaskScheduler.class);
 					assertThat(context).hasSingleBean(ScheduledExecutorService.class);
 					TestBean bean = context.getBean(TestBean.class);
-					Thread.sleep(15);
+					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
 					assertThat(bean.threadNames)
 							.allMatch((name) -> name.contains("pool-"));
 				});
@@ -124,7 +126,7 @@ public class TaskSchedulingAutoConfigurationTests {
 				SchedulingConfigurerConfiguration.class).run((context) -> {
 					assertThat(context).doesNotHaveBean(TaskScheduler.class);
 					TestBean bean = context.getBean(TestBean.class);
-					Thread.sleep(15);
+					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
 					assertThat(bean.threadNames).containsExactly("test-1");
 				});
 	}
@@ -192,9 +194,12 @@ public class TaskSchedulingAutoConfigurationTests {
 
 		private final Set<String> threadNames = ConcurrentHashMap.newKeySet();
 
-		@Scheduled(fixedRate = 10)
+		private final CountDownLatch latch = new CountDownLatch(1);
+
+		@Scheduled(fixedRate = 60000)
 		public void accumulate() {
 			this.threadNames.add(Thread.currentThread().getName());
+			this.latch.countDown();
 		}
 
 	}
