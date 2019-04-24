@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -55,9 +56,10 @@ public class MetricsAutoConfiguration {
 			ObjectProvider<MeterBinder> meterBinders,
 			ObjectProvider<MeterFilter> meterFilters,
 			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
-			ObjectProvider<MetricsProperties> metricsProperties) {
+			ObjectProvider<MetricsProperties> metricsProperties,
+			ApplicationContext applicationContext) {
 		return new MeterRegistryPostProcessor(meterBinders, meterFilters,
-				meterRegistryCustomizers, metricsProperties);
+				meterRegistryCustomizers, metricsProperties, applicationContext);
 	}
 
 	@Bean

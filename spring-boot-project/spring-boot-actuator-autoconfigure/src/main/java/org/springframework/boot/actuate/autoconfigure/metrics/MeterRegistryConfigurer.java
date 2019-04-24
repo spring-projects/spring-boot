@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -45,13 +46,16 @@ class MeterRegistryConfigurer {
 
 	private final boolean addToGlobalRegistry;
 
+	private final boolean hasCompositeMeterRegistry;
+
 	MeterRegistryConfigurer(ObjectProvider<MeterRegistryCustomizer<?>> customizers,
 			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders,
-			boolean addToGlobalRegistry) {
+			boolean addToGlobalRegistry, boolean hasCompositeMeterRegistry) {
 		this.customizers = customizers;
 		this.filters = filters;
 		this.binders = binders;
 		this.addToGlobalRegistry = addToGlobalRegistry;
+		this.hasCompositeMeterRegistry = hasCompositeMeterRegistry;
 	}
 
 	void configure(MeterRegistry registry) {
@@ -59,7 +63,10 @@ class MeterRegistryConfigurer {
 		// tags or alter timer or summary configuration.
 		customize(registry);
 		addFilters(registry);
-		addBinders(registry);
+		if (!this.hasCompositeMeterRegistry
+				|| registry instanceof CompositeMeterRegistry) {
+			addBinders(registry);
+		}
 		if (this.addToGlobalRegistry && registry != Metrics.globalRegistry) {
 			Metrics.addRegistry(registry);
 		}
