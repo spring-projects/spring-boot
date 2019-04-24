@@ -18,12 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.Map;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -74,13 +75,14 @@ public class MeterRegistryConfigurerIntegrationTests {
 	}
 
 	@Test
-	public void counterWhenCompositeMeterRegistryDoesNotExistShouldWork() {
+	public void counterIsIncrementedOncePerEventWithoutCompositeMeterRegistry() {
 		new ApplicationContextRunner()
 				.with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class))
 				.withConfiguration(
 						AutoConfigurations.of(LogbackMetricsAutoConfiguration.class))
 				.run((context) -> {
-					Logger logger = LoggerFactory.getLogger("test-logger");
+					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton()
+							.getLoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
 
 					Map<String, MeterRegistry> registriesByName = context
@@ -93,16 +95,16 @@ public class MeterRegistryConfigurerIntegrationTests {
 	}
 
 	@Test
-	public void counterWhenCompositeMeterRegistryExistsShouldWork() {
+	public void counterIsIncrementedOncePerEventWithCompositeMeterRegistry() {
 		new ApplicationContextRunner()
 				.with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class,
 						PrometheusMetricsExportAutoConfiguration.class))
 				.withConfiguration(
 						AutoConfigurations.of(LogbackMetricsAutoConfiguration.class))
 				.run((context) -> {
-					Logger logger = LoggerFactory.getLogger("test-logger");
+					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton()
+							.getLoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
-
 					Map<String, MeterRegistry> registriesByName = context
 							.getBeansOfType(MeterRegistry.class);
 					assertThat(registriesByName).hasSize(3);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link MeterRegistryConfigurer}.
@@ -80,7 +81,7 @@ public class MeterRegistryConfigurerTests {
 		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(
 				createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders),
-				false, true);
+				false, false);
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
 		configurer.configure(composite);
 		verify(this.mockCustomizer).customize(composite);
@@ -117,6 +118,29 @@ public class MeterRegistryConfigurerTests {
 				false, false);
 		configurer.configure(this.mockRegistry);
 		verify(this.mockBinder).bindTo(this.mockRegistry);
+	}
+
+	@Test
+	public void configureShouldApplyBinderToComposite() {
+		this.binders.add(this.mockBinder);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(
+				createObjectProvider(this.customizers),
+				createObjectProvider(this.filters), createObjectProvider(this.binders),
+				false, true);
+		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		configurer.configure(composite);
+		verify(this.mockBinder).bindTo(composite);
+	}
+
+	@Test
+	public void configureShouldNotApplyBinderWhenCompositeExists() {
+		this.binders.add(this.mockBinder);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(
+				createObjectProvider(this.customizers),
+				createObjectProvider(this.filters), createObjectProvider(this.binders),
+				false, true);
+		configurer.configure(this.mockRegistry);
+		verifyZeroInteractions(this.mockBinder);
 	}
 
 	@Test

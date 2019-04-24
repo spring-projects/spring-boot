@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,12 +63,8 @@ class MeterRegistryConfigurer {
 		// tags or alter timer or summary configuration.
 		customize(registry);
 		addFilters(registry);
-		if (this.hasCompositeMeterRegistry) {
-			if (registry instanceof CompositeMeterRegistry) {
-				addBinders(registry);
-			}
-		}
-		else {
+		if (!this.hasCompositeMeterRegistry
+				|| registry instanceof CompositeMeterRegistry) {
 			addBinders(registry);
 		}
 		if (this.addToGlobalRegistry && registry != Metrics.globalRegistry) {
