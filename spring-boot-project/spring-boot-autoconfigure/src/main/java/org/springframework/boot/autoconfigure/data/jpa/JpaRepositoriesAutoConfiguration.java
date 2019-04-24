@@ -66,7 +66,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 		JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled",
 		havingValue = "true", matchIfMissing = true)
-@Import(JpaRepositoriesAutoConfigureRegistrar.class)
+@Import(JpaRepositoriesRegistrar.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class,
 		TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {

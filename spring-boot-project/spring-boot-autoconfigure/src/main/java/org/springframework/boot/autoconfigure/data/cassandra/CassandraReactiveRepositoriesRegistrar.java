@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,43 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.mongo;
+package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.lang.annotation.Annotation;
 
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
-import org.springframework.data.mongodb.repository.config.ReactiveMongoRepositoryConfigurationExtension;
+import org.springframework.data.cassandra.repository.config.EnableReactiveCassandraRepositories;
+import org.springframework.data.cassandra.repository.config.ReactiveCassandraRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Mongo Reactive
- * Repositories.
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Cassandra
+ * Reactive Repositories.
  *
- * @author Mark Paluch
+ * @author Eddú Meléndez
  * @since 2.0.0
  */
-class MongoReactiveRepositoriesAutoConfigureRegistrar
+class CassandraReactiveRepositoriesRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableReactiveMongoRepositories.class;
+		return EnableReactiveCassandraRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableReactiveMongoRepositoriesConfiguration.class;
+		return EnableReactiveCassandraRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new ReactiveMongoRepositoryConfigurationExtension();
+		return new ReactiveCassandraRepositoryConfigurationExtension();
 	}
 
-	@EnableReactiveMongoRepositories
-	private static class EnableReactiveMongoRepositoriesConfiguration {
+	@EnableReactiveCassandraRepositories
+	private static class EnableReactiveCassandraRepositoriesConfiguration {
 
 	}
 

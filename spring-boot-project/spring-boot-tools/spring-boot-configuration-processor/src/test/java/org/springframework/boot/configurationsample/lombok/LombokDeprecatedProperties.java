@@ -30,6 +30,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "deprecated")
 @Deprecated
+@SuppressWarnings("unused")
 public class LombokDeprecatedProperties {
 
 	private String name;

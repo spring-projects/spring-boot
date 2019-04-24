@@ -58,14 +58,14 @@ public class CompressionConnectorCustomizerTests {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.addUpgradeProtocol(new Http2Protocol());
 		compressionConnectorCustomizer.customize(connector);
-		AbstractHttp11Protocol abstractHttp11Protocol = (AbstractHttp11Protocol) connector
+		AbstractHttp11Protocol<?> abstractHttp11Protocol = (AbstractHttp11Protocol<?>) connector
 				.getProtocolHandler();
 		verifyHttp1(abstractHttp11Protocol);
 		Http2Protocol http2Protocol = (Http2Protocol) connector.findUpgradeProtocols()[0];
 		verifyHttp2Upgrade(http2Protocol);
 	}
 
-	private void verifyHttp1(AbstractHttp11Protocol protocol) {
+	private void verifyHttp1(AbstractHttp11Protocol<?> protocol) {
 		compressionOn(protocol.getCompression());
 		minSize(protocol.getCompressionMinSize());
 		mimeType(protocol.getCompressibleMimeTypes());

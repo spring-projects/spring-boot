@@ -40,6 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@Deprecated
 public class ElasticsearchAutoConfigurationTests {
 
 	@ClassRule

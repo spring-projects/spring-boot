@@ -117,6 +117,9 @@ public class JsonTestersAutoConfiguration {
 
 	/**
 	 * {@link FactoryBean} used to create JSON Tester instances.
+	 *
+	 * @param <T> the object type
+	 * @param <M> the marshaller type
 	 */
 	static class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
 

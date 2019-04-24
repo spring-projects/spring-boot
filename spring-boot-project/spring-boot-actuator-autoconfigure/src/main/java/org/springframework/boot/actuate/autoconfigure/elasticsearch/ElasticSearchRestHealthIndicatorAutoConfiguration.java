@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ RestClientAutoConfiguration.class,
 		ElasticSearchClientHealthIndicatorAutoConfiguration.class })
+@SuppressWarnings("deprecation")
 public class ElasticSearchRestHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
 

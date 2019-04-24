@@ -107,7 +107,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer
 				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
-		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
+		assertThat(getPort(client)).isEqualTo(mongoPort);
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer
 				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
-		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
+		assertThat(getPort(client)).isEqualTo(mongoPort);
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer
 				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
-		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
+		assertThat(getPort(client)).isEqualTo(mongoPort);
 	}
 
 	@Test
@@ -235,6 +235,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	private boolean isWindows() {
 		return File.separatorChar == '\\';
+	}
+
+	@SuppressWarnings("deprecation")
+	private int getPort(MongoClient client) {
+		// At some point we'll probably need to use reflection to find the address but for
+		// now, we can use the deprecated getAddress method.
+		return client.getAddress().getPort();
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.neo4j;
+package org.springframework.boot.autoconfigure.data.jdbc;
 
 import java.lang.annotation.Annotation;
 
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
+import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Neo4j
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data JDBC
  * Repositories.
  *
- * @author Michael Hunger
+ * @author Andy Wilkinson
  */
-class Neo4jRepositoriesAutoConfigureRegistrar
+class JdbcRepositoriesRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableNeo4jRepositories.class;
+		return EnableJdbcRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableNeo4jRepositoriesConfiguration.class;
+		return EnableJdbcRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new Neo4jRepositoryConfigurationExtension();
+		return new JdbcRepositoryConfigExtension();
 	}
 
-	@EnableNeo4jRepositories
-	private static class EnableNeo4jRepositoriesConfiguration {
+	@EnableJdbcRepositories
+	private static class EnableJdbcRepositoriesConfiguration {
 
 	}
 

@@ -21,9 +21,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
+ * A simple factory bean with no generics. Used to test early initialization doesn't
+ * occur.
+ *
  * @author Madhura Bhave
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class SimpleFactoryBean implements FactoryBean {
 
 	private static boolean isInitializedEarly = false;
@@ -40,10 +44,12 @@ public class SimpleFactoryBean implements FactoryBean {
 		}
 	}
 
+	@Override
 	public Object getObject() {
 		return new Object();
 	}
 
+	@Override
 	public Class<?> getObjectType() {
 		return Object.class;
 	}

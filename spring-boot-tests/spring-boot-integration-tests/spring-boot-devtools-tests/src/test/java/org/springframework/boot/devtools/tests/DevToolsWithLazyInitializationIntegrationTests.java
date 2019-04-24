@@ -66,8 +66,6 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 
 	private final ApplicationLauncher applicationLauncher;
 
-	private String[] args;
-
 	@Rule
 	public JvmLauncher javaLauncher = new JvmLauncher();
 

@@ -417,7 +417,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	static class TomcatProtocolHandlerCustomizerConfiguration {
 
 		@Bean
-		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
+		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
 			return (protocolHandler) -> {
 			};
 		}

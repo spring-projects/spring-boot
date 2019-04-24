@@ -27,6 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties("singledeprecated")
+@SuppressWarnings("unused")
 public class LombokDeprecatedSingleProperty {
 
 	@Deprecated

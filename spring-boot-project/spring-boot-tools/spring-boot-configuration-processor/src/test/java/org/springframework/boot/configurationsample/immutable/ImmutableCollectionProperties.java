@@ -26,6 +26,7 @@ import org.springframework.boot.configurationsample.DefaultValue;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("unused")
 public class ImmutableCollectionProperties {
 
 	private final List<String> names;

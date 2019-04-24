@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -28,6 +27,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoa
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import static org.mockito.Mockito.mock;
@@ -73,8 +73,8 @@ class BaseConfiguration {
 	}
 
 	@Bean
-	public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
-		return new PropertyPlaceholderConfigurer();
+	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
 	}
 
 }

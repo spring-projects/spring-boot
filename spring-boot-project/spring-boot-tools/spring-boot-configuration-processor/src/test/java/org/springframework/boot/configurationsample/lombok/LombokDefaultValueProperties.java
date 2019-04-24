@@ -27,6 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties("default")
+@SuppressWarnings("unused")
 public class LombokDefaultValueProperties {
 
 	private String description = "my description";

@@ -159,10 +159,11 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
-		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol>[] customizers = new TomcatProtocolHandlerCustomizer[4];
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
 		factory.setTomcatProtocolHandlerCustomizers(
 				Arrays.asList(customizers[0], customizers[1]));

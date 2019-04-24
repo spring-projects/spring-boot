@@ -25,7 +25,6 @@ import javax.lang.model.element.VariableElement;
 import org.junit.Test;
 
 import org.springframework.boot.configurationsample.lombok.LombokDefaultValueProperties;
-import org.springframework.boot.configurationsample.lombok.LombokDeprecatedProperties;
 import org.springframework.boot.configurationsample.lombok.LombokDeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties;
@@ -229,14 +228,15 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void lombokDeprecatedPropertyOnClass() throws IOException {
-		process(LombokDeprecatedProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv
-					.getRootElement(LombokDeprecatedProperties.class);
-			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement,
-					"name");
-			assertItemMetadata(metadataEnv, property).isProperty()
-					.isDeprecatedWithNoInformation();
-		});
+		process(org.springframework.boot.configurationsample.lombok.LombokDeprecatedProperties.class,
+				(roundEnv, metadataEnv) -> {
+					TypeElement ownerElement = roundEnv.getRootElement(
+							org.springframework.boot.configurationsample.lombok.LombokDeprecatedProperties.class);
+					LombokPropertyDescriptor property = createPropertyDescriptor(
+							ownerElement, "name");
+					assertItemMetadata(metadataEnv, property).isProperty()
+							.isDeprecatedWithNoInformation();
+				});
 	}
 
 	@Test

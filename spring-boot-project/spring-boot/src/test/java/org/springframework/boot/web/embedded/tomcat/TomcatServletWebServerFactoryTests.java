@@ -201,9 +201,10 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
 		TomcatServletWebServerFactory factory = getFactory();
-		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol>[] customizers = new TomcatProtocolHandlerCustomizer[4];
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
 		factory.setTomcatProtocolHandlerCustomizers(
 				Arrays.asList(customizers[0], customizers[1]));
@@ -218,13 +219,13 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void tomcatProtocolHandlerCanBeCustomized() {
 		TomcatServletWebServerFactory factory = getFactory();
-		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol> customizer = (
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>> customizer = (
 				protocolHandler) -> protocolHandler.setProcessorCache(250);
 		factory.addProtocolHandlerCustomizers(customizer);
 		Tomcat tomcat = getTomcat(factory);
 		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors()
 				.get(tomcat.getService())[0];
-		AbstractHttp11Protocol protocolHandler = (AbstractHttp11Protocol) connector
+		AbstractHttp11Protocol<?> protocolHandler = (AbstractHttp11Protocol<?>) connector
 				.getProtocolHandler();
 		assertThat(protocolHandler.getProcessorCache()).isEqualTo(250);
 	}

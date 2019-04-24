@@ -43,6 +43,8 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 2.2.0 as {@literal org.elasticsearch.client:transport} has been
+ * deprecated upstream
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Client.class)
@@ -51,6 +53,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
 @EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
+@Deprecated
 public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 

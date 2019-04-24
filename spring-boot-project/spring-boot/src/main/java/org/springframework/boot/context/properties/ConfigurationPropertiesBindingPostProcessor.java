@@ -55,7 +55,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	/**
 	 * The bean name of the configuration properties validator.
-	 * @deprecated see
+	 * @deprecated since 2.2.0 in favor of
 	 * {@link ConfigurationPropertiesBindingPostProcessorRegistrar#VALIDATOR_BEAN_NAME}
 	 */
 	@Deprecated

@@ -29,6 +29,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Integration tests for {@link TestRestTemplateContextCustomizer} to ensure
  * early-initialization of factory beans doesn't occur.
@@ -47,6 +49,7 @@ public class TestRestTemplateContextCustomizerWithFactoryBeanTests {
 
 	@Test
 	public void test() {
+		assertThat(this.restTemplate).isNotNull();
 	}
 
 	@Configuration

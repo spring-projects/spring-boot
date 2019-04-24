@@ -46,6 +46,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Client.class, ElasticsearchTemplate.class })
 @AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
+@SuppressWarnings("deprecation")
 public class ElasticsearchDataAutoConfiguration {
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,43 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.redis;
+package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.lang.annotation.Annotation;
 
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.repository.configuration.RedisRepositoryConfigurationExtension;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Redis
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Neo4j
  * Repositories.
  *
- * @author Eddú Meléndez
- * @since 1.4.0
+ * @author Michael Hunger
  */
-class RedisRepositoriesAutoConfigureRegistrar
+class Neo4jRepositoriesRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableRedisRepositories.class;
+		return EnableNeo4jRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableRedisRepositoriesConfiguration.class;
+		return EnableNeo4jRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new RedisRepositoryConfigurationExtension();
+		return new Neo4jRepositoryConfigurationExtension();
 	}
 
-	@EnableRedisRepositories
-	private static class EnableRedisRepositoriesConfiguration {
+	@EnableNeo4jRepositories
+	private static class EnableNeo4jRepositoriesConfiguration {
 
 	}
 

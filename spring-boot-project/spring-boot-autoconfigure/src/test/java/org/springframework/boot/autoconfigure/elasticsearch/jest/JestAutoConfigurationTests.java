@@ -48,6 +48,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
+@Deprecated
 public class JestAutoConfigurationTests {
 
 	@ClassRule

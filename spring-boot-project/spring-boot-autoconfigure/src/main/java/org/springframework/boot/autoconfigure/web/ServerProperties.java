@@ -80,11 +80,6 @@ public class ServerProperties {
 	private final ErrorProperties error = new ErrorProperties();
 
 	/**
-	 * Whether X-Forwarded-* headers should be applied to the HttpRequest.
-	 */
-	private Boolean useForwardHeaders;
-
-	/**
 	 * Strategy for handling X-Forwarded-* headers.
 	 */
 	private ForwardHeadersStrategy forwardHeadersStrategy = ForwardHeadersStrategy.NONE;
@@ -139,18 +134,15 @@ public class ServerProperties {
 		this.address = address;
 	}
 
-	@DeprecatedConfigurationProperty
+	@DeprecatedConfigurationProperty(reason = "replaced to support additional strategies",
+			replacement = "server.forward-headers-strategy")
 	public Boolean isUseForwardHeaders() {
 		return ForwardHeadersStrategy.NATIVE.equals(this.forwardHeadersStrategy);
 	}
 
 	public void setUseForwardHeaders(Boolean useForwardHeaders) {
-		if (useForwardHeaders != null && useForwardHeaders) {
-			this.forwardHeadersStrategy = ForwardHeadersStrategy.NATIVE;
-		}
-		else {
-			this.forwardHeadersStrategy = ForwardHeadersStrategy.NONE;
-		}
+		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders)
+				? ForwardHeadersStrategy.NATIVE : ForwardHeadersStrategy.NONE;
 	}
 
 	public String getServerHeader() {
@@ -1358,6 +1350,9 @@ public class ServerProperties {
 
 	}
 
+	/**
+	 * Strategies for supporting forward headers.
+	 */
 	public enum ForwardHeadersStrategy {
 
 		/**

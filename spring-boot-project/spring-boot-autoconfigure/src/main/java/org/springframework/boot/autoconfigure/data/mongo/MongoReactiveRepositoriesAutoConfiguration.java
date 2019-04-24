@@ -53,7 +53,7 @@ import org.springframework.data.mongodb.repository.support.ReactiveMongoReposito
 @ConditionalOnMissingBean({ ReactiveMongoRepositoryFactoryBean.class,
 		ReactiveMongoRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "mongodb", type = RepositoryType.REACTIVE)
-@Import(MongoReactiveRepositoriesAutoConfigureRegistrar.class)
+@Import(MongoReactiveRepositoriesRegistrar.class)
 @AutoConfigureAfter(MongoReactiveDataAutoConfiguration.class)
 public class MongoReactiveRepositoriesAutoConfiguration {
 

@@ -292,6 +292,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Set {@link TomcatProtocolHandlerCustomizer}s that should be applied to the Tomcat
 	 * {@link Connector}. Calling this method will replace any existing customizers.
 	 * @param tomcatProtocolHandlerCustomizers the customizers to set
+	 * @since 2.2.0
 	 */
 	public void setTomcatProtocolHandlerCustomizers(
 			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers) {
@@ -305,6 +306,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Add {@link TomcatProtocolHandlerCustomizer}s that should be added to the Tomcat
 	 * {@link Connector}.
 	 * @param tomcatProtocolHandlerCustomizers the customizers to add
+	 * @since 2.2.0
 	 */
 	@Override
 	public void addProtocolHandlerCustomizers(
@@ -319,6 +321,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Returns a mutable collection of the {@link TomcatProtocolHandlerCustomizer}s that
 	 * will be applied to the Tomcat {@link Connector}.
 	 * @return the customizers that will be applied
+	 * @since 2.2.0
 	 */
 	public Collection<TomcatProtocolHandlerCustomizer<?>> getTomcatProtocolHandlerCustomizers() {
 		return this.tomcatProtocolHandlerCustomizers;

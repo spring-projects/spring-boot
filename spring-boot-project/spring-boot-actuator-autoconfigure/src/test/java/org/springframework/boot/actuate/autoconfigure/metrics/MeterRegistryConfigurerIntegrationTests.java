@@ -84,7 +84,6 @@ public class MeterRegistryConfigurerIntegrationTests {
 					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton()
 							.getLoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
-
 					Map<String, MeterRegistry> registriesByName = context
 							.getBeansOfType(MeterRegistry.class);
 					assertThat(registriesByName).hasSize(1);

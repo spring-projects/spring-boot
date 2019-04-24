@@ -54,7 +54,7 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
 		Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled",
 		havingValue = "true", matchIfMissing = true)
-@Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
+@Import(Neo4jRepositoriesRegistrar.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 public class Neo4jRepositoriesAutoConfiguration {
 

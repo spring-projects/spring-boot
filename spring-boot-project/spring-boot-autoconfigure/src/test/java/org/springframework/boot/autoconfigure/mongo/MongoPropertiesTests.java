@@ -118,7 +118,7 @@ public class MongoPropertiesTests {
 		properties.setUri("mongodb://mongo1.example.com:12345");
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 	}
@@ -130,7 +130,7 @@ public class MongoPropertiesTests {
 		properties.setPort(27017);
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
 	}
@@ -141,7 +141,7 @@ public class MongoPropertiesTests {
 		properties.setUri("mongodb://mongo1.example.com:12345");
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 	}
@@ -151,9 +151,16 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
+	}
+
+	@SuppressWarnings("deprecation")
+	private List<ServerAddress> getAllAddresses(MongoClient client) {
+		// At some point we'll probably need to use reflection to find the address but for
+		// now, we can use the deprecated getAllAddress method.
+		return client.getAllAddress();
 	}
 
 	@Test

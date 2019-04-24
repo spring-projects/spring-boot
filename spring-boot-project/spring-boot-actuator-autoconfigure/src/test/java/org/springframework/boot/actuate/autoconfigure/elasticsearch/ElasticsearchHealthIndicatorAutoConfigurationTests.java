@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@Deprecated
 public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()

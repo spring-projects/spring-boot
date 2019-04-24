@@ -72,8 +72,8 @@ public class RestClientAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
-					assertThat(restClient)
-							.hasFieldOrPropertyWithValue("maxRetryTimeoutMillis", 42L);
+					assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix",
+							"/test");
 				});
 	}
 
@@ -146,7 +146,7 @@ public class RestClientAutoConfigurationTests {
 
 		@Bean
 		public RestClientBuilderCustomizer myCustomizer() {
-			return (builder) -> builder.setMaxRetryTimeoutMillis(42);
+			return (builder) -> builder.setPathPrefix("/test");
 		}
 
 	}

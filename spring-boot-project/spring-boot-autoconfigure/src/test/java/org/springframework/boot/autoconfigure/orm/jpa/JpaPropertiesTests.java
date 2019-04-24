@@ -49,6 +49,8 @@ public class JpaPropertiesTests {
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseNoCheckIfDatabaseIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.database=postgresql")
 				.run(assertJpaProperties((properties) -> {
@@ -65,6 +67,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithKnownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Database database = properties
@@ -74,6 +78,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
 		this.contextRunner.withPropertyValues("spring.jpa.database=mysql")
 				.run(assertJpaProperties((properties) -> {
@@ -84,6 +90,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithUnknownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Database database = properties

@@ -49,6 +49,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
+@Deprecated
 public class ElasticsearchHealthIndicatorTests {
 
 	@Mock

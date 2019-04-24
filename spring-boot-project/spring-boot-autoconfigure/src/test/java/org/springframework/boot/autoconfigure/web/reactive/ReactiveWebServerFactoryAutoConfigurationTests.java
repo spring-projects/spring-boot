@@ -303,7 +303,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class TomcatProtocolHandlerCustomizerConfiguration {
 
 		@Bean
-		public TomcatProtocolHandlerCustomizer protocolHandlerCustomizer() {
+		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
 			return (protocolHandler) -> {
 			};
 		}

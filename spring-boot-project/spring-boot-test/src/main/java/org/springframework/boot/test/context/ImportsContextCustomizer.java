@@ -108,7 +108,6 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
 
-	@SuppressWarnings("unchecked")
 	private BeanDefinition registerBean(BeanDefinitionRegistry registry,
 			AnnotatedBeanDefinitionReader reader, String beanName, Class<?> type) {
 		reader.registerBean(type, beanName);

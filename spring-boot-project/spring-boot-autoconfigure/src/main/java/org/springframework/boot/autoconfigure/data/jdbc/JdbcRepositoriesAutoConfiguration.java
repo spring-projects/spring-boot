@@ -54,7 +54,7 @@ public class JdbcRepositoriesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JdbcRepositoryConfigExtension.class)
-	@Import(JdbcRepositoriesAutoConfigureRegistrar.class)
+	@Import(JdbcRepositoriesRegistrar.class)
 	static class JdbcRepositoriesConfiguration {
 
 	}
