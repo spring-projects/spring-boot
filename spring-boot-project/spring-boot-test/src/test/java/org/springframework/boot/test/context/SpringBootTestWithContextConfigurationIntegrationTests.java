@@ -31,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link SpringBootTest} configured with {@link ContextConfiguration}.
+ * Tests for {@link SpringBootTest @SpringBootTest} configured with
+ * {@link ContextConfiguration @ContextConfiguration}.
  *
  * @author Phillip Webb
  */

@@ -23,8 +23,8 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 
 /**
- * {@link EndpointExtension} for the {@link InfoEndpoint} that always exposes full git
- * details.
+ * {@link EndpointExtension @EndpointExtension} for the {@link InfoEndpoint} that always
+ * exposes full git details.
  *
  * @author Madhura Bhave
  * @since 2.2.0

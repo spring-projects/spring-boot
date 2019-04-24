@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} to expose arbitrary application information.
+ * {@link Endpoint @Endpoint} to expose arbitrary application information.
  *
  * @author Dave Syer
  * @author Meang Akira Tanaka

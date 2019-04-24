@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that checks whether or not the Spring resource handling chain is
- * enabled. Matches if {@link ResourceProperties.Chain#getEnabled()} is {@code true} or if
- * {@code webjars-locator-core} is on the classpath.
+ * {@link Conditional @Conditional} that checks whether or not the Spring resource
+ * handling chain is enabled. Matches if {@link ResourceProperties.Chain#getEnabled()} is
+ * {@code true} or if {@code webjars-locator-core} is on the classpath.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

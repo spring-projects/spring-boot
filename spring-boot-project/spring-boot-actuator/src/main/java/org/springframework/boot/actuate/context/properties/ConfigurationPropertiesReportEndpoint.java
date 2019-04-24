@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose application properties from {@link ConfigurationProperties}
- * annotated beans.
+ * {@link Endpoint @Endpoint} to expose application properties from
+ * {@link ConfigurationProperties @ConfigurationProperties} annotated beans.
  *
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
@@ -166,7 +166,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	/**
 	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
-	 * {@link ConfigurationProperties} objects into a {@link Map} structure.
+	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
+	 * structure.
 	 * @param mapper the object mapper
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
@@ -203,7 +204,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
+	 * Extract configuration prefix from
+	 * {@link ConfigurationProperties @ConfigurationProperties} annotation.
 	 * @param context the application context
 	 * @param beanFactoryMetaData the bean factory meta-data
 	 * @param beanName the bean name
@@ -290,7 +292,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	/**
 	 * {@link SimpleBeanPropertyFilter} for serialization of
-	 * {@link ConfigurationProperties} beans. The filter hides:
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans. The filter hides:
 	 *
 	 * <ul>
 	 * <li>Properties that have a name starting with '$$'.
@@ -412,8 +414,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of an application's {@link ConfigurationProperties} beans. Primarily
-	 * intended for serialization to JSON.
+	 * A description of an application's
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
+	 * for serialization to JSON.
 	 */
 	public static final class ApplicationConfigurationProperties {
 
@@ -431,8 +434,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of an application context's {@link ConfigurationProperties} beans.
-	 * Primarily intended for serialization to JSON.
+	 * A description of an application context's
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
+	 * for serialization to JSON.
 	 */
 	public static final class ContextConfigurationProperties {
 
@@ -458,8 +462,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of a {@link ConfigurationProperties} bean. Primarily intended for
-	 * serialization to JSON.
+	 * A description of a {@link ConfigurationProperties @ConfigurationProperties} bean.
+	 * Primarily intended for serialization to JSON.
 	 */
 	public static final class ConfigurationPropertiesBeanDescriptor {
 

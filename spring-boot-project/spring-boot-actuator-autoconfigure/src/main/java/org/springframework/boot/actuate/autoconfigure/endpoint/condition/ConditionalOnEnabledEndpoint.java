@@ -28,9 +28,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link Conditional} that checks whether an endpoint is enabled or not. Matches
- * according to the endpoints specific {@link Environment} property, falling back to
- * {@code management.endpoints.enabled-by-default} or failing that
+ * {@link Conditional @Conditional} that checks whether an endpoint is enabled or not.
+ * Matches according to the endpoints specific {@link Environment} property, falling back
+ * to {@code management.endpoints.enabled-by-default} or failing that
  * {@link Endpoint#enableByDefault()}.
  * <p>
  * When placed on a {@code @Bean} method, the endpoint defaults to the return type of the
@@ -99,7 +99,8 @@ public @interface ConditionalOnEnabledEndpoint {
 
 	/**
 	 * The endpoint type that should be checked. Inferred when the return type of the
-	 * {@code @Bean} method is either an {@link Endpoint} or an {@link EndpointExtension}.
+	 * {@code @Bean} method is either an {@link Endpoint @Endpoint} or an
+	 * {@link EndpointExtension @EndpointExtension}.
 	 * @return the endpoint type to check
 	 * @since 2.0.6
 	 */

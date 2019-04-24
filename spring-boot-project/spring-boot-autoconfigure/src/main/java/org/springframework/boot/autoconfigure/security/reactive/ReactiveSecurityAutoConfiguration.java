@@ -30,10 +30,11 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security in a reactive
- * application. Switches on {@link EnableWebFluxSecurity} for a reactive web application
- * if this annotation has not been added by the user. It delegates to Spring Security's
- * content-negotiation mechanism for authentication. This configuration also backs off if
- * a bean of type {@link WebFilterChainProxy} has been configured in any other way.
+ * application. Switches on {@link EnableWebFluxSecurity @EnableWebFluxSecurity} for a
+ * reactive web application if this annotation has not been added by the user. It
+ * delegates to Spring Security's content-negotiation mechanism for authentication. This
+ * configuration also backs off if a bean of type {@link WebFilterChainProxy} has been
+ * configured in any other way.
  *
  * @author Madhura Bhave
  * @since 2.0.0

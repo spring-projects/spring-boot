@@ -35,8 +35,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JDBC Repositories.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JDBC repositories
- * using the {@link EnableJdbcRepositories} annotation and providing an
- * {@link AbstractJdbcConfiguration} subclass.
+ * using the {@link EnableJdbcRepositories @EnableJdbcRepositories} annotation and
+ * providing an {@link AbstractJdbcConfiguration} subclass.
  *
  * @author Andy Wilkinson
  * @since 2.1.0

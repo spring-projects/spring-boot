@@ -30,7 +30,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
- * Web {@link Endpoint} that provides access to an application's log file.
+ * Web {@link Endpoint @Endpoint} that provides access to an application's log file.
  *
  * @author Johannes Edmeier
  * @author Phillip Webb

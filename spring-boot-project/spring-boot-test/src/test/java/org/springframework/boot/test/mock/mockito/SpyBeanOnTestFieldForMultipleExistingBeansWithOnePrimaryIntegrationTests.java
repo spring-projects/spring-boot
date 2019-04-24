@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to inject a spy instance when
- * there are multiple candidates and one is primary.
+ * Test {@link SpyBean @SpyBean} on a test class field can be used to inject a spy
+ * instance when there are multiple candidates and one is primary.
  *
  * @author Phillip Webb
  */

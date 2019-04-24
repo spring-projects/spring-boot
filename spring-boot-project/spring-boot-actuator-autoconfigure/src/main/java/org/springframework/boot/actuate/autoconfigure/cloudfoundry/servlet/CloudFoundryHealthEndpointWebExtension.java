@@ -26,8 +26,8 @@ import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ShowDetails;
 
 /**
- * {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes full
- * health details.
+ * {@link EndpointExtension @EndpointExtension} for the {@link HealthEndpoint} that always
+ * exposes full health details.
  *
  * @author Madhura Bhave
  * @since 2.0.0

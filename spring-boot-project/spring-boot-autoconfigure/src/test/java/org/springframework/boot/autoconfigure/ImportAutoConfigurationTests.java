@@ -30,7 +30,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ImportAutoConfiguration}.
+ * Tests for {@link ImportAutoConfiguration @ImportAutoConfiguration}.
  *
  * @author Phillip Webb
  */

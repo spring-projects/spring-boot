@@ -50,8 +50,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * {@link org.springframework.data.jpa.repository.JpaRepository} configured.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
- * using the {@link org.springframework.data.jpa.repository.config.EnableJpaRepositories}
- * annotation.
+ * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *

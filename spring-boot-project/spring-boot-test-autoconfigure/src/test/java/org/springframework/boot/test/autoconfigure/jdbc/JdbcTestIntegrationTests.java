@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
- * Integration tests for {@link JdbcTest}.
+ * Integration tests for {@link JdbcTest @JdbcTest}.
  *
  * @author Stephane Nicoll
  */

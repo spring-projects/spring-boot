@@ -46,7 +46,8 @@ import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the cache abstraction. Creates a
- * {@link CacheManager} if necessary when caching is enabled via {@link EnableCaching}.
+ * {@link CacheManager} if necessary when caching is enabled via
+ * {@link EnableCaching @EnableCaching}.
  * <p>
  * Cache store can be auto-detected or specified explicitly via configuration.
  *

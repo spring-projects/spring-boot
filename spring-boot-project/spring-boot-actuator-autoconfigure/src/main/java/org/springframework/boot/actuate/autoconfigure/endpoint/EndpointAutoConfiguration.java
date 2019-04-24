@@ -27,7 +27,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link Endpoint} support.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link Endpoint @Endpoint}
+ * support.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

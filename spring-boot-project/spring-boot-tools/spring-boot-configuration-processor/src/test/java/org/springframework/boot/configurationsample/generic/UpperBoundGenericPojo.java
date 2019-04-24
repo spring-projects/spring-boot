@@ -22,8 +22,8 @@ import java.util.Map;
 /**
  * A pojo with a complex generic signature.
  *
- * @author Stephane Nicoll
  * @param <T> the generic type
+ * @author Stephane Nicoll
  */
 public class UpperBoundGenericPojo<T extends Enum<T>> {
 

@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Test {@link MockBean} on a test class can be used to replace existing beans.
+ * Test {@link MockBean @MockBean} on a test class can be used to replace existing beans.
  *
  * @author Phillip Webb
  */

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Integration test for {@link DataNeo4jTest}.
+ * Integration test for {@link DataNeo4jTest @DataNeo4jTest}.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll

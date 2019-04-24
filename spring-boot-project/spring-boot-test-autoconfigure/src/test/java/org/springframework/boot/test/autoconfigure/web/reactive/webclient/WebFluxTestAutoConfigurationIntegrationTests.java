@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
- * Tests for the auto-configuration imported by {@link WebFluxTest}.
+ * Tests for the auto-configuration imported by {@link WebFluxTest @WebFluxTest}.
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin

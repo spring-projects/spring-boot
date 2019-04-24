@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring
+ * Micrometer-based metrics.
  *
  * @author Jon Schneider
  * @author Alexander Abramov

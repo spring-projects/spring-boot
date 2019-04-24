@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when a bean of the specified class is already
- * contained in the {@link BeanFactory} and a single candidate can be determined.
+ * {@link Conditional @Conditional} that only matches when a bean of the specified class
+ * is already contained in the {@link BeanFactory} and a single candidate can be
+ * determined.
  * <p>
  * The condition will also match if multiple matching bean instances are already contained
  * in the {@link BeanFactory} but a primary candidate has been defined; essentially, the

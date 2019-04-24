@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link WebAppConfiguration} integration.
+ * Tests for {@link WebAppConfiguration @WebAppConfiguration} integration.
  *
  * @author Stephane Nicoll
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
 
 /**
- * {@link Endpoint} to expose the Spring Integration graph.
+ * {@link Endpoint @Endpoint} to expose the Spring Integration graph.
  *
  * @author Tim Ysewyn
  * @since 2.1.0

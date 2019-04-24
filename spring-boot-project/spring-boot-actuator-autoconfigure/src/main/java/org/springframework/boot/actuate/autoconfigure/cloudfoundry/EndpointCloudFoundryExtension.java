@@ -26,7 +26,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 
 /**
- * Identifies a type as being a Cloud Foundry specific extension for an {@link Endpoint}.
+ * Identifies a type as being a Cloud Foundry specific extension for an
+ * {@link Endpoint @Endpoint}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave

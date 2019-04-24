@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnBean}.
+ * Tests for {@link ConditionalOnBean @ConditionalOnBean}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

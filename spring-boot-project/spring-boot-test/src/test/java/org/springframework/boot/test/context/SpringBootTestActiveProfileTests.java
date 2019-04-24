@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} with active profiles. See gh-1469.
+ * Tests for {@link SpringBootTest @SpringBootTest} with active profiles. See gh-1469.
  *
  * @author Phillip Webb
  */

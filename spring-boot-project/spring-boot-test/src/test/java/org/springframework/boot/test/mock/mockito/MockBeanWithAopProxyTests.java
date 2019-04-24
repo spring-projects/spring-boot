@@ -41,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link MockBean} when mixed with Spring AOP.
+ * Test {@link MockBean @MockBean} when mixed with Spring AOP.
  *
  * @author Phillip Webb
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>

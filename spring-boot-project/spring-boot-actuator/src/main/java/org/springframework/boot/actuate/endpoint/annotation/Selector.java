@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A {@code Selector} can be used on a parameter of an {@link Endpoint} method to indicate
- * that the parameter is used to select a subset of the endpoint's data.
+ * A {@code Selector} can be used on a parameter of an {@link Endpoint @Endpoint} method
+ * to indicate that the parameter is used to select a subset of the endpoint's data.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

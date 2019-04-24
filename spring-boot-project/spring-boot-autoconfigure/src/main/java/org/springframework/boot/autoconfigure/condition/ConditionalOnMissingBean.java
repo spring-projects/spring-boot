@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when no beans meeting the specified requirements
- * are already contained in the {@link BeanFactory}. None of the requirements must be met
- * for the condition to match and the requirements do not have to be met by the same bean.
+ * {@link Conditional @Conditional} that only matches when no beans meeting the specified
+ * requirements are already contained in the {@link BeanFactory}. None of the requirements
+ * must be met for the condition to match and the requirements do not have to be met by
+ * the same bean.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of
  * the factory method:

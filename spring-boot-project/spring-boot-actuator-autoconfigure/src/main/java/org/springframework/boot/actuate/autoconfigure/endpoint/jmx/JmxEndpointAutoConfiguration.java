@@ -49,7 +49,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for JMX {@link Endpoint} support.
+ * {@link EnableAutoConfiguration Auto-configuration} for JMX {@link Endpoint @Endpoint}
+ * support.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

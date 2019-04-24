@@ -26,7 +26,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.stereotype.Component;
 
 /**
- * Example {@link GenericConverter} used with {@link WebFluxTest} tests.
+ * Example {@link GenericConverter} used with {@link WebFluxTest @WebFluxTest} tests.
  *
  * @author Stephane Nicoll
  */

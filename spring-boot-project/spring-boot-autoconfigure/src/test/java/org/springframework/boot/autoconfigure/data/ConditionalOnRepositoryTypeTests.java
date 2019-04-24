@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnRepositoryType}.
+ * Tests for {@link ConditionalOnRepositoryType @ConditionalOnRepositoryType}.
  *
  * @author Andy Wilkinson
  */

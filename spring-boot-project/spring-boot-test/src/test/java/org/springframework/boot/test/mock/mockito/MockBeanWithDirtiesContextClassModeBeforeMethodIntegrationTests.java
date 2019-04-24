@@ -32,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Integration tests for using {@link MockBean} with {@link DirtiesContext} and
- * {@link ClassMode#BEFORE_EACH_TEST_METHOD}.
+ * Integration tests for using {@link MockBean @MockBean} with
+ * {@link DirtiesContext @DirtiesContext} and {@link ClassMode#BEFORE_EACH_TEST_METHOD}.
  *
  * @author Andy Wilkinson
  */

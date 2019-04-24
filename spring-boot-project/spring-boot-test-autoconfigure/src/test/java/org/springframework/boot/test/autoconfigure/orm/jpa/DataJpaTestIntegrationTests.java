@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
- * Integration tests for {@link DataJpaTest}.
+ * Integration tests for {@link DataJpaTest @DataJpaTest}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

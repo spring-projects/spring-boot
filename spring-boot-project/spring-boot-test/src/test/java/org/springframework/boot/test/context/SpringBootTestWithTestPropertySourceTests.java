@@ -32,7 +32,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for using {@link SpringBootTest} with {@link TestPropertySource}.
+ * Tests for using {@link SpringBootTest @SpringBootTest} with
+ * {@link TestPropertySource @TestPropertySource}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

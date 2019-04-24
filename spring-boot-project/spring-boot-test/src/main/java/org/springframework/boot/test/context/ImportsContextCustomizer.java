@@ -138,7 +138,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-	 * {@link Configuration} registered to trigger the {@link ImportsSelector}.
+	 * {@link Configuration @Configuration} registered to trigger the
+	 * {@link ImportsSelector}.
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@Import(ImportsSelector.class)

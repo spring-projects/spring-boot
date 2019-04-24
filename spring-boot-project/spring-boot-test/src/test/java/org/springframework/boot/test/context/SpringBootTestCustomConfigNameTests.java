@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} with a custom config name
+ * Tests for {@link SpringBootTest @SpringBootTest} with a custom config name
  *
  * @author Andy Wilkinson
  */

@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
- * Tests for {@link SpringBootTest} in a reactive environment configured with
- * {@link WebEnvironment#DEFINED_PORT}.
+ * Tests for {@link SpringBootTest @SpringBootTest} in a reactive environment configured
+ * with {@link WebEnvironment#DEFINED_PORT}.
  *
  * @author Stephane Nicoll
  */

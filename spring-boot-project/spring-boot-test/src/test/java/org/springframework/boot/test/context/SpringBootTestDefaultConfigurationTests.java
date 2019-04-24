@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} (detectDefaultConfigurationClasses).
+ * Tests for {@link SpringBootTest @SpringBootTest} (detectDefaultConfigurationClasses).
  *
  * @author Dave Syer
  */

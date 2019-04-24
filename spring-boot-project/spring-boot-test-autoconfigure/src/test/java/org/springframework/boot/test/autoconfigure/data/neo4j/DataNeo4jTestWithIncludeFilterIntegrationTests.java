@@ -34,7 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test with custom include filter for {@link DataNeo4jTest}.
+ * Integration test with custom include filter for {@link DataNeo4jTest @DataNeo4jTest}.
  *
  * @author Eddú Meléndez
  * @author Michael Simons

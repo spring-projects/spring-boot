@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
 
 /**
- * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
+ * An {@link Endpoint @Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
  *
  * @author Jon Schneider
  * @author Phillip Webb

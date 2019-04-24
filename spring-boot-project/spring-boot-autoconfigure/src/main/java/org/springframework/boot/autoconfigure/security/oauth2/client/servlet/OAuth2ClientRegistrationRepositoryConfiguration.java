@@ -32,8 +32,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 
 /**
- * {@link Configuration} used to map {@link OAuth2ClientProperties} to client
- * registrations.
+ * {@link Configuration @Configuration} used to map {@link OAuth2ClientProperties} to
+ * client registrations.
  *
  * @author Madhura Bhave
  */

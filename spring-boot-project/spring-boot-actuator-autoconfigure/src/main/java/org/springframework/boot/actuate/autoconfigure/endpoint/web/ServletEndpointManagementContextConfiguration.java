@@ -34,7 +34,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link ManagementContextConfiguration} for servlet endpoints.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for servlet
+ * endpoints.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

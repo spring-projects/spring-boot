@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 
 /**
- * {@link Endpoint} that outputs metrics in a format that can be scraped by the Prometheus
- * server.
+ * {@link Endpoint @Endpoint} that outputs metrics in a format that can be scraped by the
+ * Prometheus server.
  *
  * @author Jon Schneider
  * @since 2.0.0

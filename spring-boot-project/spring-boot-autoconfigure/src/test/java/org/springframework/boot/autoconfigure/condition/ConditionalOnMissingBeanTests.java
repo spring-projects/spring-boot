@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnMissingBean}.
+ * Tests for {@link ConditionalOnMissingBean @ConditionalOnMissingBean}.
  *
  * @author Dave Syer
  * @author Phillip Webb

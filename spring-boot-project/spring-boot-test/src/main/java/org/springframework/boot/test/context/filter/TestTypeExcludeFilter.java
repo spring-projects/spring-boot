@@ -24,8 +24,8 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
- * {@link TypeExcludeFilter} to exclude classes annotated with {@link TestComponent} as
- * well as inner-classes of tests.
+ * {@link TypeExcludeFilter} to exclude classes annotated with
+ * {@link TestComponent @TestComponent} as well as inner-classes of tests.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

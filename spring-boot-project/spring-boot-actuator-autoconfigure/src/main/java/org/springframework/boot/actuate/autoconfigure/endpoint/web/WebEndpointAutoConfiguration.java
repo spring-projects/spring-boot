@@ -54,7 +54,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for web {@link Endpoint} support.
+ * {@link EnableAutoConfiguration Auto-configuration} for web {@link Endpoint @Endpoint}
+ * support.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

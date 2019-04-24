@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link ConditionalOnNotWebApplication}.
+ * Tests for {@link ConditionalOnNotWebApplication @ConditionalOnNotWebApplication}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

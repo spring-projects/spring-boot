@@ -35,8 +35,9 @@ import org.springframework.core.annotation.Order;
  * {@code org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration}
  * key.
  * <p>
- * {@code ManagementContextConfiguration} classes can be ordered using {@link Order}.
- * Ordering by implementing {@link Ordered} is not supported and will have no effect.
+ * {@code ManagementContextConfiguration} classes can be ordered using
+ * {@link Order @Order}. Ordering by implementing {@link Ordered} is not supported and
+ * will have no effect.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

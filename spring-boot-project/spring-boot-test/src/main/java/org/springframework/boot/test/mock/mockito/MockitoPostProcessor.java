@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -455,8 +455,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to handle {@link SpyBean} definitions. Registered as a
-	 * separate processor so that it can be ordered above AOP post processors.
+	 * {@link BeanPostProcessor} to handle {@link SpyBean @SpyBean} definitions.
+	 * Registered as a separate processor so that it can be ordered above AOP post
+	 * processors.
 	 */
 	static class SpyPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
 			implements PriorityOrdered {

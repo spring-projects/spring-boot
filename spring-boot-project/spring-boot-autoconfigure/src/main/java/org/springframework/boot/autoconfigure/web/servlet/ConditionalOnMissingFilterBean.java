@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * {@link Conditional} that only matches when no {@link Filter} beans of the specified
- * type are contained in the {@link BeanFactory}. This condition will detect both directly
- * registered {@link Filter} beans as well as those registered via a
+ * {@link Conditional @Conditional} that only matches when no {@link Filter} beans of the
+ * specified type are contained in the {@link BeanFactory}. This condition will detect
+ * both directly registered {@link Filter} beans as well as those registered via a
  * {@link FilterRegistrationBean}.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of

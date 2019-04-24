@@ -57,8 +57,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ManagementContextConfiguration} for Servlet web endpoint infrastructure when a
- * separate management context with a web server running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Servlet web
+ * endpoint infrastructure when a separate management context with a web server running on
+ * a different port is required.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

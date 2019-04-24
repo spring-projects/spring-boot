@@ -30,7 +30,8 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 /**
- * {@link EnableAutoConfiguration} for Spring RSocket support in Spring Messaging.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring RSocket support in Spring
+ * Messaging.
  *
  * @author Brian Clozel
  * @since 2.2.0

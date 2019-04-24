@@ -25,7 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * {@link RestController} used by {@link WebMvcTestHateoasIntegrationTests}.
+ * {@link RestController @RestClientTest} used by
+ * {@link WebMvcTestHateoasIntegrationTests}.
  *
  * @author Andy Wilkinson
  */

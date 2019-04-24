@@ -25,7 +25,8 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
- * Reactive {@link EndpointWebExtension} for the {@link HealthEndpoint}.
+ * Reactive {@link EndpointWebExtension @EndpointWebExtension} for the
+ * {@link HealthEndpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0

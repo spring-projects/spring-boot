@@ -44,7 +44,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties} for a web server (e.g. port and path settings).
+ * {@link ConfigurationProperties @ConfigurationProperties} for a web server (e.g. port
+ * and path settings).
  *
  * @author Dave Syer
  * @author Stephane Nicoll

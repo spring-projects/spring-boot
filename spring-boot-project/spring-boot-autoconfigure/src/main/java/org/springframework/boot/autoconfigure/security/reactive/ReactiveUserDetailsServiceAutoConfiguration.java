@@ -38,10 +38,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
- * Default user {@link Configuration} for a reactive web application. Configures a
- * {@link ReactiveUserDetailsService} with a default user and generated password. This
- * backs-off completely if there is a bean of type {@link ReactiveUserDetailsService} or
- * {@link ReactiveAuthenticationManager}.
+ * Default user {@link Configuration @Configuration} for a reactive web application.
+ * Configures a {@link ReactiveUserDetailsService} with a default user and generated
+ * password. This backs-off completely if there is a bean of type
+ * {@link ReactiveUserDetailsService} or {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
  */

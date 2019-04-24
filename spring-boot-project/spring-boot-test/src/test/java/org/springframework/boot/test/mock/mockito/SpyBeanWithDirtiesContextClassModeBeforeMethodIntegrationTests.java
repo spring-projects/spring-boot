@@ -31,8 +31,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.mockito.Mockito.verify;
 
 /**
- * Integration tests for using {@link SpyBean} with {@link DirtiesContext} and
- * {@link ClassMode#BEFORE_EACH_TEST_METHOD}.
+ * Integration tests for using {@link SpyBean @SpyBean} with
+ * {@link DirtiesContext @DirtiesContext} and {@link ClassMode#BEFORE_EACH_TEST_METHOD}.
  *
  * @author Andy Wilkinson
  */

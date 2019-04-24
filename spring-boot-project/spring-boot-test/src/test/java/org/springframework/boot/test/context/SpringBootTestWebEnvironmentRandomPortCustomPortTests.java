@@ -31,8 +31,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link SpringBootTest} with a custom inline server.port in an embedded web
- * environment.
+ * Test for {@link SpringBootTest @SpringBootTest} with a custom inline server.port in an
+ * embedded web environment.
  *
  * @author Stephane Nicoll
  */

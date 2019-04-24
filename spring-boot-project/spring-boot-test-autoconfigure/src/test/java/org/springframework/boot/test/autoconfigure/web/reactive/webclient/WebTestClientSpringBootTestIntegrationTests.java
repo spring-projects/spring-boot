@@ -33,8 +33,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} with {@link AutoConfigureWebTestClient} (i.e. full
- * integration test).
+ * Tests for {@link SpringBootTest @SpringBootTest} with
+ * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} (i.e. full integration
+ * test).
  *
  * @author Stephane Nicoll
  */

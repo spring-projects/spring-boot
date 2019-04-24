@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnEnabledEndpoint}.
+ * Tests for {@link ConditionalOnEnabledEndpoint @ConditionalOnEnabledEndpoint}.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

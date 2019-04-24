@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link SpringBootTest} configured with specific classes.
+ * Tests for {@link SpringBootTest @SpringBootTest} configured with specific classes.
  *
  * @author Phillip Webb
  */

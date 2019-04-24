@@ -68,8 +68,8 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to check that {@link PropertyMapping} is only used on
-	 * test classes.
+	 * {@link BeanPostProcessor} to check that {@link PropertyMapping @PropertyMapping} is
+	 * only used on test classes.
 	 */
 	static class PropertyMappingCheckBeanPostProcessor implements BeanPostProcessor {
 

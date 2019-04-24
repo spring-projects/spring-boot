@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import org.springframework.util.StringUtils;
  * applications for formatting and converting values to/from the web.
  * <p>
  * This service replaces the default implementations provided by
- * {@link org.springframework.web.servlet.config.annotation.EnableWebMvc} and
- * {@link org.springframework.web.reactive.config.EnableWebFlux}.
+ * {@link org.springframework.web.servlet.config.annotation.EnableWebMvc @EnableWebMvc}
+ * and {@link org.springframework.web.reactive.config.EnableWebFlux @EnableWebFlux}.
  *
  * @author Brian Clozel
  * @since 2.0.0

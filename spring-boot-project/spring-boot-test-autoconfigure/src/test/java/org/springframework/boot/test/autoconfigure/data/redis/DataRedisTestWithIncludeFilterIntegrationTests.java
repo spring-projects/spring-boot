@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test with custom include filter for {@link DataRedisTest}.
+ * Integration test with custom include filter for {@link DataRedisTest @DataRedisTest}.
  *
  * @author Jayaram Pradhan
  */

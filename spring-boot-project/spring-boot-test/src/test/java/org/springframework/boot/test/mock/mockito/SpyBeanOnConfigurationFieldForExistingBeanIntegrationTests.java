@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a field on a {@code @Configuration} class can be used to
- * replace existing beans.
+ * Test {@link SpyBean @SpyBean} on a field on a {@code @Configuration} class can be used
+ * to replace existing beans.
  *
  * @author Phillip Webb
  */

@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -34,7 +35,8 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link AutoConfigureWebClient} with {@code registerRestTemplate=true}.
+ * Tests for {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} with
+ * {@code registerRestTemplate=true}.
  *
  * @author Phillip Webb
  */

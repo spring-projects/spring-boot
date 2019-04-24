@@ -32,7 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ConditionalOnExpression}.
+ * Tests for {@link ConditionalOnExpression @ConditionalOnExpression}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

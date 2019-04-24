@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AutoConfigureCache}.
+ * Tests for {@link AutoConfigureCache @AutoConfigureCache}.
  *
  * @author Phillip Webb
  */

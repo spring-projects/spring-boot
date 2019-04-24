@@ -33,7 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to replace existing beans.
+ * Test {@link SpyBean @SpyBean} on a test class field can be used to replace existing
+ * beans.
  *
  * @author Phillip Webb
  * @see SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests

@@ -33,7 +33,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link RestClientTest} with no specific client.
+ * Tests for {@link RestClientTest @RestClientTest} with no specific client.
  *
  * @author Phillip Webb
  */

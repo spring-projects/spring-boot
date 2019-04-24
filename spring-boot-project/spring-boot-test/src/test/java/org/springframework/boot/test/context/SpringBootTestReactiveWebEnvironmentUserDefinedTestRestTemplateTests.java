@@ -31,8 +31,8 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} in a reactive environment configured with a
- * user-defined {@link RestTemplate} that is named {@code testRestTemplate}.
+ * Tests for {@link SpringBootTest @SpringBootTest} in a reactive environment configured
+ * with a user-defined {@link RestTemplate} that is named {@code testRestTemplate}.
  *
  * @author Madhura Bhave
  */

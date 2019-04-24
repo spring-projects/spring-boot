@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link WebMvcTest} with {@link WebDriver}.
+ * Tests for {@link WebMvcTest @WebMvcTest} with {@link WebDriver}.
  *
  * @author Phillip Webb
  */

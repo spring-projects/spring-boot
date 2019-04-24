@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link ConditionalOnProperty}.
+ * Tests for {@link ConditionalOnProperty @ConditionalOnProperty}.
  *
  * @author Maciej Walkowiak
  * @author Stephane Nicoll

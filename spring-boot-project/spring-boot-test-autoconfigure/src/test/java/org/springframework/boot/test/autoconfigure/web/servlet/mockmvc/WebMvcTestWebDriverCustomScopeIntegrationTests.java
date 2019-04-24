@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDr
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTest} with {@link WebDriver} in a custom scope.
+ * Tests for {@link WebMvcTest @WebMvcTest} with {@link WebDriver} in a custom scope.
  *
  * @author Phillip Webb
  */

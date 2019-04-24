@@ -31,8 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Eddú Meléndez
  * @since 1.4.0
  */
-class RedisRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class RedisRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

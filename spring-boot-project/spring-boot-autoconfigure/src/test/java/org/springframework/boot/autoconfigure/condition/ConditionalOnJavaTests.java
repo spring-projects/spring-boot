@@ -35,7 +35,7 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnJava}.
+ * Tests for {@link ConditionalOnJava @ConditionalOnJava}.
  *
  * @author Oliver Gierke
  * @author Phillip Webb

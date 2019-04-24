@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Container annotation that aggregates several {@link MockBean} annotations.
+ * Container annotation that aggregates several {@link MockBean @MockBean} annotations.
  * <p>
- * Can be used natively, declaring several nested {@link MockBean} annotations. Can also
- * be used in conjunction with Java 8's support for <em>repeatable annotations</em>, where
- * {@link MockBean} can simply be declared several times on the same
- * {@linkplain ElementType#TYPE type}, implicitly generating this container annotation.
+ * Can be used natively, declaring several nested {@link MockBean @MockBean} annotations.
+ * Can also be used in conjunction with Java 8's support for <em>repeatable
+ * annotations</em>, where {@link MockBean @MockBean} can simply be declared several times
+ * on the same {@linkplain ElementType#TYPE type}, implicitly generating this container
+ * annotation.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -39,7 +40,7 @@ import java.lang.annotation.Target;
 public @interface MockBeans {
 
 	/**
-	 * Return the contained {@link MockBean} annotations.
+	 * Return the contained {@link MockBean @MockBean} annotations.
 	 * @return the mock beans
 	 */
 	MockBean[] value();

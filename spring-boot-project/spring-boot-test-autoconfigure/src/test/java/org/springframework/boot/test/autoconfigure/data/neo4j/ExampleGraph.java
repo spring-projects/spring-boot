@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
 /**
- * Example graph used with {@link DataNeo4jTest} tests.
+ * Example graph used with {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
  */

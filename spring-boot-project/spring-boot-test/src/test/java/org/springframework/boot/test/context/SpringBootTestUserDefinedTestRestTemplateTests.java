@@ -31,8 +31,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} configured with a user-defined {@link RestTemplate}
- * that is named {@code testRestTemplate}.
+ * Tests for {@link SpringBootTest @SpringBootTest} configured with a user-defined
+ * {@link RestTemplate} that is named {@code testRestTemplate}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

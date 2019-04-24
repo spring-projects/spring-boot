@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Test {@link MockBean} when used in combination with scoped proxy targets.
+ * Test {@link MockBean @MockBean} when used in combination with scoped proxy targets.
  *
  * @author Phillip Webb
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5724">gh-5724</a>

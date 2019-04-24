@@ -32,7 +32,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} configured with {@link WebEnvironment#RANDOM_PORT}.
+ * Tests for {@link SpringBootTest @SpringBootTest} configured with
+ * {@link WebEnvironment#RANDOM_PORT}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

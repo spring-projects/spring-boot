@@ -33,7 +33,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Base class for {@link Endpoint} related {@link SpringBootCondition} implementations.
+ * Base class for {@link Endpoint @Endpoint} related {@link SpringBootCondition}
+ * implementations.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

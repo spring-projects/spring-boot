@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnCloudPlatform}.
+ * Tests for {@link ConditionalOnCloudPlatform @ConditionalOnCloudPlatform}.
  */
 public class ConditionalOnCloudPlatformTests {
 

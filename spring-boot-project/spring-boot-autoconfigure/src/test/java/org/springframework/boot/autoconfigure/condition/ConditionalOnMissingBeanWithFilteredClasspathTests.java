@@ -30,7 +30,8 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests {@link ConditionalOnMissingBean} with filtered classpath.
+ * Tests {@link ConditionalOnMissingBean @ConditionalOnMissingBean} with filtered
+ * classpath.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

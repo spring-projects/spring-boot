@@ -479,7 +479,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	/**
-	 * Information about an {@link EndpointExtension EndpointExtension} bean.
+	 * Information about an {@link EndpointExtension @EndpointExtension} bean.
 	 */
 	private static class ExtensionBean {
 

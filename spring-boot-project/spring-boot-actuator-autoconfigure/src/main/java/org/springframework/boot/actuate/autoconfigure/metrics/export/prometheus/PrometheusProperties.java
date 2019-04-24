@@ -24,7 +24,8 @@ import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPush
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to Prometheus.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
+ * to Prometheus.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll

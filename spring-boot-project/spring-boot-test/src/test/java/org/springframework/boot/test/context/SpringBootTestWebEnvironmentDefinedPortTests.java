@@ -26,7 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * Tests for {@link SpringBootTest} configured with {@link WebEnvironment#DEFINED_PORT}.
+ * Tests for {@link SpringBootTest @SpringBootTest} configured with
+ * {@link WebEnvironment#DEFINED_PORT}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

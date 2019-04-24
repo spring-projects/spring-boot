@@ -28,7 +28,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link AutoConfigureMockRestServiceServer} with {@code enabled=false}.
+ * Tests for
+ * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer} with
+ * {@code enabled=false}.
  *
  * @author Phillip Webb
  */

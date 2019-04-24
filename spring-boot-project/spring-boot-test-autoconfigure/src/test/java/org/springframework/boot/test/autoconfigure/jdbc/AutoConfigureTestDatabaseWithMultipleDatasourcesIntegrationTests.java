@@ -33,8 +33,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link AutoConfigureTestDatabase} when there are multiple
- * datasources.
+ * Integration tests for {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} when
+ * there are multiple datasources.
  *
  * @author Greg Potter
  */

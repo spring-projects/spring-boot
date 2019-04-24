@@ -26,7 +26,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
 
 /**
- * Example {@link WebExceptionHandler} used with {@link WebFluxTest} tests.
+ * Example {@link WebExceptionHandler} used with {@link WebFluxTest @WebFluxTest} tests.
  *
  * @author Madhura Bhave
  */

@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnMissingFilterBean}.
+ * Tests for {@link ConditionalOnMissingFilterBean @ConditionalOnMissingFilterBean}.
  *
  * @author Phillip Webb
  */

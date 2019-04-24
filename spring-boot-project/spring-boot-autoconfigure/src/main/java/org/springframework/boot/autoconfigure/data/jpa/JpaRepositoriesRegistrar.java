@@ -35,8 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class JpaRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class JpaRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	private BootstrapMode bootstrapMode = null;
 

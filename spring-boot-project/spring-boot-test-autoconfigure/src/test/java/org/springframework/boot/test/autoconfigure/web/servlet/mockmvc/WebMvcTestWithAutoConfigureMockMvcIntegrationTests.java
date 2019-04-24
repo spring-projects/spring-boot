@@ -34,7 +34,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 /**
- * Tests for {@link WebMvcTest} with {@link AutoConfigureMockMvc}.
+ * Tests for {@link WebMvcTest @WebMvcTest} with
+ * {@link AutoConfigureMockMvc @AutoConfigureMockMvc}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

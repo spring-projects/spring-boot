@@ -60,8 +60,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * A custom {@link BlockJUnit4ClassRunner} that runs tests using a modified class path.
- * Entries are excluded from the class path using {@link ClassPathExclusions} and
- * overridden using {@link ClassPathOverrides} on the test class. A class loader is
+ * Entries are excluded from the class path using
+ * {@link ClassPathExclusions @ClassPathExclusions} and overridden using
+ * {@link ClassPathOverrides @ClassPathOverrides} on the test class. A class loader is
  * created with the customized class path and is used both to load the test class and as
  * the thread context class loader while the test is being run.
  *

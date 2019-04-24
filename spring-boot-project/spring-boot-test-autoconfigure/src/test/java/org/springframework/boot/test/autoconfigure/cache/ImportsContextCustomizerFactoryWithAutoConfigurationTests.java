@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@code ImportsContextCustomizerFactory} when used with
- * {@link ImportAutoConfiguration}.
+ * {@link ImportAutoConfiguration @ImportAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

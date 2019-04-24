@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 
 /**
- * {@link Controller} for handling "/error" path when the management servlet is in a child
- * context. The regular {@link ErrorController} should be available there but because of
- * the way the handler mappings are set up it will not be detected.
+ * {@link Controller @Controller} for handling "/error" path when the management servlet
+ * is in a child context. The regular {@link ErrorController} should be available there
+ * but because of the way the handler mappings are set up it will not be detected.
  *
  * @author Dave Syer
  * @since 2.0.0

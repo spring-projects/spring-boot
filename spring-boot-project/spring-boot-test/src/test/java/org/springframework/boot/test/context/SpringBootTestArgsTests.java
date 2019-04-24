@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} with application arguments.
+ * Tests for {@link SpringBootTest @SpringBootTest} with application arguments.
  *
  * @author Justin Griffin
  * @author Stephane Nicoll

@@ -30,7 +30,7 @@ import org.springframework.context.annotation.ImportResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnClass}.
+ * Tests for {@link ConditionalOnClass @ConditionalOnClass}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

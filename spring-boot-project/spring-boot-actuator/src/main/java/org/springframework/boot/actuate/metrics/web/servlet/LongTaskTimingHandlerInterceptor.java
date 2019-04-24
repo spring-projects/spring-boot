@@ -38,7 +38,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * A {@link HandlerInterceptor} that supports Micrometer's long task timers configured on
- * a handler using {@link Timed} with {@link Timed#longTask()} set to {@code true}.
+ * a handler using {@link Timed @Timed} with {@link Timed#longTask() longTask} set to
+ * {@code true}.
  *
  * @author Andy Wilkinson
  * @since 2.0.7

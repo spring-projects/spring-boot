@@ -30,8 +30,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  *
  * @author Andy Wilkinson
  */
-class JdbcRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class JdbcRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

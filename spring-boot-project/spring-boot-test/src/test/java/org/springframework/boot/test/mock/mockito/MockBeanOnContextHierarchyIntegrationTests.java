@@ -35,7 +35,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test {@link MockBean} can be used with a {@link ContextHierarchy}.
+ * Test {@link MockBean @MockBean} can be used with a
+ * {@link ContextHierarchy @ContextHierarchy}.
  *
  * @author Phillip Webb
  */

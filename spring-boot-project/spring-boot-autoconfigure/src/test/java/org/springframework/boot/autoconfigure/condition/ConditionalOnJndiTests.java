@@ -37,7 +37,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ConditionalOnJndi}
+ * Tests for {@link ConditionalOnJndi @ConditionalOnJndi}
  *
  * @author Stephane Nicoll
  * @author Phillip Webb

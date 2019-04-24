@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link ConditionalOnSingleCandidate}.
+ * Tests for {@link ConditionalOnSingleCandidate @ConditionalOnSingleCandidate}.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

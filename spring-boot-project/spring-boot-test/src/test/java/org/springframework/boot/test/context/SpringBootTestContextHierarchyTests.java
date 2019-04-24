@@ -26,7 +26,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 
 /**
- * Tests for {@link SpringBootTest} and {@link ContextHierarchy}.
+ * Tests for {@link SpringBootTest @SpringBootTest} and
+ * {@link ContextHierarchy @ContextHierarchy}.
  *
  * @author Andy Wilkinson
  */

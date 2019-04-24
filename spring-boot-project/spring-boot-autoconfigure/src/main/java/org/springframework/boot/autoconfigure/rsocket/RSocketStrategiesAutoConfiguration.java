@@ -39,7 +39,7 @@ import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 /**
- * {@link EnableAutoConfiguration} for {@link RSocketStrategies}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link RSocketStrategies}.
  *
  * @author Brian Clozel
  * @since 2.2.0

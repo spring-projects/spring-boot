@@ -36,8 +36,8 @@ import org.springframework.core.Ordered;
  * active.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of adding the
- * {@link CloudScan} annotation in one of the configuration file. Specifically, it adds a
- * bean for each service bound to the application and one for
+ * {@link CloudScan @CloudScan} annotation in one of the configuration file. Specifically,
+ * it adds a bean for each service bound to the application and one for
  * {@link ApplicationInstanceInfo}.
  *
  * @author Ramnivas Laddad

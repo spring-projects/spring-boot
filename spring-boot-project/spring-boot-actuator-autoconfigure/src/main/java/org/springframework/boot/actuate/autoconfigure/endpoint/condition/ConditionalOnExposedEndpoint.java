@@ -28,11 +28,12 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link Conditional} that checks whether an endpoint is exposed or not. Matches
- * according to the endpoint exposure configuration {@link Environment} properties. This
- * is designed as a companion annotation to {@link ConditionalOnEnabledEndpoint}.
+ * {@link Conditional @Conditional} that checks whether an endpoint is exposed or not.
+ * Matches according to the endpoint exposure configuration {@link Environment}
+ * properties. This is designed as a companion annotation to
+ * {@link ConditionalOnEnabledEndpoint @ConditionalOnEnabledEndpoint}.
  * <p>
- * For a given {@link Endpoint}, the condition will match if:
+ * For a given {@link Endpoint @Endpoint}, the condition will match if:
  * <ul>
  * <li>{@code "management.endpoints.web.exposure.*"} expose this endpoint</li>
  * <li>or if JMX is enabled and {@code "management.endpoints.jmx.exposure.*"} expose this
@@ -108,7 +109,8 @@ public @interface ConditionalOnExposedEndpoint {
 
 	/**
 	 * The endpoint type that should be checked. Inferred when the return type of the
-	 * {@code @Bean} method is either an {@link Endpoint} or an {@link EndpointExtension}.
+	 * {@code @Bean} method is either an {@link Endpoint @Endpoint} or an
+	 * {@link EndpointExtension @EndpointExtension}.
 	 * @return the endpoint type to check
 	 */
 	Class<?> endpoint() default Void.class;
