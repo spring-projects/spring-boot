@@ -1,9 +1,8 @@
 FROM ubuntu:trusty-20160914
 RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:webupd8team/java -y && \
-    apt-get update && \
-    echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get install -y oracle-java8-installer && \
-    apt-get install -y curl && \
-    apt-get clean
+    apt-get install -y software-properties-common curl && \
+    mkdir -p /opt/openjdk && \
+    cd /opt/openjdk && \
+    curl -L https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u202-b08/OpenJDK8U-jdk_x64_linux_hotspot_8u202b08.tar.gz | tar zx --strip-components=1
+ENV JAVA_HOME /opt/openjdk
+ENV PATH $JAVA_HOME/bin:$PATH
