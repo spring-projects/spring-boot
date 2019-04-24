@@ -237,12 +237,7 @@ public final class ConfigurationPropertyName
 		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
-		for (int i = this.elements.getSize() - 1; i >= 0; i--) {
-			if (!elementEquals(this.elements, name.elements, i)) {
-				return false;
-			}
-		}
-		return true;
+		return elementsEqual(name);
 	}
 
 	@Override
@@ -309,15 +304,34 @@ public final class ConfigurationPropertyName
 				&& other.elements.canShortcutWithSource(ElementType.UNIFORM)) {
 			return toString().equals(other.toString());
 		}
+		return elementsEqual(other);
+	}
+
+	private boolean elementsEqual(ConfigurationPropertyName name) {
 		for (int i = this.elements.getSize() - 1; i >= 0; i--) {
-			if (!elementEquals(this.elements, other.elements, i)) {
+			if (elementDiffers(this.elements, name.elements, i)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private boolean elementEquals(Elements e1, Elements e2, int i) {
+	private boolean elementDiffers(Elements e1, Elements e2, int i) {
+		ElementType type1 = e1.getType(i);
+		ElementType type2 = e2.getType(i);
+		if (type1.allowsFastEqualityCheck() && type2.allowsFastEqualityCheck()) {
+			return !fastElementEquals(e1, e2, i);
+		}
+		else if (type1.allowsDashIgnoringEqualityCheck()
+				&& type2.allowsDashIgnoringEqualityCheck()) {
+			return !dashIgnoringElementEquals(e1, e2, i);
+		}
+		else {
+			return !defaultElementEquals(e1, e2, i);
+		}
+	}
+
+	private boolean defaultElementEquals(Elements e1, Elements e2, int i) {
 		int l1 = e1.getLength(i);
 		int l2 = e2.getLength(i);
 		boolean indexed1 = e1.getType(i).isIndexed();
@@ -353,6 +367,59 @@ public final class ConfigurationPropertyName
 			}
 		}
 		return true;
+	}
+
+	private boolean dashIgnoringElementEquals(Elements e1, Elements e2, int i) {
+		int l1 = e1.getLength(i);
+		int l2 = e2.getLength(i);
+		int i1 = 0;
+		int i2 = 0;
+		while (i1 < l1) {
+			if (i2 >= l2) {
+				return false;
+			}
+			char ch1 = e1.charAt(i, i1);
+			char ch2 = e2.charAt(i, i2);
+			if (ch1 == '-') {
+				i1++;
+			}
+			else if (ch2 == '-') {
+				i2++;
+			}
+			else if (ch1 != ch2) {
+				return false;
+			}
+			else {
+				i1++;
+				i2++;
+			}
+		}
+		boolean indexed2 = e2.getType(i).isIndexed();
+		while (i2 < l2) {
+			char ch2 = e2.charAt(i, i2++);
+			if (indexed2 || ch2 == '-') {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean fastElementEquals(Elements e1, Elements e2, int i) {
+		int length1 = e1.getLength(i);
+		int length2 = e2.getLength(i);
+		if (length1 == length2) {
+			int i1 = 0;
+			while (length1-- != 0) {
+				char ch1 = e1.charAt(i, i1);
+				char ch2 = e2.charAt(i, i1);
+				if (ch1 != ch2) {
+					return false;
+				}
+				i1++;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -911,6 +978,14 @@ public final class ConfigurationPropertyName
 
 		public boolean isIndexed() {
 			return this.indexed;
+		}
+
+		public boolean allowsFastEqualityCheck() {
+			return this == UNIFORM || this == NUMERICALLY_INDEXED;
+		}
+
+		public boolean allowsDashIgnoringEqualityCheck() {
+			return allowsFastEqualityCheck() || this == DASHED;
 		}
 
 	}
