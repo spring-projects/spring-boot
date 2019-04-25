@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 import javax.json.bind.Jsonb;
-
-import com.jayway.jsonpath.Configuration;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -76,20 +74,7 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @see #initFields(Object, Jsonb)
 	 */
 	public JsonbTester(Class<?> resourceLoadClass, ResolvableType type, Jsonb jsonb) {
-		this(resourceLoadClass, type, jsonb, Configuration.defaultConfiguration());
-	}
-
-	/**
-	 * Create a new {@link JsonbTester} instance.
-	 * @param resourceLoadClass the source class used to load resources
-	 * @param type the type under test
-	 * @param jsonb the Jsonb instance
-	 * @param configuration the json-path configuration
-	 * @see #initFields(Object, Jsonb)
-	 */
-	public JsonbTester(Class<?> resourceLoadClass, ResolvableType type, Jsonb jsonb,
-			Configuration configuration) {
-		super(resourceLoadClass, type, configuration);
+		super(resourceLoadClass, type);
 		Assert.notNull(jsonb, "Jsonb must not be null");
 		this.jsonb = jsonb;
 	}

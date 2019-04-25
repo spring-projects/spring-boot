@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Diego Berrueta
  */
 public class JacksonTesterIntegrationTests {
 
@@ -91,14 +92,14 @@ public class JacksonTesterIntegrationTests {
 				.isEqualTo(stringWithSpecialCharacters);
 	}
 
-	// This test confirms that the handling of special characters is symmetrical between
-	// the serialisation (via the JacksonTester) and the parsing (via json-path). By
-	// default json-path uses SimpleJson as its parser, which has a slightly different
-	// behaviour to Jackson and breaks the symmetry. However JacksonTester
-	// configures json-path to use Jackson for evaluating the path expressions and
-	// restores the symmetry.
 	@Test
 	public void parseSpecialCharactersTest() throws Exception {
+		// Confirms that the handling of special characters is symmetrical between
+		// the serialization (via the JacksonTester) and the parsing (via json-path). By
+		// default json-path uses SimpleJson as its parser, which has a slightly different
+		// behavior to Jackson and breaks the symmetry. JacksonTester
+		// configures json-path to use Jackson for evaluating the path expressions and
+		// restores the symmetry. See gh-15727
 		String stringWithSpecialCharacters = "\u0006\u007F";
 		assertThat(this.stringJson.write(stringWithSpecialCharacters))
 				.extractingJsonPathStringValue("@")

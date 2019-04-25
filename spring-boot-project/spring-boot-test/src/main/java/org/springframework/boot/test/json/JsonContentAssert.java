@@ -46,6 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Diego Berrueta
  * @since 1.4.0
  */
 public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSequence> {
@@ -84,8 +85,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param json the actual JSON content
 	 * @param configuration the json-path configuration
 	 */
-	public JsonContentAssert(Class<?> resourceLoadClass, Charset charset,
-			CharSequence json, Configuration configuration) {
+	JsonContentAssert(Class<?> resourceLoadClass, Charset charset, CharSequence json,
+			Configuration configuration) {
 		super(json, JsonContentAssert.class);
 		this.configuration = configuration;
 		this.loader = new JsonLoader(resourceLoadClass, charset);

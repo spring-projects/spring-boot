@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.util.Assert;
  * @param <T> the type under test
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Diego Berrueta
  * @since 1.4.0
  */
 public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
@@ -89,12 +90,18 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type,
 			ObjectMapper objectMapper, Class<?> view) {
-		super(resourceLoadClass, type, Configuration.builder()
-				.jsonProvider(new JacksonJsonProvider(objectMapper))
-				.mappingProvider(new JacksonMappingProvider(objectMapper)).build());
+		super(resourceLoadClass, type);
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
 		this.view = view;
+	}
+
+	@Override
+	protected JsonContent<T> getJsonContent(String json) {
+		Configuration configuration = Configuration.builder()
+				.jsonProvider(new JacksonJsonProvider(this.objectMapper))
+				.mappingProvider(new JacksonMappingProvider(this.objectMapper)).build();
+		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @param <T> the source type that created the content
  * @author Phillip Webb
+ * @author Diego Berrueta
  * @since 1.4.0
  */
 public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
@@ -56,9 +57,9 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param resourceLoadClass the source class used to load resources
 	 * @param type the type under test (or {@code null} if not known)
 	 * @param json the actual JSON content
-	 * @param configuration the json-path configuration
+	 * @param configuration the JsonPath configuration
 	 */
-	public JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json,
+	JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json,
 			Configuration configuration) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
 		Assert.notNull(json, "JSON must not be null");
