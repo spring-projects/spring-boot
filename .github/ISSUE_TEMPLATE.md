@@ -24,6 +24,6 @@ Please start by describing the problem that you are trying to solve. There may a
 be a solution, or there may be a way to solve it that you hadn't considered.
 
 
-TIP: You always edit your issue if it isn't formatted correctly. 
+TIP: You can always edit your issue if it isn't formatted correctly.
      See https://guides.github.com/features/mastering-markdown 
 -->
