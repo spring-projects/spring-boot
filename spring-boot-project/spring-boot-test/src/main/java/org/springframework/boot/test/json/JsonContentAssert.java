@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractBooleanAssert;
@@ -45,12 +46,15 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Diego Berrueta
  * @author Camille Vienot
  * @since 1.4.0
  */
 public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSequence> {
 
 	private final JsonLoader loader;
+
+	private final Configuration configuration;
 
 	/**
 	 * Create a new {@link JsonContentAssert} instance that will load resources as UTF-8.
@@ -71,7 +75,21 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 */
 	public JsonContentAssert(Class<?> resourceLoadClass, Charset charset,
 			CharSequence json) {
+		this(resourceLoadClass, charset, json, Configuration.defaultConfiguration());
+	}
+
+	/**
+	 * Create a new {@link JsonContentAssert} instance that will load resources in the
+	 * given {@code charset}.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param charset the charset of the JSON resources
+	 * @param json the actual JSON content
+	 * @param configuration the json-path configuration
+	 */
+	JsonContentAssert(Class<?> resourceLoadClass, Charset charset, CharSequence json,
+			Configuration configuration) {
 		super(json, JsonContentAssert.class);
+		this.configuration = configuration;
 		this.loader = new JsonLoader(resourceLoadClass, charset);
 	}
 
@@ -1110,7 +1128,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		public Object getValue(boolean required) {
 			try {
 				CharSequence json = JsonContentAssert.this.actual;
-				return this.jsonPath.read((json != null) ? json.toString() : null);
+				return this.jsonPath.read((json != null) ? json.toString() : null,
+						JsonContentAssert.this.configuration);
 			}
 			catch (Exception ex) {
 				if (required) {

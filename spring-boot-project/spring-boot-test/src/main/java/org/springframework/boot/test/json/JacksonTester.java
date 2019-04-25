@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -56,6 +59,7 @@ import org.springframework.util.Assert;
  * @param <T> the type under test
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Diego Berrueta
  * @since 1.4.0
  */
 public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
@@ -90,6 +94,14 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
 		this.view = view;
+	}
+
+	@Override
+	protected JsonContent<T> getJsonContent(String json) {
+		Configuration configuration = Configuration.builder()
+				.jsonProvider(new JacksonJsonProvider(this.objectMapper))
+				.mappingProvider(new JacksonMappingProvider(this.objectMapper)).build();
+		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
 	}
 
 	@Override
