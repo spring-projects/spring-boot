@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,7 +129,18 @@ public abstract class AbstractJsonMarshalTester<T> {
 		verify();
 		Assert.notNull(value, "Value must not be null");
 		String json = writeObject(value, this.type);
-		return new JsonContent<>(this.resourceLoadClass, this.type, json);
+		return getJsonContent(json);
+	}
+
+	/**
+	 * Factory method used to get a {@link JsonContent} instance from a source JSON
+	 * string.
+	 * @param json the source JSON
+	 * @return a new {@link JsonContent} instance
+	 * @since 2.1.5
+	 */
+	protected JsonContent<T> getJsonContent(String json) {
+		return new JsonContent<>(getResourceLoadClass(), getType(), json);
 	}
 
 	/**
