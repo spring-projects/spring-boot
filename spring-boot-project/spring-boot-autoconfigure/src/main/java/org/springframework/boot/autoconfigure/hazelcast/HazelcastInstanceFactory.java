@@ -62,16 +62,7 @@ public class HazelcastInstanceFactory {
 
 	private Config getConfig(Resource configLocation) throws IOException {
 		URL configUrl = configLocation.getURL();
-		String configFileName = configUrl.getFile();
-
-		Config config;
-		if (configFileName.endsWith(".xml")) {
-			config = new XmlConfigBuilder(configUrl).build();
-		}
-		else { // yaml config available in the classpath
-			config = new YamlConfigBuilder(configUrl).build();
-		}
-
+		Config config = createConfig(configUrl);
 		if (ResourceUtils.isFileURL(configUrl)) {
 			config.setConfigurationFile(configLocation.getFile());
 		}
@@ -79,6 +70,14 @@ public class HazelcastInstanceFactory {
 			config.setConfigurationUrl(configUrl);
 		}
 		return config;
+	}
+
+	private static Config createConfig(URL configUrl) throws IOException {
+		String configFileName = configUrl.getFile();
+		if (configFileName.endsWith(".xml")) {
+			return new XmlConfigBuilder(configUrl).build();
+		}
+		return new YamlConfigBuilder(configUrl).build();
 	}
 
 	/**
