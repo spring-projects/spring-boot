@@ -448,9 +448,9 @@ public final class ConfigurationPropertyName
 				result.append('.');
 			}
 			if (indexed) {
-				result.append("[");
+				result.append('[');
 				result.append(getElement(i, Form.ORIGINAL));
-				result.append("]");
+				result.append(']');
 			}
 			else {
 				result.append(getElement(i, Form.DASHED));
