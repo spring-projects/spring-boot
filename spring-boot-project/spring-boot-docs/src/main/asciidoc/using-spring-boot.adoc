@@ -561,10 +561,6 @@ where the application is located (see <<using-boot-structuring-your-code,the bes
 * `@Configuration`: allow to register extra beans in the context or import additional
 configuration classes
 
-The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
-`@EnableAutoConfiguration`, `@ComponentScan`, and `@ConfigurationPropertiesScan` with
-their default attributes, as shown in the following example:
-
 
 [source,java,indent=0]
 ----
