@@ -394,12 +394,16 @@ public final class ConfigurationPropertyName
 				i2++;
 			}
 		}
-		boolean indexed2 = e2.getType(i).isIndexed();
-		while (i2 < l2) {
-			char ch2 = e2.charAt(i, i2++);
-			if (indexed2 || ch2 != '-') {
+		if (i2 < l2) {
+			if (e2.getType(i).isIndexed()) {
 				return false;
 			}
+			do {
+				if (e2.charAt(i, i2++) != '-') {
+					return false;
+				}
+			}
+			while (i2 < l2);
 		}
 		return true;
 	}
