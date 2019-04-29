@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ public class PropertiesLauncherTests {
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
 				.isEqualTo("[jars/]");
 		List<Archive> archives = launcher.getClassPathArchives();
-		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
 
 	@Test
@@ -176,7 +176,7 @@ public class PropertiesLauncherTests {
 				.isEqualTo("[jar:file:./src/test/resources/nested-jars/app.jar!/]");
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
-		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class PropertiesLauncherTests {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
-		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class PropertiesLauncherTests {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
-		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
 
 	@Test
