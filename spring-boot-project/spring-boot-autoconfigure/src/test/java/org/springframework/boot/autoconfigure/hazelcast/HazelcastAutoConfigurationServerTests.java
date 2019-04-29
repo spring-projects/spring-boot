@@ -27,7 +27,9 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -59,39 +61,71 @@ public class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	public void systemProperty() {
+	public void systemPropertyWithXml() {
 		this.contextRunner
 				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
 						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
 				.run((context) -> {
 					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getQueueConfigs().keySet()).containsOnly("foobar");
+					assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
 				});
 	}
 
 	@Test
-	public void explicitConfigFile() {
+	public void systemPropertyWithYaml() {
+		this.contextRunner
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
+				});
+	}
+
+	@Test
+	public void explicitConfigFileWithXml() {
 		this.contextRunner.withPropertyValues(
 				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
 						+ "hazelcast-specific.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getConfigurationFile())
-							.isEqualTo(new ClassPathResource(
-									"org/springframework/boot/autoconfigure/hazelcast"
-											+ "/hazelcast-specific.xml").getFile());
-				});
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml"));
 	}
 
 	@Test
-	public void explicitConfigUrl() {
+	public void explicitConfigFileWithYaml() {
+		this.contextRunner.withPropertyValues(
+				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-specific.yaml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml"));
+	}
+
+	@Test
+	public void explicitConfigUrlWithXml() {
 		this.contextRunner
-				.withPropertyValues("spring.hazelcast.config=hazelcast-default.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getConfigurationUrl()).isEqualTo(
-							new ClassPathResource("hazelcast-default.xml").getURL());
-				});
+				.withPropertyValues(
+						"spring.hazelcast.config=classpath:org/springframework/"
+								+ "boot/autoconfigure/hazelcast/hazelcast-specific.xml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml"));
+	}
+
+	@Test
+	public void explicitConfigUrlWithYaml() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=classpath:org/springframework/"
+								+ "boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml"));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastServer(
+			String location) {
+		return (context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getConfigurationUrl()).asString().endsWith(location);
+		};
 	}
 
 	@Test
