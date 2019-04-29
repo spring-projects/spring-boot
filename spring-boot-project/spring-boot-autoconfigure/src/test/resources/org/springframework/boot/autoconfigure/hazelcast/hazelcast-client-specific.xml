@@ -3,7 +3,7 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.hazelcast.com/schema/client-config hazelcast-client-config-3.12.xsd">
 	<client-labels>
-		<label>configured-client</label>
+		<label>explicit-xml</label>
 	</client-labels>
 
 </hazelcast-client>

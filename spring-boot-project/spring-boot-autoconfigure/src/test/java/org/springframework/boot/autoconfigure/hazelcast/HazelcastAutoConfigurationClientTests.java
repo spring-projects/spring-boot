@@ -30,6 +30,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -65,57 +66,54 @@ public class HazelcastAutoConfigurationClientTests {
 
 	@Test
 	public void systemPropertyWithXml() {
-		systemProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
-				+ "hazelcast-client-specific.xml");
+		this.contextRunner
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-client-specific.xml")
+				.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
 
 	@Test
 	public void systemPropertyWithYaml() {
-		systemProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
-				+ "hazelcast-client-specific.yaml");
-	}
-
-	private void systemProperty(String systemProperty) {
-		this.contextRunner.withSystemProperties(systemProperty)
-				.run((context) -> assertHazelcastClientSpecific(context));
+		this.contextRunner
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-client-specific.yaml")
+				.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
 
 	@Test
 	public void explicitConfigFileWithXml() {
-		propertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-				+ "hazelcast/hazelcast-client-specific.xml");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+								+ "hazelcast/hazelcast-client-specific.xml")
+				.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
 
 	@Test
 	public void explicitConfigFileWithYaml() {
-		propertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-				+ "hazelcast/hazelcast-client-specific.yaml");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+								+ "hazelcast/hazelcast-client-specific.yaml")
+				.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
 
 	@Test
 	public void explicitConfigUrlWithXml() {
-		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+		this.contextRunner.withPropertyValues(
+				"spring.hazelcast.config=classpath:org/springframework/"
+						+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml")
+				.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
 
 	@Test
 	public void explicitConfigUrlWithYaml() {
-		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml");
-	}
-
-	private void propertyValues(String propertyValues) {
-		this.contextRunner.withPropertyValues(propertyValues)
-				.run((context) -> assertHazelcastClientSpecific(context));
-	}
-
-	private static void assertHazelcastClientSpecific(
-			AssertableApplicationContext context) {
-		assertThat(context).getBean(HazelcastInstance.class)
-				.isInstanceOf(HazelcastInstance.class)
-				.has(labelEqualTo("configured-client"));
+		this.contextRunner.withPropertyValues(
+				"spring.hazelcast.config=classpath:org/springframework/"
+						+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml")
+				.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
 
 	@Test
@@ -133,6 +131,12 @@ public class HazelcastAutoConfigurationClientTests {
 				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
 						.isInstanceOf(HazelcastClientProxy.class));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(
+			String label) {
+		return (context) -> assertThat(context).getBean(HazelcastInstance.class)
+				.isInstanceOf(HazelcastInstance.class).has(labelEqualTo(label));
 	}
 
 	private static Condition<HazelcastInstance> labelEqualTo(String label) {

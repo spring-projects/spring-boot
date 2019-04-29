@@ -29,6 +29,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -61,55 +62,70 @@ public class HazelcastAutoConfigurationServerTests {
 
 	@Test
 	public void systemPropertyWithXml() {
-		systemProperty(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
-				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml");
+		this.contextRunner
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
+				});
 	}
 
 	@Test
 	public void systemPropertyWithYaml() {
-		systemProperty(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
-				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml");
-	}
-
-	private void systemProperty(String systemProperties) {
-		this.contextRunner.withSystemProperties(systemProperties)
-				.run((context) -> assertHazelcastSpecific(context));
+		this.contextRunner
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
+				});
 	}
 
 	@Test
 	public void explicitConfigFileWithXml() {
-		propertyValues(
+		this.contextRunner.withPropertyValues(
 				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
-						+ "hazelcast-specific.xml");
+						+ "hazelcast-specific.xml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml"));
 	}
 
 	@Test
 	public void explicitConfigFileWithYaml() {
-		propertyValues(
+		this.contextRunner.withPropertyValues(
 				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
-						+ "hazelcast-specific.yaml");
+						+ "hazelcast-specific.yaml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml"));
 	}
 
 	@Test
 	public void explicitConfigUrlWithXml() {
-		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-specific.xml");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=classpath:org/springframework/"
+								+ "boot/autoconfigure/hazelcast/hazelcast-specific.xml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml"));
 	}
 
 	@Test
 	public void explicitConfigUrlWithYaml() {
-		propertyValues("spring.hazelcast.config=classpath:org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-specific.yaml");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.hazelcast.config=classpath:org/springframework/"
+								+ "boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml"));
 	}
 
-	private void propertyValues(String propertyValues) {
-		this.contextRunner.withPropertyValues(propertyValues)
-				.run((context) -> assertHazelcastSpecific(context));
-	}
-
-	private static void assertHazelcastSpecific(AssertableApplicationContext context) {
-		Config config = context.getBean(HazelcastInstance.class).getConfig();
-		assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
+	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastServer(
+			String location) {
+		return (context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getConfigurationUrl()).asString().endsWith(location);
+		};
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,11 +73,11 @@ public class HazelcastInstanceFactory {
 	}
 
 	private static Config createConfig(URL configUrl) throws IOException {
-		String configFileName = configUrl.getFile();
-		if (configFileName.endsWith(".xml")) {
-			return new XmlConfigBuilder(configUrl).build();
+		String configFileName = configUrl.getPath();
+		if (configFileName.endsWith(".yaml")) {
+			return new YamlConfigBuilder(configUrl).build();
 		}
-		return new YamlConfigBuilder(configUrl).build();
+		return new XmlConfigBuilder(configUrl).build();
 	}
 
 	/**
