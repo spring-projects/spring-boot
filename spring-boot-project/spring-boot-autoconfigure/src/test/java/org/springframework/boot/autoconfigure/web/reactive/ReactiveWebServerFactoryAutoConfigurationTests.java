@@ -314,7 +314,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class JettyServerCustomizerConfiguration {
 
 		@Bean
-		public JettyServerCustomizer protocolHandlerCustomizer() {
+		public JettyServerCustomizer serverCustomizer() {
 			return (server) -> {
 
 			};
@@ -326,7 +326,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class UndertowBuilderCustomizerConfiguration {
 
 		@Bean
-		public UndertowBuilderCustomizer protocolHandlerCustomizer() {
+		public UndertowBuilderCustomizer builderCustomizer() {
 			return (builder) -> {
 
 			};
@@ -338,7 +338,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class UndertowDeploymentInfoCustomizerConfiguration {
 
 		@Bean
-		public UndertowDeploymentInfoCustomizer protocolHandlerCustomizer() {
+		public UndertowDeploymentInfoCustomizer deploymentInfoCustomizer() {
 			return (deploymentInfo) -> {
 
 			};
