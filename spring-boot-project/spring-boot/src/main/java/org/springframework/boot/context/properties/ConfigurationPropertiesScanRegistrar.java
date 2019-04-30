@@ -114,11 +114,8 @@ class ConfigurationPropertiesScanRegistrar
 				.from(type, MergedAnnotations.SearchStrategy.EXHAUSTIVE)
 				.get(Component.class);
 		if (component.isPresent()) {
-			MergedAnnotation<?> parent = component;
-			while (parent.getParent() != null) {
-				parent = parent.getParent();
-			}
-			throw new InvalidConfigurationPropertiesException(type, parent.getType());
+			throw new InvalidConfigurationPropertiesException(type,
+					component.getRoot().getType());
 		}
 	}
 
