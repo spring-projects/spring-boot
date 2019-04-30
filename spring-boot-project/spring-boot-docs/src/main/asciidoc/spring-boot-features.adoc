@@ -268,6 +268,8 @@ Application events are sent in the following order, as your application runs:
 except for the registration of listeners and initializers.
 . An `ApplicationEnvironmentPreparedEvent` is sent when the `Environment` to be used in
 the context is known but before the context is created.
+. An `ApplicationContextInitializedEvent` is sent when the `ApplicationContext` is prepared
+and ApplicationContextInitializers have been called but before any bean definitions are loaded.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean
 definitions have been loaded.
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any
@@ -275,6 +277,14 @@ application and command-line runners have been called.
 . An `ApplicationReadyEvent` is sent after any application and command-line runners have
 been called. It indicates that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
+
+The above list only includes `SpringApplicationEvent`s that are tied to a `SpringApplication`.
+In addition to these, the following events are also published after `ApplicationPreparedEvent`
+and before `ApplicationStartedEvent`:
+
+. A `ContextRefreshedEvent` is sent when an `ApplicationContext` is refreshed.
+. A `WebServerInitializedEvent` is sent after the `WebServer` is ready. `ServletWebServerInitializedEvent`
+and `ReactiveWebServerInitializedEvent` are the servlet and reactive variants respectively.
 
 TIP: You often need not use application events, but it can be handy to know that they
 exist. Internally, Spring Boot uses events to handle a variety of tasks.
