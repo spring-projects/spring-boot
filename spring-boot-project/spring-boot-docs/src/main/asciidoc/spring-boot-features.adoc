@@ -1934,7 +1934,7 @@ out-of-the-box:
 |`org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`
 
 |sql
-|`org.springframework.jdbc.core`, `org.hibernate.SQL`
+|`org.springframework.jdbc.core`, `org.hibernate.SQL`, `org.jooq.tools.LoggerListener`
 
 |===
 
