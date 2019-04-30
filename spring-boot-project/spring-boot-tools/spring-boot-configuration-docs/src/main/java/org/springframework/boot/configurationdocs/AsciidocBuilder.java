@@ -31,6 +31,18 @@ class AsciidocBuilder {
 		this.content = new StringBuilder();
 	}
 
+	public AsciidocBuilder appendKey(Object... items) {
+		for (Object item : items) {
+			append("`+", item, "+` +", NEWLINE);
+		}
+		return this;
+	}
+
+	public AsciidocBuilder newLine() {
+		append(NEWLINE);
+		return this;
+	}
+
 	public AsciidocBuilder appendln(Object... items) {
 		append(items);
 		append(NEWLINE);
