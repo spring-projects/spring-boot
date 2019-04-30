@@ -1625,9 +1625,9 @@ property files>>.
 [[boot-features-profiles]]
 == Profiles
 Spring Profiles provide a way to segregate parts of your application configuration and
-make it be available only in certain environments.  Any `@Component` or `@Configuration`
-can be marked with `@Profile` to limit when it is loaded, as shown in the following
-example:
+make it be available only in certain environments.  Any `@Component`, `@Configuration`
+or `@ConfigurationProperties` can be marked with `@Profile` to limit when it is loaded,
+as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1639,6 +1639,11 @@ example:
 
 	}
 ----
+
+NOTE: If `@ConfigurationProperties` beans are registered via `@EnableConfigurationProperties`
+instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration`
+class that has the `@EnableConfigurationProperties` annotation. In the case where `@ConfigurationProperties`
+are scanned, `@Profile` can be specified on the `@ConfigurationProperties` class itself.
 
 You can use a `spring.profiles.active` `Environment` property to specify which profiles
 are active. You can specify the property in any of the ways described earlier in this
