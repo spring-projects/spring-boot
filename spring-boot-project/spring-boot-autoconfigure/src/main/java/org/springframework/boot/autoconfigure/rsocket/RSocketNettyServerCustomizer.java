@@ -25,7 +25,7 @@ import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 
 /**
- * {@libnk NettyServerCustomizer} that configures an RSocket Websocket endpoint.
+ * {@link NettyServerCustomizer} that configures an RSocket Websocket endpoint.
  *
  * @author Brian Clozel
  */
