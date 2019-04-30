@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
@@ -58,6 +59,14 @@ public class RedisReactiveAutoConfiguration {
 				.hashKey(jdkSerializer).hashValue(jdkSerializer).build();
 		return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory,
 				serializationContext);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "reactiveStringRedisTemplate")
+	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
+	public ReactiveStringRedisTemplate reactiveStringRedisTemplate(
+			ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
+		return new ReactiveStringRedisTemplate(reactiveRedisConnectionFactory);
 	}
 
 }
