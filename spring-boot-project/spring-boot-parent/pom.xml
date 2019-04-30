@@ -572,6 +572,7 @@
 							<rules>
 								<bannedDependencies>
 									<excludes>
+										<exclude>com.zaxxer:HikariCP-*</exclude>
 										<exclude>javax.*:*:*</exclude>
 									</excludes>
 									<includes>
