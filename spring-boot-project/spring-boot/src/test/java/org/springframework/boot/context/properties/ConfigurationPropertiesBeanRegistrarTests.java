@@ -29,35 +29,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Tests for {@link EnableConfigurationPropertiesImportSelector}.
+ * Tests for {@link ConfigurationPropertiesBeanRegistrar}.
  *
  * @author Madhura Bhave
  * @author Stephane Nicoll
  */
-public class EnableConfigurationPropertiesImportSelectorTests {
+public class ConfigurationPropertiesBeanRegistrarTests {
 
-	private final EnableConfigurationPropertiesImportSelector importSelector = new EnableConfigurationPropertiesImportSelector();
-
-	private final EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesBeanRegistrar registrar = new EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesBeanRegistrar();
+	private final ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar();
 
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-
-	@Test
-	public void selectImports() {
-		String[] imports = this.importSelector
-				.selectImports(mock(AnnotationMetadata.class));
-		assertThat(imports).containsExactly(
-				EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesBeanRegistrar.class
-						.getName(),
-				ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName());
-	}
 
 	@Test
 	public void typeWithDefaultConstructorShouldRegisterGenericBeanDefinition()
@@ -65,7 +52,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
-				"foo-org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelectorTests$FooProperties");
+				"foo-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$FooProperties");
 		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 	}
 
@@ -75,7 +62,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
-				"bar-org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelectorTests$BarProperties");
+				"bar-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$BarProperties");
 		assertThat(beanDefinition)
 				.isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 	}
@@ -86,7 +73,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
-				"bing-org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelectorTests$BingProperties");
+				"bing-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$BingProperties");
 		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 	}
 
@@ -98,7 +85,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 						this.beanFactory))
 				.withMessageContaining("No ConfigurationProperties annotation found")
 				.withMessageContaining(
-						EnableConfigurationPropertiesImportSelectorTests.class.getName());
+						ConfigurationPropertiesBeanRegistrar.class.getName());
 	}
 
 	@Test
@@ -129,7 +116,7 @@ public class EnableConfigurationPropertiesImportSelectorTests {
 
 	}
 
-	@EnableConfigurationProperties(EnableConfigurationPropertiesImportSelectorTests.class)
+	@EnableConfigurationProperties(ConfigurationPropertiesBeanRegistrarTests.class)
 	static class InvalidConfiguration {
 
 	}

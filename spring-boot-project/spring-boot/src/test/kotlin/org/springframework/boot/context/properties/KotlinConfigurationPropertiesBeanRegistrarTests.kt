@@ -8,14 +8,14 @@ import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
 
 /**
- * Tests for `EnableConfigurationPropertiesImportSelector`.
+ * Tests for `ConfigurationPropertiesBeanRegistrar`.
  *
  * @author Stephane Nicoll
  */
 @Suppress("unused")
-class KotlinEnableConfigurationPropertiesImportSelectorTests {
+class KotlinConfigurationPropertiesBeanRegistrarTests {
 
-	private val registrar = EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesBeanRegistrar()
+	private val registrar = ConfigurationPropertiesBeanRegistrar()
 
 	private val beanFactory = DefaultListableBeanFactory()
 
@@ -24,7 +24,7 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration::class.java), this.beanFactory)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
-				"foo-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$FooProperties")
+				"foo-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$FooProperties")
 		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition::class.java)
 	}
 
@@ -33,7 +33,7 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration::class.java), this.beanFactory)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
-				"bar-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$BarProperties")
+				"bar-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$BarProperties")
 		assertThat(beanDefinition).isExactlyInstanceOf(
 				ConfigurationPropertiesBeanDefinition::class.java)
 	}
@@ -43,7 +43,7 @@ class KotlinEnableConfigurationPropertiesImportSelectorTests {
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(TestConfiguration::class.java), this.beanFactory)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
-				"bing-org.springframework.boot.context.properties.KotlinEnableConfigurationPropertiesImportSelectorTests\$BingProperties")
+				"bing-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$BingProperties")
 		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition::class.java)
 	}
 
