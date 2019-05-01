@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -58,7 +59,8 @@ public class MetricsRestTemplateCustomizerTests {
 		this.restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 		this.customizer = new MetricsRestTemplateCustomizer(this.registry,
-				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests");
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
+				new Autotime());
 		this.customizer.customize(this.restTemplate);
 	}
 

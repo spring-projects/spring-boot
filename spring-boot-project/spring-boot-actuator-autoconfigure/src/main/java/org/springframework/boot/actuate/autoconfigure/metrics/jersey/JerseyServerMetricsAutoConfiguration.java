@@ -79,14 +79,16 @@ public class JerseyServerMetricsAutoConfiguration {
 			MeterRegistry meterRegistry, JerseyTagsProvider tagsProvider) {
 		Server server = this.properties.getWeb().getServer();
 		return (config) -> config.register(new MetricsApplicationEventListener(
-				meterRegistry, tagsProvider, server.getRequestsMetricName(),
-				server.isAutoTimeRequests(), new AnnotationUtilsAnnotationFinder()));
+				meterRegistry, tagsProvider, server.getRequest().getMetricName(),
+				server.getRequest().getAutotime().isEnabled(),
+				new AnnotationUtilsAnnotationFinder()));
 	}
 
 	@Bean
 	@Order(0)
 	public MeterFilter jerseyMetricsUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
+		String metricName = this.properties.getWeb().getServer().getRequest()
+				.getMetricName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
 				.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",

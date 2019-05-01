@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -58,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  * @author Dmytro Nosan
+ * @author Tadaya Tsuyukubo
  */
 public class WebMvcMetricsAutoConfigurationTests {
 
@@ -134,6 +137,27 @@ public class WebMvcMetricsAutoConfigurationTests {
 					assertThat(this.output.toString())
 							.doesNotContain("Reached the maximum number of URI tags "
 									+ "for 'http.server.requests'");
+				});
+	}
+
+	@Test
+	public void autoTimeRequestsCanBeConfigured() {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						WebMvcAutoConfiguration.class))
+				.withPropertyValues(
+						"management.metrics.web.server.request.autotime.enabled=true",
+						"management.metrics.web.server.request.autotime.percentiles=0.5,0.7",
+						"management.metrics.web.server.request.autotime.percentiles-histogram=true")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					Timer timer = registry.get("http.server.requests").timer();
+					HistogramSnapshot snapshot = timer.takeSnapshot();
+					assertThat(snapshot.percentileValues()).hasSize(2);
+					assertThat(snapshot.percentileValues()[0].percentile())
+							.isEqualTo(0.5);
+					assertThat(snapshot.percentileValues()[1].percentile())
+							.isEqualTo(0.7);
 				});
 	}
 

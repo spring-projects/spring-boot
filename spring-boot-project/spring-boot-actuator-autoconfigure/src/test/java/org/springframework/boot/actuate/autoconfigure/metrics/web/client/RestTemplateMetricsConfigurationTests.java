@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -97,6 +99,24 @@ public class RestTemplateMetricsConfigurationTests {
 					assertThat(this.output.toString()).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.doesNotContain("Are you using 'uriVariables'?");
+				});
+	}
+
+	@Test
+	public void autoTimeRequestsCanBeConfigured() {
+		this.contextRunner.withPropertyValues(
+				"management.metrics.web.client.request.autotime.enabled=true",
+				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
+				"management.metrics.web.client.request.autotime.percentiles-histogram=true")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					Timer timer = registry.get("http.client.requests").timer();
+					HistogramSnapshot snapshot = timer.takeSnapshot();
+					assertThat(snapshot.percentileValues()).hasSize(2);
+					assertThat(snapshot.percentileValues()[0].percentile())
+							.isEqualTo(0.5);
+					assertThat(snapshot.percentileValues()[1].percentile())
+							.isEqualTo(0.7);
 				});
 	}
 

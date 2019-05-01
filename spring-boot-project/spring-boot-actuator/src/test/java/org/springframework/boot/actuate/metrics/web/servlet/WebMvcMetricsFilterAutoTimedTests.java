@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
+import java.util.Arrays;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
@@ -26,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -48,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Test for {@link WebMvcMetricsFilter} with auto-timed enabled.
  *
  * @author Jon Schneider
+ * @author Tadaya Tsuyukubo
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
@@ -73,8 +79,13 @@ public class WebMvcMetricsFilterAutoTimedTests {
 	@Test
 	public void metricsCanBeAutoTimed() throws Exception {
 		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests").tags("status", "200").timer()
-				.count()).isEqualTo(1L);
+		Timer timer = this.registry.get("http.server.requests").tags("status", "200")
+				.timer();
+		assertThat(timer.count()).isEqualTo(1L);
+		HistogramSnapshot snapshot = timer.takeSnapshot();
+		assertThat(snapshot.percentileValues()).hasSize(2);
+		assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
+		assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.95);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -96,7 +107,8 @@ public class WebMvcMetricsFilterAutoTimedTests {
 		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context,
 				MeterRegistry registry) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true);
+					"http.server.requests",
+					new Autotime(true, true, Arrays.asList(0.5, 0.95)));
 		}
 
 	}

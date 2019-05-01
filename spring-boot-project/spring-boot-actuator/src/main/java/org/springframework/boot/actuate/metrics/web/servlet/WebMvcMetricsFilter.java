@@ -34,6 +34,7 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private final String metricName;
 
-	private final boolean autoTimeRequests;
+	private final Autotime autotime;
 
 	/**
 	 * Create a new {@link WebMvcMetricsFilter} instance.
@@ -68,13 +69,30 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param metricName the metric name
 	 * @param autoTimeRequests if requests should be automatically timed
 	 * @since 2.0.7
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, Autotime)}
 	 */
+	@Deprecated
 	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
 			String metricName, boolean autoTimeRequests) {
+		this(registry, tagsProvider, metricName,
+				new Autotime(autoTimeRequests, false, null));
+	}
+
+	/**
+	 * Create a new {@link WebMvcMetricsFilter} instance.
+	 * @param registry the meter registry
+	 * @param tagsProvider the tags provider
+	 * @param metricName the metric name
+	 * @param autotime auto timed request settings
+	 * @since 2.2.0
+	 */
+	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
+			String metricName, Autotime autotime) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
-		this.autoTimeRequests = autoTimeRequests;
+		this.autotime = autotime;
 	}
 
 	@Override
@@ -155,8 +173,12 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response,
 				handlerObject, exception);
 		if (annotations.isEmpty()) {
-			if (this.autoTimeRequests) {
-				stop(timerSample, tags, Timer.builder(this.metricName));
+			if (this.autotime.isEnabled()) {
+				stop(timerSample, tags,
+						Timer.builder(this.metricName)
+								.publishPercentiles(this.autotime.getPercentiles())
+								.publishPercentileHistogram(
+										this.autotime.isPercentilesHistogram()));
 			}
 		}
 		else {

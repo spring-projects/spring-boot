@@ -1801,9 +1801,9 @@ application's absolute start time
 [[production-ready-metrics-spring-mvc]]
 ==== Spring MVC Metrics
 Auto-configuration enables the instrumentation of requests handled by Spring MVC. When
-`management.metrics.web.server.auto-time-requests` is `true`, this instrumentation occurs
-for all requests. Alternatively, when set to `false`, you can enable instrumentation by
-adding `@Timed` to a request-handling method:
+`management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation
+occurs for all requests. Alternatively, when set to `false`, you can enable
+instrumentation by adding `@Timed` to a request-handling method:
 
 [source,java,indent=0]
 ----
@@ -1896,8 +1896,8 @@ To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
 Auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS
-implementation. When `management.metrics.web.server.auto-time-requests` is `true`, this
-instrumentation occurs for all requests. Alternatively, when set to `false`, you can
+implementation. When `management.metrics.web.server.request.autotime.enabled` is `true`,
+this instrumentation occurs for all requests. Alternatively, when set to `false`, you can
 enable instrumentation by adding `@Timed` to a request-handling method:
 
 [source,java,indent=0]

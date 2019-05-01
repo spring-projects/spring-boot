@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
@@ -65,15 +66,16 @@ public class WebFluxMetricsAutoConfiguration {
 	@Bean
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
 			WebFluxTagsProvider tagConfigurer) {
-		return new MetricsWebFilter(registry, tagConfigurer,
-				this.properties.getWeb().getServer().getRequestsMetricName(),
-				this.properties.getWeb().getServer().isAutoTimeRequests());
+		ServerRequest request = this.properties.getWeb().getServer().getRequest();
+		return new MetricsWebFilter(registry, tagConfigurer, request.getMetricName(),
+				request.getAutotime());
 	}
 
 	@Bean
 	@Order(0)
 	public MeterFilter metricsHttpServerUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
+		String metricName = this.properties.getWeb().getServer().getRequest()
+				.getMetricName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
 				.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",

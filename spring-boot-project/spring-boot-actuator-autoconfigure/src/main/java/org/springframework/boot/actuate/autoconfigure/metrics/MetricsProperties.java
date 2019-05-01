@@ -19,7 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring
@@ -27,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Jon Schneider
  * @author Alexander Abramov
+ * @author Tadaya Tsuyukubo
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -94,10 +98,7 @@ public class MetricsProperties {
 
 		public static class Client {
 
-			/**
-			 * Name of the metric for sent requests.
-			 */
-			private String requestsMetricName = "http.client.requests";
+			private final ClientRequest request = new ClientRequest();
 
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
@@ -106,12 +107,29 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public String getRequestsMetricName() {
-				return this.requestsMetricName;
+			public ClientRequest getRequest() {
+				return this.request;
 			}
 
+			/**
+			 * Return the name of the metric for client requests.
+			 * @return request metric name
+			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
+			 */
+			@DeprecatedConfigurationProperty(
+					replacement = "management.metrics.web.client.request.metric-name")
+			public String getRequestsMetricName() {
+				return this.request.getMetricName();
+			}
+
+			/**
+			 * Set the name of the metric for client requests.
+			 * @param requestsMetricName request metric name
+			 * @deprecated since 2.2.0 in favor of
+			 * {@link ClientRequest#setMetricName(String)}
+			 */
 			public void setRequestsMetricName(String requestsMetricName) {
-				this.requestsMetricName = requestsMetricName;
+				this.request.setMetricName(requestsMetricName);
 			}
 
 			public int getMaxUriTags() {
@@ -120,24 +138,40 @@ public class MetricsProperties {
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
+			}
+
+			public static class ClientRequest {
+
+				/**
+				 * Name of the metric for sent requests.
+				 */
+				private String metricName = "http.client.requests";
+
+				/**
+				 * Auto-timed request settings.
+				 */
+				@NestedConfigurationProperty
+				private final Autotime autoTime = new Autotime();
+
+				public Autotime getAutotime() {
+					return this.autoTime;
+				}
+
+				public String getMetricName() {
+					return this.metricName;
+				}
+
+				public void setMetricName(String metricName) {
+					this.metricName = metricName;
+				}
+
 			}
 
 		}
 
 		public static class Server {
 
-			/**
-			 * Whether requests handled by Spring MVC, WebFlux or Jersey should be
-			 * automatically timed. If the number of time series emitted grows too large
-			 * on account of request mapping timings, disable this and use 'Timed' on a
-			 * per request mapping basis as needed.
-			 */
-			private boolean autoTimeRequests = true;
-
-			/**
-			 * Name of the metric for received requests.
-			 */
-			private String requestsMetricName = "http.server.requests";
+			private final ServerRequest request = new ServerRequest();
 
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
@@ -146,20 +180,29 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public boolean isAutoTimeRequests() {
-				return this.autoTimeRequests;
+			public ServerRequest getRequest() {
+				return this.request;
 			}
 
-			public void setAutoTimeRequests(boolean autoTimeRequests) {
-				this.autoTimeRequests = autoTimeRequests;
-			}
-
+			/**
+			 * Return name of the metric for server requests.
+			 * @return request metric name
+			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
+			 */
+			@DeprecatedConfigurationProperty(
+					replacement = "management.metrics.web.server.request.metric-name")
 			public String getRequestsMetricName() {
-				return this.requestsMetricName;
+				return this.request.getMetricName();
 			}
 
+			/**
+			 * Set the name of the metric for server requests.
+			 * @param requestsMetricName request metric name
+			 * @deprecated since 2.2.0 in favor of
+			 * {@link ServerRequest#setMetricName(String)}
+			 */
 			public void setRequestsMetricName(String requestsMetricName) {
-				this.requestsMetricName = requestsMetricName;
+				this.request.setMetricName(requestsMetricName);
 			}
 
 			public int getMaxUriTags() {
@@ -168,6 +211,33 @@ public class MetricsProperties {
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
+			}
+
+			public static class ServerRequest {
+
+				/**
+				 * Name of the metric for received requests.
+				 */
+				private String metricName = "http.server.requests";
+
+				/**
+				 * Auto-timed request settings.
+				 */
+				@NestedConfigurationProperty
+				private final Autotime autotime = new Autotime();
+
+				public Autotime getAutotime() {
+					return this.autotime;
+				}
+
+				public String getMetricName() {
+					return this.metricName;
+				}
+
+				public void setMetricName(String metricName) {
+					this.metricName = metricName;
+				}
+
 			}
 
 		}

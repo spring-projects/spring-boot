@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -63,7 +64,8 @@ public class MetricsWebClientFilterFunctionTests {
 	public void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.filterFunction = new MetricsWebClientFilterFunction(this.registry,
-				new DefaultWebClientExchangeTagsProvider(), "http.client.requests");
+				new DefaultWebClientExchangeTagsProvider(), "http.client.requests",
+				new Autotime());
 		this.response = mock(ClientResponse.class);
 		this.exchange = (r) -> Mono.just(this.response);
 	}
