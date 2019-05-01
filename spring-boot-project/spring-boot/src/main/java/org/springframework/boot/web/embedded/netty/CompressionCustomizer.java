@@ -65,11 +65,11 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		return server;
 	}
 
-	private CompressionPredicate getMimeTypesPredicate(String[] mimeTypeIds) {
-		if (ObjectUtils.isEmpty(mimeTypeIds)) {
+	private CompressionPredicate getMimeTypesPredicate(String[] mimeTypeValues) {
+		if (ObjectUtils.isEmpty(mimeTypeValues)) {
 			return ALWAYS_COMPRESS;
 		}
-		List<MimeType> mimeTypes = Arrays.stream(mimeTypeIds)
+		List<MimeType> mimeTypes = Arrays.stream(mimeTypeValues)
 				.map(MimeTypeUtils::parseMimeType).collect(Collectors.toList());
 		return (request, response) -> {
 			String contentType = response.responseHeaders()
