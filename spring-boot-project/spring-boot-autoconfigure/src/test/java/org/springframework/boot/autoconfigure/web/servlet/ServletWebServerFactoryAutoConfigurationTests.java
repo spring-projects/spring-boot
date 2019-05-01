@@ -428,7 +428,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	static class JettyServerCustomizerConfiguration {
 
 		@Bean
-		public JettyServerCustomizer protocolHandlerCustomizer() {
+		public JettyServerCustomizer serverCustomizer() {
 			return (server) -> {
 
 			};
@@ -440,7 +440,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	static class UndertowBuilderCustomizerConfiguration {
 
 		@Bean
-		public UndertowBuilderCustomizer protocolHandlerCustomizer() {
+		public UndertowBuilderCustomizer builderCustomizer() {
 			return (builder) -> {
 
 			};
@@ -452,7 +452,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	static class UndertowDeploymentInfoCustomizerConfiguration {
 
 		@Bean
-		public UndertowDeploymentInfoCustomizer protocolHandlerCustomizer() {
+		public UndertowDeploymentInfoCustomizer deploymentInfoCustomizer() {
 			return (deploymentInfo) -> {
 
 			};
