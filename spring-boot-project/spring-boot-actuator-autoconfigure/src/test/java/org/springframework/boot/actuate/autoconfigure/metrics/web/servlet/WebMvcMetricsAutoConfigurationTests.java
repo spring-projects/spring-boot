@@ -141,14 +141,14 @@ public class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoTimeRequestsDefaultValues() {
+	public void autoTimeRequestsCanBeConfigured() {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						WebMvcAutoConfiguration.class))
 				.withPropertyValues(
-						"management.metrics.web.server.request.auto-time.enabled=true",
-						"management.metrics.web.server.request.auto-time.default-percentiles=0.5,0.7",
-						"management.metrics.web.server.request.auto-time.default-histogram=true")
+						"management.metrics.web.server.request.autotime.enabled=true",
+						"management.metrics.web.server.request.autotime.percentiles=0.5,0.7",
+						"management.metrics.web.server.request.autotime.percentiles-histogram=true")
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					Timer timer = registry.get("http.server.requests").timer();

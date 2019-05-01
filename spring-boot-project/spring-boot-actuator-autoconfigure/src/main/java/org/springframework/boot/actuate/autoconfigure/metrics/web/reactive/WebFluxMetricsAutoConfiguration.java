@@ -21,8 +21,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.AutoTime;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
@@ -67,11 +66,9 @@ public class WebFluxMetricsAutoConfiguration {
 	@Bean
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
 			WebFluxTagsProvider tagConfigurer) {
-		Server serverProperties = this.properties.getWeb().getServer();
-		AutoTime autotime = serverProperties.getRequest().getAutoTime();
-		return new MetricsWebFilter(registry, tagConfigurer,
-				serverProperties.getRequest().getMetricName(), autotime.isEnabled(),
-				autotime.getDefaultPercentiles(), autotime.isDefaultHistogram());
+		ServerRequest request = this.properties.getWeb().getServer().getRequest();
+		return new MetricsWebFilter(registry, tagConfigurer, request.getMetricName(),
+				request.getAutotime());
 	}
 
 	@Bean

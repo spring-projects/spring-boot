@@ -19,8 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.AutoTime;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.ClientRequest;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
@@ -55,13 +54,10 @@ class RestTemplateMetricsConfiguration {
 			MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider restTemplateExchangeTagsProvider,
 			MetricsProperties properties) {
-
-		Client client = properties.getWeb().getClient();
-		AutoTime autoTime = client.getRequest().getAutoTime();
+		ClientRequest request = properties.getWeb().getClient().getRequest();
 		return new MetricsRestTemplateCustomizer(meterRegistry,
-				restTemplateExchangeTagsProvider, client.getRequest().getMetricName(),
-				autoTime.isEnabled(), autoTime.getDefaultPercentiles(),
-				autoTime.isDefaultHistogram());
+				restTemplateExchangeTagsProvider, request.getMetricName(),
+				request.getAutotime());
 	}
 
 }

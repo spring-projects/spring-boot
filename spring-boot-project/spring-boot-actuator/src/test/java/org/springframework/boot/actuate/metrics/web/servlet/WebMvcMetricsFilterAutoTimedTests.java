@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -106,7 +107,8 @@ public class WebMvcMetricsFilterAutoTimedTests {
 		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context,
 				MeterRegistry registry) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true, Arrays.asList(0.5, 0.95), true);
+					"http.server.requests",
+					new Autotime(true, true, Arrays.asList(0.5, 0.95)));
 		}
 
 	}

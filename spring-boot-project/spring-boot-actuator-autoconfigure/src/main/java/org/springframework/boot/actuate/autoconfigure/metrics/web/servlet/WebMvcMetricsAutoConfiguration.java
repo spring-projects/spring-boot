@@ -23,8 +23,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.AutoTime;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
@@ -79,11 +78,9 @@ public class WebMvcMetricsAutoConfiguration {
 	@Bean
 	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(
 			MeterRegistry registry, WebMvcTagsProvider tagsProvider) {
-		Server serverProperties = this.properties.getWeb().getServer();
-		AutoTime autotime = serverProperties.getRequest().getAutoTime();
+		ServerRequest request = this.properties.getWeb().getServer().getRequest();
 		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(registry, tagsProvider,
-				serverProperties.getRequest().getMetricName(), autotime.isEnabled(),
-				autotime.getDefaultPercentiles(), autotime.isDefaultHistogram());
+				request.getMetricName(), request.getAutotime());
 		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
 				filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);

@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.metrics.web.servlet;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -35,6 +34,7 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpStatus;
@@ -60,11 +60,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private final String metricName;
 
-	private final boolean autoTimeRequests;
-
-	private final double[] autoTimeRequestsPercentiles;
-
-	private final boolean autoTimeRequestsHistogram;
+	private final Autotime autotime;
 
 	/**
 	 * Create a new {@link WebMvcMetricsFilter} instance.
@@ -73,13 +69,14 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param metricName the metric name
 	 * @param autoTimeRequests if requests should be automatically timed
 	 * @since 2.0.7
-	 * @deprecated since 2.1.4 in favor of
-	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, boolean, List, boolean)}
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, Autotime)}
 	 */
 	@Deprecated
 	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
 			String metricName, boolean autoTimeRequests) {
-		this(registry, tagsProvider, metricName, autoTimeRequests, null, false);
+		this(registry, tagsProvider, metricName,
+				new Autotime(autoTimeRequests, false, null));
 	}
 
 	/**
@@ -87,26 +84,15 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param registry the meter registry
 	 * @param tagsProvider the tags provider
 	 * @param metricName the metric name
-	 * @param autoTimeRequests if requests should be automatically timed
-	 * @param autoTimeRequestsPercentiles default percentiles if requests are auto timed
-	 * @param autoTimeRequestsHistogram default histogram flag if requests are auto timed
+	 * @param autotime auto timed request settings
 	 * @since 2.2.0
 	 */
 	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
-			String metricName, boolean autoTimeRequests,
-			List<Double> autoTimeRequestsPercentiles, boolean autoTimeRequestsHistogram) {
-
-		double[] percentiles = (autoTimeRequestsPercentiles != null)
-				? autoTimeRequestsPercentiles.stream().mapToDouble(Double::doubleValue)
-						.toArray()
-				: null;
-
+			String metricName, Autotime autotime) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
-		this.autoTimeRequests = autoTimeRequests;
-		this.autoTimeRequestsPercentiles = percentiles;
-		this.autoTimeRequestsHistogram = autoTimeRequestsHistogram;
+		this.autotime = autotime;
 	}
 
 	@Override
@@ -187,10 +173,12 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response,
 				handlerObject, exception);
 		if (annotations.isEmpty()) {
-			if (this.autoTimeRequests) {
-				stop(timerSample, tags, Timer.builder(this.metricName)
-						.publishPercentiles(this.autoTimeRequestsPercentiles)
-						.publishPercentileHistogram(this.autoTimeRequestsHistogram));
+			if (this.autotime.isEnabled()) {
+				stop(timerSample, tags,
+						Timer.builder(this.metricName)
+								.publishPercentiles(this.autotime.getPercentiles())
+								.publishPercentileHistogram(
+										this.autotime.isPercentilesHistogram()));
 			}
 		}
 		else {

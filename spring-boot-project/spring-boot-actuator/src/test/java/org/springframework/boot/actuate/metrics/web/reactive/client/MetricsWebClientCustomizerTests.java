@@ -40,7 +40,7 @@ public class MetricsWebClientCustomizerTests {
 	@Before
 	public void setup() {
 		this.customizer = new MetricsWebClientCustomizer(mock(MeterRegistry.class),
-				mock(WebClientExchangeTagsProvider.class), "test");
+				mock(WebClientExchangeTagsProvider.class), "test", null);
 		this.clientBuilder = WebClient.builder();
 	}
 

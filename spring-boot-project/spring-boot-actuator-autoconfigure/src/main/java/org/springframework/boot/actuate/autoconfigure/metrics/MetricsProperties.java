@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring
@@ -107,8 +107,12 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
+			public ClientRequest getRequest() {
+				return this.request;
+			}
+
 			/**
-			 * Get name of the metric for received requests.
+			 * Return the name of the metric for client requests.
 			 * @return request metric name
 			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
 			 */
@@ -119,17 +123,13 @@ public class MetricsProperties {
 			}
 
 			/**
-			 * Set name of the metric for received requests.
+			 * Set the name of the metric for client requests.
 			 * @param requestsMetricName request metric name
 			 * @deprecated since 2.2.0 in favor of
 			 * {@link ClientRequest#setMetricName(String)}
 			 */
 			public void setRequestsMetricName(String requestsMetricName) {
 				this.request.setMetricName(requestsMetricName);
-			}
-
-			public ClientRequest getRequest() {
-				return this.request;
 			}
 
 			public int getMaxUriTags() {
@@ -148,11 +148,12 @@ public class MetricsProperties {
 				private String metricName = "http.client.requests";
 
 				/**
-				 * Automatically time requests.
+				 * Auto-timed request settings.
 				 */
-				private final AutoTime autoTime = new AutoTime();
+				@NestedConfigurationProperty
+				private final Autotime autoTime = new Autotime();
 
-				public AutoTime getAutoTime() {
+				public Autotime getAutotime() {
 					return this.autoTime;
 				}
 
@@ -179,8 +180,12 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
+			public ServerRequest getRequest() {
+				return this.request;
+			}
+
 			/**
-			 * Get name of the metric for received requests.
+			 * Return name of the metric for server requests.
 			 * @return request metric name
 			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
 			 */
@@ -191,17 +196,13 @@ public class MetricsProperties {
 			}
 
 			/**
-			 * Set name of the metric for received requests.
+			 * Set the name of the metric for server requests.
 			 * @param requestsMetricName request metric name
 			 * @deprecated since 2.2.0 in favor of
 			 * {@link ServerRequest#setMetricName(String)}
 			 */
 			public void setRequestsMetricName(String requestsMetricName) {
 				this.request.setMetricName(requestsMetricName);
-			}
-
-			public ServerRequest getRequest() {
-				return this.request;
 			}
 
 			public int getMaxUriTags() {
@@ -220,12 +221,13 @@ public class MetricsProperties {
 				private String metricName = "http.server.requests";
 
 				/**
-				 * Automatically time requests.
+				 * Auto-timed request settings.
 				 */
-				private final AutoTime autoTime = new AutoTime();
+				@NestedConfigurationProperty
+				private final Autotime autotime = new Autotime();
 
-				public AutoTime getAutoTime() {
-					return this.autoTime;
+				public Autotime getAutotime() {
+					return this.autotime;
 				}
 
 				public String getMetricName() {
@@ -236,56 +238,6 @@ public class MetricsProperties {
 					this.metricName = metricName;
 				}
 
-			}
-
-		}
-
-		public static class AutoTime {
-
-			/**
-			 * Whether requests handled by Spring MVC, WebFlux or Jersey should be
-			 * automatically timed. If the number of time series emitted grows too large
-			 * on account of request mapping timings, disable this and use 'Timed' on a
-			 * per request mapping basis as needed.
-			 */
-			private boolean enabled = true;
-
-			/**
-			 * Default percentiles when @Timed annotation is not presented on the
-			 * corresponding request handler. Any @Timed annotation presented will have
-			 * precedence.
-			 */
-			private List<Double> defaultPercentiles = new ArrayList<>();
-
-			/**
-			 * Default histogram when @Timed annotation is not presented on the
-			 * corresponding request handler. Any @Timed annotation presented will have
-			 * precedence.
-			 */
-			private boolean defaultHistogram;
-
-			public boolean isEnabled() {
-				return this.enabled;
-			}
-
-			public void setEnabled(boolean enabled) {
-				this.enabled = enabled;
-			}
-
-			public List<Double> getDefaultPercentiles() {
-				return this.defaultPercentiles;
-			}
-
-			public void setDefaultPercentiles(List<Double> defaultPercentiles) {
-				this.defaultPercentiles = defaultPercentiles;
-			}
-
-			public boolean isDefaultHistogram() {
-				return this.defaultHistogram;
-			}
-
-			public void setDefaultHistogram(boolean defaultHistogram) {
-				this.defaultHistogram = defaultHistogram;
 			}
 
 		}

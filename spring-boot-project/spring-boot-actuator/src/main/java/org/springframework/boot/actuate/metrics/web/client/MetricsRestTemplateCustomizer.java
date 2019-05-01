@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
@@ -46,32 +47,29 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, boolean, List, boolean)}
+	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, Autotime)}
 	 */
 	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
-		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry,
-				tagProvider, metricName);
+		this(meterRegistry, tagProvider, metricName, new Autotime());
 	}
 
 	/**
 	 * Creates a new {@code MetricsRestTemplateInterceptor}. When {@code autoTimeRequests}
 	 * is set to {@code true}, the interceptor records metrics using the given
 	 * {@code meterRegistry} with tags provided by the given {@code tagProvider} and with
-	 * {@code percentileList} and {@code histogram} configurations.
+	 * {@link Autotime auto-timed request configuration}.
 	 * @param meterRegistry the meter registry
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
-	 * @param autoTimeRequests if requests should be automatically timed
-	 * @param percentileList percentiles for auto time requests
-	 * @param histogram histogram or not for auto time requests
+	 * @param autotime auto-timed request settings
 	 * @since 2.2.0
 	 */
 	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			boolean autoTimeRequests, List<Double> percentileList, boolean histogram) {
+			Autotime autotime) {
 		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry,
-				tagProvider, metricName, autoTimeRequests, percentileList, histogram);
+				tagProvider, metricName, autotime);
 	}
 
 	@Override

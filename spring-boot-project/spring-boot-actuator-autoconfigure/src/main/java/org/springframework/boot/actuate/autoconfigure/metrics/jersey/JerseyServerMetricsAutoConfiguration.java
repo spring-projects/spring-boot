@@ -80,7 +80,7 @@ public class JerseyServerMetricsAutoConfiguration {
 		Server server = this.properties.getWeb().getServer();
 		return (config) -> config.register(new MetricsApplicationEventListener(
 				meterRegistry, tagsProvider, server.getRequest().getMetricName(),
-				server.getRequest().getAutoTime().isEnabled(),
+				server.getRequest().getAutotime().isEnabled(),
 				new AnnotationUtilsAnnotationFinder()));
 	}
 
