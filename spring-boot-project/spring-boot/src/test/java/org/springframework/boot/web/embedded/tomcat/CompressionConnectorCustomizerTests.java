@@ -77,7 +77,6 @@ public class CompressionConnectorCustomizerTests {
 		minSize(protocol.getCompressionMinSize());
 		mimeType(protocol.getCompressibleMimeTypes());
 		excludedUserAgents(protocol.getNoCompressionUserAgents());
-		excludedUserAgents(protocol.getNoCompressionUserAgents());
 	}
 
 	private void compressionOn(String compression) {
@@ -89,7 +88,7 @@ public class CompressionConnectorCustomizerTests {
 	}
 
 	private void mimeType(String[] mimeTypes) {
-		assertThat(mimeTypes).isEqualTo(mimeTypes);
+		assertThat(mimeTypes).isEqualTo(this.mimeTypes);
 	}
 
 	private void excludedUserAgents(String combinedUserAgents) {
