@@ -106,7 +106,7 @@ public class RSocketServerAutoConfiguration {
 		}
 
 		@Bean
-		public RSocketServerBootstrap nettyRSocketBootstrap(
+		public RSocketServerBootstrap rSocketServerBootstrap(
 				RSocketServerFactory rSocketServerFactory,
 				SocketAcceptor socketAcceptor) {
 			return new RSocketServerBootstrap(rSocketServerFactory, socketAcceptor);
