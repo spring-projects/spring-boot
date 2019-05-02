@@ -50,7 +50,7 @@ public class CassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraClusterFactory cassandraClusterFactory(){
+	public CassandraClusterFactory cassandraClusterFactory() {
 		return new CassandraClusterFactoryImpl();
 	}
 
