@@ -31,4 +31,5 @@ public class CassandraClusterFactoryImpl implements CassandraClusterFactory {
 	public Cluster build(final Initializer initializer) {
 		return Cluster.buildFrom(initializer);
 	}
+
 }

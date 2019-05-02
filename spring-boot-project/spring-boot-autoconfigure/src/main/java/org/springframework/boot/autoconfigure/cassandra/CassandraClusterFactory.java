@@ -28,5 +28,7 @@ import com.datastax.driver.core.Cluster.Initializer;
  * @since 2.2.0
  */
 public interface CassandraClusterFactory {
+
 	Cluster build(Initializer initializer);
+
 }
