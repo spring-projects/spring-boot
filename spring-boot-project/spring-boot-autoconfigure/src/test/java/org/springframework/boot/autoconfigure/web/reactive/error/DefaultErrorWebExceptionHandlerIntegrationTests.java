@@ -354,7 +354,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 			@GetMapping("/commit")
 			public Mono<Void> commit(ServerWebExchange exchange) {
-				return exchange.getResponse().writeWith(Mono.empty()).then(
+				return exchange.getResponse().setComplete().then(
 						Mono.error(new IllegalStateException("already committed!")));
 			}
 
