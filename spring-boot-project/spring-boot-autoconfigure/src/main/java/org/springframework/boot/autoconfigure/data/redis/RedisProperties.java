@@ -172,6 +172,9 @@ public class RedisProperties {
 		/**
 		 * Target for the minimum number of idle connections to maintain in the pool. This
 		 * setting only has an effect if it is positive.
+		 *
+		 * This setting only has an effect if it is positive and `timeBetweenEvictionRuns`
+		 * is greater than zero.
 		 */
 		private int minIdle = 0;
 
@@ -187,6 +190,14 @@ public class RedisProperties {
 		 * indefinitely.
 		 */
 		private Duration maxWait = Duration.ofMillis(-1);
+
+		/**
+		 * Time to sleep between runs of the idle object evictor thread.
+		 *
+		 * When positive, the idle object evictor thread starts. When non-positive, no
+		 * idle object evictor thread runs.
+		 */
+		private Duration timeBetweenEvictionRuns;
 
 		public int getMaxIdle() {
 			return this.maxIdle;
@@ -218,6 +229,14 @@ public class RedisProperties {
 
 		public void setMaxWait(Duration maxWait) {
 			this.maxWait = maxWait;
+		}
+
+		public Duration getTimeBetweenEvictionRuns() {
+			return this.timeBetweenEvictionRuns;
+		}
+
+		public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
+			this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
 		}
 
 	}
