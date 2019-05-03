@@ -66,6 +66,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.auditevents.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable storage of audit events.",
+      "defaultValue": true
+    },
+    {
       "name": "management.health.cassandra.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Cassandra health check.",

@@ -26,6 +26,7 @@ import javax.management.ReflectionException;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -53,7 +54,8 @@ public class JmxEndpointIntegrationTests {
 					EndpointAutoConfiguration.class, JmxEndpointAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class,
 					HttpTraceAutoConfiguration.class))
-			.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
+			.withUserConfiguration(HttpTraceRepositoryConfiguration.class,
+					AuditEventRepositoryConfiguration.class)
 			.withPropertyValues("spring.jmx.enabled=true").withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
@@ -148,6 +150,16 @@ public class JmxEndpointIntegrationTests {
 		@Bean
 		public InMemoryHttpTraceRepository httpTraceRepository() {
 			return new InMemoryHttpTraceRepository();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class AuditEventRepositoryConfiguration {
+
+		@Bean
+		public InMemoryAuditEventRepository auditEventRepository() {
+			return new InMemoryAuditEventRepository();
 		}
 
 	}

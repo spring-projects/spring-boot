@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -83,7 +84,8 @@ public class WebMvcEndpointExposureIntegrationTests {
 							AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 					.withUserConfiguration(CustomMvcEndpoint.class,
 							CustomServletEndpoint.class,
-							HttpTraceRepositoryConfiguration.class)
+							HttpTraceRepositoryConfiguration.class,
+							AuditEventRepositoryConfiguration.class)
 					.withPropertyValues("server.port:0");
 
 	@Test
@@ -225,6 +227,16 @@ public class WebMvcEndpointExposureIntegrationTests {
 		@Bean
 		public InMemoryHttpTraceRepository httpTraceRepository() {
 			return new InMemoryHttpTraceRepository();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class AuditEventRepositoryConfiguration {
+
+		@Bean
+		public InMemoryAuditEventRepository auditEventRepository() {
+			return new InMemoryAuditEventRepository();
 		}
 
 	}
