@@ -6819,7 +6819,7 @@ libraries.
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains
 the following provided libraries:
 
-* https://junit.org[JUnit]: The de-facto standard for unit testing Java applications.
+* https://junit.org[JUnit]: The de-facto standard for unit testing Java applications (v.4 is included).
 * {spring-reference}testing.html#integration-testing[Spring Test] & Spring Boot Test:
 Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
@@ -6875,8 +6875,7 @@ specific slices>> of an application.
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to
 your test, otherwise the annotations will be ignored. If you are using JUnit 5, there's no
 need to add the equivalent `@RunWith(SpringExtension.class)` as `@SpringBootTest` and
-the other `@…Test` annotations are already annotated with it. The latest spring-boot-starter-test 
-package comes with JUnit 4.
+the other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server. You can use the `webEnvironment`
 attribute of `@SpringBootTest` to further refine how your tests run:
