@@ -30,9 +30,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +53,7 @@ public class JmxEndpointIntegrationTests {
 					EndpointAutoConfiguration.class, JmxEndpointAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class,
 					HttpTraceAutoConfiguration.class))
+			.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 			.withPropertyValues("spring.jmx.enabled=true").withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
@@ -134,6 +138,16 @@ public class JmxEndpointIntegrationTests {
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new IllegalStateException("Invalid object name", ex);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class HttpTraceRepositoryConfiguration {
+
+		@Bean
+		public InMemoryHttpTraceRepository httpTraceRepository() {
+			return new InMemoryHttpTraceRepository();
 		}
 
 	}
