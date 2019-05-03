@@ -2213,8 +2213,12 @@ implementing `ApplicationEventPublisherAware`).
 
 [[production-ready-http-tracing]]
 == HTTP Tracing
-Tracing is automatically enabled for all HTTP requests. You can view the `httptrace`
-endpoint and obtain basic information about the last 100 request-response exchanges.
+HTTP Tracing can be enabled by providing a bean of type `HttpTraceRepository` in your application's
+configuration. For convenience, Spring Boot offers an `InMemoryHttpTraceRepository` that stores traces
+for the last 100 request-response exchanges, by default. `InMemoryHttpTraceRepository` is limited
+compared to other tracing solutions and we recommend using it only for development environments.
+For production environments, consider creating your own alternative `HttpTraceRepository` implementation.
+You can view the `httptrace` endpoint and obtain information about the request-response exchanges.
 
 
 
@@ -2223,11 +2227,6 @@ endpoint and obtain basic information about the last 100 request-response exchan
 To customize the items that are included in each trace, use the
 `management.trace.http.include` configuration property. For advanced customization,
 consider registering your own `HttpExchangeTracer` implementation.
-
-By default, an `InMemoryHttpTraceRepository` that stores traces for the last 100
-request-response exchanges is used. If you need to expand the capacity, you can define
-your own instance of the `InMemoryHttpTraceRepository` bean. You can also create your own
-alternative `HttpTraceRepository` implementation.
 
 
 
