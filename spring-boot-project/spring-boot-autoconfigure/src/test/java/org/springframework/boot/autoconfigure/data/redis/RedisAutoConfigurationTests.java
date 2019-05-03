@@ -155,7 +155,7 @@ public class RedisAutoConfigurationTests {
 				"spring.redis.lettuce.pool.max-idle:4",
 				"spring.redis.lettuce.pool.max-active:16",
 				"spring.redis.lettuce.pool.max-wait:2000",
-				"spring.redis.lettuce.pool.idle-evict-period:30000",
+				"spring.redis.lettuce.pool.time-between-eviction-runs:30000",
 				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context
 							.getBean(LettuceConnectionFactory.class);
