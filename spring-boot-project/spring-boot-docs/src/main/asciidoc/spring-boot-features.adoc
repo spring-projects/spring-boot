@@ -6819,7 +6819,7 @@ libraries.
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains
 the following provided libraries:
 
-* https://junit.org[JUnit]: The de-facto standard for unit testing Java applications.
+* https://junit.org[JUnit 4]: The de-facto standard for unit testing Java applications.
 * {spring-reference}testing.html#integration-testing[Spring Test] & Spring Boot Test:
 Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
