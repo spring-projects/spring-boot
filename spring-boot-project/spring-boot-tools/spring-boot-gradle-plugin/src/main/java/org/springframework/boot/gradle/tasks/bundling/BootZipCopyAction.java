@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,6 @@ class BootZipCopyAction implements CopyAction {
 		return () -> true;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Spec<FileTreeElement> createExclusionSpec(
 			Spec<FileTreeElement> loaderEntries) {
 		return Specs.union(loaderEntries, this.exclusions);

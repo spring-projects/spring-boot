@@ -52,7 +52,7 @@ Explicit build support is provided for the following build tools:
 |3.3+
 
 |Gradle
-|4.4+
+|5.x (4.10 is also supported but in a deprecated form)
 |===
 
 
@@ -201,8 +201,9 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4.4 and later. If you do not already have Gradle
-installed, you can follow the instructions at https://gradle.org.
+Spring Boot is compatible with 5.x. 4.10 is also supported but this support is deprecated
+and will be removed in a future release. If you do not already have Gradle installed, you
+can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
