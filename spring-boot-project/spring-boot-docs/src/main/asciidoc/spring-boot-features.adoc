@@ -7479,7 +7479,8 @@ full end-to-end tests with an actual server>>.
 You can use the `@DataJpaTest` annotation to test JPA applications. By default, it
 configures an in-memory embedded database, scans for `@Entity` classes, and configures
 Spring Data JPA repositories. Regular `@Component` beans are not loaded into the
-`ApplicationContext`.
+`ApplicationContext`. For setup, add an in-memory embedded database such as h2 
+in your build tool's configuration file (ex. pom.xml and build.gradle).
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be
 <<appendix.adoc#test-auto-configuration,found in the appendix>>.
