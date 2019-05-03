@@ -197,7 +197,7 @@ public class RedisProperties {
 		 * When positive, the idle object evictor thread starts. When non-positive, no
 		 * idle object evictor thread runs.
 		 */
-		private Duration timeBetweenEvictionRuns = Duration.ofMillis(-1);
+		private Duration timeBetweenEvictionRuns;
 
 		public int getMaxIdle() {
 			return this.maxIdle;
