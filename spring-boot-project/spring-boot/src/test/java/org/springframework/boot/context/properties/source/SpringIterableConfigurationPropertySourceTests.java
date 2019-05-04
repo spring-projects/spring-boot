@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -160,7 +161,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void propertySourceKeyDataChangeInvalidatesCache() {
+	public void simpleMapPropertySourceKeyDataChangeInvalidatesCache() {
 		// gh-13344
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("key1", "value1");
@@ -184,6 +185,18 @@ public class SpringIterableConfigurationPropertySourceTests {
 				source, DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.stream().count()).isEqualTo(2);
 		map.setThrowException(true);
+	}
+
+	public void originTrackedMapPropertySourceKeyAdditionInvalidatesCache() {
+		// gh-13344
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("key1", "value1");
+		map.put("key2", "value2");
+		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test",
+				map);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				source, DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.stream().count()).isEqualTo(2);
 		map.put("key3", "value3");
 		assertThat(adapter.stream().count()).isEqualTo(3);
 	}
