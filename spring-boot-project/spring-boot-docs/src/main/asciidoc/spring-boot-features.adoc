@@ -7476,10 +7476,10 @@ full end-to-end tests with an actual server>>.
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
 ==== Auto-configured Data JPA Tests
-You can use the `@DataJpaTest` annotation to test JPA applications. By default, it
-configures an in-memory embedded database, scans for `@Entity` classes, and configures
-Spring Data JPA repositories. Regular `@Component` beans are not loaded into the
-`ApplicationContext`.
+You can use the `@DataJpaTest` annotation to test JPA applications. By default, it scans
+for `@Entity` classes and configures Spring Data JPA repositories. If an embedded database
+is available on the classpath, it configures one as well. Regular `@Component` beans are
+not loaded into the `ApplicationContext`.
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be
 <<appendix.adoc#test-auto-configuration,found in the appendix>>.
