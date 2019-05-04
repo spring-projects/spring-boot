@@ -5639,6 +5639,12 @@ Alternatively, you can configure a {spring-framework-docs}testing.html#webtestcl
 include::{code-examples}/test/web/MockWebTestClientExampleTests.java[tag=test-mock-web-test-client]
 ----
 
+Testing within a mocked environment enables fast runs as it does not require the cost of setting up a full Servlet container.
+Although this works fine in most cases, you cannot test situations where the servlet container takes precedence.
+For example, Spring Boot's error handling is based on Servlet container’s error mappings.
+Therefore, exceptions behave differently in the container-less mock environment than the real environment.
+If you need to test the precise format of the error response, test with a fully running server as follows.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-with-running-server]]
