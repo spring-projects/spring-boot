@@ -224,7 +224,7 @@ deployments is to `git push` the code to production, as shown in the following e
 	 * [new branch]      master -> master
 ----
 
-Your application should now be up and running on Heroku.
+For a detailed guide, refer to [this article](https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku) by Heroku.
 
 
 
