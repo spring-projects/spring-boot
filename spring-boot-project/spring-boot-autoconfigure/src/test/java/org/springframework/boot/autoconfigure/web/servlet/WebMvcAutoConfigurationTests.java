@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidatorFactory;
 
+import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -800,10 +801,11 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
+		Assertions.setExtractBareNamePropertyMethods(false);
 		Map<String, Object> handlerMap = getHandlerMap(
 				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.keySet()) {
+		for (Object handler : handlerMap.values()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
 				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds())
 						.isEqualTo(-1);
@@ -812,6 +814,7 @@ public class WebMvcAutoConfigurationTests {
 								CacheControl.maxAge(5, TimeUnit.SECONDS));
 			}
 		}
+		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
 	@Test
