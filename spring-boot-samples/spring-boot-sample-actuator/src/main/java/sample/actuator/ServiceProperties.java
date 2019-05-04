@@ -24,7 +24,7 @@ public class ServiceProperties {
 	/**
 	 * Name of the service.
 	 */
-	private String name = "World";
+	private String name = "HelloWorld";
 
 	public String getName() {
 		return this.name;
