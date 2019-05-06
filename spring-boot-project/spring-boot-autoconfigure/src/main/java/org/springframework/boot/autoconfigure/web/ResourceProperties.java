@@ -476,6 +476,10 @@ public class ResourceProperties {
 						.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
 				map.from(this::getSMaxAge).whenNonNull().to((duration) -> control
 						.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+				// check if cacheControl remained untouched
+				if (control.getHeaderValue() == null) {
+					return null;
+				}
 				return control;
 			}
 

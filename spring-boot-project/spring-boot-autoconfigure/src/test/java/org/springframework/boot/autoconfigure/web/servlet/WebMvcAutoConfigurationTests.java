@@ -803,13 +803,12 @@ public class WebMvcAutoConfigurationTests {
 		Map<String, Object> handlerMap = getHandlerMap(
 				context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.keySet()) {
+		for (Object handler : handlerMap.values()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
 				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds())
-						.isEqualTo(-1);
+						.isEqualTo(5);
 				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl())
-						.isEqualToComparingFieldByField(
-								CacheControl.maxAge(5, TimeUnit.SECONDS));
+						.isNull();
 			}
 		}
 	}
