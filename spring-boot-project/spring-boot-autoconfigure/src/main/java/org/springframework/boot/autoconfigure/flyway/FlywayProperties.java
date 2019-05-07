@@ -229,13 +229,13 @@ public class FlywayProperties {
 	 * Whether to batch SQL statements when executing them. Requires Flyway Pro or Flyway
 	 * Enterprise.
 	 */
-	private Boolean batch = null;
+	private Boolean batch;
 
 	/**
 	 * File to which the SQL statements of a migration dry run should be output. Requires
 	 * Flyway Pro or Flyway Enterprise.
 	 */
-	private File dryRunOutput = null;
+	private File dryRunOutput;
 
 	/**
 	 * Rules for the built-in error handling to override specific SQL states and error
@@ -252,18 +252,18 @@ public class FlywayProperties {
 	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Pro or
 	 * Flyway Enterprise.
 	 */
-	private Boolean oracleSqlplus = null;
+	private Boolean oracleSqlplus;
 
 	/**
-	 * Whether to stream SQL migrarions when executing them. Requires Flyway Pro or Flyway
+	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
 	 * Enterprise.
 	 */
-	private Boolean stream = null;
+	private Boolean stream;
 
 	/**
 	 * File name prefix for undo SQL migrations. Requires Flyway Pro or Flyway Enterprise.
 	 */
-	private String undoSqlMigrationPrefix = null;
+	private String undoSqlMigrationPrefix;
 
 	public boolean isEnabled() {
 		return this.enabled;
