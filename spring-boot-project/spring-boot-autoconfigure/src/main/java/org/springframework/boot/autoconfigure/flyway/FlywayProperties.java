@@ -255,7 +255,7 @@ public class FlywayProperties {
 	private Boolean oracleSqlplus;
 
 	/**
-	 * Whether to stream SQL migrarions when executing them. Requires Flyway Pro or Flyway
+	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
 	 * Enterprise.
 	 */
 	private Boolean stream;
