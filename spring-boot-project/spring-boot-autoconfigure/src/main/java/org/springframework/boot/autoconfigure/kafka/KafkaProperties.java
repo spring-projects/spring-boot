@@ -873,6 +873,11 @@ public class KafkaProperties {
 		 */
 		private Boolean logContainerConfig;
 
+		/**
+		 * Set to false to disable checking that topic(s) exist.
+		 */
+		private Boolean missingTopicsFatal;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -959,6 +964,14 @@ public class KafkaProperties {
 
 		public void setLogContainerConfig(Boolean logContainerConfig) {
 			this.logContainerConfig = logContainerConfig;
+		}
+
+		public Boolean getMissingTopicsFatal() {
+			return this.missingTopicsFatal;
+		}
+
+		public void setMissingTopicsFatal(Boolean missingTopicsFatal) {
+			this.missingTopicsFatal = missingTopicsFatal;
 		}
 
 	}
