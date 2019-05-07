@@ -21,11 +21,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Utility to deduce if Devtools should be enabled in the current context.
+ * Utility to deduce if DevTools should be enabled in the current context.
  *
  * @author Madhura Bhave
+ * @since 2.2.0
  */
-public final class DevtoolsEnablementDeducer {
+public final class DevToolsEnablementDeducer {
 
 	private static final Set<String> SKIPPED_STACK_ELEMENTS;
 
@@ -38,7 +39,7 @@ public final class DevtoolsEnablementDeducer {
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
 
-	private DevtoolsEnablementDeducer() {
+	private DevToolsEnablementDeducer() {
 	}
 
 	/**

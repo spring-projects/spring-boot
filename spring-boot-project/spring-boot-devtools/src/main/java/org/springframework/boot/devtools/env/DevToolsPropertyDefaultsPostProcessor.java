@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.DevtoolsEnablementDeducer;
+import org.springframework.boot.devtools.DevToolsEnablementDeducer;
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -80,7 +80,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		if (DevtoolsEnablementDeducer.shouldEnable(Thread.currentThread())
+		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())
 				&& isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
 				logger.info("Devtools property defaults active! Set '" + ENABLED

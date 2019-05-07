@@ -27,11 +27,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OnEnabledDevtoolsCondition}.
+ * Tests for {@link OnEnabledDevToolsCondition}.
  *
  * @author Madhura Bhave
  */
-public class OnEnabledDevtoolsConditionTests {
+public class OnEnabledDevToolsConditionTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -44,8 +44,8 @@ public class OnEnabledDevtoolsConditionTests {
 	@Test
 	public void outcomeWhenDevtoolsShouldBeEnabledIsTrueShouldMatch() throws Exception {
 		Thread thread = new Thread(() -> {
-			OnEnabledDevtoolsConditionTests.this.context.refresh();
-			assertThat(OnEnabledDevtoolsConditionTests.this.context.containsBean("test"))
+			OnEnabledDevToolsConditionTests.this.context.refresh();
+			assertThat(OnEnabledDevToolsConditionTests.this.context.containsBean("test"))
 					.isTrue();
 		});
 		thread.start();
@@ -54,8 +54,8 @@ public class OnEnabledDevtoolsConditionTests {
 
 	@Test
 	public void outcomeWhenDevtoolsShouldBeEnabledIsFalseShouldNotMatch() {
-		OnEnabledDevtoolsConditionTests.this.context.refresh();
-		assertThat(OnEnabledDevtoolsConditionTests.this.context.containsBean("test"))
+		OnEnabledDevToolsConditionTests.this.context.refresh();
+		assertThat(OnEnabledDevToolsConditionTests.this.context.containsBean("test"))
 				.isFalse();
 	}
 
@@ -63,7 +63,7 @@ public class OnEnabledDevtoolsConditionTests {
 	static class TestConfiguration {
 
 		@Bean
-		@Conditional(OnEnabledDevtoolsCondition.class)
+		@Conditional(OnEnabledDevToolsCondition.class)
 		public String test() {
 			return "hello";
 		}
