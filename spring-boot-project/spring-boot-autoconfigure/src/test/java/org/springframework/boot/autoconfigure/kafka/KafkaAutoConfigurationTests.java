@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.kafka;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -289,6 +290,7 @@ public class KafkaAutoConfigurationTests {
 				});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void streamsProperties() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
@@ -314,15 +316,16 @@ public class KafkaAutoConfigurationTests {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
-							.isEqualTo("localhost:9092, localhost:9093");
+					assertThat((List<String>) configs
+							.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
+									.containsExactly("localhost:9092", "localhost:9093");
 					assertThat(
 							configs.get(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG))
-									.isEqualTo("1024");
+									.isEqualTo(1024);
 					assertThat(configs.get(StreamsConfig.CLIENT_ID_CONFIG))
 							.isEqualTo("override");
 					assertThat(configs.get(StreamsConfig.REPLICATION_FACTOR_CONFIG))
-							.isEqualTo("2");
+							.isEqualTo(2);
 					assertThat(configs.get(StreamsConfig.STATE_DIR_CONFIG))
 							.isEqualTo("/tmp/state");
 					assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG))
@@ -354,6 +357,7 @@ public class KafkaAutoConfigurationTests {
 				});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void streamsApplicationIdUsesMainApplicationNameByDefault() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
@@ -364,8 +368,9 @@ public class KafkaAutoConfigurationTests {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
-							.isEqualTo("localhost:9092, localhost:9093");
+					assertThat((List<String>) configs
+							.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
+									.containsExactly("localhost:9092", "localhost:9093");
 					assertThat(configs.get(StreamsConfig.APPLICATION_ID_CONFIG))
 							.isEqualTo("my-test-app");
 				});
@@ -390,6 +395,7 @@ public class KafkaAutoConfigurationTests {
 				});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void streamsWithSeveralStreamsBuilderFactoryBeans() {
 		this.contextRunner
@@ -402,8 +408,9 @@ public class KafkaAutoConfigurationTests {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
-							.isEqualTo("localhost:9092, localhost:9093");
+					assertThat((List<String>) configs
+							.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
+									.containsExactly("localhost:9092", "localhost:9093");
 					verify(context.getBean("&firstStreamsBuilderFactoryBean",
 							StreamsBuilderFactoryBean.class), never())
 									.setAutoStartup(false);
