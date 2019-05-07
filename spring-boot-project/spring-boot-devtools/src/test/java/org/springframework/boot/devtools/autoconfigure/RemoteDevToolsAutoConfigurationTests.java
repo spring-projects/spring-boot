@@ -16,7 +16,6 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -183,11 +182,9 @@ public class RemoteDevToolsAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext getContext(
 			Supplier<AnnotationConfigServletWebApplicationContext> supplier)
 			throws Exception {
-		CountDownLatch latch = new CountDownLatch(1);
 		AtomicReference<AnnotationConfigServletWebApplicationContext> atomicReference = new AtomicReference<>();
 		Thread thread = new Thread(() -> {
 			AnnotationConfigServletWebApplicationContext context = supplier.get();
-			latch.countDown();
 			atomicReference.getAndSet(context);
 		});
 		thread.start();

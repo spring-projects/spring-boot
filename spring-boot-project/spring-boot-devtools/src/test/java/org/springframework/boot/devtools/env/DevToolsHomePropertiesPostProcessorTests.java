@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,10 +73,8 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	protected void runPostProcessor(Runnable runnable) throws Exception {
-		CountDownLatch latch = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
 			runnable.run();
-			latch.countDown();
 		});
 		thread.start();
 		thread.join();

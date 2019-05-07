@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -95,11 +94,9 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	protected ConfigurableApplicationContext getContext(
 			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
-		CountDownLatch latch = new CountDownLatch(1);
 		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
 		Thread thread = new Thread(() -> {
 			ConfigurableApplicationContext context = supplier.get();
-			latch.countDown();
 			atomicReference.getAndSet(context);
 		});
 		thread.start();
