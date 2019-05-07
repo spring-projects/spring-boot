@@ -72,10 +72,10 @@ public class RestClientAutoConfiguration {
 		});
 		builder.setRequestConfigCallback((requestConfigBuilder) -> {
 			map.from(properties::getConnectionTimeout).whenNonNull()
-					.as(Duration::toMillis).asInt(Math::toIntExact)
+					.asInt(Duration::toMillis)
 					.to(requestConfigBuilder::setConnectTimeout);
-			map.from(properties::getReadTimeout).whenNonNull().as(Duration::toMillis)
-					.asInt(Math::toIntExact).to(requestConfigBuilder::setSocketTimeout);
+			map.from(properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
+					.to(requestConfigBuilder::setSocketTimeout);
 			return requestConfigBuilder;
 		});
 		builderCustomizers.orderedStream()
