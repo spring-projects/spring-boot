@@ -457,6 +457,7 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.idle-event-interval=1s",
 						"spring.kafka.listener.monitor-interval=45",
 						"spring.kafka.listener.log-container-config=true",
+						"spring.kafka.listener.missing-topics-fatal=false",
 						"spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo",
 						"spring.kafka.jaas.login-module=foo",
@@ -491,6 +492,7 @@ public class KafkaAutoConfigurationTests {
 							.isEqualTo(1000L);
 					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();
+					assertThat(containerProperties.isMissingTopicsFatal()).isFalse();
 					assertThat(ReflectionTestUtils.getField(kafkaListenerContainerFactory,
 							"concurrency")).isEqualTo(3);
 					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
