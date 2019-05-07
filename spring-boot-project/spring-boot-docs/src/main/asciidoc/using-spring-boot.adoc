@@ -124,7 +124,7 @@ benefit of the dependency management (but not the plugin management) by using a
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<dependencyManagement>
- 		<dependencies>
+		<dependencies>
 			<dependency>
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
