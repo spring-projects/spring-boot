@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.redis;
 import java.util.Properties;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,6 +32,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  *
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
@@ -44,10 +46,14 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		ReactiveRedisConnection connection = this.connectionFactory
-				.getReactiveConnection();
-		return connection.serverCommands().info().map((info) -> up(builder, info))
-				.doFinally((signal) -> connection.close());
+		Mono<ReactiveRedisConnection> connection = Mono
+				.fromSupplier(this.connectionFactory::getReactiveConnection)
+				.subscribeOn(Schedulers.parallel());
+
+		return connection
+				.flatMap((c) -> c.serverCommands().info().map((info) -> up(builder, info))
+						.onErrorResume((e) -> Mono.just(builder.down(e).build()))
+						.flatMap((signal) -> c.closeLater().thenReturn(signal)));
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
