@@ -27,8 +27,9 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -49,9 +50,10 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 @Deprecated
+@Testcontainers
 public class JestAutoConfigurationTests {
 
-	@ClassRule
+	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()

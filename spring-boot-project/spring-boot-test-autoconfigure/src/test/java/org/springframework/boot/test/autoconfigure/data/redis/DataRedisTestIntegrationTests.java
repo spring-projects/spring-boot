@@ -19,9 +19,9 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -43,12 +42,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Jayaram Pradhan
  */
-@RunWith(SpringRunner.class)
+@Testcontainers
 @ContextConfiguration(initializers = DataRedisTestIntegrationTests.Initializer.class)
 @DataRedisTest
 public class DataRedisTestIntegrationTests {
 
-	@ClassRule
+	@Container
 	public static RedisContainer redis = new RedisContainer();
 
 	@Autowired

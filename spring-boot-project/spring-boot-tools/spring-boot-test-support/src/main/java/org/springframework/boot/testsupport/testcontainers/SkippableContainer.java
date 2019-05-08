@@ -18,13 +18,10 @@ package org.springframework.boot.testsupport.testcontainers;
 
 import java.util.function.Supplier;
 
-import org.junit.AssumptionViolatedException;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.Assumptions;
 import org.testcontainers.DockerClientFactory;
-import org.testcontainers.containers.FailureDetectingExternalResource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.lifecycle.Startable;
 
 /**
  * A {@link GenericContainer} decorator that skips test execution when Docker is not
@@ -32,8 +29,9 @@ import org.testcontainers.containers.GenericContainer;
  *
  * @param <T> type of the underlying container
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
-public class SkippableContainer<T> implements TestRule {
+public class SkippableContainer<T extends GenericContainer> implements Startable {
 
 	private final Supplier<T> containerFactory;
 
@@ -41,19 +39,6 @@ public class SkippableContainer<T> implements TestRule {
 
 	public SkippableContainer(Supplier<T> containerFactory) {
 		this.containerFactory = containerFactory;
-	}
-
-	@Override
-	public Statement apply(Statement base, Description description) {
-		try {
-			DockerClientFactory.instance().client();
-		}
-		catch (Throwable ex) {
-			return new SkipStatement();
-		}
-		this.container = this.containerFactory.get();
-		return ((FailureDetectingExternalResource) this.container).apply(base,
-				description);
 	}
 
 	public T getContainer() {
@@ -64,14 +49,29 @@ public class SkippableContainer<T> implements TestRule {
 		return this.container;
 	}
 
-	private static class SkipStatement extends Statement {
+	@Override
+	public void start() {
+		Assumptions.assumeTrue(isDockerRunning(),
+				"Could not find valid docker environment.");
+		this.container = this.containerFactory.get();
+		this.container.start();
+	}
 
-		@Override
-		public void evaluate() {
-			throw new AssumptionViolatedException(
-					"Could not find a valid Docker environment.");
+	private boolean isDockerRunning() {
+		try {
+			DockerClientFactory.instance().client();
+			return true;
 		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
 
+	@Override
+	public void stop() {
+		if (this.container != null) {
+			this.container.stop();
+		}
 	}
 
 }

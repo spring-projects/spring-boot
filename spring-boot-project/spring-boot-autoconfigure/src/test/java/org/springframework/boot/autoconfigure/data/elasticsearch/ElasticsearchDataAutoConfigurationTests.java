@@ -16,9 +16,10 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -37,14 +38,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artur Konczak
  */
 @SuppressWarnings("deprecation")
+@Testcontainers
 public class ElasticsearchDataAutoConfigurationTests {
 
-	@ClassRule
+	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

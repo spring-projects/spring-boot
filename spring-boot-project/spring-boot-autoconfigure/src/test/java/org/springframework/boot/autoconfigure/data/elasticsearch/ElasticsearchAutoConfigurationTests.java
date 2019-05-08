@@ -20,9 +20,10 @@ import java.util.List;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -41,14 +42,15 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 @Deprecated
+@Testcontainers
 public class ElasticsearchAutoConfigurationTests {
 
-	@ClassRule
+	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

@@ -16,10 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -40,20 +41,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
+@Testcontainers
 public class RedisRepositoriesAutoConfigurationTests {
 
-	@ClassRule
+	@Container
 	public static RedisContainer redis = new RedisContainer();
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
 				.applyTo(this.context.getEnvironment());
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		this.context.close();
 	}

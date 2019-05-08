@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -28,7 +28,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,13 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Jayaram Pradhan
  */
-@RunWith(SpringRunner.class)
+@Testcontainers
 @ContextConfiguration(
 		initializers = DataRedisTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataRedisTest(includeFilters = @Filter(Service.class))
 public class DataRedisTestWithIncludeFilterIntegrationTests {
 
-	@ClassRule
+	@Container
 	public static RedisContainer redis = new RedisContainer();
 
 	@Autowired

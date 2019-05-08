@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,11 @@ package org.springframework.boot.testsupport.testcontainers;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.junit.AssumptionViolatedException;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.testcontainers.DockerClientFactory;
-import org.testcontainers.containers.FailureDetectingExternalResource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.lifecycle.Startable;
 
 /**
  * {@link TestRule} for working with an optional Docker environment. Spins up a
@@ -34,7 +32,7 @@ import org.testcontainers.containers.GenericContainer;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class Container implements TestRule {
+class Container implements Startable {
 
 	private final int port;
 
@@ -60,19 +58,6 @@ class Container implements TestRule {
 		};
 	}
 
-	@Override
-	public Statement apply(Statement base, Description description) {
-		try {
-			DockerClientFactory.instance().client();
-		}
-		catch (Throwable ex) {
-			return new SkipStatement();
-		}
-		this.container = this.containerFactory.get();
-		return ((FailureDetectingExternalResource) this.container).apply(base,
-				description);
-	}
-
 	public int getMappedPort() {
 		return this.container.getMappedPort(this.port);
 	}
@@ -81,14 +66,29 @@ class Container implements TestRule {
 		return this.container;
 	}
 
-	private static class SkipStatement extends Statement {
+	@Override
+	public void start() {
+		Assumptions.assumeTrue(isDockerRunning(),
+				"Could not find valid docker environment.");
+		this.container = this.containerFactory.get();
+		this.container.start();
+	}
 
-		@Override
-		public void evaluate() {
-			throw new AssumptionViolatedException(
-					"Could not find a valid Docker environment.");
+	private boolean isDockerRunning() {
+		try {
+			DockerClientFactory.instance().client();
+			return true;
 		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
 
+	@Override
+	public void stop() {
+		if (this.container != null) {
+			this.container.stop();
+		}
 	}
 
 }

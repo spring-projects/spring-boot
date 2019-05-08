@@ -16,10 +16,10 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -29,7 +29,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,13 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Michael Simons
  */
-@RunWith(SpringRunner.class)
+@Testcontainers
 @ContextConfiguration(
 		initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
-	@ClassRule
+	@Container
 	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
 			() -> new Neo4jContainer<>().withAdminPassword(null));
 
