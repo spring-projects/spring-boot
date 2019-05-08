@@ -47,7 +47,7 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 		ReactiveRedisConnection connection = this.connectionFactory
 				.getReactiveConnection();
 		return connection.serverCommands().info().map((info) -> up(builder, info))
-				.doFinally((signal) -> connection.close());
+				.doFinally((signal) -> connection.closeLater());
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
