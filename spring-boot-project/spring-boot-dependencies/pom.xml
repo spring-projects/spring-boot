@@ -1592,6 +1592,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.kafka</groupId>
+				<artifactId>connect-basic-auth-extension</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
 				<artifactId>connect-file</artifactId>
 				<version>${kafka.version}</version>
 			</dependency>
@@ -1623,6 +1628,21 @@
 			<dependency>
 				<groupId>org.apache.kafka</groupId>
 				<artifactId>kafka-streams</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-streams-scala_2.11</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-streams-scala_2.12</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-streams-test-utils</artifactId>
 				<version>${kafka.version}</version>
 			</dependency>
 			<dependency>
