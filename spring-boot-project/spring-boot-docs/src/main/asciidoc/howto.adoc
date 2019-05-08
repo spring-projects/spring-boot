@@ -623,7 +623,6 @@ shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
 

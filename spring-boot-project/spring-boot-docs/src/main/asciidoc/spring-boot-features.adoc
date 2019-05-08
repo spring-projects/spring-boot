@@ -6809,8 +6809,12 @@ application. Test support is provided by two modules: `spring-boot-test` contain
 items, and `spring-boot-test-autoconfigure` supports auto-configuration for tests.
 
 Most developers use the `spring-boot-starter-test` "`Starter`", which imports both Spring
-Boot test modules as well as JUnit, AssertJ, Hamcrest, and a number of other useful
-libraries.
+Boot test modules as well as JUnit Jupiter, AssertJ, Hamcrest, and a number of other
+useful libraries.
+
+TIP: The starter brings also the vintage engine so that you can run both JUnit 4 and Junit
+5 tests. If you have migrated your tests to JUnit 5, consider excluding the vintage
+engine.
 
 
 
@@ -6819,7 +6823,8 @@ libraries.
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains
 the following provided libraries:
 
-* https://junit.org[JUnit 4]: The de-facto standard for unit testing Java applications.
+* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward
+compatibility with JUnit 4: The de-facto standard for unit testing Java applications.
 * {spring-reference}testing.html#integration-testing[Spring Test] & Spring Boot Test:
 Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
@@ -7115,19 +7120,16 @@ implementation:
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
+	import org.junit.jupiter.api.Test;
 	import org.springframework.beans.factory.annotation.*;
 	import org.springframework.boot.test.context.*;
 	import org.springframework.boot.test.mock.mockito.*;
-	import org.springframework.test.context.junit4.*;
 
 	import static org.assertj.core.api.Assertions.*;
 	import static org.mockito.BDDMockito.*;
 
-	@RunWith(SpringRunner.class)
 	@SpringBootTest
-	public class MyTests {
+	class MyTests {
 
 		@MockBean
 		private RemoteService remoteService;
@@ -7136,7 +7138,7 @@ implementation:
 		private Reverser reverser;
 
 		@Test
-		public void exampleTest() {
+		void exampleTest() {
 			// RemoteService has been injected into the reverser bean
 			given(this.remoteService.someCall()).willReturn("mock");
 			String reverse = reverser.reverseSomeCall();
@@ -7219,25 +7221,22 @@ Strings respectively. Any helper fields on the test class can be `@Autowired` wh
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
+	import org.junit.jupiter.api.Test;
 	import org.springframework.beans.factory.annotation.*;
 	import org.springframework.boot.test.autoconfigure.json.*;
 	import org.springframework.boot.test.context.*;
 	import org.springframework.boot.test.json.*;
-	import org.springframework.test.context.junit4.*;
 
 	import static org.assertj.core.api.Assertions.*;
 
-	@RunWith(SpringRunner.class)
 	@JsonTest
-	public class MyJsonTests {
+	class MyJsonTests {
 
 		@Autowired
 		private JacksonTester<VehicleDetails> json;
 
 		@Test
-		public void testSerialize() throws Exception {
+		void testSerialize() throws Exception {
 			VehicleDetails details = new VehicleDetails("Honda", "Civic");
 			// Assert against a `.json` file in the same package as the test
 			assertThat(this.json.write(details)).isEqualToJson("expected.json");
@@ -7303,8 +7302,7 @@ uses `MockMvc`:
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
+	import org.junit.jupiter.api.*;
 	import org.springframework.beans.factory.annotation.*;
 	import org.springframework.boot.test.autoconfigure.web.servlet.*;
 	import org.springframework.boot.test.mock.mockito.*;
@@ -7314,9 +7312,8 @@ uses `MockMvc`:
 	import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 	import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-	@RunWith(SpringRunner.class)
 	@WebMvcTest(UserVehicleController.class)
-	public class MyControllerTests {
+	class MyControllerTests {
 
 		@Autowired
 		private MockMvc mvc;
@@ -7325,7 +7322,7 @@ uses `MockMvc`:
 		private UserVehicleService userVehicleService;
 
 		@Test
-		public void testExample() throws Exception {
+		void testExample() throws Exception {
 			given(this.userVehicleService.getVehicleDetails("sboot"))
 					.willReturn(new VehicleDetails("Honda", "Civic"));
 			this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
@@ -7346,8 +7343,7 @@ bean and/or a `WebDriver` bean. The following example uses HtmlUnit:
 [source,java,indent=0]
 ----
 	import com.gargoylesoftware.htmlunit.*;
-	import org.junit.*;
-	import org.junit.runner.*;
+	import org.junit.jupiter.api.*;
 	import org.springframework.beans.factory.annotation.*;
 	import org.springframework.boot.test.autoconfigure.web.servlet.*;
 	import org.springframework.boot.test.mock.mockito.*;
@@ -7355,9 +7351,8 @@ bean and/or a `WebDriver` bean. The following example uses HtmlUnit:
 	import static org.assertj.core.api.Assertions.*;
 	import static org.mockito.BDDMockito.*;
 
-	@RunWith(SpringRunner.class)
 	@WebMvcTest(UserVehicleController.class)
-	public class MyHtmlUnitTests {
+	class MyHtmlUnitTests {
 
 		@Autowired
 		private WebClient webClient;
@@ -7366,7 +7361,7 @@ bean and/or a `WebDriver` bean. The following example uses HtmlUnit:
 		private UserVehicleService userVehicleService;
 
 		@Test
-		public void testExample() throws Exception {
+		void testExample() throws Exception {
 			given(this.userVehicleService.getVehicleDetails("sboot"))
 					.willReturn(new VehicleDetails("Honda", "Civic"));
 			HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
@@ -7425,18 +7420,15 @@ example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 
 [source,java,indent=0]
 ----
-	import org.junit.Test;
-	import org.junit.runner.RunWith;
+	import org.junit.jupiter.api.Test;
 
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 	import org.springframework.http.MediaType;
-	import org.springframework.test.context.junit4.SpringRunner;
 	import org.springframework.test.web.reactive.server.WebTestClient;
 
-	@RunWith(SpringRunner.class)
 	@WebFluxTest(UserVehicleController.class)
-	public class MyControllerTests {
+	class MyControllerTests {
 
 		@Autowired
 		private WebTestClient webClient;
@@ -7445,7 +7437,7 @@ example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 		private UserVehicleService userVehicleService;
 
 		@Test
-		public void testExample() throws Exception {
+		void testExample() throws Exception {
 			given(this.userVehicleService.getVehicleDetails("sboot"))
 					.willReturn(new VehicleDetails("Honda", "Civic"));
 			this.webClient.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)
@@ -7492,17 +7484,14 @@ follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.Test;
-	import org.junit.runner.RunWith;
+	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 	import org.springframework.transaction.annotation.Propagation;
 	import org.springframework.transaction.annotation.Transactional;
 
-	@RunWith(SpringRunner.class)
 	@DataJpaTest
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public class ExampleNonTransactionalTests {
+	class ExampleNonTransactionalTests {
 
 	}
 ----
@@ -7517,15 +7506,13 @@ shows the `@DataJpaTest` annotation in use:
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
+	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
 
 	import static org.assertj.core.api.Assertions.*;
 
-	@RunWith(SpringRunner.class)
 	@DataJpaTest
-	public class ExampleRepositoryTests {
+	class ExampleRepositoryTests {
 
 		@Autowired
 		private TestEntityManager entityManager;
@@ -7534,7 +7521,7 @@ shows the `@DataJpaTest` annotation in use:
 		private UserRepository repository;
 
 		@Test
-		public void testExample() throws Exception {
+		void testExample() throws Exception {
 			this.entityManager.persist(new User("sboot", "1234"));
 			User user = this.repository.findByUsername("sboot");
 			assertThat(user.getUsername()).isEqualTo("sboot");
@@ -7581,17 +7568,14 @@ follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.Test;
-	import org.junit.runner.RunWith;
+	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 	import org.springframework.transaction.annotation.Propagation;
 	import org.springframework.transaction.annotation.Transactional;
 
-	@RunWith(SpringRunner.class)
 	@JdbcTest
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public class ExampleNonTransactionalTests {
+	class ExampleNonTransactionalTests {
 
 	}
 ----
@@ -7643,14 +7627,11 @@ TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be
 [source,java,indent=0]
 ----
 	import org.jooq.DSLContext;
-	import org.junit.Test;
-	import org.junit.runner.RunWith;
+	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@JooqTest
-	public class ExampleJooqTests {
+	class ExampleJooqTests {
 
 		@Autowired
 		private DSLContext dslContext;
@@ -7681,13 +7662,10 @@ The following class shows the `@DataMongoTest` annotation in use:
 
 [source,java,indent=0]
 ----
-	import org.junit.runner.RunWith;
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 	import org.springframework.data.mongodb.core.MongoTemplate;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@DataMongoTest
 	public class ExampleDataMongoTests {
 
@@ -7705,12 +7683,9 @@ the following example:
 
 [source,java,indent=0]
 ----
-	import org.junit.runner.RunWith;
-  import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+	import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 	public class ExampleDataMongoNonEmbeddedTests {
 
@@ -7735,12 +7710,9 @@ The following example shows a typical setup for using Neo4J tests in Spring Boot
 
 [source,java,indent=0]
 ----
-	import org.junit.runner.RunWith;
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@DataNeo4jTest
 	public class ExampleDataNeo4jTests {
 
@@ -7759,14 +7731,10 @@ as follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.Test;
-	import org.junit.runner.RunWith;
 	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 	import org.springframework.transaction.annotation.Propagation;
 	import org.springframework.transaction.annotation.Transactional;
 
-	@RunWith(SpringRunner.class)
 	@DataNeo4jTest
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public class ExampleNonTransactionalTests {
@@ -7791,12 +7759,9 @@ The following example shows the `@DataRedisTest` annotation in use:
 
 [source,java,indent=0]
 ----
-	import org.junit.runner.RunWith;
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@DataRedisTest
 	public class ExampleDataRedisTests {
 
@@ -7824,13 +7789,10 @@ The following example shows the `@DataLdapTest` annotation in use:
 
 [source,java,indent=0]
 ----
-	import org.junit.runner.RunWith;
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 	import org.springframework.ldap.core.LdapTemplate;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@DataLdapTest
 	public class ExampleDataLdapTests {
 
@@ -7848,12 +7810,9 @@ following example:
 
 [source,java,indent=0]
 ----
-	import org.junit.runner.RunWith;
 	import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
 	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
-	import org.springframework.test.context.junit4.SpringRunner;
 
-	@RunWith(SpringRunner.class)
 	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
 	public class ExampleDataLdapNonEmbeddedTests {
 
@@ -7905,7 +7864,7 @@ The specific beans that you want to test should be specified by using the `value
 ==== Auto-configured Spring REST Docs Tests
 You can use the `@AutoConfigureRestDocs` annotation to use {spring-rest-docs}[Spring REST
 Docs] in your tests with Mock MVC, REST Assured, or WebTestClient. It removes the need for
-the JUnit rule in Spring REST Docs.
+the JUnit extension in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory
 (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
@@ -7922,29 +7881,26 @@ Mock MVC and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	import org.junit.Test;
-	import org.junit.runner.RunWith;
+	import org.junit.jupiter.api.Test;
 
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 	import org.springframework.http.MediaType;
-	import org.springframework.test.context.junit4.SpringRunner;
 	import org.springframework.test.web.servlet.MockMvc;
 
 	import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 	import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 	import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-	@RunWith(SpringRunner.class)
 	@WebMvcTest(UserController.class)
 	@AutoConfigureRestDocs
-	public class UserDocumentationTests {
+	class UserDocumentationTests {
 
 		@Autowired
 		private MockMvc mvc;
 
 		@Test
-		public void listUsers() throws Exception {
+		void listUsers() throws Exception {
 			this.mvc.perform(get("/users").accept(MediaType.TEXT_PLAIN))
 					.andExpect(status().isOk())
 					.andDo(document("list-users"));
@@ -8201,28 +8157,28 @@ which auto-configures one for you.
 
 [[boot-features-output-capture-test-utility]]
 ==== OutputCapture
-`OutputCapture` is a JUnit `Rule` that you can use to capture `System.out` and
-`System.err` output. You can declare the capture as a `@Rule` and then use `toString()`
-for assertions, as follows:
+`OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and
+`System.err` output. You can declare the capture as a `@RegisterExtension` and then use
+`toString()` for assertions, as follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.Rule;
-	import org.junit.Test;
-	import org.springframework.boot.test.rule.OutputCapture;
+	import org.junit.jupiter.api.Test;
+    import org.junit.jupiter.api.extension.RegisterExtension;
 
-	import static org.hamcrest.Matchers.*;
-	import static org.junit.Assert.*;
+	import org.springframework.boot.test.extension.OutputCapture;
 
-	public class MyTest {
+	import static org.assertj.core.api.Assertions.assertThat;
 
-		@Rule
-		public OutputCapture capture = new OutputCapture();
+	class MyTest {
+
+		@RegisterExtension
+		public OutputCapture output = new OutputCapture();
 
 		@Test
-		public void testName() throws Exception {
+		void testName() {
 			System.out.println("Hello World!");
-			assertThat(capture.toString(), containsString("World"));
+			assertThat(this.output.toString()).contains("World"));
 		}
 
 	}
@@ -8929,16 +8885,15 @@ to limitations in the model kapt provides.
 
 [[boot-features-kotlin-testing]]
 === Testing
-While it is possible to use JUnit 4 (the default provided by `spring-boot-starter-test`)
-to test Kotlin code, JUnit 5 is recommended. JUnit 5 enables a test class to be
-instantiated once and reused for all of the class's tests. This makes it possible to use
-`@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for
-Kotlin.
+While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is recommended. JUnit 5
+enables a test class to be instantiated once and reused for all of the class's tests. This
+makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static
+methods, which is a good fit for Kotlin.
 
-To use JUnit 5, exclude `junit:junit` dependency from `spring-boot-starter-test`, add
-JUnit 5 dependencies, and configure the Maven or Gradle plugin accordingly. See the
-{junit5-documentation}/#dependency-metadata-junit-jupiter-samples[JUnit 5
-documentation] for more details. You also need to
+JUnit 5 is the default and the vintage engine is provided for backward compatibility with
+JUnit 4. If you don't use it, exclude `org.junit.vintange:junit-vintage-engine`. See the
+{junit5-documentation}/#dependency-metadata-junit-jupiter-samples[JUnit 5 documentation]
+for more details. You also need to
 {junit5-documentation}/#writing-tests-test-instance-lifecycle-changing-default[switch test
 instance lifecycle to "per-class"].
 
