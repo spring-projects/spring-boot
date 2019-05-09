@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Cluster.Initializer;
 import com.datastax.driver.core.PoolingOptions;
 import org.junit.jupiter.api.Test;
 
@@ -115,6 +116,14 @@ public class CassandraAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void clusterFactoryIsCalledToCreateCluster() {
+		this.contextRunner.withUserConfiguration(ClusterFactoryConfig.class)
+				.run((context) -> assertThat(
+						context.getBean(TestClusterFactory.class).initializer)
+								.isNotNull());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class MockCustomizerConfig {
 
@@ -131,6 +140,28 @@ public class CassandraAutoConfigurationTests {
 		@Bean
 		public ClusterBuilderCustomizer customizer() {
 			return (clusterBuilder) -> clusterBuilder.withClusterName("overridden-name");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ClusterFactoryConfig {
+
+		@Bean
+		public TestClusterFactory clusterFactory() {
+			return new TestClusterFactory();
+		}
+
+	}
+
+	static class TestClusterFactory implements ClusterFactory {
+
+		private Initializer initializer = null;
+
+		@Override
+		public Cluster create(Initializer initializer) {
+			this.initializer = initializer;
+			return Cluster.buildFrom(initializer);
 		}
 
 	}
