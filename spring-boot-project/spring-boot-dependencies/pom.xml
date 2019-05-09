@@ -77,7 +77,7 @@
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
 		<httpclient.version>4.5.8</httpclient.version>
 		<httpcore.version>4.4.11</httpcore.version>
-		<infinispan.version>9.4.12.Final</infinispan.version>
+		<infinispan.version>9.4.13.Final</infinispan.version>
 		<influxdb-java.version>2.15</influxdb-java.version>
 		<jackson.version>2.9.8</jackson.version>
 		<jakarta-activation.version>1.2.1</jakarta-activation.version>
