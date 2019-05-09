@@ -154,7 +154,7 @@
 		<mysql.version>8.0.15</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.2.0-alpha05</neo4j-ogm.version>
-		<netty.version>4.1.34.Final</netty.version>
+		<netty.version>4.1.36.Final</netty.version>
 		<netty-tcnative.version>2.0.24.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<okhttp3.version>3.14.1</okhttp3.version>
