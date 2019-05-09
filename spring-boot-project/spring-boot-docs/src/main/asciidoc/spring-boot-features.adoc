@@ -6812,9 +6812,31 @@ Most developers use the `spring-boot-starter-test` "`Starter`", which imports bo
 Boot test modules as well as JUnit Jupiter, AssertJ, Hamcrest, and a number of other
 useful libraries.
 
-TIP: The starter brings also the vintage engine so that you can run both JUnit 4 and Junit
-5 tests. If you have migrated your tests to JUnit 5, consider excluding the vintage
-engine.
+[TIP]
+====
+The starter also brings the vintage engine and `junit:junit` so that you can run both
+JUnit 4 and Junit 5 tests. If you have migrated your tests to JUnit 5, you should
+exclude JUnit 4 support, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+		<exclusions>
+			<exclusion>
+				<groupId>org.junit.vintage</groupId>
+				<artifactId>junit-vintage-engine</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+----
+====
 
 
 
@@ -8891,7 +8913,8 @@ makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-sta
 methods, which is a good fit for Kotlin.
 
 JUnit 5 is the default and the vintage engine is provided for backward compatibility with
-JUnit 4. If you don't use it, exclude `org.junit.vintange:junit-vintage-engine`. See the
+JUnit 4. If you don't use it, exclude `org.junit.vintange:junit-vintage-engine` and
+`junit:junit`. See the
 {junit5-documentation}/#dependency-metadata-junit-jupiter-samples[JUnit 5 documentation]
 for more details. You also need to
 {junit5-documentation}/#writing-tests-test-instance-lifecycle-changing-default[switch test
