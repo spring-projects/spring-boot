@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,10 +171,8 @@ public class RedisProperties {
 
 		/**
 		 * Target for the minimum number of idle connections to maintain in the pool. This
-		 * setting only has an effect if it is positive.
-		 *
-		 * This setting only has an effect if it is positive and `timeBetweenEvictionRuns`
-		 * is greater than zero.
+		 * setting only has an effect if both it and time between eviction runs are
+		 * positive.
 		 */
 		private int minIdle = 0;
 
@@ -192,10 +190,8 @@ public class RedisProperties {
 		private Duration maxWait = Duration.ofMillis(-1);
 
 		/**
-		 * Time to sleep between runs of the idle object evictor thread.
-		 *
-		 * When positive, the idle object evictor thread starts. When non-positive, no
-		 * idle object evictor thread runs.
+		 * Time between runs of the idle object evictor thread. When positive, the idle
+		 * object evictor thread starts, otherwise no idle object eviction is performed.
 		 */
 		private Duration timeBetweenEvictionRuns;
 
