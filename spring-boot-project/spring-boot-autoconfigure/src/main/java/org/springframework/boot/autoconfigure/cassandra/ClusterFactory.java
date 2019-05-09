@@ -20,10 +20,10 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Initializer;
 
 /**
- * {@code CassandraClusterFactory} provides control over the creation of a {@Cluster} from
- * an {@link Initializer}.
+ * {@code ClusterFactory} provides control over the creation of a {@link Cluster} from an
+ * {@link Initializer}.
  *
- * @auther Steffen F. Qvistgaard
+ * @author Steffen F. Qvistgaard
  * @since 2.2.0
  */
 @FunctionalInterface
@@ -31,7 +31,7 @@ public interface ClusterFactory {
 
 	/**
 	 * Creates a {@link Cluster} from the given {@link Initializer}.
-	 * @param initializer the {@Code Initializer}
+	 * @param initializer the {@code Initializer}
 	 * @return the {@code Cluster}
 	 */
 	Cluster create(Initializer initializer);

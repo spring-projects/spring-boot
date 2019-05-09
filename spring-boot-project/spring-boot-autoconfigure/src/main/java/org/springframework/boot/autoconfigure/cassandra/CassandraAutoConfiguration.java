@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @auther Steffen F. Qvistgaard
+ * @author Steffen F. Qvistgaard
  * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
