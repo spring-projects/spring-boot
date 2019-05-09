@@ -34,6 +34,7 @@ import static org.mockito.BDDMockito.willCallRealMethod;
  * Integration tests for {@link ConfigurationPropertiesScan}.
  *
  * @author Madhura Bhave
+ * @author Johnny Lim
  */
 public class ConfigurationPropertiesScanTests {
 
@@ -52,7 +53,7 @@ public class ConfigurationPropertiesScanTests {
 	}
 
 	@Test
-	public void scanImportBeanRegistrarShouldBeEnvironmentAware() {
+	public void scanImportBeanRegistrarShouldBeEnvironmentAwareWithRequiredProfile() {
 		this.context.getEnvironment().addActiveProfile("test");
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
@@ -61,7 +62,15 @@ public class ConfigurationPropertiesScanTests {
 	}
 
 	@Test
-	public void scanImportBeanRegistrarShouldBeResourceLoaderAware() {
+	public void scanImportBeanRegistrarShouldBeEnvironmentAwareWithoutRequiredProfile() {
+		load(TestConfiguration.class);
+		assertThat(this.context.containsBean(
+				"profile-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyProfileProperties"))
+				.isFalse();
+	}
+
+	@Test
+	public void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithRequiredResource() {
 		DefaultResourceLoader resourceLoader = Mockito.mock(DefaultResourceLoader.class);
 		this.context.setResourceLoader(resourceLoader);
 		willCallRealMethod().given(resourceLoader).getClassLoader();
@@ -71,6 +80,14 @@ public class ConfigurationPropertiesScanTests {
 		assertThat(this.context.containsBean(
 				"resource-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyResourceProperties"))
 						.isTrue();
+	}
+
+	@Test
+	public void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithoutRequiredResource() {
+		load(TestConfiguration.class);
+		assertThat(this.context.containsBean(
+				"resource-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyResourceProperties"))
+				.isFalse();
 	}
 
 	private void load(Class<?>... classes) {
