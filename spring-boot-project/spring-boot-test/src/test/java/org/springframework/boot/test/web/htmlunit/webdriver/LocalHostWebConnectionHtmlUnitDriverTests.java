@@ -21,6 +21,7 @@ import java.net.URL;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
+import com.gargoylesoftware.htmlunit.WebConsole;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 	public LocalHostWebConnectionHtmlUnitDriverTests() {
 		MockitoAnnotations.initMocks(this);
 		given(this.webClient.getOptions()).willReturn(new WebClientOptions());
+		given(this.webClient.getWebConsole()).willReturn(new WebConsole());
 	}
 
 	@Test
