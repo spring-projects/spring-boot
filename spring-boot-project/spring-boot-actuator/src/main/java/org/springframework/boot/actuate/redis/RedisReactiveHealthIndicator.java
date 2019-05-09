@@ -53,7 +53,7 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 		return connection
 				.flatMap((c) -> c.serverCommands().info().map((info) -> up(builder, info))
 						.onErrorResume((e) -> Mono.just(builder.down(e).build()))
-						.doFinally((signal) -> c.closeLater()));
+						.flatMap((signal) -> c.closeLater().thenReturn(signal)));
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
