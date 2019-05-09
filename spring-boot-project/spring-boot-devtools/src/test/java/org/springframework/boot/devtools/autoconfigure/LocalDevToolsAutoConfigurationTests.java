@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -253,11 +252,9 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	private ConfigurableApplicationContext getContext(
 			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
-		CountDownLatch latch = new CountDownLatch(1);
 		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
 		Thread thread = new Thread(() -> {
 			ConfigurableApplicationContext context = supplier.get();
-			latch.countDown();
 			atomicReference.getAndSet(context);
 		});
 		thread.start();

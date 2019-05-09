@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,11 +73,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	protected void runPostProcessor(Runnable runnable) throws Exception {
-		CountDownLatch latch = new CountDownLatch(1);
-		Thread thread = new Thread(() -> {
-			runnable.run();
-			latch.countDown();
-		});
+		Thread thread = new Thread(runnable);
 		thread.start();
 		thread.join();
 	}
