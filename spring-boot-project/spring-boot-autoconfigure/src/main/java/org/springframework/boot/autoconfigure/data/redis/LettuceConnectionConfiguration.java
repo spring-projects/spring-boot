@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,6 +155,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			config.setMaxTotal(properties.getMaxActive());
 			config.setMaxIdle(properties.getMaxIdle());
 			config.setMinIdle(properties.getMinIdle());
+			if (properties.getTimeBetweenEvictionRuns() != null) {
+				config.setTimeBetweenEvictionRunsMillis(
+						properties.getTimeBetweenEvictionRuns().toMillis());
+			}
 			if (properties.getMaxWait() != null) {
 				config.setMaxWaitMillis(properties.getMaxWait().toMillis());
 			}
