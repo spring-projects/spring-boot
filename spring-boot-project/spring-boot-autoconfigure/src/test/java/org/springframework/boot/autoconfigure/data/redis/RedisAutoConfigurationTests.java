@@ -155,6 +155,7 @@ public class RedisAutoConfigurationTests {
 				"spring.redis.lettuce.pool.max-idle:4",
 				"spring.redis.lettuce.pool.max-active:16",
 				"spring.redis.lettuce.pool.max-wait:2000",
+				"spring.redis.lettuce.pool.time-between-eviction-runs:30000",
 				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context
 							.getBean(LettuceConnectionFactory.class);
@@ -165,6 +166,8 @@ public class RedisAutoConfigurationTests {
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
 					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(2000);
+					assertThat(poolConfig.getTimeBetweenEvictionRunsMillis())
+							.isEqualTo(30000);
 					assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
 				});
 	}

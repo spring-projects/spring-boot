@@ -113,6 +113,10 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		config.setMaxTotal(pool.getMaxActive());
 		config.setMaxIdle(pool.getMaxIdle());
 		config.setMinIdle(pool.getMinIdle());
+		if (pool.getTimeBetweenEvictionRuns() != null) {
+			config.setTimeBetweenEvictionRunsMillis(
+					pool.getTimeBetweenEvictionRuns().toMillis());
+		}
 		if (pool.getMaxWait() != null) {
 			config.setMaxWaitMillis(pool.getMaxWait().toMillis());
 		}
