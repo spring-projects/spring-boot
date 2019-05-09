@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.DevtoolsEnablementDeducer;
+import org.springframework.boot.devtools.DevToolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -44,7 +44,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		if (DevtoolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
+		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
 			File home = getHomeFolder();
 			File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
 			if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {

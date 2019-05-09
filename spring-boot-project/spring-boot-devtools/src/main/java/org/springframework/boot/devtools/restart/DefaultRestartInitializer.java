@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 
-import org.springframework.boot.devtools.DevtoolsEnablementDeducer;
+import org.springframework.boot.devtools.DevToolsEnablementDeducer;
 
 /**
  * Default {@link RestartInitializer} that only enable initial restart when running a
@@ -36,7 +36,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 		if (!isMain(thread)) {
 			return null;
 		}
-		if (!DevtoolsEnablementDeducer.shouldEnable(thread)) {
+		if (!DevToolsEnablementDeducer.shouldEnable(thread)) {
 			return null;
 		}
 		return getUrls(thread);
