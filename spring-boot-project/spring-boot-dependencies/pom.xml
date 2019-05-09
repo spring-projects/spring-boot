@@ -167,7 +167,7 @@
 		<reactor-bom.version>Dysprosium-M1</reactor-bom.version>
 		<rest-assured.version>3.3.0</rest-assured.version>
 		<reactive-streams.version>1.0.2</reactive-streams.version>
-		<rsocket.version>0.12.1-RC3</rsocket.version>
+		<rsocket.version>0.12.2-RC2</rsocket.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
 		<rxjava2.version>2.2.8</rxjava2.version>
