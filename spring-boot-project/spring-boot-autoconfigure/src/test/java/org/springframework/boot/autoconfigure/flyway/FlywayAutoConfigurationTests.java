@@ -30,6 +30,7 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.callback.FlywayCallback;
+import org.flywaydb.core.internal.jdbc.DriverDataSource;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -66,6 +67,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Dominic Gunn
+ * @author András Deák
  */
 @SuppressWarnings("deprecation")
 public class FlywayAutoConfigurationTests {
@@ -95,6 +97,30 @@ public class FlywayAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+				});
+	}
+
+	@Test
+	public void createDataSourceFallbackToEmbeddedProperties() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest").run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+					assertThat(((DriverDataSource) context.getBean(Flyway.class).getDataSource()).getUser())
+							.isEqualTo("sa");
+					assertThat(((DriverDataSource) context.getBean(Flyway.class).getDataSource()).getPassword())
+							.isEqualTo("");
+				});
+	}
+
+	@Test
+	public void createDataSourceWithUserAndFallbackToEmbeddedProperties() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.user:sa").run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+					assertThat(((DriverDataSource) context.getBean(Flyway.class).getDataSource()).getUrl())
+							.startsWith("jdbc:h2:mem:");
 				});
 	}
 
