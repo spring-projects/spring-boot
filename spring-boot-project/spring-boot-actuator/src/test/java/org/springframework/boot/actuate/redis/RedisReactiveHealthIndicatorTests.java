@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Nikolay Rybak
+ * @author Artsiom Yudovin
  */
 public class RedisReactiveHealthIndicatorTests {
 
@@ -59,7 +60,7 @@ public class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails()).containsOnlyKeys("version");
 			assertThat(h.getDetails().get("version")).isEqualTo("2.8.9");
 		}).verifyComplete();
-		verify(redisConnection).close();
+		verify(redisConnection).closeLater();
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class RedisReactiveHealthIndicatorTests {
 		StepVerifier.create(health)
 				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
-		verify(redisConnection).close();
+		verify(redisConnection).closeLater();
 	}
 
 	@Test
