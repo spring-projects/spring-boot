@@ -20,16 +20,20 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Initializer;
 
 /**
- * Default Cassandra Cluster Factory Implementation.
+ * {@code CassandraClusterFactory} provides control over the creation of a {@Cluster} from
+ * an {@link Initializer}.
  *
  * @auther Steffen F. Qvistgaard
  * @since 2.2.0
  */
-public class CassandraClusterFactoryImpl implements CassandraClusterFactory {
+@FunctionalInterface
+public interface ClusterFactory {
 
-	@Override
-	public Cluster build(final Initializer initializer) {
-		return Cluster.buildFrom(initializer);
-	}
+	/**
+	 * Creates a {@link Cluster} from the given {@link Initializer}.
+	 * @param initializer the {@Code Initializer}
+	 * @return the {@code Cluster}
+	 */
+	Cluster create(Initializer initializer);
 
 }

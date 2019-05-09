@@ -50,15 +50,9 @@ public class CassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraClusterFactory cassandraClusterFactory() {
-		return new CassandraClusterFactoryImpl();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public Cluster cassandraCluster(CassandraProperties properties,
 			ObjectProvider<ClusterBuilderCustomizer> builderCustomizers,
-			CassandraClusterFactory clusterFactory) {
+			ObjectProvider<ClusterFactory> clusterFactory) {
 		PropertyMapper map = PropertyMapper.get();
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(properties.getClusterName())
@@ -79,8 +73,7 @@ public class CassandraAutoConfiguration {
 				.toCall(builder::withoutJMXReporting);
 		builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(builder));
-
-		return clusterFactory.build(builder);
+		return clusterFactory.getIfAvailable(() -> Cluster::buildFrom).create(builder);
 	}
 
 	private QueryOptions getQueryOptions(CassandraProperties properties) {
