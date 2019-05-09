@@ -61,6 +61,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Dominic Gunn
  * @author Dan Zheng
+ * @author András Deák
  * @since 1.1.0
  */
 @Configuration
@@ -163,11 +164,11 @@ public class LiquibaseAutoConfiguration {
 
 		private DataSource createNewDataSource() {
 			String url = getProperty(this.properties::getUrl,
-					this.dataSourceProperties::getUrl);
+					this.dataSourceProperties::determineUrl);
 			String user = getProperty(this.properties::getUser,
-					this.dataSourceProperties::getUsername);
+					this.dataSourceProperties::determineUsername);
 			String password = getProperty(this.properties::getPassword,
-					this.dataSourceProperties::getPassword);
+					this.dataSourceProperties::determinePassword);
 			return DataSourceBuilder.create().url(url).username(user).password(password)
 					.build();
 		}
