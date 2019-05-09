@@ -111,7 +111,7 @@
 		<jmustache.version>1.14</jmustache.version>
 		<jna.version>4.5.2</jna.version>
 		<joda-time.version>2.10.1</joda-time.version>
-		<jolokia.version>1.6.0</jolokia.version>
+		<jolokia.version>1.6.1</jolokia.version>
 		<!-- Deprecated in favor of "johnzon.version" -->
 		<johnzon-jsonb.version>1.1.11</johnzon-jsonb.version>
 		<johnzon.version>${johnzon-jsonb.version}</johnzon.version>
