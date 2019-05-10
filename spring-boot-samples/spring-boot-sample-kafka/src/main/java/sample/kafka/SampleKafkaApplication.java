@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package sample.kafka;
 
+import org.apache.kafka.clients.admin.NewTopic;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +28,11 @@ public class SampleKafkaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleKafkaApplication.class, args);
+	}
+
+	@Bean
+	public NewTopic kafkaTestTopic() {
+		return new NewTopic("testTopic", 10, (short) 2);
 	}
 
 	@Bean

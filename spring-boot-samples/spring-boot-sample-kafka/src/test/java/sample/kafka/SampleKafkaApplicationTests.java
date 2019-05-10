@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(
 		properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-@EmbeddedKafka
+@EmbeddedKafka(topics = "testTopic")
 class SampleKafkaApplicationTests {
 
 	@RegisterExtension
