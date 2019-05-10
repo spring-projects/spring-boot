@@ -75,7 +75,7 @@ public class JsonTestersAutoConfiguration {
 				null);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonJsonTestersConfiguration {
 
@@ -89,7 +89,7 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Gson.class)
 	static class GsonJsonTestersConfiguration {
 
@@ -102,7 +102,7 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jsonb.class)
 	static class JsonbJsonTesterConfiguration {
 

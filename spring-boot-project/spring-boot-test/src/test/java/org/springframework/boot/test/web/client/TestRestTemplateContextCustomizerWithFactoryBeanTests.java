@@ -49,7 +49,7 @@ public class TestRestTemplateContextCustomizerWithFactoryBeanTests {
 		assertThat(this.restTemplate).isNotNull();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ComponentScan("org.springframework.boot.test.web.client.scan")
 	static class TestClassWithFactoryBean {
 

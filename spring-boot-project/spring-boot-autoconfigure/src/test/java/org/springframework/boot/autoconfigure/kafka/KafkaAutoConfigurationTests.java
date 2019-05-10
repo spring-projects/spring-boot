@@ -754,7 +754,7 @@ public class KafkaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestStreamsBuilderFactoryBeanConfiguration {
 
 		@Bean
