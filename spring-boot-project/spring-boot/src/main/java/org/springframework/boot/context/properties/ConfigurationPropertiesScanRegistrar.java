@@ -53,8 +53,17 @@ class ConfigurationPropertiesScanRegistrar
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		Set<String> packagesToScan = getPackagesToScan(importingClassMetadata);
-		register(registry, (ConfigurableListableBeanFactory) registry, packagesToScan);
+		if (isEnabled()) {
+			Set<String> packagesToScan = getPackagesToScan(importingClassMetadata);
+			register(registry, (ConfigurableListableBeanFactory) registry,
+					packagesToScan);
+		}
+	}
+
+	protected boolean isEnabled() {
+		return this.environment.getProperty(
+				ConfigurationPropertiesScan.CONFIGURATION_PROPERTIES_SCAN_ENABLED_PROPERTY,
+				Boolean.class, true);
 	}
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {

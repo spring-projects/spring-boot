@@ -41,6 +41,11 @@ import org.springframework.core.annotation.AliasFor;
 public @interface ConfigurationPropertiesScan {
 
 	/**
+	 * Whether configuration properties should be automatically scanned.
+	 */
+	String CONFIGURATION_PROPERTIES_SCAN_ENABLED_PROPERTY = "spring.boot.configurationpropertiesscan.enabled";
+
+	/**
 	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation
 	 * declarations e.g.: {@code @ConfigurationPropertiesScan("org.my.pkg")} instead of
 	 * {@code @ConfigurationPropertiesScan(basePackages="org.my.pkg")}.
