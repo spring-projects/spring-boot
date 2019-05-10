@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,13 +45,15 @@ public class OnEnabledDevToolsConditionTests {
 
 	@Test
 	public void outcomeWhenDevtoolsShouldBeEnabledIsTrueShouldMatch() throws Exception {
+		AtomicBoolean containsBean = new AtomicBoolean();
 		Thread thread = new Thread(() -> {
 			OnEnabledDevToolsConditionTests.this.context.refresh();
-			assertThat(OnEnabledDevToolsConditionTests.this.context.containsBean("test"))
-					.isTrue();
+			containsBean.set(
+					OnEnabledDevToolsConditionTests.this.context.containsBean("test"));
 		});
 		thread.start();
 		thread.join();
+		assertThat(containsBean).isTrue();
 	}
 
 	@Test
