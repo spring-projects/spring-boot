@@ -66,7 +66,7 @@ public class ConfigurationPropertiesScanTests {
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
 				"profile-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyProfileProperties"))
-				.isFalse();
+						.isFalse();
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class ConfigurationPropertiesScanTests {
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
 				"resource-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyResourceProperties"))
-				.isFalse();
+						.isFalse();
 	}
 
 	private void load(Class<?>... classes) {
