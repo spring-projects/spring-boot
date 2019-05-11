@@ -20,7 +20,6 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -45,25 +44,9 @@ public class ConfigurationPropertiesScanRegistrarTests {
 
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	private MockEnvironment environment;
-
 	@Before
 	public void setup() {
-		this.environment = new MockEnvironment();
-		this.registrar.setEnvironment(this.environment);
-	}
-
-	@Test
-	public void scanningDisabled() throws IOException {
-		this.environment.setProperty(
-				ConfigurationPropertiesScan.CONFIGURATION_PROPERTIES_SCAN_ENABLED_PROPERTY,
-				"false");
-		this.registrar.registerBeanDefinitions(
-				getAnnotationMetadata(ConfigurationPropertiesScanConfiguration.class),
-				this.beanFactory);
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.beanFactory.getBeanDefinition(
-						"bing-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$BingProperties"));
+		this.registrar.setEnvironment(new MockEnvironment());
 	}
 
 	@Test

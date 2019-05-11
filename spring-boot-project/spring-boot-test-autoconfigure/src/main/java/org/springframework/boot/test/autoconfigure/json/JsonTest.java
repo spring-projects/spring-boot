@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.OverrideConfigurationPropertiesScan;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.json.GsonTester;
@@ -68,7 +67,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @BootstrapWith(JsonTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
-@OverrideConfigurationPropertiesScan(enabled = false)
 @TypeExcludeFilters(JsonExcludeFilter.class)
 @AutoConfigureCache
 @AutoConfigureJson
