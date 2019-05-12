@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,15 +45,9 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
 public class HealthIndicatorAutoConfiguration {
-
-	private final HealthIndicatorProperties properties;
-
-	public HealthIndicatorAutoConfiguration(HealthIndicatorProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean({ HealthIndicator.class, ReactiveHealthIndicator.class })
@@ -63,10 +57,11 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HealthAggregator.class)
-	public OrderedHealthAggregator healthAggregator() {
+	public OrderedHealthAggregator healthAggregator(
+			HealthIndicatorProperties properties) {
 		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
-		if (this.properties.getOrder() != null) {
-			healthAggregator.setStatusOrder(this.properties.getOrder());
+		if (properties.getOrder() != null) {
+			healthAggregator.setStatusOrder(properties.getOrder());
 		}
 		return healthAggregator;
 	}
@@ -78,7 +73,7 @@ public class HealthIndicatorAutoConfiguration {
 		return HealthIndicatorRegistryBeans.get(applicationContext);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Flux.class)
 	static class ReactiveHealthIndicatorConfiguration {
 

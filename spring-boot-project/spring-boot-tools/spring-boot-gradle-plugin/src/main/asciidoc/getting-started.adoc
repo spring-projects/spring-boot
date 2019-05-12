@@ -19,18 +19,10 @@ include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
 ifeval::["{version-type}" == "MILESTONE"]
-The plugin is published to the Spring milestones repository. For Gradle versions less
-than 4.10, this means that you must apply the plugin imperatively:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-include::../gradle/getting-started/apply-plugin-milestone.gradle[]
-----
-
-For Gradle 4.10 and above, Gradle can be configured to use the milestones repository
-and it can be applied using the `plugins` block. To configure Gradle to use the milestones
-repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts`
-(Kotlin):
+The plugin is published to the Spring milestones repository. Gradle can be configured to
+use the milestones repository and the plugin can then be applied using the `plugins`
+block. To configure Gradle to use the milestones repository, add the following to your
+`settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -59,18 +51,10 @@ include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
 ifeval::["{version-type}" == "SNAPSHOT"]
-The plugin is published to the Spring snapshots repository. For Gradle versions less
-than 4.10, this means that you must apply the plugin imperatively:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-include::../gradle/getting-started/apply-plugin-milestone.gradle[]
-----
-
-For Gradle 4.10 and above, Gradle can be configured to use the snapshots repository
-and it can be applied using the `plugins` block. To configure Gradle to use the snapshots
-repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts`
-(Kotlin):
+The plugin is published to the Spring snapshots repository. Gradle can be configured to
+use the snapshots repository and the plugin can then be applied using the `plugins`
+block. To configure Gradle to use the snapshots repository, add the following to your
+`settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

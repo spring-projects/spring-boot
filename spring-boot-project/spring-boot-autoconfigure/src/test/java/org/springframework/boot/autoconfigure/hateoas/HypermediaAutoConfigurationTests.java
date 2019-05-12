@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import org.junit.After;
-import org.junit.Test;
+import java.util.Optional;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.EntityLinksConfiguration;
@@ -26,19 +28,19 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.LinkDiscoverer;
-import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.client.LinkDiscoverer;
+import org.springframework.hateoas.client.LinkDiscoverers;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.hateoas.hal.HalLinkDiscoverer;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
+import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
+import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,9 +54,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HypermediaAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigServletWebApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -63,19 +65,20 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void linkDiscoverersCreated() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
 		LinkDiscoverers discoverers = this.context.getBean(LinkDiscoverers.class);
 		assertThat(discoverers).isNotNull();
-		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
-		assertThat(discoverer).isInstanceOf(HalLinkDiscoverer.class);
+		Optional<LinkDiscoverer> discoverer = discoverers
+				.getLinkDiscovererFor(MediaTypes.HAL_JSON);
+		assertThat(discoverer).containsInstanceOf(HalLinkDiscoverer.class);
 	}
 
 	@Test
 	public void entityLinksCreated() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
@@ -85,7 +88,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EnableHypermediaSupportConfig.class, BaseConfig.class);
 		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
@@ -97,7 +100,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void supportedMediaTypesOfTypeConstrainedConvertersIsCustomized() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
@@ -113,7 +116,7 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void customizationOfSupportedMediaTypesCanBeDisabled() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		TestPropertyValues.of("spring.hateoas.use-hal-as-default-json-media-type:false")
@@ -136,7 +139,7 @@ public class HypermediaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	static class EnableHypermediaSupportConfig {
 

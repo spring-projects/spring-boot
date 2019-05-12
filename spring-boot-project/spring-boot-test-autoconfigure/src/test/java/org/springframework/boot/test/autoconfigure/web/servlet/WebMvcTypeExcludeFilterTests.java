@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -113,20 +113,6 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 	}
 
-	@Test
-	public void matchWhenSecureFalse() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				WithSecureFalse.class);
-		assertThat(excludes(filter, Controller1.class)).isFalse();
-		assertThat(excludes(filter, Controller2.class)).isFalse();
-		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
-		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
-		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
-		assertThat(excludes(filter, ExampleService.class)).isTrue();
-		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
-		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
-	}
-
 	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type)
 			throws IOException {
 		MetadataReader metadataReader = this.metadataReaderFactory
@@ -154,13 +140,9 @@ public class WebMvcTypeExcludeFilterTests {
 
 	}
 
-	@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = Controller1.class))
+	@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+			classes = Controller1.class))
 	static class WithExcludeFilter {
-
-	}
-
-	@WebMvcTest(secure = false)
-	static class WithSecureFalse {
 
 	}
 

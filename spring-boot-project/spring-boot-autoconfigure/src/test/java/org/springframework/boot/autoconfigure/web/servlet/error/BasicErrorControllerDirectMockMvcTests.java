@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,8 +28,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
- * {@link org.springframework.test.context.junit4.SpringRunner}.
+ * {@link org.springframework.test.context.junit.jupiter.SpringExtension}.
  *
  * @author Dave Syer
  * @author Sebastien Deleuze
@@ -67,7 +67,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	private MockMvc mockMvc;
 
-	@After
+	@AfterEach
 	public void close() {
 		ApplicationContextTestUtils.closeAll(this.wac);
 	}
@@ -131,13 +131,13 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	protected static class ParentConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	@EnableWebMvc
 	protected static class WebMvcIncludedConfiguration {
@@ -149,7 +149,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	protected static class VanillaConfiguration {
 
@@ -160,7 +160,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	protected static class ChildConfiguration {
 
@@ -172,7 +172,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
 	@MinimalWebConfiguration
 	@Aspect

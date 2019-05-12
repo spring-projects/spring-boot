@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.configurationprocessor.json;
 // Note: this class was written without inspecting the non-free org.json source code.
 
 /**
- * Parses a JSON (<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>) encoded
+ * Parses a JSON (<a href="https://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>) encoded
  * string into the corresponding object. Most clients of this class will use only need the
  * {@link #JSONTokener(String) constructor} and {@link #nextValue} method. Example usage:
  * <pre>
@@ -151,7 +151,7 @@ public class JSONTokener {
 				/*
 				 * Skip a # hash end-of-line comment. The JSON RFC doesn't specify this
 				 * behavior, but it's required to parse existing documents. See
-				 * http://b/2571423.
+				 * https://b/2571423.
 				 */
 				skipToEndOfLine();
 				continue;

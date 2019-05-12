@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Scheduler.class, SchedulerFactoryBean.class,
 		PlatformTransactionManager.class })
 @EnableConfigurationProperties(QuartzProperties.class)
@@ -60,61 +60,37 @@ import org.springframework.transaction.PlatformTransactionManager;
 		HibernateJpaAutoConfiguration.class })
 public class QuartzAutoConfiguration {
 
-	private final QuartzProperties properties;
-
-	private final ObjectProvider<SchedulerFactoryBeanCustomizer> customizers;
-
-	private final JobDetail[] jobDetails;
-
-	private final Map<String, Calendar> calendars;
-
-	private final Trigger[] triggers;
-
-	private final ApplicationContext applicationContext;
-
-	public QuartzAutoConfiguration(QuartzProperties properties,
-			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
-			ObjectProvider<JobDetail[]> jobDetails, Map<String, Calendar> calendars,
-			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
-		this.properties = properties;
-		this.customizers = customizers;
-		this.jobDetails = jobDetails.getIfAvailable();
-		this.calendars = calendars;
-		this.triggers = triggers.getIfAvailable();
-		this.applicationContext = applicationContext;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public SchedulerFactoryBean quartzScheduler() {
+	public SchedulerFactoryBean quartzScheduler(QuartzProperties properties,
+			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
+			ObjectProvider<JobDetail> jobDetails, Map<String, Calendar> calendars,
+			ObjectProvider<Trigger> triggers, ApplicationContext applicationContext) {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
-		jobFactory.setApplicationContext(this.applicationContext);
+		jobFactory.setApplicationContext(applicationContext);
 		schedulerFactoryBean.setJobFactory(jobFactory);
-		if (this.properties.getSchedulerName() != null) {
-			schedulerFactoryBean.setSchedulerName(this.properties.getSchedulerName());
+		if (properties.getSchedulerName() != null) {
+			schedulerFactoryBean.setSchedulerName(properties.getSchedulerName());
 		}
-		schedulerFactoryBean.setAutoStartup(this.properties.isAutoStartup());
+		schedulerFactoryBean.setAutoStartup(properties.isAutoStartup());
 		schedulerFactoryBean
-				.setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
+				.setStartupDelay((int) properties.getStartupDelay().getSeconds());
 		schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(
-				this.properties.isWaitForJobsToCompleteOnShutdown());
+				properties.isWaitForJobsToCompleteOnShutdown());
 		schedulerFactoryBean
-				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
-		if (!this.properties.getProperties().isEmpty()) {
+				.setOverwriteExistingJobs(properties.isOverwriteExistingJobs());
+		if (!properties.getProperties().isEmpty()) {
 			schedulerFactoryBean
-					.setQuartzProperties(asProperties(this.properties.getProperties()));
+					.setQuartzProperties(asProperties(properties.getProperties()));
 		}
-		if (this.jobDetails != null && this.jobDetails.length > 0) {
-			schedulerFactoryBean.setJobDetails(this.jobDetails);
-		}
-		if (this.calendars != null && !this.calendars.isEmpty()) {
-			schedulerFactoryBean.setCalendars(this.calendars);
-		}
-		if (this.triggers != null && this.triggers.length > 0) {
-			schedulerFactoryBean.setTriggers(this.triggers);
-		}
-		customize(schedulerFactoryBean);
+		schedulerFactoryBean
+				.setJobDetails(jobDetails.orderedStream().toArray(JobDetail[]::new));
+		schedulerFactoryBean.setCalendars(calendars);
+		schedulerFactoryBean
+				.setTriggers(triggers.orderedStream().toArray(Trigger[]::new));
+		customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(schedulerFactoryBean));
 		return schedulerFactoryBean;
 	}
 
@@ -124,12 +100,7 @@ public class QuartzAutoConfiguration {
 		return properties;
 	}
 
-	private void customize(SchedulerFactoryBean schedulerFactoryBean) {
-		this.customizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(schedulerFactoryBean));
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	protected static class JdbcStoreTypeConfiguration {
 

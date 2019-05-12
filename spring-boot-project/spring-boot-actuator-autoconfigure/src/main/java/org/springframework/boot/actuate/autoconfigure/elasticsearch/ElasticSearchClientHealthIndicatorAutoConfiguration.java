@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,32 +43,31 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 2.2.0 as {@literal org.elasticsearch.client:transport} has been
+ * deprecated upstream
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Client.class)
 @ConditionalOnBean(Client.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
 @EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
+@Deprecated
 public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
-
-	private final Map<String, Client> clients;
 
 	private final ElasticsearchHealthIndicatorProperties properties;
 
 	public ElasticSearchClientHealthIndicatorAutoConfiguration(
-			Map<String, Client> clients,
 			ElasticsearchHealthIndicatorProperties properties) {
-		this.clients = clients;
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "elasticsearchHealthIndicator")
-	public HealthIndicator elasticsearchHealthIndicator() {
-		return createHealthIndicator(this.clients);
+	public HealthIndicator elasticsearchHealthIndicator(Map<String, Client> clients) {
+		return createHealthIndicator(clients);
 	}
 
 	@Override

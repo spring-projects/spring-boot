@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
@@ -55,6 +56,8 @@ import org.springframework.web.context.WebApplicationContext;
  * specified.</li>
  * <li>Allows custom {@link Environment} properties to be defined using the
  * {@link #properties() properties attribute}.</li>
+ * <li>Allows application arguments to be defined using the {@link #args() args
+ * attribute}.</li>
  * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
  * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
@@ -94,13 +97,21 @@ public @interface SpringBootTest {
 	String[] properties() default {};
 
 	/**
+	 * Application arguments that should be passed to the application under test.
+	 * @return the application arguments to pass to the application under test.
+	 * @see ApplicationArguments
+	 * @see SpringApplication#run(String...)
+	 */
+	String[] args() default {};
+
+	/**
 	 * The <em>annotated classes</em> to use for loading an
 	 * {@link org.springframework.context.ApplicationContext ApplicationContext}. Can also
 	 * be specified using
 	 * {@link ContextConfiguration#classes() @ContextConfiguration(classes=...)}. If no
 	 * explicit classes are defined the test will look for nested
 	 * {@link Configuration @Configuration} classes, before falling back to a
-	 * {@link SpringBootConfiguration} search.
+	 * {@link SpringBootConfiguration @SpringBootConfiguration} search.
 	 * @see ContextConfiguration#classes()
 	 * @return the annotated classes used to load the application context
 	 */
@@ -130,7 +141,7 @@ public @interface SpringBootTest {
 		 * Creates a web application context (reactive or servlet based) and sets a
 		 * {@code server.port=0} {@link Environment} property (which usually triggers
 		 * listening on a random port). Often used in conjunction with a
-		 * {@link LocalServerPort} injected field on the test.
+		 * {@link LocalServerPort @LocalServerPort} injected field on the test.
 		 */
 		RANDOM_PORT(true),
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
@@ -66,22 +66,16 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
 public class WebServicesAutoConfiguration {
 
-	private final WebServicesProperties properties;
-
-	public WebServicesAutoConfiguration(WebServicesProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-			ApplicationContext applicationContext) {
+			ApplicationContext applicationContext, WebServicesProperties properties) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
-		String path = this.properties.getPath();
+		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(
 				servlet, urlMapping);
-		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
+		WebServicesProperties.Servlet servletProperties = properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		servletProperties.getInit().forEach(registration::addInitParameter);
 		return registration;
@@ -93,7 +87,7 @@ public class WebServicesAutoConfiguration {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWs
 	protected static class WsConfiguration {
 

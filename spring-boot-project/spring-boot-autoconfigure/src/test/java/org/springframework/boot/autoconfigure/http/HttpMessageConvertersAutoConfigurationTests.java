@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import javax.json.bind.Jsonb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -38,8 +38,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -269,7 +269,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenReactiveWebApplicationHttpMessageConvertersRestTemplateIsNotConfigured() {
+	public void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations
 						.of(HttpMessageConvertersAutoConfiguration.class))
@@ -306,7 +306,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		assertThat(converters.getConverters()).contains(converter);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonObjectMapperConfig {
 
 		@Bean
@@ -316,7 +316,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonObjectMapperBuilderConfig {
 
 		@Bean
@@ -331,7 +331,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JacksonConverterConfig {
 
 		@Bean
@@ -344,7 +344,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class GsonConverterConfig {
 
 		@Bean
@@ -356,7 +356,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JsonbConverterConfig {
 
 		@Bean
@@ -368,7 +368,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class StringConverterConfig {
 
 		@Bean
@@ -378,13 +378,13 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TypeConstrainedConverterConfiguration {
 
 		@Bean
 		public TypeConstrainedMappingJackson2HttpMessageConverter typeConstrainedConverter() {
 			return new TypeConstrainedMappingJackson2HttpMessageConverter(
-					ResourceSupport.class);
+					RepresentationModel.class);
 		}
 
 	}

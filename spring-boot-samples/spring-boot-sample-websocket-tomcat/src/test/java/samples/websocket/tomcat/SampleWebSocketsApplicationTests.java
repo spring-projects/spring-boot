@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import samples.websocket.tomcat.client.GreetingService;
 import samples.websocket.tomcat.client.SimpleClientWebSocketHandler;
 import samples.websocket.tomcat.client.SimpleGreetingService;
@@ -38,15 +37,14 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SampleTomcatWebSocketApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleWebSocketsApplicationTests {
+@SpringBootTest(classes = SampleTomcatWebSocketApplication.class,
+		webEnvironment = WebEnvironment.RANDOM_PORT)
+class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
@@ -54,7 +52,7 @@ public class SampleWebSocketsApplicationTests {
 	private int port = 1234;
 
 	@Test
-	public void echoEndpoint() {
+	void echoEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
@@ -70,7 +68,7 @@ public class SampleWebSocketsApplicationTests {
 	}
 
 	@Test
-	public void reverseEndpoint() {
+	void reverseEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties(
@@ -84,7 +82,7 @@ public class SampleWebSocketsApplicationTests {
 		assertThat(messagePayloadReference.get()).isEqualTo("Reversed: !dlrow olleH");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClientConfiguration implements CommandLineRunner {
 
 		@Value("${websocket.uri}")

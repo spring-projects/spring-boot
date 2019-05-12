@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,11 @@
 
 package sample.jpa;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -38,23 +36,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Oliver Gierke
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class SampleJpaApplicationTests {
+class SampleJpaApplicationTests {
 
 	@Autowired
 	private WebApplicationContext context;
 
 	private MockMvc mvc;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
 
 	@Test
-	public void testHome() throws Exception {
+	void testHome() throws Exception {
 		this.mvc.perform(get("/")).andExpect(status().isOk())
 				.andExpect(xpath("//tbody/tr").nodeCount(4));
 	}

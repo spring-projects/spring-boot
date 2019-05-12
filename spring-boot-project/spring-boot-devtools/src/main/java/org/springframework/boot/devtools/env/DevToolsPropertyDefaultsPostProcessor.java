@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.devtools.DevToolsEnablementDeducer;
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -79,7 +80,8 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		if (isLocalApplication(environment)) {
+		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())
+				&& isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
 				logger.info("Devtools property defaults active! Set '" + ENABLED
 						+ "' to 'false' to disable");

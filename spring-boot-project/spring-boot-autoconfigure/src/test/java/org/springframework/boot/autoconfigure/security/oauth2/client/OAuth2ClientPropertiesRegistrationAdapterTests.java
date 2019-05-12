@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
 import org.junit.Test;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
@@ -73,14 +74,14 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		ClientRegistration adapted = registrations.get("registration");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri())
-				.isEqualTo("http://example.com/auth");
-		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
+				.isEqualTo("https://example.com/auth");
+		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://example.com/token");
 		UserInfoEndpoint userInfoEndpoint = adaptedProvider.getUserInfoEndpoint();
-		assertThat(userInfoEndpoint.getUri()).isEqualTo("http://example.com/info");
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/info");
 		assertThat(userInfoEndpoint.getAuthenticationMethod()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthenticationMethod.FORM);
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
-		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
+		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("https://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
@@ -89,7 +90,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("user");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
@@ -161,7 +162,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("user");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
@@ -270,23 +271,23 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getClientName()).isEqualTo(issuer);
 		assertThat(adapted.getScopes()).containsOnly("user");
 		assertThat(adapted.getRedirectUriTemplate())
-				.isEqualTo("http://example.com/redirect");
+				.isEqualTo("https://example.com/redirect");
 		assertThat(providerDetails.getAuthorizationUri())
-				.isEqualTo("http://example.com/auth");
-		assertThat(providerDetails.getTokenUri()).isEqualTo("http://example.com/token");
-		assertThat(providerDetails.getJwkSetUri()).isEqualTo("http://example.com/jwk");
+				.isEqualTo("https://example.com/auth");
+		assertThat(providerDetails.getTokenUri()).isEqualTo("https://example.com/token");
+		assertThat(providerDetails.getJwkSetUri()).isEqualTo("https://example.com/jwk");
 		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
-		assertThat(userInfoEndpoint.getUri()).isEqualTo("http://example.com/info");
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/info");
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 	}
 
 	private Provider createProvider() {
 		Provider provider = new Provider();
-		provider.setAuthorizationUri("http://example.com/auth");
-		provider.setTokenUri("http://example.com/token");
-		provider.setUserInfoUri("http://example.com/info");
+		provider.setAuthorizationUri("https://example.com/auth");
+		provider.setTokenUri("https://example.com/token");
+		provider.setUserInfoUri("https://example.com/info");
 		provider.setUserNameAttribute("sub");
-		provider.setJwkSetUri("http://example.com/jwk");
+		provider.setJwkSetUri("https://example.com/jwk");
 		return provider;
 	}
 
@@ -296,7 +297,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
 		registration.setClientAuthenticationMethod("post");
-		registration.setRedirectUri("http://example.com/redirect");
+		registration.setRedirectUri("https://example.com/redirect");
 		registration.setScope(Collections.singleton("user"));
 		registration.setAuthorizationGrantType("authorization_code");
 		return registration;
@@ -337,7 +338,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
 	}
 
-	private void setupMockResponse(String issuer) throws Exception {
+	private void setupMockResponse(String issuer) throws JsonProcessingException {
 		MockResponse mockResponse = new MockResponse()
 				.setResponseCode(HttpStatus.OK.value())
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))

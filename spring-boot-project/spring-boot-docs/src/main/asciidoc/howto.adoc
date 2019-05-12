@@ -489,7 +489,7 @@ can come from additional jar files on your classpath.
 A running application with the Actuator features has a `configprops` endpoint that shows
 all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<appendix-application-properties#common-application-properties,
+The appendix includes an <<appendix.adoc#common-application-properties,
 `application.properties`>> example with a list of the most common properties supported by
 Spring Boot. The definitive list comes from searching the source code for
 `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of
@@ -623,7 +623,6 @@ shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
 
@@ -769,7 +768,7 @@ additional dependency.
 Spring Boot manages the version for the
 `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for
 all platforms. Developers can choose to import only the required dependencies using
-a classifier (see http://netty.io/wiki/forked-tomcat-native.html[the Netty official
+a classifier (see https://netty.io/wiki/forked-tomcat-native.html[the Netty official
 documentation]).
 
 
@@ -969,11 +968,11 @@ construct links to itself.
 
 If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most
 proxy servers do so), the absolute links should be rendered correctly, provided
-`server.use-forward-headers` is set to `true` in your `application.properties`.
+`server.forward-headers-strategy` is set to `NATIVE` or `FRAMEWORK` in your `application.properties`.
 
 NOTE: If your application runs in Cloud Foundry or Heroku, the
-`server.use-forward-headers` property defaults to `true`. In all
-other instances, it defaults to `false`.
+`server.forward-headers-strategy` property defaults to `NATIVE`. In all
+other instances, it defaults to `NONE`.
 
 
 
@@ -1006,7 +1005,7 @@ NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but 
 so in production).
 
 You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
-switching the automatic one off (to do so, set `server.use-forward-headers=false`) and
+switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and
 adding a new valve instance in a `TomcatServletWebServerFactory` bean.
 
 
@@ -1167,9 +1166,9 @@ work. To use the Jackson XML renderer, add the following dependency to your proj
 	</dependency>
 ----
 
-If Jackson's XML extension is not available, JAXB (provided by default in the JDK) is
-used, with the additional requirement of having `MyThing` annotated as
-`@XmlRootElement`, as shown in the following example:
+If Jackson's XML extension is not available and JAXB is available, XML can be rendered
+with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as
+shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1180,7 +1179,18 @@ used, with the additional requirement of having `MyThing` annotated as
 	}
 ----
 
-To get the server to render XML instead of JSON, you might have to send an
+JAXB is only available out of the box with Java 8. If you're using a more recent Java
+generation, add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.glassfish.jaxb</groupId>
+		<artifactId>jaxb-runtime</artifactId>
+	</dependency>
+----
+
+NOTE: To get the server to render XML instead of JSON, you might have to send an
 `Accept: text/xml` header (or use a browser).
 
 
@@ -1491,7 +1501,7 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 
 Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which
 is typically provided by Spring Framework's `spring-jcl` module. To use
-http://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
+https://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
 The simplest way to do that is through the starters, which all depend on
 `spring-boot-starter-logging`. For a web application, you need only
 `spring-boot-starter-web`, since it depends transitively on the logging starter. If you
@@ -1595,7 +1605,7 @@ following example:
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for Logging
-Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
+Spring Boot supports https://logging.apache.org/log4j/2.x[Log4j 2] for logging
 configuration if it is on the classpath. If you use the starters for
 assembling dependencies, you have to exclude Logback and then include log4j 2
 instead. If you do not use the starters, you need to provide (at least) `spring-jcl` in
@@ -1891,7 +1901,7 @@ annotation, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@EntityScan(basePackageClasses=City.class)
 	public class Application {
@@ -1915,15 +1925,8 @@ conditions, it has different defaults. If an embedded database is used and no sc
 manager (such as Liquibase or Flyway) is handling the `DataSource`, it defaults to
 `create-drop`. In all other cases, it defaults to `none`.
 
-The dialect to use is also automatically detected based on the current `DataSource`, but
-you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
-check on startup.
-
-NOTE: Specifying a `database` leads to the configuration of a well-defined Hibernate
-dialect. Several databases have more than one `Dialect`, and this may not suit your needs.
-In that case, you can either set `spring.jpa.database` to `default` to let Hibernate
-figure things out or set the dialect by setting the `spring.jpa.database-platform`
-property.
+The dialect to use is detected by the JPA provider. If you prefer to set the dialect
+yourself, set the `spring.jpa.database-platform` property.
 
 The most common options to set are shown in the following example:
 
@@ -2071,14 +2074,14 @@ as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = Customer.class,
 			entityManagerFactoryRef = "customerEntityManagerFactory")
 	public class CustomerConfiguration {
 		...
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = Order.class,
 			entityManagerFactoryRef = "orderEntityManagerFactory")
 	public class OrderConfiguration {
@@ -2187,6 +2190,7 @@ reused to provide similar features to what the auto-configuration does with a si
 == Database Initialization
 An SQL database can be initialized in different ways depending on what your stack is.
 Of course, you can also do it manually, provided the database is a separate process.
+It is recommended to use a single mechanism for schema generation.
 
 
 
@@ -2278,7 +2282,7 @@ You can also switch off the initialization explicitly by setting
 [[howto-use-a-higher-level-database-migration-tool]]
 === Use a Higher-level Database Migration Tool
 Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Flyway]
-and http://www.liquibase.org/[Liquibase].
+and https://www.liquibase.org/[Liquibase].
 
 [[howto-execute-flyway-database-migrations-on-startup]]
 ==== Execute Flyway Database Migrations on Startup
@@ -2588,7 +2592,7 @@ requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class SslWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override
@@ -2615,7 +2619,7 @@ There are several options for hot reloading. The recommended approach is to use
 additional development-time features, such as support for fast application restarts
 and LiveReload as well as sensible development-time configuration (such as template
 caching). Devtools works by monitoring the classpath for changes. This means that static
-resource changes must be "built" for the change to take affect. By default, this happens
+resource changes must be "built" for the change to take effect. By default, this happens
 automatically in Eclipse when you save your changes. In IntelliJ IDEA, the Make Project
 command triggers the necessary build. Due to the
 <<using-spring-boot.adoc#using-boot-devtools-restart-exclude, default restart
@@ -2671,7 +2675,7 @@ for other Groovy customization options.
 === Fast Application Restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
 While not as fast as technologies such as
-http://zeroturnaround.com/software/jrebel/[JRebel] it is usually significantly faster than
+https://zeroturnaround.com/software/jrebel/[JRebel] it is usually significantly faster than
 a "`cold start`". You should probably give it a try before investigating some of the more
 complex reload options discussed later in this document.
 
@@ -2865,9 +2869,9 @@ then be depended upon by your application and other projects.
 If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle
 plugins must be configured to produce a separate artifact that is suitable for use as a
 dependency. The executable archive cannot be used as a dependency as the
-<<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,executable jar
-format>> packages application classes in `BOOT-INF/classes`. This means
-that they cannot be found when the executable jar is used as a dependency.
+<<appendix.adoc#executable-jar-jar-file-structure,executable jar format>> packages
+application classes in `BOOT-INF/classes`. This means that they cannot be found when the
+executable jar is used as a dependency.
 
 To produce the two artifacts, one that can be used as a dependency and one that is
 executable, a classifier must be specified. This classifier is applied to the name of the
@@ -3307,9 +3311,9 @@ rather than the version that was pre-installed with the server. You can do so by
 		xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-			http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+			https://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
 			http://xmlns.oracle.com/weblogic/weblogic-web-app
-			http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+			https://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
 		<wls:container-descriptor>
 			<wls:prefer-application-packages>
 				<wls:package-name>org.slf4j</wls:package-name>

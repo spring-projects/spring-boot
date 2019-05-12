@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms.artemis;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,29 +41,16 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@Configuration
-@ConditionalOnClass(name = ArtemisConnectionFactoryFactory.EMBEDDED_JMS_CLASS)
-@ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(EmbeddedJMS.class)
+@ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
 class ArtemisEmbeddedServerConfiguration {
 
 	private final ArtemisProperties properties;
 
-	private final ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers;
-
-	private final List<JMSQueueConfiguration> queuesConfiguration;
-
-	private final List<TopicConfiguration> topicsConfiguration;
-
-	ArtemisEmbeddedServerConfiguration(ArtemisProperties properties,
-			ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers,
-			ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
-			ObjectProvider<TopicConfiguration> topicsConfiguration) {
+	ArtemisEmbeddedServerConfiguration(ArtemisProperties properties) {
 		this.properties = properties;
-		this.configurationCustomizers = configurationCustomizers;
-		this.queuesConfiguration = queuesConfiguration.orderedStream()
-				.collect(Collectors.toList());
-		this.topicsConfiguration = topicsConfiguration.orderedStream()
-				.collect(Collectors.toList());
 	}
 
 	@Bean
@@ -78,35 +64,33 @@ class ArtemisEmbeddedServerConfiguration {
 	@ConditionalOnMissingBean
 	public EmbeddedJMS artemisServer(
 			org.apache.activemq.artemis.core.config.Configuration configuration,
-			JMSConfiguration jmsConfiguration) {
+			JMSConfiguration jmsConfiguration,
+			ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers) {
 		EmbeddedJMS server = new EmbeddedJMS();
-		customize(configuration);
+		configurationCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(configuration));
 		server.setConfiguration(configuration);
 		server.setJmsConfiguration(jmsConfiguration);
 		server.setRegistry(new ArtemisNoOpBindingRegistry());
 		return server;
 	}
 
-	private void customize(
-			org.apache.activemq.artemis.core.config.Configuration configuration) {
-		this.configurationCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(configuration));
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public JMSConfiguration artemisJmsConfiguration() {
+	public JMSConfiguration artemisJmsConfiguration(
+			ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
+			ObjectProvider<TopicConfiguration> topicsConfiguration) {
 		JMSConfiguration configuration = new JMSConfigurationImpl();
-		addAll(configuration.getQueueConfigurations(), this.queuesConfiguration);
-		addAll(configuration.getTopicConfigurations(), this.topicsConfiguration);
+		addAll(configuration.getQueueConfigurations(), queuesConfiguration);
+		addAll(configuration.getTopicConfigurations(), topicsConfiguration);
 		addQueues(configuration, this.properties.getEmbedded().getQueues());
 		addTopics(configuration, this.properties.getEmbedded().getTopics());
 		return configuration;
 	}
 
-	private <T> void addAll(List<T> list, Collection<? extends T> items) {
+	private <T> void addAll(List<T> list, ObjectProvider<T> items) {
 		if (items != null) {
-			list.addAll(items);
+			list.addAll(items.orderedStream().collect(Collectors.toList()));
 		}
 	}
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,8 +55,14 @@ public class BootJar extends Jar implements BootArchive {
 		getMainSpec().with(this.bootInf);
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
 		this.bootInf.into("lib", classpathFiles(File::isFile));
-		this.bootInf.filesMatching("module-info.class", (details) -> {
-			details.setRelativePath(details.getRelativeSourcePath());
+		this.bootInf.filesMatching("module-info.class",
+				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
+		getRootSpec().eachFile((details) -> {
+			String pathString = details.getRelativePath().getPathString();
+			if (pathString.startsWith("BOOT-INF/lib/")
+					&& !this.support.isZip(details.getFile())) {
+				details.exclude();
+			}
 		});
 	}
 
@@ -68,7 +74,8 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName());
+		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/",
+				"BOOT-INF/lib/");
 		super.copy();
 	}
 

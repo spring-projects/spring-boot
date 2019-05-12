@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package sample.test.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -25,43 +25,43 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link VehicleIdentificationNumber}.
  *
  * @author Phillip Webb
- * @see <a href="http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html">
+ * @see <a href="https://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html">
  * Naming standards for unit tests</a>
- * @see <a href="http://joel-costigliola.github.io/assertj/">AssertJ</a>
+ * @see <a href="https://joel-costigliola.github.io/assertj/">AssertJ</a>
  */
-public class VehicleIdentificationNumberTests {
+class VehicleIdentificationNumberTests {
 
 	private static final String SAMPLE_VIN = "41549485710496749";
 
 	@Test
-	public void createWhenVinIsNullShouldThrowException() {
+	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new VehicleIdentificationNumber(null))
 				.withMessage("VIN must not be null");
 	}
 
 	@Test
-	public void createWhenVinIsMoreThan17CharsShouldThrowException() {
+	void createWhenVinIsMoreThan17CharsShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new VehicleIdentificationNumber("012345678901234567"))
 				.withMessage("VIN must be exactly 17 characters");
 	}
 
 	@Test
-	public void createWhenVinIsLessThan17CharsShouldThrowException() {
+	void createWhenVinIsLessThan17CharsShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new VehicleIdentificationNumber("0123456789012345"))
 				.withMessage("VIN must be exactly 17 characters");
 	}
 
 	@Test
-	public void toStringShouldReturnVin() {
+	void toStringShouldReturnVin() {
 		VehicleIdentificationNumber vin = new VehicleIdentificationNumber(SAMPLE_VIN);
 		assertThat(vin.toString()).isEqualTo(SAMPLE_VIN);
 	}
 
 	@Test
-	public void equalsAndHashCodeShouldBeBasedOnVin() {
+	void equalsAndHashCodeShouldBeBasedOnVin() {
 		VehicleIdentificationNumber vin1 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin2 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber(

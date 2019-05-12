@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,8 +50,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * {@link org.springframework.data.jpa.repository.JpaRepository} configured.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
- * using the {@link org.springframework.data.jpa.repository.config.EnableJpaRepositories}
- * annotation.
+ * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *
@@ -59,13 +58,14 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * @author Josh Long
  * @see EnableJpaRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class,
 		JpaRepositoryConfigExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(JpaRepositoriesAutoConfigureRegistrar.class)
+@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled",
+		havingValue = "true", matchIfMissing = true)
+@Import(JpaRepositoriesRegistrar.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class,
 		TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
@@ -98,12 +98,14 @@ public class JpaRepositoriesAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories",
+				name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
 		static class DeferredBootstrapMode {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories",
+				name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
 		static class LazyBootstrapMode {
 
 		}

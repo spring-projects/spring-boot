@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.util.Collections;
+
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Dan Zheng
  */
 public class JdbcTemplateAutoConfigurationTests {
 
@@ -186,6 +189,21 @@ public class JdbcTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDependencyToFlywayWithJdbcTemplateMixed() {
+		this.contextRunner
+				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
+				.withPropertyValues("spring.flyway.locations:classpath:db/city")
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
+					assertThat(context.getBean(
+							NamedParameterDataSourceMigrationValidator.class).count)
+									.isEqualTo(0);
+				});
+	}
+
+	@Test
 	public void testDependencyToLiquibase() {
 		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
 				.withPropertyValues(
@@ -199,7 +217,24 @@ public class JdbcTemplateAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Test
+	public void testDependencyToLiquibaseWithJdbcTemplateMixed() {
+		this.contextRunner
+				.withUserConfiguration(NamedParameterDataSourceMigrationValidator.class)
+				.withPropertyValues(
+						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
+				.withConfiguration(
+						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
+					assertThat(context.getBean(
+							NamedParameterDataSourceMigrationValidator.class).count)
+									.isEqualTo(0);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -215,7 +250,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestDataSourceConfiguration {
 
 		@Bean
@@ -225,7 +260,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultiJdbcTemplateConfiguration {
 
 		@Bean
@@ -240,7 +275,7 @@ public class JdbcTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultiJdbcTemplateUsingPrimaryConfiguration {
 
 		@Bean
@@ -274,6 +309,18 @@ public class JdbcTemplateAutoConfigurationTests {
 		DataSourceMigrationValidator(JdbcTemplate jdbcTemplate) {
 			this.count = jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY",
 					Integer.class);
+		}
+
+	}
+
+	static class NamedParameterDataSourceMigrationValidator {
+
+		private final Integer count;
+
+		NamedParameterDataSourceMigrationValidator(
+				NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+			this.count = namedParameterJdbcTemplate.queryForObject(
+					"SELECT COUNT(*) from CITY", Collections.emptyMap(), Integer.class);
 		}
 
 	}

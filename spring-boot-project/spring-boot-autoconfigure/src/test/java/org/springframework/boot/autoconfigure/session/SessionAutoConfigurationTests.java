@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
@@ -245,7 +246,19 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 						context.getBeansOfType(DefaultCookieSerializer.class)).isEmpty());
 	}
 
-	@Configuration
+	@Test
+	public void autoConfiguredCookieSerializerIsConfiguredWithRememberMeRequestAttribute() {
+		this.contextRunner.withBean(SpringSessionRememberMeServicesConfiguration.class)
+				.run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context
+							.getBean(DefaultCookieSerializer.class);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue(
+							"rememberMeRequestAttribute",
+							SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
 
@@ -261,7 +274,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class UserProvidedCookieSerializerConfiguration
 			extends SessionRepositoryConfiguration {
@@ -273,7 +286,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class UserProvidedCookieHttpSessionStrategyConfiguration
 			extends SessionRepositoryConfiguration {
@@ -285,7 +298,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class UserProvidedHeaderHttpSessionStrategyConfiguration
 			extends SessionRepositoryConfiguration {
@@ -297,7 +310,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class UserProvidedCustomHttpSessionStrategyConfiguration
 			extends SessionRepositoryConfiguration {
@@ -305,6 +318,18 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		@Bean
 		public HttpSessionIdResolver httpSessionStrategy() {
 			return mock(HttpSessionIdResolver.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableSpringHttpSession
+	static class SpringSessionRememberMeServicesConfiguration
+			extends SessionRepositoryConfiguration {
+
+		@Bean
+		public SpringSessionRememberMeServices rememberMeServices() {
+			return new SpringSessionRememberMeServices();
 		}
 
 	}

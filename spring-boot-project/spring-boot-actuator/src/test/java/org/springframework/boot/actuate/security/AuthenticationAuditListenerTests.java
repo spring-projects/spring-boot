@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.security;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -49,7 +49,7 @@ public class AuthenticationAuditListenerTests {
 	private final ApplicationEventPublisher publisher = mock(
 			ApplicationEventPublisher.class);
 
-	@Before
+	@BeforeEach
 	public void init() {
 		this.listener.setApplicationEventPublisher(this.publisher);
 	}
@@ -88,6 +88,16 @@ public class AuthenticationAuditListenerTests {
 						new UsernamePasswordAuthenticationToken("user", "password"),
 						new User("user", "password", AuthorityUtils
 								.commaSeparatedStringToAuthorityList("USER"))));
+		assertThat(event.getAuditEvent().getType())
+				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
+	}
+
+	@Test
+	public void testAuthenticationSwitchBackToAnonymous() {
+		AuditApplicationEvent event = handleAuthenticationEvent(
+				new AuthenticationSwitchUserEvent(
+						new UsernamePasswordAuthenticationToken("user", "password"),
+						null));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
 	}

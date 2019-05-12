@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,15 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.KeyValueCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -27,34 +33,50 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 
 /**
- * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI is available.
+ * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI
+ * or Public Key configuration is available.
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
 
-	private final OAuth2ResourceServerProperties properties;
+	private final OAuth2ResourceServerProperties.Jwt properties;
 
 	ReactiveOAuth2ResourceServerJwkConfiguration(
 			OAuth2ResourceServerProperties properties) {
-		this.properties = properties;
+		this.properties = properties.getJwt();
 	}
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 	@ConditionalOnMissingBean
 	public ReactiveJwtDecoder jwtDecoder() {
-		return new NimbusReactiveJwtDecoder(this.properties.getJwt().getJwkSetUri());
+		return new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
+	}
+
+	@Bean
+	@Conditional(KeyValueCondition.class)
+	@ConditionalOnMissingBean
+	public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
+				.generatePublic(new X509EncodedKeySpec(
+						getKeySpec(this.properties.readPublicKey())));
+		return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
+	}
+
+	private byte[] getKeySpec(String keyValue) {
+		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "")
+				.replace("-----END PUBLIC KEY-----", "");
+		return Base64.getMimeDecoder().decode(keyValue);
 	}
 
 	@Bean
 	@Conditional(IssuerUriCondition.class)
 	@ConditionalOnMissingBean
 	public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-		return ReactiveJwtDecoders
-				.fromOidcIssuerLocation(this.properties.getJwt().getIssuerUri());
+		return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
 	}
 
 }

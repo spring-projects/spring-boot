@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,15 +19,13 @@ package sample.session;
 import java.time.Duration;
 import java.util.Base64;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -38,9 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Vedran Pavic
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(properties = "server.servlet.session.timeout:2", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SampleSessionWebFluxApplicationTests {
+@SpringBootTest(properties = "server.servlet.session.timeout:2",
+		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort
 	private int port;
@@ -49,7 +47,7 @@ public class SampleSessionWebFluxApplicationTests {
 	private WebClient.Builder webClientBuilder;
 
 	@Test
-	public void userDefinedMappingsSecureByDefault() throws Exception {
+	void userDefinedMappingsSecureByDefault() throws Exception {
 		WebClient webClient = this.webClientBuilder
 				.baseUrl("http://localhost:" + this.port + "/").build();
 		ClientResponse response = webClient.get().header("Authorization", getBasicAuth())

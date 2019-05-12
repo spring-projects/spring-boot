@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,15 +27,15 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 public class LongTaskTimingHandlerInterceptorTests {
 
@@ -78,7 +78,7 @@ public class LongTaskTimingHandlerInterceptorTests {
 
 	private MockMvc mvc;
 
-	@Before
+	@BeforeEach
 	public void setUpMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
@@ -119,7 +119,7 @@ public class LongTaskTimingHandlerInterceptorTests {
 				.longTaskTimer().activeTasks()).isEqualTo(0);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Import(Controller1.class)
 	static class MetricsInterceptorConfiguration {
@@ -162,8 +162,8 @@ public class LongTaskTimingHandlerInterceptorTests {
 		private CyclicBarrier callableBarrier;
 
 		@Timed
-		@Timed(value = "my.long.request", extraTags = { "region",
-				"test" }, longTask = true)
+		@Timed(value = "my.long.request", extraTags = { "region", "test" },
+				longTask = true)
 		@GetMapping("/callable/{id}")
 		public Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
 			this.callableBarrier.await();

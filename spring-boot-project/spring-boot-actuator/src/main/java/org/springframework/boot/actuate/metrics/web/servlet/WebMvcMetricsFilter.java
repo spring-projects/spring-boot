@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,9 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
@@ -59,24 +60,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private final String metricName;
 
-	private final boolean autoTimeRequests;
-
-	/**
-	 * Create a new {@link WebMvcMetricsFilter} instance.
-	 * @param context the source application context
-	 * @param registry the meter registry
-	 * @param tagsProvider the tags provider
-	 * @param metricName the metric name
-	 * @param autoTimeRequests if requests should be automatically timed
-	 * @deprecated since 2.0.7 in favor of
-	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, boolean)}
-	 */
-	@Deprecated
-	public WebMvcMetricsFilter(ApplicationContext context, MeterRegistry registry,
-			WebMvcTagsProvider tagsProvider, String metricName,
-			boolean autoTimeRequests) {
-		this(registry, tagsProvider, metricName, autoTimeRequests);
-	}
+	private final Autotime autotime;
 
 	/**
 	 * Create a new {@link WebMvcMetricsFilter} instance.
@@ -85,13 +69,30 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param metricName the metric name
 	 * @param autoTimeRequests if requests should be automatically timed
 	 * @since 2.0.7
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, Autotime)}
 	 */
+	@Deprecated
 	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
 			String metricName, boolean autoTimeRequests) {
+		this(registry, tagsProvider, metricName,
+				new Autotime(autoTimeRequests, false, null));
+	}
+
+	/**
+	 * Create a new {@link WebMvcMetricsFilter} instance.
+	 * @param registry the meter registry
+	 * @param tagsProvider the tags provider
+	 * @param metricName the metric name
+	 * @param autotime auto timed request settings
+	 * @since 2.2.0
+	 */
+	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
+			String metricName, Autotime autotime) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
-		this.autoTimeRequests = autoTimeRequests;
+		this.autotime = autotime;
 	}
 
 	@Override
@@ -130,6 +131,10 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			record(timingContext, response, request, ex.getCause());
 			throw ex;
 		}
+		catch (ServletException | IOException | RuntimeException ex) {
+			record(timingContext, response, request, ex);
+			throw ex;
+		}
 	}
 
 	private TimingContext startAndAttachTimingContext(HttpServletRequest request) {
@@ -155,7 +160,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	}
 
 	private Set<Timed> findTimedAnnotations(AnnotatedElement element) {
-		return AnnotationUtils.getDeclaredRepeatableAnnotations(element, Timed.class);
+		return MergedAnnotations.from(element).stream(Timed.class)
+				.collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
 	private void record(TimingContext timingContext, HttpServletResponse response,
@@ -167,8 +173,12 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response,
 				handlerObject, exception);
 		if (annotations.isEmpty()) {
-			if (this.autoTimeRequests) {
-				stop(timerSample, tags, Timer.builder(this.metricName));
+			if (this.autotime.isEnabled()) {
+				stop(timerSample, tags,
+						Timer.builder(this.metricName)
+								.publishPercentiles(this.autotime.getPercentiles())
+								.publishPercentileHistogram(
+										this.autotime.isPercentilesHistogram()));
 			}
 		}
 		else {

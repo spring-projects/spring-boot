@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,21 +18,21 @@ package sample.liquibase;
 
 import java.net.ConnectException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SampleLiquibaseApplicationTests {
+class SampleLiquibaseApplicationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	void testDefaultSettings() throws Exception {
 		try {
 			SampleLiquibaseApplication.main(new String[] { "--server.port=0" });
 		}
@@ -41,8 +41,7 @@ public class SampleLiquibaseApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output.toString())
-				.contains("Successfully acquired change log lock")
+		assertThat(this.output).contains("Successfully acquired change log lock")
 				.contains("Creating database history "
 						+ "table with name: PUBLIC.DATABASECHANGELOG")
 				.contains("Table person created")

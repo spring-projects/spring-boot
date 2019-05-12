@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -35,7 +34,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,9 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleActuatorApplicationTests {
+class SampleActuatorApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -56,7 +53,7 @@ public class SampleActuatorApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testHomeIsSecure() {
+	void testHomeIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -67,7 +64,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetricsIsSecure() {
+	void testMetricsIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/metrics",
 				Map.class);
@@ -81,7 +78,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
@@ -93,7 +90,7 @@ public class SampleActuatorApplicationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testMetrics() {
+	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
@@ -107,7 +104,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testEnv() {
+	void testEnv() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
@@ -119,7 +116,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void healthInsecureByDefault() {
+	void healthInsecureByDefault() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -128,7 +125,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void infoInsecureByDefault() {
+	void infoInsecureByDefault() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/info",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -142,7 +139,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPage() {
+	void testErrorPage() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/foo", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,7 +148,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHtmlErrorPage() {
+	void testHtmlErrorPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
@@ -165,7 +162,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPageDirectAccess() {
+	void testErrorPageDirectAccess() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/error", Map.class);
@@ -189,7 +186,7 @@ public class SampleActuatorApplicationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testConfigProps() {
+	void testConfigProps() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())

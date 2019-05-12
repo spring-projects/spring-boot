@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -48,15 +48,6 @@ public class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void allowsUptimeMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.uptime.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(UptimeMetrics.class));
-	}
-
-	@Test
 	public void allowsCustomUptimeMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class)
@@ -67,15 +58,6 @@ public class SystemMetricsAutoConfigurationTests {
 	public void autoConfiguresProcessorMetrics() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
-	}
-
-	@Test
-	@Deprecated
-	public void allowsProcessorMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.processor.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ProcessorMetrics.class));
 	}
 
 	@Test
@@ -94,15 +76,6 @@ public class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.files.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(FileDescriptorMetrics.class));
-	}
-
-	@Test
 	public void allowsCustomFileDescriptorMetricsToBeUsed() {
 		this.contextRunner
 				.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
@@ -111,7 +84,7 @@ public class SystemMetricsAutoConfigurationTests {
 						.hasBean("customFileDescriptorMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomUptimeMetricsConfiguration {
 
 		@Bean
@@ -121,7 +94,7 @@ public class SystemMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomProcessorMetricsConfiguration {
 
 		@Bean
@@ -131,7 +104,7 @@ public class SystemMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomFileDescriptorMetricsConfiguration {
 
 		@Bean

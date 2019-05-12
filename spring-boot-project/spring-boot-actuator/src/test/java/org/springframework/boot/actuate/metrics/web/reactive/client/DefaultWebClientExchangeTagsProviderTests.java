@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -50,13 +50,13 @@ public class DefaultWebClientExchangeTagsProviderTests {
 
 	private ClientResponse response;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.request = ClientRequest
 				.create(HttpMethod.GET,
-						URI.create("http://example.org/projects/spring-boot"))
+						URI.create("https://example.org/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE,
-						"http://example.org/projects/{project}")
+						"https://example.org/projects/{project}")
 				.build();
 		this.response = mock(ClientResponse.class);
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
@@ -73,7 +73,7 @@ public class DefaultWebClientExchangeTagsProviderTests {
 	@Test
 	public void tagsWhenNoUriTemplateShouldProvideUriPath() {
 		ClientRequest request = ClientRequest.create(HttpMethod.GET,
-				URI.create("http://example.org/projects/spring-boot")).build();
+				URI.create("https://example.org/projects/spring-boot")).build();
 		Iterable<Tag> tags = this.tagsProvider.tags(request, this.response, null);
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"),
 				Tag.of("uri", "/projects/spring-boot"),

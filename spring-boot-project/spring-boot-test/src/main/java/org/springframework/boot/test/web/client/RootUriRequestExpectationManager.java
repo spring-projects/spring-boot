@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link RequestExpectationManager} that strips the specified root URI from the request
  * before verification. Can be used to simply test declarations when all REST calls start
  * the same way. For example: <pre class="code">
- * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("http://example.com").build();
+ * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://example.com").build();
  * MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
  * server.expect(requestTo("/hello")).andRespond(withSuccess());
  * restTemplate.getForEntity("/hello", String.class);

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -37,7 +38,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 
@@ -52,9 +55,11 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
-				mergedContextConfiguration.getTestClass(), SpringBootTest.class);
-		if (annotation.webEnvironment().isEmbedded()) {
+		MergedAnnotation<?> annotation = MergedAnnotations
+				.from(mergedContextConfiguration.getTestClass(),
+						SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(SpringBootTest.class);
+		if (annotation.getEnum("webEnvironment", WebEnvironment.class).isEmbedded()) {
 			registerTestRestTemplate(context);
 		}
 	}
@@ -111,8 +116,8 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 				throws BeansException {
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					(ListableBeanFactory) this.beanFactory,
-					TestRestTemplate.class).length == 0) {
+					(ListableBeanFactory) this.beanFactory, TestRestTemplate.class, false,
+					false).length == 0) {
 				registry.registerBeanDefinition(TestRestTemplate.class.getName(),
 						new RootBeanDefinition(TestRestTemplateFactory.class));
 			}

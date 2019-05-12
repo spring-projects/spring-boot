@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,8 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -45,7 +45,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -69,8 +69,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class QuartzAutoConfigurationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
@@ -186,9 +186,8 @@ public class QuartzAutoConfigurationTests {
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger")))
 							.isNotNull();
 					Thread.sleep(1000L);
-					assertThat(this.output.toString())
-							.contains("withConfiguredJobAndTrigger");
-					assertThat(this.output.toString()).contains("jobDataValue");
+					assertThat(this.output).contains("withConfiguredJobAndTrigger");
+					assertThat(this.output).contains("jobDataValue");
 				});
 	}
 
@@ -308,12 +307,12 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Import(ComponentThatUsesScheduler.class)
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class BaseQuartzConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class QuartzJobsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
@@ -330,7 +329,7 @@ public class QuartzAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class QuartzFullConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
@@ -340,17 +339,17 @@ public class QuartzAutoConfigurationTests {
 		}
 
 		@Bean
-		public Trigger fooTrigger() {
+		public Trigger fooTrigger(JobDetail jobDetail) {
 			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
 					.withIntervalInSeconds(10).repeatForever();
 
-			return TriggerBuilder.newTrigger().forJob(fooJob()).withIdentity("fooTrigger")
-					.withSchedule(scheduleBuilder).build();
+			return TriggerBuilder.newTrigger().forJob(jobDetail)
+					.withIdentity("fooTrigger").withSchedule(scheduleBuilder).build();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(QuartzFullConfiguration.class)
 	protected static class OverwriteTriggerConfiguration extends BaseQuartzConfiguration {
 
@@ -365,7 +364,7 @@ public class QuartzAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class QuartzCalendarsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
@@ -380,7 +379,7 @@ public class QuartzAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MockExecutorConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
@@ -390,7 +389,7 @@ public class QuartzAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class QuartzCustomConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
@@ -401,7 +400,7 @@ public class QuartzAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ManualSchedulerConfiguration {
 
 		@Bean
@@ -411,7 +410,7 @@ public class QuartzAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MultipleDataSourceConfiguration
 			extends BaseQuartzConfiguration {
 

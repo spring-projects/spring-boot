@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.neo4j.ogm.driver.NativeTypesNotAvailableException;
+import org.neo4j.ogm.driver.NativeTypesNotSupportedException;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -51,8 +53,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
- * use Lucene 4 and Neo4j still requires 3.
+ * Tests for {@link Neo4jDataAutoConfiguration}. Tests should not use the embedded driver
+ * as it requires the complete Neo4j-Kernel and server to function properly.
  *
  * @author Stephane Nicoll
  * @author Michael Hunger
@@ -116,7 +118,6 @@ public class Neo4jDataAutoConfigurationTests {
 					assertThat(context)
 							.hasSingleBean(org.neo4j.ogm.config.Configuration.class);
 				});
-
 	}
 
 	@Test
@@ -142,6 +143,48 @@ public class Neo4jDataAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.neo4j.open-in-view:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(OpenSessionInViewInterceptor.class));
+	}
+
+	@Test
+	public void shouldBeAbleToUseNativeTypesWithBolt() {
+		this.contextRunner
+				.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.getBean(org.neo4j.ogm.config.Configuration.class)
+						.hasFieldOrPropertyWithValue("useNativeTypes", true));
+	}
+
+	@Test
+	public void shouldFailWhenNativeTypesAreNotAvailable() {
+		this.contextRunner
+				.withClassLoader(
+						new FilteredClassLoader("org.neo4j.ogm.drivers.bolt.types"))
+				.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(
+							NativeTypesNotAvailableException.class);
+				});
+	}
+
+	@Test
+	public void shouldFailWhenNativeTypesAreNotSupported() {
+		this.contextRunner
+				.withPropertyValues("spring.data.neo4j.uri=http://localhost:7474",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
+						TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(
+							NativeTypesNotSupportedException.class);
+				});
 	}
 
 	@Test
@@ -202,13 +245,13 @@ public class Neo4jDataAutoConfigurationTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = Country.class)
 	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSessionFactory {
 
 		@Bean
@@ -218,7 +261,7 @@ public class Neo4jDataAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -229,13 +272,13 @@ public class Neo4jDataAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBookmarkManagement
 	static class BookmarkManagementEnabledConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EventListenerConfiguration {
 
 		@Bean

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,9 @@ import java.util.Properties;
 import javax.mail.Session;
 import javax.naming.Context;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -58,7 +58,7 @@ public class MailSenderAutoConfigurationTests {
 
 	private String initialContextFactory;
 
-	@Before
+	@BeforeEach
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
@@ -68,7 +68,7 @@ public class MailSenderAutoConfigurationTests {
 				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
@@ -272,7 +272,7 @@ public class MailSenderAutoConfigurationTests {
 		return session;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ManualMailConfiguration {
 
 		@Bean
@@ -282,7 +282,7 @@ public class MailSenderAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MockMailConfiguration {
 
 		@Bean

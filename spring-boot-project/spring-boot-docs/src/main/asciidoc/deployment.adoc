@@ -114,7 +114,7 @@ using the `cf apps` command, as shown in the following example:
 
 Once Cloud Foundry acknowledges that your application has been deployed, you should be
 able to find the application at the URI given. In the preceding example, you could find
-it at `\http://acloudyspringtime.cfapps.io/`.
+it at `\https://acloudyspringtime.cfapps.io/`.
 
 
 
@@ -203,7 +203,7 @@ deployments is to `git push` the code to production, as shown in the following e
 	       Downloading: https://repo.spring.io/...
 	       Downloaded: https://repo.spring.io/... (818 B at 1.8 KB/sec)
 			....
-	       Downloaded: http://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
+	       Downloaded: https://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
 	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
 	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
 	       [INFO] ------------------------------------------------------------------------
@@ -219,13 +219,15 @@ deployments is to `git push` the code to production, as shown in the following e
 
 	-----> Compressing... *done*, 70.4MB
 	-----> Launching... *done*, v6
-	       http://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
+	       https://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
 
 	To git@heroku.com:agile-sierra-1405.git
 	 * [new branch]      master -> master
 ----
 
-Your application should now be up and running on Heroku.
+Your application should now be up and running on Heroku. For more details, refer to
+https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[Deploying
+Spring Boot Applications to Heroku].
 
 
 
@@ -373,11 +375,11 @@ example:
 	Creating security group boxfuse-sg_axelfontaine/myapp:1.0 ...
 	Launching t2.micro instance of axelfontaine/myapp:1.0 (ami-d23f38cf) in eu-central-1 ...
 	Instance launched in 00:30.306s -> i-92ef9f53
-	Waiting for AWS to boot Instance i-92ef9f53 and Payload to start at http://52.28.235.61/ ...
-	Payload started in 00:29.266s -> http://52.28.235.61/
+	Waiting for AWS to boot Instance i-92ef9f53 and Payload to start at https://52.28.235.61/ ...
+	Payload started in 00:29.266s -> https://52.28.235.61/
 	Remapping Elastic IP 52.28.233.167 to i-92ef9f53 ...
 	Waiting 15s for AWS to complete Elastic IP Zero Downtime transition ...
-	Deployment completed successfully. axelfontaine/myapp:1.0 is up and running at http://myapp-axelfontaine.boxfuse.io/
+	Deployment completed successfully. axelfontaine/myapp:1.0 is up and running at https://myapp-axelfontaine.boxfuse.io/
 ----
 
 Your application should now be up and running on AWS.
@@ -644,7 +646,7 @@ the `run` command is used by default.
 Note that, unlike when running as an `init.d` service, the user that runs the application,
 the PID file, and the console log file are managed by `systemd` itself and therefore must
 be configured by using appropriate fields in the '`service`' script. Consult the
-http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
+https://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
 To flag the application to start automatically on system boot, use the following command:
@@ -842,7 +844,7 @@ If it is not a symlink or you want to explicitly set the app name, this can be u
 NOTE: The `PID_FOLDER`, `LOG_FOLDER`, and `LOG_FILENAME` variables are only valid for an
 `init.d` service. For `systemd`, the equivalent customizations are made by using the
 '`service`' script. See the
-http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
+https://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
 [[deployment-script-customization-conf-file]]

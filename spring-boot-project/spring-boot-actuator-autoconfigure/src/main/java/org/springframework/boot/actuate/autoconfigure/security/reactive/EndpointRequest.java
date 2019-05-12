@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,11 +31,14 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.reactive.ApplicationContextServerWebExchangeMatcher;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
@@ -223,11 +226,11 @@ public final class EndpointRequest {
 		}
 
 		private EndpointId getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source,
-					Endpoint.class);
-			Assert.state(annotation != null,
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source)
+					.get(Endpoint.class);
+			Assert.state(annotation.isPresent(),
 					() -> "Class " + source + " is not annotated with @Endpoint");
-			return EndpointId.of(annotation.id());
+			return EndpointId.of(annotation.getString("id"));
 		}
 
 		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
@@ -239,7 +242,26 @@ public final class EndpointRequest {
 		@Override
 		protected Mono<MatchResult> matches(ServerWebExchange exchange,
 				Supplier<PathMappedEndpoints> context) {
+			if (!isManagementContext(exchange)) {
+				return MatchResult.notMatch();
+			}
 			return this.delegate.matches(exchange);
+		}
+
+		static boolean isManagementContext(ServerWebExchange exchange) {
+			ApplicationContext applicationContext = exchange.getApplicationContext();
+			if (ManagementPortType.get(applicationContext
+					.getEnvironment()) == ManagementPortType.DIFFERENT) {
+				if (applicationContext.getParent() == null) {
+					return false;
+				}
+				String managementContextId = applicationContext.getParent().getId()
+						+ ":management";
+				if (!managementContextId.equals(applicationContext.getId())) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 	}
@@ -273,6 +295,9 @@ public final class EndpointRequest {
 		@Override
 		protected Mono<MatchResult> matches(ServerWebExchange exchange,
 				Supplier<WebEndpointProperties> context) {
+			if (!EndpointServerWebExchangeMatcher.isManagementContext(exchange)) {
+				return MatchResult.notMatch();
+			}
 			return this.delegate.matches(exchange);
 		}
 

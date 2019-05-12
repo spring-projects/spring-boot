@@ -809,8 +809,11 @@ is used to populate the `description` attribute.
 NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since
 they are not processed before being added to the JSON.
 
-Properties are discovered through the presence of standard getters and setters with
-special handling for collection types (that is detected even if only a getter is present).
+If the class has a single constructor with at least one parameters, one property is
+created per constructor parameter. Otherwise, properties are discovered through the
+presence of standard getters and setters with special handling for collection types (that
+is detected even if only a getter is present).
+
 The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter`
 lombok annotations.
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,26 +51,21 @@ import org.springframework.security.oauth2.client.web.server.ServerOAuth2Authori
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 @Conditional(ReactiveOAuth2ClientAutoConfiguration.NonServletApplicationCondition.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ClientRegistration.class })
 public class ReactiveOAuth2ClientAutoConfiguration {
 
-	private final OAuth2ClientProperties properties;
-
-	public ReactiveOAuth2ClientAutoConfiguration(OAuth2ClientProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@Conditional(ClientsConfiguredCondition.class)
 	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
-	public InMemoryReactiveClientRegistrationRepository clientRegistrationRepository() {
+	public InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(
+			OAuth2ClientProperties properties) {
 		List<ClientRegistration> registrations = new ArrayList<>(
 				OAuth2ClientPropertiesRegistrationAdapter
-						.getClientRegistrations(this.properties).values());
+						.getClientRegistrations(properties).values());
 		return new InMemoryReactiveClientRegistrationRepository(registrations);
 	}
 

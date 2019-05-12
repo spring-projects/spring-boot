@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -380,7 +380,8 @@ public class Repackager {
 				return null;
 			}
 			if ((entry.getName().startsWith("META-INF/")
-					&& !entry.getName().equals("META-INF/aop.xml"))
+					&& !entry.getName().equals("META-INF/aop.xml")
+					&& !entry.getName().endsWith(".kotlin_module"))
 					|| entry.getName().startsWith("BOOT-INF/")
 					|| entry.getName().equals("module-info.class")) {
 				return entry;

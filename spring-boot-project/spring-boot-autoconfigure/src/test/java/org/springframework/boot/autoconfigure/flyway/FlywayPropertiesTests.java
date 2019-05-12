@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -127,11 +127,10 @@ public class FlywayPropertiesTests {
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");
-		// Pro version only
-		ignoreProperties(configuration, "batch", "dryRunOutput", "dryRunOutputAsFile",
-				"dryRunOutputAsFileName", "errorHandlers", "errorHandlersAsClassNames",
-				"errorOverrides", "licenseKey", "oracleSqlplus", "stream",
-				"undoSqlMigrationPrefix");
+		// Handled as dryRunOutput
+		ignoreProperties(configuration, "dryRunOutputAsFile", "dryRunOutputAsFileName");
+		// Deprecated
+		ignoreProperties(configuration, "errorHandlers", "errorHandlersAsClassNames");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());

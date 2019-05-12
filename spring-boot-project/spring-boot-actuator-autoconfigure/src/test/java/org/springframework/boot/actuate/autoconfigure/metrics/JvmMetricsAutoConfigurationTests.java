@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -48,17 +48,6 @@ public class JvmMetricsAutoConfigurationTests {
 				.hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
 				.hasSingleBean(JvmThreadMetrics.class)
 				.hasSingleBean(ClassLoaderMetrics.class));
-	}
-
-	@Test
-	@Deprecated
-	public void allowsJvmMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.jvm.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(JvmGcMetrics.class)
-						.doesNotHaveBean(JvmMemoryMetrics.class)
-						.doesNotHaveBean(JvmThreadMetrics.class)
-						.doesNotHaveBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
@@ -104,7 +93,7 @@ public class JvmMetricsAutoConfigurationTests {
 						.hasBean("customClassLoaderMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmGcMetricsConfiguration {
 
 		@Bean
@@ -114,7 +103,7 @@ public class JvmMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmMemoryMetricsConfiguration {
 
 		@Bean
@@ -124,7 +113,7 @@ public class JvmMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmThreadMetricsConfiguration {
 
 		@Bean
@@ -134,7 +123,7 @@ public class JvmMetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomClassLoaderMetricsConfiguration {
 
 		@Bean

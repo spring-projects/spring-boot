@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -99,7 +99,7 @@ public class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue bar2 = getValue("example.foo[0].bar[1].bar2");
 		assertThat(name.toString()).isEqualTo("springboot");
 		assertThat(getLocation(name)).isEqualTo("22:15");
-		assertThat(url.toString()).isEqualTo("http://springboot.com");
+		assertThat(url.toString()).isEqualTo("https://springboot.example.com/");
 		assertThat(getLocation(url)).isEqualTo("23:14");
 		assertThat(bar1.toString()).isEqualTo("baz");
 		assertThat(getLocation(bar1)).isEqualTo("25:19");

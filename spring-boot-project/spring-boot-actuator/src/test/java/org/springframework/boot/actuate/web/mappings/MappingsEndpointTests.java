@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ContextMappings;
@@ -42,6 +42,7 @@ import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDesc
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -133,7 +133,7 @@ public class MappingsEndpointTests {
 		given((Map<String, ServletRegistration>) servletContext.getServletRegistrations())
 				.willReturn(Collections.singletonMap("testServlet", servletRegistration));
 		return () -> {
-			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+			AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 			context.setServletContext(servletContext);
 			return context;
 		};
@@ -170,7 +170,7 @@ public class MappingsEndpointTests {
 		return (T) contextMappings.getMappings().get(key);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EndpointConfiguration {
 
 		@Bean
@@ -182,7 +182,7 @@ public class MappingsEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebFlux
 	@Controller
 	static class ReactiveWebConfiguration {
@@ -205,7 +205,7 @@ public class MappingsEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Controller
 	static class ServletWebConfiguration {
@@ -259,7 +259,7 @@ public class MappingsEndpointTests {
 
 		@Bean
 		public ServletRegistrationBean<DispatcherServlet> anotherDispatcherServletRegistration(
-				WebApplicationContext context) {
+				DispatcherServlet dispatcherServlet, WebApplicationContext context) {
 			ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<>(
 					anotherDispatcherServlet(context));
 			registrationBean.setName("anotherDispatcherServletRegistration");

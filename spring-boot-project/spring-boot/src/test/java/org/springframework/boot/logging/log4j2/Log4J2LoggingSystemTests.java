@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,6 +46,7 @@ import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -125,10 +126,11 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null);
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem
+				.initialize(null, "classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
@@ -208,7 +210,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void configLocationsWithNoExtraDependencies() {
 		assertThat(this.loggingSystem.getStandardConfigLocations())
-				.contains("log4j2.xml");
+				.contains("log4j2.properties", "log4j2.xml");
 	}
 
 	@Test
@@ -238,7 +240,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).isEqualTo(new String[] { "log4j2-spring.xml" });
+		assertThat(locations).containsExactly("log4j2-spring.properties",
+				"log4j2-spring.xml");
 	}
 
 	@Test

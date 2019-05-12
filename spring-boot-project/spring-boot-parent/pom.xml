@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -26,11 +26,13 @@
 		<maven.version>3.5.4</maven.version>
 		<maven-resolver.version>1.1.1</maven-resolver.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
+		<testcontainers.version>1.10.6</testcontainers.version>
+		<testng.version>6.14.3</testng.version>
 		<dependency-management-plugin.version>1.0.6.RELEASE</dependency-management-plugin.version>
-		<spring-doc-resources.version>0.1.0.BUILD-SNAPSHOT</spring-doc-resources.version>
+		<spring-doc-resources.version>0.1.1.RELEASE</spring-doc-resources.version>
 	</properties>
 	<scm>
-		<url>http://github.com/spring-projects/spring-boot</url>
+		<url>https://github.com/spring-projects/spring-boot</url>
 		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
 	</scm>
@@ -59,23 +61,9 @@
 				<version>1.3.3</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhaarman</groupId>
-				<artifactId>mockito-kotlin</artifactId>
-				<version>1.6.0</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-stdlib</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-reflect</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>io.mockk</groupId>
+				<artifactId>mockk</artifactId>
+				<version>1.9.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
@@ -86,21 +74,6 @@
 				<groupId>org.sonatype.sisu</groupId>
 				<artifactId>sisu-inject-plexus</artifactId>
 				<version>2.6.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.squareup.okhttp3</groupId>
-				<artifactId>okhttp</artifactId>
-				<version>3.11.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.squareup.okhttp3</groupId>
-				<artifactId>mockwebserver</artifactId>
-				<version>3.9.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>testcontainers</artifactId>
-				<version>1.10.6</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin.external.google</groupId>
@@ -244,6 +217,18 @@
 				<version>${spock.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
 				<version>1.13</version>
@@ -253,8 +238,18 @@
 	<dependencies>
 		<!-- Generally Useful Test Dependencies -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -282,13 +277,16 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>com.googlecode.maven-download-plugin</groupId>
+					<artifactId>download-maven-plugin</artifactId>
+					<version>1.4.1</version>
+				</plugin>
+				<plugin>
 					<groupId>org.jetbrains.kotlin</groupId>
 					<artifactId>kotlin-maven-plugin</artifactId>
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
-						<apiVersion>1.1</apiVersion>
-						<languageVersion>1.1</languageVersion>
 						<javaParameters>true</javaParameters>
 					</configuration>
 				</plugin>
@@ -296,6 +294,13 @@
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
 					<version>1.5.7.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj</artifactId>
+							<version>1.5.8</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -575,6 +580,19 @@
 						</goals>
 						<configuration>
 							<rules>
+								<bannedDependencies>
+									<excludes>
+										<exclude>com.zaxxer:HikariCP-*</exclude>
+										<exclude>javax.*:*:*</exclude>
+									</excludes>
+									<includes>
+										<include>javax.batch:*:*</include>
+										<include>javax.cache:*:*</include>
+										<include>javax.inject:*:*</include>
+										<include>javax.money:*:*</include>
+									</includes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
 								<requireJavaVersion>
 									<version>[1.8,)</version>
 								</requireJavaVersion>
@@ -680,6 +698,9 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<source>${java.version}</source>
+						</configuration>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>

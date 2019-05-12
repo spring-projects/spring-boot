@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -121,7 +121,7 @@ public final class AnsiColors {
 					: (1.0 / 3.0) * Math.pow(29.0 / 6.0, 2) * t + (4.0 / 29.0);
 		}
 
-		// See http://en.wikipedia.org/wiki/Color_difference#CIE94
+		// See https://en.wikipedia.org/wiki/Color_difference#CIE94
 		public double getDistance(LabColor other) {
 			double c1 = Math.sqrt(this.a * this.a + this.b * this.b);
 			double deltaC = c1 - Math.sqrt(other.a * other.a + other.b * other.b);

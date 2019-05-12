@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,11 +134,14 @@ public class RedisAutoConfigurationJedisTests {
 
 	@Test
 	public void testRedisConfigurationWithPool() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo",
-				"spring.redis.jedis.pool.min-idle:1",
-				"spring.redis.jedis.pool.max-idle:4",
-				"spring.redis.jedis.pool.max-active:16",
-				"spring.redis.jedis.pool.max-wait:2000").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.redis.host:foo",
+						"spring.redis.jedis.pool.min-idle:1",
+						"spring.redis.jedis.pool.max-idle:4",
+						"spring.redis.jedis.pool.max-active:16",
+						"spring.redis.jedis.pool.max-wait:2000",
+						"spring.redis.jedis.pool.time-between-eviction-runs:30000")
+				.run((context) -> {
 					JedisConnectionFactory cf = context
 							.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
@@ -146,6 +149,8 @@ public class RedisAutoConfigurationJedisTests {
 					assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
 					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
 					assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
+					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRunsMillis())
+							.isEqualTo(30000);
 				});
 	}
 
@@ -200,7 +205,7 @@ public class RedisAutoConfigurationJedisTests {
 						.getClusterConnection()).isNotNull());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
@@ -210,7 +215,7 @@ public class RedisAutoConfigurationJedisTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JedisConnectionFactoryCaptorConfiguration {
 
 		@Bean

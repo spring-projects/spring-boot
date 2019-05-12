@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,7 +78,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Eddú Meléndez
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
 
@@ -95,7 +95,7 @@ public class JacksonAutoConfiguration {
 		return new JsonComponentModule();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperConfiguration {
 
@@ -108,7 +108,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
 			DateTimeSerializer.class, JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
@@ -116,16 +116,12 @@ public class JacksonAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(JodaDateTimeJacksonConfiguration.class);
 
-		private final JacksonProperties jacksonProperties;
-
-		JodaDateTimeJacksonConfiguration(JacksonProperties jacksonProperties) {
-			this.jacksonProperties = jacksonProperties;
-		}
-
 		@Bean
-		public SimpleModule jodaDateTimeSerializationModule() {
+		public SimpleModule jodaDateTimeSerializationModule(
+				JacksonProperties jacksonProperties) {
 			SimpleModule module = new SimpleModule();
-			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
+			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat(
+					jacksonProperties);
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class,
 						new DateTimeSerializer(jacksonJodaFormat, 0));
@@ -133,17 +129,17 @@ public class JacksonAutoConfiguration {
 			return module;
 		}
 
-		private JacksonJodaDateFormat getJacksonJodaDateFormat() {
-			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
+		private JacksonJodaDateFormat getJacksonJodaDateFormat(
+				JacksonProperties jacksonProperties) {
+			if (jacksonProperties.getJodaDateTimeFormat() != null) {
 				return new JacksonJodaDateFormat(DateTimeFormat
-						.forPattern(this.jacksonProperties.getJodaDateTimeFormat())
+						.forPattern(jacksonProperties.getJodaDateTimeFormat())
 						.withZoneUTC());
 			}
-			if (this.jacksonProperties.getDateFormat() != null) {
+			if (jacksonProperties.getDateFormat() != null) {
 				try {
 					return new JacksonJodaDateFormat(DateTimeFormat
-							.forPattern(this.jacksonProperties.getDateFormat())
-							.withZoneUTC());
+							.forPattern(jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
 					if (logger.isWarnEnabled()) {
@@ -159,7 +155,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ParameterNamesModule.class)
 	static class ParameterNamesModuleConfiguration {
 
@@ -171,22 +167,17 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperBuilderConfiguration {
-
-		private final ApplicationContext applicationContext;
-
-		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(
+				ApplicationContext applicationContext,
 				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-			builder.applicationContext(this.applicationContext);
+			builder.applicationContext(applicationContext);
 			customize(builder, customizers);
 			return builder;
 		}
@@ -200,7 +191,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	@EnableConfigurationProperties(JacksonProperties.class)
 	static class Jackson2ObjectMapperBuilderCustomizerConfiguration {

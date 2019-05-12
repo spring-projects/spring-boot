@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -158,7 +158,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestApp {
 
 	}
@@ -191,7 +191,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
 
 	}
@@ -206,7 +206,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class WithErrorPageFilterNotRegistered
 			extends SpringBootServletInitializer {
 
@@ -216,7 +216,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class ExecutableWar extends SpringBootServletInitializer {
 
 		@Bean
@@ -226,7 +226,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class Config {
 
 	}

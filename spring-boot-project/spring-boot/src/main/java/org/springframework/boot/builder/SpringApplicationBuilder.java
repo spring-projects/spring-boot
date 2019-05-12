@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -393,6 +393,17 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder properties(String... defaultProperties) {
 		return properties(getMapFromKeyValuePairs(defaultProperties));
+	}
+
+	/**
+	 * Flag to control whether the application should be initialized lazily.
+	 * @param lazyInitialization the flag to set. Defaults to false.
+	 * @return the current builder
+	 * @since 2.2
+	 */
+	public SpringApplicationBuilder lazyInitialization(boolean lazyInitialization) {
+		this.application.setLazyInitialization(lazyInitialization);
+		return this;
 	}
 
 	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -143,14 +143,14 @@ public class JpaRepositoriesAutoConfigurationTests {
 								.getBootstrapExecutor()).isNull());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	@Import(TestConfiguration.class)
 	protected static class MultipleAsyncTaskExecutorConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestConfiguration.class)
 	protected static class SingleAsyncTaskExecutorConfiguration {
 
@@ -161,22 +161,26 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
-	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class, excludeFilters = {
-			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
-			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
+	@Configuration(proxyBeanMethods = false)
+	@EnableJpaRepositories(
+			basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class,
+			excludeFilters = {
+					@Filter(type = FilterType.ASSIGNABLE_TYPE,
+							value = CityMongoDbRepository.class),
+					@Filter(type = FilterType.ASSIGNABLE_TYPE,
+							value = CitySolrRepository.class) })
 	@TestAutoConfigurationPackage(City.class)
 	protected static class CustomConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// To not find any repositories
 	@EnableJpaRepositories("foo.bar")
 	@TestAutoConfigurationPackage(City.class)

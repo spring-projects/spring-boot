@@ -151,7 +151,7 @@ Once this is done, you can build the reference documentation with the command be
 	$ ./mvnw clean prepare-package -pl spring-boot-project/spring-boot-docs -Pdefault,full
 ----
 
-TIP: The generated documentation is available from `spring-boot-project/spring-boot-docs/target/contents/reference`
+TIP: The generated documentation is available from `spring-boot-project/spring-boot-docs/target/generated-docs/reference/html`
 
 
 == Modules
@@ -273,4 +273,4 @@ Boot step-by-step:
 
 == License
 Spring Boot is Open Source software released under the
-http://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
+https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].

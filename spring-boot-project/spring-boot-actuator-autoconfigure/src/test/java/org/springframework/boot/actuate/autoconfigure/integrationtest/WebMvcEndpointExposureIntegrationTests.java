@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -35,6 +36,7 @@ import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagem
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -45,6 +47,8 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -79,7 +83,9 @@ public class WebMvcEndpointExposureIntegrationTests {
 					.withConfiguration(
 							AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 					.withUserConfiguration(CustomMvcEndpoint.class,
-							CustomServletEndpoint.class)
+							CustomServletEndpoint.class,
+							HttpTraceRepositoryConfiguration.class,
+							AuditEventRepositoryConfiguration.class)
 					.withPropertyValues("server.port:0");
 
 	@Test
@@ -211,6 +217,26 @@ public class WebMvcEndpointExposureIntegrationTests {
 				}
 
 			});
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class HttpTraceRepositoryConfiguration {
+
+		@Bean
+		public InMemoryHttpTraceRepository httpTraceRepository() {
+			return new InMemoryHttpTraceRepository();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class AuditEventRepositoryConfiguration {
+
+		@Bean
+		public InMemoryAuditEventRepository auditEventRepository() {
+			return new InMemoryAuditEventRepository();
 		}
 
 	}

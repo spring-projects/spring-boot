@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,8 +57,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ManagementContextConfiguration} for Servlet web endpoint infrastructure when a
- * separate management context with a web server running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Servlet web
+ * endpoint infrastructure when a separate management context with a web server running on
+ * a different port is required.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -94,9 +95,10 @@ class ServletManagementChildContextConfiguration {
 		return new JettyAccessLogCustomizer();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
+	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN,
+			search = SearchStrategy.ANCESTORS)
 	static class ServletManagementContextSecurityConfiguration {
 
 		@Bean

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.SslContextFactory;
 import com.rabbitmq.client.TrustEverythingTrustManager;
 import org.aopalliance.aop.Advice;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -318,18 +318,6 @@ public class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
 						"spring.rabbitmq.template.default-receive-queue:default-queue")
-				.run((context) -> {
-					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue(
-							"defaultReceiveQueue", "default-queue");
-				});
-	}
-
-	@Test
-	@Deprecated
-	public void testRabbitTemplateDefaultQueue() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.template.queue:default-queue")
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					assertThat(rabbitTemplate).hasFieldOrPropertyWithValue(
@@ -818,12 +806,12 @@ public class RabbitAutoConfigurationTests {
 		return rabbitTemplate.isMandatoryFor(mock(Message.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration2 {
 
 		@Bean
@@ -833,13 +821,14 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration3 {
 
 		@Bean
-		RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+				MessageConverter messageConverter) {
 			RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-			rabbitTemplate.setMessageConverter(testMessageConverter());
+			rabbitTemplate.setMessageConverter(messageConverter);
 			return rabbitTemplate;
 		}
 
@@ -850,7 +839,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration4 {
 
 		@Bean
@@ -863,7 +852,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration5 {
 
 		@Bean
@@ -873,7 +862,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MessageConvertersConfiguration {
 
 		@Bean
@@ -889,7 +878,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class MessageRecoverersConfiguration {
 
 		@Bean
@@ -905,7 +894,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ConnectionNameStrategyConfiguration {
 
 		private final AtomicInteger counter = new AtomicInteger();
@@ -917,7 +906,7 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class RabbitRetryTemplateCustomizerConfiguration {
 
 		private final BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
@@ -944,13 +933,13 @@ public class RabbitAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableRabbit
 	protected static class EnableRabbitConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class NoEnableRabbitConfiguration {
 
 	}

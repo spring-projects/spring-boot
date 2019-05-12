@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,8 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -57,14 +59,15 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void tomcatCustomizers() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
-		Arrays.setAll(listeners, (i) -> mock(TomcatContextCustomizer.class));
-		factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
-		factory.addContextCustomizers(listeners[2], listeners[3]);
+		TomcatContextCustomizer[] customizers = new TomcatContextCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatContextCustomizer.class));
+		factory.setTomcatContextCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
+		factory.addContextCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatContextCustomizer listener : listeners) {
-			ordered.verify(listener).customize(any(Context.class));
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatContextCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(Context.class));
 		}
 	}
 
@@ -82,8 +85,13 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
-				.isInstanceOf(AprLifecycleListener.class);
+		if (AprLifecycleListener.isAprAvailable()) {
+			assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
+					.isInstanceOf(AprLifecycleListener.class);
+		}
+		else {
+			assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		}
 	}
 
 	@Test
@@ -117,17 +125,53 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
+	public void setNullProtocolHandlerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
+				.withMessageContaining(
+						"TomcatProtocolHandlerCustomizers must not be null");
+	}
+
+	@Test
+	public void addNullProtocolHandlerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory
+				.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
+				.withMessageContaining(
+						"TomcatProtocolHandlerCustomizers must not be null");
+	}
+
+	@Test
 	public void tomcatConnectorCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
-		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
-		Arrays.setAll(listeners, (i) -> mock(TomcatConnectorCustomizer.class));
-		factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
-		factory.addConnectorCustomizers(listeners[2], listeners[3]);
+		TomcatConnectorCustomizer[] customizers = new TomcatConnectorCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatConnectorCustomizer.class));
+		factory.setTomcatConnectorCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
+		factory.addConnectorCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatConnectorCustomizer listener : listeners) {
-			ordered.verify(listener).customize(any(Connector.class));
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatConnectorCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(Connector.class));
+		}
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		HttpHandler handler = mock(HttpHandler.class);
+		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
+		factory.setTomcatProtocolHandlerCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
+		factory.addProtocolHandlerCustomizers(customizers[2], customizers[3]);
+		this.webServer = factory.getWebServer(handler);
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatProtocolHandlerCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(ProtocolHandler.class));
 		}
 	}
 

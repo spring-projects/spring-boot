@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,8 +55,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @since 1.3.3
  */
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@Conditional(DevToolsDataSourceCondition.class)
-@Configuration
+@Conditional({ OnEnabledDevToolsCondition.class, DevToolsDataSourceCondition.class })
+@Configuration(proxyBeanMethods = false)
 public class DevToolsDataSourceAutoConfiguration {
 
 	@Bean
@@ -71,7 +71,7 @@ public class DevToolsDataSourceAutoConfiguration {
 	 * {@link javax.persistence.EntityManagerFactory} beans depend on the
 	 * {@code inMemoryDatabaseShutdownExecutor} bean.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	static class DatabaseShutdownExecutorJpaDependencyConfiguration

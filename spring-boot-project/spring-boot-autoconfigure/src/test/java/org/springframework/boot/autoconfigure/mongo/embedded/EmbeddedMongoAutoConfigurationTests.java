@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
@@ -30,10 +31,9 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import org.bson.Document;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,12 +59,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class EmbeddedMongoAutoConfigurationTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
-
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -107,7 +104,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer
 				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
-		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
+		assertThat(getPort(client)).isEqualTo(mongoPort);
 	}
 
 	@Test
@@ -117,7 +114,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer
 				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
-		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
+		assertThat(getPort(client)).isEqualTo(mongoPort);
 	}
 
 	@Test
@@ -126,7 +123,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer
 				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
-		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
+		assertThat(getPort(client)).isEqualTo(mongoPort);
 	}
 
 	@Test
@@ -153,8 +150,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void mongoWritesToCustomDatabaseDir() throws IOException {
-		File customDatabaseDir = this.temp.newFolder("custom-database-dir");
+	public void mongoWritesToCustomDatabaseDir(@TempDir Path temp) throws IOException {
+		File customDatabaseDir = new File(temp.toFile(), "custom-database-dir");
 		FileSystemUtils.deleteRecursively(customDatabaseDir);
 		load("spring.mongodb.embedded.storage.databaseDir="
 				+ customDatabaseDir.getPath());
@@ -237,7 +234,14 @@ public class EmbeddedMongoAutoConfigurationTests {
 		return File.separatorChar == '\\';
 	}
 
-	@Configuration
+	@SuppressWarnings("deprecation")
+	private int getPort(MongoClient client) {
+		// At some point we'll probably need to use reflection to find the address but for
+		// now, we can use the deprecated getAddress method.
+		return client.getAddress().getPort();
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class MongoClientConfiguration {
 
 		@Bean
@@ -247,14 +251,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DownloadConfigBuilderCustomizerConfiguration {
 
 		@Bean
 		public DownloadConfigBuilderCustomizer testDownloadConfigBuilderCustomizer() {
-			return (downloadConfigBuilder) -> {
-				downloadConfigBuilder.userAgent("Test User Agent");
-			};
+			return (downloadConfigBuilder) -> downloadConfigBuilder
+					.userAgent("Test User Agent");
 		}
 
 	}

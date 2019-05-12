@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,26 +36,21 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebServlet.class)
-@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled",
+		havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 public class H2ConsoleAutoConfiguration {
 
-	private final H2ConsoleProperties properties;
-
-	public H2ConsoleAutoConfiguration(H2ConsoleProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
-	public ServletRegistrationBean<WebServlet> h2Console() {
-		String path = this.properties.getPath();
+	public ServletRegistrationBean<WebServlet> h2Console(H2ConsoleProperties properties) {
+		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(
 				new WebServlet(), urlMapping);
-		H2ConsoleProperties.Settings settings = this.properties.getSettings();
+		H2ConsoleProperties.Settings settings = properties.getSettings();
 		if (settings.isTrace()) {
 			registration.addInitParameter("trace", "");
 		}

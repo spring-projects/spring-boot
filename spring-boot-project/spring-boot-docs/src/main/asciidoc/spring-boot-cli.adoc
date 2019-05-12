@@ -189,8 +189,8 @@ Boot's default dependency metadata to deduce the artifact's group and version.
 NOTE: The default metadata is tied to the version of the CLI that you use. it changes only
 when you move to a new version of the CLI, putting you in control of when the versions of
 your dependencies may change. A table showing the dependencies and their versions that are
-included in the default metadata can be found in the <<appendix-dependency-versions,
-appendix>>.
+included in the default metadata can be found in the
+<<appendix.adoc#appendix-dependency-versions,appendix>>.
 
 
 
@@ -248,7 +248,7 @@ You can use `@DependencyManagementBom` anywhere that you can use `@Grab`. Howeve
 ensure consistent ordering of the dependency management, you can use
 `@DependencyManagementBom` at most once in your application. A useful source of dependency
 management (which is a superset of Spring Boot's dependency management) is the
-http://platform.spring.io/[Spring IO Platform], which you might include with the following
+https://platform.spring.io/[Spring IO Platform], which you might include with the following
 line:
 
 [source,java,indent=0]
@@ -422,13 +422,13 @@ following example:
 [[cli-groovy-beans-dsl]]
 == Developing Applications with the Groovy Beans DSL
 Spring Framework 4.0 has native support for a `beans{}` "`DSL`" (borrowed from
-http://grails.org/[Grails]), and you can embed bean definitions in your Groovy application
+https://grails.org/[Grails]), and you can embed bean definitions in your Groovy application
 scripts by using the same format. This is sometimes a good way to include external
 features like middleware declarations, as shown in the following example:
 
 [source,groovy,indent=0]
 ----
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	class Application implements CommandLineRunner {
 
 		@Autowired

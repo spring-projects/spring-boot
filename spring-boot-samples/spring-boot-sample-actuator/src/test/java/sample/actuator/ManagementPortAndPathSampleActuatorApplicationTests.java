@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,7 @@ package sample.actuator;
 
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
@@ -30,7 +29,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,23 +37,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "management.endpoints.web.base-path=/admin",
-		"management.endpoint.health.show-details=never" })
-public class ManagementPortAndPathSampleActuatorApplicationTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0",
+				"management.endpoints.web.base-path=/admin",
+				"management.endpoint.health.show-details=never" })
+class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
-	private int port = 9010;
+	private int port;
 
 	@LocalManagementPort
-	private int managementPort = 9011;
+	private int managementPort;
 
 	@Autowired
 	private Environment environment;
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port, Map.class);
@@ -66,7 +64,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetrics() {
+	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
@@ -75,7 +73,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() {
+	void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword())
 				.getForEntity("http://localhost:" + this.managementPort + "/admin/health",
@@ -85,7 +83,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testEnvNotFound() {
+	void testEnvNotFound() {
 		String unknownProperty = "test-does-not-exist";
 		assertThat(this.environment.containsProperty(unknownProperty)).isFalse();
 		ResponseEntity<String> entity = new TestRestTemplate()
@@ -96,7 +94,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMissing() {
+	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity(
 						"http://localhost:" + this.managementPort + "/admin/missing",
@@ -106,7 +104,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPage() {
+	void testErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/error", Map.class);
@@ -117,7 +115,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testManagementErrorPage() {
+	void testManagementErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.managementPort + "/error",

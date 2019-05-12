@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,10 +33,10 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 
 	private final ConfigurationProperties annotation;
 
-	ConfigurationPropertiesBindException(String beanName, Object bean,
+	ConfigurationPropertiesBindException(String beanName, Class<?> beanType,
 			ConfigurationProperties annotation, Exception cause) {
-		super(beanName, getMessage(bean, annotation), cause);
-		this.beanType = bean.getClass();
+		super(beanName, getMessage(beanType, annotation), cause);
+		this.beanType = beanType;
 		this.annotation = annotation;
 	}
 
@@ -56,10 +56,11 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 		return this.annotation;
 	}
 
-	private static String getMessage(Object bean, ConfigurationProperties annotation) {
+	private static String getMessage(Class<?> beanType,
+			ConfigurationProperties annotation) {
 		StringBuilder message = new StringBuilder();
 		message.append("Could not bind properties to '");
-		message.append(ClassUtils.getShortName(bean.getClass())).append("' : ");
+		message.append(ClassUtils.getShortName(beanType)).append("' : ");
 		message.append("prefix=").append(annotation.prefix());
 		message.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		message.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());

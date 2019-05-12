@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -37,10 +38,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +67,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -153,6 +157,40 @@ public class HibernateJpaAutoConfigurationTests
 				.withConfiguration(
 						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void hibernateDialectIsNotSetByDefault() {
+		contextRunner().run(assertJpaVendorAdapter(
+				(adapter) -> assertThat(adapter.getJpaPropertyMap())
+						.doesNotContainKeys("hibernate.dialect")));
+	}
+
+	@Test
+	public void hibernateDialectIsSetWhenDatabaseIsSet() {
+		contextRunner().withPropertyValues("spring.jpa.database=H2")
+				.run(assertJpaVendorAdapter(
+						(adapter) -> assertThat(adapter.getJpaPropertyMap()).contains(
+								entry("hibernate.dialect", H2Dialect.class.getName()))));
+	}
+
+	@Test
+	public void hibernateDialectIsSetWhenDatabasePlatformIsSet() {
+		String databasePlatform = TestH2Dialect.class.getName();
+		contextRunner()
+				.withPropertyValues("spring.jpa.database-platform=" + databasePlatform)
+				.run(assertJpaVendorAdapter(
+						(adapter) -> assertThat(adapter.getJpaPropertyMap())
+								.contains(entry("hibernate.dialect", databasePlatform))));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertJpaVendorAdapter(
+			Consumer<HibernateJpaVendorAdapter> adapter) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(JpaVendorAdapter.class);
+			assertThat(context).hasSingleBean(HibernateJpaVendorAdapter.class);
+			adapter.accept(context.getBean(HibernateJpaVendorAdapter.class));
+		};
 	}
 
 	@Test
@@ -435,7 +473,7 @@ public class HibernateJpaAutoConfigurationTests
 		return false;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class TestInitializedJpaConfiguration {
 
@@ -455,7 +493,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestImplicitNamingStrategyConfiguration {
 
 		@Bean
@@ -465,7 +503,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestPhysicalNamingStrategyConfiguration {
 
 		@Bean
@@ -475,7 +513,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestHibernatePropertiesCustomizerConfiguration {
 
 		private final PhysicalNamingStrategy physicalNamingStrategy = new SpringPhysicalNamingStrategy();
@@ -494,7 +532,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DisableBeanContainerConfiguration {
 
 		@Bean
@@ -558,7 +596,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	static class JpaUsingApplicationListenerConfiguration {
 
 		@Bean
@@ -581,7 +619,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AsyncBootstrappingConfiguration {
 
 		@Bean
@@ -594,6 +632,10 @@ public class HibernateJpaAutoConfigurationTests
 				ThreadPoolTaskExecutor executor) {
 			return (builder) -> builder.setBootstrapExecutor(executor);
 		}
+
+	}
+
+	public static class TestH2Dialect extends H2Dialect {
 
 	}
 

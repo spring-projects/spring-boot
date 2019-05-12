@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.hazelcast.util.Base64;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Credentials;
@@ -35,12 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Neo4jProperties}.
  *
  * @author Stephane Nicoll
+ * @author Michael Simons
  */
 public class Neo4jPropertiesTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -109,9 +110,10 @@ public class Neo4jPropertiesTests {
 	@Test
 	public void credentialsAreSetFromUri() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
+				"spring.data.neo4j.uri=https://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://my-server:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
+				"https://my-server:7474");
 		assertCredentials(configuration, "user", "secret");
 	}
 
@@ -145,6 +147,21 @@ public class Neo4jPropertiesTests {
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
 				"file:relative/path/to/my.db");
+	}
+
+	@Test
+	public void nativeTypesAreSetToFalseByDefault() {
+		Neo4jProperties properties = load(true);
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getUseNativeTypes()).isFalse();
+	}
+
+	@Test
+	public void nativeTypesCanBeConfigured() {
+		Neo4jProperties properties = load(true,
+				"spring.data.neo4j.use-native-types=true");
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getUseNativeTypes()).isTrue();
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {
@@ -183,7 +200,7 @@ public class Neo4jPropertiesTests {
 		return this.context.getBean(Neo4jProperties.class);
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class TestConfiguration {
 

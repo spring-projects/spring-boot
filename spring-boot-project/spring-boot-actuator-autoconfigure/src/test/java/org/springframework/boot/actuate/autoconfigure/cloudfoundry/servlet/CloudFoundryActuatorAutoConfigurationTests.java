@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -44,8 +44,6 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.config.BeanIds;
@@ -85,7 +83,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -109,7 +107,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 					mockMvc.perform(get("/cloudfoundryapplication"))
@@ -123,7 +121,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -140,7 +138,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -151,7 +149,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 					String cloudControllerUrl = (String) ReflectionTestUtils
 							.getField(interceptorSecurityService, "cloudControllerUrl");
 					assertThat(cloudControllerUrl)
-							.isEqualTo("http://my-cloud-controller.com");
+							.isEqualTo("https://my-cloud-controller.com");
 				});
 	}
 
@@ -160,7 +158,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.cloudfoundry.skip-ssl-validation:true")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
@@ -227,10 +225,10 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
@@ -248,9 +246,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.endpoints.web.path-mapping.test=custom")
-				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+				.withBean(TestEndpoint.class, TestEndpoint::new).run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(
 							context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping
@@ -272,7 +270,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---",
 						"vcap.application.application_id:my-app-id",
-						"vcap.application.cf_api:http://my-cloud-controller.com")
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.withConfiguration(
 						AutoConfigurations.of(HealthIndicatorAutoConfiguration.class,
 								HealthEndpointAutoConfiguration.class))
@@ -307,16 +305,6 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		}
 		throw new IllegalStateException("No operation found with request path "
 				+ requestPath + " from " + endpoint.getOperations());
-	}
-
-	@Configuration
-	static class TestConfiguration {
-
-		@Bean
-		public TestEndpoint testEndpoint() {
-			return new TestEndpoint();
-		}
-
 	}
 
 	@Endpoint(id = "test")

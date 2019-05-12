@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,15 +24,18 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -41,9 +45,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
+@Testcontainers
 public class RestClientAutoConfigurationTests {
 
-	@ClassRule
+	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -69,9 +74,43 @@ public class RestClientAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
-					assertThat(restClient)
-							.hasFieldOrPropertyWithValue("maxRetryTimeoutMillis", 42L);
+					assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix",
+							"/test");
 				});
+	}
+
+	@Test
+	public void configureWithNoTimeoutsApplyDefaults() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertTimeouts(restClient,
+					Duration.ofMillis(RestClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
+					Duration.ofMillis(RestClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS));
+		});
+	}
+
+	@Test
+	public void configureWithCustomTimeouts() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
+						"spring.elasticsearch.rest.read-timeout=1m")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RestClient.class);
+					RestClient restClient = context.getBean(RestClient.class);
+					assertTimeouts(restClient, Duration.ofSeconds(15),
+							Duration.ofMinutes(1));
+				});
+	}
+
+	private static void assertTimeouts(RestClient restClient, Duration connectTimeout,
+			Duration readTimeout) {
+		Object client = ReflectionTestUtils.getField(restClient, "client");
+		Object config = ReflectionTestUtils.getField(client, "defaultConfig");
+		assertThat(config).hasFieldOrPropertyWithValue("socketTimeout",
+				Math.toIntExact(readTimeout.toMillis()));
+		assertThat(config).hasFieldOrPropertyWithValue("connectTimeout",
+				Math.toIntExact(connectTimeout.toMillis()));
 	}
 
 	@Test
@@ -94,7 +133,7 @@ public class RestClientAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomRestClientConfiguration {
 
 		@Bean
@@ -104,12 +143,12 @@ public class RestClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BuilderCustomizerConfiguration {
 
 		@Bean
 		public RestClientBuilderCustomizer myCustomizer() {
-			return (builder) -> builder.setMaxRetryTimeoutMillis(42);
+			return (builder) -> builder.setPathPrefix("/test");
 		}
 
 	}

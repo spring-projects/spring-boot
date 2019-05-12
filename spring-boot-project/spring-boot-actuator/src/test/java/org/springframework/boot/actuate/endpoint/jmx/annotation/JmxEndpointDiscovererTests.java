@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
@@ -304,12 +304,12 @@ public class JmxEndpointDiscovererTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleEndpointsConfiguration {
 
 		@Bean
@@ -329,7 +329,7 @@ public class JmxEndpointDiscovererTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OverriddenOperationJmxEndpointConfiguration {
 
 		@Bean
@@ -344,7 +344,7 @@ public class JmxEndpointDiscovererTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AdditionalOperationJmxEndpointConfiguration {
 
 		@Bean
@@ -359,7 +359,7 @@ public class JmxEndpointDiscovererTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AdditionalClashingOperationsConfiguration {
 
 		@Bean
@@ -374,7 +374,7 @@ public class JmxEndpointDiscovererTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClashingJmxEndpointConfiguration {
 
 		@Bean
@@ -394,7 +394,7 @@ public class JmxEndpointDiscovererTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClashingStandardEndpointConfiguration {
 
 		@Bean
@@ -409,7 +409,7 @@ public class JmxEndpointDiscovererTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class InvalidJmxExtensionConfiguration {
 
 		@Bean
@@ -470,8 +470,8 @@ public class JmxEndpointDiscovererTests {
 
 		@ReadOperation
 		@ManagedOperation(description = "Get something based on a timeUnit")
-		@ManagedOperationParameters({
-				@ManagedOperationParameter(name = "unitMs", description = "Number of milliseconds") })
+		@ManagedOperationParameters({ @ManagedOperationParameter(name = "unitMs",
+				description = "Number of milliseconds") })
 		public String getSomething(Long timeUnit) {
 			return null;
 		}
@@ -487,8 +487,8 @@ public class JmxEndpointDiscovererTests {
 
 		@DeleteOperation
 		@ManagedOperation(description = "Delete something based on a timeUnit")
-		@ManagedOperationParameters({
-				@ManagedOperationParameter(name = "unitMs", description = "Number of milliseconds") })
+		@ManagedOperationParameters({ @ManagedOperationParameter(name = "unitMs",
+				description = "Number of milliseconds") })
 		public void deleteSomething(Long timeUnit) {
 
 		}

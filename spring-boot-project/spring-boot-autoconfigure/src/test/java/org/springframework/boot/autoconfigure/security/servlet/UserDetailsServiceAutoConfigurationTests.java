@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,14 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,7 +57,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 			.withUserConfiguration(TestSecurityConfiguration.class).withConfiguration(
 					AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	@Test
@@ -172,7 +172,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 				}));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestAuthenticationManagerConfiguration {
 
 		private AuthenticationManager authenticationManager;
@@ -187,7 +187,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestUserDetailsServiceConfiguration {
 
 		@Bean
@@ -198,7 +198,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestAuthenticationProviderConfiguration {
 
 		@Bean
@@ -208,14 +208,14 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
 	protected static class TestSecurityConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
 	protected static class TestConfigWithPasswordEncoder {
 
@@ -226,7 +226,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
 	protected static class TestConfigWithClientRegistrationRepository {
 
@@ -237,7 +237,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
 	protected static class TestConfigWithAuthenticationManagerBuilder {
 

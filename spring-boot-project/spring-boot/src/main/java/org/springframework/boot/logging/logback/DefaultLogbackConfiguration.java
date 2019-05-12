@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,6 +36,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -45,6 +46,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Vedran Pavic
+ * @author Robert Thornton
  * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
@@ -57,7 +59,7 @@ class DefaultLogbackConfiguration {
 	private static final String FILE_LOG_PATTERN = "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} "
 			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
 
-	private static final String MAX_FILE_SIZE = "10MB";
+	private static final DataSize MAX_FILE_SIZE = DataSize.ofMegabytes(10);
 
 	private final PropertyResolver patterns;
 
@@ -140,11 +142,16 @@ class DefaultLogbackConfiguration {
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config, String logFile) {
 		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
+		rollingPolicy.setCleanHistoryOnStart(this.patterns.getProperty(
+				"logging.file.clean-history-on-start", Boolean.class, false));
 		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
 		setMaxFileSize(rollingPolicy,
-				this.patterns.getProperty("logging.file.max-size", MAX_FILE_SIZE));
+				getDataSize("logging.file.max-size", MAX_FILE_SIZE));
 		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
 				Integer.class, CoreConstants.UNBOUND_HISTORY));
+		DataSize totalSizeCap = getDataSize("logging.file.total-size-cap",
+				DataSize.ofBytes(CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP));
+		rollingPolicy.setTotalSizeCap(new FileSize(totalSizeCap.toBytes()));
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
@@ -152,15 +159,30 @@ class DefaultLogbackConfiguration {
 
 	private void setMaxFileSize(
 			SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy,
-			String maxFileSize) {
+			DataSize maxFileSize) {
 		try {
-			rollingPolicy.setMaxFileSize(FileSize.valueOf(maxFileSize));
+			rollingPolicy.setMaxFileSize(new FileSize(maxFileSize.toBytes()));
 		}
 		catch (NoSuchMethodError ex) {
 			// Logback < 1.1.8 used String configuration
 			Method method = ReflectionUtils.findMethod(
 					SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize", String.class);
-			ReflectionUtils.invokeMethod(method, rollingPolicy, maxFileSize);
+			ReflectionUtils.invokeMethod(method, rollingPolicy,
+					String.valueOf(maxFileSize.toBytes()));
+		}
+	}
+
+	private DataSize getDataSize(String property, DataSize defaultSize) {
+		String value = this.patterns.getProperty(property);
+		if (value == null) {
+			return defaultSize;
+		}
+		try {
+			return DataSize.parse(value);
+		}
+		catch (IllegalArgumentException ex) {
+			FileSize fileSize = FileSize.valueOf(value);
+			return DataSize.ofBytes(fileSize.getSize());
 		}
 	}
 

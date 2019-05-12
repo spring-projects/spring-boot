@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,12 @@
 
 package sample.aop;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,19 +31,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class SampleAopApplicationTests {
+class SampleAopApplicationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	private String profiles;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		this.profiles = System.getProperty("spring.profiles.active");
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		if (this.profiles != null) {
 			System.setProperty("spring.profiles.active", this.profiles);
@@ -54,15 +54,15 @@ public class SampleAopApplicationTests {
 	}
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	void testDefaultSettings() throws Exception {
 		SampleAopApplication.main(new String[0]);
-		assertThat(this.output.toString()).contains("Hello Phil");
+		assertThat(this.output).contains("Hello Phil");
 	}
 
 	@Test
-	public void testCommandLineOverrides() throws Exception {
+	void testCommandLineOverrides() throws Exception {
 		SampleAopApplication.main(new String[] { "--name=Gordon" });
-		assertThat(this.output.toString()).contains("Hello Gordon");
+		assertThat(this.output).contains("Hello Gordon");
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,8 +26,8 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -60,7 +60,7 @@ public class ServletEndpointRegistrarTests {
 	@Captor
 	private ArgumentCaptor<Servlet> servlet;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addServlet(any(String.class), any(Servlet.class)))
@@ -118,6 +118,28 @@ public class ServletEndpointRegistrarTests {
 				Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setInitParameters(Collections.singletonMap("a", "b"));
+	}
+
+	@Test
+	public void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup()
+			throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).setLoadOnStartup(7);
+	}
+
+	@Test
+	public void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue()
+			throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).setLoadOnStartup(-1);
 	}
 
 	private ExposableServletEndpoint mockEndpoint(EndpointServlet endpointServlet) {

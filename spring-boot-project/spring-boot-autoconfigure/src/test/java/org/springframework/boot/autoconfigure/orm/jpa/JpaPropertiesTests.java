@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -49,6 +49,8 @@ public class JpaPropertiesTests {
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseNoCheckIfDatabaseIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.database=postgresql")
 				.run(assertJpaProperties((properties) -> {
@@ -65,6 +67,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithKnownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Database database = properties
@@ -74,6 +78,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
 		this.contextRunner.withPropertyValues("spring.jpa.database=mysql")
 				.run(assertJpaProperties((properties) -> {
@@ -84,6 +90,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithUnknownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Database database = properties
@@ -126,7 +134,7 @@ public class JpaPropertiesTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(JpaProperties.class)
 	static class TestConfiguration {
 

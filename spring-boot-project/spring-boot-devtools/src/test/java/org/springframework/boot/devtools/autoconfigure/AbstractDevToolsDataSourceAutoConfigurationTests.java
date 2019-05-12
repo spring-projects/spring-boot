@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -49,18 +51,18 @@ import static org.mockito.Mockito.verify;
 public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
-	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				SingleDataSourceConfiguration.class);
+	public void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
+		ConfigurableApplicationContext context = getContext(
+				() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
 		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
-	public void multipleDataSourcesAreIgnored() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				MultipleDataSourcesConfiguration.class);
+	public void multipleDataSourcesAreIgnored() throws Exception {
+		ConfigurableApplicationContext context = getContext(
+				() -> createContext(MultipleDataSourcesConfiguration.class));
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class)
 				.values();
 		for (DataSource dataSource : dataSources) {
@@ -90,6 +92,18 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return statement;
 	}
 
+	protected ConfigurableApplicationContext getContext(
+			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
+		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
+		Thread thread = new Thread(() -> {
+			ConfigurableApplicationContext context = supplier.get();
+			atomicReference.getAndSet(context);
+		});
+		thread.start();
+		thread.join();
+		return atomicReference.get();
+	}
+
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
 		return this.createContext(null, classes);
 	}
@@ -116,7 +130,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SingleDataSourceConfiguration {
 
 		@Bean
@@ -126,7 +140,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleDataSourcesConfiguration {
 
 		@Bean
@@ -141,7 +155,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceSpyConfiguration {
 
 		@Bean

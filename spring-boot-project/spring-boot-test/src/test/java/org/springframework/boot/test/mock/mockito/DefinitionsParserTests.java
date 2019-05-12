@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.test.mock.mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -225,7 +225,10 @@ public class DefinitionsParserTests {
 
 	}
 
-	@MockBean(name = "Name", classes = ExampleService.class, extraInterfaces = ExampleExtraInterface.class, answer = Answers.RETURNS_SMART_NULLS, serializable = true, reset = MockReset.NONE)
+	@MockBean(name = "Name", classes = ExampleService.class,
+			extraInterfaces = ExampleExtraInterface.class,
+			answer = Answers.RETURNS_SMART_NULLS, serializable = true,
+			reset = MockReset.NONE)
 	static class MockBeanAttributes {
 
 	}
@@ -244,8 +247,8 @@ public class DefinitionsParserTests {
 
 	}
 
-	@MockBean(name = "name", classes = { ExampleService.class,
-			ExampleServiceCaller.class })
+	@MockBean(name = "name",
+			classes = { ExampleService.class, ExampleServiceCaller.class })
 	static class MockBeanMultipleClassesWithName {
 
 	}
@@ -292,8 +295,8 @@ public class DefinitionsParserTests {
 
 	}
 
-	@SpyBean(name = "name", classes = { RealExampleService.class,
-			ExampleServiceCaller.class })
+	@SpyBean(name = "name",
+			classes = { RealExampleService.class, ExampleServiceCaller.class })
 	static class SpyBeanMultipleClassesWithName {
 
 	}

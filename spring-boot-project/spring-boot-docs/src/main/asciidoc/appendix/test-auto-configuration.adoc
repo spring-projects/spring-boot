@@ -5,4 +5,4 @@
 The following table lists the various `@…Test` annotations that can be used to test
 slices of your application and the auto-configuration that they import by default:
 
-include::../../../target/generated-resources/test-slice-auto-configuration.adoc[]
+include::{generated-resources-root}/test-slice-auto-configuration.adoc[]

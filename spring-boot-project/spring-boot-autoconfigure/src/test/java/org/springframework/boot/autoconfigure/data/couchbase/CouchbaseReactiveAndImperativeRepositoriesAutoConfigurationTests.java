@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
@@ -50,7 +50,7 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		this.context.close();
 	}
@@ -67,15 +67,16 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CouchbaseAutoConfigurationTests.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
-	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
+	@EnableReactiveCouchbaseRepositories(
+			basePackageClasses = ReactiveCityRepository.class)
 	protected static class ImperativeAndReactiveConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ CouchbaseTestConfigurer.class, Registrar.class })
 	protected static class BaseConfiguration {
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.context;
 
 import java.util.Locale;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -126,7 +126,7 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Expected to fail per gh-1075")
+	@Disabled("Expected to fail per gh-1075")
 	public void testMessageSourceFromPropertySourceAnnotation() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.run((context) -> assertThat(
@@ -202,19 +202,17 @@ public class MessageSourceAutoConfigurationTests {
 	public void messageSourceWithNonStandardBeanNameIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 				.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getMessage("foo", null, Locale.US))
-							.isEqualTo("bar");
-				});
+				.run((context) -> assertThat(context.getMessage("foo", null, Locale.US))
+						.isEqualTo("bar"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/switch-messages.properties")
 	protected static class Config {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomMessageSourceConfiguration {
 
 		@Bean
@@ -224,7 +222,7 @@ public class MessageSourceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class CustomBeanNameMessageSourceConfiguration {
 
 		@Bean

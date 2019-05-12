@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -33,8 +35,10 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
 /**
  * Type Utilities.
@@ -73,18 +77,22 @@ class TypeUtils {
 
 	private final ProcessingEnvironment env;
 
+	private final Types types;
+
 	private final TypeExtractor typeExtractor;
 
 	private final TypeMirror collectionType;
 
 	private final TypeMirror mapType;
 
+	private final Map<TypeElement, TypeDescriptor> typeDescriptors = new HashMap<>();
+
 	TypeUtils(ProcessingEnvironment env) {
 		this.env = env;
-		Types types = env.getTypeUtils();
-		this.typeExtractor = new TypeExtractor(types);
-		this.collectionType = getDeclaredType(types, Collection.class, 1);
-		this.mapType = getDeclaredType(types, Map.class, 2);
+		this.types = env.getTypeUtils();
+		this.typeExtractor = new TypeExtractor(this.types);
+		this.collectionType = getDeclaredType(this.types, Collection.class, 1);
+		this.mapType = getDeclaredType(this.types, Map.class, 2);
 	}
 
 	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
@@ -102,6 +110,14 @@ class TypeUtils {
 		}
 	}
 
+	public boolean isSameType(TypeMirror t1, TypeMirror t2) {
+		return this.types.isSameType(t1, t2);
+	}
+
+	public Element asElement(TypeMirror type) {
+		return this.types.asElement(type);
+	}
+
 	/**
 	 * Return the qualified name of the specified element.
 	 * @param element the element to handle
@@ -115,14 +131,50 @@ class TypeUtils {
 	/**
 	 * Return the type of the specified {@link TypeMirror} including all its generic
 	 * information.
+	 * @param element the {@link TypeElement} in which this {@code type} is declared
 	 * @param type the type to handle
 	 * @return a representation of the type including all its generic information
 	 */
-	public String getType(TypeMirror type) {
+	public String getType(TypeElement element, TypeMirror type) {
 		if (type == null) {
 			return null;
 		}
-		return type.accept(this.typeExtractor, null);
+		return type.accept(this.typeExtractor, createTypeDescriptor(element));
+	}
+
+	/**
+	 * Extract the target element type from the specified container type or {@code null}
+	 * if no element type was found.
+	 * @param type a type, potentially wrapping an element type
+	 * @return the element type or {@code null} if no specific type was found
+	 */
+	public TypeMirror extractElementType(TypeMirror type) {
+		if (!this.env.getTypeUtils().isAssignable(type, this.collectionType)) {
+			return null;
+		}
+		return getCollectionElementType(type);
+	}
+
+	private TypeMirror getCollectionElementType(TypeMirror type) {
+		if (((TypeElement) this.types.asElement(type)).getQualifiedName()
+				.contentEquals(Collection.class.getName())) {
+			DeclaredType declaredType = (DeclaredType) type;
+			// raw type, just "Collection"
+			if (declaredType.getTypeArguments().size() == 0) {
+				return this.types.getDeclaredType(this.env.getElementUtils()
+						.getTypeElement(Object.class.getName()));
+			}
+			// return type argument to Collection<...>
+			return declaredType.getTypeArguments().get(0);
+		}
+
+		// recursively walk the supertypes, looking for Collection<...>
+		for (TypeMirror superType : this.env.getTypeUtils().directSupertypes(type)) {
+			if (this.types.isAssignable(superType, this.collectionType)) {
+				return getCollectionElementType(superType);
+			}
+		}
+		return null;
 	}
 
 	public boolean isCollectionOrMap(TypeMirror type) {
@@ -137,6 +189,19 @@ class TypeUtils {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
 		return "".equals(javadoc) ? null : javadoc;
+	}
+
+	/**
+	 * Return the {@link PrimitiveType} of the specified type or {@code null} if the type
+	 * does not represent a valid wrapper type.
+	 * @param typeMirror a type
+	 * @return the primitive type or {@code null} if the type is not a wrapper type
+	 */
+	public PrimitiveType getPrimitiveType(TypeMirror typeMirror) {
+		if (getPrimitiveFor(typeMirror) != null) {
+			return this.types.unboxedType(typeMirror);
+		}
+		return null;
 	}
 
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
@@ -160,11 +225,49 @@ class TypeUtils {
 		return WRAPPER_TO_PRIMITIVE.get(type.toString());
 	}
 
+	TypeDescriptor resolveTypeDescriptor(TypeElement element) {
+		if (this.typeDescriptors.containsKey(element)) {
+			return this.typeDescriptors.get(element);
+		}
+		return createTypeDescriptor(element);
+	}
+
+	private TypeDescriptor createTypeDescriptor(TypeElement element) {
+		TypeDescriptor descriptor = new TypeDescriptor();
+		process(descriptor, element.asType());
+		this.typeDescriptors.put(element, descriptor);
+		return descriptor;
+	}
+
+	private void process(TypeDescriptor descriptor, TypeMirror type) {
+		try {
+			if (type.getKind() == TypeKind.DECLARED) {
+				DeclaredType declaredType = (DeclaredType) type;
+				DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
+						.getTypeElement(this.types.asElement(type).toString()).asType();
+				List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
+				for (int i = 0; i < arguments.size(); i++) {
+					TypeMirror specificType = arguments.get(i);
+					TypeMirror signatureType = freshType.getTypeArguments().get(i);
+					descriptor.registerIfNecessary(signatureType, specificType);
+				}
+				TypeElement element = (TypeElement) this.types.asElement(type);
+				process(descriptor, element.getSuperclass());
+			}
+		}
+		catch (Exception ex) {
+			this.env.getMessager().printMessage(Kind.WARNING,
+					"Failed to generated type descriptor for " + type,
+					this.types.asElement(type));
+		}
+	}
+
 	/**
 	 * A visitor that extracts the fully qualified name of a type, including generic
 	 * information.
 	 */
-	private static class TypeExtractor extends SimpleTypeVisitor8<String, Void> {
+	private static class TypeExtractor
+			extends SimpleTypeVisitor8<String, TypeDescriptor> {
 
 		private final Types types;
 
@@ -173,32 +276,71 @@ class TypeUtils {
 		}
 
 		@Override
-		public String visitDeclared(DeclaredType type, Void none) {
+		public String visitDeclared(DeclaredType type, TypeDescriptor descriptor) {
 			TypeElement enclosingElement = getEnclosingTypeElement(type);
-			if (enclosingElement != null) {
-				return getQualifiedName(enclosingElement) + "$"
-						+ type.asElement().getSimpleName();
-			}
-			String qualifiedName = getQualifiedName(type.asElement());
+			String qualifiedName = determineQualifiedName(type, enclosingElement);
 			if (type.getTypeArguments().isEmpty()) {
 				return qualifiedName;
 			}
 			StringBuilder name = new StringBuilder();
 			name.append(qualifiedName);
 			name.append("<").append(type.getTypeArguments().stream()
-					.map(TypeMirror::toString).collect(Collectors.joining(",")))
+					.map((t) -> visit(t, descriptor)).collect(Collectors.joining(",")))
 					.append(">");
 			return name.toString();
 		}
 
-		@Override
-		public String visitArray(ArrayType t, Void none) {
-			return t.getComponentType().accept(this, none) + "[]";
+		private String determineQualifiedName(DeclaredType type,
+				TypeElement enclosingElement) {
+			if (enclosingElement != null) {
+				return getQualifiedName(enclosingElement) + "$"
+						+ type.asElement().getSimpleName();
+			}
+			return getQualifiedName(type.asElement());
 		}
 
 		@Override
-		public String visitPrimitive(PrimitiveType t, Void none) {
+		public String visitTypeVariable(TypeVariable t, TypeDescriptor descriptor) {
+			TypeMirror typeMirror = descriptor.resolveGeneric(t);
+			if (typeMirror != null) {
+				if (typeMirror instanceof TypeVariable) {
+					TypeVariable typeVariable = (TypeVariable) typeMirror;
+					// Still unresolved, let's use the upper bound, checking first if
+					// a cycle may exist
+					if (!hasCycle(typeVariable)) {
+						return visit(typeVariable.getUpperBound(), descriptor);
+					}
+				}
+				else {
+					return visit(typeMirror, descriptor);
+				}
+			}
+			// Fallback to simple representation of the upper bound
+			return defaultAction(t.getUpperBound(), descriptor);
+		}
+
+		private boolean hasCycle(TypeVariable variable) {
+			TypeMirror upperBound = variable.getUpperBound();
+			if (upperBound instanceof DeclaredType) {
+				return ((DeclaredType) upperBound).getTypeArguments().stream()
+						.anyMatch((candidate) -> candidate.equals(variable));
+			}
+			return false;
+		}
+
+		@Override
+		public String visitArray(ArrayType t, TypeDescriptor descriptor) {
+			return t.getComponentType().accept(this, descriptor) + "[]";
+		}
+
+		@Override
+		public String visitPrimitive(PrimitiveType t, TypeDescriptor descriptor) {
 			return this.types.boxedClass(t).getQualifiedName().toString();
+		}
+
+		@Override
+		protected String defaultAction(TypeMirror t, TypeDescriptor descriptor) {
+			return t.toString();
 		}
 
 		public String getQualifiedName(Element element) {
@@ -221,11 +363,49 @@ class TypeUtils {
 			if (type instanceof DeclaredType) {
 				DeclaredType declaredType = (DeclaredType) type;
 				Element enclosingElement = declaredType.asElement().getEnclosingElement();
-				if (enclosingElement != null && enclosingElement instanceof TypeElement) {
+				if (enclosingElement instanceof TypeElement) {
 					return (TypeElement) enclosingElement;
 				}
 			}
 			return null;
+		}
+
+	}
+
+	/**
+	 * Descriptor for a given type.
+	 */
+	static class TypeDescriptor {
+
+		private final Map<TypeVariable, TypeMirror> generics = new HashMap<>();
+
+		public Map<TypeVariable, TypeMirror> getGenerics() {
+			return Collections.unmodifiableMap(this.generics);
+		}
+
+		public TypeMirror resolveGeneric(TypeVariable typeVariable) {
+			return resolveGeneric(getParameterName(typeVariable));
+		}
+
+		public TypeMirror resolveGeneric(String parameterName) {
+			return this.generics.entrySet().stream()
+					.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
+					.findFirst().map(Entry::getValue).orElse(null);
+		}
+
+		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
+			if (variable instanceof TypeVariable) {
+				TypeVariable typeVariable = (TypeVariable) variable;
+				if (this.generics.keySet().stream()
+						.noneMatch((candidate) -> getParameterName(candidate)
+								.equals(getParameterName(typeVariable)))) {
+					this.generics.put(typeVariable, resolution);
+				}
+			}
+		}
+
+		private String getParameterName(TypeVariable typeVariable) {
+			return typeVariable.asElement().getSimpleName().toString();
 		}
 
 	}

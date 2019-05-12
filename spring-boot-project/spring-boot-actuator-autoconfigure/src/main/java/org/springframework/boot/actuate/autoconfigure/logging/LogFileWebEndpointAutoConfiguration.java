@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.logging;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -39,21 +41,18 @@ import org.springframework.util.StringUtils;
  * @author Christian Carriere-Tisseur
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnEnabledEndpoint(endpoint = LogFileWebEndpoint.class)
+@ConditionalOnExposedEndpoint(endpoint = LogFileWebEndpoint.class)
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
-
-	private final LogFileWebEndpointProperties properties;
-
-	public LogFileWebEndpointAutoConfiguration(LogFileWebEndpointProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(LogFileCondition.class)
-	public LogFileWebEndpoint logFileWebEndpoint(Environment environment) {
-		return new LogFileWebEndpoint(environment, this.properties.getExternalFile());
+	public LogFileWebEndpoint logFileWebEndpoint(Environment environment,
+			LogFileWebEndpointProperties properties) {
+		return new LogFileWebEndpoint(environment, properties.getExternalFile());
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {

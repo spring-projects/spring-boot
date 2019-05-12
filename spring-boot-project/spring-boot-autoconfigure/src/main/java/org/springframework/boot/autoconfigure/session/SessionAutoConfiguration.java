@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,6 +56,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -71,7 +72,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
@@ -82,7 +83,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class,
 			SessionRepositoryFilterConfiguration.class })
@@ -90,8 +91,8 @@ public class SessionAutoConfiguration {
 
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		public DefaultCookieSerializer cookieSerializer(
-				ServerProperties serverProperties) {
+		public DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
+				ObjectProvider<SpringSessionRememberMeServices> springSessionRememberMeServices) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -102,10 +103,13 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer
 					.setCookieMaxAge((int) maxAge.getSeconds()));
+			springSessionRememberMeServices.ifAvailable((
+					rememberMeServices) -> cookieSerializer.setRememberMeRequestAttribute(
+							SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR));
 			return cookieSerializer;
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
 		@Import({ ServletSessionRepositoryImplementationValidator.class,
 				ServletSessionConfigurationImportSelector.class })
@@ -115,12 +119,12 @@ public class SessionAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 		@Import({ ReactiveSessionRepositoryImplementationValidator.class,
 				ReactiveSessionConfigurationImportSelector.class })

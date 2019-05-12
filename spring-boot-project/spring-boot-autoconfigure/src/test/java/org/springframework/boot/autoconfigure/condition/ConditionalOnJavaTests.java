@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.util.ServiceLoader;
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
@@ -35,7 +35,7 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnJava}.
+ * Tests for {@link ConditionalOnJava @ConditionalOnJava}.
  *
  * @author Oliver Gierke
  * @author Phillip Webb
@@ -121,7 +121,7 @@ public class ConditionalOnJavaTests {
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJava(JavaVersion.NINE)
 	static class Java9Required {
 
@@ -132,7 +132,7 @@ public class ConditionalOnJavaTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.EIGHT)
 	static class Java7Required {
 
@@ -143,7 +143,7 @@ public class ConditionalOnJavaTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJava(JavaVersion.EIGHT)
 	static class Java8Required {
 

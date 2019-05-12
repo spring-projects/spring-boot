@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -186,7 +186,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void openEntityManagerInViewInterceptorISNotRegisteredWhenExplicitlyOff() {
+	public void openEntityManagerInViewInterceptorIsNotRegisteredWhenExplicitlyOff() {
 		new WebApplicationContextRunner()
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.jpa.open-in-view=false")
@@ -264,7 +264,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestTwoDataSourcesConfiguration {
 
 		@Bean
@@ -284,7 +284,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestTwoDataSourcesAndPrimaryConfiguration {
 
 		@Bean
@@ -305,13 +305,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestFilterConfiguration {
 
@@ -322,7 +322,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestFilterRegistrationConfiguration {
 
@@ -333,7 +333,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestInterceptorManualConfiguration {
 
@@ -349,7 +349,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean
 			extends TestConfiguration {
 
@@ -369,7 +369,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfigurationWithEntityManagerFactory
 			extends TestConfiguration {
 
@@ -397,7 +397,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfigurationWithTransactionManager {
 
@@ -408,7 +408,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
 	public static class TestConfigurationWithCustomPersistenceUnitManager {
 

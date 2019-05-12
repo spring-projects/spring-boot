@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.TaskExecutorBuilder;
@@ -29,7 +29,7 @@ import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -58,7 +58,7 @@ public class TaskExecutionAutoConfigurationTests {
 			.withConfiguration(
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
 	@Test
@@ -69,6 +69,8 @@ public class TaskExecutionAutoConfigurationTests {
 						"spring.task.execution.pool.max-size=4",
 						"spring.task.execution.pool.allow-core-thread-timeout=true",
 						"spring.task.execution.pool.keep-alive=5s",
+						"spring.task.execution.shutdown.await-termination=true",
+						"spring.task.execution.shutdown.await-termination-period=30s",
 						"spring.task.execution.thread-name-prefix=mytest-")
 				.run(assertTaskExecutor((taskExecutor) -> {
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity",
@@ -78,6 +80,10 @@ public class TaskExecutionAutoConfigurationTests {
 					assertThat(taskExecutor)
 							.hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue(
+							"waitForTasksToCompleteOnShutdown", true);
+					assertThat(taskExecutor)
+							.hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
 					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				}));
 	}
@@ -177,7 +183,7 @@ public class TaskExecutionAutoConfigurationTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorBuilderConfig {
 
 		private final TaskExecutorBuilder taskExecutorBuilder = new TaskExecutorBuilder();
@@ -189,7 +195,7 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskExecutorCustomizerConfig {
 
 		@Bean
@@ -199,7 +205,7 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskDecoratorConfig {
 
 		@Bean
@@ -209,7 +215,7 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorConfig {
 
 		@Bean
@@ -219,13 +225,13 @@ public class TaskExecutionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAsync
 	static class AsyncConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class SchedulingConfiguration {
 

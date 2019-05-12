@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,8 +31,8 @@ import org.elasticsearch.cluster.block.ClusterBlocks;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.cluster.routing.RoutingTable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -49,6 +49,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
+@Deprecated
 public class ElasticsearchHealthIndicatorTests {
 
 	@Mock
@@ -62,7 +63,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	private ElasticsearchHealthIndicator indicator;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.client.admin()).willReturn(this.admin);
@@ -176,7 +177,7 @@ public class ElasticsearchHealthIndicatorTests {
 			super("test-cluster", new String[0],
 					new ClusterState(null, 0, null, null, RoutingTable.builder().build(),
 							DiscoveryNodes.builder().build(),
-							ClusterBlocks.builder().build(), null, false));
+							ClusterBlocks.builder().build(), null, 1, false));
 			this.status = status;
 		}
 

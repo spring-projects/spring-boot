@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,19 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Rule;
-import org.junit.Test;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -41,6 +44,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
+ * @author Raheela Aslam
  */
 public class RestTemplateMetricsConfigurationTests {
 
@@ -49,8 +53,8 @@ public class RestTemplateMetricsConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
 					HttpClientMetricsAutoConfiguration.class));
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -96,6 +100,34 @@ public class RestTemplateMetricsConfigurationTests {
 							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.doesNotContain("Are you using 'uriVariables'?");
 				});
+	}
+
+	@Test
+	public void autoTimeRequestsCanBeConfigured() {
+		this.contextRunner.withPropertyValues(
+				"management.metrics.web.client.request.autotime.enabled=true",
+				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
+				"management.metrics.web.client.request.autotime.percentiles-histogram=true")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					Timer timer = registry.get("http.client.requests").timer();
+					HistogramSnapshot snapshot = timer.takeSnapshot();
+					assertThat(snapshot.percentileValues()).hasSize(2);
+					assertThat(snapshot.percentileValues()[0].percentile())
+							.isEqualTo(0.5);
+					assertThat(snapshot.percentileValues()[1].percentile())
+							.isEqualTo(0.7);
+				});
+	}
+
+	@Test
+	public void backsOffWhenRestTemplateBuilderIsMissing() {
+		new ApplicationContextRunner().with(MetricsRun.simple())
+				.withConfiguration(
+						AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
+						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(

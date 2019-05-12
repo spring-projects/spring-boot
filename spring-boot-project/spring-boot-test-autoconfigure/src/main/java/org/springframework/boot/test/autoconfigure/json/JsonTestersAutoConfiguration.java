@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,7 @@ import org.springframework.util.ReflectionUtils;
  * @see AutoConfigureJsonTesters
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnProperty("spring.test.jsontesters.enabled")
 @AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class,
@@ -75,7 +75,7 @@ public class JsonTestersAutoConfiguration {
 				null);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonJsonTestersConfiguration {
 
@@ -89,7 +89,7 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Gson.class)
 	static class GsonJsonTestersConfiguration {
 
@@ -102,7 +102,7 @@ public class JsonTestersAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jsonb.class)
 	static class JsonbJsonTesterConfiguration {
 
@@ -117,8 +117,11 @@ public class JsonTestersAutoConfiguration {
 
 	/**
 	 * {@link FactoryBean} used to create JSON Tester instances.
+	 *
+	 * @param <T> the object type
+	 * @param <M> the marshaller type
 	 */
-	private static class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
+	static class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
 
 		private final Class<?> objectType;
 
@@ -127,7 +130,6 @@ public class JsonTestersAutoConfiguration {
 		JsonTesterFactoryBean(Class<?> objectType, M marshaller) {
 			this.objectType = objectType;
 			this.marshaller = marshaller;
-
 		}
 
 		@Override
@@ -166,7 +168,7 @@ public class JsonTestersAutoConfiguration {
 	/**
 	 * {@link BeanPostProcessor} used to initialize JSON testers.
 	 */
-	private static class JsonMarshalTestersBeanPostProcessor
+	static class JsonMarshalTestersBeanPostProcessor
 			extends InstantiationAwareBeanPostProcessorAdapter {
 
 		@Override

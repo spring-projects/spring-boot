@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,9 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
@@ -31,7 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -53,20 +52,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ConditionsReportEndpointDocumentationTests
 		extends MockMvcEndpointDocumentationTests {
 
-	@Rule
-	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
-
 	private MockMvc mockMvc;
 
 	@Autowired
 	private WebApplicationContext applicationContext;
 
 	@Override
-	@Before
-	public void setup() {
+	@BeforeEach
+	public void setup(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
 				.apply(MockMvcRestDocumentation
-						.documentationConfiguration(this.restDocumentation).uris())
+						.documentationConfiguration(restDocumentation).uris())
 				.build();
 	}
 
@@ -114,7 +110,7 @@ public class ConditionsReportEndpointDocumentationTests
 												parentIdField())));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 

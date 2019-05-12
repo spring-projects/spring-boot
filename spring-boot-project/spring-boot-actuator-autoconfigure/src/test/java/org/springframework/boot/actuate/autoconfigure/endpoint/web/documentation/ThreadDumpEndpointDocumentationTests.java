@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -84,20 +84,21 @@ public class ThreadDumpEndpointDocumentationTests
 										.description(
 												"Description of the object on which the "
 														+ "thread is blocked, if any.")
-										.optional(),
-								fieldWithPath("threads.[].lockInfo").description(
-										"Object for which the thread is blocked "
-												+ "waiting.")
-										.optional(),
+										.optional().type(JsonFieldType.STRING),
+								fieldWithPath("threads.[].lockInfo")
+										.description(
+												"Object for which the thread is blocked "
+														+ "waiting.")
+										.optional().type(JsonFieldType.OBJECT),
 								fieldWithPath("threads.[].lockInfo.className")
 										.description(
 												"Fully qualified class name of the lock"
 														+ " object.")
-										.optional(),
+										.optional().type(JsonFieldType.STRING),
 								fieldWithPath("threads.[].lockInfo.identityHashCode")
 										.description(
 												"Identity hash code of the lock object.")
-										.optional(),
+										.optional().type(JsonFieldType.NUMBER),
 								fieldWithPath("threads.[].lockedMonitors").description(
 										"Monitors locked by this thread, if any"),
 								fieldWithPath("threads.[].lockedMonitors.[].className")
@@ -209,7 +210,7 @@ public class ThreadDumpEndpointDocumentationTests
 		latch.countDown();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 

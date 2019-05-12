@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,11 @@
 
 package sample.data.neo4j;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.extension.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class SampleNeo4jApplicationTests {
+class SampleNeo4jApplicationTests {
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	OutputCapture output = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() {
+	void testDefaultSettings() {
 		try {
 			SampleNeo4jApplication.main(new String[0]);
 		}
@@ -44,8 +44,7 @@ public class SampleNeo4jApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output.toString())
-				.contains("firstName='Alice', lastName='Smith'");
+		assertThat(this.output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean neo4jServerRunning(Throwable ex) {

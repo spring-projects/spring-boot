@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(AuthenticationManager.class)
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean({ AuthenticationManager.class, AuthenticationProvider.class,
@@ -67,7 +67,8 @@ public class UserDetailsServiceAutoConfiguration {
 			.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@ConditionalOnMissingBean(type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
+	@ConditionalOnMissingBean(
+			type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
 	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
 			SecurityProperties properties,
