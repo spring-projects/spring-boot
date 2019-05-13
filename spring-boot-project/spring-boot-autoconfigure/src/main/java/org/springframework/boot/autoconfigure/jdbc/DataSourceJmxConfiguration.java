@@ -75,7 +75,7 @@ class DataSourceJmxConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled")
+	@ConditionalOnProperty(prefix = "spring.datasource.tomcat", name = "jmx-enabled")
 	@ConditionalOnClass(DataSourceProxy.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class TomcatDataSourceJmxConfiguration {
