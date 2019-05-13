@@ -41,7 +41,7 @@ class SampleKafkaApplicationTests {
 
 	@Test
 	void testVanillaExchange() throws Exception {
-		long end = System.currentTimeMillis() + 10000;
+		long end = System.currentTimeMillis() + 30000;
 		while (!this.output.toString().contains("A simple test message")
 				&& System.currentTimeMillis() < end) {
 			Thread.sleep(250);
