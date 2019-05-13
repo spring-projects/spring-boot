@@ -69,7 +69,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	@Override
 	public void customize(Server server) {
-		SslContextFactory sslContextFactory = new SslContextFactory();
+		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
 		configureSsl(sslContextFactory, this.ssl, this.sslStoreProvider);
 		ServerConnector connector = createConnector(server, sslContextFactory,
 				this.address);
@@ -77,7 +77,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private ServerConnector createConnector(Server server,
-			SslContextFactory sslContextFactory, InetSocketAddress address) {
+			SslContextFactory.Server sslContextFactory, InetSocketAddress address) {
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSendServerVersion(false);
 		config.setSecureScheme("https");
@@ -91,7 +91,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private ServerConnector createServerConnector(Server server,
-			SslContextFactory sslContextFactory, HttpConfiguration config) {
+			SslContextFactory.Server sslContextFactory, HttpConfiguration config) {
 		if (this.http2 == null || !this.http2.isEnabled()) {
 			return createHttp11ServerConnector(server, config, sslContextFactory);
 		}
@@ -104,7 +104,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private ServerConnector createHttp11ServerConnector(Server server,
-			HttpConfiguration config, SslContextFactory sslContextFactory) {
+			HttpConfiguration config, SslContextFactory.Server sslContextFactory) {
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
 		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
 				sslContextFactory, HttpVersion.HTTP_1_1.asString());
@@ -121,7 +121,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private ServerConnector createHttp2ServerConnector(Server server,
-			HttpConfiguration config, SslContextFactory sslContextFactory) {
+			HttpConfiguration config, SslContextFactory.Server sslContextFactory) {
 		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(config);
 		ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
 		sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
@@ -134,11 +134,11 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	/**
 	 * Configure the SSL connection.
-	 * @param factory the Jetty {@link SslContextFactory}.
+	 * @param factory the Jetty {@link SslContextFactory.Server}.
 	 * @param ssl the ssl details.
 	 * @param sslStoreProvider the ssl store provider
 	 */
-	protected void configureSsl(SslContextFactory factory, Ssl ssl,
+	protected void configureSsl(SslContextFactory.Server factory, Ssl ssl,
 			SslStoreProvider sslStoreProvider) {
 		factory.setProtocol(ssl.getProtocol());
 		configureSslClientAuth(factory, ssl);
@@ -166,7 +166,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {
+	private void configureSslClientAuth(SslContextFactory.Server factory, Ssl ssl) {
 		if (ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
 			factory.setNeedClientAuth(true);
 			factory.setWantClientAuth(true);
@@ -176,7 +176,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslPasswords(SslContextFactory factory, Ssl ssl) {
+	private void configureSslPasswords(SslContextFactory.Server factory, Ssl ssl) {
 		if (ssl.getKeyStorePassword() != null) {
 			factory.setKeyStorePassword(ssl.getKeyStorePassword());
 		}
@@ -185,7 +185,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslKeyStore(SslContextFactory factory, Ssl ssl) {
+	private void configureSslKeyStore(SslContextFactory.Server factory, Ssl ssl) {
 		try {
 			URL url = ResourceUtils.getURL(ssl.getKeyStore());
 			factory.setKeyStoreResource(Resource.newResource(url));
@@ -202,7 +202,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
+	private void configureSslTrustStore(SslContextFactory.Server factory, Ssl ssl) {
 		if (ssl.getTrustStorePassword() != null) {
 			factory.setTrustStorePassword(ssl.getTrustStorePassword());
 		}
