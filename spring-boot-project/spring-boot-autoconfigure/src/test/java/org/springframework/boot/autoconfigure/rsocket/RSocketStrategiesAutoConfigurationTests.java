@@ -26,8 +26,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
+import org.springframework.http.codec.cbor.Jackson2CborDecoder;
+import org.springframework.http.codec.cbor.Jackson2CborEncoder;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,10 +51,16 @@ public class RSocketStrategiesAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
-			assertThat(strategies.decoders()).hasSize(1)
-					.hasOnlyElementsOfType(Jackson2JsonDecoder.class);
-			assertThat(strategies.encoders()).hasSize(1)
-					.hasOnlyElementsOfType(Jackson2JsonEncoder.class);
+			assertThat(strategies.decoders()).hasSize(2);
+			assertThat(strategies.decoders().get(0))
+					.isInstanceOf(Jackson2CborDecoder.class);
+			assertThat(strategies.decoders().get(1))
+					.isInstanceOf(Jackson2JsonDecoder.class);
+			assertThat(strategies.encoders()).hasSize(2);
+			assertThat(strategies.encoders().get(0))
+					.isInstanceOf(Jackson2CborEncoder.class);
+			assertThat(strategies.encoders().get(1))
+					.isInstanceOf(Jackson2JsonEncoder.class);
 		});
 	}
 
@@ -71,9 +80,9 @@ public class RSocketStrategiesAutoConfigurationTests {
 					assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 					RSocketStrategies strategies = context
 							.getBean(RSocketStrategies.class);
-					assertThat(strategies.decoders()).hasSize(2)
+					assertThat(strategies.decoders()).hasSize(3)
 							.hasAtLeastOneElementOfType(StringDecoder.class);
-					assertThat(strategies.encoders()).hasSize(2)
+					assertThat(strategies.encoders()).hasSize(3)
 							.hasAtLeastOneElementOfType(CharSequenceEncoder.class);
 				});
 	}
@@ -84,6 +93,11 @@ public class RSocketStrategiesAutoConfigurationTests {
 		@Bean
 		public ObjectMapper objectMapper() {
 			return new ObjectMapper();
+		}
+
+		@Bean
+		public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
+			return new Jackson2ObjectMapperBuilder();
 		}
 
 	}

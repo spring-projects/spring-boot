@@ -3483,6 +3483,22 @@ The following code shows a typical `@Controller`:
 	}
 ----
 
+[[boot-features-rsocket-strategies-auto-configuration]]
+=== RSocket Strategies Auto-configuration
+Spring Boot auto-configures an `RSocketStrategies` bean that provides all the required
+infrastructure for encoding and decoding RSocket payloads. By default, the
+auto-configuration will try to configure the following (in order):
+
+1. https://cbor.io/[CBOR] codecs with Jackson
+2. JSON codecs with Jackson
+
+The `spring-boot-starter-rsocket` Starter provides both dependencies.
+
+Developers can customize the `RSocketStrategies` component by creating beans that
+implement the `RSocketStrategiesCustomizer` interface. Note that their `@Order` is
+important, as it determines the order of codecs.
+
+
 [[boot-features-rsocket-server-auto-configuration]]
 === RSocket server Auto-configuration
 Spring Boot provides auto-configuration for RSocket servers. The required dependencies
