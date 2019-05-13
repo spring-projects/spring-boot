@@ -90,6 +90,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private File outputDirectory;
 
 	/**
+	 * Name of the generated archive.
+	 * @since 1.0
+	 */
+	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
+	private String finalName;
+
+	/**
 	 * Skip the execution.
 	 * @since 1.2
 	 */
@@ -259,8 +266,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		String finalName = this.project.getBuild().getFinalName();
-		return new File(this.outputDirectory, finalName + classifier + "."
+		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
