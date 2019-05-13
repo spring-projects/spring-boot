@@ -27,7 +27,6 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.SocketAcceptor;
-import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
 import org.assertj.core.api.Assertions;
@@ -45,7 +44,6 @@ import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,7 +94,7 @@ public class NettyRSocketServerFactoryTests {
 		factory.setPort(specificPort);
 		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
 		this.rSocketServer.start();
-		this.requester = getRSocketRequester(createRSocketTcpClient());
+		this.requester = createRSocketTcpClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload)
 				.retrieveMono(String.class).block(TIMEOUT);
@@ -111,7 +109,7 @@ public class NettyRSocketServerFactoryTests {
 		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
 		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
 		this.rSocketServer.start();
-		this.requester = getRSocketRequester(createRSocketWebSocketClient());
+		this.requester = createRSocketWebSocketClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload)
 				.retrieveMono(String.class).block(TIMEOUT);
@@ -136,29 +134,28 @@ public class NettyRSocketServerFactoryTests {
 		}
 	}
 
-	private RSocket createRSocketTcpClient() {
+	private RSocketRequester createRSocketTcpClient() {
 		Assertions.assertThat(this.rSocketServer).isNotNull();
 		InetSocketAddress address = this.rSocketServer.address();
-		return RSocketFactory.connect().dataMimeType(MimeTypeUtils.TEXT_PLAIN_VALUE)
-				.transport(TcpClientTransport.create(address)).start().block();
+		return createRSocketRequesterBuilder()
+				.connectTcp(address.getHostString(), address.getPort()).block();
 	}
 
-	private RSocket createRSocketWebSocketClient() {
+	private RSocketRequester createRSocketWebSocketClient() {
 		Assertions.assertThat(this.rSocketServer).isNotNull();
 		InetSocketAddress address = this.rSocketServer.address();
-		return RSocketFactory.connect().dataMimeType(MimeTypeUtils.TEXT_PLAIN_VALUE)
-				.transport(WebsocketClientTransport.create(address)).start().block();
+		return createRSocketRequesterBuilder()
+				.connect(WebsocketClientTransport.create(address)).block();
 	}
 
-	private RSocketRequester getRSocketRequester(RSocket rSocketClient) {
+	private RSocketRequester.Builder createRSocketRequesterBuilder() {
 		RSocketStrategies strategies = RSocketStrategies.builder()
 				.decoder(StringDecoder.allMimeTypes())
 				.encoder(CharSequenceEncoder.allMimeTypes())
 				.dataBufferFactory(
 						new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT))
 				.build();
-		return RSocketRequester.create(rSocketClient, MimeTypeUtils.TEXT_PLAIN,
-				strategies);
+		return RSocketRequester.builder().rsocketStrategies(strategies);
 	}
 
 	static class EchoRequestResponseAcceptor implements SocketAcceptor {
