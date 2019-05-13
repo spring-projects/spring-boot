@@ -23,6 +23,7 @@ import java.util.Collections;
 import com.samskivert.mustache.Mustache;
 import org.junit.Before;
 import org.junit.Test;
+import reactor.core.publisher.Flux;
 
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
@@ -34,12 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link MustacheView}.
  *
- * @author Brian Clozel
+ * @author Brian Clozel, Dave Syer
  */
 public class MustacheViewTests {
 
 	private final String templateUrl = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+			+ getClass().getPackage().getName().replace(".", "/");
 
 	private GenericApplicationContext context = new GenericApplicationContext();
 
@@ -56,13 +57,61 @@ public class MustacheViewTests {
 				.from(MockServerHttpRequest.get("/test").build());
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
-		view.setUrl(this.templateUrl);
+		view.setUrl(this.templateUrl + "/template.html");
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML,
 				this.exchange).block(Duration.ofSeconds(30));
 		assertThat(this.exchange.getResponse().getBodyAsString()
 				.block(Duration.ofSeconds(30))).isEqualTo("Hello Spring");
+	}
+
+	@Test
+	public void viewResolvesPublisher() {
+		this.exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
+		MustacheView view = new MustacheView();
+		view.setCompiler(Mustache.compiler());
+		view.setUrl(this.templateUrl + "/flux.html");
+		view.setCharset(StandardCharsets.UTF_8.displayName());
+		view.setApplicationContext(this.context);
+		view.render(Collections.singletonMap("flux.value", Flux.just("World", "Spring")),
+				MediaType.TEXT_HTML, this.exchange).block(Duration.ofSeconds(30));
+		assertThat(this.exchange.getResponse().getBodyAsString()
+				.block(Duration.ofSeconds(30))).isEqualTo("Hello\nWorld\nSpring\n");
+	}
+
+	@Test
+	public void viewResolvesSseManual() {
+		this.exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
+		MustacheView view = new MustacheView();
+		view.setCompiler(Mustache.compiler());
+		view.setUrl(this.templateUrl + "/sse.html");
+		view.setCharset(StandardCharsets.UTF_8.displayName());
+		view.setApplicationContext(this.context);
+		view.render(Collections.singletonMap("flux.value", Flux.just("World", "Spring")),
+				MediaType.TEXT_EVENT_STREAM, this.exchange).block(Duration.ofSeconds(30));
+		assertThat(this.exchange.getResponse().getBodyAsString()
+				.block(Duration.ofSeconds(30))).isEqualTo(
+						"event: message\ndata: World\n\n\nevent: message\ndata: Spring\n\n\n");
+	}
+
+	@Test
+	public void viewResolvesSseData() {
+		this.exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").build());
+		MustacheView view = new MustacheView();
+		view.setCompiler(Mustache.compiler());
+		view.setUrl(this.templateUrl + "/ssedata.html");
+		view.setCharset(StandardCharsets.UTF_8.displayName());
+		view.setApplicationContext(this.context);
+		view.render(Collections.singletonMap("flux.value", Flux.just("World", "Spring")),
+				MediaType.TEXT_EVENT_STREAM, this.exchange)
+				.block(Duration.ofSeconds(300));
+		assertThat(this.exchange.getResponse().getBodyAsString()
+				.block(Duration.ofSeconds(30))).isEqualTo(
+						"event: message\ndata: World\n\n\nevent: message\ndata: Spring\n\n\n");
 	}
 
 }

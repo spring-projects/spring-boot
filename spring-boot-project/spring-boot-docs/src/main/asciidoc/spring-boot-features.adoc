@@ -3032,6 +3032,54 @@ Spring Boot includes auto-configuration support for the following templating eng
 When you use one of these templating engines with the default configuration, your
 templates are picked up automatically from `src/main/resources/templates`.
 
+==== Mustache Views
+
+There are some special features of the `MustacheView` that make it suitable for handling the rendering of reactive elements. Most browsers will start to show content before the HTML tags are closed, so you can drip feed a list or a table into the view as the content becomes available.
+
+===== Progressive Rendering
+
+A model element of type `Publisher` will be left in the model (instead of expanding it before the view is rendered), if its name starts with "flux" or "mono" or "publisher". The `View` is then rendered and flushed to the HTTP response as soon as each element is published. Browsers are really good at rendering partially complete HTML, so the flux elements will most likely be visible to the user as soon as they are available. This is useful for rendering the "main" content of a page if it is a list or a table, for instance.
+
+===== Sserver Sent Event (SSE) Support
+
+To render a `View` with content type `text/event-stream` you need a model element of type `Publisher`, and also a template that includes that element (probably starts and ends with it). There is a convenience Lambda (`ssedata`) added to the model for you that prepends every line with `data:` - you can use it if you wish to simplify the rendering of the data elements. Two new lines are added after each item in `{{#ssedata}}`. E.g. with an element called `flux.events` of type `Flux<Event>`:
+
+```
+{{#flux.events}}
+event: message
+id: {{id}}
+{{#ssedata}}
+<div>
+  <span>Name: {{name}}<span>
+  <span>Value: {{value}}<span>
+</div>
+{{/ssedata}}
+{{/flux.events}}
+```
+
+the output will be
+
+```
+event: message
+id: 0
+data: <div>
+data:   <span>Name: foo<span>
+data:   <span>Value: bar<span>
+data: </div>
+
+
+event: message
+id: 1
+data: <div>
+data:   <span>Name: spam<span>
+data:   <span>Value: bucket<span>
+data: </div>
+
+
+... etc.
+```
+
+assuming the `Event` object has fields `id`, `name`, `value`.
 
 
 [[boot-features-webflux-error-handling]]

@@ -16,10 +16,13 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
+import java.time.Duration;
 import java.util.Date;
 
 import com.samskivert.mustache.Mustache;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -35,6 +38,7 @@ import org.springframework.boot.web.reactive.result.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.ui.Model;
@@ -46,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration Tests for {@link MustacheAutoConfiguration}, {@link MustacheViewResolver}
  * and {@link MustacheView}.
  *
- * @author Brian Clozel
+ * @author Brian Clozel, Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = "spring.main.web-application-type=reactive")
@@ -67,6 +71,14 @@ public class MustacheAutoConfigurationReactiveIntegrationTests {
 		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk()
 				.expectBody(String.class).returnResult().getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
+	}
+
+	@Test
+	public void testSse() {
+		this.client.get().uri("/sse").exchange() //
+				.expectBody(String.class).value(Matchers.containsString("event: message"))
+				.value(Matchers.containsString("\ndata: <span>Hello</span>"))
+				.value(Matchers.containsString("World")).value(Matchers.endsWith("\n\n"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -90,6 +102,16 @@ public class MustacheAutoConfigurationReactiveIntegrationTests {
 			model.addAttribute("message", "Hello World");
 			model.addAttribute("title", "Hello App");
 			return "partial";
+		}
+
+		@RequestMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+		public String sse(Model model) {
+			model.addAttribute("time", new Date());
+			model.addAttribute("flux.message",
+					Flux.just("<span>Hello</span>", "<span>World</span>")
+							.delayElements(Duration.ofMillis(10)));
+			model.addAttribute("title", "Hello App");
+			return "sse";
 		}
 
 		@Bean

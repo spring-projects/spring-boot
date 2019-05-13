@@ -16,9 +16,12 @@
 
 package org.springframework.boot.web.reactive.result.view;
 
+import java.util.Arrays;
+
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
 import org.springframework.web.reactive.result.view.ViewResolver;
@@ -26,7 +29,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 /**
  * Spring WebFlux {@link ViewResolver} for Mustache.
  *
- * @author Brian Clozel
+ * @author Brian Clozel, Dave Syer
  * @since 2.0.0
  */
 public class MustacheViewResolver extends UrlBasedViewResolver {
@@ -34,6 +37,13 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	private final Compiler compiler;
 
 	private String charset;
+
+	private boolean cache;
+
+	{
+		setSupportedMediaTypes(
+				Arrays.asList(MediaType.TEXT_HTML, MediaType.TEXT_EVENT_STREAM));
+	}
 
 	/**
 	 * Create a {@code MustacheViewResolver} backed by a default instance of a
@@ -62,6 +72,14 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 		this.charset = charset;
 	}
 
+	/**
+	 * Flag to indicate that the view template should be cached. Default false.
+	 * @param cache the flag value.
+	 */
+	public void setCache(boolean cache) {
+		this.cache = cache;
+	}
+
 	@Override
 	protected Class<?> requiredViewClass() {
 		return MustacheView.class;
@@ -72,6 +90,7 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 		MustacheView view = (MustacheView) super.createView(viewName);
 		view.setCompiler(this.compiler);
 		view.setCharset(this.charset);
+		view.setCache(this.cache);
 		return view;
 	}
 

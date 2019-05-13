@@ -38,6 +38,7 @@ class MustacheReactiveWebConfiguration {
 		resolver.setPrefix(mustache.getPrefix());
 		resolver.setSuffix(mustache.getSuffix());
 		resolver.setViewNames(mustache.getViewNames());
+		resolver.setCache(mustache.isCache());
 		resolver.setRequestContextAttribute(mustache.getRequestContextAttribute());
 		resolver.setCharset(mustache.getCharsetName());
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);

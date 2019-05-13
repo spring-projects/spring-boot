@@ -10,6 +10,7 @@
 .DS_Store
 .classpath
 .factorypath
+.attach_pid*
 .gradle
 .idea
 .metadata
