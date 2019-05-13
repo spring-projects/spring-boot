@@ -231,7 +231,7 @@ public class ServerPropertiesTests {
 		map.put("server.jetty.accesslog.file-date-format", "yyyymmdd");
 		map.put("server.jetty.accesslog.retention-period", "4");
 		map.put("server.jetty.accesslog.append", "true");
-		map.put("server.jetty.accesslog.prefer-proxied-for-address", "true");
+		map.put("server.jetty.accesslog.custom-format", "{client}a - %u %t \"%r\" %s %O");
 		map.put("server.jetty.accesslog.ignore-paths", "/a/path,/b/path");
 		bind(map);
 		ServerProperties.Jetty jetty = this.properties.getJetty();
@@ -240,7 +240,8 @@ public class ServerPropertiesTests {
 		assertThat(jetty.getAccesslog().getFileDateFormat()).isEqualTo("yyyymmdd");
 		assertThat(jetty.getAccesslog().getRetentionPeriod()).isEqualTo(4);
 		assertThat(jetty.getAccesslog().isAppend()).isTrue();
-		assertThat(jetty.getAccesslog().isPreferProxiedForAddress()).isTrue();
+		assertThat(jetty.getAccesslog().getCustomFormat())
+				.isEqualTo("{client}a - %u %t \"%r\" %s %O");
 		assertThat(jetty.getAccesslog().getIgnorePaths()).containsExactly("/a/path",
 				"/b/path");
 	}

@@ -25,9 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import io.undertow.UndertowOptions;
 
@@ -891,6 +889,17 @@ public class ServerProperties {
 			private boolean enabled = false;
 
 			/**
+			 * Log format.
+			 */
+			private FORMAT format = FORMAT.NCSA;
+
+			/**
+			 * Custom log format, see org.eclipse.jetty.server.CustomRequestLog. If
+			 * defined, overrides the "format" configuration key.
+			 */
+			private String customFormat;
+
+			/**
 			 * Log filename. If not specified, logs redirect to "System.err".
 			 */
 			private String filename;
@@ -911,47 +920,6 @@ public class ServerProperties {
 			private boolean append;
 
 			/**
-			 * Enable extended NCSA format.
-			 */
-			private boolean extendedFormat;
-
-			/**
-			 * Timestamp format of the request log.
-			 */
-			private String dateFormat = "dd/MMM/yyyy:HH:mm:ss Z";
-
-			/**
-			 * Locale of the request log.
-			 */
-			private Locale locale;
-
-			/**
-			 * Timezone of the request log.
-			 */
-			private TimeZone timeZone = TimeZone.getTimeZone("GMT");
-
-			/**
-			 * Enable logging of the request cookies.
-			 */
-			private boolean logCookies;
-
-			/**
-			 * Enable logging of the request hostname.
-			 */
-			private boolean logServer;
-
-			/**
-			 * Enable logging of request processing time.
-			 */
-			private boolean logLatency;
-
-			/**
-			 * Whether to log IP address from the "X-Forwarded-For" header rather than the
-			 * one from the connection.
-			 */
-			private boolean preferProxiedForAddress = false;
-
-			/**
 			 * Request paths that should not be logged.
 			 */
 			private List<String> ignorePaths;
@@ -962,6 +930,22 @@ public class ServerProperties {
 
 			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
+			}
+
+			public FORMAT getFormat() {
+				return this.format;
+			}
+
+			public void setFormat(FORMAT format) {
+				this.format = format;
+			}
+
+			public String getCustomFormat() {
+				return this.customFormat;
+			}
+
+			public void setCustomFormat(String customFormat) {
+				this.customFormat = customFormat;
 			}
 
 			public String getFilename() {
@@ -996,76 +980,30 @@ public class ServerProperties {
 				this.append = append;
 			}
 
-			public boolean isExtendedFormat() {
-				return this.extendedFormat;
-			}
-
-			public void setExtendedFormat(boolean extendedFormat) {
-				this.extendedFormat = extendedFormat;
-			}
-
-			public String getDateFormat() {
-				return this.dateFormat;
-			}
-
-			public void setDateFormat(String dateFormat) {
-				this.dateFormat = dateFormat;
-			}
-
-			public Locale getLocale() {
-				return this.locale;
-			}
-
-			public void setLocale(Locale locale) {
-				this.locale = locale;
-			}
-
-			public TimeZone getTimeZone() {
-				return this.timeZone;
-			}
-
-			public void setTimeZone(TimeZone timeZone) {
-				this.timeZone = timeZone;
-			}
-
-			public boolean isLogCookies() {
-				return this.logCookies;
-			}
-
-			public void setLogCookies(boolean logCookies) {
-				this.logCookies = logCookies;
-			}
-
-			public boolean isLogServer() {
-				return this.logServer;
-			}
-
-			public void setLogServer(boolean logServer) {
-				this.logServer = logServer;
-			}
-
-			public boolean isLogLatency() {
-				return this.logLatency;
-			}
-
-			public void setLogLatency(boolean logLatency) {
-				this.logLatency = logLatency;
-			}
-
-			public boolean isPreferProxiedForAddress() {
-				return this.preferProxiedForAddress;
-			}
-
-			public void setPreferProxiedForAddress(boolean preferProxiedForAddress) {
-				this.preferProxiedForAddress = preferProxiedForAddress;
-			}
-
 			public List<String> getIgnorePaths() {
 				return this.ignorePaths;
 			}
 
 			public void setIgnorePaths(List<String> ignorePaths) {
 				this.ignorePaths = ignorePaths;
+			}
+
+			/**
+			 * Log format for Jetty access logs.
+			 */
+			public enum FORMAT {
+
+				/**
+				 * NCSA format, as defined in CustomRequestLog#NCSA_FORMAT.
+				 */
+				NCSA,
+
+				/**
+				 * Extended NCSA format, as defined in
+				 * CustomRequestLog#EXTENDED_NCSA_FORMAT.
+				 */
+				EXTENDED_NCSA
+
 			}
 
 		}
