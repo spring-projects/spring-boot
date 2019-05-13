@@ -81,6 +81,8 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromProductName("PostgreSQL"))
 				.isEqualTo(DatabaseDriver.POSTGRESQL);
+		assertThat(DatabaseDriver.fromProductName("Amazon Redshift"))
+				.isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(DatabaseDriver.fromProductName("Microsoft SQL Server"))
 				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("SQL SERVER"))
@@ -120,6 +122,9 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:postgresql://127.0.0.1:5432/sample"))
 				.isEqualTo(DatabaseDriver.POSTGRESQL);
+		assertThat(DatabaseDriver.fromJdbcUrl(
+				"jdbc:redshift://foo.bar.us-east-1.redshift.amazonaws.com:5439/postgres"))
+						.isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(
 				DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))
 						.isEqualTo(DatabaseDriver.JTDS);
