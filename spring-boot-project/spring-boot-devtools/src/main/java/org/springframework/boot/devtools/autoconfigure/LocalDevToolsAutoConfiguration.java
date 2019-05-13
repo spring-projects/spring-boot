@@ -134,11 +134,6 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		public HateoasObjenesisCacheDisabler hateoasObjenesisCacheDisabler() {
-			return new HateoasObjenesisCacheDisabler();
-		}
-
-		@Bean
 		public FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
 		}
