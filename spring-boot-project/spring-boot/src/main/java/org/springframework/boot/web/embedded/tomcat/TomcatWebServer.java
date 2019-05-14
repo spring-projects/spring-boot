@@ -87,7 +87,7 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private void initialize() throws WebServerException {
-		if(!autoStart){
+		if (!this.autoStart) {
 			return;
 		}
 		logger.info("Tomcat initialized with port(s): " + getPortsDescription(false));
