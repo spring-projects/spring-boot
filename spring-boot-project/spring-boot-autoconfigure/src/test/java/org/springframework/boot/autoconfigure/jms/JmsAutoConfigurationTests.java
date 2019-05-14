@@ -292,6 +292,18 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	public void testJmsMessagingTemplateUseConfiguredDefaultDestination() {
+		this.contextRunner
+				.withPropertyValues("spring.jms.template.default-destination=testQueue")
+				.run((context) -> {
+					JmsMessagingTemplate messagingTemplate = context
+							.getBean(JmsMessagingTemplate.class);
+					assertThat(messagingTemplate.getDefaultDestinationName())
+							.isEqualTo("testQueue");
+				});
+	}
+
+	@Test
 	public void testPubSubDisabledByDefault() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.run((context) -> assertThat(

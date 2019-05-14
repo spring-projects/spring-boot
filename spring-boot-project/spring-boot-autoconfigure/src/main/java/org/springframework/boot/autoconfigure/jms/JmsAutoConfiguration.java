@@ -110,8 +110,19 @@ public class JmsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
-		public JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
-			return new JmsMessagingTemplate(jmsTemplate);
+		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties,
+				JmsTemplate jmsTemplate) {
+			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(
+					jmsTemplate);
+			mapTemplateProperties(properties.getTemplate(), messagingTemplate);
+			return messagingTemplate;
+		}
+
+		private void mapTemplateProperties(Template properties,
+				JmsMessagingTemplate messagingTemplate) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getDefaultDestination)
+					.to(messagingTemplate::setDefaultDestinationName);
 		}
 
 	}
