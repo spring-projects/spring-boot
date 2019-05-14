@@ -65,8 +65,7 @@ import org.springframework.util.Assert;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
-@ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled",
+@ConditionalOnProperty(prefix = LiquibaseProperties.PROPERTIES_PREFIX, name = "enabled",
 		matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
@@ -141,9 +140,12 @@ public class LiquibaseAutoConfiguration {
 				liquibase.setDataSource(liquibaseDataSource);
 				return liquibase;
 			}
-			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
-			liquibase.setDataSource(createNewDataSource(dataSourceProperties));
-			return liquibase;
+			else if (this.properties.isCreateDataSource()) {
+				SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
+				liquibase.setDataSource(createNewDataSource(dataSourceProperties));
+				return liquibase;
+			}
+			throw new LiquibaseDataSourceMissingException();
 		}
 
 		private DataSource getDataSource(DataSource liquibaseDataSource,
@@ -151,7 +153,7 @@ public class LiquibaseAutoConfiguration {
 			if (liquibaseDataSource != null) {
 				return liquibaseDataSource;
 			}
-			if (this.properties.getUrl() == null && this.properties.getUser() == null) {
+			if (!this.properties.isCreateDataSource()) {
 				return dataSource;
 			}
 			return null;

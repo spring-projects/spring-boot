@@ -1,3 +1,5 @@
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
 import org.springframework.boot.configurationdocs.ConfigurationMetadataDocumentWriter
 import org.springframework.boot.configurationdocs.DocumentOptions
 import org.springframework.core.io.UrlResource
@@ -48,7 +50,7 @@ def generateConfigMetadataDocumentation() {
 				.addSection("security")
 					.withKeyPrefixes("spring.security", "spring.ldap", "spring.session")
 				.addSection("data-migration")
-					.withKeyPrefixes("spring.flyway", "spring.liquibase")
+					.withKeyPrefixes(FlywayProperties.PROPERTIES_PREFIX, LiquibaseProperties.PROPERTIES_PREFIX)
 				.addSection("data")
 					.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2",
 						"spring.influx", "spring.mongodb", "spring.redis",
