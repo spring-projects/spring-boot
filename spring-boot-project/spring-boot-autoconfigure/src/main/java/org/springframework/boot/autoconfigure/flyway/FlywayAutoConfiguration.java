@@ -82,8 +82,8 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flyway.class)
-@ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = FlywayProperties.PROPERTIES_PREFIX, name = "enabled",
+		matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
@@ -152,8 +152,11 @@ public class FlywayAutoConfiguration {
 			else if (flywayDataSource != null) {
 				configuration.dataSource(flywayDataSource);
 			}
-			else {
+			else if (dataSource != null) {
 				configuration.dataSource(dataSource);
+			}
+			else {
+				throw new FlywayDataSourceMissingException();
 			}
 			return configuration.getDataSource();
 		}

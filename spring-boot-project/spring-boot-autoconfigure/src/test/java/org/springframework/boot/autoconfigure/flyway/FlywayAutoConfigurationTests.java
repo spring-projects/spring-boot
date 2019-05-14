@@ -80,8 +80,25 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void noDataSource() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
+			assertThat(context).getFailure()
+					.hasRootCauseInstanceOf(FlywayDataSourceMissingException.class);
+			assertThat(context).getFailure()
+					.hasMessageContaining("Flyway is present in classpath and enabled");
+		});
+	}
+
+	@Test
+	public void noDataSourceCreateOneWithUrl() {
 		this.contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
+				.withPropertyValues(
+						"spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+				});
 	}
 
 	@Test

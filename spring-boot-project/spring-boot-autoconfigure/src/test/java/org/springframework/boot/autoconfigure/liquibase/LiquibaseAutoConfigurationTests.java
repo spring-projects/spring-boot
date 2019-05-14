@@ -79,8 +79,26 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void noDataSource() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
+			assertThat(context).getFailure()
+					.hasRootCauseInstanceOf(LiquibaseDataSourceMissingException.class);
+			assertThat(context).getFailure().hasMessageContaining(
+					"Liquibase is present in classpath and enabled");
+		});
+	}
+
+	@Test
+	public void noDataSourceCreateOneWithUrl() {
+		this.contextRunner
+				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
+							.isEqualTo("jdbc:hsqldb:mem:liquibase");
+				}));
 	}
 
 	@Test
