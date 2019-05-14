@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ public class MustacheView extends AbstractUrlBasedView {
 		else {
 			map = model;
 		}
-		rendered = rendered.doOnSuccess(template -> template.execute(map, writer));
+		rendered = rendered.doOnSuccess((template) -> template.execute(map, writer));
 		return rendered
 				.thenEmpty(Mono.defer(() -> exchange.getResponse()
 						.writeAndFlushWith(Flux.from(writer.getBuffers()))))
@@ -130,7 +130,7 @@ public class MustacheView extends AbstractUrlBasedView {
 		try {
 			writer.close();
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			writer.release();
 		}
 	}
@@ -142,7 +142,7 @@ public class MustacheView extends AbstractUrlBasedView {
 				return template;
 			}
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			throw new IllegalStateException("Cannot close reader");
 		}
 	}
@@ -160,7 +160,7 @@ public class MustacheView extends AbstractUrlBasedView {
 			}
 		}
 		return super.resolveAsyncAttributes(result)
-				.doOnSuccess(v -> model.putAll(result));
+				.doOnSuccess((v) -> model.putAll(result));
 	}
 
 	private Resource resolveResource() {
@@ -183,14 +183,14 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	private Optional<Charset> getCharset(MediaType mediaType) {
-		return Optional.ofNullable(mediaType != null ? mediaType.getCharset() : null);
+		return Optional.ofNullable((mediaType != null) ? mediaType.getCharset() : null);
 	}
 
 	private static class FluxLambda implements Mustache.Lambda {
 
 		private Publisher<?> publisher;
 
-		public FluxLambda(Publisher<?> publisher) {
+		FluxLambda(Publisher<?> publisher) {
 			this.publisher = publisher;
 		}
 
@@ -200,12 +200,12 @@ public class MustacheView extends AbstractUrlBasedView {
 				if (out instanceof FluxWriter) {
 					FluxWriter fluxWriter = (FluxWriter) out;
 					fluxWriter.flush();
-					fluxWriter.write(
-							Flux.from(this.publisher).map(value -> frag.execute(value)));
+					fluxWriter.write(Flux.from(this.publisher)
+							.map((value) -> frag.execute(value)));
 				}
 			}
-			catch (IOException e) {
-				e.printStackTrace();
+			catch (IOException ex) {
+				ex.printStackTrace();
 			}
 		}
 
@@ -220,19 +220,19 @@ public class MustacheView extends AbstractUrlBasedView {
 				frag.execute(writer);
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
 						new ByteArrayInputStream(writer.toString().getBytes())))) {
-					reader.lines().forEach(line -> {
+					reader.lines().forEach((line) -> {
 						try {
 							out.write("data: " + line + "\n");
 						}
-						catch (IOException e) {
-							throw new IllegalStateException("Cannot write data", e);
+						catch (IOException ex) {
+							throw new IllegalStateException("Cannot write data", ex);
 						}
 					});
 				}
 				out.write(new char[] { '\n', '\n' });
 			}
-			catch (IOException e) {
-				throw new IllegalStateException("Cannot render SSE data", e);
+			catch (IOException ex) {
+				throw new IllegalStateException("Cannot render SSE data", ex);
 			}
 		}
 
