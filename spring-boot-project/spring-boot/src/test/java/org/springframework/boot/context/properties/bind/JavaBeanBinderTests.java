@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,11 +30,14 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.bind.JavaBeanBinder.Bean;
+import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperty;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.boot.convert.Delimiter;
+import org.springframework.core.ResolvableType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +49,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
 public class JavaBeanBinderTests {
 
@@ -505,6 +511,56 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getBooleans().get("b").getValue()).isEqualTo(true);
 	}
 
+	public void bindToClassWithOverloadedSetterShouldUseSetterThatMatchesField() {
+		// gh-16206
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.property", "some string");
+		this.sources.add(source);
+		PropertyWithOverloadedSetter bean = this.binder
+				.bind("foo", Bindable.of(PropertyWithOverloadedSetter.class)).get();
+		assertThat(bean.getProperty()).isEqualTo("some string");
+	}
+
+	@Test
+	public void beanProperiesPreferMatchingType() {
+		// gh-16206
+
+		ResolvableType type = ResolvableType.forClass(PropertyWithOverloadedSetter.class);
+		Bean<PropertyWithOverloadedSetter> bean = new Bean<PropertyWithOverloadedSetter>(
+				type, type.resolve()) {
+
+			@Override
+			protected void addProperties(Method[] declaredMethods,
+					Field[] declaredFields) {
+				// We override here because we need a specific order of the declared
+				// methods and the JVM doesn't give us one
+				int intSetter = -1;
+				int stringSetter = -1;
+				for (int i = 0; i < declaredMethods.length; i++) {
+					Method method = declaredMethods[i];
+					if (method.getName().equals("setProperty")) {
+						if (method.getParameters()[0].getType().equals(int.class)) {
+							intSetter = i;
+						}
+						else {
+							stringSetter = i;
+						}
+					}
+				}
+				if (intSetter > stringSetter) {
+					Method method = declaredMethods[intSetter];
+					declaredMethods[intSetter] = declaredMethods[stringSetter];
+					declaredMethods[stringSetter] = method;
+				}
+				super.addProperties(declaredMethods, declaredFields);
+			}
+
+		};
+		BeanProperty property = bean.getProperties().get("property");
+		PropertyWithOverloadedSetter target = new PropertyWithOverloadedSetter();
+		property.setValue(() -> target, "some string");
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -951,6 +1007,24 @@ public class JavaBeanBinderTests {
 
 		public void setValue(T value) {
 			this.value = value;
+		}
+
+	}
+
+	public static class PropertyWithOverloadedSetter {
+
+		private String property;
+
+		public void setProperty(int property) {
+			this.property = String.valueOf(property);
+		}
+
+		public void setProperty(String property) {
+			this.property = property;
+		}
+
+		public String getProperty() {
+			return this.property;
 		}
 
 	}

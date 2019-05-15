@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,8 +97,10 @@ class JavaBeanBinder implements BeanBinder {
 
 	/**
 	 * The bean being bound.
+	 *
+	 * @param <T> the bean type
 	 */
-	private static class Bean<T> {
+	static class Bean<T> {
 
 		private static Bean<?> cached;
 
@@ -111,20 +113,33 @@ class JavaBeanBinder implements BeanBinder {
 		Bean(ResolvableType type, Class<?> resolvedType) {
 			this.type = type;
 			this.resolvedType = resolvedType;
-			putProperties(resolvedType);
+			addProperties(resolvedType);
 		}
 
-		private void putProperties(Class<?> type) {
+		private void addProperties(Class<?> type) {
 			while (type != null && !Object.class.equals(type)) {
-				for (Method method : type.getDeclaredMethods()) {
-					if (isCandidate(method)) {
-						addMethod(method);
-					}
-				}
-				for (Field field : type.getDeclaredFields()) {
-					addField(field);
-				}
+				Method[] declaredMethods = type.getDeclaredMethods();
+				Field[] declaredFields = type.getDeclaredFields();
+				addProperties(declaredMethods, declaredFields);
 				type = type.getSuperclass();
+			}
+		}
+
+		protected void addProperties(Method[] declaredMethods, Field[] declaredFields) {
+			for (int i = 0; i < declaredMethods.length; i++) {
+				if (!isCandidate(declaredMethods[i])) {
+					declaredMethods[i] = null;
+				}
+			}
+			for (Method method : declaredMethods) {
+				addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
+			}
+			for (Method method : declaredMethods) {
+				addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
+				addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
+			}
+			for (Field field : declaredFields) {
+				addField(field);
 			}
 		}
 
@@ -136,15 +151,9 @@ class JavaBeanBinder implements BeanBinder {
 					&& !Class.class.equals(method.getDeclaringClass());
 		}
 
-		private void addMethod(Method method) {
-			addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
-			addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
-			addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
-		}
-
 		private void addMethodIfPossible(Method method, String prefix, int parameterCount,
 				BiConsumer<BeanProperty, Method> consumer) {
-			if (method.getParameterCount() == parameterCount
+			if (method != null && method.getParameterCount() == parameterCount
 					&& method.getName().startsWith(prefix)
 					&& method.getName().length() > prefix.length()) {
 				String propertyName = Introspector
@@ -250,7 +259,7 @@ class JavaBeanBinder implements BeanBinder {
 	/**
 	 * A bean property being bound.
 	 */
-	private static class BeanProperty {
+	static class BeanProperty {
 
 		private final String name;
 
@@ -274,9 +283,14 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		public void addSetter(Method setter) {
-			if (this.setter == null) {
+			if (this.setter == null || isBetterSetter(setter)) {
 				this.setter = setter;
 			}
+		}
+
+		private boolean isBetterSetter(Method setter) {
+			return this.getter != null
+					&& this.getter.getReturnType().equals(setter.getParameterTypes()[0]);
 		}
 
 		public void addField(Field field) {
