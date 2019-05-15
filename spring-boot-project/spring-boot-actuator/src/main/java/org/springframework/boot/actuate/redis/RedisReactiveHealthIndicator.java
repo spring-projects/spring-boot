@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.redis;
 import java.util.Properties;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,6 +32,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  *
  * @author Stephane Nicoll
  * @author Mark Paluch
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
@@ -44,15 +46,29 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		ReactiveRedisConnection connection = this.connectionFactory
-				.getReactiveConnection();
+		return getConnection()
+				.flatMap((connection) -> doHealthCheck(builder, connection));
+	}
+
+	private Mono<Health> doHealthCheck(Health.Builder builder,
+			ReactiveRedisConnection connection) {
 		return connection.serverCommands().info().map((info) -> up(builder, info))
-				.doFinally((signal) -> connection.close());
+				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
+				.flatMap((health) -> connection.closeLater().thenReturn(health));
+	}
+
+	private Mono<ReactiveRedisConnection> getConnection() {
+		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
+				.subscribeOn(Schedulers.parallel());
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
 		return builder.up().withDetail(RedisHealthIndicator.VERSION,
 				info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
+	}
+
+	private Health down(Health.Builder builder, Throwable cause) {
+		return builder.down(cause).build();
 	}
 
 }
