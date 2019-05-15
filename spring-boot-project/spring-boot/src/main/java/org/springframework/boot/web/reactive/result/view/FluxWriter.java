@@ -21,13 +21,13 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
 
 /**
  * A {@link Writer} that can write a {@link Flux} (or {@link Publisher}) to a data buffer.
@@ -37,47 +37,46 @@ import org.springframework.core.io.buffer.DataBuffer;
  */
 class FluxWriter extends Writer {
 
-	private final Supplier<DataBuffer> factory;
+	private final DataBufferFactory factory;
 
 	private final Charset charset;
 
-	private List<String> current = new ArrayList<>();
-
 	private List<Object> accumulated = new ArrayList<>();
 
-	FluxWriter(Supplier<DataBuffer> factory) {
-		this(factory, Charset.defaultCharset());
-	}
-
-	FluxWriter(Supplier<DataBuffer> factory, Charset charset) {
+	FluxWriter(DataBufferFactory factory, Charset charset) {
 		this.factory = factory;
 		this.charset = charset;
 	}
 
-	public Publisher<? extends Publisher<? extends DataBuffer>> getBuffers() {
+	@SuppressWarnings("unchecked")
+	public Flux<? extends Publisher<? extends DataBuffer>> getBuffers() {
 		Flux<String> buffers = Flux.empty();
-		if (!this.current.isEmpty()) {
-			this.accumulated.add(new ArrayList<>(this.current));
-			this.current.clear();
-		}
+		List<String> chunks = new ArrayList<>();
 		for (Object thing : this.accumulated) {
 			if (thing instanceof Publisher) {
-				@SuppressWarnings("unchecked")
-				Publisher<String> publisher = (Publisher<String>) thing;
-				buffers = buffers.concatWith(publisher);
+				buffers = concatValues(chunks, buffers);
+				buffers = buffers.concatWith((Publisher<String>) thing);
 			}
 			else {
-				@SuppressWarnings("unchecked")
-				List<String> list = (List<String>) thing;
-				buffers = buffers.concatWithValues(list.toArray(new String[0]));
+				chunks.add((String) thing);
 			}
 		}
-		return buffers.map((string) -> Mono.just(buffer().write(string, this.charset)));
+		buffers = concatValues(chunks, buffers);
+		return buffers.map((string) -> Mono.fromCallable(
+				() -> this.factory.allocateBuffer().write(string, this.charset)));
+	}
+
+	private Flux<String> concatValues(List<String> chunks, Flux<String> buffers) {
+		if (!chunks.isEmpty()) {
+			buffers = buffers.concatWithValues(chunks.toArray(new String[0]));
+			chunks.clear();
+		}
+		return buffers;
 	}
 
 	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
-		this.current.add(new String(cbuf, off, len));
+		this.accumulated.add(new String(cbuf, off, len));
 	}
 
 	@Override
@@ -92,23 +91,8 @@ class FluxWriter extends Writer {
 		// TODO: maybe implement this and call it on error
 	}
 
-	private DataBuffer buffer() {
-		return this.factory.get();
-	}
-
 	public void write(Object thing) {
-		if (thing instanceof Publisher) {
-			if (!this.current.isEmpty()) {
-				this.accumulated.add(new ArrayList<>(this.current));
-				this.current.clear();
-			}
-			this.accumulated.add(thing);
-		}
-		else {
-			if (thing instanceof String) {
-				this.current.add((String) thing);
-			}
-		}
+		this.accumulated.add(thing);
 	}
 
 }

@@ -40,6 +40,7 @@ import reactor.core.scheduler.Schedulers;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.server.ServerWebExchange;
@@ -101,8 +102,8 @@ public class MustacheView extends AbstractUrlBasedView {
 		}
 		boolean sse = MediaType.TEXT_EVENT_STREAM.isCompatibleWith(contentType);
 		Charset charset = getCharset(contentType).orElse(getDefaultCharset());
-		FluxWriter writer = new FluxWriter(
-				() -> exchange.getResponse().bufferFactory().allocateBuffer(), charset);
+		ServerHttpResponse response = exchange.getResponse();
+		FluxWriter writer = new FluxWriter(response.bufferFactory(), charset);
 		Mono<Template> rendered;
 		if (!this.cache || !templates.containsKey(resource)) {
 			rendered = Mono.fromCallable(() -> compile(resource))
@@ -119,11 +120,10 @@ public class MustacheView extends AbstractUrlBasedView {
 		else {
 			map = model;
 		}
-		rendered = rendered.doOnSuccess((template) -> template.execute(map, writer));
-		return rendered
-				.thenEmpty(Mono.defer(() -> exchange.getResponse()
-						.writeAndFlushWith(Flux.from(writer.getBuffers()))))
-				.doOnTerminate(() -> close(writer));
+		return rendered.flatMap((template) -> {
+			template.execute(map, writer);
+			return response.writeAndFlushWith(writer.getBuffers());
+		}).doOnTerminate(() -> close(writer));
 	}
 
 	private void close(FluxWriter writer) {
@@ -199,8 +199,7 @@ public class MustacheView extends AbstractUrlBasedView {
 				if (out instanceof FluxWriter) {
 					FluxWriter fluxWriter = (FluxWriter) out;
 					fluxWriter.flush();
-					fluxWriter.write(Flux.from(this.publisher)
-							.map((value) -> frag.execute(value)));
+					fluxWriter.write(Flux.from(this.publisher).map(frag::execute));
 				}
 			}
 			catch (IOException ex) {
