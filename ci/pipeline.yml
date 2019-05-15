@@ -438,6 +438,7 @@ jobs:
     trigger: false
     passed: [stage-milestone]
     params:
+      download_artifacts: false
       save_build_info: true
   - task: promote
     image: spring-boot-ci-image
@@ -468,6 +469,7 @@ jobs:
     trigger: false
     passed: [stage-rc]
     params:
+      download_artifacts: false
       save_build_info: true
   - task: promote
     image: spring-boot-ci-image
@@ -498,6 +500,7 @@ jobs:
     trigger: false
     passed: [stage-release]
     params:
+      download_artifacts: false
       save_build_info: true
   - task: promote
     image: spring-boot-ci-image
@@ -520,6 +523,7 @@ jobs:
     trigger: true
     passed: [promote-release]
     params:
+      download_artifacts: false
       save_build_info: true
   - task: sync-to-maven-central
     image: spring-boot-ci-image
