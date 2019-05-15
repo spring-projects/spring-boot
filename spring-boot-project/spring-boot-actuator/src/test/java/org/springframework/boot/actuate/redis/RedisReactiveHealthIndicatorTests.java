@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Nikolay Rybak
+ * @author Artsiom Yudovin
  */
 public class RedisReactiveHealthIndicatorTests {
 
@@ -49,6 +50,7 @@ public class RedisReactiveHealthIndicatorTests {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
+		given(redisConnection.closeLater()).willReturn(Mono.empty());
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
 		given(commands.info()).willReturn(Mono.just(info));
 		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(
@@ -59,7 +61,7 @@ public class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails()).containsOnlyKeys("version");
 			assertThat(h.getDetails().get("version")).isEqualTo("2.8.9");
 		}).verifyComplete();
-		verify(redisConnection).close();
+		verify(redisConnection).closeLater();
 	}
 
 	@Test
@@ -68,13 +70,14 @@ public class RedisReactiveHealthIndicatorTests {
 		given(commands.info()).willReturn(
 				Mono.error(new RedisConnectionFailureException("Connection failed")));
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
+		given(redisConnection.closeLater()).willReturn(Mono.empty());
 		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(
 				redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health)
 				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
-		verify(redisConnection).close();
+		verify(redisConnection).closeLater();
 	}
 
 	@Test
