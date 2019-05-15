@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,19 +46,29 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		Mono<ReactiveRedisConnection> connection = Mono
-				.fromSupplier(this.connectionFactory::getReactiveConnection)
-				.subscribeOn(Schedulers.parallel());
+		return getConnection()
+				.flatMap((connection) -> doHealthCheck(builder, connection));
+	}
 
-		return connection
-				.flatMap((c) -> c.serverCommands().info().map((info) -> up(builder, info))
-						.onErrorResume((e) -> Mono.just(builder.down(e).build()))
-						.flatMap((signal) -> c.closeLater().thenReturn(signal)));
+	private Mono<Health> doHealthCheck(Health.Builder builder,
+			ReactiveRedisConnection connection) {
+		return connection.serverCommands().info().map((info) -> up(builder, info))
+				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
+				.flatMap((health) -> connection.closeLater().thenReturn(health));
+	}
+
+	private Mono<ReactiveRedisConnection> getConnection() {
+		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
+				.subscribeOn(Schedulers.parallel());
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
 		return builder.up().withDetail(RedisHealthIndicator.VERSION,
 				info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
+	}
+
+	private Health down(Health.Builder builder, Throwable cause) {
+		return builder.down(cause).build();
 	}
 
 }
