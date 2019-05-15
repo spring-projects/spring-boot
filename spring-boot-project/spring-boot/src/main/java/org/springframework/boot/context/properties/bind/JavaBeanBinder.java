@@ -102,16 +102,16 @@ class JavaBeanBinder implements BeanBinder {
 
 		private static Bean<?> cached;
 
-		private final Class<?> type;
+		private final ResolvableType type;
 
-		private final ResolvableType resolvableType;
+		private final Class<?> resolvedType;
 
 		private final Map<String, BeanProperty> properties = new LinkedHashMap<>();
 
-		Bean(ResolvableType resolvableType, Class<?> type) {
-			this.resolvableType = resolvableType;
+		Bean(ResolvableType type, Class<?> resolvedType) {
 			this.type = type;
-			putProperties(type);
+			this.resolvedType = resolvedType;
+			putProperties(resolvedType);
 		}
 
 		private void putProperties(Class<?> type) {
@@ -155,7 +155,7 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		private BeanProperty getBeanProperty(String name) {
-			return new BeanProperty(name, this.resolvableType);
+			return new BeanProperty(name, this.type);
 		}
 
 		private void addField(Field field) {
@@ -163,10 +163,6 @@ class JavaBeanBinder implements BeanBinder {
 			if (property != null) {
 				property.addField(field);
 			}
-		}
-
-		public Class<?> getType() {
-			return this.type;
 		}
 
 		public Map<String, BeanProperty> getProperties() {
@@ -181,27 +177,36 @@ class JavaBeanBinder implements BeanBinder {
 					instance = target.getValue().get();
 				}
 				if (instance == null) {
-					instance = (T) BeanUtils.instantiateClass(this.type);
+					instance = (T) BeanUtils.instantiateClass(this.resolvedType);
 				}
 				return instance;
 			});
 		}
 
+		private boolean isOfDifferentType(ResolvableType targetType) {
+			if (this.type.hasGenerics() || targetType.hasGenerics()) {
+				return !this.type.equals(targetType);
+			}
+			return this.resolvedType == null
+					|| !this.resolvedType.equals(targetType.resolve());
+		}
+
 		@SuppressWarnings("unchecked")
 		public static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
-			Class<?> type = bindable.getType().resolve(Object.class);
+			ResolvableType type = bindable.getType();
+			Class<?> resolvedType = type.resolve(Object.class);
 			Supplier<T> value = bindable.getValue();
 			T instance = null;
 			if (canCallGetValue && value != null) {
 				instance = value.get();
-				type = (instance != null) ? instance.getClass() : type;
+				resolvedType = (instance != null) ? instance.getClass() : resolvedType;
 			}
-			if (instance == null && !isInstantiable(type)) {
+			if (instance == null && !isInstantiable(resolvedType)) {
 				return null;
 			}
 			Bean<?> bean = Bean.cached;
-			if (bean == null || !type.equals(bean.getType())) {
-				bean = new Bean<>(bindable.getType(), type);
+			if (bean == null || bean.isOfDifferentType(type)) {
+				bean = new Bean<>(type, resolvedType);
 				cached = bean;
 			}
 			return (Bean<T>) bean;
