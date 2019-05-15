@@ -494,6 +494,19 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getCounter()).isEqualTo(42);
 	}
 
+	@Test
+	public void bindToClassShouldCacheWithGenerics() {
+		// gh-16821
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.integers[a].value", "1");
+		source.put("foo.booleans[b].value", "true");
+		this.sources.add(source);
+		ExampleWithGenericMap bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithGenericMap.class)).get();
+		assertThat(bean.getIntegers().get("a").getValue()).isEqualTo(1);
+		assertThat(bean.getBooleans().get("b").getValue()).isEqualTo(true);
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -909,6 +922,36 @@ public class JavaBeanBinderTests {
 		}
 
 		public void setValue(Class<? extends Throwable> value) {
+			this.value = value;
+		}
+
+	}
+
+	public static class ExampleWithGenericMap {
+
+		private final Map<String, GenericValue<Integer>> integers = new LinkedHashMap<>();
+
+		private final Map<String, GenericValue<Boolean>> booleans = new LinkedHashMap<>();
+
+		public Map<String, GenericValue<Integer>> getIntegers() {
+			return this.integers;
+		}
+
+		public Map<String, GenericValue<Boolean>> getBooleans() {
+			return this.booleans;
+		}
+
+	}
+
+	public static class GenericValue<T> {
+
+		private T value;
+
+		public T getValue() {
+			return this.value;
+		}
+
+		public void setValue(T value) {
 			this.value = value;
 		}
 
