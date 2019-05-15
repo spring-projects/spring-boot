@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Issam El-atif
  */
 public class Repackager {
 
@@ -168,7 +169,7 @@ public class Repackager {
 	 * @throws IOException if the file cannot be repackaged
 	 * @since 1.3.0
 	 */
-	public void repackage(File destination, Libraries libraries,
+	public synchronized void repackage(File destination, Libraries libraries,
 			LaunchScript launchScript) throws IOException {
 		if (destination == null || destination.isDirectory()) {
 			throw new IllegalArgumentException("Invalid destination");
@@ -181,7 +182,7 @@ public class Repackager {
 		}
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
-		if (alreadyRepackaged() && this.source.equals(destination)) {
+		if (alreadyRepackaged()) {
 			return;
 		}
 		if (this.source.equals(destination)) {

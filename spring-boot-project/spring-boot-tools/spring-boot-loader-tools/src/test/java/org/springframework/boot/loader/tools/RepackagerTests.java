@@ -60,6 +60,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Issam El-atif
  */
 public class RepackagerTests {
 
@@ -246,6 +247,20 @@ public class RepackagerTests {
 				.doesNotExist();
 		assertThat(hasLauncherClasses(source)).isFalse();
 		assertThat(hasLauncherClasses(dest)).isTrue();
+	}
+
+	@Test
+	public void differentDestinationWithSourceAlreadyRepackaged() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		TestJarFile destJarFile = new TestJarFile(this.temporaryFolder);
+		destJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File dest = destJarFile.getFile();
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(NO_LIBRARIES);
+		repackager.repackage(dest, NO_LIBRARIES);
+		assertThat(hasLauncherClasses(source)).isTrue();
+		assertThat(hasLauncherClasses(dest)).isFalse();
 	}
 
 	@Test
