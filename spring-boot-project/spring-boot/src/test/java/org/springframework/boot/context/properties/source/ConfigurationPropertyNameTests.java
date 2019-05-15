@@ -625,6 +625,16 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	public void equalsWhenNameStartsTheSameUsingDashedCompare() {
+		// gh-16855
+		ConfigurationPropertyName n1 = ConfigurationPropertyName
+				.of("management.metrics.web.server.auto-time-request");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName
+				.of("management.metrics.web.server.auto-time-requests");
+		assertThat(n1).isNotEqualTo(n2);
+	}
+
+	@Test
 	public void isValidWhenValidShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
