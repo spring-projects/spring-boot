@@ -201,13 +201,14 @@ need to import the root `spring-boot` pom and the `spring-boot-samples` pom sepa
 
 
 === Importing into IntelliJ IDEA
-The separate Maven import process that IntelliJ IDEA uses to parse a project structure
-requires more memory. Before importing the project, we recommend increasing the memory
-allocation in `Preferences | Build, Execution, Deployment | Build Tools | Maven |
-Importing`. Set the `VM options for importer` option to `-Xmx2g`.
+**Please, do this first!!!**
+Go to `Preferences | Build, Execution, Deployment | Build Tools | Maven | Importing`
+and set `VM options for importer` to `-Xmx2g` to allocate sufficient memory for IDEA's
+Maven import process to parse the Spring Boot project structure. _Not doing so could
+mean the import fails silently, leaving the project setup incomplete._
 
-To open the project in IntelliJ IDEA, select "`File`" -> "`Open`" and then click on the
-root `pom.xml`.
+For the actual import use "`File`" -> "`Open`" and select the root `pom.xml`, or the
+`spring-boot-project/pom.xml` if you only want the Spring Boot project sources.
 
 
 
