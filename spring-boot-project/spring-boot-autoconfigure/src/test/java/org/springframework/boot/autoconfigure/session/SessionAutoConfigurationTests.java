@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -256,17 +255,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 							"rememberMeRequestAttribute",
 							SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 				});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableSpringHttpSession
-	static class SessionRepositoryConfiguration {
-
-		@Bean
-		public MapSessionRepository mySessionRepository() {
-			return new MapSessionRepository(Collections.emptyMap());
-		}
-
 	}
 
 	@EnableConfigurationProperties(ServerProperties.class)
