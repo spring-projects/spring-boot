@@ -122,6 +122,7 @@ public class TomcatWebServer implements WebServer {
 			}
 			catch (Exception ex) {
 				stopSilently();
+				destroySilently();
 				throw new WebServerException("Unable to start embedded Tomcat", ex);
 			}
 		}
@@ -236,6 +237,15 @@ public class TomcatWebServer implements WebServer {
 	private void stopSilently() {
 		try {
 			stopTomcat();
+		}
+		catch (LifecycleException ex) {
+			// Ignore
+		}
+	}
+
+	private void destroySilently() {
+		try {
+			this.tomcat.destroy();
 		}
 		catch (LifecycleException ex) {
 			// Ignore
