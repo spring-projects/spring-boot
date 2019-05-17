@@ -92,6 +92,13 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
+	public void configuresServletFilter() {
+		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(HttpTraceFilter.class));
+	}
+
+	@Test
 	public void usesUserProvidedServletFilter() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
