@@ -1270,13 +1270,13 @@ By default, Spring Boot picks up the native configuration from its default locat
 [[howto-configure-logback-for-logging]]
 === Configure Logback for Logging
 If you put a `logback.xml` in the root of your classpath, it is picked up from there (or from `logback-spring.xml`, to take advantage of the templating features provided by Boot).
-Spring Boot provides a default base configuration that you can include if you want to set levels, as shown in the following example:
+Spring Boot provides a default level configuration that you can include if you want to set levels, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<configuration>
-		<include resource="org/springframework/boot/logging/logback/base.xml"/>
+		<include resource="org/springframework/boot/logging/logback/default.xml"/>
 		<logger name="org.springframework.web" level="DEBUG"/>
 	</configuration>
 ----
