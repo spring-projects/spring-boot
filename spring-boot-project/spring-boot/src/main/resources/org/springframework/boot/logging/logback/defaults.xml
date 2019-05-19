@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-Default logback configuration provided for import, equivalent to the programmatic
-initialization performed by Boot
+Default logback configuration provided for import
 -->
 
 <included>
