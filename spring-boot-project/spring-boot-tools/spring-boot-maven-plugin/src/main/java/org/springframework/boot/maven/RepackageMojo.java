@@ -193,7 +193,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * Exclude Spring Boot devtools from the repackaged archive.
 	 * @since 1.3
 	 */
-	@Parameter(property = "spring-boot.excludeDevtools", defaultValue = "true")
+	@Parameter(property = "spring-boot.repackage.excludeDevtools", defaultValue = "true")
 	private boolean excludeDevtools = true;
 
 	/**
