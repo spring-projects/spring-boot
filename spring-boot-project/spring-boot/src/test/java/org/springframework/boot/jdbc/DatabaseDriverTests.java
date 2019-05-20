@@ -123,7 +123,7 @@ public class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:postgresql://127.0.0.1:5432/sample"))
 				.isEqualTo(DatabaseDriver.POSTGRESQL);
 		assertThat(DatabaseDriver.fromJdbcUrl(
-				"jdbc:redshift://foo.bar.us-east-1.redshift.amazonaws.com:5439/postgres"))
+				"jdbc:redshift://examplecluster.abc123xyz789.us-west-2.redshift.amazonaws.com:5439/sample"))
 						.isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(
 				DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))

@@ -100,7 +100,8 @@ public enum DatabaseDriver {
 			"SELECT 1"),
 
 	/**
-	 * AWS Redshift.
+	 * Amazon Redshift.
+	 * @since 2.2.0
 	 */
 	REDSHIFT("Amazon Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
 
