@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
+@Deprecated
 public class ConditionalOnEnabledEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();

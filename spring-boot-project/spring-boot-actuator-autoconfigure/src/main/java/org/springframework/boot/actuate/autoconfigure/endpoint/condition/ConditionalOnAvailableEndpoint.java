@@ -28,20 +28,17 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link Conditional @Conditional} that checks whether an endpoint is exposed or not.
- * Matches according to the endpoint exposure configuration {@link Environment}
- * properties. This is designed as a companion annotation to
- * {@link ConditionalOnEnabledEndpoint @ConditionalOnEnabledEndpoint}.
+ * {@link Conditional @Conditional} that checks whether an endpoint is available. An
+ * endpoint is considered available if it is both enabled and exposed. Matches enablement
+ * according to the endpoints specific {@link Environment} property, falling back to
+ * {@code management.endpoints.enabled-by-default} or failing that
+ * {@link Endpoint#enableByDefault()}. Matches exposure according to any of the
+ * {@code management.endpoints.web.exposure.<id>} or
+ * {@code management.endpoints.jmx.exposure.<id>} specific properties or failing that to
+ * whether the application runs on
+ * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}. Both those
+ * conditions should match for the endpoint to be considered available.
  * <p>
- * For a given {@link Endpoint @Endpoint}, the condition will match if:
- * <ul>
- * <li>{@code "management.endpoints.web.exposure.*"} expose this endpoint</li>
- * <li>or if JMX is enabled and {@code "management.endpoints.jmx.exposure.*"} expose this
- * endpoint</li>
- * <li>or if the application is running on
- * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}</li>
- * </ul>
- *
  * When placed on a {@code @Bean} method, the endpoint defaults to the return type of the
  * factory method:
  *
@@ -49,7 +46,7 @@ import org.springframework.core.env.Environment;
  * &#064;Configuration
  * public class MyConfiguration {
  *
- *     &#064;ConditionalOnExposedEndpoint
+ *     &#064;ConditionalOnAvailableEndpoint
  *     &#064;Bean
  *     public MyEndpoint myEndpoint() {
  *         ...
@@ -63,7 +60,7 @@ import org.springframework.core.env.Environment;
  * &#064;Configuration
  * public class MyConfiguration {
  *
- *     &#064;ConditionalOnExposedEndpoint
+ *     &#064;ConditionalOnAvailableEndpoint
  *     &#064;Bean
  *     public MyEndpointWebExtension myEndpointWebExtension() {
  *         ...
@@ -72,8 +69,8 @@ import org.springframework.core.env.Environment;
  * }</pre>
  * <p>
  * In the sample above, {@code MyEndpointWebExtension} will be created if the endpoint is
- * enabled as defined by the rules above. {@code MyEndpointWebExtension} must be a regular
- * extension that refers to an endpoint, something like:
+ * available as defined by the rules above. {@code MyEndpointWebExtension} must be a
+ * regular extension that refers to an endpoint, something like:
  *
  * <pre class="code">
  * &#064;EndpointWebExtension(endpoint = MyEndpoint.class)
@@ -82,13 +79,13 @@ import org.springframework.core.env.Environment;
  * }</pre>
  * <p>
  * Alternatively, the target endpoint can be manually specified for components that should
- * only be created when a given endpoint is enabled:
+ * only be created when a given endpoint is available:
  *
  * <pre class="code">
  * &#064;Configuration
  * public class MyConfiguration {
  *
- *     &#064;ConditionalOnExposedEndpoint(endpoint = MyEndpoint.class)
+ *     &#064;ConditionalOnAvailableEndpoint(endpoint = MyEndpoint.class)
  *     &#064;Bean
  *     public MyComponent myComponent() {
  *         ...
@@ -97,15 +94,15 @@ import org.springframework.core.env.Environment;
  * }</pre>
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  * @since 2.2.0
  * @see Endpoint
- * @see ConditionalOnEnabledEndpoint
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Documented
-@Conditional(OnExposedEndpointCondition.class)
-public @interface ConditionalOnExposedEndpoint {
+@Conditional(OnAvailableEndpointCondition.class)
+public @interface ConditionalOnAvailableEndpoint {
 
 	/**
 	 * The endpoint type that should be checked. Inferred when the return type of the

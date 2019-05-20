@@ -90,11 +90,13 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 2.0.0
  * @see Endpoint
+ * @deprecated as of 2.2.0 in favor of {@link ConditionalOnAvailableEndpoint}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Documented
 @Conditional(OnEnabledEndpointCondition.class)
+@Deprecated
 public @interface ConditionalOnEnabledEndpoint {
 
 	/**

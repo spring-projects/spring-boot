@@ -16,8 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integration;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnExposedEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,8 +40,7 @@ import org.springframework.integration.graph.IntegrationGraphServer;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(IntegrationGraphServer.class)
 @ConditionalOnBean(IntegrationConfigurationBeanFactoryPostProcessor.class)
-@ConditionalOnEnabledEndpoint(endpoint = IntegrationGraphEndpoint.class)
-@ConditionalOnExposedEndpoint(endpoint = IntegrationGraphEndpoint.class)
+@ConditionalOnAvailableEndpoint(endpoint = IntegrationGraphEndpoint.class)
 @AutoConfigureAfter(IntegrationAutoConfiguration.class)
 public class IntegrationGraphEndpointAutoConfiguration {
 
