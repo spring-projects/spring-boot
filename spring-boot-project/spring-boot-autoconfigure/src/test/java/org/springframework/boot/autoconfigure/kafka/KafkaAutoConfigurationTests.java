@@ -38,6 +38,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -509,6 +510,19 @@ public class KafkaAutoConfigurationTests {
 					assertThat(((Map<String, String>) ReflectionTestUtils.getField(jaas,
 							"options"))).containsExactly(entry("useKeyTab", "true"));
 				});
+	}
+
+	@Test
+	public void listenerPropertiesMatchDefaults() {
+		this.contextRunner.run((context) -> {
+			Listener listenerProperties = new KafkaProperties().getListener();
+			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
+					.getBean(KafkaListenerContainerFactory.class);
+			ContainerProperties containerProperties = kafkaListenerContainerFactory
+					.getContainerProperties();
+			assertThat(containerProperties.isMissingTopicsFatal())
+					.isEqualTo(listenerProperties.isMissingTopicsFatal());
+		});
 	}
 
 	@Test

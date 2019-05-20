@@ -874,9 +874,10 @@ public class KafkaProperties {
 		private Boolean logContainerConfig;
 
 		/**
-		 * Set to false to disable checking that topic(s) exist.
+		 * Whether the container should fail to start if at least one of the configured
+		 * topics are not present on the broker.
 		 */
-		private Boolean missingTopicsFatal;
+		private boolean missingTopicsFatal = true;
 
 		public Type getType() {
 			return this.type;
@@ -966,11 +967,11 @@ public class KafkaProperties {
 			this.logContainerConfig = logContainerConfig;
 		}
 
-		public Boolean getMissingTopicsFatal() {
+		public boolean isMissingTopicsFatal() {
 			return this.missingTopicsFatal;
 		}
 
-		public void setMissingTopicsFatal(Boolean missingTopicsFatal) {
+		public void setMissingTopicsFatal(boolean missingTopicsFatal) {
 			this.missingTopicsFatal = missingTopicsFatal;
 		}
 
