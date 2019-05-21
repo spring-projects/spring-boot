@@ -29,6 +29,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchErrorHandler;
+import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
@@ -57,6 +58,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final KafkaAwareTransactionManager<Object, Object> transactionManager;
 
+	private final ConsumerAwareRebalanceListener rebalanceListener;
+
 	private final ErrorHandler errorHandler;
 
 	private final BatchErrorHandler batchErrorHandler;
@@ -68,6 +71,7 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
+			ObjectProvider<ConsumerAwareRebalanceListener> rebalanceListener,
 			ObjectProvider<ErrorHandler> errorHandler,
 			ObjectProvider<BatchErrorHandler> batchErrorHandler,
 			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor) {
@@ -77,6 +81,7 @@ class KafkaAnnotationDrivenConfiguration {
 				() -> new BatchMessagingMessageConverter(this.messageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
+		this.rebalanceListener = rebalanceListener.getIfUnique();
 		this.errorHandler = errorHandler.getIfUnique();
 		this.batchErrorHandler = batchErrorHandler.getIfUnique();
 		this.afterRollbackProcessor = afterRollbackProcessor.getIfUnique();
@@ -92,6 +97,7 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setMessageConverter(messageConverterToUse);
 		configurer.setReplyTemplate(this.kafkaTemplate);
 		configurer.setTransactionManager(this.transactionManager);
+		configurer.setRebalanceListener(this.rebalanceListener);
 		configurer.setErrorHandler(this.errorHandler);
 		configurer.setBatchErrorHandler(this.batchErrorHandler);
 		configurer.setAfterRollbackProcessor(this.afterRollbackProcessor);

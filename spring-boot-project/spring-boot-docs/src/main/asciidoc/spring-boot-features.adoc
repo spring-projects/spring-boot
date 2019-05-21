@@ -6158,8 +6158,9 @@ The following component creates a listener endpoint on the `someTopic` topic:
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the
-container factory. Similarly, if a `ErrorHandler` or `AfterRollbackProcessor` bean is
-defined, it is automatically associated to the default factory.
+container factory. Similarly, if a `ErrorHandler`, `AfterRollbackProcessor` or
+`ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the
+default factory.
 
 Depending on the listener type, a `RecordMessageConverter` or `BatchMessageConverter` bean
 is associated to the default factory. If only a `RecordMessageConverter` bean is present

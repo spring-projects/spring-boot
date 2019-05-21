@@ -55,6 +55,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
@@ -675,6 +676,18 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	public void testConcurrentKafkaListenerContainerFactoryWithCustomRebalanceListener() {
+		this.contextRunner.withUserConfiguration(RebalanceListenerConfiguration.class)
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(factory.getContainerProperties())
+							.hasFieldOrPropertyWithValue("consumerRebalanceListener",
+									context.getBean("rebalanceListener"));
+				});
+	}
+
+	@Test
 	public void testConcurrentKafkaListenerContainerFactoryWithKafkaTemplate() {
 		this.contextRunner.run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
@@ -745,6 +758,16 @@ public class KafkaAutoConfigurationTests {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class RebalanceListenerConfiguration {
+
+		@Bean
+		public ConsumerAwareRebalanceListener rebalanceListener() {
+			return mock(ConsumerAwareRebalanceListener.class);
 		}
 
 	}

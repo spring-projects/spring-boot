@@ -25,6 +25,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchErrorHandler;
+import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.support.converter.MessageConverter;
@@ -46,6 +47,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private KafkaTemplate<Object, Object> replyTemplate;
 
 	private KafkaAwareTransactionManager<Object, Object> transactionManager;
+
+	private ConsumerAwareRebalanceListener rebalanceListener;
 
 	private ErrorHandler errorHandler;
 
@@ -84,6 +87,15 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	void setTransactionManager(
 			KafkaAwareTransactionManager<Object, Object> transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	/**
+	 * Set the {@link ConsumerAwareRebalanceListener} to use.
+	 * @param rebalanceListener the rebalance listener.
+	 * @since 2.2
+	 */
+	void setRebalanceListener(ConsumerAwareRebalanceListener rebalanceListener) {
+		this.rebalanceListener = rebalanceListener;
 	}
 
 	/**
@@ -160,6 +172,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getLogContainerConfig).to(container::setLogContainerConfig);
 		map.from(properties::isMissingTopicsFatal).to(container::setMissingTopicsFatal);
 		map.from(this.transactionManager).to(container::setTransactionManager);
+		map.from(this.rebalanceListener).to(container::setConsumerRebalanceListener);
 	}
 
 }
