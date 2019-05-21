@@ -151,8 +151,7 @@ public class MustacheView extends AbstractUrlBasedView {
 	protected Mono<Void> resolveAsyncAttributes(Map<String, Object> model) {
 		Map<String, Object> result = new HashMap<>();
 		for (String key : model.keySet()) {
-			if (!key.startsWith("flux") && !key.startsWith("mono")
-					&& !key.startsWith("publisher")) {
+			if (!key.startsWith("async.") && !key.startsWith("async:")) {
 				result.put(key, model.get(key));
 			}
 			else {
