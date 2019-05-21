@@ -1075,6 +1075,20 @@ include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.jav
 
 
 
+[[howto-enable-tomcat-mbean-registry]]
+=== Enable Tomcat's MBean Registry
+Embedded Tomcat's MBean registry is disabled by default. This minimizes Tomcat's memory
+footprint. If you want to use Tomcat's MBeans, for example so that they can be used to
+expose metrics via Micrometer, you must use the `server.tomcat.mbeanregistry.enabled`
+property to do so, as shown in the following example:
+
+[source,properties,indent=0]
+----
+server.tomcat.mbeanregistry.enabled=true
+----
+
+
+
 [[howto-enable-multiple-listeners-in-undertow]]
 === Enable Multiple Listeners with Undertow
 Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and

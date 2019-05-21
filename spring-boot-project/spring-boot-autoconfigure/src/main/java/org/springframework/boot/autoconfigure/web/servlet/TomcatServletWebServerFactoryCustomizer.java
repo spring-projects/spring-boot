@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import org.apache.tomcat.util.modeler.Registry;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -59,6 +61,9 @@ public class TomcatServletWebServerFactoryCustomizer
 		if (tomcatProperties.getUseRelativeRedirects() != null) {
 			customizeUseRelativeRedirects(factory,
 					tomcatProperties.getUseRelativeRedirects());
+		}
+		if (!tomcatProperties.getMbeanregistry().isEnabled()) {
+			Registry.disableRegistry();
 		}
 	}
 

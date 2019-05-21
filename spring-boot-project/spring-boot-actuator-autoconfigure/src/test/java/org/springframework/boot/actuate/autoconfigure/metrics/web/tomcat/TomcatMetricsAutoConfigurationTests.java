@@ -17,10 +17,12 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.apache.tomcat.util.modeler.Registry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -33,11 +35,13 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,6 +55,7 @@ public class TomcatMetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresTomcatMetricsWithEmbeddedServletTomcat() {
+		resetTomcatState();
 		new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(
@@ -58,6 +63,7 @@ public class TomcatMetricsAutoConfigurationTests {
 								ServletWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(ServletWebServerConfiguration.class,
 								MeterRegistryConfiguration.class)
+						.withPropertyValues("server.tomcat.mbeanregistry.enabled=true")
 						.run((context) -> {
 							context.publishEvent(
 									new ApplicationStartedEvent(new SpringApplication(),
@@ -75,6 +81,7 @@ public class TomcatMetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresTomcatMetricsWithEmbeddedReactiveTomcat() {
+		resetTomcatState();
 		new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(
@@ -82,6 +89,7 @@ public class TomcatMetricsAutoConfigurationTests {
 								ReactiveWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(ReactiveWebServerConfiguration.class,
 								MeterRegistryConfiguration.class)
+						.withPropertyValues("server.tomcat.mbeanregistry.enabled=true")
 						.run((context) -> {
 							context.publishEvent(
 									new ApplicationStartedEvent(new SpringApplication(),
@@ -128,6 +136,13 @@ public class TomcatMetricsAutoConfigurationTests {
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(TomcatMetricsBinder.class)
 						.hasBean("customTomcatMetrics"));
+	}
+
+	private void resetTomcatState() {
+		ReflectionTestUtils.setField(Registry.class, "registry", null);
+		AtomicInteger containerCounter = (AtomicInteger) ReflectionTestUtils
+				.getField(TomcatWebServer.class, "containerCounter");
+		containerCounter.set(-1);
 	}
 
 	@Configuration(proxyBeanMethods = false)

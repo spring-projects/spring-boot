@@ -24,6 +24,7 @@ import reactor.netty.http.server.HttpServer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -96,6 +97,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 					.addAll(protocolHandlerCustomizers.orderedStream()
 							.collect(Collectors.toList()));
 			return factory;
+		}
+
+		@Bean
+		public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new TomcatReactiveWebServerFactoryCustomizer(serverProperties);
 		}
 
 	}

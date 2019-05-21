@@ -400,6 +400,11 @@ public class ServerProperties {
 		 */
 		private final Resource resource = new Resource();
 
+		/**
+		 * Modeler MBean Registry configuration.
+		 */
+		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -550,6 +555,10 @@ public class ServerProperties {
 
 		public Resource getResource() {
 			return this.resource;
+		}
+
+		public Mbeanregistry getMbeanregistry() {
+			return this.mbeanregistry;
 		}
 
 		/**
@@ -817,6 +826,23 @@ public class ServerProperties {
 
 			public void setCacheTtl(Duration cacheTtl) {
 				this.cacheTtl = cacheTtl;
+			}
+
+		}
+
+		public static class Mbeanregistry {
+
+			/**
+			 * Whether Tomcat's MBean Registry should be enabled.
+			 */
+			private boolean enabled;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
 			}
 
 		}
