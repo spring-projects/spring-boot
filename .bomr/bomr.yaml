@@ -39,6 +39,10 @@ bomr:
       - 'io.micrometer:micrometer-registry-azure-monitor'
       - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
       - 'org.eclipse.jetty:jetty-home'
+      # Mismanaged by Jetty's bom. See
+      # https://github.com/eclipse/jetty.project/issues/3680
+      - 'org.eclipse.jetty:infinispan-embedded'
+      - 'org.eclipse.jetty:infinispan-remote'
     repositories:
       # Solr's Restlet dependencies
       - 'https://maven.restlet.com'
