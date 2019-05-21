@@ -93,10 +93,7 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		}
 
 		private Class<?> getRoot(MergedAnnotation<?> annotation) {
-			while (annotation.getParent() != null) {
-				annotation = annotation.getParent();
-			}
-			return annotation.getType();
+			return annotation.getRoot().getType();
 		}
 
 		private String getAnnotationsDescription(Set<Class<?>> annotations) {
