@@ -59,12 +59,11 @@ public class CouchbaseConfiguration {
 	public Cluster couchbaseCluster() {
 		CouchbaseCluster couchbaseCluster = CouchbaseCluster
 				.create(couchbaseEnvironment(), determineBootstrapHosts());
-		if (this.properties.getUsername().isEmpty()
-				|| this.properties.getPassword().isEmpty()) {
-			return couchbaseCluster;
+		if (isRoleBasedAccessControlEnabled()) {
+			return couchbaseCluster.authenticate(this.properties.getUsername(),
+					this.properties.getPassword());
 		}
-		return couchbaseCluster.authenticate(this.properties.getUsername(),
-				this.properties.getPassword());
+		return couchbaseCluster;
 	}
 
 	/**
@@ -86,12 +85,16 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Bucket couchbaseClient() {
-		if (this.properties.getUsername().isEmpty()
-				|| this.properties.getPassword().isEmpty()) {
-			return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
-					this.properties.getBucket().getPassword());
+		if (isRoleBasedAccessControlEnabled()) {
+			return couchbaseCluster().openBucket(this.properties.getBucket().getName());
 		}
-		return couchbaseCluster().openBucket(this.properties.getBucket().getName());
+		return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
+				this.properties.getBucket().getPassword());
+	}
+
+	private boolean isRoleBasedAccessControlEnabled() {
+		return this.properties.getUsername() != null
+				&& this.properties.getPassword() != null;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.time.Duration;
@@ -37,19 +38,19 @@ public class CouchbaseProperties {
 	 */
 	private List<String> bootstrapHosts;
 
+	/**
+	 * Cluster username when using role based access.
+	 */
+	private String username;
+
+	/**
+	 * Cluster password when using role based access.
+	 */
+	private String password;
+
 	private final Bucket bucket = new Bucket();
 
 	private final Env env = new Env();
-
-	/**
-	 * Password of the cluster on RBA(role base access).
-	 */
-	private String password = "";
-
-	/**
-	 * Username of the cluster on RBA(role base access).
-	 */
-	private String username = "";
 
 	public List<String> getBootstrapHosts() {
 		return this.bootstrapHosts;
@@ -59,12 +60,12 @@ public class CouchbaseProperties {
 		this.bootstrapHosts = bootstrapHosts;
 	}
 
-	public Bucket getBucket() {
-		return this.bucket;
+	public String getUsername() {
+		return this.username;
 	}
 
-	public Env getEnv() {
-		return this.env;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {
@@ -75,12 +76,12 @@ public class CouchbaseProperties {
 		this.password = password;
 	}
 
-	public String getUsername() {
-		return this.username;
+	public Bucket getBucket() {
+		return this.bucket;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public Env getEnv() {
+		return this.env;
 	}
 
 	public static class Bucket {
