@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -158,6 +159,16 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
+	public void duration() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties.get("duration"))
+					.isEqualTo(Duration.ofSeconds(10).toString());
+		});
+	}
+
+	@Test
 	public void singleLetterProperty() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
@@ -276,6 +287,8 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 		private String nullValue = null;
 
+		private Duration duration = Duration.ofSeconds(10);
+
 		public TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
 			this.secrets.put("yours", "yourPrivateThing");
@@ -377,6 +390,14 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 		public void setNullValue(String nullValue) {
 			this.nullValue = nullValue;
+		}
+
+		public Duration getDuration() {
+			return this.duration;
+		}
+
+		public void setDuration(Duration duration) {
+			this.duration = duration;
 		}
 
 		public static class Hidden {
