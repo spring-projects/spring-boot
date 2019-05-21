@@ -1724,11 +1724,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-infinispan</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-io</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
