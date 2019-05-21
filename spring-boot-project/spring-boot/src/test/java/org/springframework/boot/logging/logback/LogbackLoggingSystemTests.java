@@ -27,7 +27,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import org.hamcrest.Matcher;
@@ -134,8 +133,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")
 				.toString()).isEqualTo("10 MB");
-		assertThat(getRollingPolicy().getMaxHistory())
-				.isEqualTo(CoreConstants.UNBOUND_HISTORY);
+		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(7);
 	}
 
 	@Test

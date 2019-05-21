@@ -107,7 +107,7 @@
       "type": "java.lang.Integer",
       "description": "Maximum of archive log files to keep. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": 0
+      "defaultValue": 7
     },
     {
       "name": "logging.file.total-size-cap",

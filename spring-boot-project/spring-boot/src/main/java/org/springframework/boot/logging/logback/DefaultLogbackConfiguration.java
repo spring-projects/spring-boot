@@ -61,6 +61,8 @@ class DefaultLogbackConfiguration {
 
 	private static final DataSize MAX_FILE_SIZE = DataSize.ofMegabytes(10);
 
+	private static final Integer MAX_FILE_HISTORY = 7;
+
 	private final PropertyResolver patterns;
 
 	private final LogFile logFile;
@@ -148,7 +150,7 @@ class DefaultLogbackConfiguration {
 		setMaxFileSize(rollingPolicy,
 				getDataSize("logging.file.max-size", MAX_FILE_SIZE));
 		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
-				Integer.class, CoreConstants.UNBOUND_HISTORY));
+				Integer.class, MAX_FILE_HISTORY));
 		DataSize totalSizeCap = getDataSize("logging.file.total-size-cap",
 				DataSize.ofBytes(CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP));
 		rollingPolicy.setTotalSizeCap(new FileSize(totalSizeCap.toBytes()));
