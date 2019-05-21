@@ -767,8 +767,7 @@ public class KafkaAutoConfigurationTests {
 
 		@Bean
 		public ConsumerAwareRebalanceListener rebalanceListener() {
-			return new ConsumerAwareRebalanceListener() {
-			};
+			return mock(ConsumerAwareRebalanceListener.class);
 		}
 
 	}

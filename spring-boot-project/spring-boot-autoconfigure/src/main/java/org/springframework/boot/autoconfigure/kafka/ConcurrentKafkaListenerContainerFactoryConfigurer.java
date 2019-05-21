@@ -48,13 +48,13 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private KafkaAwareTransactionManager<Object, Object> transactionManager;
 
+	private ConsumerAwareRebalanceListener rebalanceListener;
+
 	private ErrorHandler errorHandler;
 
 	private BatchErrorHandler batchErrorHandler;
 
 	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
-
-	private ConsumerAwareRebalanceListener rebalanceListener;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -90,6 +90,15 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link ConsumerAwareRebalanceListener} to use.
+	 * @param rebalanceListener the rebalance listener.
+	 * @since 2.2
+	 */
+	void setRebalanceListener(ConsumerAwareRebalanceListener rebalanceListener) {
+		this.rebalanceListener = rebalanceListener;
+	}
+
+	/**
 	 * Set the {@link ErrorHandler} to use.
 	 * @param errorHandler the error handler
 	 */
@@ -112,15 +121,6 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	void setAfterRollbackProcessor(
 			AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
 		this.afterRollbackProcessor = afterRollbackProcessor;
-	}
-
-	/**
-	 * Set the {@link ConsumerAwareRebalanceListener} to use.
-	 * @param rebalanceListener the rebalance listener.
-	 * @since 2.2
-	 */
-	void setRebalanceListener(ConsumerAwareRebalanceListener rebalanceListener) {
-		this.rebalanceListener = rebalanceListener;
 	}
 
 	/**
