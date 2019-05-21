@@ -1,0 +1,10 @@
+== Spring Boot Mail Sample
+
+This sample demonstrates a basic use of spring-boot-starter-mail.
+
+Fill in src/main/resources/application.properties with your email and password.
+(Also, host and port when necessary).
+
+Note:
+If you are using gmail with 2-Step-Verification enabled, you need to either temporarily disable it, or setup App Passwords.
+Refer to the https://support.google.com/mail/answer/185833?hl=en[official guide] for setup.

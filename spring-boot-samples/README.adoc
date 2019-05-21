@@ -134,6 +134,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-metrics-redis[spring-boot-sample-metrics-redis]
 | Exports metrics to Redis
 
+| link:spring-boot-sample-mail[spring-boot-sample-mail]
+| Demonstrates a basic use of spring-boot-starter-mail.
+
 | link:spring-boot-sample-oauth2-client[spring-boot-sample-oauth2-client]
 | Configure an OAuth2 login client
 
