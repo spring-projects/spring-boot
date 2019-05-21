@@ -12,6 +12,8 @@ bomr:
         versions:
           # Jar contains dependencies' classes resulting in duplicates
           - '[2.7.3]'
+          # Artifacts published as .bundle files rather than .jar files
+          - '[2.7.5]'
       - project: dom4j
         versions:
           # Old versions that use yyyymmdd format
