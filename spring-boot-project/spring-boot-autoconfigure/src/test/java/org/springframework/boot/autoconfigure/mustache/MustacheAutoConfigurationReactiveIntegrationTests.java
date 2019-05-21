@@ -107,7 +107,7 @@ public class MustacheAutoConfigurationReactiveIntegrationTests {
 		@RequestMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 		public String sse(Model model) {
 			model.addAttribute("time", new Date());
-			model.addAttribute("async.message",
+			model.addAttribute("async:message",
 					Flux.just("<span>Hello</span>", "<span>World</span>")
 							.delayElements(Duration.ofMillis(10)));
 			model.addAttribute("title", "Hello App");

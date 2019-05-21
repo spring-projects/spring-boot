@@ -90,7 +90,7 @@ public class MustacheViewTests {
 		view.setUrl(this.templateUrl + "/sse.html");
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("async.value", Flux.just("World", "Spring")),
+		view.render(Collections.singletonMap("async:value", Flux.just("World", "Spring")),
 				MediaType.TEXT_EVENT_STREAM, this.exchange).block(Duration.ofSeconds(30));
 		assertThat(this.exchange.getResponse().getBodyAsString()
 				.block(Duration.ofSeconds(30))).isEqualTo(
@@ -106,7 +106,7 @@ public class MustacheViewTests {
 		view.setUrl(this.templateUrl + "/ssedata.html");
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("async.value", Flux.just("World", "Spring")),
+		view.render(Collections.singletonMap("async:value", Flux.just("World", "Spring")),
 				MediaType.TEXT_EVENT_STREAM, this.exchange)
 				.block(Duration.ofSeconds(300));
 		assertThat(this.exchange.getResponse().getBodyAsString()

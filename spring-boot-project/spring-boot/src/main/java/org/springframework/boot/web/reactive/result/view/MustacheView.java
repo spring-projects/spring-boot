@@ -114,7 +114,7 @@ public class MustacheView extends AbstractUrlBasedView {
 		Map<String, Object> map;
 		if (sse) {
 			map = new HashMap<>(model);
-			map.put("ssedata", new SseLambda());
+			map.put("sse:data", new SseLambda());
 		}
 		else {
 			map = model;
@@ -151,7 +151,7 @@ public class MustacheView extends AbstractUrlBasedView {
 	protected Mono<Void> resolveAsyncAttributes(Map<String, Object> model) {
 		Map<String, Object> result = new HashMap<>();
 		for (String key : model.keySet()) {
-			if (!key.startsWith("async.") && !key.startsWith("async:")) {
+			if (!key.startsWith("async:")) {
 				result.put(key, model.get(key));
 			}
 			else {

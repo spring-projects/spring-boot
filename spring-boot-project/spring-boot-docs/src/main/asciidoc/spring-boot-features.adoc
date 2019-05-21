@@ -3038,23 +3038,23 @@ There are some special features of the `MustacheView` that make it suitable for 
 
 ===== Progressive Rendering
 
-A model element of type `Publisher` will be left in the model (instead of expanding it before the view is rendered), if its name starts with "async." or "async:". The `View` is then rendered and flushed to the HTTP response as soon as each element is published. Browsers are really good at rendering partially complete HTML, so the flux elements will most likely be visible to the user as soon as they are available. This is useful for rendering the "main" content of a page if it is a list or a table, for instance.
+A model element of type `Publisher` will be left in the model (instead of expanding it before the view is rendered), if its name starts with "async:". The `View` is then rendered and flushed to the HTTP response as soon as each element is published. Browsers are really good at rendering partially complete HTML, so the flux elements will most likely be visible to the user as soon as they are available. This is useful for rendering the "main" content of a page if it is a list or a table, for instance.
 
 ===== Sserver Sent Event (SSE) Support
 
-To render a `View` with content type `text/event-stream` you need a model element of type `Publisher`, and also a template that includes that element (probably starts and ends with it). There is a convenience Lambda (`ssedata`) added to the model for you that prepends every line with `data:` - you can use it if you wish to simplify the rendering of the data elements. Two new lines are added after each item in `{{#ssedata}}`. E.g. with an element called `flux.events` of type `Flux<Event>`:
+To render a `View` with content type `text/event-stream` you need a model element of type `Publisher`, and also a template that includes that element (probably starts and ends with it). There is a convenience Lambda (`ssedata`) added to the model for you that prepends every line with `data:` - you can use it if you wish to simplify the rendering of the data elements. Two new lines are added after each item in `{{#sse:data}}`. E.g. with an element called `async:events` of type `Flux<Event>`:
 
 ```
-{{#async.events}}
+{{#async:events}}
 event: message
 id: {{id}}
-{{#ssedata}}
+{{#sse:data}}
 <div>
   <span>Name: {{name}}<span>
   <span>Value: {{value}}<span>
 </div>
-{{/ssedata}}
-{{/async.events}}
+{{/sse:data}}
+{{/async:events}}
 ```
 
 the output will be
