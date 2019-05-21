@@ -30,7 +30,6 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.data.repository.config.RepositoryConfigurationDelegate;
@@ -66,8 +65,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource(
 			BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
-		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
-				getConfiguration(), true);
+		AnnotationMetadata metadata = AnnotationMetadata.introspect(getConfiguration());
 		return new AutoConfiguredAnnotationRepositoryConfigurationSource(metadata,
 				getAnnotation(), this.resourceLoader, this.environment, registry,
 				importBeanNameGenerator) {
