@@ -37,7 +37,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -220,7 +220,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	private String[] selectImports(Class<?> source) {
-		return this.importSelector.selectImports(new StandardAnnotationMetadata(source));
+		return this.importSelector.selectImports(AnnotationMetadata.introspect(source));
 	}
 
 	private List<String> getAutoConfigurationClassNames() {

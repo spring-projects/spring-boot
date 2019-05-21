@@ -46,7 +46,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ReflectionUtils;
@@ -284,8 +283,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private Set<Object> determineImports(Set<Annotation> annotations,
 				Class<?> testClass) {
 			Set<Object> determinedImports = new LinkedHashSet<>();
-			AnnotationMetadata testClassMetadata = new StandardAnnotationMetadata(
-					testClass);
+			AnnotationMetadata testClassMetadata = AnnotationMetadata
+					.introspect(testClass);
 			for (Annotation annotation : annotations) {
 				for (Class<?> source : getImports(annotation)) {
 					Set<Object> determinedSourceImports = determineImports(source,
