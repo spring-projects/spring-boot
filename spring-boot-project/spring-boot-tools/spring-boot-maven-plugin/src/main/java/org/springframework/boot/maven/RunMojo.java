@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
@@ -53,6 +55,9 @@ public class RunMojo extends AbstractRunMojo {
 	 */
 	private Boolean hasDevtools;
 
+	@Parameter(property = "optimizedLaunch", defaultValue = "true")
+	private boolean optimizedLaunch = true;
+
 	@Override
 	@Deprecated
 	protected boolean enableForkByDefault() {
@@ -70,6 +75,10 @@ public class RunMojo extends AbstractRunMojo {
 	@Override
 	protected void runWithForkedJvm(File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException {
+		if (this.optimizedLaunch) {
+			String[] optimizedLaunchArgs = { "-Xverify:none", "-XX:TieredStopAtLevel=1" };
+			Collections.addAll(args, optimizedLaunchArgs);
+		}
 		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
 		if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
 			return;
