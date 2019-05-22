@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +41,7 @@ public class ManagementContextConfigurationImportSelectorTests {
 	public void selectImportsShouldOrderResult() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(C.class,
 				A.class, D.class, B.class).selectImports(
-						new StandardAnnotationMetadata(EnableChildContext.class));
+						AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactly(A.class.getName(), B.class.getName(),
 				C.class.getName(), D.class.getName());
 	}
@@ -50,7 +50,7 @@ public class ManagementContextConfigurationImportSelectorTests {
 	public void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(
 				ChildOnly.class, SameOnly.class, A.class).selectImports(
-						new StandardAnnotationMetadata(EnableSameContext.class));
+						AnnotationMetadata.introspect(EnableSameContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(SameOnly.class.getName(),
 				A.class.getName());
 	}
@@ -59,7 +59,7 @@ public class ManagementContextConfigurationImportSelectorTests {
 	public void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(
 				ChildOnly.class, SameOnly.class, A.class).selectImports(
-						new StandardAnnotationMetadata(EnableChildContext.class));
+						AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(ChildOnly.class.getName(),
 				A.class.getName());
 	}
