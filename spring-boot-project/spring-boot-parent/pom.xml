@@ -246,6 +246,12 @@
 			<groupId>org.junit.vintage</groupId>
 			<artifactId>junit-vintage-engine</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -264,7 +270,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
+			<artifactId>hamcrest</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -583,6 +589,7 @@
 								<bannedDependencies>
 									<excludes>
 										<exclude>com.zaxxer:HikariCP-*</exclude>
+										<exclude>org.hamcrest:hamcrest-*</exclude>
 										<exclude>javax.*:*:*</exclude>
 									</excludes>
 									<includes>

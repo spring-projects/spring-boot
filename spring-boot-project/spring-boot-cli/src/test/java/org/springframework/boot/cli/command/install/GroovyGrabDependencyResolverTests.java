@@ -121,9 +121,9 @@ public class GroovyGrabDependencyResolverTests {
 	public void resolveMultipleArtifacts() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("junit:junit:4.11",
 				"commons-logging:commons-logging:1.1.3"));
-		assertThat(resolved).hasSize(3);
+		assertThat(resolved).hasSize(4);
 		assertThat(getNames(resolved)).containsOnly("junit-4.11.jar",
-				"commons-logging-1.1.3.jar", "hamcrest-core-1.3.jar");
+				"commons-logging-1.1.3.jar", "hamcrest-core-2.1.jar", "hamcrest-2.1.jar");
 	}
 
 	public Set<String> getNames(Collection<File> files) {
