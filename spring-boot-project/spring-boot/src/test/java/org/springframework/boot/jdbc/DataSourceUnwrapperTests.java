@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc;
 
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -27,6 +29,9 @@ import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link DataSourceUnwrapper}.
@@ -89,6 +94,17 @@ public class DataSourceUnwrapperTests {
 		DataSource actual = wrapInDelegate(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, DataSourceProxy.class))
 				.isSameAs(dataSource);
+	}
+
+	@Test
+	public void unwrappingIsNotAttemptedWhenDataSourceIsNotWrapperForTarget()
+			throws SQLException {
+		DataSource dataSource = mock(DataSource.class);
+		DataSource actual = DataSourceUnwrapper.unwrap(dataSource,
+				HikariDataSource.class);
+		assertThat(actual).isNull();
+		verify(dataSource).isWrapperFor(HikariDataSource.class);
+		verifyNoMoreInteractions(dataSource);
 	}
 
 	private DataSource wrapInProxy(DataSource dataSource) {
