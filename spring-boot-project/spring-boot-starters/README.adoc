@@ -133,6 +133,9 @@ do as they were designed before this was clarified.
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
+| https://developer.nexmo.com/[Nexmo]
+| https://github.com/nexmo/nexmo-spring-boot-starter
+
 | https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
