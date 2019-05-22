@@ -199,11 +199,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
 
+	@Parameter(property = "optimizedLaunch", defaultValue = "true")
+	private boolean optimizedLaunch = true;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("skipping run as per configuration.");
 			return;
+		}
+		if (this.optimizedLaunch) {
+			RunArguments jvmArguments = resolveJvmArguments();
+			List<String> args = Arrays.asList("-Xverify:none", "-XX:TieredStopAtLevel=1");
+			Collections.addAll(args, jvmArguments.asArray());
 		}
 		run(getStartClass());
 	}

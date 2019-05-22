@@ -22,8 +22,6 @@ import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -60,9 +58,6 @@ public class StartMojo extends AbstractRunMojo {
 	private static final String ENABLE_MBEAN_PROPERTY = "--spring.application.admin.enabled=true";
 
 	private static final String JMX_NAME_PROPERTY_PREFIX = "--spring.application.admin.jmx-name=";
-
-	@Parameter(property = "optimizedLaunch", defaultValue = "true")
-	private boolean optimizedLaunch = true;
 
 	/**
 	 * The JMX name of the automatically deployed MBean managing the lifecycle of the
@@ -261,11 +256,6 @@ public class StartMojo extends AbstractRunMojo {
 	 */
 	public <T> T execute(long wait, int maxAttempts, Callable<T> callback)
 			throws Exception {
-		if (this.optimizedLaunch) {
-			RunArguments jvmArguments = resolveJvmArguments();
-			List<String> args = Arrays.asList("-Xverify:none", "-XX:TieredStopAtLevel=1");
-			Collections.addAll(args, jvmArguments.asArray());
-		}
 		getLog().debug("Waiting for spring application to start...");
 		for (int i = 0; i < maxAttempts; i++) {
 			T result = callback.call();
