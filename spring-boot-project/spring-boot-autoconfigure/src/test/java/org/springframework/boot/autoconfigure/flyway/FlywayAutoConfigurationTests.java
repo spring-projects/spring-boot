@@ -36,6 +36,7 @@ import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.mockito.internal.util.MockUtil;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -48,11 +49,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -470,6 +474,16 @@ public class FlywayAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void customFlywayClassLoader() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				ResourceLoaderConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			Flyway flyway = context.getBean(Flyway.class);
+			assertTrue(MockUtil.isMock(flyway.getConfiguration().getClassLoader()));
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class FlywayDataSourceConfiguration {
 
@@ -485,6 +499,17 @@ public class FlywayAutoConfigurationTests {
 		public DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest")
 					.username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class ResourceLoaderConfiguration {
+
+		@Bean
+		@Primary
+		public ResourceLoader customClassLoader() {
+			return new DefaultResourceLoader(mock(ClassLoader.class));
 		}
 
 	}
