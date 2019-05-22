@@ -9,8 +9,8 @@
 	</parent>
 	<artifactId>spring-boot-project</artifactId>
 	<packaging>pom</packaging>
-	<name>Spring Boot Build</name>
-	<description>Spring Boot Build</description>
+	<name>Spring Boot Project</name>
+	<description>Spring Boot Project</description>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
