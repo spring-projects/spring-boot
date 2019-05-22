@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.web.server.WebFilterChainProxy;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security in a reactive
@@ -40,8 +41,8 @@ import org.springframework.security.web.server.WebFilterChainProxy;
  */
 @Configuration
 @EnableConfigurationProperties(SecurityProperties.class)
-@ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class,
-		WebFilterChainProxy.class })
+@ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, WebFilterChainProxy.class,
+		WebFluxConfigurer.class })
 public class ReactiveSecurityAutoConfiguration {
 
 	@Configuration
