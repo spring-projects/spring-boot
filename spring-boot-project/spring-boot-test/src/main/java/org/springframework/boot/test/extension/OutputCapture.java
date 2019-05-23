@@ -19,11 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.hamcrest.Matcher;
-import org.junit.Assert;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -34,12 +30,11 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
-import static org.hamcrest.Matchers.allOf;
-
 /**
  * JUnit5 {@code @Extension} to capture output from System.out and System.err.
  *
  * @author Madhura Bhave
+ * @since 2.2.0
  */
 public class OutputCapture implements BeforeEachCallback, AfterEachCallback,
 		BeforeAllCallback, ParameterResolver, CharSequence {
@@ -52,20 +47,9 @@ public class OutputCapture implements BeforeEachCallback, AfterEachCallback,
 
 	private ByteArrayOutputStream classLevelCopy;
 
-	private List<Matcher<? super String>> matchers = new ArrayList<>();
-
 	@Override
 	public void afterEach(ExtensionContext context) {
-		try {
-			if (!this.matchers.isEmpty()) {
-				String output = this.toString();
-				Assert.assertThat(output, allOf(this.matchers));
-			}
-		}
-		finally {
-			releaseOutput();
-		}
-
+		releaseOutput();
 	}
 
 	@Override
@@ -166,11 +150,6 @@ public class OutputCapture implements BeforeEachCallback, AfterEachCallback,
 			this.copy.write(b);
 			this.original.write(b);
 			this.original.flush();
-		}
-
-		@Override
-		public void write(byte[] b) throws IOException {
-			write(b, 0, b.length);
 		}
 
 		@Override

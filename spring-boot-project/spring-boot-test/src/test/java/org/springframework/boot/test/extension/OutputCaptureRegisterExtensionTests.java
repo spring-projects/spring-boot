@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class OutputCaptureRegisterExtensionTests {
+class OutputCaptureRegisterExtensionTests {
 
 	@RegisterExtension
 	OutputCapture output = new OutputCapture();
@@ -34,8 +34,7 @@ public class OutputCaptureRegisterExtensionTests {
 	void captureShouldReturnAllCapturedOutput() {
 		System.out.println("Hello World");
 		System.err.println("Error!!!");
-		assertThat(this.output).contains("Hello World");
-		assertThat(this.output).contains("Error!!!");
+		assertThat(this.output).contains("Hello World").contains("Error!!!");
 	}
 
 }
