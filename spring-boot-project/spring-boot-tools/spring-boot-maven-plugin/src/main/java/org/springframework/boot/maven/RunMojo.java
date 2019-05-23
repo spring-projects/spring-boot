@@ -75,7 +75,7 @@ public class RunMojo extends AbstractRunMojo {
 	protected void runWithForkedJvm(File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException {
 		if (this.optimizedLaunch) {
-			String[] optimizedLaunchArgs = {"-Xverify:none", "-XX:TieredStopAtLevel=1"};
+			String[] optimizedLaunchArgs = { "-Xverify:none", "-XX:TieredStopAtLevel=1" };
 			Collections.addAll(args, optimizedLaunchArgs);
 		}
 		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
