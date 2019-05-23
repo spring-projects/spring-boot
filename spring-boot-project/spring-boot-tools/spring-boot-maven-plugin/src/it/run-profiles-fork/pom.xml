@@ -23,7 +23,6 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<fork>true</fork>
 							<profiles>
 								<profile>foo</profile>
 								<profile>bar</profile>

@@ -130,10 +130,11 @@ Usage
 mvn spring-boot:run
 ---
 
-  By default the application is executed directly from the Maven JVM. If you need to run
-  in a forked process you can use the 'fork' option. Forking will also occur if the
-  'jvmArguments', 'systemPropertyVariables', 'environmentVariables'  or 'agent' options
-  are specified, or if devtools is present.
+  By default the application is executed in a forked process. Although this is not
+  recommended, it is possible to execute the application directly from the Maven JVM by
+  disabling the <<<fork>>> property. Doing so means that <<<jvmArguments>>>,
+  <<<systemPropertyVariables>>>, <<<environmentVariables>>> and <<<agent>>> options are
+  ignored.
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
   the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}

@@ -54,6 +54,7 @@ public class RunMojo extends AbstractRunMojo {
 	private Boolean hasDevtools;
 
 	@Override
+	@Deprecated
 	protected boolean enableForkByDefault() {
 		return super.enableForkByDefault() || hasDevtools();
 	}

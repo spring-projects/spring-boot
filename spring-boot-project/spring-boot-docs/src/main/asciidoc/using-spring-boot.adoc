@@ -829,8 +829,8 @@ and triggers a restart. In IntelliJ IDEA, building the project
 ====
 As long as forking is enabled, you can also start your application by using the supported
 build plugins (Maven and Gradle), since DevTools needs an isolated application
-classloader to operate properly. By default, Gradle and Maven do that when they detect
-DevTools on the classpath.
+classloader to operate properly. By default, the Gradle and Maven plugins fork the
+application process.
 
 ====
 
