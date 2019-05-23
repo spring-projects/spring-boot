@@ -31,6 +31,10 @@
 					<groupId>com.couchbase.mock</groupId>
 					<artifactId>CouchbaseMock</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.couchbase.client</groupId>
+					<artifactId>encryption</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
