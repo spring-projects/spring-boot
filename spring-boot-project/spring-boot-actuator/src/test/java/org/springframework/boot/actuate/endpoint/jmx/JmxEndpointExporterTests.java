@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class JmxEndpointExporterTests {
+class JmxEndpointExporterTests {
 
 	@Mock
 	private MBeanServer mBeanServer;
@@ -78,21 +78,21 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void createWhenMBeanServerIsNullShouldThrowException() {
+	void createWhenMBeanServerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new JmxEndpointExporter(null, this.objectNameFactory, this.responseMapper, this.endpoints))
 				.withMessageContaining("MBeanServer must not be null");
 	}
 
 	@Test
-	public void createWhenObjectNameFactoryIsNullShouldThrowException() {
+	void createWhenObjectNameFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper, this.endpoints))
 				.withMessageContaining("ObjectNameFactory must not be null");
 	}
 
 	@Test
-	public void createWhenResponseMapperIsNullShouldThrowException() {
+	void createWhenResponseMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
 						() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, null, this.endpoints))
@@ -100,14 +100,14 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void createWhenEndpointsIsNullShouldThrowException() {
+	void createWhenEndpointsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, this.responseMapper, null))
 				.withMessageContaining("Endpoints must not be null");
 	}
 
 	@Test
-	public void afterPropertiesSetShouldRegisterMBeans() throws Exception {
+	void afterPropertiesSetShouldRegisterMBeans() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		verify(this.mBeanServer).registerMBean(this.objectCaptor.capture(), this.objectNameCaptor.capture());
@@ -116,14 +116,14 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void registerShouldUseObjectNameFactory() throws Exception {
+	void registerShouldUseObjectNameFactory() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		verify(this.objectNameFactory).getObjectName(any(ExposableJmxEndpoint.class));
 	}
 
 	@Test
-	public void registerWhenObjectNameIsMalformedShouldThrowException() throws Exception {
+	void registerWhenObjectNameIsMalformedShouldThrowException() throws Exception {
 		given(this.objectNameFactory.getObjectName(any(ExposableJmxEndpoint.class)))
 				.willThrow(MalformedObjectNameException.class);
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
@@ -132,7 +132,7 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void registerWhenRegistrationFailsShouldThrowException() throws Exception {
+	void registerWhenRegistrationFailsShouldThrowException() throws Exception {
 		given(this.mBeanServer.registerMBean(any(), any(ObjectName.class)))
 				.willThrow(new MBeanRegistrationException(new RuntimeException()));
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
@@ -141,7 +141,7 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void destroyShouldUnregisterMBeans() throws Exception {
+	void destroyShouldUnregisterMBeans() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		this.exporter.destroy();
@@ -150,7 +150,7 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void unregisterWhenInstanceNotFoundShouldContinue() throws Exception {
+	void unregisterWhenInstanceNotFoundShouldContinue() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		willThrow(InstanceNotFoundException.class).given(this.mBeanServer).unregisterMBean(any(ObjectName.class));
@@ -158,7 +158,7 @@ public class JmxEndpointExporterTests {
 	}
 
 	@Test
-	public void unregisterWhenUnregisterThrowsExceptionShouldThrowException() throws Exception {
+	void unregisterWhenUnregisterThrowsExceptionShouldThrowException() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		willThrow(new MBeanRegistrationException(new RuntimeException())).given(this.mBeanServer)

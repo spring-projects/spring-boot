@@ -66,10 +66,10 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Kristine Jetzke
  */
-public class TestRestTemplateTests {
+class TestRestTemplateTests {
 
 	@Test
-	public void fromRestTemplateBuilder() {
+	void fromRestTemplateBuilder() {
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
 		RestTemplate delegate = new RestTemplate();
 		given(builder.build()).willReturn(delegate);
@@ -77,14 +77,14 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void simple() {
+	void simple() {
 		// The Apache client is on the classpath so we get the fully-fledged factory
 		assertThat(new TestRestTemplate().getRestTemplate().getRequestFactory())
 				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
-	public void doNotReplaceCustomRequestFactory() {
+	void doNotReplaceCustomRequestFactory() {
 		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(OkHttp3ClientHttpRequestFactory.class);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
@@ -92,7 +92,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void useTheSameRequestFactoryClassWithBasicAuth() {
+	void useTheSameRequestFactoryClassWithBasicAuth() {
 		OkHttp3ClientHttpRequestFactory customFactory = new OkHttp3ClientHttpRequestFactory();
 		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(() -> customFactory);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder).withBasicAuth("test", "test");
@@ -103,14 +103,14 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void getRootUriRootUriSetViaRestTemplateBuilder() {
+	void getRootUriRootUriSetViaRestTemplateBuilder() {
 		String rootUri = "https://example.com";
 		RestTemplateBuilder delegate = new RestTemplateBuilder().rootUri(rootUri);
 		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
 	}
 
 	@Test
-	public void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
+	void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
 		String rootUri = "https://example.com";
 		TestRestTemplate template = new TestRestTemplate();
 		LocalHostUriTemplateHandler templateHandler = mock(LocalHostUriTemplateHandler.class);
@@ -120,19 +120,19 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void getRootUriRootUriNotSet() {
+	void getRootUriRootUriNotSet() {
 		assertThat(new TestRestTemplate().getRootUri()).isEqualTo("");
 	}
 
 	@Test
-	public void authenticated() {
+	void authenticated() {
 		RestTemplate restTemplate = new TestRestTemplate("user", "password").getRestTemplate();
 		ClientHttpRequestFactory factory = restTemplate.getRequestFactory();
 		assertThat(factory.getClass().getName()).contains("BasicAuthentication");
 	}
 
 	@Test
-	public void options() {
+	void options() {
 		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 				.getRestTemplate().getRequestFactory();
@@ -141,7 +141,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void restOperationsAreAvailable() {
+	void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
 		given(delegate.getRequestFactory()).willReturn(new SimpleClientHttpRequestFactory());
 		given(delegate.getUriTemplateHandler()).willReturn(new DefaultUriBuilderFactory());
@@ -201,7 +201,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthAddsBasicAuthClientFactoryWhenNotAlreadyPresent() {
+	void withBasicAuthAddsBasicAuthClientFactoryWhenNotAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate();
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(getConverterClasses(original)).containsExactlyElementsOf(getConverterClasses(basicAuth));
@@ -213,7 +213,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthReplacesBasicAuthClientFactoryWhenAlreadyPresent() {
+	void withBasicAuthReplacesBasicAuthClientFactoryWhenAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate("foo", "bar").withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(getConverterClasses(basicAuth)).containsExactlyElementsOf(getConverterClasses(original));
@@ -230,7 +230,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthShouldUseNoOpErrorHandler() throws Exception {
+	void withBasicAuthShouldUseNoOpErrorHandler() throws Exception {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);
@@ -240,90 +240,90 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void deleteHandlesRelativeUris() throws IOException {
+	void deleteHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(TestRestTemplate::delete);
 	}
 
 	@Test
-	public void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
+	void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
 				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
 	}
 
 	@Test
-	public void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
+	void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(
 				new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
 				}));
 	}
 
 	@Test
-	public void exchangeHandlesRelativeUris() throws IOException {
+	void exchangeHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
 				HttpMethod.GET, new HttpEntity<>(new byte[0]), String.class));
 	}
 
 	@Test
-	public void exchangeWithParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
+	void exchangeWithParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
 				HttpMethod.GET, new HttpEntity<>(new byte[0]), new ParameterizedTypeReference<String>() {
 				}));
 	}
 
 	@Test
-	public void executeHandlesRelativeUris() throws IOException {
+	void executeHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.execute(relativeUri, HttpMethod.GET, null, null));
 	}
 
 	@Test
-	public void getForEntityHandlesRelativeUris() throws IOException {
+	void getForEntityHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.getForEntity(relativeUri, String.class));
 	}
 
 	@Test
-	public void getForObjectHandlesRelativeUris() throws IOException {
+	void getForObjectHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.getForObject(relativeUri, String.class));
 	}
 
 	@Test
-	public void headForHeadersHandlesRelativeUris() throws IOException {
+	void headForHeadersHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(TestRestTemplate::headForHeaders);
 	}
 
 	@Test
-	public void optionsForAllowHandlesRelativeUris() throws IOException {
+	void optionsForAllowHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(TestRestTemplate::optionsForAllow);
 	}
 
 	@Test
-	public void patchForObjectHandlesRelativeUris() throws IOException {
+	void patchForObjectHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.patchForObject(relativeUri, "hello", String.class));
 	}
 
 	@Test
-	public void postForEntityHandlesRelativeUris() throws IOException {
+	void postForEntityHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.postForEntity(relativeUri, "hello", String.class));
 	}
 
 	@Test
-	public void postForLocationHandlesRelativeUris() throws IOException {
+	void postForLocationHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.postForLocation(relativeUri, "hello"));
 	}
 
 	@Test
-	public void postForObjectHandlesRelativeUris() throws IOException {
+	void postForObjectHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling(
 				(testRestTemplate, relativeUri) -> testRestTemplate.postForObject(relativeUri, "hello", String.class));
 	}
 
 	@Test
-	public void putHandlesRelativeUris() throws IOException {
+	void putHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.put(relativeUri, "hello"));
 	}
 

@@ -41,58 +41,58 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConditionalOnMissingFilterBeanTests {
+class ConditionalOnMissingFilterBeanTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void outcomeWhenValueIsOfMissingBeanReturnsMatch() {
+	void outcomeWhenValueIsOfMissingBeanReturnsMatch() {
 
 		this.contextRunner.withUserConfiguration(WithoutTestFilterConfig.class, OnMissingWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myOtherFilter", "testFilter")));
 	}
 
 	@Test
-	public void outcomeWhenValueIsOfExistingBeanReturnsNoMatch() {
+	void outcomeWhenValueIsOfExistingBeanReturnsNoMatch() {
 		this.contextRunner.withUserConfiguration(WithTestFilterConfig.class, OnMissingWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myTestFilter")));
 	}
 
 	@Test
-	public void outcomeWhenValueIsOfMissingBeanRegistrationReturnsMatch() {
+	void outcomeWhenValueIsOfMissingBeanRegistrationReturnsMatch() {
 		this.contextRunner
 				.withUserConfiguration(WithoutTestFilterRegistrationConfig.class, OnMissingWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myOtherFilter", "testFilter")));
 	}
 
 	@Test
-	public void outcomeWhenValueIsOfExistingBeanRegistrationReturnsNoMatch() {
+	void outcomeWhenValueIsOfExistingBeanRegistrationReturnsNoMatch() {
 		this.contextRunner.withUserConfiguration(WithTestFilterRegistrationConfig.class, OnMissingWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myTestFilter")));
 	}
 
 	@Test
-	public void outcomeWhenReturnTypeIsOfExistingBeanReturnsNoMatch() {
+	void outcomeWhenReturnTypeIsOfExistingBeanReturnsNoMatch() {
 		this.contextRunner.withUserConfiguration(WithTestFilterConfig.class, OnMissingWithReturnTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myTestFilter")));
 	}
 
 	@Test
-	public void outcomeWhenReturnTypeIsOfExistingBeanRegistrationReturnsNoMatch() {
+	void outcomeWhenReturnTypeIsOfExistingBeanRegistrationReturnsNoMatch() {
 		this.contextRunner
 				.withUserConfiguration(WithTestFilterRegistrationConfig.class, OnMissingWithReturnTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myTestFilter")));
 	}
 
 	@Test
-	public void outcomeWhenReturnRegistrationTypeIsOfExistingBeanReturnsNoMatch() {
+	void outcomeWhenReturnRegistrationTypeIsOfExistingBeanReturnsNoMatch() {
 		this.contextRunner
 				.withUserConfiguration(WithTestFilterConfig.class, OnMissingWithReturnRegistrationTypeConfig.class)
 				.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myTestFilter")));
 	}
 
 	@Test
-	public void outcomeWhenReturnRegistrationTypeIsOfExistingBeanRegistrationReturnsNoMatch() {
+	void outcomeWhenReturnRegistrationTypeIsOfExistingBeanRegistrationReturnsNoMatch() {
 		this.contextRunner
 				.withUserConfiguration(WithTestFilterRegistrationConfig.class,
 						OnMissingWithReturnRegistrationTypeConfig.class)

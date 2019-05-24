@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Diego Berrueta
  */
-public class JacksonTesterIntegrationTests {
+class JacksonTesterIntegrationTests {
 
 	private JacksonTester<ExampleObject> simpleJson;
 
@@ -61,20 +61,20 @@ public class JacksonTesterIntegrationTests {
 	}
 
 	@Test
-	public void typicalTest() throws Exception {
+	void typicalTest() throws Exception {
 		String example = JSON;
 		assertThat(this.simpleJson.parse(example).getObject().getName()).isEqualTo("Spring");
 	}
 
 	@Test
-	public void typicalListTest() throws Exception {
+	void typicalListTest() throws Exception {
 		String example = "[" + JSON + "]";
 		assertThat(this.listJson.parse(example)).asList().hasSize(1);
 		assertThat(this.listJson.parse(example).getObject().get(0).getName()).isEqualTo("Spring");
 	}
 
 	@Test
-	public void typicalMapTest() throws Exception {
+	void typicalMapTest() throws Exception {
 		Map<String, Integer> map = new LinkedHashMap<>();
 		map.put("a", 1);
 		map.put("b", 2);
@@ -82,14 +82,14 @@ public class JacksonTesterIntegrationTests {
 	}
 
 	@Test
-	public void stringLiteral() throws Exception {
+	void stringLiteral() throws Exception {
 		String stringWithSpecialCharacters = "myString";
 		assertThat(this.stringJson.write(stringWithSpecialCharacters)).extractingJsonPathStringValue("@")
 				.isEqualTo(stringWithSpecialCharacters);
 	}
 
 	@Test
-	public void parseSpecialCharactersTest() throws Exception {
+	void parseSpecialCharactersTest() throws Exception {
 		// Confirms that the handling of special characters is symmetrical between
 		// the serialization (via the JacksonTester) and the parsing (via json-path). By
 		// default json-path uses SimpleJson as its parser, which has a slightly different
@@ -102,7 +102,7 @@ public class JacksonTesterIntegrationTests {
 	}
 
 	@Test
-	public void writeWithView() throws Exception {
+	void writeWithView() throws Exception {
 		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		ExampleObjectWithView object = new ExampleObjectWithView();
 		object.setName("Spring");
@@ -114,7 +114,7 @@ public class JacksonTesterIntegrationTests {
 	}
 
 	@Test
-	public void readWithResourceAndView() throws Exception {
+	void readWithResourceAndView() throws Exception {
 		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		ByteArrayResource resource = new ByteArrayResource(JSON.getBytes());
 		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)
@@ -124,7 +124,7 @@ public class JacksonTesterIntegrationTests {
 	}
 
 	@Test
-	public void readWithReaderAndView() throws Exception {
+	void readWithReaderAndView() throws Exception {
 		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		Reader reader = new StringReader(JSON);
 		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)

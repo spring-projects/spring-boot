@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -62,16 +62,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Kris De Volder
  * @author Jonas Keßler
  */
-public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
+class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void notAnnotated() {
+	void notAnnotated() {
 		ConfigurationMetadata metadata = compile(NotAnnotated.class);
 		assertThat(metadata.getItems()).isEmpty();
 	}
 
 	@Test
-	public void simpleProperties() {
+	void simpleProperties() {
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
@@ -85,7 +85,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void simplePrefixValueProperties() {
+	void simplePrefixValueProperties() {
 		ConfigurationMetadata metadata = compile(SimplePrefixValueProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimplePrefixValueProperties.class));
 		assertThat(metadata)
@@ -93,7 +93,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void simpleTypeProperties() {
+	void simpleTypeProperties() {
 		ConfigurationMetadata metadata = compile(SimpleTypeProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("simple.type").fromSource(SimpleTypeProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-string", String.class));
@@ -122,7 +122,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void hierarchicalProperties() {
+	void hierarchicalProperties() {
 		ConfigurationMetadata metadata = compile(HierarchicalProperties.class, HierarchicalPropertiesParent.class,
 				HierarchicalPropertiesGrandparent.class);
 		assertThat(metadata).has(Metadata.withGroup("hierarchical").fromSource(HierarchicalProperties.class));
@@ -135,7 +135,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void descriptionProperties() {
+	void descriptionProperties() {
 		ConfigurationMetadata metadata = compile(DescriptionProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("description").fromSource(DescriptionProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("description.simple", String.class)
@@ -147,7 +147,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void deprecatedProperties() {
+	void deprecatedProperties() {
 		Class<?> type = org.springframework.boot.configurationsample.simple.DeprecatedProperties.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("deprecated").fromSource(type));
@@ -158,7 +158,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void singleDeprecatedProperty() {
+	void singleDeprecatedProperty() {
 		Class<?> type = DeprecatedSingleProperty.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("singledeprecated").fromSource(type));
@@ -168,7 +168,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void deprecatedOnUnrelatedSetter() {
+	void deprecatedOnUnrelatedSetter() {
 		Class<?> type = DeprecatedUnrelatedMethodPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
@@ -179,7 +179,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void boxingOnSetter() {
+	void boxingOnSetter() {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("boxing").fromSource(type));
@@ -189,7 +189,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void parseCollectionConfig() {
+	void parseCollectionConfig() {
 		ConfigurationMetadata metadata = compile(SimpleCollectionProperties.class);
 		// getter and setter
 		assertThat(metadata).has(Metadata.withProperty("collection.integers-to-names",
@@ -206,7 +206,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void parseArrayConfig() throws Exception {
+	void parseArrayConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
@@ -219,7 +219,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void annotatedGetter() {
+	void annotatedGetter() {
 		ConfigurationMetadata metadata = compile(AnnotatedGetter.class);
 		assertThat(metadata).has(Metadata.withGroup("specific").fromSource(AnnotatedGetter.class));
 		assertThat(metadata)
@@ -227,7 +227,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void staticAccessor() {
+	void staticAccessor() {
 		ConfigurationMetadata metadata = compile(StaticAccessor.class);
 		assertThat(metadata).has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
 		assertThat(metadata).has(Metadata.withProperty("specific.counter", Integer.class)
@@ -238,13 +238,13 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void innerClassRootConfig() {
+	void innerClassRootConfig() {
 		ConfigurationMetadata metadata = compile(InnerClassRootConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("config.name"));
 	}
 
 	@Test
-	public void innerClassProperties() {
+	void innerClassProperties() {
 		ConfigurationMetadata metadata = compile(InnerClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config").fromSource(InnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(InnerClassProperties.Foo.class)
@@ -263,7 +263,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void innerClassPropertiesHierarchical() {
+	void innerClassPropertiesHierarchical() {
 		ConfigurationMetadata metadata = compile(InnerClassHierarchicalProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config.foo").ofType(InnerClassHierarchicalProperties.Foo.class));
 		assertThat(metadata)
@@ -275,7 +275,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void innerClassAnnotatedGetterConfig() {
+	void innerClassAnnotatedGetterConfig() {
 		ConfigurationMetadata metadata = compile(InnerClassAnnotatedGetterConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("specific.value"));
 		assertThat(metadata).has(Metadata.withProperty("foo.name"));
@@ -283,7 +283,7 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void nestedClassChildProperties() {
+	void nestedClassChildProperties() {
 		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
 		assertThat(metadata).has(
 				Metadata.withGroup("nestedChildProps").fromSource(ClassWithNestedProperties.NestedChildClass.class));
@@ -294,13 +294,13 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void builderPojo() {
+	void builderPojo() {
 		ConfigurationMetadata metadata = compile(BuilderPojo.class);
 		assertThat(metadata).has(Metadata.withProperty("builder.name"));
 	}
 
 	@Test
-	public void excludedTypesPojo() {
+	void excludedTypesPojo() {
 		ConfigurationMetadata metadata = compile(ExcludedTypesPojo.class);
 		assertThat(metadata).has(Metadata.withProperty("excluded.name"));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("excluded.class-loader"));
@@ -311,14 +311,14 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void invalidAccessor() {
+	void invalidAccessor() {
 		ConfigurationMetadata metadata = compile(InvalidAccessorProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config"));
 		assertThat(metadata.getItems()).hasSize(1);
 	}
 
 	@Test
-	public void doubleRegistration() {
+	void doubleRegistration() {
 		ConfigurationMetadata metadata = compile(DoubleRegistrationProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("one"));
 		assertThat(metadata).has(Metadata.withGroup("two"));
@@ -328,25 +328,25 @@ public class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetad
 	}
 
 	@Test
-	public void invalidDoubleRegistration() {
+	void invalidDoubleRegistration() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDoubleRegistrationProperties.class))
 				.withMessageContaining("Compilation failed");
 	}
 
 	@Test
-	public void constructorParameterPropertyWithInvalidDefaultValueOnNumber() {
+	void constructorParameterPropertyWithInvalidDefaultValueOnNumber() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDefaultValueNumberProperties.class))
 				.withMessageContaining("Compilation failed");
 	}
 
 	@Test
-	public void constructorParameterPropertyWithInvalidDefaultValueOnFloatingPoint() {
+	void constructorParameterPropertyWithInvalidDefaultValueOnFloatingPoint() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDefaultValueFloatingPointProperties.class))
 				.withMessageContaining("Compilation failed");
 	}
 
 	@Test
-	public void constructorParameterPropertyWithInvalidDefaultValueOnCharacter() {
+	void constructorParameterPropertyWithInvalidDefaultValueOnCharacter() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDefaultValueCharacterProperties.class))
 				.withMessageContaining("Compilation failed");
 	}

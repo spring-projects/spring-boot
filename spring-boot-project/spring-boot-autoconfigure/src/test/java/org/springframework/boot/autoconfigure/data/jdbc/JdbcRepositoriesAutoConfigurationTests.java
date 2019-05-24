@@ -42,19 +42,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class JdbcRepositoriesAutoConfigurationTests {
+class JdbcRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JdbcRepositoriesAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithNoDataSource() {
+	void backsOffWithNoDataSource() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(JdbcRepositoryConfigExtension.class));
 	}
 
 	@Test
-	public void backsOffWithNoJdbcOperations() {
+	void backsOffWithNoJdbcOperations() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, TestConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
@@ -63,7 +63,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void basicAutoConfiguration() {
+	void basicAutoConfiguration() {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class, DataSourceAutoConfiguration.class))
@@ -78,7 +78,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationWithNoRepositories() {
+	void autoConfigurationWithNoRepositories() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, EmptyConfiguration.class)
 				.run((context) -> {
@@ -88,7 +88,7 @@ public class JdbcRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void honoursUsersEnableJdbcRepositoriesConfiguration() {
+	void honoursUsersEnableJdbcRepositoriesConfiguration() {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class, DataSourceAutoConfiguration.class))

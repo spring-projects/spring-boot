@@ -38,13 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
 				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
@@ -52,7 +52,7 @@ public class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfi
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
 						JdbcOperationsSessionRepository.class, RedisOperationsSessionRepository.class))
@@ -62,7 +62,7 @@ public class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfi
 	}
 
 	@Test
-	public void mongoSessionStoreWithCustomizations() {
+	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))

@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
-public class KafkaAutoConfigurationIntegrationTests {
+class KafkaAutoConfigurationIntegrationTests {
 
 	private static final String TEST_TOPIC = "testTopic";
 
@@ -76,7 +76,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testEndToEnd() throws Exception {
+	void testEndToEnd() throws Exception {
 		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.consumer.auto-offset-reset=earliest");
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
@@ -93,7 +93,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void testStreams() {
+	void testStreams() {
 		load(KafkaStreamsConfig.class, "spring.application.name:my-app",
 				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString());
 		assertThat(this.context.getBean(StreamsBuilderFactoryBean.class).isAutoStartup()).isTrue();

@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -39,23 +39,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ConfigurationsTests {
+class ConfigurationsTests {
 
 	@Test
-	public void createWhenClassesIsNullShouldThrowException() {
+	void createWhenClassesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations(null))
 				.withMessageContaining("Classes must not be null");
 	}
 
 	@Test
-	public void createShouldSortClasses() {
+	void createShouldSortClasses() {
 		TestSortedConfigurations configurations = new TestSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
 		assertThat(configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
 	}
 
 	@Test
-	public void getClassesShouldMergeByClassAndSort() {
+	void getClassesShouldMergeByClassAndSort() {
 		Configurations c1 = new TestSortedConfigurations(Arrays.asList(OutputStream.class, InputStream.class));
 		Configurations c2 = new TestConfigurations(Collections.singletonList(Short.class));
 		Configurations c3 = new TestSortedConfigurations(Arrays.asList(String.class, Integer.class));

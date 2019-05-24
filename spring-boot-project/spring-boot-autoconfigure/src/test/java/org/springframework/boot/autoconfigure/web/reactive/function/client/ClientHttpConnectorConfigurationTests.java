@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.util.thread.Scheduler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
@@ -35,10 +35,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class ClientHttpConnectorConfigurationTests {
+class ClientHttpConnectorConfigurationTests {
 
 	@Test
-	public void jettyClientHttpConnectorAppliesJettyResourceFactory() {
+	void jettyClientHttpConnectorAppliesJettyResourceFactory() {
 		Executor executor = mock(Executor.class);
 		ByteBufferPool byteBufferPool = mock(ByteBufferPool.class);
 		Scheduler scheduler = mock(Scheduler.class);
@@ -54,7 +54,7 @@ public class ClientHttpConnectorConfigurationTests {
 	}
 
 	@Test
-	public void JettyResourceFactoryHasSslContextFactory() {
+	void JettyResourceFactoryHasSslContextFactory() {
 		// gh-16810
 		JettyResourceFactory jettyResourceFactory = new JettyResourceFactory();
 		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HibernateDefaultDdlAutoProviderTests {
+class HibernateDefaultDdlAutoProviderTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
@@ -45,7 +45,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 			.withPropertyValues("spring.datasource.initialization-mode:never");
 
 	@Test
-	public void defaultDDlAutoForEmbedded() {
+	void defaultDDlAutoForEmbedded() {
 		this.contextRunner.run((context) -> {
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.emptyList());
@@ -54,7 +54,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 	}
 
 	@Test
-	public void defaultDDlAutoForEmbeddedWithPositiveContributor() {
+	void defaultDDlAutoForEmbeddedWithPositiveContributor() {
 		this.contextRunner.run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			SchemaManagementProvider provider = mock(SchemaManagementProvider.class);
@@ -66,7 +66,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 	}
 
 	@Test
-	public void defaultDDlAutoForEmbeddedWithNegativeContributor() {
+	void defaultDDlAutoForEmbeddedWithNegativeContributor() {
 		this.contextRunner.run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			SchemaManagementProvider provider = mock(SchemaManagementProvider.class);

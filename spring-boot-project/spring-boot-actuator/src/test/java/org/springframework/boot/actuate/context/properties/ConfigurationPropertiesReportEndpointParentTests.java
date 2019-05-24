@@ -34,10 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointParentTests {
+class ConfigurationPropertiesReportEndpointParentTests {
 
 	@Test
-	public void configurationPropertiesClass() {
+	void configurationPropertiesClass() {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class).run((parent) -> {
 			new ApplicationContextRunner().withUserConfiguration(ClassConfigurationProperties.class).withParent(parent)
 					.run((child) -> {
@@ -54,7 +54,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 	}
 
 	@Test
-	public void configurationPropertiesBeanMethod() {
+	void configurationPropertiesBeanMethod() {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class).run((parent) -> {
 			new ApplicationContextRunner().withUserConfiguration(BeanMethodConfigurationProperties.class)
 					.withParent(parent).run((child) -> {

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.reactive.context.config;
 
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContextTests;
 import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Example {@code @Configuration} for use with
- * {@link AnnotationConfigReactiveWebServerApplicationContextTests}.
+ * {@code AnnotationConfigReactiveWebServerApplicationContextTests}.
  *
  * @author Phillip Webb
  */

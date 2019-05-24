@@ -21,7 +21,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
@@ -32,12 +32,12 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class ConnectionInputStreamTests {
+class ConnectionInputStreamTests {
 
 	private static final byte[] NO_BYTES = {};
 
 	@Test
-	public void readHeader() throws Exception {
+	void readHeader() throws Exception {
 		String header = "";
 		for (int i = 0; i < 100; i++) {
 			header += "x-something-" + i + ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -48,7 +48,7 @@ public class ConnectionInputStreamTests {
 	}
 
 	@Test
-	public void readFully() throws Exception {
+	void readFully() throws Exception {
 		byte[] bytes = "the data that we want to read fully".getBytes();
 		LimitedInputStream source = new LimitedInputStream(new ByteArrayInputStream(bytes), 2);
 		ConnectionInputStream inputStream = new ConnectionInputStream(source);
@@ -58,13 +58,13 @@ public class ConnectionInputStreamTests {
 	}
 
 	@Test
-	public void checkedRead() throws Exception {
+	void checkedRead() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
 		assertThatIOException().isThrownBy(inputStream::checkedRead).withMessageContaining("End of stream");
 	}
 
 	@Test
-	public void checkedReadArray() throws Exception {
+	void checkedReadArray() throws Exception {
 		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
 		assertThatIOException().isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))

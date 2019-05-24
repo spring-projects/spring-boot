@@ -39,13 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ImportAutoConfiguration({ MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 @ActiveProfiles("switch-messages")
 @DirtiesContext
-public class MessageSourceAutoConfigurationProfileTests {
+class MessageSourceAutoConfigurationProfileTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void testMessageSourceFromPropertySourceAnnotation() {
+	void testMessageSourceFromPropertySourceAnnotation() {
 		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 	}
 

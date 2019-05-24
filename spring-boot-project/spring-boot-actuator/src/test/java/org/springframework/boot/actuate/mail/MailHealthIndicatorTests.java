@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Johannes Edmeier
  * @author Stephane Nicoll
  */
-public class MailHealthIndicatorTests {
+class MailHealthIndicatorTests {
 
 	private JavaMailSenderImpl mailSender;
 
@@ -63,7 +63,7 @@ public class MailHealthIndicatorTests {
 	}
 
 	@Test
-	public void smtpIsUp() {
+	void smtpIsUp() {
 		given(this.mailSender.getProtocol()).willReturn("success");
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -71,7 +71,7 @@ public class MailHealthIndicatorTests {
 	}
 
 	@Test
-	public void smtpIsDown() throws MessagingException {
+	void smtpIsDown() throws MessagingException {
 		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

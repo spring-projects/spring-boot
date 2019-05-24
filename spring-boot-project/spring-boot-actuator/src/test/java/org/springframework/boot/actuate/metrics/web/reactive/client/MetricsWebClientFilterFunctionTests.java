@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class MetricsWebClientFilterFunctionTests {
+class MetricsWebClientFilterFunctionTests {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
@@ -69,7 +69,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterShouldRecordTimer() {
+	void filterShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
@@ -79,7 +79,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenUriTemplatePresentShouldRecordTimer() {
+	void filterWhenUriTemplatePresentShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
@@ -90,7 +90,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenIoExceptionThrownShouldRecordTimer() {
+	void filterWhenIoExceptionThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction errorExchange = (r) -> Mono.error(new IOException());
@@ -102,7 +102,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenExceptionThrownShouldRecordTimer() {
+	void filterWhenExceptionThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException());
@@ -114,7 +114,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
+	void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException())

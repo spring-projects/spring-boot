@@ -38,15 +38,13 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -75,12 +73,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
 	protected WebServer webServer;
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.webServer != null) {
 			try {
@@ -95,7 +90,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected abstract AbstractReactiveWebServerFactory getFactory();
 
 	@Test
-	public void specificPort() {
+	void specificPort() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
@@ -109,12 +104,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void basicSslFromClassPath() {
+	void basicSslFromClassPath() {
 		testBasicSslWithKeyStore("classpath:test.jks", "password");
 	}
 
 	@Test
-	public void basicSslFromFileSystem() {
+	void basicSslFromFileSystem() {
 		testBasicSslWithKeyStore("src/test/resources/test.jks", "password");
 	}
 
@@ -144,7 +139,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+	void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
 		ssl.setKeyStore("classpath:test.jks");
@@ -154,7 +149,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() {
+	void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
 		ssl.setKeyStore("classpath:test.jks");
@@ -201,7 +196,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");
@@ -211,7 +206,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate() {
+	void sslNeedsClientAuthenticationFailsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");
@@ -244,7 +239,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResponseToGetRequest() {
+	void compressionOfResponseToGetRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));
@@ -252,7 +247,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResponseToPostRequest() {
+	void compressionOfResponseToPostRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.post().exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));
@@ -260,7 +255,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForSmallResponse() {
+	void noCompressionForSmallResponse() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setMinResponseSize(DataSize.ofBytes(3001));
@@ -271,7 +266,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForMimeType() {
+	void noCompressionForMimeType() {
 		Compression compression = new Compression();
 		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression);
@@ -281,7 +276,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForUserAgent() {
+	void noCompressionForUserAgent() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
@@ -292,7 +287,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
+	void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
 		assertThatThrownBy(() -> testBasicSslWithKeyStore(null, null))
 				.hasMessageContaining("Could not load key store 'null'");
 	}

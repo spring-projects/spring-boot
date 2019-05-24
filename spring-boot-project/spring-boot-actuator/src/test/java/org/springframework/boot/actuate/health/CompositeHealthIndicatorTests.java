@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
-public class CompositeHealthIndicatorTests {
+class CompositeHealthIndicatorTests {
 
 	private HealthAggregator healthAggregator;
 
@@ -56,7 +56,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWithIndicators() {
+	void createWithIndicators() {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
@@ -70,7 +70,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void testSerialization() throws Exception {
+	void testSerialization() throws Exception {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);

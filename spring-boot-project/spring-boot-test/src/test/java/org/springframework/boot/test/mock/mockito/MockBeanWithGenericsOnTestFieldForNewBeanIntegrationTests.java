@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-public class MockBeanWithGenericsOnTestFieldForNewBeanIntegrationTests {
+class MockBeanWithGenericsOnTestFieldForNewBeanIntegrationTests {
 
 	@MockBean
 	private ExampleGenericService<Integer> exampleIntegerService;
@@ -48,7 +48,7 @@ public class MockBeanWithGenericsOnTestFieldForNewBeanIntegrationTests {
 	private ExampleGenericServiceCaller caller;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		given(this.exampleIntegerService.greeting()).willReturn(200);
 		given(this.exampleStringService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say 200 Boot");

@@ -39,27 +39,27 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class Neo4jHealthIndicatorAutoConfigurationTests {
+class Neo4jHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(Neo4jConfiguration.class).withConfiguration(AutoConfigurations
 					.of(Neo4jHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.neo4j.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void defaultIndicatorCanBeReplaced() {
+	void defaultIndicatorCanBeReplaced() {
 		this.contextRunner.withUserConfiguration(CustomIndicatorConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Neo4jHealthIndicator.class);
 			assertThat(context).doesNotHaveBean(ApplicationHealthIndicator.class);

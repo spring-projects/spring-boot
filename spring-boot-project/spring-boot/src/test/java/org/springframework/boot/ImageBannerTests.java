@@ -19,9 +19,9 @@ package org.springframework.boot;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Craig Burke
  * @author Phillip Webb
  */
-public class ImageBannerTests {
+class ImageBannerTests {
 
 	private static final char HIGH_LUMINANCE_CHARACTER = ' ';
 
@@ -48,60 +48,60 @@ public class ImageBannerTests {
 
 	private static final String INVERT_TRUE = "spring.banner.image.invert=true";
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
 	@Test
-	public void printBannerShouldResetForegroundAndBackground() {
+	void printBannerShouldResetForegroundAndBackground() {
 		String banner = printBanner("black-and-white.gif");
 		String expected = AnsiOutput.encode(AnsiColor.DEFAULT) + AnsiOutput.encode(AnsiBackground.DEFAULT);
 		assertThat(banner).startsWith(expected);
 	}
 
 	@Test
-	public void printBannerWhenInvertedShouldResetForegroundAndBackground() {
+	void printBannerWhenInvertedShouldResetForegroundAndBackground() {
 		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
 		String expected = AnsiOutput.encode(AnsiColor.DEFAULT) + AnsiOutput.encode(AnsiBackground.BLACK);
 		assertThat(banner).startsWith(expected);
 	}
 
 	@Test
-	public void printBannerShouldPrintWhiteAsBrightWhiteHighLuminance() {
+	void printBannerShouldPrintWhiteAsBrightWhiteHighLuminance() {
 		String banner = printBanner("black-and-white.gif");
 		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE) + HIGH_LUMINANCE_CHARACTER;
 		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void printBannerWhenInvertedShouldPrintWhiteAsBrightWhiteLowLuminance() {
+	void printBannerWhenInvertedShouldPrintWhiteAsBrightWhiteLowLuminance() {
 		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
 		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE) + LOW_LUMINANCE_CHARACTER;
 		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void printBannerShouldPrintBlackAsBlackLowLuminance() {
+	void printBannerShouldPrintBlackAsBlackLowLuminance() {
 		String banner = printBanner("black-and-white.gif");
 		String expected = AnsiOutput.encode(AnsiColor.BLACK) + LOW_LUMINANCE_CHARACTER;
 		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void printBannerWhenInvertedShouldPrintBlackAsBlackHighLuminance() {
+	void printBannerWhenInvertedShouldPrintBlackAsBlackHighLuminance() {
 		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
 		String expected = AnsiOutput.encode(AnsiColor.BLACK) + HIGH_LUMINANCE_CHARACTER;
 		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void printBannerWhenShouldPrintAllColors() {
+	void printBannerWhenShouldPrintAllColors() {
 		String banner = printBanner("colors.gif");
 		for (AnsiColor color : AnsiColor.values()) {
 			if (color != AnsiColor.DEFAULT) {
@@ -111,26 +111,26 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerShouldRenderGradient() {
+	void printBannerShouldRenderGradient() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("gradient.gif", "spring.banner.image.width=10", "spring.banner.image.margin=0");
 		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
 	@Test
-	public void printBannerShouldCalculateHeight() {
+	void printBannerShouldCalculateHeight() {
 		String banner = printBanner("large.gif", "spring.banner.image.width=20");
 		assertThat(getBannerHeight(banner)).isEqualTo(10);
 	}
 
 	@Test
-	public void printBannerWhenHasHeightPropertyShouldSetHeight() {
+	void printBannerWhenHasHeightPropertyShouldSetHeight() {
 		String banner = printBanner("large.gif", "spring.banner.image.width=20", "spring.banner.image.height=30");
 		assertThat(getBannerHeight(banner)).isEqualTo(30);
 	}
 
 	@Test
-	public void printBannerShouldCapWidthAndCalculateHeight() {
+	void printBannerShouldCapWidthAndCalculateHeight() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "spring.banner.image.margin=0");
 		assertThat(getBannerWidth(banner)).isEqualTo(76);
@@ -138,7 +138,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerShouldPrintMargin() {
+	void printBannerShouldPrintMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif");
 		String[] lines = banner.split(System.lineSeparator());
@@ -148,7 +148,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() {
+	void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "spring.banner.image.margin=4");
 		String[] lines = banner.split(System.lineSeparator());
@@ -158,7 +158,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerWhenAnimatesShouldPrintAllFrames() {
+	void printBannerWhenAnimatesShouldPrintAllFrames() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("animated.gif");
 		String[] lines = banner.split(System.lineSeparator());

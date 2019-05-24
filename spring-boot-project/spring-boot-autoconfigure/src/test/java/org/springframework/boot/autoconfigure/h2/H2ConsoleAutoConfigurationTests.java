@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Marten Deinum
  * @author Stephane Nicoll
  */
-public class H2ConsoleAutoConfigurationTests {
+class H2ConsoleAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
@@ -53,14 +53,14 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	public void consoleIsDisabledByDefault() {
+	void consoleIsDisabledByDefault() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).isEmpty();
 	}
 
 	@Test
-	public void propertyCanEnableConsole() {
+	void propertyCanEnableConsole() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues.of("spring.h2.console.enabled:true").applyTo(this.context);
 		this.context.refresh();
@@ -72,7 +72,7 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPathMustBeginWithASlash() {
+	void customPathMustBeginWithASlash() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom").applyTo(this.context);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
@@ -80,7 +80,7 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPathWithTrailingSlash() {
+	void customPathWithTrailingSlash() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues.of("spring.h2.console.enabled:true", "spring.h2.console.path:/custom/")
 				.applyTo(this.context);
@@ -91,7 +91,7 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPath() {
+	void customPath() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues.of("spring.h2.console.enabled:true", "spring.h2.console.path:/custom").applyTo(this.context);
 		this.context.refresh();
@@ -101,7 +101,7 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	public void customInitParameters() {
+	void customInitParameters() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues.of("spring.h2.console.enabled:true", "spring.h2.console.settings.trace=true",
 				"spring.h2.console.settings.webAllowOthers=true").applyTo(this.context);

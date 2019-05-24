@@ -22,11 +22,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -37,28 +36,28 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class InstallerTests {
+class InstallerTests {
 
-	public DependencyResolver resolver = mock(DependencyResolver.class);
+	private final DependencyResolver resolver = mock(DependencyResolver.class);
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private Installer installer;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
-		System.setProperty("spring.home", this.tempFolder.getRoot().getAbsolutePath());
+		System.setProperty("spring.home", this.tempDir.getAbsolutePath());
 		this.installer = new Installer(this.resolver);
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		System.clearProperty("spring.home");
 	}
 
 	@Test
-	public void installNewDependency() throws Exception {
+	void installNewDependency() throws Exception {
 		File foo = createTemporaryFile("foo.jar");
 		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
@@ -66,7 +65,7 @@ public class InstallerTests {
 	}
 
 	@Test
-	public void installAndUninstall() throws Exception {
+	void installAndUninstall() throws Exception {
 		File foo = createTemporaryFile("foo.jar");
 		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
@@ -75,7 +74,7 @@ public class InstallerTests {
 	}
 
 	@Test
-	public void installAndUninstallWithCommonDependencies() throws Exception {
+	void installAndUninstallWithCommonDependencies() throws Exception {
 		File alpha = createTemporaryFile("alpha.jar");
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
@@ -92,7 +91,7 @@ public class InstallerTests {
 	}
 
 	@Test
-	public void uninstallAll() throws Exception {
+	void uninstallAll() throws Exception {
 		File alpha = createTemporaryFile("alpha.jar");
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
@@ -107,15 +106,15 @@ public class InstallerTests {
 
 	private Set<String> getNamesOfFilesInLibExt() {
 		Set<String> names = new HashSet<>();
-		for (File file : new File(this.tempFolder.getRoot(), "lib/ext").listFiles()) {
+		for (File file : new File(this.tempDir, "lib/ext").listFiles()) {
 			names.add(file.getName());
 		}
 		return names;
 	}
 
 	private File createTemporaryFile(String name) throws IOException {
-		File temporaryFile = this.tempFolder.newFile(name);
-		temporaryFile.deleteOnExit();
+		File temporaryFile = new File(this.tempDir, name);
+		temporaryFile.createNewFile();
 		return temporaryFile;
 	}
 

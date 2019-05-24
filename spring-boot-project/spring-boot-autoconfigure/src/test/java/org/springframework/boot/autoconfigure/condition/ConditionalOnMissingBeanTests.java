@@ -64,7 +64,7 @@ public class ConditionalOnMissingBeanTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void testNameOnMissingBeanCondition() {
+	void testNameOnMissingBeanCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanNameConfiguration.class)
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
@@ -73,7 +73,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testNameOnMissingBeanConditionReverseOrder() {
+	void testNameOnMissingBeanConditionReverseOrder() {
 		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class, FooConfiguration.class)
 				.run((context) -> {
 					// Ideally this would be doesNotHaveBean, but the ordering is a
@@ -84,7 +84,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testNameAndTypeOnMissingBeanCondition() {
+	void testNameAndTypeOnMissingBeanCondition() {
 		// Arguably this should be hasBean, but as things are implemented the conditions
 		// specified in the different attributes of @ConditionalOnBean are combined with
 		// logical OR (not AND) so if any of them match the condition is true.
@@ -93,7 +93,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void hierarchyConsidered() {
+	void hierarchyConsidered() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class)
 				.run((parent) -> new ApplicationContextRunner().withParent(parent)
 						.withUserConfiguration(HierarchyConsidered.class)
@@ -101,7 +101,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void hierarchyNotConsidered() {
+	void hierarchyNotConsidered() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class)
 				.run((parent) -> new ApplicationContextRunner().withParent(parent)
 						.withUserConfiguration(HierarchyNotConsidered.class)
@@ -109,13 +109,13 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void impliedOnBeanMethod() {
+	void impliedOnBeanMethod() {
 		this.contextRunner.withUserConfiguration(ExampleBeanConfiguration.class, ImpliedOnBeanMethod.class)
 				.run((context) -> assertThat(context).hasSingleBean(ExampleBean.class));
 	}
 
 	@Test
-	public void testAnnotationOnMissingBeanCondition() {
+	void testAnnotationOnMissingBeanCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnAnnotationConfiguration.class)
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
@@ -124,7 +124,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
+	void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
 		// Rigorous test for SPR-11069
 		this.contextRunner
 				.withUserConfiguration(FooConfiguration.class, OnAnnotationConfiguration.class,
@@ -137,7 +137,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBean() {
+	void testOnMissingBeanConditionWithFactoryBean() {
 		this.contextRunner
 				.withUserConfiguration(FactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
@@ -145,7 +145,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
+	void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
 		this.contextRunner
 				.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
@@ -153,7 +153,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
+	void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
 		this.contextRunner
 				.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
@@ -161,7 +161,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
+	void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
 		this.contextRunner
 				.withUserConfiguration(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
@@ -170,7 +170,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithConcreteFactoryBean() {
+	void testOnMissingBeanConditionWithConcreteFactoryBean() {
 		this.contextRunner
 				.withUserConfiguration(ConcreteFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
@@ -178,7 +178,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
+	void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
 		// We could not tell that the FactoryBean would ultimately create an ExampleBean
 		this.contextRunner
 				.withUserConfiguration(UnhelpfulFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
@@ -187,7 +187,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithRegisteredFactoryBean() {
+	void testOnMissingBeanConditionWithRegisteredFactoryBean() {
 		this.contextRunner
 				.withUserConfiguration(RegisteredFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
@@ -195,7 +195,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
+	void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
 		this.contextRunner
 				.withUserConfiguration(NonspecificFactoryBeanClassAttributeConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
@@ -203,7 +203,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
+	void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
 		this.contextRunner
 				.withUserConfiguration(NonspecificFactoryBeanStringAttributeConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
@@ -211,7 +211,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBeanInXml() {
+	void testOnMissingBeanConditionWithFactoryBeanInXml() {
 		this.contextRunner
 				.withUserConfiguration(FactoryBeanXmlConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
@@ -219,7 +219,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithIgnoredSubclass() {
+	void testOnMissingBeanConditionWithIgnoredSubclass() {
 		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
 				ConditionalOnIgnoredSubclass.class, PropertyPlaceholderAutoConfiguration.class).run((context) -> {
 					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
@@ -228,7 +228,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithIgnoredSubclassByName() {
+	void testOnMissingBeanConditionWithIgnoredSubclassByName() {
 		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
 				ConditionalOnIgnoredSubclassByName.class, PropertyPlaceholderAutoConfiguration.class).run((context) -> {
 					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
@@ -237,7 +237,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void grandparentIsConsideredWhenUsingAncestorsStrategy() {
+	void grandparentIsConsideredWhenUsingAncestorsStrategy() {
 		this.contextRunner.withUserConfiguration(ExampleBeanConfiguration.class)
 				.run((grandparent) -> new ApplicationContextRunner().withParent(grandparent)
 						.run((parent) -> new ApplicationContextRunner().withParent(parent)
@@ -247,14 +247,14 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
+	void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
 		this.contextRunner.run((parent) -> new ApplicationContextRunner().withParent(parent)
 				.withUserConfiguration(ExampleBeanConfiguration.class, OnBeanInAncestorsConfiguration.class)
 				.run((context) -> assertThat(context).getBeans(ExampleBean.class).hasSize(2)));
 	}
 
 	@Test
-	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
+	void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
 		this.contextRunner.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
 				OnAnnotationWithFactoryBeanConfiguration.class).run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
@@ -263,7 +263,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfMissingBeanMatches() {
+	void parameterizedContainerWhenValueIsOfMissingBeanMatches() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithoutCustomConfig.class,
 						ParameterizedConditionWithValueConfig.class)
@@ -272,14 +272,14 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfExistingBeanDoesNotMatch() {
+	void parameterizedContainerWhenValueIsOfExistingBeanDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomConfig.class, ParameterizedConditionWithValueConfig.class)
 				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfMissingBeanRegistrationMatches() {
+	void parameterizedContainerWhenValueIsOfMissingBeanRegistrationMatches() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithoutCustomContainerConfig.class,
 						ParameterizedConditionWithValueConfig.class)
@@ -288,7 +288,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfExistingBeanRegistrationDoesNotMatch() {
+	void parameterizedContainerWhenValueIsOfExistingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
 						ParameterizedConditionWithValueConfig.class)
@@ -296,7 +296,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnTypeIsOfExistingBeanDoesNotMatch() {
+	void parameterizedContainerWhenReturnTypeIsOfExistingBeanDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomConfig.class,
 						ParameterizedConditionWithReturnTypeConfig.class)
@@ -304,7 +304,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationDoesNotMatch() {
+	void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
 						ParameterizedConditionWithReturnTypeConfig.class)
@@ -312,7 +312,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanDoesNotMatch() {
+	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomConfig.class,
 						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
@@ -320,7 +320,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationDoesNotMatch() {
+	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
 						ParameterizedConditionWithReturnRegistrationTypeConfig.class)

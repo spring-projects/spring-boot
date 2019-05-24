@@ -34,12 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class NonUniqueSessionRepositoryFailureAnalyzerTests {
+class NonUniqueSessionRepositoryFailureAnalyzerTests {
 
 	private final FailureAnalyzer analyzer = new NonUniqueSessionRepositoryFailureAnalyzer();
 
 	@Test
-	public void failureAnalysisWithMultipleCandidates() {
+	void failureAnalysisWithMultipleCandidates() {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(JdbcOperationsSessionRepository.class, HazelcastSessionRepository.class));
 		assertThat(analysis).isNotNull();

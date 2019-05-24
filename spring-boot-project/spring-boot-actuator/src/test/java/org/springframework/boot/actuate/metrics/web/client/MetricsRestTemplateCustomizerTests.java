@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  * @author Brian Clozel
  */
-public class MetricsRestTemplateCustomizerTests {
+class MetricsRestTemplateCustomizerTests {
 
 	private MeterRegistry registry;
 
@@ -64,7 +64,7 @@ public class MetricsRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void interceptRestTemplate() {
+	void interceptRestTemplate() {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
@@ -78,7 +78,7 @@ public class MetricsRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void avoidDuplicateRegistration() {
+	void avoidDuplicateRegistration() {
 		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
 		this.customizer.customize(this.restTemplate);
@@ -86,7 +86,7 @@ public class MetricsRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void normalizeUriToContainLeadingSlash() {
+	void normalizeUriToContainLeadingSlash() {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
@@ -97,7 +97,7 @@ public class MetricsRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void interceptRestTemplateWithUri() throws URISyntaxException {
+	void interceptRestTemplateWithUri() throws URISyntaxException {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("http://localhost/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));

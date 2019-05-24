@@ -54,13 +54,13 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-public class IntegrationAutoConfigurationTests {
+class IntegrationAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class));
 
 	@Test
-	public void integrationIsAvailable() {
+	void integrationIsAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
 			assertThat(context).hasSingleBean(IntegrationComponentScanConfiguration.class);
@@ -68,7 +68,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void explicitIntegrationComponentScan() {
+	void explicitIntegrationComponentScan() {
 		this.contextRunner.withUserConfiguration(CustomIntegrationComponentScanConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
 			assertThat(context).doesNotHaveBean(IntegrationComponentScanConfiguration.class);
@@ -76,7 +76,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void noMBeanServerAvailable() {
+	void noMBeanServerAvailable() {
 		ApplicationContextRunner contextRunnerWithoutJmx = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class));
 		contextRunnerWithoutJmx.run((context) -> {
@@ -86,14 +86,14 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void parentContext() {
+	void parentContext() {
 		this.contextRunner.run((context) -> this.contextRunner.withParent(context)
 				.withPropertyValues("spring.jmx.default_domain=org.foo")
 				.run((child) -> assertThat(child).hasSingleBean(HeaderChannelRegistry.class)));
 	}
 
 	@Test
-	public void enableJmxIntegration() {
+	void enableJmxIntegration() {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			assertThat(mBeanServer.getDomains()).contains("org.springframework.integration",
@@ -103,7 +103,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void jmxIntegrationIsDisabledByDefault() {
+	void jmxIntegrationIsDisabledByDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(MBeanServer.class);
 			assertThat(context).hasSingleBean(IntegrationManagementConfigurer.class);
@@ -111,7 +111,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeJmxDomain() {
+	void customizeJmxDomain() {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default_domain=org.foo")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
@@ -121,7 +121,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void primaryExporterIsAllowed() {
+	void primaryExporterIsAllowed() {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
 				.withUserConfiguration(CustomMBeanExporter.class).run((context) -> {
 					assertThat(context).getBeans(MBeanExporter.class).hasSize(2);
@@ -130,7 +130,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationJdbcDataSourceInitializerEnabled() {
+	void integrationJdbcDataSourceInitializerEnabled() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
 						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
@@ -150,7 +150,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationJdbcDataSourceInitializerDisabled() {
+	void integrationJdbcDataSourceInitializerDisabled() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
 						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
@@ -167,7 +167,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationJdbcDataSourceInitializerEnabledByDefaultWithEmbeddedDb() {
+	void integrationJdbcDataSourceInitializerEnabledByDefaultWithEmbeddedDb() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
 						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
@@ -181,7 +181,7 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationEnablesDefaultCounts() {
+	void integrationEnablesDefaultCounts() {
 		this.contextRunner.withUserConfiguration(MessageSourceConfiguration.class).run((context) -> {
 			assertThat(context).hasBean("myMessageSource");
 			assertThat(((MessageProcessorMessageSource) context.getBean("myMessageSource")).isCountsEnabled()).isTrue();

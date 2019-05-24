@@ -20,8 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -41,17 +41,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesBindHandlerAdvisorTests {
+class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		this.context.close();
 	}
 
 	@Test
-	public void loadWithoutConfigurationPropertiesBindHandlerAdvisor() {
+	void loadWithoutConfigurationPropertiesBindHandlerAdvisor() {
 		load(WithoutConfigurationPropertiesBindHandlerAdvisor.class, "foo.bar.default.content-type=text/plain",
 				"foo.bar.bindings.input.destination=d1", "foo.bar.bindings.input.content-type=text/xml",
 				"foo.bar.bindings.output.destination=d2");
@@ -65,7 +65,7 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 	}
 
 	@Test
-	public void loadWithConfigurationPropertiesBindHandlerAdvisor() {
+	void loadWithConfigurationPropertiesBindHandlerAdvisor() {
 		load(WithConfigurationPropertiesBindHandlerAdvisor.class, "foo.bar.default.content-type=text/plain",
 				"foo.bar.bindings.input.destination=d1", "foo.bar.bindings.input.content-type=text/xml",
 				"foo.bar.bindings.output.destination=d2");

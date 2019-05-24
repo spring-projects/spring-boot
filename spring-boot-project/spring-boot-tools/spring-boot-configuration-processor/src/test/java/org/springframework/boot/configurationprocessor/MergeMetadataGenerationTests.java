@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -47,10 +47,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Stephane Nicoll
  */
-public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void mergingOfAdditionalProperty() throws Exception {
+	void mergingOfAdditionalProperty() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty(null, "foo", "java.lang.String",
 				AdditionalMetadata.class.getName(), null, null, null, null);
 		writeAdditionalMetadata(property);
@@ -60,7 +60,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergingOfAdditionalPropertyMatchingGroup() throws Exception {
+	void mergingOfAdditionalPropertyMatchingGroup() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty(null, "simple", "java.lang.String", null, null, null, null,
 				null);
 		writeAdditionalMetadata(property);
@@ -70,7 +70,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeExistingPropertyDefaultValue() throws Exception {
+	void mergeExistingPropertyDefaultValue() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null, null, null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
@@ -80,7 +80,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeExistingPropertyWithSeveralCandidates() throws Exception {
+	void mergeExistingPropertyWithSeveralCandidates() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", Boolean.class.getName(), null, null, null,
 				true, null);
 		writeAdditionalMetadata(property);
@@ -104,7 +104,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeExistingPropertyDescription() throws Exception {
+	void mergeExistingPropertyDescription() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, "A nice comparator.",
 				null, null);
 		writeAdditionalMetadata(property);
@@ -115,7 +115,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeExistingPropertyDeprecation() throws Exception {
+	void mergeExistingPropertyDeprecation() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, null, null,
 				new ItemDeprecation("Don't use this.", "simple.complex-comparator", "error"));
 		writeAdditionalMetadata(property);
@@ -127,7 +127,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeExistingPropertyDeprecationOverride() throws Exception {
+	void mergeExistingPropertyDeprecationOverride() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
 				new ItemDeprecation("Don't use this.", "single.name"));
 		writeAdditionalMetadata(property);
@@ -138,7 +138,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
+	void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
 				new ItemDeprecation(null, null, "error"));
 		writeAdditionalMetadata(property);
@@ -150,7 +150,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergeOfInvalidAdditionalMetadata() throws IOException {
+	void mergeOfInvalidAdditionalMetadata() throws IOException {
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
 		assertThatIllegalStateException().isThrownBy(() -> compile(SimpleProperties.class))
@@ -158,7 +158,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergingOfSimpleHint() throws Exception {
+	void mergingOfSimpleHint() throws Exception {
 		writeAdditionalHints(ItemHint.newHint("simple.the-name", new ItemHint.ValueHint("boot", "Bla bla"),
 				new ItemHint.ValueHint("spring", null)));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
@@ -170,7 +170,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergingOfHintWithNonCanonicalName() throws Exception {
+	void mergingOfHintWithNonCanonicalName() throws Exception {
 		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint("boot", "Bla bla")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
@@ -180,7 +180,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergingOfHintWithProvider() throws Exception {
+	void mergingOfHintWithProvider() throws Exception {
 		writeAdditionalHints(new ItemHint("simple.theName", Collections.emptyList(),
 				Arrays.asList(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "org.foo")),
 						new ItemHint.ValueProvider("second", null))));
@@ -193,7 +193,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergingOfAdditionalDeprecation() throws Exception {
+	void mergingOfAdditionalDeprecation() throws Exception {
 		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName", "java.lang.String", null, null, null,
 				null, new ItemDeprecation("Lame name.", "simple.the-name")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
@@ -202,7 +202,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	}
 
 	@Test
-	public void mergingOfAdditionalMetadata() throws Exception {
+	void mergingOfAdditionalMetadata() throws Exception {
 		File metaInfFolder = new File(getCompiler().getOutputLocation(), "META-INF");
 		metaInfFolder.mkdirs();
 		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");

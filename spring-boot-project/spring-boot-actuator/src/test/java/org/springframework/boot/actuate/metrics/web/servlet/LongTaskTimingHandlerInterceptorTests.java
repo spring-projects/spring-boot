@@ -65,7 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class LongTaskTimingHandlerInterceptorTests {
+class LongTaskTimingHandlerInterceptorTests {
 
 	@Autowired
 	private SimpleMeterRegistry registry;
@@ -84,7 +84,7 @@ public class LongTaskTimingHandlerInterceptorTests {
 	}
 
 	@Test
-	public void asyncRequestThatThrowsUncheckedException() throws Exception {
+	void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
 				.andExpect(request().asyncStarted()).andReturn();
 		assertThat(this.registry.get("my.long.request.exception").longTaskTimer().activeTasks()).isEqualTo(1);
@@ -95,7 +95,7 @@ public class LongTaskTimingHandlerInterceptorTests {
 	}
 
 	@Test
-	public void asyncCallableRequest() throws Exception {
+	void asyncCallableRequest() throws Exception {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {

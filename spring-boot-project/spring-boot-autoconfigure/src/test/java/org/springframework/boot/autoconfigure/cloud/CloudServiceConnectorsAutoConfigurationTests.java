@@ -36,10 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class CloudServiceConnectorsAutoConfigurationTests {
+class CloudServiceConnectorsAutoConfigurationTests {
 
 	@Test
-	public void testOrder() {
+	void testOrder() {
 		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(new CachingMetadataReaderFactory());
 		Collection<String> classNames = new ArrayList<>();
 		classNames.add(MongoAutoConfiguration.class.getName());

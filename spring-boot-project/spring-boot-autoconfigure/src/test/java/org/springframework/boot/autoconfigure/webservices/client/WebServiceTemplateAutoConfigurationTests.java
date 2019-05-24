@@ -43,13 +43,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Dmytro Nosan
  */
-public class WebServiceTemplateAutoConfigurationTests {
+class WebServiceTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguredBuilderShouldNotHaveMarshallerAndUnmarshaller() {
+	void autoConfiguredBuilderShouldNotHaveMarshallerAndUnmarshaller() {
 		this.contextRunner.run(assertWebServiceTemplateBuilder((builder) -> {
 			WebServiceTemplate webServiceTemplate = builder.build();
 			assertThat(webServiceTemplate.getUnmarshaller()).isNull();
@@ -58,7 +58,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguredBuilderShouldHaveHttpMessageSenderByDefault() {
+	void autoConfiguredBuilderShouldHaveHttpMessageSenderByDefault() {
 		this.contextRunner.run(assertWebServiceTemplateBuilder((builder) -> {
 			WebServiceTemplate webServiceTemplate = builder.build();
 			assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
@@ -68,7 +68,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServiceTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
+	void webServiceTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
 		this.contextRunner.withUserConfiguration(CustomWebServiceTemplateBuilderConfig.class)
 				.run(assertWebServiceTemplateBuilder((builder) -> {
 					WebServiceTemplate webServiceTemplate = builder.build();
@@ -78,7 +78,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServiceTemplateShouldApplyCustomizer() {
+	void webServiceTemplateShouldApplyCustomizer() {
 		this.contextRunner.withUserConfiguration(WebServiceTemplateCustomizerConfig.class)
 				.run(assertWebServiceTemplateBuilder((builder) -> {
 					WebServiceTemplate webServiceTemplate = builder.build();
@@ -88,7 +88,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void builderShouldBeFreshForEachUse() {
+	void builderShouldBeFreshForEachUse() {
 		this.contextRunner.withUserConfiguration(DirtyWebServiceTemplateConfig.class)
 				.run((context) -> assertThat(context).hasNotFailed());
 	}

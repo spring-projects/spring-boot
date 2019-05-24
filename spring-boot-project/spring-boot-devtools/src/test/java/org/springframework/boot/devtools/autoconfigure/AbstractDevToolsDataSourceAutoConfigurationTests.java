@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
@@ -48,10 +48,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
+abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
-	public void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
+	void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
 		ConfigurableApplicationContext context = getContext(() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
@@ -59,7 +59,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void multipleDataSourcesAreIgnored() throws Exception {
+	void multipleDataSourcesAreIgnored() throws Exception {
 		ConfigurableApplicationContext context = getContext(
 				() -> createContext(MultipleDataSourcesConfiguration.class));
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
@@ -70,7 +70,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void emptyFactoryMethodMetadataIgnored() {
+	void emptyFactoryMethodMetadataIgnored() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		DataSource dataSource = mock(DataSource.class);
 		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());

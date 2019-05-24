@@ -56,7 +56,7 @@ import static org.hamcrest.Matchers.nullValue;
  * @author Greg Turnquist
  * @author Phillip Webb
  */
-public class ConditionEvaluationReportTests {
+class ConditionEvaluationReportTests {
 
 	private DefaultListableBeanFactory beanFactory;
 
@@ -85,13 +85,13 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void get() {
+	void get() {
 		assertThat(this.report).isNotEqualTo(nullValue());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 	}
 
 	@Test
-	public void parent() {
+	void parent() {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
@@ -104,7 +104,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void parentBottomUp() {
+	void parentBottomUp() {
 		this.beanFactory = new DefaultListableBeanFactory(); // NB: overrides setup
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
@@ -116,7 +116,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void recordConditionEvaluations() {
+	void recordConditionEvaluations() {
 		this.outcome1 = new ConditionOutcome(false, "m1");
 		this.outcome2 = new ConditionOutcome(false, "m2");
 		this.outcome3 = new ConditionOutcome(false, "m3");
@@ -141,13 +141,13 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void fullMatch() {
+	void fullMatch() {
 		prepareMatches(true, true, true);
 		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch()).isTrue();
 	}
 
 	@Test
-	public void notFullMatch() {
+	void notFullMatch() {
 		prepareMatches(true, false, true);
 		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch()).isFalse();
 	}
@@ -163,14 +163,14 @@ public class ConditionEvaluationReportTests {
 
 	@Test
 	@SuppressWarnings("resource")
-	public void springBootConditionPopulatesReport() {
+	void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport
 				.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size()).isNotEqualTo(0);
 	}
 
 	@Test
-	public void testDuplicateConditionAndOutcomes() {
+	void testDuplicateConditionAndOutcomes() {
 		ConditionAndOutcome outcome1 = new ConditionAndOutcome(this.condition1,
 				new ConditionOutcome(true, "Message 1"));
 		ConditionAndOutcome outcome2 = new ConditionAndOutcome(this.condition2,
@@ -188,7 +188,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void duplicateOutcomes() {
+	void duplicateOutcomes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DuplicateConfig.class);
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
@@ -206,7 +206,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void negativeOuterPositiveInnerBean() {
+	void negativeOuterPositiveInnerBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("test.present=true").applyTo(context);
 		context.register(NegativeOuterConfig.class);
@@ -221,7 +221,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void reportWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
+	void reportWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(WebMvcAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
@@ -236,7 +236,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void reportMessageWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
+	void reportMessageWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(WebMvcAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,

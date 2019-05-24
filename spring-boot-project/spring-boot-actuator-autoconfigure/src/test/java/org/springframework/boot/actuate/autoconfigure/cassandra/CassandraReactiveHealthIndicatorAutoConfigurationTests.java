@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  * @author Artsiom Yudovin
  * @author Stephane Nicoll
  */
-public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
+class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withBean(ReactiveCassandraOperations.class, () -> mock(ReactiveCassandraOperations.class))
@@ -43,13 +43,13 @@ public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CassandraReactiveHealthIndicator.class)
 				.doesNotHaveBean(CassandraHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.cassandra.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(CassandraReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));

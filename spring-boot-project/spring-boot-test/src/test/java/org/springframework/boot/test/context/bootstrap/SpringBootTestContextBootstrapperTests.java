@@ -34,10 +34,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootTestContextBootstrapperTests {
+class SpringBootTestContextBootstrapperTests {
 
 	@Test
-	public void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
+	void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class))
 				.withMessageContaining("@WebAppConfiguration should only be used with "
@@ -46,7 +46,7 @@ public class SpringBootTestContextBootstrapperTests {
 	}
 
 	@Test
-	public void springBootTestWithAMockWebEnvironmentCanBeUsedWithWebAppConfiguration() {
+	void springBootTestWithAMockWebEnvironmentCanBeUsedWithWebAppConfiguration() {
 		buildTestContext(SpringBootTestMockWebEnvironmentAndWebAppConfiguration.class);
 	}
 

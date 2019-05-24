@@ -20,11 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -38,14 +35,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
 @TestPropertySource(properties = { "info.app.name=MyService" })
-public class InfoEndpointWebIntegrationTests {
+class InfoEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void info() {
+	@WebEndpointTest
+	void info(WebTestClient client) {
 		client.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
 				.expectBody().jsonPath("beanName1.key11").isEqualTo("value11").jsonPath("beanName1.key12")
 				.isEqualTo("value12").jsonPath("beanName2.key21").isEqualTo("value21").jsonPath("beanName2.key22")

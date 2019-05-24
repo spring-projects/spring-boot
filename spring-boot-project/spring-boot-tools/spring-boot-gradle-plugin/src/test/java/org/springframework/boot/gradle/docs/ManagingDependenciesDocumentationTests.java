@@ -16,7 +16,6 @@
 
 package org.springframework.boot.gradle.docs;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -25,6 +24,7 @@ import org.springframework.boot.gradle.testkit.Dsl;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 /**
  * Tests for the managing dependencies documentation.
@@ -56,10 +56,11 @@ public class ManagingDependenciesDocumentationTests {
 
 	@TestTemplate
 	public void dependencyManagementInIsolationWithPluginsBlock() {
-		Assume.assumeTrue(this.gradleBuild.getDsl() == Dsl.KOTLIN);
-		assertThat(this.gradleBuild.script("src/main/gradle/managing-dependencies/configure-bom-with-plugins")
-				.build("dependencyManagement").getOutput())
-						.contains("org.springframework.boot:spring-boot-starter TEST-SNAPSHOT");
+		assumingThat(this.gradleBuild.getDsl() == Dsl.KOTLIN,
+				() -> assertThat(
+						this.gradleBuild.script("src/main/gradle/managing-dependencies/configure-bom-with-plugins")
+								.build("dependencyManagement").getOutput())
+										.contains("org.springframework.boot:spring-boot-starter TEST-SNAPSHOT"));
 	}
 
 }

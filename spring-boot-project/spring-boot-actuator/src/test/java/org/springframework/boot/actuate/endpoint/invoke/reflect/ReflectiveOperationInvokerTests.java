@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class ReflectiveOperationInvokerTests {
+class ReflectiveOperationInvokerTests {
 
 	private Example target;
 
@@ -56,28 +56,28 @@ public class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	public void createWhenTargetIsNullShouldThrowException() {
+	void createWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
 				.withMessageContaining("Target must not be null");
 	}
 
 	@Test
-	public void createWhenOperationMethodIsNullShouldThrowException() {
+	void createWhenOperationMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
 				.withMessageContaining("OperationMethod must not be null");
 	}
 
 	@Test
-	public void createWhenParameterValueMapperIsNullShouldThrowException() {
+	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
 				.withMessageContaining("ParameterValueMapper must not be null");
 	}
 
 	@Test
-	public void invokeShouldInvokeMethod() {
+	void invokeShouldInvokeMethod() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
@@ -86,7 +86,7 @@ public class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	public void invokeWhenMissingNonNullableArgumentShouldThrowException() {
+	void invokeWhenMissingNonNullableArgumentShouldThrowException() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		assertThatExceptionOfType(MissingParametersException.class).isThrownBy(() -> invoker
@@ -94,7 +94,7 @@ public class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	public void invokeWhenMissingNullableArgumentShouldInvoke() {
+	void invokeWhenMissingNullableArgumentShouldInvoke() {
 		OperationMethod operationMethod = new OperationMethod(
 				ReflectionUtils.findMethod(Example.class, "reverseNullable", String.class), OperationType.READ);
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
@@ -105,7 +105,7 @@ public class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	public void invokeShouldResolveParameters() {
+	void invokeShouldResolveParameters() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker

@@ -70,13 +70,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Vedran Pavic
  * @author Kazuki Shimizu
  */
-public class BatchAutoConfigurationTests {
+class BatchAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class, TransactionAutoConfiguration.class));
 
 	@Test
-	public void testDefaultContext() {
+	void testDefaultContext() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
@@ -89,7 +89,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoDatabase() {
+	void testNoDatabase() {
 		this.contextRunner.withUserConfiguration(TestCustomConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			JobExplorer explorer = context.getBean(JobExplorer.class);
@@ -98,7 +98,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoBatchConfiguration() {
+	void testNoBatchConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean(JobLauncher.class);
@@ -107,7 +107,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefinesAndLaunchesJob() {
+	void testDefinesAndLaunchesJob() {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
@@ -118,7 +118,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefinesAndLaunchesNamedJob() {
+	void testDefinesAndLaunchesNamedJob() {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithRegisteredJob.class,
 						EmbeddedDataSourceConfiguration.class)
@@ -131,7 +131,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefinesAndLaunchesLocalJob() {
+	void testDefinesAndLaunchesLocalJob() {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.job.names:discreteLocalJob").run((context) -> {
@@ -143,7 +143,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisableLaunchesJob() {
+	void testDisableLaunchesJob() {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.job.enabled:false").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
@@ -152,7 +152,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisableSchemaLoader() {
+	void testDisableSchemaLoader() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.batch.initialize-schema:never")
@@ -167,7 +167,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testUsingJpa() {
+	void testUsingJpa() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class).run((context) -> {
 					PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
@@ -183,7 +183,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRenamePrefix() {
+	void testRenamePrefix() {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
@@ -204,7 +204,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeJpaTransactionManagerUsingProperties() {
+	void testCustomizeJpaTransactionManagerUsingProperties() {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
@@ -220,7 +220,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeDataSourceTransactionManagerUsingProperties() {
+	void testCustomizeDataSourceTransactionManagerUsingProperties() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.transaction.default-timeout:30",
 						"spring.transaction.rollback-on-commit-failure:true")

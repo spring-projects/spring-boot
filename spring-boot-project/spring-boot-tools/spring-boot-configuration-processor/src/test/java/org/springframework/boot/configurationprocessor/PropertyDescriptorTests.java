@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
@@ -25,8 +26,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.test.ItemMetadataAssert;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -40,8 +40,8 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
  */
 public abstract class PropertyDescriptorTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	protected String createAccessorMethodName(String prefix, String name) {
 		char[] chars = name.toCharArray();
@@ -70,7 +70,7 @@ public abstract class PropertyDescriptorTests {
 			throws IOException {
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
 				consumer, new MetadataGenerationEnvironmentFactory());
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		compiler.getTask(target).call(processor);
 	}
 

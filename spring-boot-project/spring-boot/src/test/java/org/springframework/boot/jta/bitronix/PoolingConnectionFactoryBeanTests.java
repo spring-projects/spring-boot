@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.jta.bitronix;
 
 import javax.jms.XAConnectionFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class PoolingConnectionFactoryBeanTests {
+class PoolingConnectionFactoryBeanTests {
 
 	@SuppressWarnings("serial")
 	private PoolingConnectionFactoryBean bean = new PoolingConnectionFactoryBean() {
@@ -40,7 +40,7 @@ public class PoolingConnectionFactoryBeanTests {
 	};
 
 	@Test
-	public void sensibleDefaults() {
+	void sensibleDefaults() {
 		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
 		assertThat(this.bean.getTestConnections()).isTrue();
 		assertThat(this.bean.getAutomaticEnlistingEnabled()).isTrue();
@@ -48,14 +48,14 @@ public class PoolingConnectionFactoryBeanTests {
 	}
 
 	@Test
-	public void setsUniqueNameIfNull() throws Exception {
+	void setsUniqueNameIfNull() throws Exception {
 		this.bean.setBeanName("beanName");
 		this.bean.afterPropertiesSet();
 		assertThat(this.bean.getUniqueName()).isEqualTo("beanName");
 	}
 
 	@Test
-	public void doesNotSetUniqueNameIfNotNull() throws Exception {
+	void doesNotSetUniqueNameIfNotNull() throws Exception {
 		this.bean.setBeanName("beanName");
 		this.bean.setUniqueName("un");
 		this.bean.afterPropertiesSet();
@@ -63,7 +63,7 @@ public class PoolingConnectionFactoryBeanTests {
 	}
 
 	@Test
-	public void setConnectionFactory() throws Exception {
+	void setConnectionFactory() throws Exception {
 		XAConnectionFactory factory = mock(XAConnectionFactory.class);
 		this.bean.setConnectionFactory(factory);
 		this.bean.setBeanName("beanName");

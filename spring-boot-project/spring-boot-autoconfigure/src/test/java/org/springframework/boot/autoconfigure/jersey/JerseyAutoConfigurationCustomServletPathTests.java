@@ -52,13 +52,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class JerseyAutoConfigurationCustomServletPathTests {
+class JerseyAutoConfigurationCustomServletPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}

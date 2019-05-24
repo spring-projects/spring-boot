@@ -47,13 +47,13 @@ import static org.mockito.Mockito.verify;
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>
  */
 @ExtendWith(SpringExtension.class)
-public class MockBeanWithAopProxyTests {
+class MockBeanWithAopProxyTests {
 
 	@MockBean
 	private DateService dateService;
 
 	@Test
-	public void verifyShouldUseProxyTarget() {
+	void verifyShouldUseProxyTarget() {
 		given(this.dateService.getDate(false)).willReturn(1L);
 		Long d1 = this.dateService.getDate(false);
 		assertThat(d1).isEqualTo(1L);

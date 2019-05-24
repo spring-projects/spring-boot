@@ -27,7 +27,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.joran.spi.JoranException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,10 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class LogbackConfigurationTests {
+class LogbackConfigurationTests {
 
 	@Test
-	public void consolePatternCanBeOverridden() throws JoranException {
+	void consolePatternCanBeOverridden() throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
@@ -52,7 +52,7 @@ public class LogbackConfigurationTests {
 	}
 
 	@Test
-	public void filePatternCanBeOverridden() throws JoranException {
+	void filePatternCanBeOverridden() throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);

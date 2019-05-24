@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
@@ -33,33 +33,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class ConditionalOnAvailableEndpointTests {
+class ConditionalOnAvailableEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(AllEndpointsConfiguration.class);
 
 	@Test
-	public void outcomeShouldMatchDefaults() {
+	void outcomeShouldMatchDefaults() {
 		this.contextRunner.run((context) -> assertThat(context).hasBean("info").hasBean("health")
 				.doesNotHaveBean("spring").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWithEnabledByDefaultSetToFalseShouldNotMatchAnything() {
+	void outcomeWithEnabledByDefaultSetToFalseShouldNotMatchAnything() {
 		this.contextRunner.withPropertyValues("management.endpoints.enabled-by-default=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("info").doesNotHaveBean("health")
 						.doesNotHaveBean("spring").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllWebShouldMatchEnabledEndpoints() {
+	void outcomeWhenIncludeAllWebShouldMatchEnabledEndpoints() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.run((context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("test")
 						.hasBean("spring").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllWebAndDisablingEndpointShouldMatchEnabledEndpoints() {
+	void outcomeWhenIncludeAllWebAndDisablingEndpointShouldMatchEnabledEndpoints() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=*",
 						"management.endpoint.test.enabled=false", "management.endpoint.health.enabled=false")
@@ -68,7 +68,7 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllWebAndEnablingEndpointDisabledByDefaultShouldMatchAll() {
+	void outcomeWhenIncludeAllWebAndEnablingEndpointDisabledByDefaultShouldMatchAll() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=*",
 						"management.endpoint.shutdown.enabled=true")
@@ -77,21 +77,21 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllJmxButJmxDisabledShouldMatchDefaults() {
+	void outcomeWhenIncludeAllJmxButJmxDisabledShouldMatchDefaults() {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=*")
 				.run((context) -> assertThat(context).hasBean("info").hasBean("health").doesNotHaveBean("spring")
 						.doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllJmxAndJmxEnabledShouldMatchEnabledEndpoints() {
+	void outcomeWhenIncludeAllJmxAndJmxEnabledShouldMatchEnabledEndpoints() {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=*", "spring.jmx.enabled=true")
 				.run((context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("test")
 						.hasBean("spring").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllJmxAndJmxEnabledAndEnablingEndpointDisabledByDefaultShouldMatchAll() {
+	void outcomeWhenIncludeAllJmxAndJmxEnabledAndEnablingEndpointDisabledByDefaultShouldMatchAll() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.jmx.exposure.include=*", "spring.jmx.enabled=true",
 						"management.endpoint.shutdown.enabled=true")
@@ -100,7 +100,7 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeAllWebAndExcludeMatchesShouldNotMatch() {
+	void outcomeWhenIncludeAllWebAndExcludeMatchesShouldNotMatch() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=*",
 						"management.endpoints.web.exposure.exclude=spring,info")
@@ -109,7 +109,7 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchesAndExcludeMatchesShouldNotMatch() {
+	void outcomeWhenIncludeMatchesAndExcludeMatchesShouldNotMatch() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=info,health,spring,test",
 						"management.endpoints.web.exposure.exclude=spring,info")
@@ -118,21 +118,21 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchesShouldMatchEnabledEndpoints() {
+	void outcomeWhenIncludeMatchesShouldMatchEnabledEndpoints() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=spring")
 				.run((context) -> assertThat(context).hasBean("spring").doesNotHaveBean("health")
 						.doesNotHaveBean("info").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchOnDisabledEndpointShouldNotMatch() {
+	void outcomeWhenIncludeMatchOnDisabledEndpointShouldNotMatch() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=shutdown")
 				.run((context) -> assertThat(context).doesNotHaveBean("spring").doesNotHaveBean("health")
 						.doesNotHaveBean("info").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchOnEnabledEndpointShouldNotMatch() {
+	void outcomeWhenIncludeMatchOnEnabledEndpointShouldNotMatch() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=shutdown",
 						"management.endpoint.shutdown.enabled=true")
@@ -141,14 +141,14 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchesWithCaseShouldMatch() {
+	void outcomeWhenIncludeMatchesWithCaseShouldMatch() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=sPRing")
 				.run((context) -> assertThat(context).hasBean("spring").doesNotHaveBean("health")
 						.doesNotHaveBean("info").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchesAndExcludeAllShouldNotMatch() {
+	void outcomeWhenIncludeMatchesAndExcludeAllShouldNotMatch() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.exposure.include=info,health,spring,test",
 						"management.endpoints.web.exposure.exclude=*")
@@ -157,7 +157,7 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWhenIncludeMatchesShouldMatchWithExtensionsAndComponents() {
+	void outcomeWhenIncludeMatchesShouldMatchWithExtensionsAndComponents() {
 		this.contextRunner.withUserConfiguration(ComponentEnabledIfEndpointIsExposedConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=spring")
 				.run((context) -> assertThat(context).hasBean("spring").hasBean("springComponent")
@@ -166,7 +166,7 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeWithNoEndpointReferenceShouldFail() {
+	void outcomeWithNoEndpointReferenceShouldFail() {
 		this.contextRunner.withUserConfiguration(ComponentWithNoEndpointReferenceConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=*").run((context) -> {
 					assertThat(context).hasFailed();
@@ -177,7 +177,7 @@ public class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test
-	public void outcomeOnCloudFoundryShouldMatchAll() {
+	void outcomeOnCloudFoundryShouldMatchAll() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---").run(
 				(context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("spring").hasBean("test"));
 	}

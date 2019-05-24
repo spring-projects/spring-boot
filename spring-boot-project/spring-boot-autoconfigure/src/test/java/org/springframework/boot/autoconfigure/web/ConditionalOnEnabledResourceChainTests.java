@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ConditionalOnEnabledResourceChainTests {
+class ConditionalOnEnabledResourceChainTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -41,31 +41,31 @@ public class ConditionalOnEnabledResourceChainTests {
 	}
 
 	@Test
-	public void disabledByDefault() {
+	void disabledByDefault() {
 		load();
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void disabledExplicitly() {
+	void disabledExplicitly() {
 		load("spring.resources.chain.enabled:false");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void enabledViaMainEnabledFlag() {
+	void enabledViaMainEnabledFlag() {
 		load("spring.resources.chain.enabled:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void enabledViaFixedStrategyFlag() {
+	void enabledViaFixedStrategyFlag() {
 		load("spring.resources.chain.strategy.fixed.enabled:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void enabledViaContentStrategyFlag() {
+	void enabledViaContentStrategyFlag() {
 		load("spring.resources.chain.strategy.content.enabled:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}

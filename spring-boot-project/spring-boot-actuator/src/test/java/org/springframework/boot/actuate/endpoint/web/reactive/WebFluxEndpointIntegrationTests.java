@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @see WebFluxEndpointHandlerMapping
  */
-public class WebFluxEndpointIntegrationTests
+class WebFluxEndpointIntegrationTests
 		extends AbstractWebEndpointIntegrationTests<AnnotationConfigReactiveWebServerApplicationContext> {
 
 	public WebFluxEndpointIntegrationTests() {
@@ -74,7 +74,7 @@ public class WebFluxEndpointIntegrationTests
 	}
 
 	@Test
-	public void responseToOptionsRequestIncludesCorsHeaders() {
+	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
 				(client) -> client.options().uri("/test").accept(MediaType.APPLICATION_JSON)
 						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
@@ -84,7 +84,7 @@ public class WebFluxEndpointIntegrationTests
 	}
 
 	@Test
-	public void readOperationsThatReturnAResourceSupportRangeRequests() {
+	void readOperationsThatReturnAResourceSupportRangeRequests() {
 		load(ResourceEndpointConfiguration.class, (client) -> {
 			byte[] responseBody = client.get().uri("/resource").header("Range", "bytes=0-3").exchange().expectStatus()
 					.isEqualTo(HttpStatus.PARTIAL_CONTENT).expectHeader()

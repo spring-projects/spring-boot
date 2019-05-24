@@ -37,32 +37,32 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class MongoAutoConfigurationTests {
+class MongoAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class));
 
 	@Test
-	public void clientExists() {
+	void clientExists() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
 	@Test
-	public void optionsAdded() {
+	void optionsAdded() {
 		this.contextRunner.withUserConfiguration(OptionsConfig.class).run(
 				(context) -> assertThat(context.getBean(MongoClient.class).getMongoClientOptions().getSocketTimeout())
 						.isEqualTo(300));
 	}
 
 	@Test
-	public void optionsAddedButNoHost() {
+	void optionsAddedButNoHost() {
 		this.contextRunner.withUserConfiguration(OptionsConfig.class).run(
 				(context) -> assertThat(context.getBean(MongoClient.class).getMongoClientOptions().getSocketTimeout())
 						.isEqualTo(300));
 	}
 
 	@Test
-	public void optionsSslConfig() {
+	void optionsSslConfig() {
 		this.contextRunner.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(MongoClient.class);
 			MongoClient mongo = context.getBean(MongoClient.class);
@@ -73,7 +73,7 @@ public class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void doesNotCreateMongoClientWhenAlreadyDefined() {
+	void doesNotCreateMongoClientWhenAlreadyDefined() {
 		this.contextRunner.withUserConfiguration(FallbackMongoClientConfig.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(MongoClient.class);
 			assertThat(context).hasSingleBean(com.mongodb.client.MongoClient.class);

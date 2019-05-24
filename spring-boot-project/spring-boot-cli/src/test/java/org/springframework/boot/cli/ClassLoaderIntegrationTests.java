@@ -16,8 +16,12 @@
 
 package org.springframework.boot.cli;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,13 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ClassLoaderIntegrationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class ClassLoaderIntegrationTests {
 
-	@Rule
-	public CliTester cli = new CliTester("src/test/resources/");
+	@RegisterExtension
+	private CliTester cli;
+
+	ClassLoaderIntegrationTests(CapturedOutput capturedOutput) {
+		this.cli = new CliTester("src/test/resources/", capturedOutput);
+	}
 
 	@Test
-	public void runWithIsolatedClassLoader() throws Exception {
+	void runWithIsolatedClassLoader() throws Exception {
 		// CLI classes or dependencies should not be exposed to the app
 		String output = this.cli.run("classloader-test-app.groovy", SpringCli.class.getName());
 		assertThat(output).contains("HasClasses-false-true-false");

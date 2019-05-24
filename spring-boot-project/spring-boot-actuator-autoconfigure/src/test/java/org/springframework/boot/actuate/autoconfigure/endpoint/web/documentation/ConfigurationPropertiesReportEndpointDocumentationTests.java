@@ -37,10 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void configProps() throws Exception {
+	void configProps() throws Exception {
 		this.mockMvc.perform(get("/actuator/configprops")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("configprops",
 						preprocessResponse(limit("contexts", getApplicationContext().getId(), "beans")),

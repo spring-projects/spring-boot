@@ -34,14 +34,14 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class ReactiveManagementContextFactoryTests {
+class ReactiveManagementContextFactoryTests {
 
 	private ReactiveManagementContextFactory factory = new ReactiveManagementContextFactory();
 
 	private AnnotationConfigReactiveWebServerApplicationContext parent = new AnnotationConfigReactiveWebServerApplicationContext();
 
 	@Test
-	public void createManagementContextShouldCreateChildContextWithConfigClasses() {
+	void createManagementContextShouldCreateChildContextWithConfigClasses() {
 		this.parent.register(ParentConfiguration.class);
 		this.parent.refresh();
 		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory

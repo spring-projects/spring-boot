@@ -17,7 +17,6 @@
 package org.springframework.boot.jdbc.metadata;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.junit.Before;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,12 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TomcatDataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
 
-	private TomcatDataSourcePoolMetadata dataSourceMetadata;
-
-	@Before
-	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
-	}
+	private final TomcatDataSourcePoolMetadata dataSourceMetadata = new TomcatDataSourcePoolMetadata(
+			createDataSource(0, 2));
 
 	@Override
 	protected TomcatDataSourcePoolMetadata getDataSourceMetadata() {

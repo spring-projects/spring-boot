@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -39,12 +39,12 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  * @author Filip Hrisafov
  */
-public class TaskExecutorBuilderTests {
+class TaskExecutorBuilderTests {
 
 	private TaskExecutorBuilder builder = new TaskExecutorBuilder();
 
 	@Test
-	public void poolSettingsShouldApply() {
+	void poolSettingsShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
 				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1)).build();
 		assertThat(executor).hasFieldOrPropertyWithValue("queueCapacity", 10);
@@ -55,52 +55,52 @@ public class TaskExecutorBuilderTests {
 	}
 
 	@Test
-	public void awaitTerminationShouldApply() {
+	void awaitTerminationShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.awaitTermination(true).build();
 		assertThat(executor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
 	}
 
 	@Test
-	public void awaitTerminationPeriodShouldApply() {
+	void awaitTerminationPeriodShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.awaitTerminationPeriod(Duration.ofMinutes(1)).build();
 		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
 	}
 
 	@Test
-	public void threadNamePrefixShouldApply() {
+	void threadNamePrefixShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.threadNamePrefix("test-").build();
 		assertThat(executor.getThreadNamePrefix()).isEqualTo("test-");
 	}
 
 	@Test
-	public void taskDecoratorShouldApply() {
+	void taskDecoratorShouldApply() {
 		TaskDecorator taskDecorator = mock(TaskDecorator.class);
 		ThreadPoolTaskExecutor executor = this.builder.taskDecorator(taskDecorator).build();
 		assertThat(ReflectionTestUtils.getField(executor, "taskDecorator")).isSameAs(taskDecorator);
 	}
 
 	@Test
-	public void customizersWhenCustomizersAreNullShouldThrowException() {
+	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.customizers((TaskExecutorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
+	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void customizersShouldApply() {
+	void customizersShouldApply() {
 		TaskExecutorCustomizer customizer = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer).build();
 		verify(customizer).customize(executor);
 	}
 
 	@Test
-	public void customizersShouldBeAppliedLast() {
+	void customizersShouldBeAppliedLast() {
 		TaskDecorator taskDecorator = mock(TaskDecorator.class);
 		ThreadPoolTaskExecutor executor = spy(new ThreadPoolTaskExecutor());
 		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8).allowCoreThreadTimeOut(true)
@@ -120,7 +120,7 @@ public class TaskExecutorBuilderTests {
 	}
 
 	@Test
-	public void customizersShouldReplaceExisting() {
+	void customizersShouldReplaceExisting() {
 		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
@@ -130,21 +130,21 @@ public class TaskExecutorBuilderTests {
 	}
 
 	@Test
-	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
+	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
+	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskExecutorCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void additionalCustomizersShouldAddToExisting() {
+	void additionalCustomizersShouldAddToExisting() {
 		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1).additionalCustomizers(customizer2)

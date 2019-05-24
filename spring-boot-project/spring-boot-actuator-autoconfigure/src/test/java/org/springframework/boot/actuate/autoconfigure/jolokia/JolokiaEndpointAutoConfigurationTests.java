@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class JolokiaEndpointAutoConfigurationTests {
+class JolokiaEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
@@ -55,7 +55,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 					TestConfiguration.class));
 
 	@Test
-	public void jolokiaServletShouldBeEnabledByDefault() {
+	void jolokiaServletShouldBeEnabledByDefault() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=jolokia").run((context) -> {
 			ExposableServletEndpoint endpoint = getEndpoint(context);
 			assertThat(endpoint.getRootPath()).isEqualTo("jolokia");
@@ -65,7 +65,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void jolokiaServletWhenEndpointNotExposedShouldNotBeDiscovered() {
+	void jolokiaServletWhenEndpointNotExposedShouldNotBeDiscovered() {
 		this.contextRunner.run((context) -> {
 			Collection<ExposableServletEndpoint> endpoints = context.getBean(ServletEndpointsSupplier.class)
 					.getEndpoints();
@@ -74,7 +74,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void jolokiaServletWhenDisabledShouldNotBeDiscovered() {
+	void jolokiaServletWhenDisabledShouldNotBeDiscovered() {
 		this.contextRunner.withPropertyValues("management.endpoint.jolokia.enabled=false")
 				.withPropertyValues("management.endpoints.web.exposure.include=jolokia").run((context) -> {
 					Collection<ExposableServletEndpoint> endpoints = context.getBean(ServletEndpointsSupplier.class)
@@ -84,7 +84,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void jolokiaServletWhenHasCustomConfigShouldApplyInitParams() {
+	void jolokiaServletWhenHasCustomConfigShouldApplyInitParams() {
 		this.contextRunner.withPropertyValues("management.endpoint.jolokia.config.debug=true")
 				.withPropertyValues("management.endpoints.web.exposure.include=jolokia").run((context) -> {
 					ExposableServletEndpoint endpoint = getEndpoint(context);

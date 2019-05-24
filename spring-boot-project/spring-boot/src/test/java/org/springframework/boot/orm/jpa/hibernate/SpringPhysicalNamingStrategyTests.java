@@ -24,8 +24,8 @@ import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.mapping.PersistentClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,13 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SpringPhysicalNamingStrategyTests {
+class SpringPhysicalNamingStrategyTests {
 
 	private Metadata metadata;
 
 	private MetadataSources metadataSources;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.metadataSources = new MetadataSources(createServiceRegistry());
 		this.metadataSources.addAnnotatedClass(TelephoneNumber.class);
@@ -54,13 +54,13 @@ public class SpringPhysicalNamingStrategyTests {
 	}
 
 	@Test
-	public void tableNameShouldBeLowercaseUnderscore() {
+	void tableNameShouldBeLowercaseUnderscore() {
 		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("telephone_number");
 	}
 
 	@Test
-	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
+	void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
 		this.metadata = this.metadataSources.getMetadataBuilder()
 				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy()).build();
 		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());

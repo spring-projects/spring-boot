@@ -40,13 +40,13 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class HealthEndpointAutoConfigurationTests {
+class HealthEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
 
 	@Test
-	public void healthEndpointShowDetailsDefault() {
+	void healthEndpointShowDetailsDefault() {
 		this.contextRunner.withBean(ReactiveHealthIndicator.class, this::reactiveHealthIndicator).run((context) -> {
 			ReactiveHealthIndicator indicator = context.getBean("reactiveHealthIndicator",
 					ReactiveHealthIndicator.class);
@@ -59,7 +59,7 @@ public class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void healthEndpointAdaptReactiveHealthIndicator() {
+	void healthEndpointAdaptReactiveHealthIndicator() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always")
 				.withBean(ReactiveHealthIndicator.class, this::reactiveHealthIndicator).run((context) -> {
 					ReactiveHealthIndicator indicator = context.getBean("reactiveHealthIndicator",
@@ -73,7 +73,7 @@ public class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void healthEndpointMergeRegularAndReactive() {
+	void healthEndpointMergeRegularAndReactive() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always")
 				.withBean("simpleHealthIndicator", HealthIndicator.class, this::simpleHealthIndicator)
 				.withBean("reactiveHealthIndicator", ReactiveHealthIndicator.class, this::reactiveHealthIndicator)

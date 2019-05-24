@@ -36,15 +36,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class PathRequestTests {
+class PathRequestTests {
 
 	@Test
-	public void toStaticResourcesShouldReturnStaticResourceRequest() {
+	void toStaticResourcesShouldReturnStaticResourceRequest() {
 		assertThat(PathRequest.toStaticResources()).isInstanceOf(StaticResourceRequest.class);
 	}
 
 	@Test
-	public void toH2ConsoleShouldMatchH2ConsolePath() {
+	void toH2ConsoleShouldMatchH2ConsolePath() {
 		RequestMatcher matcher = PathRequest.toH2Console();
 		assertMatcher(matcher).matches("/h2-console");
 		assertMatcher(matcher).matches("/h2-console/subpath");

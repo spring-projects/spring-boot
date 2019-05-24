@@ -16,7 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
+class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 
 	private InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
 
 	@Test
-	public void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() {
+	void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() {
 		BeanCreationException failure = createFailure(InvalidPrefixConfiguration.class);
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		assertThat(analysis.getDescription())

@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class DatadogPropertiesTests extends StepRegistryPropertiesTests {
+class DatadogPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		DatadogProperties properties = new DatadogProperties();
 		DatadogConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

@@ -57,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class EmbeddedMongoAutoConfigurationTests {
+class EmbeddedMongoAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -69,23 +69,23 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultVersion() {
+	void defaultVersion() {
 		assertVersionConfiguration(null, "3.5.5");
 	}
 
 	@Test
-	public void customVersion() {
+	void customVersion() {
 		String version = Version.V3_4_15.asInDownloadPath();
 		assertVersionConfiguration(version, version);
 	}
 
 	@Test
-	public void customUnknownVersion() {
+	void customUnknownVersion() {
 		assertVersionConfiguration("3.4.1", "3.4.1");
 	}
 
 	@Test
-	public void customFeatures() {
+	void customFeatures() {
 		EnumSet<Feature> features = EnumSet.of(Feature.TEXT_SEARCH, Feature.SYNC_DELAY, Feature.ONLY_WITH_SSL,
 				Feature.NO_HTTP_INTERFACE_ARG);
 		if (isWindows()) {
@@ -98,7 +98,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void useRandomPortByDefault() {
+	void useRandomPortByDefault() {
 		load();
 		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
 		MongoClient client = this.context.getBean(MongoClient.class);
@@ -107,7 +107,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void specifyPortToZeroAllocateRandomPort() {
+	void specifyPortToZeroAllocateRandomPort() {
 		load("spring.data.mongodb.port=0");
 		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
 		MongoClient client = this.context.getBean(MongoClient.class);
@@ -116,7 +116,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void randomlyAllocatedPortIsAvailableWhenCreatingMongoClient() {
+	void randomlyAllocatedPortIsAvailableWhenCreatingMongoClient() {
 		load(MongoClientConfiguration.class);
 		MongoClient client = this.context.getBean(MongoClient.class);
 		Integer mongoPort = Integer.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
@@ -124,7 +124,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void portIsAvailableInParentContext() {
+	void portIsAvailableInParentContext() {
 		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
 			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
@@ -136,7 +136,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultStorageConfiguration() {
+	void defaultStorageConfiguration() {
 		load(MongoClientConfiguration.class);
 		Storage replication = this.context.getBean(IMongodConfig.class).replication();
 		assertThat(replication.getOplogSize()).isEqualTo(0);
@@ -145,7 +145,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void mongoWritesToCustomDatabaseDir(@TempDir Path temp) throws IOException {
+	void mongoWritesToCustomDatabaseDir(@TempDir Path temp) throws IOException {
 		File customDatabaseDir = new File(temp.toFile(), "custom-database-dir");
 		FileSystemUtils.deleteRecursively(customDatabaseDir);
 		load("spring.mongodb.embedded.storage.databaseDir=" + customDatabaseDir.getPath());
@@ -154,25 +154,25 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void customOpLogSizeIsAppliedToConfiguration() {
+	void customOpLogSizeIsAppliedToConfiguration() {
 		load("spring.mongodb.embedded.storage.oplogSize=1024KB");
 		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize()).isEqualTo(1);
 	}
 
 	@Test
-	public void customOpLogSizeUsesMegabytesPerDefault() {
+	void customOpLogSizeUsesMegabytesPerDefault() {
 		load("spring.mongodb.embedded.storage.oplogSize=10");
 		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize()).isEqualTo(10);
 	}
 
 	@Test
-	public void customReplicaSetNameIsAppliedToConfiguration() {
+	void customReplicaSetNameIsAppliedToConfiguration() {
 		load("spring.mongodb.embedded.storage.replSetName=testing");
 		assertThat(this.context.getBean(IMongodConfig.class).replication().getReplSetName()).isEqualTo("testing");
 	}
 
 	@Test
-	public void customizeDownloadConfiguration() {
+	void customizeDownloadConfiguration() {
 		load(DownloadConfigBuilderCustomizerConfiguration.class);
 		IRuntimeConfig runtimeConfig = this.context.getBean(IRuntimeConfig.class);
 		IDownloadConfig downloadConfig = (IDownloadConfig) new DirectFieldAccessor(runtimeConfig.getArtifactStore())
@@ -181,7 +181,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void shutdownHookIsNotRegistered() {
+	void shutdownHookIsNotRegistered() {
 		load();
 		assertThat(this.context.getBean(MongodExecutable.class).isRegisteredJobKiller()).isFalse();
 	}

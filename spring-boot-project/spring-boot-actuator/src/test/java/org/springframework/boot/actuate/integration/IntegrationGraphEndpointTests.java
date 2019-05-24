@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Tim Ysewyn
  */
-public class IntegrationGraphEndpointTests {
+class IntegrationGraphEndpointTests {
 
 	@Mock
 	private IntegrationGraphServer integrationGraphServer;
@@ -49,7 +49,7 @@ public class IntegrationGraphEndpointTests {
 	}
 
 	@Test
-	public void readOperationShouldReturnGraph() {
+	void readOperationShouldReturnGraph() {
 		Graph mockedGraph = mock(Graph.class);
 		given(this.integrationGraphServer.getGraph()).willReturn(mockedGraph);
 		Graph graph = this.integrationGraphEndpoint.graph();
@@ -58,7 +58,7 @@ public class IntegrationGraphEndpointTests {
 	}
 
 	@Test
-	public void writeOperationShouldRebuildGraph() {
+	void writeOperationShouldRebuildGraph() {
 		this.integrationGraphEndpoint.rebuild();
 		verify(this.integrationGraphServer).rebuild();
 	}

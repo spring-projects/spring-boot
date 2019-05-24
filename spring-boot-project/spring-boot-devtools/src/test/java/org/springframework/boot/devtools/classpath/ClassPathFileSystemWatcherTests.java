@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
@@ -47,13 +46,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class ClassPathFileSystemWatcherTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class ClassPathFileSystemWatcherTests {
 
 	@Test
-	public void urlsMustNotBeNull() {
+	void urlsMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
 						mock(ClassPathRestartStrategy.class), (URL[]) null))
@@ -61,10 +57,9 @@ public class ClassPathFileSystemWatcherTests {
 	}
 
 	@Test
-	public void configuredWithRestartStrategy() throws Exception {
+	void configuredWithRestartStrategy(@TempDir File folder) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		Map<String, Object> properties = new HashMap<>();
-		File folder = this.temp.newFolder();
 		List<URL> urls = new ArrayList<>();
 		urls.add(new URL("https://spring.io"));
 		urls.add(folder.toURI().toURL());

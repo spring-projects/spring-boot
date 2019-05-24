@@ -56,18 +56,18 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ServletEndpointDiscovererTests {
+class ServletEndpointDiscovererTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
+	void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> assertThat(discoverer.getEndpoints()).isEmpty()));
 	}
 
 	@Test
-	public void getEndpointsShouldIncludeServletEndpoints() {
+	void getEndpointsShouldIncludeServletEndpoints() {
 		this.contextRunner.withUserConfiguration(TestServletEndpoint.class).run(assertDiscoverer((discoverer) -> {
 			Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
 			assertThat(endpoints).hasSize(1);
@@ -79,7 +79,7 @@ public class ServletEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldDiscoverProxyServletEndpoints() {
+	void getEndpointsShouldDiscoverProxyServletEndpoints() {
 		this.contextRunner.withUserConfiguration(TestProxyServletEndpoint.class)
 				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
@@ -93,7 +93,7 @@ public class ServletEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldNotDiscoverRegularEndpoints() {
+	void getEndpointsShouldNotDiscoverRegularEndpoints() {
 		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
@@ -104,7 +104,7 @@ public class ServletEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
+	void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
 				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
 						.isThrownBy(discoverer::getEndpoints)
@@ -112,21 +112,21 @@ public class ServletEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointWhenEndpointNotASupplierShouldThrowException() {
+	void getEndpointWhenEndpointNotASupplierShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
 				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
 						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must be a supplier")));
 	}
 
 	@Test
-	public void getEndpointWhenEndpointSuppliesWrongTypeShouldThrowException() {
+	void getEndpointWhenEndpointSuppliesWrongTypeShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
 				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
 						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must supply an EndpointServlet")));
 	}
 
 	@Test
-	public void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
+	void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
 				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
 						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must not supply null")));

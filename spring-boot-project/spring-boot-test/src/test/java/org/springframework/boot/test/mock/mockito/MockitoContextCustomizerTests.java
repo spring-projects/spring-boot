@@ -34,12 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MockitoContextCustomizerTests {
+class MockitoContextCustomizerTests {
 
 	private static final Set<MockDefinition> NO_DEFINITIONS = Collections.emptySet();
 
 	@Test
-	public void hashCodeAndEquals() {
+	void hashCodeAndEquals() {
 		MockDefinition d1 = createTestMockDefinition(ExampleService.class);
 		MockDefinition d2 = createTestMockDefinition(ExampleServiceCaller.class);
 		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS);

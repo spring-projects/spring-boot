@@ -38,26 +38,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
+class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ConfigurationPropertiesReportEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
 				.run(validateTestProperties("******", "654321"));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.configprops.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
+	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
 				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
@@ -65,7 +65,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner
 				.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}

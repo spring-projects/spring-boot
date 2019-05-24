@@ -47,18 +47,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class NoSuchBeanDefinitionFailureAnalyzerTests {
+class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer();
 
 	@Test
-	public void failureAnalysisForMultipleBeans() {
+	void failureAnalysisForMultipleBeans() {
 		FailureAnalysis analysis = analyzeFailure(new NoUniqueBeanDefinitionException(String.class, 2, "Test"));
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void failureAnalysisForNoMatchType() {
+	void failureAnalysisForNoMatchType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringHandler.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertThat(analysis.getDescription())
@@ -68,7 +68,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingPropertyExactType() {
+	void failureAnalysisForMissingPropertyExactType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringPropertyTypeConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
@@ -77,7 +77,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingPropertySubType() {
+	void failureAnalysisForMissingPropertySubType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(IntegerPropertyTypeConfiguration.class));
 		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, NumberHandler.class, 0, Number.class);
@@ -87,7 +87,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingClassOnAutoConfigurationType() {
+	void failureAnalysisForMissingClassOnAutoConfigurationType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(MissingClassOnAutoConfigurationConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'", "string",
@@ -96,7 +96,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForExcludedAutoConfigurationType() {
+	void failureAnalysisForExcludedAutoConfigurationType() {
 		FatalBeanException failure = createFailure(StringHandler.class);
 		addExclusions(this.analyzer, TestPropertyAutoConfiguration.class);
 		FailureAnalysis analysis = analyzeFailure(failure);
@@ -108,7 +108,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForSeveralConditionsType() {
+	void failureAnalysisForSeveralConditionsType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(SeveralAutoConfigurationTypeConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
@@ -119,7 +119,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForNoMatchName() {
+	void failureAnalysisForNoMatchName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNameHandler.class));
 		assertThat(analysis.getDescription())
 				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
@@ -129,7 +129,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingBeanName() {
+	void failureAnalysisForMissingBeanName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringMissingBeanNameConfiguration.class));
 		assertThat(analysis.getDescription())
 				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
@@ -141,7 +141,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForNullBeanByType() {
+	void failureAnalysisForNullBeanByType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNullBeanConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertUserDefinedBean(analysis, "as the bean value is null", TestNullBeanConfiguration.class, "string");
@@ -149,7 +149,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForUnmatchedQualifier() {
+	void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
 		assertThat(analysis.getDescription())
 				.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");

@@ -22,7 +22,7 @@ import java.util.Arrays;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected JettyReactiveWebServerFactory getFactory() {
@@ -49,14 +49,14 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void setNullServerCustomizersShouldThrowException() {
+	void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void addNullServerCustomizersShouldThrowException() {
+	void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
@@ -64,7 +64,7 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void jettyCustomizersShouldBeInvoked() {
+	void jettyCustomizersShouldBeInvoked() {
 		HttpHandler handler = mock(HttpHandler.class);
 		JettyReactiveWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
@@ -79,7 +79,7 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void specificIPAddressNotReverseResolved() throws Exception {
+	void specificIPAddressNotReverseResolved() throws Exception {
 		JettyReactiveWebServerFactory factory = getFactory();
 		InetAddress localhost = InetAddress.getLocalHost();
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
@@ -90,14 +90,14 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void useForwardedHeaders() {
+	void useForwardedHeaders() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Test
-	public void useServerResources() throws Exception {
+	void useServerResources() throws Exception {
 		JettyResourceFactory resourceFactory = new JettyResourceFactory();
 		resourceFactory.afterPropertiesSet();
 		JettyReactiveWebServerFactory factory = getFactory();

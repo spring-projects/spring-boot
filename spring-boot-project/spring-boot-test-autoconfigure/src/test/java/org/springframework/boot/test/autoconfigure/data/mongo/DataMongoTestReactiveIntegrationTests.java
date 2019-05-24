@@ -18,12 +18,10 @@ package org.springframework.boot.test.autoconfigure.data.mongo;
 
 import java.time.Duration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,9 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @DataMongoTest
-public class DataMongoTestReactiveIntegrationTests {
+class DataMongoTestReactiveIntegrationTests {
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;
@@ -43,7 +40,7 @@ public class DataMongoTestReactiveIntegrationTests {
 	private ExampleReactiveRepository exampleRepository;
 
 	@Test
-	public void testRepository() {
+	void testRepository() {
 		ExampleDocument exampleDocument = new ExampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
 		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));

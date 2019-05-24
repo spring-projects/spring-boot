@@ -38,30 +38,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World" })
-public class MustacheStandaloneIntegrationTests {
+class MustacheStandaloneIntegrationTests {
 
 	@Autowired
 	private Mustache.Compiler compiler;
 
 	@Test
-	public void directCompilation() {
+	void directCompilation() {
 		assertThat(this.compiler.compile("Hello: {{world}}").execute(Collections.singletonMap("world", "World")))
 				.isEqualTo("Hello: World");
 	}
 
 	@Test
-	public void environmentCollectorCompoundKey() {
+	void environmentCollectorCompoundKey() {
 		assertThat(this.compiler.compile("Hello: {{env.foo}}").execute(new Object())).isEqualTo("Hello: There");
 	}
 
 	@Test
-	public void environmentCollectorCompoundKeyStandard() {
+	void environmentCollectorCompoundKeyStandard() {
 		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}").execute(new Object()))
 				.isEqualTo("Hello: There");
 	}
 
 	@Test
-	public void environmentCollectorSimpleKey() {
+	void environmentCollectorSimpleKey() {
 		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object())).isEqualTo("Hello: World");
 	}
 

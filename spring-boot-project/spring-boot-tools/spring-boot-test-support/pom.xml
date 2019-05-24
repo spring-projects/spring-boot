@@ -109,6 +109,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Provided -->
 		<dependency>
 			<groupId>junit</groupId>

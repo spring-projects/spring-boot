@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.json;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.app.ExampleBasicObject;
@@ -30,7 +29,6 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,10 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Eddú Meléndez
  */
-@RunWith(SpringRunner.class)
 @JsonTest
 @ContextConfiguration(classes = ExampleJsonApplication.class)
-public class JsonTestIntegrationTests {
+class JsonTestIntegrationTests {
 
 	@Autowired
 	private BasicJsonTester basicJson;
@@ -65,39 +62,39 @@ public class JsonTestIntegrationTests {
 	private JsonbTester<ExampleBasicObject> jsonbJson;
 
 	@Test
-	public void basicJson() {
+	void basicJson() {
 		assertThat(this.basicJson.from("{\"a\":\"b\"}")).hasJsonPathStringValue("@.a");
 	}
 
 	@Test
-	public void jacksonBasic() throws Exception {
+	void jacksonBasic() throws Exception {
 		ExampleBasicObject object = new ExampleBasicObject();
 		object.setValue("spring");
 		assertThat(this.jacksonBasicJson.write(object)).isEqualToJson("example.json");
 	}
 
 	@Test
-	public void jacksonCustom() throws Exception {
+	void jacksonCustom() throws Exception {
 		ExampleCustomObject object = new ExampleCustomObject("spring");
 		assertThat(this.jacksonCustomJson.write(object)).isEqualToJson("example.json");
 	}
 
 	@Test
-	public void gson() throws Exception {
+	void gson() throws Exception {
 		ExampleBasicObject object = new ExampleBasicObject();
 		object.setValue("spring");
 		assertThat(this.gsonJson.write(object)).isEqualToJson("example.json");
 	}
 
 	@Test
-	public void jsonb() throws Exception {
+	void jsonb() throws Exception {
 		ExampleBasicObject object = new ExampleBasicObject();
 		object.setValue("spring");
 		assertThat(this.jsonbJson.write(object)).isEqualToJson("example.json");
 	}
 
 	@Test
-	public void customView() throws Exception {
+	void customView() throws Exception {
 		ExampleJsonObjectWithView object = new ExampleJsonObjectWithView();
 		object.setValue("spring");
 		JsonContent<ExampleJsonObjectWithView> content = this.jacksonWithViewJson

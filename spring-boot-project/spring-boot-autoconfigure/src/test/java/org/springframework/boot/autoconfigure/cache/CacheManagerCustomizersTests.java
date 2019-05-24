@@ -33,15 +33,15 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Stephane Nicoll
  */
-public class CacheManagerCustomizersTests {
+class CacheManagerCustomizersTests {
 
 	@Test
-	public void customizeWithNullCustomizersShouldDoNothing() {
+	void customizeWithNullCustomizersShouldDoNothing() {
 		new CacheManagerCustomizers(null).customize(mock(CacheManager.class));
 	}
 
 	@Test
-	public void customizeSimpleCacheManager() {
+	void customizeSimpleCacheManager() {
 		CacheManagerCustomizers customizers = new CacheManagerCustomizers(
 				Collections.singletonList(new CacheNamesCacheManagerCustomizer()));
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
@@ -50,7 +50,7 @@ public class CacheManagerCustomizersTests {
 	}
 
 	@Test
-	public void customizeShouldCheckGeneric() {
+	void customizeShouldCheckGeneric() {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestConcurrentMapCacheManagerCustomizer());

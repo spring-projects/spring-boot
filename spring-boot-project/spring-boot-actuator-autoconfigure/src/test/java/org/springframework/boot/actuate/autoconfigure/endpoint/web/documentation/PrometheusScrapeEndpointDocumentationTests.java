@@ -36,10 +36,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void prometheus() throws Exception {
+	void prometheus() throws Exception {
 		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus"));
 	}
 

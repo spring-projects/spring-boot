@@ -38,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class SharedMetadataReaderFactoryContextInitializerTests {
+class SharedMetadataReaderFactoryContextInitializerTests {
 
 	@Test
-	public void checkOrderOfInitializer() {
+	void checkOrderOfInitializer() {
 		SpringApplication application = new SpringApplication(TestConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		@SuppressWarnings("unchecked")

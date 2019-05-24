@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  */
-public class FilterOrderingIntegrationTests {
+class FilterOrderingIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
@@ -66,7 +66,7 @@ public class FilterOrderingIntegrationTests {
 	}
 
 	@Test
-	public void testFilterOrdering() {
+	void testFilterOrdering() {
 		load();
 		List<RegisteredFilter> registeredFilters = this.context.getBean(MockServletWebServerFactory.class)
 				.getWebServer().getRegisteredFilters();

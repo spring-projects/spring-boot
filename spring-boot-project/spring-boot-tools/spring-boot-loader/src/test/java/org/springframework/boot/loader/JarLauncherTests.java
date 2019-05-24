@@ -20,7 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
+class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
 	@Test
-	public void explodedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
+	void explodedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF"));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
 		List<Archive> archives = launcher.getClassPathArchives();
@@ -46,7 +46,7 @@ public class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	}
 
 	@Test
-	public void archivedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
+	void archivedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
 		File jarRoot = createJarArchive("archive.jar", "BOOT-INF");
 		JarLauncher launcher = new JarLauncher(new JarFileArchive(jarRoot));
 		List<Archive> archives = launcher.getClassPathArchives();

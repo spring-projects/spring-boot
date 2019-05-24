@@ -19,10 +19,10 @@ package org.springframework.boot.devtools.autoconfigure;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -52,14 +52,12 @@ import static org.mockito.Mockito.mock;
  * @author Rob Winch
  * @author Phillip Webb
  */
-public class RemoteDevToolsAutoConfigurationTests {
+@ExtendWith(MockRestarter.class)
+class RemoteDevToolsAutoConfigurationTests {
 
 	private static final String DEFAULT_CONTEXT_PATH = RemoteDevToolsProperties.DEFAULT_CONTEXT_PATH;
 
 	private static final String DEFAULT_SECRET_HEADER_NAME = RemoteDevToolsProperties.DEFAULT_SECRET_HEADER_NAME;
-
-	@Rule
-	public MockRestarter mockRestarter = new MockRestarter();
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -69,14 +67,14 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	private MockFilterChain chain;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.request = new MockHttpServletRequest();
 		this.response = new MockHttpServletResponse();
 		this.chain = new MockFilterChain();
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -84,14 +82,14 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void disabledIfRemoteSecretIsMissing() throws Exception {
+	void disabledIfRemoteSecretIsMissing() throws Exception {
 		this.context = getContext(() -> loadContext("a:b"));
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(DispatcherFilter.class));
 	}
 
 	@Test
-	public void ignoresUnmappedUrl() throws Exception {
+	void ignoresUnmappedUrl() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/restart");
@@ -101,7 +99,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void ignoresIfMissingSecretFromRequest() throws Exception {
+	void ignoresIfMissingSecretFromRequest() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
@@ -110,7 +108,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void ignoresInvalidSecretInRequest() throws Exception {
+	void ignoresInvalidSecretInRequest() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
@@ -120,7 +118,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void invokeRestartWithDefaultSetup() throws Exception {
+	void invokeRestartWithDefaultSetup() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
@@ -130,7 +128,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void invokeRestartWithCustomServerContextPath() throws Exception {
+	void invokeRestartWithCustomServerContextPath() throws Exception {
 		this.context = getContext(
 				() -> loadContext("spring.devtools.remote.secret:supersecret", "server.servlet.context-path:/test"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
@@ -141,7 +139,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableRestart() throws Exception {
+	void disableRestart() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false"));
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
@@ -149,7 +147,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void devToolsHealthReturns200() throws Exception {
+	void devToolsHealthReturns200() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH);
@@ -160,7 +158,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
+	void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
 		this.context = getContext(
 				() -> loadContext("spring.devtools.remote.secret:supersecret", "server.servlet.context-path:/test"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);

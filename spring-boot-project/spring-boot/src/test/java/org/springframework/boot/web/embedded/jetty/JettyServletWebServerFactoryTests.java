@@ -41,7 +41,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.web.server.PortInUseException;
@@ -64,7 +64,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  */
-public class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
+class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
 	@Override
 	protected JettyServletWebServerFactory getFactory() {
@@ -72,7 +72,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void jettyConfigurations() throws Exception {
+	void jettyConfigurations() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		Configuration[] configurations = new Configuration[4];
 		Arrays.setAll(configurations, (i) -> mock(Configuration.class));
@@ -86,7 +86,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void jettyCustomizations() {
+	void jettyCustomizations() {
 		JettyServletWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
 		Arrays.setAll(configurations, (i) -> mock(JettyServerCustomizer.class));
@@ -100,21 +100,21 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void sessionTimeout() {
+	void sessionTimeout() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.getSession().setTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 10);
 	}
 
 	@Test
-	public void sessionTimeoutInMins() {
+	void sessionTimeoutInMins() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 60);
 	}
 
 	@Test
-	public void sslCiphersConfiguration() {
+	void sslCiphersConfiguration() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStorePassword("secret");
@@ -136,7 +136,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void stopCalledWithoutStart() {
+	void stopCalledWithoutStart() {
 		JettyServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.stop();
@@ -154,7 +154,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void sslEnabledMultiProtocolsConfiguration() {
+	void sslEnabledMultiProtocolsConfiguration() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setSsl(getSslSettings("TLSv1.1", "TLSv1.2"));
 		this.webServer = factory.getWebServer();
@@ -167,7 +167,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void sslEnabledProtocolsConfiguration() {
+	void sslEnabledProtocolsConfiguration() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setSsl(getSslSettings("TLSv1.1"));
 		this.webServer = factory.getWebServer();
@@ -198,7 +198,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void wrappedHandlers() throws Exception {
+	void wrappedHandlers() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setServerCustomizers(Collections.singletonList((server) -> {
 			Handler handler = server.getHandler();
@@ -214,19 +214,19 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void basicSslClasspathKeyStore() throws Exception {
+	void basicSslClasspathKeyStore() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
 
 	@Test
-	public void useForwardHeaders() throws Exception {
+	void useForwardHeaders() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Test
-	public void defaultThreadPool() {
+	void defaultThreadPool() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setThreadPool(null);
 		assertThat(factory.getThreadPool()).isNull();
@@ -235,7 +235,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void customThreadPool() {
+	void customThreadPool() {
 		JettyServletWebServerFactory factory = getFactory();
 		ThreadPool threadPool = mock(ThreadPool.class);
 		factory.setThreadPool(threadPool);
@@ -244,7 +244,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void startFailsWhenThreadPoolIsTooSmall() {
+	void startFailsWhenThreadPoolIsTooSmall() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.addServerCustomizers((server) -> {
 			QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
@@ -256,7 +256,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void specificIPAddressNotReverseResolved() throws Exception {
+	void specificIPAddressNotReverseResolved() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		InetAddress localhost = InetAddress.getLocalHost();
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
@@ -267,7 +267,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void specificIPAddressWithSslIsNotReverseResolved() throws Exception {
+	void specificIPAddressWithSslIsNotReverseResolved() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		InetAddress localhost = InetAddress.getLocalHost();
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
@@ -283,7 +283,7 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 	}
 
 	@Test
-	public void faultyListenerCausesStartFailure() throws Exception {
+	void faultyListenerCausesStartFailure() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.addServerCustomizers((JettyServerCustomizer) (server) -> {
 			Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);

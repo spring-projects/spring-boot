@@ -16,38 +16,39 @@
 
 package org.springframework.boot.cli.command;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Integration tests for {@link CommandRunner}.
+ *
  * @author Dave Syer
  */
-public class CommandRunnerIntegrationTests {
-
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
+@ExtendWith(OutputCaptureExtension.class)
+class CommandRunnerIntegrationTests {
 
 	@Test
-	public void debugAddsAutoconfigReport() {
+	void debugAddsAutoconfigReport(CapturedOutput capturedOutput) {
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new RunCommand());
 		// -d counts as "debug" for the spring command, but not for the
 		// LoggingApplicationListener
 		runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
-		assertThat(this.output.toString()).contains("Negative matches:");
+		assertThat(capturedOutput).contains("Negative matches:");
 	}
 
 	@Test
-	public void debugSwitchedOffForAppArgs() {
+	void debugSwitchedOffForAppArgs(CapturedOutput capturedOutput) {
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new RunCommand());
 		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
-		assertThat(this.output.toString()).doesNotContain("Negative matches:");
+		assertThat(capturedOutput).doesNotContain("Negative matches:");
 	}
 
 }

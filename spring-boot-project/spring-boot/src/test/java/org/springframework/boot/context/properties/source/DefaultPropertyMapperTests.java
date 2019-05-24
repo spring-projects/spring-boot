@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
+class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 
 	@Override
 	protected PropertyMapper getMapper() {
@@ -34,7 +34,7 @@ public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 	}
 
 	@Test
-	public void mapFromStringShouldReturnBestGuess() {
+	void mapFromStringShouldReturnBestGuess() {
 		assertThat(namesFromString("server")).toIterable().containsExactly("server");
 		assertThat(namesFromString("server.port")).toIterable().containsExactly("server.port");
 		assertThat(namesFromString("host[0]")).toIterable().containsExactly("host[0]");
@@ -49,7 +49,7 @@ public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 	}
 
 	@Test
-	public void mapFromConfigurationShouldReturnBestGuess() {
+	void mapFromConfigurationShouldReturnBestGuess() {
 		assertThat(namesFromConfiguration("server")).toIterable().containsExactly("server");
 		assertThat(namesFromConfiguration("server.port")).toIterable().containsExactly("server.port");
 		assertThat(namesFromConfiguration("host[0]")).toIterable().containsExactly("host[0]");

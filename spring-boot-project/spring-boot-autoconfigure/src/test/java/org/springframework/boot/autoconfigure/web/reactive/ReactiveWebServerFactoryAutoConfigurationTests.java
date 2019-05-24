@@ -54,14 +54,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Raheela Aslam
  * @author Madhura Bhave
  */
-public class ReactiveWebServerFactoryAutoConfigurationTests {
+class ReactiveWebServerFactoryAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
 					.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class));
 
 	@Test
-	public void createFromConfigClass() {
+	void createFromConfigClass() {
 		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class)
 				.run((context) -> {
 					assertThat(context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
@@ -71,7 +71,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void missingHttpHandler() {
+	void missingHttpHandler() {
 		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class)
 				.run((context) -> assertThat(context.getStartupFailure())
 						.isInstanceOf(ApplicationContextException.class)
@@ -79,7 +79,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void multipleHttpHandler() {
+	void multipleHttpHandler() {
 		this.contextRunner
 				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
 						TooManyHttpHandlers.class)
@@ -89,7 +89,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeReactiveWebServer() {
+	void customizeReactiveWebServer() {
 		this.contextRunner
 				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
 						ReactiveWebServerCustomization.class)
@@ -98,7 +98,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultWebServerIsTomcat() {
+	void defaultWebServerIsTomcat() {
 		// Tomcat should be chosen over Netty if the Tomcat library is present.
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class).withPropertyValues("server.port=0")
 				.run((context) -> assertThat(context.getBean(ReactiveWebServerFactory.class))
@@ -106,7 +106,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void tomcatConnectorCustomizerBeanIsAddedToFactory() {
+	void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
@@ -118,7 +118,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void tomcatContextCustomizerBeanIsAddedToFactory() {
+	void tomcatContextCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
@@ -130,7 +130,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
+	void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
@@ -142,7 +142,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void jettyServerCustomizerBeanIsAddedToFactory() {
+	void jettyServerCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
@@ -154,7 +154,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
+	void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
@@ -167,7 +167,7 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void undertowBuilderCustomizerBeanIsAddedToFactory() {
+	void undertowBuilderCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
@@ -179,21 +179,21 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void forwardedHeaderTransformerShouldBeConfigured() {
+	void forwardedHeaderTransformerShouldBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")
 				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
-	public void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
+	void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=native")
 				.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
-	public void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
+	void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
 		this.contextRunner
 				.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")

@@ -25,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ApplicationHealthIndicatorTests {
+class ApplicationHealthIndicatorTests {
 
 	@Test
-	public void indicatesUp() {
+	void indicatesUp() {
 		ApplicationHealthIndicator healthIndicator = new ApplicationHealthIndicator();
 		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}

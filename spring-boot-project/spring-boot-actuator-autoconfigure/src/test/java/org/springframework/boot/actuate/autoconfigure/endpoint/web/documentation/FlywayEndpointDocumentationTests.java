@@ -47,10 +47,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void flyway() throws Exception {
+	void flyway() throws Exception {
 		this.mockMvc.perform(get("/actuator/flyway")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("flyway",
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),

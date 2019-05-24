@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class JpaWebAutoConfigurationTests {
+class JpaWebAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -51,7 +51,7 @@ public class JpaWebAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,

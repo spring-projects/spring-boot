@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class DiscoveredOperationsFactoryTests {
+class DiscoveredOperationsFactoryTests {
 
 	private TestDiscoveredOperationsFactory factory;
 
@@ -59,7 +59,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenHasReadMethodShouldCreateOperation() {
+	void createOperationsWhenHasReadMethodShouldCreateOperation() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"), new ExampleRead());
 		assertThat(operations).hasSize(1);
 		TestOperation operation = getFirst(operations);
@@ -67,7 +67,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenHasWriteMethodShouldCreateOperation() {
+	void createOperationsWhenHasWriteMethodShouldCreateOperation() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"), new ExampleWrite());
 		assertThat(operations).hasSize(1);
 		TestOperation operation = getFirst(operations);
@@ -75,7 +75,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenHasDeleteMethodShouldCreateOperation() {
+	void createOperationsWhenHasDeleteMethodShouldCreateOperation() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"),
 				new ExampleDelete());
 		assertThat(operations).hasSize(1);
@@ -84,7 +84,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenMultipleShouldReturnMultiple() {
+	void createOperationsWhenMultipleShouldReturnMultiple() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"),
 				new ExampleMultiple());
 		assertThat(operations).hasSize(2);
@@ -93,7 +93,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsShouldProvideOperationMethod() {
+	void createOperationsShouldProvideOperationMethod() {
 		TestOperation operation = getFirst(
 				this.factory.createOperations(EndpointId.of("test"), new ExampleWithParams()));
 		OperationMethod operationMethod = operation.getOperationMethod();
@@ -102,7 +102,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsShouldProviderInvoker() {
+	void createOperationsShouldProviderInvoker() {
 		TestOperation operation = getFirst(
 				this.factory.createOperations(EndpointId.of("test"), new ExampleWithParams()));
 		Map<String, Object> params = Collections.singletonMap("name", 123);
@@ -111,7 +111,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationShouldApplyAdvisors() {
+	void createOperationShouldApplyAdvisors() {
 		TestOperationInvokerAdvisor advisor = new TestOperationInvokerAdvisor();
 		this.invokerAdvisors.add(advisor);
 		TestOperation operation = getFirst(this.factory.createOperations(EndpointId.of("test"), new ExampleRead()));

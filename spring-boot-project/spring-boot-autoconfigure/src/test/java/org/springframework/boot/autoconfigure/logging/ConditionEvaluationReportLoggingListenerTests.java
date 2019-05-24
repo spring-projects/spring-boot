@@ -54,12 +54,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Madhura Bhave
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class ConditionEvaluationReportLoggingListenerTests {
+class ConditionEvaluationReportLoggingListenerTests {
 
 	private ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener();
 
 	@Test
-	public void logsDebugOnContextRefresh(CapturedOutput capturedOutput) {
+	void logsDebugOnContextRefresh(CapturedOutput capturedOutput) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
@@ -69,7 +69,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void logsDebugOnError(CapturedOutput capturedOutput) {
+	void logsDebugOnError(CapturedOutput capturedOutput) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
@@ -80,7 +80,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void logsInfoOnErrorIfDebugDisabled(CapturedOutput capturedOutput) {
+	void logsInfoOnErrorIfDebugDisabled(CapturedOutput capturedOutput) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
@@ -92,7 +92,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void logsOutput(CapturedOutput capturedOutput) {
+	void logsOutput(CapturedOutput capturedOutput) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
@@ -103,7 +103,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void canBeUsedInApplicationContext() {
+	void canBeUsedInApplicationContext() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class);
 		new ConditionEvaluationReportLoggingListener().initialize(context);
@@ -112,7 +112,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void canBeUsedInNonGenericApplicationContext() {
+	void canBeUsedInNonGenericApplicationContext() {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.setServletContext(new MockServletContext());
 		context.register(Config.class);
@@ -122,7 +122,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void listenerWithInfoLevelShouldLogAtInfo(CapturedOutput capturedOutput) {
+	void listenerWithInfoLevelShouldLogAtInfo(CapturedOutput capturedOutput) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
 				LogLevel.INFO);
@@ -134,14 +134,14 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	public void listenerSupportsOnlyInfoAndDebug() {
+	void listenerSupportsOnlyInfoAndDebug() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
 				.withMessageContaining("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test
-	public void noErrorIfNotInitialized(CapturedOutput capturedOutput) {
+	void noErrorIfNotInitialized(CapturedOutput capturedOutput) {
 		this.initializer.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], null,
 				new RuntimeException("Planned")));
 		assertThat(capturedOutput).contains("Unable to provide the conditions report");

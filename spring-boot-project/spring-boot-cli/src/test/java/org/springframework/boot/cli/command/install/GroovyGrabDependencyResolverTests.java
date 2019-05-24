@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.assertj.core.api.Condition;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
@@ -42,11 +42,11 @@ import static org.hamcrest.Matchers.startsWith;
  *
  * @author Andy Wilkinson
  */
-public class GroovyGrabDependencyResolverTests {
+class GroovyGrabDependencyResolverTests {
 
 	private DependencyResolver resolver;
 
-	@Before
+	@BeforeEach
 	public void setupResolver() {
 		GroovyCompilerConfiguration configuration = new GroovyCompilerConfiguration() {
 
@@ -90,14 +90,14 @@ public class GroovyGrabDependencyResolverTests {
 	}
 
 	@Test
-	public void resolveArtifactWithNoDependencies() throws Exception {
+	void resolveArtifactWithNoDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("commons-logging:commons-logging:1.1.3"));
 		assertThat(resolved).hasSize(1);
 		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar");
 	}
 
 	@Test
-	public void resolveArtifactWithDependencies() throws Exception {
+	void resolveArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("org.springframework:spring-core:4.1.1.RELEASE"));
 		assertThat(resolved).hasSize(2);
 		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar", "spring-core-4.1.1.RELEASE.jar");
@@ -105,7 +105,7 @@ public class GroovyGrabDependencyResolverTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void resolveShorthandArtifactWithDependencies() throws Exception {
+	void resolveShorthandArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-beans"));
 		assertThat(resolved).hasSize(3);
 		assertThat(getNames(resolved)).has((Condition) Matched
@@ -113,7 +113,7 @@ public class GroovyGrabDependencyResolverTests {
 	}
 
 	@Test
-	public void resolveMultipleArtifacts() throws Exception {
+	void resolveMultipleArtifacts() throws Exception {
 		List<File> resolved = this.resolver
 				.resolve(Arrays.asList("junit:junit:4.11", "commons-logging:commons-logging:1.1.3"));
 		assertThat(resolved).hasSize(4);

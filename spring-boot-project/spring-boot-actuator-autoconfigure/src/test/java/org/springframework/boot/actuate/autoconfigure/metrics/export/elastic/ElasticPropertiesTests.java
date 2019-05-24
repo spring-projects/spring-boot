@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ElasticPropertiesTests extends StepRegistryPropertiesTests {
+class ElasticPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		ElasticProperties properties = new ElasticProperties();
 		ElasticConfig config = ElasticConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);

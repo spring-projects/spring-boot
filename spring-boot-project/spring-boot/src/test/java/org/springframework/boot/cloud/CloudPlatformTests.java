@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -35,16 +35,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class CloudPlatformTests {
+class CloudPlatformTests {
 
 	@Test
-	public void getActiveWhenEnvironmentIsNullShouldReturnNull() {
+	void getActiveWhenEnvironmentIsNullShouldReturnNull() {
 		CloudPlatform platform = CloudPlatform.getActive(null);
 		assertThat(platform).isNull();
 	}
 
 	@Test
-	public void getActiveWhenNotInCloudShouldReturnNull() {
+	void getActiveWhenNotInCloudShouldReturnNull() {
 		Environment environment = new MockEnvironment();
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
@@ -52,7 +52,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() {
+	void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
@@ -60,7 +60,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() {
+	void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
@@ -68,7 +68,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasDynoShouldReturnHeroku() {
+	void getActiveWhenHasDynoShouldReturnHeroku() {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
@@ -76,7 +76,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasHcLandscapeShouldReturnSap() {
+	void getActiveWhenHasHcLandscapeShouldReturnSap() {
 		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.SAP);
@@ -84,7 +84,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasServiceHostAndServicePortShouldReturnKubernetes() {
+	void getActiveWhenHasServiceHostAndServicePortShouldReturnKubernetes() {
 		MockEnvironment environment = new MockEnvironment();
 		Map<String, Object> source = new HashMap<>();
 		source.put("EXAMPLE_SERVICE_HOST", "---");
@@ -98,7 +98,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasServiceHostAndNoServicePortShouldNotReturnKubernetes() {
+	void getActiveWhenHasServiceHostAndNoServicePortShouldNotReturnKubernetes() {
 		MockEnvironment environment = new MockEnvironment();
 		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,

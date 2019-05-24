@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class ReactiveOAuth2ClientAutoConfigurationTests {
+class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class));
@@ -55,19 +55,19 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
 
 	@Test
-	public void autoConfigurationShouldBackOffForServletEnvironments() {
+	void autoConfigurationShouldBackOffForServletEnvironments() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
+	void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
+	void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
 		this.contextRunner
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
 						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
@@ -82,19 +82,19 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientServiceBeanIsConditionalOnClientRegistrationRepository() {
+	void authorizedClientServiceBeanIsConditionalOnClientRegistrationRepository() {
 		this.contextRunner
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2AuthorizedClientService.class));
 	}
 
 	@Test
-	public void configurationRegistersAuthorizedClientServiceBean() {
+	void configurationRegistersAuthorizedClientServiceBean() {
 		this.contextRunner.withUserConfiguration(ReactiveClientRepositoryConfiguration.class).run(
 				(context) -> assertThat(context).hasSingleBean(InMemoryReactiveClientRegistrationRepository.class));
 	}
 
 	@Test
-	public void authorizedClientServiceBeanIsConditionalOnMissingBean() {
+	void authorizedClientServiceBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ReactiveOAuth2AuthorizedClientService.class);
@@ -103,20 +103,20 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientRepositoryBeanIsConditionalOnAuthorizedClientService() {
+	void authorizedClientRepositoryBeanIsConditionalOnAuthorizedClientService() {
 		this.contextRunner
 				.run((context) -> assertThat(context).doesNotHaveBean(ServerOAuth2AuthorizedClientRepository.class));
 	}
 
 	@Test
-	public void configurationRegistersAuthorizedClientRepositoryBean() {
+	void configurationRegistersAuthorizedClientRepositoryBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class));
 	}
 
 	@Test
-	public void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
+	void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ServerOAuth2AuthorizedClientRepository.class);
@@ -125,17 +125,17 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationConditionalOnClassFlux() {
+	void autoConfigurationConditionalOnClassFlux() {
 		assertWhenClassNotPresent(Flux.class);
 	}
 
 	@Test
-	public void autoConfigurationConditionalOnClassEnableWebFluxSecurity() {
+	void autoConfigurationConditionalOnClassEnableWebFluxSecurity() {
 		assertWhenClassNotPresent(EnableWebFluxSecurity.class);
 	}
 
 	@Test
-	public void autoConfigurationConditionalOnClassClientRegistration() {
+	void autoConfigurationConditionalOnClassClientRegistration() {
 		assertWhenClassNotPresent(ClientRegistration.class);
 	}
 

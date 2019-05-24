@@ -47,13 +47,13 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  */
-public class WebClientAutoConfigurationTests {
+class WebClientAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class));
 
 	@Test
-	public void shouldCreateBuilder() {
+	void shouldCreateBuilder() {
 		this.contextRunner.run((context) -> {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			WebClient webClient = builder.build();
@@ -62,7 +62,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeClientCodecs() {
+	void shouldCustomizeClientCodecs() {
 		this.contextRunner.withUserConfiguration(CodecConfiguration.class).run((context) -> {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			CodecCustomizer codecCustomizer = context.getBean(CodecCustomizer.class);
@@ -74,7 +74,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void webClientShouldApplyCustomizers() {
+	void webClientShouldApplyCustomizers() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
@@ -84,7 +84,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldGetPrototypeScopedBean() {
+	void shouldGetPrototypeScopedBean() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
 			ClientHttpResponse response = mock(ClientHttpResponse.class);
 			ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
@@ -107,7 +107,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotCreateClientBuilderIfAlreadyPresent() {
+	void shouldNotCreateClientBuilderIfAlreadyPresent() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class, CustomWebClientBuilderConfig.class)
 				.run((context) -> {
 					WebClient.Builder builder = context.getBean(WebClient.Builder.class);

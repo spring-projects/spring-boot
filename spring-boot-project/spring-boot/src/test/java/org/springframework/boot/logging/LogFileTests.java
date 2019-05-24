@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -37,24 +37,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class LogFileTests {
+class LogFileTests {
 
 	@Test
-	public void noProperties() {
+	void noProperties() {
 		PropertyResolver resolver = getPropertyResolver(Collections.emptyMap());
 		LogFile logFile = LogFile.get(resolver);
 		assertThat(logFile).isNull();
 	}
 
 	@Test
-	public void loggingFile() {
+	void loggingFile() {
 		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file.name", "log.file"));
 		testLoggingFile(resolver);
 	}
 
 	@Test
 	@Deprecated
-	public void loggingFileWithDeprecatedProperties() {
+	void loggingFileWithDeprecatedProperties() {
 		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file", "log.file"));
 		testLoggingFile(resolver);
 	}
@@ -69,14 +69,14 @@ public class LogFileTests {
 	}
 
 	@Test
-	public void loggingPath() {
+	void loggingPath() {
 		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file.path", "logpath"));
 		testLoggingPath(resolver);
 	}
 
 	@Test
 	@Deprecated
-	public void loggingPathWithDeprecatedProperties() {
+	void loggingPathWithDeprecatedProperties() {
 		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.path", "logpath"));
 		testLoggingPath(resolver);
 	}
@@ -92,7 +92,7 @@ public class LogFileTests {
 	}
 
 	@Test
-	public void loggingFileAndPath() {
+	void loggingFileAndPath() {
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("logging.file.name", "log.file");
 		properties.put("logging.file.path", "logpath");
@@ -102,7 +102,7 @@ public class LogFileTests {
 
 	@Test
 	@Deprecated
-	public void loggingFileAndPathWithDeprecatedProperties() {
+	void loggingFileAndPathWithDeprecatedProperties() {
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("logging.file", "log.file");
 		properties.put("logging.path", "logpath");

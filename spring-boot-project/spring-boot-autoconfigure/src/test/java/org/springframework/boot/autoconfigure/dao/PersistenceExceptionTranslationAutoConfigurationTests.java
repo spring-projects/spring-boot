@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class PersistenceExceptionTranslationAutoConfigurationTests {
+class PersistenceExceptionTranslationAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -55,7 +55,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	}
 
 	@Test
-	public void exceptionTranslationPostProcessorUsesCglibByDefault() {
+	void exceptionTranslationPostProcessorUsesCglibByDefault() {
 		this.context = new AnnotationConfigApplicationContext(PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
@@ -64,7 +64,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	}
 
 	@Test
-	public void exceptionTranslationPostProcessorCanBeConfiguredToUseJdkProxy() {
+	void exceptionTranslationPostProcessorCanBeConfiguredToUseJdkProxy() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.aop.proxy-target-class=false").applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
@@ -76,7 +76,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	}
 
 	@Test
-	public void exceptionTranslationPostProcessorCanBeDisabled() {
+	void exceptionTranslationPostProcessorCanBeDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.dao.exceptiontranslation.enabled=false").applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
@@ -97,7 +97,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	// }
 
 	@Test
-	public void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
+	void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
 		this.context = new AnnotationConfigApplicationContext(EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);

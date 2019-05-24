@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
  * @see SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
+class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 
 	// gh-7625
 
@@ -51,7 +51,7 @@ public class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 	private ExampleGenericServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say 123 simple");
 		verify(this.exampleService).greeting();
 	}

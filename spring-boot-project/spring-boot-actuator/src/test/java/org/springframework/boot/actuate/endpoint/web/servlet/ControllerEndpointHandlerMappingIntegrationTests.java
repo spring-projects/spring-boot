@@ -57,27 +57,27 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ControllerEndpointHandlerMappingIntegrationTests {
+class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new).withUserConfiguration(EndpointConfiguration.class,
 					ExampleMvcEndpoint.class);
 
 	@Test
-	public void get() {
+	void get() {
 		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
 				.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk().expectHeader()
 				.contentTypeCompatibleWith(MediaType.TEXT_PLAIN).expectBody(String.class).isEqualTo("One")));
 	}
 
 	@Test
-	public void getWithUnacceptableContentType() {
+	void getWithUnacceptableContentType() {
 		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
 				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
 	}
 
 	@Test
-	public void post() {
+	void post() {
 		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.post().uri("/actuator/example/two")
 				.syncBody(Collections.singletonMap("id", "test")).exchange().expectStatus().isCreated().expectHeader()
 				.valueEquals(HttpHeaders.LOCATION, "/example/test")));

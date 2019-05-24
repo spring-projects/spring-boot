@@ -30,9 +30,8 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.catalina.webresources.WarResourceSet;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.CollectionUtils;
 
@@ -43,20 +42,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class TomcatEmbeddedWebappClassLoaderTests {
+class TomcatEmbeddedWebappClassLoaderTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void getResourceFindsResourceFromParentClassLoader() throws Exception {
+	void getResourceFindsResourceFromParentClassLoader() throws Exception {
 		File war = createWar();
 		withWebappClassLoader(war, (classLoader) -> assertThat(classLoader.getResource("test.txt"))
 				.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt")));
 	}
 
 	@Test
-	public void getResourcesOnlyFindsResourcesFromParentClassLoader() throws Exception {
+	void getResourcesOnlyFindsResourcesFromParentClassLoader() throws Exception {
 		File warFile = createWar();
 		withWebappClassLoader(warFile, (classLoader) -> {
 			List<URL> urls = new ArrayList<>();
@@ -85,7 +84,7 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 	}
 
 	private File createWar() throws IOException {
-		File warFile = this.temp.newFile("test.war");
+		File warFile = new File(this.tempDir, "test.war");
 		try (JarOutputStream warOut = new JarOutputStream(new FileOutputStream(warFile))) {
 			createEntries(warOut, "WEB-INF/", "WEB-INF/classes/", "WEB-INF/classes/test.txt");
 		}

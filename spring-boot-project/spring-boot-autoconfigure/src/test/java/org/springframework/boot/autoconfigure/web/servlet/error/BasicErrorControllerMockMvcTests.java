@@ -70,7 +70,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @DirtiesContext
-public class BasicErrorControllerMockMvcTests {
+class BasicErrorControllerMockMvcTests {
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -83,14 +83,14 @@ public class BasicErrorControllerMockMvcTests {
 	}
 
 	@Test
-	public void testDirectAccessForMachineClient() throws Exception {
+	void testDirectAccessForMachineClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error")).andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("999");
 	}
 
 	@Test
-	public void testErrorWithResponseStatus() throws Exception {
+	void testErrorWithResponseStatus() throws Exception {
 		MvcResult result = this.mockMvc.perform(get("/bang")).andExpect(status().isNotFound()).andReturn();
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
 		String content = response.getResponse().getContentAsString();
@@ -98,7 +98,7 @@ public class BasicErrorControllerMockMvcTests {
 	}
 
 	@Test
-	public void testBindingExceptionForMachineClient() throws Exception {
+	void testBindingExceptionForMachineClient() throws Exception {
 		// In a real server the response is carried over into the error dispatcher, but
 		// in the mock a new one is created so we have to assert the status at this
 		// intermediate point
@@ -111,7 +111,7 @@ public class BasicErrorControllerMockMvcTests {
 	}
 
 	@Test
-	public void testDirectAccessForBrowserClient() throws Exception {
+	void testDirectAccessForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();

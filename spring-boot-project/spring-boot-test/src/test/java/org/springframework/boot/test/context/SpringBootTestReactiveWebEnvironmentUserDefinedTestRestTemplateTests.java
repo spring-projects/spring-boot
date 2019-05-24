@@ -37,11 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "spring.main.web-application-type=reactive", "value=123" })
-public class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTests
+class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTests
 		extends AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 
 	@Test
-	public void restTemplateIsUserDefined() {
+	void restTemplateIsUserDefined() {
 		assertThat(getContext().getBean("testRestTemplate")).isInstanceOf(RestTemplate.class);
 	}
 

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jdbc;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -28,40 +28,40 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
  */
-public class DatabaseDriverTests {
+class DatabaseDriverTests {
 
 	@Test
-	public void classNameForKnownDatabase() {
+	void classNameForKnownDatabase() {
 		String driverClassName = DatabaseDriver.fromJdbcUrl("jdbc:postgresql://hostname/dbname").getDriverClassName();
 		assertThat(driverClassName).isEqualTo("org.postgresql.Driver");
 	}
 
 	@Test
-	public void nullClassNameForUnknownDatabase() {
+	void nullClassNameForUnknownDatabase() {
 		String driverClassName = DatabaseDriver.fromJdbcUrl("jdbc:unknowndb://hostname/dbname").getDriverClassName();
 		assertThat(driverClassName).isNull();
 	}
 
 	@Test
-	public void unknownOnNullJdbcUrl() {
+	void unknownOnNullJdbcUrl() {
 		DatabaseDriver actual = DatabaseDriver.fromJdbcUrl(null);
 		assertThat(actual).isEqualTo(DatabaseDriver.UNKNOWN);
 	}
 
 	@Test
-	public void failureOnMalformedJdbcUrl() {
+	void failureOnMalformedJdbcUrl() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DatabaseDriver.fromJdbcUrl("malformed:url"))
 				.withMessageContaining("URL must start with");
 	}
 
 	@Test
-	public void unknownOnNullProductName() {
+	void unknownOnNullProductName() {
 		DatabaseDriver actual = DatabaseDriver.fromProductName(null);
 		assertThat(actual).isEqualTo(DatabaseDriver.UNKNOWN);
 	}
 
 	@Test
-	public void databaseProductNameLookups() {
+	void databaseProductNameLookups() {
 		assertThat(DatabaseDriver.fromProductName("newone")).isEqualTo(DatabaseDriver.UNKNOWN);
 		assertThat(DatabaseDriver.fromProductName("Apache Derby")).isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromProductName("H2")).isEqualTo(DatabaseDriver.H2);
@@ -85,7 +85,7 @@ public class DatabaseDriverTests {
 	}
 
 	@Test
-	public void databaseJdbcUrlLookups() {
+	void databaseJdbcUrlLookups() {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:newone://localhost")).isEqualTo(DatabaseDriver.UNKNOWN);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:derby:sample")).isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:h2:~/sample")).isEqualTo(DatabaseDriver.H2);

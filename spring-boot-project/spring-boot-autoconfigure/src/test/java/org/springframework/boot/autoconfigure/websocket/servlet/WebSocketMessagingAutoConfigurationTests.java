@@ -69,14 +69,14 @@ import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link WebSocketMessagingAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public class WebSocketMessagingAutoConfigurationTests {
+class WebSocketMessagingAutoConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 
@@ -97,19 +97,19 @@ public class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	@Test
-	public void basicMessagingWithJsonResponse() throws Throwable {
+	void basicMessagingWithJsonResponse() throws Throwable {
 		Object result = performStompSubscription("/app/json");
 		assertThat(new String((byte[]) result)).isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
 	}
 
 	@Test
-	public void basicMessagingWithStringResponse() throws Throwable {
+	void basicMessagingWithStringResponse() throws Throwable {
 		Object result = performStompSubscription("/app/string");
 		assertThat(new String((byte[]) result)).isEqualTo("string data");
 	}
 
 	@Test
-	public void customizedConverterTypesMatchDefaultConverterTypes() {
+	void customizedConverterTypesMatchDefaultConverterTypes() {
 		List<MessageConverter> customizedConverters = getCustomizedConverters();
 		List<MessageConverter> defaultConverters = getDefaultConverters();
 		assertThat(customizedConverters.size()).isEqualTo(defaultConverters.size());

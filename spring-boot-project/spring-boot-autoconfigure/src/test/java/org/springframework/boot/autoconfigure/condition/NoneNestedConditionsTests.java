@@ -32,31 +32,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link NoneNestedConditions}.
  */
-public class NoneNestedConditionsTests {
+class NoneNestedConditionsTests {
 
 	@Test
-	public void neither() {
+	void neither() {
 		AnnotationConfigApplicationContext context = load(Config.class);
 		assertThat(context.containsBean("myBean")).isTrue();
 		context.close();
 	}
 
 	@Test
-	public void propertyA() {
+	void propertyA() {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a");
 		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();
 	}
 
 	@Test
-	public void propertyB() {
+	void propertyB() {
 		AnnotationConfigApplicationContext context = load(Config.class, "b:b");
 		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();
 	}
 
 	@Test
-	public void both() {
+	void both() {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a", "b:b");
 		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();

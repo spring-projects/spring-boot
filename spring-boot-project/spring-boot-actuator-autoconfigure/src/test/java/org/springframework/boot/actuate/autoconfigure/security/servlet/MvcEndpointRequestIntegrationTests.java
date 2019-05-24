@@ -54,10 +54,10 @@ import org.springframework.web.cors.CorsConfiguration;
  *
  * @author Madhura Bhave
  */
-public class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
+class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
 
 	@Test
-	public void toLinksWhenServletPathSetShouldMatch() {
+	void toLinksWhenServletPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
@@ -66,7 +66,7 @@ public class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestI
 	}
 
 	@Test
-	public void toEndpointWhenServletPathSetShouldMatch() {
+	void toEndpointWhenServletPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/admin/actuator/e1").exchange().expectStatus().isOk();
@@ -74,7 +74,7 @@ public class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestI
 	}
 
 	@Test
-	public void toAnyEndpointWhenServletPathSetShouldMatch() {
+	void toAnyEndpointWhenServletPathSetShouldMatch() {
 		getContextRunner()
 				.withPropertyValues("spring.mvc.servlet.path=/admin", "spring.security.user.password=password")
 				.run((context) -> {

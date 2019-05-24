@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void simpleGenericProperties() {
+	void simpleGenericProperties() {
 		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class, SimpleGenericProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(SimpleGenericProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.name", String.class)
@@ -50,7 +50,7 @@ public class GenericsMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void complexGenericProperties() {
+	void complexGenericProperties() {
 		ConfigurationMetadata metadata = compile(ComplexGenericProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ComplexGenericProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("generic.test").ofType(UpperBoundGenericPojo.class)
@@ -62,7 +62,7 @@ public class GenericsMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void unresolvedGenericProperties() {
+	void unresolvedGenericProperties() {
 		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class, UnresolvedGenericProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(UnresolvedGenericProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.name", String.class)
@@ -75,7 +75,7 @@ public class GenericsMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void genericTypes() {
+	void genericTypes() {
 		ConfigurationMetadata metadata = compile(GenericConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("generic")
 				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig"));
@@ -100,7 +100,7 @@ public class GenericsMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void wildcardTypes() {
+	void wildcardTypes() {
 		ConfigurationMetadata metadata = compile(WildcardConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("wildcard").ofType(WildcardConfig.class));
 		assertThat(metadata).has(Metadata.withProperty("wildcard.string-to-number")

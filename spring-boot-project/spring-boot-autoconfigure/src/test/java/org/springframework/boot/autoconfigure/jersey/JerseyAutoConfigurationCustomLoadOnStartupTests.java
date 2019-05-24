@@ -44,13 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
 @DirtiesContext
-public class JerseyAutoConfigurationCustomLoadOnStartupTests {
+class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		assertThat(this.context.getBean("jerseyServletRegistration")).hasFieldOrPropertyWithValue("loadOnStartup", 5);
 	}
 

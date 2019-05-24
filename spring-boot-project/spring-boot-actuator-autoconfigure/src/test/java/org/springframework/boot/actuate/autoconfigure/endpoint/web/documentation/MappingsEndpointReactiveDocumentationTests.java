@@ -62,7 +62,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  */
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
-public class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumentationTests {
+class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumentationTests {
 
 	@LocalServerPort
 	private int port;
@@ -77,7 +77,7 @@ public class MappingsEndpointReactiveDocumentationTests extends AbstractEndpoint
 	}
 
 	@Test
-	public void mappings() throws Exception {
+	void mappings() throws Exception {
 		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
 				requestMappingConditionField("").description("Details of the request mapping conditions.").optional(),
 				requestMappingConditionField(".consumes").description("Details of the consumes condition"),

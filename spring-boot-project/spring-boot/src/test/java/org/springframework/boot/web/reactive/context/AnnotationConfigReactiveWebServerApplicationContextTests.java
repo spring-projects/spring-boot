@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;
@@ -38,26 +38,26 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class AnnotationConfigReactiveWebServerApplicationContextTests {
+class AnnotationConfigReactiveWebServerApplicationContextTests {
 
 	private AnnotationConfigReactiveWebServerApplicationContext context;
 
 	@Test
-	public void createFromScan() {
+	void createFromScan() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
 	}
 
 	@Test
-	public void createFromConfigClass() {
+	void createFromConfigClass() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void registerAndRefresh() {
+	void registerAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
 		this.context.refresh();
@@ -65,7 +65,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void multipleRegistersAndRefresh() {
+	void multipleRegistersAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(WebServerConfiguration.class);
 		this.context.register(HttpHandlerConfiguration.class);
@@ -75,7 +75,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void scanAndRefresh() {
+	void scanAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
@@ -83,7 +83,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void httpHandlerInitialization() {
+	void httpHandlerInitialization() {
 		// gh-14666
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(InitializationTestConfig.class);
 		verifyContext();

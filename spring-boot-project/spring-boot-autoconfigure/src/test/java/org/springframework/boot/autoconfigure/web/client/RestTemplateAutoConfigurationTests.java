@@ -45,13 +45,13 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class RestTemplateAutoConfigurationTests {
+class RestTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class));
 
 	@Test
-	public void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
+	void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 				.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
@@ -65,7 +65,7 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateWhenNoMessageConvertersDefinedShouldHaveDefaultMessageConverters() {
+	void restTemplateWhenNoMessageConvertersDefinedShouldHaveDefaultMessageConverters() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(RestTemplate.class);
 			RestTemplate restTemplate = context.getBean(RestTemplate.class);
@@ -76,7 +76,7 @@ public class RestTemplateAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
+	void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 				.withUserConfiguration(CustomHttpMessageConverter.class, RestTemplateConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
@@ -87,7 +87,7 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
+	void restTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfig.class, CustomRestTemplateBuilderConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
@@ -99,7 +99,7 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateShouldApplyCustomizer() {
+	void restTemplateShouldApplyCustomizer() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfig.class, RestTemplateCustomizerConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
@@ -110,19 +110,19 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void builderShouldBeFreshForEachUse() {
+	void builderShouldBeFreshForEachUse() {
 		this.contextRunner.withUserConfiguration(DirtyRestTemplateConfig.class)
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void whenServletWebApplicationRestTemplateBuilderIsConfigured() {
+	void whenServletWebApplicationRestTemplateBuilderIsConfigured() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(RestTemplateBuilder.class));
 	}
 
 	@Test
-	public void whenReactiveWebApplicationRestTemplateBuilderIsNotConfigured() {
+	void whenReactiveWebApplicationRestTemplateBuilderIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(RestTemplateBuilder.class));

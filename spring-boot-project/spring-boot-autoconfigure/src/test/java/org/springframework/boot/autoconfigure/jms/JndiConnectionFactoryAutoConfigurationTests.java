@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class JndiConnectionFactoryAutoConfigurationTests {
+class JndiConnectionFactoryAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JndiConnectionFactoryAutoConfiguration.class));
@@ -70,38 +70,38 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void detectNoAvailableCandidates() {
+	void detectNoAvailableCandidates() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ConnectionFactory.class));
 	}
 
 	@Test
-	public void detectWithJmsXAConnectionFactory() {
+	void detectWithJmsXAConnectionFactory() {
 		ConnectionFactory connectionFactory = configureConnectionFactory("java:/JmsXA");
 		this.contextRunner.run(assertConnectionFactory(connectionFactory));
 	}
 
 	@Test
-	public void detectWithXAConnectionFactory() {
+	void detectWithXAConnectionFactory() {
 		ConnectionFactory connectionFactory = configureConnectionFactory("java:/XAConnectionFactory");
 		this.contextRunner.run(assertConnectionFactory(connectionFactory));
 	}
 
 	@Test
-	public void jndiNamePropertySet() {
+	void jndiNamePropertySet() {
 		ConnectionFactory connectionFactory = configureConnectionFactory("java:comp/env/myCF");
 		this.contextRunner.withPropertyValues("spring.jms.jndi-name=java:comp/env/myCF")
 				.run(assertConnectionFactory(connectionFactory));
 	}
 
 	@Test
-	public void jndiNamePropertySetWithResourceRef() {
+	void jndiNamePropertySetWithResourceRef() {
 		ConnectionFactory connectionFactory = configureConnectionFactory("java:comp/env/myCF");
 		this.contextRunner.withPropertyValues("spring.jms.jndi-name=myCF")
 				.run(assertConnectionFactory(connectionFactory));
 	}
 
 	@Test
-	public void jndiNamePropertySetWithWrongValue() {
+	void jndiNamePropertySetWithWrongValue() {
 		this.contextRunner.withPropertyValues("spring.jms.jndi-name=doesNotExistCF").run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)

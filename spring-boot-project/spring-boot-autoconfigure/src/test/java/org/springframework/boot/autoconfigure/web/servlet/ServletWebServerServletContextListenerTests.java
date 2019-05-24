@@ -40,35 +40,35 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class ServletWebServerServletContextListenerTests {
+class ServletWebServerServletContextListenerTests {
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByJetty() {
+	void registeredServletContextListenerBeanIsCalledByJetty() {
 		registeredServletContextListenerBeanIsCalled(JettyConfiguration.class);
 	}
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByTomcat() {
+	void registeredServletContextListenerBeanIsCalledByTomcat() {
 		registeredServletContextListenerBeanIsCalled(TomcatConfiguration.class);
 	}
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByUndertow() {
+	void registeredServletContextListenerBeanIsCalledByUndertow() {
 		registeredServletContextListenerBeanIsCalled(UndertowConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByJetty() {
+	void servletContextListenerBeanIsCalledByJetty() {
 		servletContextListenerBeanIsCalled(JettyConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByTomcat() {
+	void servletContextListenerBeanIsCalledByTomcat() {
 		servletContextListenerBeanIsCalled(TomcatConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByUndertow() {
+	void servletContextListenerBeanIsCalledByUndertow() {
 		servletContextListenerBeanIsCalled(UndertowConfiguration.class);
 	}
 

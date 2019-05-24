@@ -44,18 +44,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class HttpTraceAutoConfigurationTests {
+class HttpTraceAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class));
 
 	@Test
-	public void autoConfigurationIsDisabledByDefault() {
+	void autoConfigurationIsDisabledByDefault() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceAutoConfiguration.class));
 	}
 
 	@Test
-	public void autoConfigurationIsEnabledWhenHttpTraceRepositoryBeanPresent() {
+	void autoConfigurationIsEnabledWhenHttpTraceRepositoryBeanPresent() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(HttpExchangeTracer.class);
 			assertThat(context).hasSingleBean(HttpTraceFilter.class);
@@ -65,7 +65,7 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void usesUserProvidedTracer() {
+	void usesUserProvidedTracer() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withUserConfiguration(CustomTracerConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(HttpExchangeTracer.class);
@@ -74,7 +74,7 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void usesUserProvidedWebFilterWhenReactiveContext() {
+	void usesUserProvidedWebFilterWhenReactiveContext() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
 				.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
@@ -85,13 +85,13 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void configuresServletFilter() {
+	void configuresServletFilter() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(HttpTraceFilter.class));
 	}
 
 	@Test
-	public void usesUserProvidedServletFilter() {
+	void usesUserProvidedServletFilter() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(HttpTraceFilter.class);
@@ -100,7 +100,7 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void backsOffWhenDisabled() {
+	void backsOffWhenDisabled() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withPropertyValues("management.trace.http.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpTraceRepository.class)

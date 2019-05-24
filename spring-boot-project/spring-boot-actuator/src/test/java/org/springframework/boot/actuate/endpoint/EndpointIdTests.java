@@ -31,45 +31,45 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class EndpointIdTests {
+class EndpointIdTests {
 
 	@Test
-	public void ofWhenNullThrowsException() {
+	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(null))
 				.withMessage("Value must not be empty");
 	}
 
 	@Test
-	public void ofWhenEmptyThrowsException() {
+	void ofWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("")).withMessage("Value must not be empty");
 	}
 
 	@Test
-	public void ofWhenContainsSlashThrowsException() {
+	void ofWhenContainsSlashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo/bar"))
 				.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
-	public void ofWhenHasBadCharThrowsException() {
+	void ofWhenHasBadCharThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
 				.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
-	public void ofWhenStartsWithNumberThrowsException() {
+	void ofWhenStartsWithNumberThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("1foo"))
 				.withMessage("Value must not start with a number");
 	}
 
 	@Test
-	public void ofWhenStartsWithUppercaseLetterThrowsException() {
+	void ofWhenStartsWithUppercaseLetterThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("Foo"))
 				.withMessage("Value must not start with an uppercase letter");
 	}
 
 	@Test
-	public void ofWhenContainsDotIsValid() {
+	void ofWhenContainsDotIsValid() {
 		// Ideally we wouldn't support this but there are existing endpoints using the
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo.bar");
@@ -77,7 +77,7 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void ofWhenContainsDashIsValid() {
+	void ofWhenContainsDashIsValid() {
 		// Ideally we wouldn't support this but there are existing endpoints using the
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo-bar");
@@ -85,7 +85,7 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void ofWhenContainsDeprecatedCharsLogsWarning(CapturedOutput capturedOutput) {
+	void ofWhenContainsDeprecatedCharsLogsWarning(CapturedOutput capturedOutput) {
 		EndpointId.resetLoggedWarnings();
 		EndpointId.of("foo-bar");
 		assertThat(capturedOutput.toString())
@@ -93,7 +93,7 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void equalsAndHashCode() {
+	void equalsAndHashCode() {
 		EndpointId one = EndpointId.of("foobar1");
 		EndpointId two = EndpointId.of("fooBar1");
 		EndpointId three = EndpointId.of("foo-bar1");
@@ -106,17 +106,17 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void toLowerCaseStringReturnsLowercase() {
+	void toLowerCaseStringReturnsLowercase() {
 		assertThat(EndpointId.of("fooBar").toLowerCaseString()).isEqualTo("foobar");
 	}
 
 	@Test
-	public void toStringReturnsString() {
+	void toStringReturnsString() {
 		assertThat(EndpointId.of("fooBar").toString()).isEqualTo("fooBar");
 	}
 
 	@Test
-	public void fromPropertyValueStripsDashes() {
+	void fromPropertyValueStripsDashes() {
 		EndpointId fromPropertyValue = EndpointId.fromPropertyValue("foo-bar");
 		assertThat(fromPropertyValue).isEqualTo(EndpointId.of("fooBar"));
 	}

@@ -30,15 +30,13 @@ import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
-import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -57,10 +55,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class NettyRSocketServerFactoryTests {
-
-	@Rule
-	public OutputCapture output = new OutputCapture();
+class NettyRSocketServerFactoryTests {
 
 	private NettyRSocketServer rSocketServer;
 
@@ -68,7 +63,7 @@ public class NettyRSocketServerFactoryTests {
 
 	private static final Duration TIMEOUT = Duration.ofSeconds(3);
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.rSocketServer != null) {
 			try {
@@ -88,7 +83,7 @@ public class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
-	public void specificPort() {
+	void specificPort() {
 		NettyRSocketServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
@@ -103,7 +98,7 @@ public class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
-	public void websocketTransport() {
+	void websocketTransport() {
 		NettyRSocketServerFactory factory = getFactory();
 		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
 		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
@@ -115,7 +110,7 @@ public class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
-	public void serverCustomizers() {
+	void serverCustomizers() {
 		NettyRSocketServerFactory factory = getFactory();
 		ServerRSocketFactoryCustomizer[] customizers = new ServerRSocketFactoryCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {

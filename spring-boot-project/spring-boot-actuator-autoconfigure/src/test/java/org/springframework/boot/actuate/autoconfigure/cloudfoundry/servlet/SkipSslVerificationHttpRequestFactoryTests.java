@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 /**
  * Test for {@link SkipSslVerificationHttpRequestFactory}.
  */
-public class SkipSslVerificationHttpRequestFactoryTests {
+class SkipSslVerificationHttpRequestFactoryTests {
 
 	private WebServer webServer;
 
@@ -49,7 +49,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	}
 
 	@Test
-	public void restCallToSelfSignedServerShouldNotThrowSslException() {
+	void restCallToSelfSignedServerShouldNotThrowSslException() {
 		String httpsUrl = getHttpsUrl();
 		SkipSslVerificationHttpRequestFactory requestFactory = new SkipSslVerificationHttpRequestFactory();
 		RestTemplate restTemplate = new RestTemplate(requestFactory);

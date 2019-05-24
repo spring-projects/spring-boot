@@ -20,8 +20,8 @@ import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -38,11 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ServletComponentScanIntegrationTests {
+class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
@@ -50,7 +50,7 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Test
-	public void componentsAreRegistered() {
+	void componentsAreRegistered() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
@@ -61,7 +61,7 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Test
-	public void multipartConfigIsHonoured() {
+	void multipartConfigIsHonoured() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);

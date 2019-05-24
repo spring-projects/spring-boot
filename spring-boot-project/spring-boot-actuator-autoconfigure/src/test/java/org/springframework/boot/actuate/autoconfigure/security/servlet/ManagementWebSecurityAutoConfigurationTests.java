@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class ManagementWebSecurityAutoConfigurationTests {
+class ManagementWebSecurityAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
@@ -58,7 +58,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 					SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class));
 
 	@Test
-	public void permitAllForHealth() {
+	void permitAllForHealth() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
 			assertThat(status).isEqualTo(HttpStatus.OK);
@@ -66,7 +66,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void permitAllForInfo() {
+	void permitAllForInfo() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/info");
 			assertThat(status).isEqualTo(HttpStatus.OK);
@@ -74,7 +74,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void securesEverythingElse() {
+	void securesEverythingElse() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator");
 			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -84,7 +84,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void usesMatchersBasedOffConfiguredActuatorBasePath() {
+	void usesMatchersBasedOffConfiguredActuatorBasePath() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/").run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/health");
 			assertThat(status).isEqualTo(HttpStatus.OK);
@@ -92,7 +92,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffIfCustomSecurityIsAdded() {
+	void backOffIfCustomSecurityIsAdded() {
 		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class).run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
 			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -102,7 +102,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
+	void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
 				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityConfigurerAdapter.class));

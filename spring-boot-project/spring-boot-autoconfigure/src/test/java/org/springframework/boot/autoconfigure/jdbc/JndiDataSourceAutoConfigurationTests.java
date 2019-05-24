@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class JndiDataSourceAutoConfigurationTests {
+class JndiDataSourceAutoConfigurationTests {
 
 	private ClassLoader threadContextClassLoader;
 
@@ -80,7 +80,7 @@ public class JndiDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void dataSourceIsAvailableFromJndi() throws IllegalStateException, NamingException {
+	void dataSourceIsAvailableFromJndi() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -94,7 +94,7 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException, NamingException {
+	void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -111,7 +111,7 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException, NamingException {
+	void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 		this.context = new AnnotationConfigApplicationContext();
@@ -128,7 +128,7 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException, NamingException {
+	void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException, NamingException {
 		DataSource dataSource = mock(DataSource.class);
 		configureJndi("foo", dataSource);
 

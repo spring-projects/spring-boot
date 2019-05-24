@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * Sample configuration used in {@link AutoConfigurationPackagesTests}.
+ * Sample configuration used in {@code AutoConfigurationPackagesTests}.
  *
  * @author Oliver Gierke
  */

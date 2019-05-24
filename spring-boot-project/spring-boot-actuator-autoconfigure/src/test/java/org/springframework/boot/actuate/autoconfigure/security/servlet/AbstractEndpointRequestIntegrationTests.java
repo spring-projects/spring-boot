@@ -47,12 +47,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public abstract class AbstractEndpointRequestIntegrationTests {
+abstract class AbstractEndpointRequestIntegrationTests {
 
 	protected abstract WebApplicationContextRunner getContextRunner();
 
 	@Test
-	public void toEndpointShouldMatch() {
+	void toEndpointShouldMatch() {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator/e1").exchange().expectStatus().isOk();
@@ -60,7 +60,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	@Test
-	public void toAllEndpointsShouldMatch() {
+	void toAllEndpointsShouldMatch() {
 		getContextRunner().withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 				.withPropertyValues("spring.security.user.password=password").run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
@@ -71,7 +71,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	@Test
-	public void toLinksShouldMatch() {
+	void toLinksShouldMatch() {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();

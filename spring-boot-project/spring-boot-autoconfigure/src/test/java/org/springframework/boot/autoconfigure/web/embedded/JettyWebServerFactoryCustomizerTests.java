@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Phillip Webb
  */
-public class JettyWebServerFactoryCustomizerTests {
+class JettyWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
 
@@ -67,7 +67,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeaders() {
+	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -75,14 +75,14 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeaders() {
+	void defaultUseForwardHeaders() {
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void accessLogCanBeCustomized() throws IOException {
+	void accessLogCanBeCustomized() throws IOException {
 		File logFile = File.createTempFile("jetty_log", ".log");
 		bind("server.jetty.accesslog.enabled=true", "server.jetty.accesslog.format=extended_ncsa",
 				"server.jetty.accesslog.filename=" + logFile.getAbsolutePath().replace("\\", "\\\\"),
@@ -101,7 +101,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogCanBeEnabled() {
+	void accessLogCanBeEnabled() {
 		bind("server.jetty.accesslog.enabled=true");
 		JettyWebServer server = customizeAndGetServer();
 		CustomRequestLog requestLog = getRequestLog(server);
@@ -125,7 +125,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void setUseForwardHeaders() {
+	void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -133,7 +133,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customizeMaxHttpHeaderSize() {
+	void customizeMaxHttpHeaderSize() {
 		bind("server.max-http-header-size=2048");
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
@@ -141,7 +141,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+	void customMaxHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-header-size=-1");
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
@@ -149,7 +149,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+	void customMaxHttpHeaderSizeIgnoredIfZero() {
 		bind("server.max-http-header-size=0");
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);

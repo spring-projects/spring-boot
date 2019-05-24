@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Mark Paluch
  */
-public class CassandraReactiveDataAutoConfigurationTests {
+class CassandraReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -56,14 +56,14 @@ public class CassandraReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateExists() {
+	void templateExists() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
 		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
@@ -72,7 +72,7 @@ public class CassandraReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() {
+	void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))

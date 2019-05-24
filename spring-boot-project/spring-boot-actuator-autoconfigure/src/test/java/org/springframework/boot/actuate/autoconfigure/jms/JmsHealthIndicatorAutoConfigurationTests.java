@@ -33,20 +33,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class JmsHealthIndicatorAutoConfigurationTests {
+class JmsHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
 					JmsHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JmsHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.jms.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.session;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.session.SessionsEndpoint.SessionDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Vedran Pavic
  */
-public class SessionsEndpointTests {
+class SessionsEndpointTests {
 
 	private static final Session session = new MapSession();
 
@@ -46,7 +46,7 @@ public class SessionsEndpointTests {
 	private final SessionsEndpoint endpoint = new SessionsEndpoint(this.repository);
 
 	@Test
-	public void sessionsForUsername() {
+	void sessionsForUsername() {
 		given(this.repository.findByPrincipalName("user"))
 				.willReturn(Collections.singletonMap(session.getId(), session));
 		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
@@ -60,7 +60,7 @@ public class SessionsEndpointTests {
 	}
 
 	@Test
-	public void getSession() {
+	void getSession() {
 		given(this.repository.findById(session.getId())).willReturn(session);
 		SessionDescriptor result = this.endpoint.getSession(session.getId());
 		assertThat(result.getId()).isEqualTo(session.getId());
@@ -72,13 +72,13 @@ public class SessionsEndpointTests {
 	}
 
 	@Test
-	public void getSessionWithIdNotFound() {
+	void getSessionWithIdNotFound() {
 		given(this.repository.findById("not-found")).willReturn(null);
 		assertThat(this.endpoint.getSession("not-found")).isNull();
 	}
 
 	@Test
-	public void deleteSession() {
+	void deleteSession() {
 		this.endpoint.deleteSession(session.getId());
 		verify(this.repository).deleteById(session.getId());
 	}

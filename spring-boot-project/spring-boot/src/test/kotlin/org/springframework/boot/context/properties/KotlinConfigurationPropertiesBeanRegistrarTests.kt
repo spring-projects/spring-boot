@@ -1,7 +1,7 @@
 package org.springframework.boot.context.properties
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.core.type.AnnotationMetadata

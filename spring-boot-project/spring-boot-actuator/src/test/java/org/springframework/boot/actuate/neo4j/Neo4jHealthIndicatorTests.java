@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.exception.CypherException;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Michael Simons
  */
-public class Neo4jHealthIndicatorTests {
+class Neo4jHealthIndicatorTests {
 
 	private Session session;
 
@@ -59,7 +58,7 @@ public class Neo4jHealthIndicatorTests {
 	}
 
 	@Test
-	public void neo4jUp() {
+	void neo4jUp() {
 		Result result = mock(Result.class);
 		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willReturn(result);
 		int nodeCount = 500;
@@ -72,11 +71,11 @@ public class Neo4jHealthIndicatorTests {
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Map<String, Object> details = health.getDetails();
 		int nodeCountFromDetails = (int) details.get("nodes");
-		Assert.assertEquals(nodeCount, nodeCountFromDetails);
+		assertThat(nodeCountFromDetails).isEqualTo(nodeCount);
 	}
 
 	@Test
-	public void neo4jDown() {
+	void neo4jDown() {
 		CypherException cypherException = new CypherException("Neo.ClientError.Statement.SyntaxError",
 				"Error executing Cypher");
 		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willThrow(cypherException);

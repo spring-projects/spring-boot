@@ -38,12 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Mark Paluch
  */
-public class MongoClientFactoryTests {
+class MongoClientFactoryTests {
 
 	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void portCanBeCustomized() {
+	void portCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
 		MongoClient client = createMongoClient(properties);
@@ -53,7 +53,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void hostCanBeCustomized() {
+	void hostCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
 		MongoClient client = createMongoClient(properties);
@@ -63,7 +63,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void credentialsCanBeCustomized() {
+	void credentialsCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
@@ -72,7 +72,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void databaseCanBeCustomized() {
+	void databaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setDatabase("foo");
 		properties.setUsername("user");
@@ -82,7 +82,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void authenticationDatabaseCanBeCustomized() {
+	void authenticationDatabaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setAuthenticationDatabase("foo");
 		properties.setUsername("user");
@@ -92,7 +92,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCanBeCustomized() {
+	void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://user:secret@mongo1.example.com:12345," + "mongo2.example.com:23456/test");
 		MongoClient client = createMongoClient(properties);
@@ -106,7 +106,7 @@ public class MongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriIsIgnoredInEmbeddedMode() {
+	void uriIsIgnoredInEmbeddedMode() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo.example.com:1234/mydb");
 		this.environment.setProperty("local.mongo.port", "4000");

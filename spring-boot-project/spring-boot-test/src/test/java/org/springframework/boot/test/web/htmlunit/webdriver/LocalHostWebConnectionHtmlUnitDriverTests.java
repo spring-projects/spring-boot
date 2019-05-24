@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class LocalHostWebConnectionHtmlUnitDriverTests {
+class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	@Mock
 	private WebClient webClient;
@@ -57,26 +57,26 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 	}
 
 	@Test
-	public void createWhenEnvironmentIsNullWillThrowException() {
+	void createWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
-	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
+	void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
-	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
+	void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
-	public void createWithCapabilitiesWhenEnvironmentIsNullWillThrowException() {
+	void createWithCapabilitiesWhenEnvironmentIsNullWillThrowException() {
 		Capabilities capabilities = mock(Capabilities.class);
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
 		given(capabilities.getVersion()).willReturn("chrome");
@@ -86,7 +86,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 	}
 
 	@Test
-	public void getWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
+	void getWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
@@ -94,7 +94,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 	}
 
 	@Test
-	public void getWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
+	void getWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "8181");
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);

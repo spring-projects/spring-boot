@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class EhCache2CacheMeterBinderProviderTests {
+class EhCache2CacheMeterBinderProviderTests {
 
 	@Test
-	public void ehCache2CacheProvider() {
+	void ehCache2CacheProvider() {
 		CacheManager cacheManager = new CacheManager(
 				new Configuration().name("EhCacheCacheTests").defaultCache(new CacheConfiguration("default", 100)));
 		try {

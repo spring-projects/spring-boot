@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class JpaPropertiesTests {
+class JpaPropertiesTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfiguration.class);
@@ -51,7 +51,7 @@ public class JpaPropertiesTests {
 	@Test
 	@Deprecated
 	@SuppressWarnings("deprecation")
-	public void determineDatabaseNoCheckIfDatabaseIsSet() {
+	void determineDatabaseNoCheckIfDatabaseIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.database=postgresql")
 				.run(assertJpaProperties((properties) -> {
 					DataSource dataSource = mockStandaloneDataSource();
@@ -69,7 +69,7 @@ public class JpaPropertiesTests {
 	@Test
 	@Deprecated
 	@SuppressWarnings("deprecation")
-	public void determineDatabaseWithKnownUrl() {
+	void determineDatabaseWithKnownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 			assertThat(database).isEqualTo(Database.H2);
@@ -79,7 +79,7 @@ public class JpaPropertiesTests {
 	@Test
 	@Deprecated
 	@SuppressWarnings("deprecation")
-	public void determineDatabaseWithKnownUrlAndUserConfig() {
+	void determineDatabaseWithKnownUrlAndUserConfig() {
 		this.contextRunner.withPropertyValues("spring.jpa.database=mysql").run(assertJpaProperties((properties) -> {
 			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 			assertThat(database).isEqualTo(Database.MYSQL);
@@ -89,7 +89,7 @@ public class JpaPropertiesTests {
 	@Test
 	@Deprecated
 	@SuppressWarnings("deprecation")
-	public void determineDatabaseWithUnknownUrl() {
+	void determineDatabaseWithUnknownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Database database = properties.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 			assertThat(database).isEqualTo(Database.DEFAULT);

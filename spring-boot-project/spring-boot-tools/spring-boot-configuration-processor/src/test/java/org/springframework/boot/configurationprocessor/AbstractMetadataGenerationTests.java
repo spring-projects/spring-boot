@@ -16,11 +16,11 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
@@ -33,14 +33,14 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
  */
 public abstract class AbstractMetadataGenerationTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private TestCompiler compiler;
 
-	@Before
+	@BeforeEach
 	public void createCompiler() throws IOException {
-		this.compiler = new TestCompiler(this.temporaryFolder);
+		this.compiler = new TestCompiler(this.tempDir);
 	}
 
 	protected TestCompiler getCompiler() {

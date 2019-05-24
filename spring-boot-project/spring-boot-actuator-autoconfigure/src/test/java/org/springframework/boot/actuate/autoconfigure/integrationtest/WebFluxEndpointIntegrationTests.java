@@ -41,10 +41,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Andy Wilkinson
  */
-public class WebFluxEndpointIntegrationTests {
+class WebFluxEndpointIntegrationTests {
 
 	@Test
-	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+	void linksAreProvidedToAllEndpointTypes() throws Exception {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 						WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,

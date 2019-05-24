@@ -28,7 +28,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected TomcatReactiveWebServerFactory getFactory() {
@@ -56,7 +56,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void tomcatCustomizers() {
+	void tomcatCustomizers() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] customizers = new TomcatContextCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatContextCustomizer.class));
@@ -70,7 +70,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void contextIsAddedToHostBeforeCustomizersAreCalled() {
+	void contextIsAddedToHostBeforeCustomizersAreCalled() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
 		factory.addContextCustomizers(customizer);
@@ -81,7 +81,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void defaultTomcatListeners() {
+	void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		if (AprLifecycleListener.isAprAvailable()) {
 			assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
@@ -93,7 +93,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void tomcatListeners() {
+	void tomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		LifecycleListener[] listeners = new LifecycleListener[4];
 		Arrays.setAll(listeners, (i) -> mock(LifecycleListener.class));
@@ -107,14 +107,14 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void setNullConnectorCustomizersShouldThrowException() {
+	void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void addNullAddConnectorCustomizersShouldThrowException() {
+	void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
@@ -122,14 +122,14 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void setNullProtocolHandlerCustomizersShouldThrowException() {
+	void setNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
 				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test
-	public void addNullProtocolHandlerCustomizersShouldThrowException() {
+	void addNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
@@ -137,7 +137,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void tomcatConnectorCustomizersShouldBeInvoked() {
+	void tomcatConnectorCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] customizers = new TomcatConnectorCustomizer[4];
@@ -153,7 +153,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
+	void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
@@ -168,7 +168,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void useForwardedHeaders() {
+	void useForwardedHeaders() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		RemoteIpValve valve = new RemoteIpValve();
 		valve.setProtocolHeader("X-Forwarded-Proto");
@@ -177,7 +177,7 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 	}
 
 	@Test
-	public void referenceClearingIsDisabled() {
+	void referenceClearingIsDisabled() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		this.webServer.start();

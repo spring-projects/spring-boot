@@ -49,20 +49,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
-public class MustacheAutoConfigurationReactiveIntegrationTests {
+class MustacheAutoConfigurationReactiveIntegrationTests {
 
 	@Autowired
 	private WebTestClient client;
 
 	@Test
-	public void testHomePage() {
+	void testHomePage() {
 		String result = this.client.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
 				.returnResult().getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
 	@Test
-	public void testPartialPage() {
+	void testPartialPage() {
 		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk().expectBody(String.class)
 				.returnResult().getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");

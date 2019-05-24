@@ -21,11 +21,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.util.StringUtils;
@@ -42,28 +41,28 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class WebServerPortFileWriterTest {
+class WebServerPortFileWriterTest {
 
-	@Rule
-	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
-	@After
+	@BeforeEach
+	@AfterEach
 	public void reset() {
 		System.clearProperty("PORTFILE");
 	}
 
 	@Test
-	public void createPortFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createPortFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		assertThat(contentOf(file)).isEqualTo("8080");
 	}
 
 	@Test
-	public void overridePortFileWithDefault() throws Exception {
-		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+	void overridePortFileWithDefault() throws Exception {
+		System.setProperty("PORTFILE", new File(this.tempDir, "port.file").getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter();
 		listener.onApplicationEvent(mockEvent("", 8080));
 		String content = contentOf(new File(System.getProperty("PORTFILE")));
@@ -71,9 +70,9 @@ public class WebServerPortFileWriterTest {
 	}
 
 	@Test
-	public void overridePortFileWithExplicitFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+	void overridePortFileWithExplicitFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
+		System.setProperty("PORTFILE", new File(this.tempDir, "override.file").getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		String content = contentOf(new File(System.getProperty("PORTFILE")));
@@ -81,8 +80,8 @@ public class WebServerPortFileWriterTest {
 	}
 
 	@Test
-	public void createManagementPortFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createManagementPortFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		listener.onApplicationEvent(mockEvent("management", 9090));
@@ -97,8 +96,8 @@ public class WebServerPortFileWriterTest {
 	}
 
 	@Test
-	public void createUpperCaseManagementPortFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createUpperCaseManagementPortFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
 		file = new File(file.getParentFile(), file.getName().toUpperCase(Locale.ENGLISH));
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("management", 9090));

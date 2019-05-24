@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-public class MockBeanOnTestFieldForNewBeanIntegrationTests {
+class MockBeanOnTestFieldForNewBeanIntegrationTests {
 
 	@MockBean
 	private ExampleService exampleService;
@@ -45,7 +45,7 @@ public class MockBeanOnTestFieldForNewBeanIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		given(this.exampleService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}

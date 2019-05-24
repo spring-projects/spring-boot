@@ -22,7 +22,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationsample.lombok.LombokDefaultValueProperties;
 import org.springframework.boot.configurationsample.lombok.LombokDeprecatedSingleProperty;
@@ -40,10 +40,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
+class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 
 	@Test
-	public void lombokSimpleProperty() throws IOException {
+	void lombokSimpleProperty() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "name");
@@ -56,7 +56,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokCollectionProperty() throws IOException {
+	void lombokCollectionProperty() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "items");
@@ -69,7 +69,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokNestedPropertySameClass() throws IOException {
+	void lombokNestedPropertySameClass() throws IOException {
 		process(LombokInnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokInnerClassProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
@@ -82,7 +82,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokNestedPropertyWithAnnotation() throws IOException {
+	void lombokNestedPropertyWithAnnotation() throws IOException {
 		process(LombokInnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokInnerClassProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "third");
@@ -95,7 +95,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokSimplePropertyWithOnlyGetterOnClassShouldNotBeExposed() throws IOException {
+	void lombokSimplePropertyWithOnlyGetterOnClassShouldNotBeExposed() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignored");
@@ -105,7 +105,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokSimplePropertyWithOnlyGetterOnDataClassShouldNotBeExposed() throws IOException {
+	void lombokSimplePropertyWithOnlyGetterOnDataClassShouldNotBeExposed() throws IOException {
 		process(LombokSimpleDataProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleDataProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignored");
@@ -115,7 +115,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokSimplePropertyWithOnlyGetterOnFieldShouldNotBeExposed() throws IOException {
+	void lombokSimplePropertyWithOnlyGetterOnFieldShouldNotBeExposed() throws IOException {
 		process(LombokExplicitProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokExplicitProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignoredOnlyGetter");
@@ -125,7 +125,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokSimplePropertyWithOnlySetterOnFieldShouldNotBeExposed() throws IOException {
+	void lombokSimplePropertyWithOnlySetterOnFieldShouldNotBeExposed() throws IOException {
 		process(LombokExplicitProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokExplicitProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignoredOnlySetter");
@@ -135,7 +135,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokMetadataSimpleProperty() throws IOException {
+	void lombokMetadataSimpleProperty() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "description");
@@ -145,7 +145,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokMetadataCollectionProperty() throws IOException {
+	void lombokMetadataCollectionProperty() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "items");
@@ -156,7 +156,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokMetadataNestedGroup() throws IOException {
+	void lombokMetadataNestedGroup() throws IOException {
 		process(LombokInnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokInnerClassProperties.class);
 			VariableElement field = getField(ownerElement, "third");
@@ -171,7 +171,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokMetadataNestedGroupNoGetter() throws IOException {
+	void lombokMetadataNestedGroupNoGetter() throws IOException {
 		process(LombokInnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokInnerClassProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
@@ -183,7 +183,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokMetadataNotACandidatePropertyShouldReturnNull() throws IOException {
+	void lombokMetadataNotACandidatePropertyShouldReturnNull() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignored");
@@ -193,7 +193,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void lombokDeprecatedPropertyOnClass() throws IOException {
+	void lombokDeprecatedPropertyOnClass() throws IOException {
 		process(org.springframework.boot.configurationsample.lombok.LombokDeprecatedProperties.class,
 				(roundEnv, metadataEnv) -> {
 					TypeElement ownerElement = roundEnv.getRootElement(
@@ -204,7 +204,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokDeprecatedPropertyOnField() throws IOException {
+	void lombokDeprecatedPropertyOnField() throws IOException {
 		process(LombokDeprecatedSingleProperty.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokDeprecatedSingleProperty.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "name");
@@ -213,7 +213,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokPropertyWithDescription() throws IOException {
+	void lombokPropertyWithDescription() throws IOException {
 		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "name");
@@ -222,7 +222,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokPropertyWithDefaultValue() throws IOException {
+	void lombokPropertyWithDefaultValue() throws IOException {
 		process(LombokDefaultValueProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokDefaultValueProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "description");
@@ -231,7 +231,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokPropertyNotCandidate() throws IOException {
+	void lombokPropertyNotCandidate() throws IOException {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
@@ -241,7 +241,7 @@ public class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	public void lombokNestedPropertyNotCandidate() throws IOException {
+	void lombokNestedPropertyNotCandidate() throws IOException {
 		process(InnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(InnerClassProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");

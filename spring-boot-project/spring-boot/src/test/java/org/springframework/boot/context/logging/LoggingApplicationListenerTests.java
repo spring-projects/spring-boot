@@ -28,6 +28,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,9 +54,9 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.system.ApplicationPid;
-import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -89,7 +90,7 @@ public class LoggingApplicationListenerTests {
 	private static final String[] NO_ARGS = {};
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public OutputCaptureRule outputCapture = new OutputCaptureRule();
 
 	@Rule
 	public final TemporaryFolder temp = new TemporaryFolder();
@@ -366,6 +367,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseLevelsFails() {
+		this.logger.setLevel(Level.INFO);
 		addPropertiesToEnvironment(this.context, "logging.level.org.springframework.boot=GARBAGE");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");

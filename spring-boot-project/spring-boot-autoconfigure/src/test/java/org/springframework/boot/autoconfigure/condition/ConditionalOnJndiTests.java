@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionalOnJndiTests {
+class ConditionalOnJndiTests {
 
 	private ClassLoader threadContextClassLoader;
 
@@ -72,27 +72,27 @@ public class ConditionalOnJndiTests {
 	}
 
 	@Test
-	public void jndiNotAvailable() {
+	void jndiNotAvailable() {
 		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void jndiAvailable() {
+	void jndiAvailable() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
-	public void jndiLocationNotBound() {
+	void jndiLocationNotBound() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void jndiLocationBound() {
+	void jndiLocationBound() {
 		setupJndi();
 		TestableInitialContextFactory.bind("java:/FooManager", new Object());
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
@@ -100,13 +100,13 @@ public class ConditionalOnJndiTests {
 	}
 
 	@Test
-	public void jndiLocationNotFound() {
+	void jndiLocationNotFound() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a"));
 		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
-	public void jndiLocationFound() {
+	void jndiLocationFound() {
 		this.condition.setFoundLocation("java:/b");
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a", "java:/b"));
 		assertThat(outcome.isMatch()).isTrue();

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
-public class CassandraDataAutoConfigurationTests {
+class CassandraDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -62,14 +62,14 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateExists() {
+	void templateExists() {
 		load(TestExcludeConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
@@ -78,7 +78,7 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() {
+	void userTypeResolverShouldBeSet() {
 		load();
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
@@ -86,14 +86,14 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultConversions() {
+	void defaultConversions() {
 		load();
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(Person.class, String.class)).isFalse();
 	}
 
 	@Test
-	public void customConversions() {
+	void customConversions() {
 		load(CustomConversionConfig.class);
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(Person.class, String.class)).isTrue();
@@ -101,7 +101,7 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void clusterDoesNotExist() {
+	void clusterDoesNotExist() {
 		this.context = new AnnotationConfigApplicationContext(CassandraDataAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
 	}

@@ -30,7 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Andy Wilkinson
  */
-public class WebFilterHandlerTests {
+class WebFilterHandlerTests {
 
 	private final WebFilterHandler handler = new WebFilterHandler();
 
@@ -54,7 +54,7 @@ public class WebFilterHandlerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void defaultFilterConfiguration() throws IOException {
+	void defaultFilterConfiguration() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
 				new SimpleMetadataReaderFactory().getMetadataReader(DefaultConfigurationFilter.class.getName()));
 		this.handler.handle(scanned, this.registry);
@@ -72,7 +72,7 @@ public class WebFilterHandlerTests {
 	}
 
 	@Test
-	public void filterWithCustomName() throws IOException {
+	void filterWithCustomName() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
 				new SimpleMetadataReaderFactory().getMetadataReader(CustomNameFilter.class.getName()));
 		this.handler.handle(scanned, this.registry);
@@ -82,7 +82,7 @@ public class WebFilterHandlerTests {
 	}
 
 	@Test
-	public void asyncSupported() throws IOException {
+	void asyncSupported() throws IOException {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(AsyncSupportedFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(true);
@@ -90,7 +90,7 @@ public class WebFilterHandlerTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void dispatcherTypes() throws IOException {
+	void dispatcherTypes() throws IOException {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(DispatcherTypesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Set<DispatcherType>) propertyValues.get("dispatcherTypes")).containsExactly(DispatcherType.FORWARD,
@@ -99,7 +99,7 @@ public class WebFilterHandlerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void initParameters() throws IOException {
+	void initParameters() throws IOException {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(InitParametersFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
@@ -107,28 +107,28 @@ public class WebFilterHandlerTests {
 	}
 
 	@Test
-	public void servletNames() throws IOException {
+	void servletNames() throws IOException {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(ServletNamesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("servletNames")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatterns() throws IOException {
+	void urlPatterns() throws IOException {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(UrlPatternsFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsFromValue() throws IOException {
+	void urlPatternsFromValue() throws IOException {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(UrlPatternsFromValueFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsDeclaredTwice() throws IOException {
+	void urlPatternsDeclaredTwice() throws IOException {
 		assertThatIllegalStateException().isThrownBy(() -> getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class))
 				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}

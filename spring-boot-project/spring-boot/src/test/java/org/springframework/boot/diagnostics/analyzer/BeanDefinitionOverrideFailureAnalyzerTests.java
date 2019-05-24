@@ -16,7 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BeanDefinitionOverrideFailureAnalyzerTests {
+class BeanDefinitionOverrideFailureAnalyzerTests {
 
 	@Test
-	public void analyzeBeanDefinitionOverrideException() {
+	void analyzeBeanDefinitionOverrideException() {
 		FailureAnalysis analysis = performAnalysis(BeanOverrideConfiguration.class);
 		String description = analysis.getDescription();
 		assertThat(description).contains("The bean 'testBean', defined in " + SecondConfiguration.class.getName()

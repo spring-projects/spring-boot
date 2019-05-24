@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.ReactiveCityRepository;
@@ -46,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
+class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -56,7 +55,7 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndImperativeRepositories() {
+	void shouldCreateInstancesForReactiveAndImperativeRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class);
@@ -66,7 +65,7 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(CouchbaseAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(CouchbaseAutoConfiguration.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
 	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
 	protected static class ImperativeAndReactiveConfiguration {

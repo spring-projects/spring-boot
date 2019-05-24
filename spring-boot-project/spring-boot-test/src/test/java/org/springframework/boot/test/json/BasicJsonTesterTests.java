@@ -36,53 +36,53 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class BasicJsonTesterTests {
+class BasicJsonTesterTests {
 
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
 	private BasicJsonTester json = new BasicJsonTester(getClass());
 
 	@Test
-	public void createWhenResourceLoadClassIsNullShouldThrowException() {
+	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BasicJsonTester(null))
 				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
-	public void fromJsonStringShouldReturnJsonContent() {
+	void fromJsonStringShouldReturnJsonContent() {
 		assertThat(this.json.from(JSON)).isEqualToJson("source.json");
 	}
 
 	@Test
-	public void fromResourceStringShouldReturnJsonContent() {
+	void fromResourceStringShouldReturnJsonContent() {
 		assertThat(this.json.from("source.json")).isEqualToJson(JSON);
 	}
 
 	@Test
-	public void fromResourceStringWithClassShouldReturnJsonContent() {
+	void fromResourceStringWithClassShouldReturnJsonContent() {
 		assertThat(this.json.from("source.json", getClass())).isEqualToJson(JSON);
 	}
 
 	@Test
-	public void fromByteArrayShouldReturnJsonContent() {
+	void fromByteArrayShouldReturnJsonContent() {
 		assertThat(this.json.from(JSON.getBytes())).isEqualToJson("source.json");
 	}
 
 	@Test
-	public void fromFileShouldReturnJsonContent(@TempDir Path temp) throws Exception {
+	void fromFileShouldReturnJsonContent(@TempDir Path temp) throws Exception {
 		File file = new File(temp.toFile(), "file.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		assertThat(this.json.from(file)).isEqualToJson("source.json");
 	}
 
 	@Test
-	public void fromInputStreamShouldReturnJsonContent() {
+	void fromInputStreamShouldReturnJsonContent() {
 		InputStream inputStream = new ByteArrayInputStream(JSON.getBytes());
 		assertThat(this.json.from(inputStream)).isEqualToJson("source.json");
 	}
 
 	@Test
-	public void fromResourceShouldReturnJsonContent() {
+	void fromResourceShouldReturnJsonContent() {
 		Resource resource = new ByteArrayResource(JSON.getBytes());
 		assertThat(this.json.from(resource)).isEqualToJson("source.json");
 	}

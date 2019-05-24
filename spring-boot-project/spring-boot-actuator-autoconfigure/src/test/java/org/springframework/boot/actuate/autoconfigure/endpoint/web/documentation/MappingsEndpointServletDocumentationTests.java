@@ -62,7 +62,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  */
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocumentationTests {
+class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocumentationTests {
 
 	@LocalServerPort
 	private int port;
@@ -76,7 +76,7 @@ public class MappingsEndpointServletDocumentationTests extends AbstractEndpointD
 	}
 
 	@Test
-	public void mappings() throws Exception {
+	void mappings() throws Exception {
 		ResponseFieldsSnippet commonResponseFields = responseFields(
 				fieldWithPath("contexts").description("Application contexts keyed by id."),
 				fieldWithPath("contexts.*.mappings").description("Mappings in the context, keyed by mapping type."),

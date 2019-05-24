@@ -16,13 +16,13 @@
 
 package org.springframework.boot.web.server;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,9 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Anand Shah
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "local.server.port=8181")
-public class LocalServerPortTests {
+class LocalServerPortTests {
 
 	@Value("${local.server.port}")
 	private String fromValue;
@@ -43,7 +43,7 @@ public class LocalServerPortTests {
 	private String fromAnnotation;
 
 	@Test
-	public void testLocalServerPortAnnotation() {
+	void testLocalServerPortAnnotation() {
 		assertThat(this.fromAnnotation).isNotNull().isEqualTo(this.fromValue);
 	}
 

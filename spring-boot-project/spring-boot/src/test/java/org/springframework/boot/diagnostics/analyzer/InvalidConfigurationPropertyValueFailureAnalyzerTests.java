@@ -18,7 +18,7 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -35,12 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
+class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void analysisWithNullEnvironment() {
+	void analysisWithNullEnvironment() {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = new InvalidConfigurationPropertyValueFailureAnalyzer().analyze(failure);
@@ -48,7 +48,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analysisWithKnownProperty() {
+	void analysisWithKnownProperty() {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("test.property", "invalid"));
 		this.environment.getPropertySources().addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
@@ -61,7 +61,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analysisWithKnownPropertyAndNoReason() {
+	void analysisWithKnownPropertyAndNoReason() {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("test.property", "invalid"));
 		this.environment.getPropertySources().addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
@@ -73,7 +73,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analysisWithKnownPropertyAndOtherCandidates() {
+	void analysisWithKnownPropertyAndOtherCandidates() {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("test.property", "invalid"));
 		MapPropertySource additional = new MapPropertySource("additional",
 				Collections.singletonMap("test.property", "valid"));
@@ -93,7 +93,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analysisWithUnknownKey() {
+	void analysisWithUnknownKey() {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.key.not.defined", "invalid", "This is not valid.");
 		assertThat(performAnalysis(failure)).isNull();

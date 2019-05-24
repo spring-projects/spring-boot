@@ -52,14 +52,14 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class WebClientMetricsConfigurationTests {
+class WebClientMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(
 					AutoConfigurations.of(WebClientAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
 
 	@Test
-	public void webClientCreatedWithBuilderIsInstrumented() {
+	void webClientCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
@@ -68,13 +68,13 @@ public class WebClientMetricsConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotOverrideCustomTagsProvider() {
+	void shouldNotOverrideCustomTagsProvider() {
 		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class).run((context) -> assertThat(context)
 				.getBeans(WebClientExchangeTagsProvider.class).hasSize(1).containsKey("customTagsProvider"));
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
@@ -84,7 +84,7 @@ public class WebClientMetricsConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
@@ -95,7 +95,7 @@ public class WebClientMetricsConfigurationTests {
 	}
 
 	@Test
-	public void autoTimeRequestsCanBeConfigured() {
+	void autoTimeRequestsCanBeConfigured() {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
 				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
 				"management.metrics.web.client.request.autotime.percentiles-histogram=true").run((context) -> {

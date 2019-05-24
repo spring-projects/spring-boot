@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @TestPropertySource(properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
-public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final Session sessionOne = createSession(Instant.now().minusSeconds(60 * 60 * 12),
 			Instant.now().minusSeconds(45));
@@ -78,7 +78,7 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 	private FindByIndexNameSessionRepository<Session> sessionRepository;
 
 	@Test
-	public void sessionsForUsername() throws Exception {
+	void sessionsForUsername() throws Exception {
 		Map<String, Session> sessions = new HashMap<>();
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
@@ -92,7 +92,7 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 	}
 
 	@Test
-	public void sessionWithId() throws Exception {
+	void sessionWithId() throws Exception {
 		Map<String, Session> sessions = new HashMap<>();
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
@@ -103,7 +103,7 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 	}
 
 	@Test
-	public void deleteASession() throws Exception {
+	void deleteASession() throws Exception {
 		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isNoContent())
 				.andDo(document("sessions/delete"));
 		verify(this.sessionRepository).deleteById(sessionTwo.getId());

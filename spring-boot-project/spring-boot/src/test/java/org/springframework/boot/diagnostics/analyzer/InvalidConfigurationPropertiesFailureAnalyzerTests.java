@@ -16,7 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.InvalidConfigurationPropertiesException;
@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class InvalidConfigurationPropertiesFailureAnalyzerTests {
+class InvalidConfigurationPropertiesFailureAnalyzerTests {
 
 	private final InvalidConfigurationPropertiesFailureAnalyzer analyzer = new InvalidConfigurationPropertiesFailureAnalyzer();
 
 	@Test
-	public void analysisForInvalidConfigurationOfConfigurationProperties() {
+	void analysisForInvalidConfigurationOfConfigurationProperties() {
 		FailureAnalysis analysis = performAnalysis();
 		assertThat(analysis.getDescription()).isEqualTo(getDescription());
 		assertThat(analysis.getAction()).isEqualTo("Remove @Component from " + TestProperties.class.getName()

@@ -23,12 +23,12 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.index.get.GetResult;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
@@ -46,34 +46,35 @@ import static org.mockito.Mockito.mock;
 public class ReactiveRestClientAutoConfigurationTests {
 
 	@Container
-	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));
 
 	@Test
-	public void configureShouldCreateDefaultBeans() {
+	void configureShouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ClientConfiguration.class)
 				.hasSingleBean(ReactiveElasticsearchClient.class));
 	}
 
 	@Test
-	public void configureWhenCustomClientShouldBackOff() {
+	void configureWhenCustomClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomClientConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(ReactiveElasticsearchClient.class).hasBean("customClient"));
 	}
 
 	@Test
-	public void configureWhenCustomClientConfig() {
+	void configureWhenCustomClientConfig() {
 		this.contextRunner.withUserConfiguration(CustomClientConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class)
 						.hasSingleBean(ClientConfiguration.class).hasBean("customClientConfiguration"));
 	}
 
 	@Test
-	public void restClientCanQueryElasticsearchNode() {
-		this.contextRunner.withPropertyValues(
-				"spring.data.elasticsearch.client.reactive.endpoints=localhost:" + elasticsearch.getMappedPort())
+	void restClientCanQueryElasticsearchNode() {
+		this.contextRunner
+				.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints="
+						+ elasticsearch.getContainerIpAddress() + ":" + elasticsearch.getFirstMappedPort())
 				.run((context) -> {
 					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
 					Map<String, String> source = new HashMap<>();

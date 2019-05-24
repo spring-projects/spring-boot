@@ -26,8 +26,7 @@ import java.util.Map;
 
 import javax.validation.Validation;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 
@@ -63,52 +62,47 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class BinderTests {
+class BinderTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private Binder binder = new Binder(this.sources);
 
 	@Test
-	public void createWhenSourcesIsNullShouldThrowException() {
+	void createWhenSourcesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
 				.withMessageContaining("Sources must not be null");
 	}
 
 	@Test
-	public void bindWhenNameIsNullShouldThrowException() {
+	void bindWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null,
 				Bindable.of(String.class), BindHandler.DEFAULT)).withMessageContaining("Name must not be null");
 	}
 
 	@Test
-	public void bindWhenTargetIsNullShouldThrowException() {
+	void bindWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT))
 				.withMessageContaining("Target must not be null");
 	}
 
 	@Test
-	public void bindToValueWhenPropertyIsMissingShouldReturnUnbound() {
+	void bindToValueWhenPropertyIsMissingShouldReturnUnbound() {
 		this.sources.add(new MockConfigurationPropertySource());
 		BindResult<String> result = this.binder.bind("foo", Bindable.of(String.class));
 		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
-	public void bindToValueShouldReturnPropertyValue() {
+	void bindToValueShouldReturnPropertyValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	public void bindToValueShouldReturnPropertyValueFromSecondSource() {
+	void bindToValueShouldReturnPropertyValueFromSecondSource() {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		this.sources.add(new MockConfigurationPropertySource("bar", 234));
 		BindResult<Integer> result = this.binder.bind("bar", Bindable.of(Integer.class));
@@ -116,14 +110,14 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueShouldReturnConvertedPropertyValue() {
+	void bindToValueShouldReturnConvertedPropertyValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "123"));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	public void bindToValueWhenMultipleCandidatesShouldReturnFirst() {
+	void bindToValueWhenMultipleCandidatesShouldReturnFirst() {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		this.sources.add(new MockConfigurationPropertySource("foo", 234));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
@@ -131,7 +125,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWithPlaceholdersShouldResolve() {
+	void bindToValueWithPlaceholdersShouldResolve() {
 		StandardEnvironment environment = new StandardEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=23");
 		this.sources.add(new MockConfigurationPropertySource("foo", "1${bar}"));
@@ -141,7 +135,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWithMissingPlaceholderShouldResolveToValueWithPlaceholder() {
+	void bindToValueWithMissingPlaceholderShouldResolveToValueWithPlaceholder() {
 		StandardEnvironment environment = new StandardEnvironment();
 		this.sources.add(new MockConfigurationPropertySource("foo", "${bar}"));
 		this.binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment));
@@ -150,7 +144,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWithCustomPropertyEditorShouldReturnConvertedValue() {
+	void bindToValueWithCustomPropertyEditorShouldReturnConvertedValue() {
 		this.binder = new Binder(this.sources, null, null,
 				(registry) -> registry.registerCustomEditor(JavaBean.class, new JavaBeanPropertyEditor()));
 		this.sources.add(new MockConfigurationPropertySource("foo", "123"));
@@ -159,7 +153,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueShouldTriggerOnSuccess() {
+	void bindToValueShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1", "line1"));
 		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Bindable<Integer> target = Bindable.of(Integer.class);
@@ -169,14 +163,14 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToJavaBeanShouldReturnPopulatedBean() {
+	void bindToJavaBeanShouldReturnPopulatedBean() {
 		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar"));
 		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
 		assertThat(result.getValue()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindToJavaBeanWhenNonIterableShouldReturnPopulatedBean() {
+	void bindToJavaBeanWhenNonIterableShouldReturnPopulatedBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource("foo.value", "bar");
 		this.sources.add(source.nonIterable());
 		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
@@ -184,7 +178,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToJavaBeanWhenHasPropertyWithSameNameShouldStillBind() {
+	void bindToJavaBeanWhenHasPropertyWithSameNameShouldStillBind() {
 		// gh-10945
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "boom");
@@ -195,7 +189,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToJavaBeanShouldTriggerOnSuccess() {
+	void bindToJavaBeanShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
 		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
@@ -208,7 +202,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindWhenHasMalformedDateShouldThrowException() {
+	void bindWhenHasMalformedDateShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "2014-04-01T01:30:00.000-05:00"));
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bind("foo", Bindable.of(LocalDate.class)))
@@ -216,7 +210,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindWhenHasAnnotationsShouldChangeConvertedValue() {
+	void bindWhenHasAnnotationsShouldChangeConvertedValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "2014-04-01T01:30:00.000-05:00"));
 		DateTimeFormat annotation = AnnotationUtils.synthesizeAnnotation(
 				Collections.singletonMap("iso", DateTimeFormat.ISO.DATE_TIME), DateTimeFormat.class, null);
@@ -225,7 +219,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty() {
+	void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "hello");
 		source.put("foo.items", "bar,baz");
@@ -241,7 +235,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValidatedBeanWithResourceAndNonEnumerablePropertySource() {
+	void bindToValidatedBeanWithResourceAndNonEnumerablePropertySource() {
 		ConfigurationPropertySources.from(new PropertySource<String>("test") {
 
 			@Override
@@ -256,7 +250,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithCycle() {
+	void bindToBeanWithCycle() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source.nonIterable());
 		Bindable<CycleBean1> target = Bindable.of(CycleBean1.class);
@@ -265,7 +259,7 @@ public class BinderTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void bindToBeanWithUnresolvableGenerics() {
+	void bindToBeanWithUnresolvableGenerics() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "hello");
 		this.sources.add(source);
@@ -274,7 +268,7 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindWithEmptyPrefixShouldIgnorePropertiesWithEmptyName() {
+	void bindWithEmptyPrefixShouldIgnorePropertiesWithEmptyName() {
 		Map<String, Object> source = new HashMap<>();
 		source.put("value", "hello");
 		source.put("", "bar");

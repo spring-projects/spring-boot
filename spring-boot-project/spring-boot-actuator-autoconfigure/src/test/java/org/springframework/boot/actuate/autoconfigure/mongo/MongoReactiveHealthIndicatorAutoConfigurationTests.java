@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Yulin Qin
  */
-public class MongoReactiveHealthIndicatorAutoConfigurationTests {
+class MongoReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
@@ -44,13 +44,13 @@ public class MongoReactiveHealthIndicatorAutoConfigurationTests {
 					MongoReactiveHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoReactiveHealthIndicator.class)
 				.doesNotHaveBean(MongoHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveHealthIndicator.class)
 						.doesNotHaveBean(MongoHealthIndicator.class).hasSingleBean(ApplicationHealthIndicator.class));

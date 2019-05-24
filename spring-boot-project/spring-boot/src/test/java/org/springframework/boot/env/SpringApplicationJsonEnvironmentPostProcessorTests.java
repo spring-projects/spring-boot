@@ -16,7 +16,7 @@
 
 package org.springframework.boot.env;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.boot.origin.PropertySourceOrigin;
@@ -36,14 +36,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  */
-public class SpringApplicationJsonEnvironmentPostProcessorTests {
+class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	private SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
 
 	private ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void error() {
+	void error() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.application.json=foo:bar");
 		assertThatExceptionOfType(JsonParseException.class)
@@ -52,14 +52,14 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void missing() {
+	void missing() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
-	public void empty() {
+	void empty() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.application.json={}");
 		this.processor.postProcessEnvironment(this.environment, null);
@@ -67,7 +67,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void periodSeparated() {
+	void periodSeparated() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");
@@ -76,7 +76,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void envVar() {
+	void envVar() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":\"bar\"}");
@@ -85,7 +85,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void nested() {
+	void nested() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":{\"bar\":\"spam\",\"rab\":\"maps\"}}");
@@ -95,7 +95,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void prefixed() {
+	void prefixed() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo.bar\":\"spam\"}");
@@ -104,7 +104,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void list() {
+	void list() {
 		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[\"bar\",\"spam\"]}");
@@ -113,7 +113,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void listOfObject() {
+	void listOfObject() {
 		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[{\"bar\":\"spam\"}]}");
@@ -122,7 +122,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void propertySourceShouldTrackOrigin() {
+	void propertySourceShouldTrackOrigin() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");

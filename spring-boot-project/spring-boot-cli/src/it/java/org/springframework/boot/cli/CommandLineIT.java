@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,17 @@
 
 package org.springframework.boot.cli;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for the command line application.
@@ -36,56 +34,52 @@ import static org.junit.Assert.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public class CommandLineIT {
+class CommandLineIT {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private CommandLineInvoker cli;
 
-	private final CommandLineInvoker cli = new CommandLineInvoker(this.temp);
+	@BeforeEach
+	public void setup(@TempDir File tempDir) {
+		this.cli = new CommandLineInvoker(tempDir);
+	}
 
-	@Test
-	public void hintProducesListOfValidCommands()
+	@Test void hintProducesListOfValidCommands()
 			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("hint");
-		assertThat(cli.await(), equalTo(0));
-		assertThat("Unexpected error: \n" + cli.getErrorOutput(),
-				cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutputLines().size(), equalTo(11));
+		assertThat(cli.await()).isEqualTo(0);
+		assertThat(cli.getErrorOutput()).isEmpty();
+		assertThat(cli.getStandardOutputLines()).hasSize(11);
 	}
 
-	@Test
-	public void invokingWithNoArgumentsDisplaysHelp()
+	@Test void invokingWithNoArgumentsDisplaysHelp()
 			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke();
-		assertThat(cli.await(), equalTo(1));
-		assertThat(cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutput(), startsWith("usage:"));
+		assertThat(cli.await()).isEqualTo(1);
+		assertThat(cli.getErrorOutput()).isEmpty();
+		assertThat(cli.getStandardOutput()).startsWith("usage:");
 	}
 
-	@Test
-	public void unrecognizedCommandsAreHandledGracefully()
+	@Test void unrecognizedCommandsAreHandledGracefully()
 			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("not-a-real-command");
-		assertThat(cli.await(), equalTo(1));
-		assertThat(cli.getErrorOutput(),
-				containsString("'not-a-real-command' is not a valid command"));
-		assertThat(cli.getStandardOutput().length(), equalTo(0));
+		assertThat(cli.await()).isEqualTo(1);
+		assertThat(cli.getErrorOutput())
+				.contains("'not-a-real-command' is not a valid command");
+		assertThat(cli.getStandardOutput()).isEmpty();
 	}
 
-	@Test
-	public void version() throws IOException, InterruptedException {
+	@Test void version() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("version");
-		assertThat(cli.await(), equalTo(0));
-		assertThat(cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutput(), startsWith("Spring CLI v"));
+		assertThat(cli.await()).isEqualTo(0);
+		assertThat(cli.getErrorOutput()).isEmpty();
+		assertThat(cli.getStandardOutput()).startsWith("Spring CLI v");
 	}
 
-	@Test
-	public void help() throws IOException, InterruptedException {
+	@Test void help() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("help");
-		assertThat(cli.await(), equalTo(1));
-		assertThat(cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutput(), startsWith("usage:"));
+		assertThat(cli.await()).isEqualTo(1);
+		assertThat(cli.getErrorOutput()).isEmpty();
+		assertThat(cli.getStandardOutput()).startsWith("usage:");
 	}
 
 }

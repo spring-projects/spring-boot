@@ -19,7 +19,7 @@ package org.springframework.boot.convert;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -29,16 +29,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class DurationStyleTests {
+class DurationStyleTests {
 
 	@Test
-	public void detectAndParseWhenValueIsNullShouldThrowException() {
+	void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detectAndParse(null))
 				.withMessageContaining("Value must not be null");
 	}
 
 	@Test
-	public void detectAndParseWhenIso8601ShouldReturnDuration() {
+	void detectAndParseWhenIso8601ShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("PT20.345S")).isEqualTo(Duration.parse("PT20.345S"));
 		assertThat(DurationStyle.detectAndParse("PT15M")).isEqualTo(Duration.parse("PT15M"));
 		assertThat(DurationStyle.detectAndParse("+PT15M")).isEqualTo(Duration.parse("PT15M"));
@@ -50,7 +50,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleNanosShouldReturnDuration() {
+	void detectAndParseWhenSimpleNanosShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10ns")).isEqualTo(Duration.ofNanos(10));
 		assertThat(DurationStyle.detectAndParse("10NS")).isEqualTo(Duration.ofNanos(10));
 		assertThat(DurationStyle.detectAndParse("+10ns")).isEqualTo(Duration.ofNanos(10));
@@ -58,7 +58,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleMicrosShouldReturnDuration() {
+	void detectAndParseWhenSimpleMicrosShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10us")).isEqualTo(Duration.ofNanos(10000));
 		assertThat(DurationStyle.detectAndParse("10US")).isEqualTo(Duration.ofNanos(10000));
 		assertThat(DurationStyle.detectAndParse("+10us")).isEqualTo(Duration.ofNanos(10000));
@@ -66,7 +66,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleMillisShouldReturnDuration() {
+	void detectAndParseWhenSimpleMillisShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10ms")).isEqualTo(Duration.ofMillis(10));
 		assertThat(DurationStyle.detectAndParse("10MS")).isEqualTo(Duration.ofMillis(10));
 		assertThat(DurationStyle.detectAndParse("+10ms")).isEqualTo(Duration.ofMillis(10));
@@ -74,7 +74,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleSecondsShouldReturnDuration() {
+	void detectAndParseWhenSimpleSecondsShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10s")).isEqualTo(Duration.ofSeconds(10));
 		assertThat(DurationStyle.detectAndParse("10S")).isEqualTo(Duration.ofSeconds(10));
 		assertThat(DurationStyle.detectAndParse("+10s")).isEqualTo(Duration.ofSeconds(10));
@@ -82,7 +82,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleMinutesShouldReturnDuration() {
+	void detectAndParseWhenSimpleMinutesShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10m")).isEqualTo(Duration.ofMinutes(10));
 		assertThat(DurationStyle.detectAndParse("10M")).isEqualTo(Duration.ofMinutes(10));
 		assertThat(DurationStyle.detectAndParse("+10m")).isEqualTo(Duration.ofMinutes(10));
@@ -90,7 +90,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleHoursShouldReturnDuration() {
+	void detectAndParseWhenSimpleHoursShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10h")).isEqualTo(Duration.ofHours(10));
 		assertThat(DurationStyle.detectAndParse("10H")).isEqualTo(Duration.ofHours(10));
 		assertThat(DurationStyle.detectAndParse("+10h")).isEqualTo(Duration.ofHours(10));
@@ -98,7 +98,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleDaysShouldReturnDuration() {
+	void detectAndParseWhenSimpleDaysShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10d")).isEqualTo(Duration.ofDays(10));
 		assertThat(DurationStyle.detectAndParse("10D")).isEqualTo(Duration.ofDays(10));
 		assertThat(DurationStyle.detectAndParse("+10d")).isEqualTo(Duration.ofDays(10));
@@ -106,27 +106,27 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleWithoutSuffixShouldReturnDuration() {
+	void detectAndParseWhenSimpleWithoutSuffixShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10")).isEqualTo(Duration.ofMillis(10));
 		assertThat(DurationStyle.detectAndParse("+10")).isEqualTo(Duration.ofMillis(10));
 		assertThat(DurationStyle.detectAndParse("-10")).isEqualTo(Duration.ofMillis(-10));
 	}
 
 	@Test
-	public void detectAndParseWhenSimpleWithoutSuffixButWithChronoUnitShouldReturnDuration() {
+	void detectAndParseWhenSimpleWithoutSuffixButWithChronoUnitShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
 		assertThat(DurationStyle.detectAndParse("+10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
 		assertThat(DurationStyle.detectAndParse("-10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(-10));
 	}
 
 	@Test
-	public void detectAndParseWhenBadFormatShouldThrowException() {
+	void detectAndParseWhenBadFormatShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detectAndParse("10foo"))
 				.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@Test
-	public void detectWhenSimpleShouldReturnSimple() {
+	void detectWhenSimpleShouldReturnSimple() {
 		assertThat(DurationStyle.detect("10")).isEqualTo(DurationStyle.SIMPLE);
 		assertThat(DurationStyle.detect("+10")).isEqualTo(DurationStyle.SIMPLE);
 		assertThat(DurationStyle.detect("-10")).isEqualTo(DurationStyle.SIMPLE);
@@ -142,7 +142,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectWhenIso8601ShouldReturnIso8601() {
+	void detectWhenIso8601ShouldReturnIso8601() {
 		assertThat(DurationStyle.detect("PT20.345S")).isEqualTo(DurationStyle.ISO8601);
 		assertThat(DurationStyle.detect("PT15M")).isEqualTo(DurationStyle.ISO8601);
 		assertThat(DurationStyle.detect("+PT15M")).isEqualTo(DurationStyle.ISO8601);
@@ -154,13 +154,13 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void detectWhenUnknownShouldThrowException() {
+	void detectWhenUnknownShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detect("bad"))
 				.withMessageContaining("'bad' is not a valid duration");
 	}
 
 	@Test
-	public void parseIso8601ShouldParse() {
+	void parseIso8601ShouldParse() {
 		assertThat(DurationStyle.ISO8601.parse("PT20.345S")).isEqualTo(Duration.parse("PT20.345S"));
 		assertThat(DurationStyle.ISO8601.parse("PT15M")).isEqualTo(Duration.parse("PT15M"));
 		assertThat(DurationStyle.ISO8601.parse("+PT15M")).isEqualTo(Duration.parse("PT15M"));
@@ -172,7 +172,7 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void parseIso8601WithUnitShouldIgnoreUnit() {
+	void parseIso8601WithUnitShouldIgnoreUnit() {
 		assertThat(DurationStyle.ISO8601.parse("PT20.345S", ChronoUnit.SECONDS)).isEqualTo(Duration.parse("PT20.345S"));
 		assertThat(DurationStyle.ISO8601.parse("PT15M", ChronoUnit.SECONDS)).isEqualTo(Duration.parse("PT15M"));
 		assertThat(DurationStyle.ISO8601.parse("+PT15M", ChronoUnit.SECONDS)).isEqualTo(Duration.parse("PT15M"));
@@ -184,54 +184,54 @@ public class DurationStyleTests {
 	}
 
 	@Test
-	public void parseIso8601WhenSimpleShouldThrowException() {
+	void parseIso8601WhenSimpleShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.ISO8601.parse("10d"))
 				.withMessageContaining("'10d' is not a valid ISO-8601 duration");
 	}
 
 	@Test
-	public void parseSimpleShouldParse() {
+	void parseSimpleShouldParse() {
 		assertThat(DurationStyle.SIMPLE.parse("10m")).isEqualTo(Duration.ofMinutes(10));
 	}
 
 	@Test
-	public void parseSimpleWithUnitShouldUseUnitAsFallback() {
+	void parseSimpleWithUnitShouldUseUnitAsFallback() {
 		assertThat(DurationStyle.SIMPLE.parse("10m", ChronoUnit.SECONDS)).isEqualTo(Duration.ofMinutes(10));
 		assertThat(DurationStyle.SIMPLE.parse("10", ChronoUnit.MINUTES)).isEqualTo(Duration.ofMinutes(10));
 	}
 
 	@Test
-	public void parseSimpleWhenUnknownUnitShouldThrowException() {
+	void parseSimpleWhenUnknownUnitShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.SIMPLE.parse("10mb"))
 				.satisfies((ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit 'mb'"));
 	}
 
 	@Test
-	public void parseSimpleWhenIso8601ShouldThrowException() {
+	void parseSimpleWhenIso8601ShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.SIMPLE.parse("PT10H"))
 				.withMessageContaining("'PT10H' is not a valid simple duration");
 	}
 
 	@Test
-	public void printIso8601ShouldPrint() {
+	void printIso8601ShouldPrint() {
 		Duration duration = Duration.parse("-PT-6H+3M");
 		assertThat(DurationStyle.ISO8601.print(duration)).isEqualTo("PT5H57M");
 	}
 
 	@Test
-	public void printIso8601ShouldIgnoreUnit() {
+	void printIso8601ShouldIgnoreUnit() {
 		Duration duration = Duration.parse("-PT-6H+3M");
 		assertThat(DurationStyle.ISO8601.print(duration, ChronoUnit.DAYS)).isEqualTo("PT5H57M");
 	}
 
 	@Test
-	public void printSimpleWithoutUnitShouldPrintInMs() {
+	void printSimpleWithoutUnitShouldPrintInMs() {
 		Duration duration = Duration.ofSeconds(1);
 		assertThat(DurationStyle.SIMPLE.print(duration)).isEqualTo("1000ms");
 	}
 
 	@Test
-	public void printSimpleWithUnitShouldPrintInUnit() {
+	void printSimpleWithUnitShouldPrintInUnit() {
 		Duration duration = Duration.ofMillis(1000);
 		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.SECONDS)).isEqualTo("1s");
 	}

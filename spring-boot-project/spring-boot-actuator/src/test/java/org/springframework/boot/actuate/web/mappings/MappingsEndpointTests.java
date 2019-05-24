@@ -70,10 +70,10 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class MappingsEndpointTests {
+class MappingsEndpointTests {
 
 	@Test
-	public void servletWebMappings() {
+	void servletWebMappings() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
 		new WebApplicationContextRunner(contextSupplier)
 				.withUserConfiguration(EndpointConfiguration.class, ServletWebConfiguration.class).run((context) -> {
@@ -95,7 +95,7 @@ public class MappingsEndpointTests {
 	}
 
 	@Test
-	public void servletWebMappingsWithAdditionalDispatcherServlets() {
+	void servletWebMappingsWithAdditionalDispatcherServlets() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
 		new WebApplicationContextRunner(contextSupplier).withUserConfiguration(EndpointConfiguration.class,
 				ServletWebConfiguration.class, CustomDispatcherServletConfiguration.class).run((context) -> {
@@ -129,7 +129,7 @@ public class MappingsEndpointTests {
 	}
 
 	@Test
-	public void reactiveWebMappings() {
+	void reactiveWebMappings() {
 		new ReactiveWebApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class, ReactiveWebConfiguration.class).run((context) -> {
 					ContextMappings contextMappings = contextMappings(context);

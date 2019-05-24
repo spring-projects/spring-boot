@@ -1,7 +1,7 @@
 package org.springframework.boot.context.properties.bind
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource
 

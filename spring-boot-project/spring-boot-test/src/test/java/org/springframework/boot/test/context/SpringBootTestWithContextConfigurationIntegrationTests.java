@@ -37,13 +37,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @DirtiesContext
 @SpringBootTest
 @ContextConfiguration(classes = SpringBootTestWithContextConfigurationIntegrationTests.Config.class)
-public class SpringBootTestWithContextConfigurationIntegrationTests {
+class SpringBootTestWithContextConfigurationIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void injectsOnlyConfig() {
+	void injectsOnlyConfig() {
 		assertThat(this.context.getBean(Config.class)).isNotNull();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(AdditionalConfig.class));

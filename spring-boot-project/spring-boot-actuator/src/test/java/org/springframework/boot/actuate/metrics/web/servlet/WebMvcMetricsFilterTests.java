@@ -96,7 +96,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class WebMvcMetricsFilterTests {
+class WebMvcMetricsFilterTests {
 
 	@Autowired
 	private SimpleMeterRegistry registry;
@@ -127,39 +127,39 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void timedMethod() throws Exception {
+	void timedMethod() throws Exception {
 		this.mvc.perform(get("/api/c1/10")).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests")
 				.tags("status", "200", "uri", "/api/c1/{id}", "public", "true").timer().count()).isEqualTo(1);
 	}
 
 	@Test
-	public void subclassedTimedMethod() throws Exception {
+	void subclassedTimedMethod() throws Exception {
 		this.mvc.perform(get("/api/c1/metaTimed/10")).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests").tags("status", "200", "uri", "/api/c1/metaTimed/{id}")
 				.timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void untimedMethod() throws Exception {
+	void untimedMethod() throws Exception {
 		this.mvc.perform(get("/api/c1/untimed/10")).andExpect(status().isOk());
 		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/c1/untimed/10").timer()).isNull();
 	}
 
 	@Test
-	public void timedControllerClass() throws Exception {
+	void timedControllerClass() throws Exception {
 		this.mvc.perform(get("/api/c2/10")).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests").tags("status", "200").timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void badClientRequest() throws Exception {
+	void badClientRequest() throws Exception {
 		this.mvc.perform(get("/api/c1/oops")).andExpect(status().is4xxClientError());
 		assertThat(this.registry.get("http.server.requests").tags("status", "400").timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void redirectRequest() throws Exception {
+	void redirectRequest() throws Exception {
 		this.mvc.perform(get("/api/redirect").header(RedirectAndNotFoundFilter.TEST_MISBEHAVE_HEADER, "302"))
 				.andExpect(status().is3xxRedirection());
 		assertThat(this.registry.get("http.server.requests").tags("uri", "REDIRECTION").tags("status", "302").timer())
@@ -167,7 +167,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void notFoundRequest() throws Exception {
+	void notFoundRequest() throws Exception {
 		this.mvc.perform(get("/api/not/found").header(RedirectAndNotFoundFilter.TEST_MISBEHAVE_HEADER, "404"))
 				.andExpect(status().is4xxClientError());
 		assertThat(this.registry.get("http.server.requests").tags("uri", "NOT_FOUND").tags("status", "404").timer())
@@ -175,7 +175,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void unhandledError() {
+	void unhandledError() {
 		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10")).andExpect(status().isOk()))
 				.hasRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.get("http.server.requests").tags("exception", "RuntimeException").timer().count())
@@ -183,7 +183,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void streamingError() throws Exception {
+	void streamingError() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/streamingError")).andExpect(request().asyncStarted())
 				.andReturn();
 		assertThatCode(() -> this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk()));
@@ -192,7 +192,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void anonymousError() {
+	void anonymousError() {
 		try {
 			this.mvc.perform(get("/api/c1/anonymousError/10"));
 		}
@@ -203,7 +203,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void asyncCallableRequest() throws Exception {
+	void asyncCallableRequest() throws Exception {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {
@@ -228,7 +228,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void asyncRequestThatThrowsUncheckedException() throws Exception {
+	void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
 				.andExpect(request().asyncStarted()).andReturn();
 		assertThatExceptionOfType(NestedServletException.class)
@@ -239,7 +239,7 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void asyncCompletableFutureRequest() throws Exception {
+	void asyncCompletableFutureRequest() throws Exception {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {
@@ -261,13 +261,13 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void endpointThrowsError() throws Exception {
+	void endpointThrowsError() throws Exception {
 		this.mvc.perform(get("/api/c1/error/10")).andExpect(status().is4xxClientError());
 		assertThat(this.registry.get("http.server.requests").tags("status", "422").timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void regexBasedRequestMapping() throws Exception {
+	void regexBasedRequestMapping() throws Exception {
 		this.mvc.perform(get("/api/c1/regex/.abc")).andExpect(status().isOk());
 		assertThat(
 				this.registry.get("http.server.requests").tags("uri", "/api/c1/regex/{id:\\.[a-z]+}").timer().count())
@@ -275,14 +275,14 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void recordQuantiles() throws Exception {
+	void recordQuantiles() throws Exception {
 		this.mvc.perform(get("/api/c1/percentiles/10")).andExpect(status().isOk());
 		assertThat(this.prometheusRegistry.scrape()).contains("quantile=\"0.5\"");
 		assertThat(this.prometheusRegistry.scrape()).contains("quantile=\"0.95\"");
 	}
 
 	@Test
-	public void recordHistogram() throws Exception {
+	void recordHistogram() throws Exception {
 		this.mvc.perform(get("/api/c1/histogram/10")).andExpect(status().isOk());
 		assertThat(this.prometheusRegistry.scrape()).contains("le=\"0.001\"");
 		assertThat(this.prometheusRegistry.scrape()).contains("le=\"30.0\"");

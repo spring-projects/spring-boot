@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.rsocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
@@ -42,14 +42,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class RSocketStrategiesAutoConfigurationTests {
+class RSocketStrategiesAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(BaseConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class));
 
 	@Test
-	public void shouldCreateDefaultBeans() {
+	void shouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
@@ -65,7 +65,7 @@ public class RSocketStrategiesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldUseCustomStrategies() {
+	void shouldUseCustomStrategies() {
 		this.contextRunner.withUserConfiguration(UserStrategies.class).run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			assertThat(context.getBeanNamesForType(RSocketStrategies.class)).contains("customRSocketStrategies");
@@ -73,7 +73,7 @@ public class RSocketStrategiesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldUseStrategiesCustomizer() {
+	void shouldUseStrategiesCustomizer() {
 		this.contextRunner.withUserConfiguration(StrategiesCustomizer.class).run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);

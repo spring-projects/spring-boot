@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.devtools.integrationtest.HttpTunnelIntegrationTests.TunnelConfiguration.TestTunnelClient;
@@ -59,10 +59,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class HttpTunnelIntegrationTests {
+class HttpTunnelIntegrationTests {
 
 	@Test
-	public void httpServerDirect() {
+	void httpServerDirect() {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		context.register(ServerConfiguration.class);
 		context.refresh();
@@ -74,7 +74,7 @@ public class HttpTunnelIntegrationTests {
 	}
 
 	@Test
-	public void viaTunnel() {
+	void viaTunnel() {
 		AnnotationConfigServletWebServerApplicationContext serverContext = new AnnotationConfigServletWebServerApplicationContext();
 		serverContext.register(ServerConfiguration.class);
 		serverContext.refresh();

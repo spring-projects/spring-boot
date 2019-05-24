@@ -22,7 +22,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +38,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link BeanCurrentlyInCreationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-public class BeanCurrentlyInCreationFailureAnalyzerTests {
+class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	private final FailureAnalyzer analyzer = new BeanCurrentlyInCreationFailureAnalyzer();
 
 	@Test
-	public void cyclicBeanMethods() throws IOException {
+	void cyclicBeanMethods() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CyclicBeanMethodsConfiguration.class);
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(9);
@@ -67,7 +67,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAutowiredFields() throws IOException {
+	void cycleWithAutowiredFields() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CycleWithAutowiredFields.class);
 		assertThat(analysis.getDescription())
 				.startsWith("The dependencies of some of the beans in the application context form a cycle:");
@@ -87,7 +87,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleReferencedViaOtherBeans() throws IOException {
+	void cycleReferencedViaOtherBeans() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CycleReferencedViaOtherBeansConfiguration.class);
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(12);
@@ -110,7 +110,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAnUnknownStartIsNotAnalyzed() {
+	void cycleWithAnUnknownStartIsNotAnalyzed() {
 		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test"))).isNull();
 	}
 

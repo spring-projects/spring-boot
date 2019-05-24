@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class StatsdPropertiesTests {
+class StatsdPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		StatsdProperties properties = new StatsdProperties();
 		StatsdConfig config = StatsdConfig.DEFAULT;
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());

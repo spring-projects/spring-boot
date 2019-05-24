@@ -39,10 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Artsiom Yudovin
  */
-public class MongoPropertiesTests {
+class MongoPropertiesTests {
 
 	@Test
-	public void canBindCharArrayPassword() {
+	void canBindCharArrayPassword() {
 		// gh-1572
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.data.mongodb.password:word").applyTo(context);
@@ -54,7 +54,7 @@ public class MongoPropertiesTests {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void allMongoClientOptionsCanBeSet() {
+	void allMongoClientOptionsCanBeSet() {
 		MongoClientOptions.Builder builder = MongoClientOptions.builder();
 		builder.alwaysUseMBeans(true);
 		builder.connectionsPerHost(101);
@@ -100,7 +100,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void uriOverridesHostAndPort() {
+	void uriOverridesHostAndPort() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
 		properties.setPort(27017);
@@ -112,7 +112,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void onlyHostAndPortSetShouldUseThat() {
+	void onlyHostAndPortSetShouldUseThat() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
 		properties.setPort(27017);
@@ -123,7 +123,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void onlyUriSetShouldUseThat() {
+	void onlyUriSetShouldUseThat() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo1.example.com:12345");
 		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
@@ -133,7 +133,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void noCustomAddressAndNoUriUsesDefaultUri() {
+	void noCustomAddressAndNoUriUsesDefaultUri() {
 		MongoProperties properties = new MongoProperties();
 		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
 		List<ServerAddress> allAddresses = getAllAddresses(client);
@@ -149,7 +149,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void canBindAutoIndexCreation() {
+	void canBindAutoIndexCreation() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.data.mongodb.autoIndexCreation:true").applyTo(context);
 		context.register(Config.class);

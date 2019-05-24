@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.function.Consumer;
@@ -143,11 +142,13 @@ class OutputCapture implements CapturedOutput {
 	 */
 	private static class SystemCapture {
 
+		private final Object monitor = new Object();
+
 		private final PrintStreamCapture out;
 
 		private final PrintStreamCapture err;
 
-		private final List<CapturedString> capturedStrings = Collections.synchronizedList(new ArrayList<>());
+		private final List<CapturedString> capturedStrings = new ArrayList<>();
 
 		SystemCapture() {
 			this.out = new PrintStreamCapture(System.out, this::captureOut);
@@ -162,23 +163,31 @@ class OutputCapture implements CapturedOutput {
 		}
 
 		private void captureOut(String string) {
-			this.capturedStrings.add(new CapturedString(Type.OUT, string));
+			synchronized (this.monitor) {
+				this.capturedStrings.add(new CapturedString(Type.OUT, string));
+			}
 		}
 
 		private void captureErr(String string) {
-			this.capturedStrings.add(new CapturedString(Type.ERR, string));
+			synchronized (this.monitor) {
+				this.capturedStrings.add(new CapturedString(Type.ERR, string));
+			}
 		}
 
 		public void append(StringBuilder builder, Predicate<Type> filter) {
-			for (CapturedString stringCapture : this.capturedStrings) {
-				if (filter.test(stringCapture.getType())) {
-					builder.append(stringCapture);
+			synchronized (this.monitor) {
+				for (CapturedString stringCapture : this.capturedStrings) {
+					if (filter.test(stringCapture.getType())) {
+						builder.append(stringCapture);
+					}
 				}
 			}
 		}
 
 		public void reset() {
-			this.capturedStrings.clear();
+			synchronized (this.monitor) {
+				this.capturedStrings.clear();
+			}
 		}
 
 	}

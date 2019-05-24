@@ -36,18 +36,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class GraphiteMetricsExportAutoConfigurationTests {
+class GraphiteMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GraphiteMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(GraphiteMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresUseTagsAsPrefix() {
+	void autoConfiguresUseTagsAsPrefix() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app").run((context) -> {
 					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
@@ -58,13 +58,13 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguresItsConfigAndMeterRegistry() {
+	void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(GraphiteMeterRegistry.class).hasSingleBean(GraphiteConfig.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.graphite.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(GraphiteMeterRegistry.class)
@@ -72,21 +72,21 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
 						.hasSingleBean(GraphiteConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
 						.hasBean("customRegistry").hasSingleBean(GraphiteConfig.class));
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
 			assertThat(registry.isClosed()).isFalse();

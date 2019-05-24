@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class HikariDataSourceConfigurationTests {
+class HikariDataSourceConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
@@ -40,7 +40,7 @@ public class HikariDataSourceConfigurationTests {
 					"spring.datasource.type=" + HikariDataSource.class.getName());
 
 	@Test
-	public void testDataSourceExists() {
+	void testDataSourceExists() {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
 			assertThat(context.getBeansOfType(HikariDataSource.class)).hasSize(1);
@@ -48,7 +48,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourcePropertiesOverridden() {
+	void testDataSourcePropertiesOverridden() {
 		this.contextRunner.withPropertyValues("spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
 				"spring.datasource.hikari.max-lifetime=1234").run((context) -> {
 					HikariDataSource ds = context.getBean(HikariDataSource.class);
@@ -59,7 +59,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceGenericPropertiesOverridden() {
+	void testDataSourceGenericPropertiesOverridden() {
 		this.contextRunner.withPropertyValues(
 				"spring.datasource.hikari.data-source-properties" + ".dataSourceClassName=org.h2.JDBCDataSource")
 				.run((context) -> {
@@ -71,7 +71,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceDefaultsPreserved() {
+	void testDataSourceDefaultsPreserved() {
 		this.contextRunner.run((context) -> {
 			HikariDataSource ds = context.getBean(HikariDataSource.class);
 			assertThat(ds.getMaxLifetime()).isEqualTo(1800000);
@@ -79,7 +79,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void nameIsAliasedToPoolName() {
+	void nameIsAliasedToPoolName() {
 		this.contextRunner.withPropertyValues("spring.datasource.name=myDS").run((context) -> {
 			HikariDataSource ds = context.getBean(HikariDataSource.class);
 			assertThat(ds.getPoolName()).isEqualTo("myDS");
@@ -88,7 +88,7 @@ public class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void poolNameTakesPrecedenceOverName() {
+	void poolNameTakesPrecedenceOverName() {
 		this.contextRunner
 				.withPropertyValues("spring.datasource.name=myDS", "spring.datasource.hikari.pool-name=myHikariDS")
 				.run((context) -> {

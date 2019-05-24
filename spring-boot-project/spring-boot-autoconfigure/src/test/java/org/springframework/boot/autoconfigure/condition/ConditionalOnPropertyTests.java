@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionalOnPropertyTests {
+class ConditionalOnPropertyTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -59,148 +59,148 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void allPropertiesAreDefined() {
+	void allPropertiesAreDefined() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1", "property2=value2");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void notAllPropertiesAreDefined() {
+	void notAllPropertiesAreDefined() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void propertyValueEqualsFalse() {
+	void propertyValueEqualsFalse() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=false", "property2=value2");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void propertyValueEqualsFALSE() {
+	void propertyValueEqualsFALSE() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=FALSE", "property2=value2");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void relaxedName() {
+	void relaxedName() {
 		load(RelaxedPropertiesRequiredConfiguration.class, "spring.theRelaxedProperty=value1");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void prefixWithoutPeriod() {
+	void prefixWithoutPeriod() {
 		load(RelaxedPropertiesRequiredConfigurationWithShortPrefix.class, "spring.property=value1");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
 	// Enabled by default
-	public void enabledIfNotConfiguredOtherwise() {
+	void enabledIfNotConfiguredOtherwise() {
 		load(EnabledIfNotConfiguredOtherwiseConfig.class);
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void enabledIfNotConfiguredOtherwiseWithConfig() {
+	void enabledIfNotConfiguredOtherwiseWithConfig() {
 		load(EnabledIfNotConfiguredOtherwiseConfig.class, "simple.myProperty:false");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void enabledIfNotConfiguredOtherwiseWithConfigDifferentCase() {
+	void enabledIfNotConfiguredOtherwiseWithConfigDifferentCase() {
 		load(EnabledIfNotConfiguredOtherwiseConfig.class, "simple.my-property:FALSE");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
 	// Disabled by default
-	public void disableIfNotConfiguredOtherwise() {
+	void disableIfNotConfiguredOtherwise() {
 		load(DisabledIfNotConfiguredOtherwiseConfig.class);
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void disableIfNotConfiguredOtherwiseWithConfig() {
+	void disableIfNotConfiguredOtherwiseWithConfig() {
 		load(DisabledIfNotConfiguredOtherwiseConfig.class, "simple.myProperty:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void disableIfNotConfiguredOtherwiseWithConfigDifferentCase() {
+	void disableIfNotConfiguredOtherwiseWithConfigDifferentCase() {
 		load(DisabledIfNotConfiguredOtherwiseConfig.class, "simple.myproperty:TrUe");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void simpleValueIsSet() {
+	void simpleValueIsSet() {
 		load(SimpleValueConfig.class, "simple.myProperty:bar");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void caseInsensitive() {
+	void caseInsensitive() {
 		load(SimpleValueConfig.class, "simple.myProperty:BaR");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void defaultValueIsSet() {
+	void defaultValueIsSet() {
 		load(DefaultValueConfig.class, "simple.myProperty:bar");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void defaultValueIsNotSet() {
+	void defaultValueIsNotSet() {
 		load(DefaultValueConfig.class);
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void defaultValueIsSetDifferentValue() {
+	void defaultValueIsSetDifferentValue() {
 		load(DefaultValueConfig.class, "simple.myProperty:another");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void prefix() {
+	void prefix() {
 		load(PrefixValueConfig.class, "simple.myProperty:bar");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void relaxedEnabledByDefault() {
+	void relaxedEnabledByDefault() {
 		load(PrefixValueConfig.class, "simple.myProperty:bar");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void multiValuesAllSet() {
+	void multiValuesAllSet() {
 		load(MultiValuesConfig.class, "simple.my-property:bar", "simple.my-another-property:bar");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void multiValuesOnlyOneSet() {
+	void multiValuesOnlyOneSet() {
 		load(MultiValuesConfig.class, "simple.my-property:bar");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void usingValueAttribute() {
+	void usingValueAttribute() {
 		load(ValueAttribute.class, "some.property");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void nameOrValueMustBeSpecified() {
+	void nameOrValueMustBeSpecified() {
 		assertThatIllegalStateException().isThrownBy(() -> load(NoNameOrValueAttribute.class, "some.property"))
 				.satisfies(causeMessageContaining(
 						"The name or value attribute of @ConditionalOnProperty must be specified"));
 	}
 
 	@Test
-	public void nameAndValueMustNotBeSpecified() {
+	void nameAndValueMustNotBeSpecified() {
 		assertThatIllegalStateException().isThrownBy(() -> load(NameAndValueAttribute.class, "some.property"))
 				.satisfies(causeMessageContaining(
 						"The name and value attributes of @ConditionalOnProperty are exclusive"));
@@ -211,37 +211,37 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void metaAnnotationConditionMatchesWhenPropertyIsSet() {
+	void metaAnnotationConditionMatchesWhenPropertyIsSet() {
 		load(MetaAnnotation.class, "my.feature.enabled=true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void metaAnnotationConditionDoesNotMatchWhenPropertyIsNotSet() {
+	void metaAnnotationConditionDoesNotMatchWhenPropertyIsNotSet() {
 		load(MetaAnnotation.class);
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyDirectPropertyIsSet() {
+	void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyDirectPropertyIsSet() {
 		load(MetaAnnotationAndDirectAnnotation.class, "my.other.feature.enabled=true");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyMetaPropertyIsSet() {
+	void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyMetaPropertyIsSet() {
 		load(MetaAnnotationAndDirectAnnotation.class, "my.feature.enabled=true");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void metaAndDirectAnnotationConditionDoesNotMatchWhenNeitherPropertyIsSet() {
+	void metaAndDirectAnnotationConditionDoesNotMatchWhenNeitherPropertyIsSet() {
 		load(MetaAnnotationAndDirectAnnotation.class);
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void metaAndDirectAnnotationConditionMatchesWhenBothPropertiesAreSet() {
+	void metaAndDirectAnnotationConditionMatchesWhenBothPropertiesAreSet() {
 		load(MetaAnnotationAndDirectAnnotation.class, "my.feature.enabled=true", "my.other.feature.enabled=true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}

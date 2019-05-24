@@ -30,29 +30,29 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class EndpointMediaTypesTests {
+class EndpointMediaTypesTests {
 
 	@Test
-	public void createWhenProducedIsNullShouldThrowException() {
+	void createWhenProducedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
 				.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
-	public void createWhenConsumedIsNullShouldThrowException() {
+	void createWhenConsumedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
 				.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test
-	public void getProducedShouldReturnProduced() {
+	void getProducedShouldReturnProduced() {
 		List<String> produced = Arrays.asList("a", "b", "c");
 		EndpointMediaTypes types = new EndpointMediaTypes(produced, Collections.emptyList());
 		assertThat(types.getProduced()).isEqualTo(produced);
 	}
 
 	@Test
-	public void getConsumedShouldReturnConsumed() {
+	void getConsumedShouldReturnConsumed() {
 		List<String> consumed = Arrays.asList("a", "b", "c");
 		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(), consumed);
 		assertThat(types.getConsumed()).isEqualTo(consumed);

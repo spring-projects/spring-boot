@@ -44,7 +44,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Stephane Nicoll
  * @see WebFluxEndpointManagementContextConfiguration
  */
-public class WebFluxEndpointCorsIntegrationTests {
+class WebFluxEndpointCorsIntegrationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
@@ -54,14 +54,14 @@ public class WebFluxEndpointCorsIntegrationTests {
 			.withPropertyValues("management.endpoints.web.exposure.include:*");
 
 	@Test
-	public void corsIsDisabledByDefault() {
+	void corsIsDisabledByDefault() {
 		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
 				.header("Origin", "spring.example.org").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 				.exchange().expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN)));
 	}
 
 	@Test
-	public void settingAllowedOriginsEnablesCors() {
+	void settingAllowedOriginsEnablesCors() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.run(withWebTestClient((webTestClient) -> {
 					webTestClient.options().uri("/actuator/beans").header("Origin", "test.example.org")
@@ -72,14 +72,14 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void maxAgeDefaultsTo30Minutes() {
+	void maxAgeDefaultsTo30Minutes() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.run(withWebTestClient((webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans")
 						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800")));
 	}
 
 	@Test
-	public void maxAgeCanBeConfigured() {
+	void maxAgeCanBeConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.max-age: 2400")
@@ -88,7 +88,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void requestsWithDisallowedHeadersAreRejected() {
+	void requestsWithDisallowedHeadersAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
 						.header("Origin", "spring.example.org").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
@@ -97,7 +97,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void allowedHeadersCanBeConfigured() {
+	void allowedHeadersCanBeConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allowed-headers:Alpha,Bravo")
@@ -108,7 +108,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void requestsWithDisallowedMethodsAreRejected() {
+	void requestsWithDisallowedMethodsAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
 						.header("Origin", "spring.example.org")
@@ -117,7 +117,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void allowedMethodsCanBeConfigured() {
+	void allowedMethodsCanBeConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allowed-methods:GET,HEAD")
@@ -128,7 +128,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void credentialsCanBeAllowed() {
+	void credentialsCanBeAllowed() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:true")
@@ -137,7 +137,7 @@ public class WebFluxEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void credentialsCanBeDisabled() {
+	void credentialsCanBeDisabled() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:false")

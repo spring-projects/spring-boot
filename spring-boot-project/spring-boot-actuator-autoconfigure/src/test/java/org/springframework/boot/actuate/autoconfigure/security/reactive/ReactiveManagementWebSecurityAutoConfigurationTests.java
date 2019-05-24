@@ -62,7 +62,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class ReactiveManagementWebSecurityAutoConfigurationTests {
+class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(
@@ -73,17 +73,17 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 							ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
-	public void permitAllForHealth() {
+	void permitAllForHealth() {
 		this.contextRunner.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull());
 	}
 
 	@Test
-	public void permitAllForInfo() {
+	void permitAllForInfo() {
 		this.contextRunner.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/info")).isNull());
 	}
 
 	@Test
-	public void securesEverythingElse() {
+	void securesEverythingElse() {
 		this.contextRunner.run((context) -> {
 			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
 			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
@@ -91,7 +91,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void usesMatchersBasedOffConfiguredActuatorBasePath() {
+	void usesMatchersBasedOffConfiguredActuatorBasePath() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/").run((context) -> {
 			assertThat(getAuthenticateHeader(context, "/health")).isNull();
 			assertThat(getAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
@@ -99,7 +99,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backsOffIfCustomSecurityIsAdded() {
+	void backsOffIfCustomSecurityIsAdded() {
 		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class).run((context) -> {
 			assertThat(getLocationHeader(context, "/actuator/health").toString()).contains("/login");
 			assertThat(getLocationHeader(context, "/foo")).isNull();
@@ -107,7 +107,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
+	void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
 				.run((context) -> assertThat(context)
@@ -115,7 +115,7 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backsOffWhenWebFilterChainProxyBeanPresent() {
+	void backsOffWhenWebFilterChainProxyBeanPresent() {
 		this.contextRunner.withUserConfiguration(WebFilterChainProxyConfiguration.class).run((context) -> {
 			assertThat(getLocationHeader(context, "/actuator/health").toString()).contains("/login");
 			assertThat(getLocationHeader(context, "/foo").toString()).contains("/login");

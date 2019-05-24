@@ -45,13 +45,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class TestRestTemplateContextCustomizerWithOverrideIntegrationTests {
+class TestRestTemplateContextCustomizerWithOverrideIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void test() {
+	void test() {
 		assertThat(this.restTemplate).isInstanceOf(CustomTestRestTemplate.class);
 	}
 

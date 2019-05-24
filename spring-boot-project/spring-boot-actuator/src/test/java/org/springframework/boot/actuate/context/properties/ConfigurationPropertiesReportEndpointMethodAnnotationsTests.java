@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
+class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Test
-	public void testNaming() {
+	void testNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
 				.withPropertyValues("other.name:foo", "first.name:bar");
 		contextRunner.run((context) -> {
@@ -56,7 +56,7 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	}
 
 	@Test
-	public void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
+	void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(OverriddenPrefix.class).withPropertyValues("other.name:foo");
 		contextRunner.run((context) -> {

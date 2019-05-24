@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
 import bitronix.tm.TransactionManagerServices;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -34,26 +34,26 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class PoolingDataSourceBeanTests {
+class PoolingDataSourceBeanTests {
 
 	private PoolingDataSourceBean bean = new PoolingDataSourceBean();
 
 	@Test
-	public void sensibleDefaults() {
+	void sensibleDefaults() {
 		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
 		assertThat(this.bean.getAutomaticEnlistingEnabled()).isTrue();
 		assertThat(this.bean.isEnableJdbc4ConnectionTest()).isTrue();
 	}
 
 	@Test
-	public void setsUniqueNameIfNull() throws Exception {
+	void setsUniqueNameIfNull() throws Exception {
 		this.bean.setBeanName("beanName");
 		this.bean.afterPropertiesSet();
 		assertThat(this.bean.getUniqueName()).isEqualTo("beanName");
 	}
 
 	@Test
-	public void doesNotSetUniqueNameIfNotNull() throws Exception {
+	void doesNotSetUniqueNameIfNotNull() throws Exception {
 		this.bean.setBeanName("beanName");
 		this.bean.setUniqueName("un");
 		this.bean.afterPropertiesSet();
@@ -61,7 +61,7 @@ public class PoolingDataSourceBeanTests {
 	}
 
 	@Test
-	public void setDataSource() throws Exception {
+	void setDataSource() throws Exception {
 		XADataSource dataSource = mock(XADataSource.class);
 		XAConnection xaConnection = mock(XAConnection.class);
 		Connection connection = mock(Connection.class);

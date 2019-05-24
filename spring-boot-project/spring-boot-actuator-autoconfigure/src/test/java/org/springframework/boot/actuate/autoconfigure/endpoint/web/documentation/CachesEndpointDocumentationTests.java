@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Stephane Nicoll
  */
-public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> levelFields = Arrays.asList(
 			fieldWithPath("name").description("Cache name."),
@@ -61,7 +61,7 @@ public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 					.optional());
 
 	@Test
-	public void allCaches() throws Exception {
+	void allCaches() throws Exception {
 		this.mockMvc.perform(get("/actuator/caches")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("caches/all",
 						responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
@@ -72,19 +72,19 @@ public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	}
 
 	@Test
-	public void namedCache() throws Exception {
+	void namedCache() throws Exception {
 		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk()).andDo(MockMvcRestDocumentation
 				.document("caches/named", requestParameters(requestParameters), responseFields(levelFields)));
 	}
 
 	@Test
-	public void evictAllCaches() throws Exception {
+	void evictAllCaches() throws Exception {
 		this.mockMvc.perform(delete("/actuator/caches")).andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("caches/evict-all"));
 	}
 
 	@Test
-	public void evictNamedCache() throws Exception {
+	void evictNamedCache() throws Exception {
 		this.mockMvc.perform(delete("/actuator/caches/countries?cacheManager=anotherCacheManager"))
 				.andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("caches/evict-named", requestParameters(requestParameters)));

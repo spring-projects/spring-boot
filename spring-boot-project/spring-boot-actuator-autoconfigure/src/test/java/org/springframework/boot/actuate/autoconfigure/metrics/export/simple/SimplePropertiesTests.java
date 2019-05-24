@@ -24,10 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Stephane Nicoll
  */
-public class SimplePropertiesTests {
+class SimplePropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		SimpleProperties properties = new SimpleProperties();
 		SimpleConfig config = SimpleConfig.DEFAULT;
 		assertThat(properties.getStep()).isEqualTo(config.step());

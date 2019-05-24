@@ -68,7 +68,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Stephane Nicoll
  */
-public class CloudFoundryWebFluxEndpointIntegrationTests {
+class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	private static ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
 
@@ -82,7 +82,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 					.withUserConfiguration(TestEndpointConfiguration.class).withPropertyValues("server.port=0");
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() {
+	void operationWithSecurityInterceptorForbidden() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
 		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication/test")
@@ -91,7 +91,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() {
+	void operationWithSecurityInterceptorSuccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
 		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication/test")
@@ -100,7 +100,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void responseToOptionsRequestIncludesCorsHeaders() {
+	void responseToOptionsRequestIncludesCorsHeaders() {
 		this.contextRunner.run(withWebTestClient((client) -> client.options().uri("/cfApplication/test")
 				.accept(MediaType.APPLICATION_JSON).header("Access-Control-Request-Method", "POST")
 				.header("Origin", "https://example.com").exchange().expectStatus().isOk().expectHeader()
@@ -109,7 +109,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithFullAccess() {
+	void linksToOtherEndpointsWithFullAccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
 		this.contextRunner
@@ -124,7 +124,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsForbidden() {
+	void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
@@ -134,7 +134,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithRestrictedAccess() {
+	void linksToOtherEndpointsWithRestrictedAccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
 		this.contextRunner

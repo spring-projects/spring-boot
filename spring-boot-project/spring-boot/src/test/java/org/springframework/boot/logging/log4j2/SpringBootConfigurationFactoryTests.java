@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootConfigurationFactoryTests {
+class SpringBootConfigurationFactoryTests {
 
 	@Test
-	public void producesConfigurationWithShutdownHookDisabled() throws IOException {
+	void producesConfigurationWithShutdownHookDisabled() throws IOException {
 		ConfigurationSource source = new ConfigurationSource(new ByteArrayInputStream(new byte[0]));
 		assertThat(new SpringBootConfigurationFactory().getConfiguration(new LoggerContext(""), source)
 				.isShutdownHookEnabled()).isFalse();

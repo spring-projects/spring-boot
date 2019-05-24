@@ -43,10 +43,10 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionsReportEndpointTests {
+class ConditionsReportEndpointTests {
 
 	@Test
-	public void invoke() {
+	void invoke() {
 		new ApplicationContextRunner().withUserConfiguration(Config.class).run((context) -> {
 			ContextConditionEvaluation report = context.getBean(ConditionsReportEndpoint.class)
 					.applicationConditionEvaluation().getContexts().get(context.getId());

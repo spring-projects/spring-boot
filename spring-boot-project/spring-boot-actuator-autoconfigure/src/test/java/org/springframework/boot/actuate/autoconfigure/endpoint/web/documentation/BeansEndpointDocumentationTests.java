@@ -45,10 +45,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void beans() throws Exception {
+	void beans() throws Exception {
 		List<FieldDescriptor> beanFields = Arrays.asList(fieldWithPath("aliases").description("Names of any aliases."),
 				fieldWithPath("scope").description("Scope of the bean."),
 				fieldWithPath("type").description("Fully qualified type of the bean."),

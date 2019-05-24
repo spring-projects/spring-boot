@@ -45,19 +45,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class TaskSchedulingAutoConfigurationTests {
+class TaskSchedulingAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class));
 
 	@Test
-	public void noSchedulingDoesNotExposeTaskScheduler() {
+	void noSchedulingDoesNotExposeTaskScheduler() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(TaskScheduler.class));
 	}
 
 	@Test
-	public void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
+	void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
 		this.contextRunner
 				.withPropertyValues("spring.task.scheduling.shutdown.await-termination=true",
 						"spring.task.scheduling.shutdown.await-termination-period=30s",
@@ -74,7 +74,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithNoTaskExecutorAppliesCustomizers() {
+	void enableSchedulingWithNoTaskExecutorAppliesCustomizers() {
 		this.contextRunner.withPropertyValues("spring.task.scheduling.thread-name-prefix=scheduling-test-")
 				.withUserConfiguration(SchedulingConfiguration.class, TaskSchedulerCustomizerConfiguration.class)
 				.run((context) -> {
@@ -86,7 +86,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithExistingTaskSchedulerBacksOff() {
+	void enableSchedulingWithExistingTaskSchedulerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, TaskSchedulerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskScheduler.class);
@@ -98,7 +98,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
+	void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
 		this.contextRunner
 				.withUserConfiguration(SchedulingConfiguration.class, ScheduledExecutorServiceConfiguration.class)
 				.run((context) -> {
@@ -111,7 +111,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithConfigurerBacksOff() {
+	void enableSchedulingWithConfigurerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, SchedulingConfigurerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean(TaskScheduler.class);

@@ -18,8 +18,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -32,19 +31,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class ConstructorParametersBinderTests {
+class ConstructorParametersBinderTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private final Binder binder = new Binder(this.sources);
 
 	@Test
-	public void bindToClassShouldCreateBoundBean() {
+	void bindToClassShouldCreateBoundBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "34");
@@ -61,7 +55,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoPrefixShouldCreateBoundBean() {
+	void bindToClassWhenHasNoPrefixShouldCreateBoundBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("int-value", "12");
 		source.put("long-value", "34");
@@ -79,7 +73,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToAbstractClassWithShouldNotBind() {
+	void bindToAbstractClassWithShouldNotBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.name", "test");
 		this.sources.add(source);
@@ -88,7 +82,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithMultipleConstructorsShouldNotBind() {
+	void bindToClassWithMultipleConstructorsShouldNotBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		this.sources.add(source);
@@ -97,7 +91,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithOnlyDefaultConstructorShouldNotBind() {
+	void bindToClassWithOnlyDefaultConstructorShouldNotBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		this.sources.add(source);
@@ -106,7 +100,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindNested() {
+	void bindToClassShouldBindNested() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.long-value", "34");
@@ -121,7 +115,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithNoValueForPrimitiveShouldUseDefault() {
+	void bindToClassWithNoValueForPrimitiveShouldUseDefault() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);
@@ -133,7 +127,7 @@ public class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithNoValueAndDefaultValueShouldUseDefault() {
+	void bindToClassWithNoValueAndDefaultValueShouldUseDefault() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);

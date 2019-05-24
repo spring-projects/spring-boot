@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.junit.rules.TemporaryFolder;
-
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -49,13 +47,13 @@ public final class CommandLineInvoker {
 
 	private final File workingDirectory;
 
-	private final TemporaryFolder temp;
+	private final File temp;
 
-	public CommandLineInvoker(TemporaryFolder temp) {
+	public CommandLineInvoker(File temp) {
 		this(new File("."), temp);
 	}
 
-	public CommandLineInvoker(File workingDirectory, TemporaryFolder temp) {
+	public CommandLineInvoker(File workingDirectory, File temp) {
 		this.workingDirectory = workingDirectory;
 		this.temp = temp;
 	}
@@ -75,7 +73,7 @@ public final class CommandLineInvoker {
 	}
 
 	private File findLaunchScript() throws IOException {
-		File unpacked = new File(this.temp.getRoot(), "unpacked-cli");
+		File unpacked = new File(this.temp, "unpacked-cli");
 		if (!unpacked.isDirectory()) {
 			File zip = new BuildOutput(getClass()).getRootLocation()
 					.listFiles((pathname) -> pathname.getName().endsWith("-bin.zip"))[0];

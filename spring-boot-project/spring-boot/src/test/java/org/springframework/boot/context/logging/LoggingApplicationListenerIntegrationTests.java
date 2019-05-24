@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context.logging;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,8 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -37,13 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class LoggingApplicationListenerIntegrationTests {
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class LoggingApplicationListenerIntegrationTests {
 
 	@Test
-	public void loggingSystemRegisteredInTheContext() {
+	void loggingSystemRegisteredInTheContext() {
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
 				.web(WebApplicationType.NONE).run()) {
 			SampleService service = context.getBean(SampleService.class);
@@ -52,7 +51,7 @@ public class LoggingApplicationListenerIntegrationTests {
 	}
 
 	@Test
-	public void loggingPerformedDuringChildApplicationStartIsNotLost() {
+	void loggingPerformedDuringChildApplicationStartIsNotLost(CapturedOutput capturedOutput) {
 		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE).child(Config.class)
 				.web(WebApplicationType.NONE).listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
@@ -64,7 +63,7 @@ public class LoggingApplicationListenerIntegrationTests {
 					}
 
 				}).run();
-		assertThat(this.outputCapture.toString()).contains("Child application starting");
+		assertThat(capturedOutput).contains("Child application starting");
 	}
 
 	@Component

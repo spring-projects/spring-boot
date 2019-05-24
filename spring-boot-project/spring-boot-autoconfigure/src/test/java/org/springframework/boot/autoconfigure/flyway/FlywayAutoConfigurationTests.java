@@ -72,19 +72,19 @@ import static org.mockito.Mockito.mock;
  * @author Dominic Gunn
  */
 @SuppressWarnings("deprecation")
-public class FlywayAutoConfigurationTests {
+class FlywayAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void backsOffWithNoDataSourceBeanAndNoFlywayUrl() {
+	void backsOffWithNoDataSourceBeanAndNoFlywayUrl() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
 	}
 
 	@Test
-	public void createsDataSourceWithNoDataSourceBeanAndFlywayUrl() {
+	void createsDataSourceWithNoDataSourceBeanAndFlywayUrl() {
 		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -93,7 +93,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void createDataSourceWithUrl() {
+	void createDataSourceWithUrl() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -102,7 +102,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void createDataSourceWithUser() {
+	void createDataSourceWithUser() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:" + UUID.randomUUID(),
 						"spring.flyway.user:sa")
@@ -113,7 +113,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void flywayDataSource() {
+	void flywayDataSource() {
 		this.contextRunner
 				.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
@@ -124,7 +124,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void flywayDataSourceWithoutDataSourceAutoConfiguration() {
+	void flywayDataSourceWithoutDataSourceAutoConfiguration() {
 		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Flyway.class);
 			assertThat(context.getBean(Flyway.class).getDataSource()).isEqualTo(context.getBean("flywayDataSource"));
@@ -132,7 +132,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void schemaManagementProviderDetectsDataSource() {
+	void schemaManagementProviderDetectsDataSource() {
 		this.contextRunner
 				.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
@@ -147,7 +147,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultFlyway() {
+	void defaultFlyway() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Flyway.class);
 			Flyway flyway = context.getBean(Flyway.class);
@@ -156,7 +156,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideLocations() {
+	void overrideLocations() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
 				.run((context) -> {
@@ -168,7 +168,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideLocationsList() {
+	void overrideLocationsList() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations[0]:classpath:db/changelog",
 						"spring.flyway.locations[1]:classpath:db/migration")
@@ -181,7 +181,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideSchemas() {
+	void overrideSchemas() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.schemas:public").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -191,7 +191,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void changeLogDoesNotExist() {
+	void changeLogDoesNotExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:filesystem:no-such-dir").run((context) -> {
 					assertThat(context).hasFailed();
@@ -200,7 +200,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void checkLocationsAllMissing() {
+	void checkLocationsAllMissing() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
 				.run((context) -> {
@@ -211,28 +211,28 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void checkLocationsAllExist() {
+	void checkLocationsAllExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void checkLocationsAllExistWithImplicitClasspathPrefix() {
+	void checkLocationsAllExistWithImplicitClasspathPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void checkLocationsAllExistWithFilesystemPrefix() {
+	void checkLocationsAllExistWithFilesystemPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:filesystem:src/test/resources/db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void customFlywayMigrationStrategy() {
+	void customFlywayMigrationStrategy() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, MockFlywayMigrationStrategy.class)
 				.run((context) -> {
@@ -242,7 +242,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFlywayMigrationInitializer() {
+	void customFlywayMigrationInitializer() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayMigrationInitializer.class)
 				.run((context) -> {
@@ -253,14 +253,14 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFlywayWithJpa() {
+	void customFlywayWithJpa() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJpaConfiguration.class)
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	public void overrideBaselineVersionString() {
+	void overrideBaselineVersionString() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.baseline-version=0").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -270,7 +270,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideBaselineVersionNumber() {
+	void overrideBaselineVersionNumber() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.baseline-version=1").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -280,7 +280,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void useVendorDirectory() {
+	void useVendorDirectory() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
 				.run((context) -> {
@@ -292,7 +292,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void useOneLocationWithVendorDirectory() {
+	void useOneLocationWithVendorDirectory() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations=classpath:db/vendors/{vendor}").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -302,7 +302,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void callbacksAreConfiguredAndOrdered() {
+	void callbacksAreConfiguredAndOrdered() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CallbackConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -318,7 +318,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void legacyCallbacksAreConfiguredAndOrdered() {
+	void legacyCallbacksAreConfiguredAndOrdered() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, LegacyCallbackConfiguration.class)
 				.run((context) -> {
@@ -334,7 +334,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void callbacksAndLegacyCallbacksCannotBeMixed() {
+	void callbacksAndLegacyCallbacksCannotBeMixed() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				LegacyCallbackConfiguration.class, CallbackConfiguration.class).run((context) -> {
 					assertThat(context).hasFailed();
@@ -345,7 +345,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void configurationCustomizersAreConfiguredAndOrdered() {
+	void configurationCustomizersAreConfiguredAndOrdered() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				ConfigurationCustomizerConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -357,7 +357,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void batchIsCorrectlyMapped() {
+	void batchIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.batch=true").run((context) -> {
 					assertThat(context).hasFailed();
@@ -368,7 +368,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void dryRunOutputIsCorrectlyMapped() {
+	void dryRunOutputIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.dryRunOutput=dryrun.sql").run((context) -> {
 					assertThat(context).hasFailed();
@@ -379,7 +379,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void errorOverridesIsCorrectlyMapped() {
+	void errorOverridesIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.errorOverrides=D12345").run((context) -> {
 					assertThat(context).hasFailed();
@@ -390,7 +390,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void licenseKeyIsCorrectlyMapped() {
+	void licenseKeyIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.license-key=<<secret>>").run((context) -> {
 					assertThat(context).hasFailed();
@@ -401,7 +401,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void oracleSqlplusIsCorrectlyMapped() {
+	void oracleSqlplusIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.oracle-sqlplus=true").run((context) -> {
 					assertThat(context).hasFailed();
@@ -412,7 +412,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void streamIsCorrectlyMapped() {
+	void streamIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.stream=true").run((context) -> {
 					assertThat(context).hasFailed();
@@ -423,7 +423,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void undoSqlMigrationPrefix() {
+	void undoSqlMigrationPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.undo-sql-migration-prefix=undo").run((context) -> {
 					assertThat(context).hasFailed();
@@ -434,7 +434,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFlywayClassLoader() {
+	void customFlywayClassLoader() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, ResourceLoaderConfiguration.class)
 				.run((context) -> {

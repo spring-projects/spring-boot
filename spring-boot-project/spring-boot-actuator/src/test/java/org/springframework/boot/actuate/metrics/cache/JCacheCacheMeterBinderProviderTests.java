@@ -39,13 +39,13 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @ExtendWith(MockitoExtension.class)
-public class JCacheCacheMeterBinderProviderTests {
+class JCacheCacheMeterBinderProviderTests {
 
 	@Mock
 	private javax.cache.Cache<Object, Object> nativeCache;
 
 	@Test
-	public void jCacheCacheProvider() throws URISyntaxException {
+	void jCacheCacheProvider() throws URISyntaxException {
 		javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
 		given(cacheManager.getURI()).willReturn(new URI("/test"));
 		given(this.nativeCache.getCacheManager()).willReturn(cacheManager);

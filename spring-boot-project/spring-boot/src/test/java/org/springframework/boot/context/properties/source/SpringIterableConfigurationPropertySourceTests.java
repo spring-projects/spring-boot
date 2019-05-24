@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.Origin;
@@ -43,17 +43,17 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Fahim Farook
  */
-public class SpringIterableConfigurationPropertySourceTests {
+class SpringIterableConfigurationPropertySourceTests {
 
 	@Test
-	public void createWhenPropertySourceIsNullShouldThrowException() {
+	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class)))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
-	public void createWhenMapperIsNullShouldThrowException() {
+	void createWhenMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
 						() -> new SpringIterableConfigurationPropertySource(mock(EnumerablePropertySource.class), null))
@@ -61,7 +61,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void iteratorShouldAdaptNames() {
+	void iteratorShouldAdaptNames() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -79,7 +79,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseDirectMapping() {
+	void getValueShouldUseDirectMapping() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -94,7 +94,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueShouldUseEnumerableMapping() {
+	void getValueShouldUseEnumerableMapping() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -110,7 +110,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueOrigin() {
+	void getValueOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		EnumerablePropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -124,7 +124,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
+	void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		EnumerablePropertySource<?> propertySource = new OriginCapablePropertySource<>(
@@ -138,7 +138,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfShouldCheckSourceNames() {
+	void containsDescendantOfShouldCheckSourceNames() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");
 		source.put("faf", "value");
@@ -155,7 +155,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void simpleMapPropertySourceKeyDataChangeInvalidatesCache() {
+	void simpleMapPropertySourceKeyDataChangeInvalidatesCache() {
 		// gh-13344
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("key1", "value1");
@@ -169,7 +169,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void concurrentModificationExceptionInvalidatesCache() {
+	void concurrentModificationExceptionInvalidatesCache() {
 		// gh-17013
 		ConcurrentModificationThrowingMap<String, Object> map = new ConcurrentModificationThrowingMap<>();
 		map.put("key1", "value1");

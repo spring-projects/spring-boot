@@ -35,18 +35,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class ConditionalOnClassTests {
+class ConditionalOnClassTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void testVanillaOnClassCondition() {
+	void testVanillaOnClassCondition() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class, FooConfiguration.class)
 				.run(this::hasBarBean);
 	}
 
 	@Test
-	public void testMissingOnClassCondition() {
+	void testMissingOnClassCondition() {
 		this.contextRunner.withUserConfiguration(MissingConfiguration.class, FooConfiguration.class).run((context) -> {
 			assertThat(context).doesNotHaveBean("bar");
 			assertThat(context).hasBean("foo");
@@ -55,18 +55,18 @@ public class ConditionalOnClassTests {
 	}
 
 	@Test
-	public void testOnClassConditionWithXml() {
+	void testOnClassConditionWithXml() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class, XmlConfiguration.class)
 				.run(this::hasBarBean);
 	}
 
 	@Test
-	public void testOnClassConditionWithCombinedXml() {
+	void testOnClassConditionWithCombinedXml() {
 		this.contextRunner.withUserConfiguration(CombinedXmlConfiguration.class).run(this::hasBarBean);
 	}
 
 	@Test
-	public void onClassConditionOutputShouldNotContainConditionalOnMissingClassInMessage() {
+	void onClassConditionOutputShouldNotContainConditionalOnMissingClassInMessage() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class).run((context) -> {
 			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
 					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()

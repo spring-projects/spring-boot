@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.mongo.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.mongo.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -46,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  */
-public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
+class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -56,7 +55,7 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndBlockingRepositories() {
+	void shouldCreateInstancesForReactiveAndBlockingRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(BlockingAndReactiveConfiguration.class, BaseConfiguration.class);
@@ -66,7 +65,7 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	@EnableMongoRepositories(basePackageClasses = ReactiveCityRepository.class)
 	@EnableReactiveMongoRepositories(basePackageClasses = ReactiveCityRepository.class)
 	protected static class BlockingAndReactiveConfiguration {

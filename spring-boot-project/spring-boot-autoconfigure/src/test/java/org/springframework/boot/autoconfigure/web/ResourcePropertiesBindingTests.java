@@ -33,13 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ResourcePropertiesBindingTests {
+class ResourcePropertiesBindingTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	public void staticLocationsExpandArray() {
+	void staticLocationsExpandArray() {
 		this.contextRunner
 				.withPropertyValues("spring.resources.static-locations[0]=classpath:/one/",
 						"spring.resources.static-locations[1]=classpath:/two",

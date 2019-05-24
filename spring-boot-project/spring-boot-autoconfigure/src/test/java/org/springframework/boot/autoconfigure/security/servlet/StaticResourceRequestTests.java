@@ -38,12 +38,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class StaticResourceRequestTests {
+class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
-	public void atCommonLocationsShouldMatchCommonLocations() {
+	void atCommonLocationsShouldMatchCommonLocations() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
@@ -54,34 +54,34 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
+	void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
 
 	@Test
-	public void atLocationShouldMatchLocation() {
+	void atLocationShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void atLocationWhenHasServletPathShouldMatchLocation() {
+	void atLocationWhenHasServletPathShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher, "/foo").matches("/foo", "/css/file.css");
 		assertMatcher(matcher, "/foo").doesNotMatch("/foo", "/js/file.js");
 	}
 
 	@Test
-	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
+	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
-	public void excludeFromSetWhenSetIsNullShouldThrowException() {
+	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 				.withMessageContaining("Locations must not be null");
 	}

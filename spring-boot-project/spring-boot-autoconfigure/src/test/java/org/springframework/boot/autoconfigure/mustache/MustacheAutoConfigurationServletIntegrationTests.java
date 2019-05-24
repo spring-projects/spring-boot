@@ -58,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MustacheAutoConfigurationServletIntegrationTests {
+class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Autowired
 	private ServletWebServerApplicationContext context;
@@ -71,7 +71,7 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		String source = "Hello {{arg}}!";
 		Template tmpl = Mustache.compiler().compile(source);
 		Map<String, String> context = new HashMap<>();
@@ -80,13 +80,13 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void testHomePage() {
+	void testHomePage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port, String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
-	public void testPartialPage() {
+	void testPartialPage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}

@@ -54,13 +54,13 @@ import static org.mockito.Mockito.verify;
  * @author Camille Vienot
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class TaskExecutionAutoConfigurationTests {
+class TaskExecutionAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
 	@Test
-	public void taskExecutorBuilderShouldApplyCustomSettings() {
+	void taskExecutorBuilderShouldApplyCustomSettings() {
 		this.contextRunner.withPropertyValues("spring.task.execution.pool.queue-capacity=10",
 				"spring.task.execution.pool.core-size=2", "spring.task.execution.pool.max-size=4",
 				"spring.task.execution.pool.allow-core-thread-timeout=true", "spring.task.execution.pool.keep-alive=5s",
@@ -79,7 +79,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorBuilderWhenHasCustomBuilderShouldUseCustomBuilder() {
+	void taskExecutorBuilderWhenHasCustomBuilderShouldUseCustomBuilder() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorBuilderConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			assertThat(context.getBean(TaskExecutorBuilder.class))
@@ -88,7 +88,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorBuilderShouldUseTaskDecorator() {
+	void taskExecutorBuilderShouldUseTaskDecorator() {
 		this.contextRunner.withUserConfiguration(TaskDecoratorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
@@ -98,7 +98,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorAutoConfigured(CapturedOutput capturedOutput) {
+	void taskExecutorAutoConfigured(CapturedOutput capturedOutput) {
 		this.contextRunner.run((context) -> {
 			assertThat(capturedOutput).doesNotContain("Initializing ExecutorService");
 			assertThat(context).hasSingleBean(Executor.class);
@@ -109,7 +109,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
+	void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context.getBean(Executor.class)).isSameAs(context.getBean("customTaskExecutor"));
@@ -117,7 +117,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorBuilderShouldApplyCustomizer() {
+	void taskExecutorBuilderShouldApplyCustomizer() {
 		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class).run((context) -> {
 			TaskExecutorCustomizer customizer = context.getBean(TaskExecutorCustomizer.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
@@ -126,7 +126,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableAsyncUsesAutoConfiguredOneByDefault() {
+	void enableAsyncUsesAutoConfiguredOneByDefault() {
 		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
 				.withUserConfiguration(AsyncConfiguration.class, TestBean.class).run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
@@ -137,7 +137,7 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableAsyncUsesAutoConfiguredOneByDefaultEvenThoughSchedulingIsConfigured() {
+	void enableAsyncUsesAutoConfiguredOneByDefaultEvenThoughSchedulingIsConfigured() {
 		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
 				.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
 				.withUserConfiguration(AsyncConfiguration.class, SchedulingConfiguration.class, TestBean.class)

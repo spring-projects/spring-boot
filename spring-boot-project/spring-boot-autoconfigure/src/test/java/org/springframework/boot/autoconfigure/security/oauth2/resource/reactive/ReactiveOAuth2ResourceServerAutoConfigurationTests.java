@@ -25,8 +25,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -61,7 +61,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  */
-public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
+class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
@@ -69,7 +69,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	private MockWebServer server;
 
-	@After
+	@AfterEach
 	public void cleanup() throws Exception {
 		if (this.server != null) {
 			this.server.shutdown();
@@ -77,7 +77,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldConfigureResourceServer() {
+	void autoConfigurationShouldConfigureResourceServer() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
@@ -87,7 +87,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri() throws IOException {
+	void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri() throws IOException {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
@@ -101,7 +101,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldConfigureResourceServerUsingPublicKeyValue() {
+	void autoConfigurationShouldConfigureResourceServerUsingPublicKeyValue() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
@@ -112,7 +112,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldFailIfPublicKeyLocationDoesNotExist() {
+	void autoConfigurationShouldFailIfPublicKeyLocationDoesNotExist() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:does-not-exist")
@@ -122,7 +122,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationWhenSetUriKeyLocationIssuerUriPresentShouldUseSetUri() {
+	void autoConfigurationWhenSetUriKeyLocationIssuerUriPresentShouldUseSetUri() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
 						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
@@ -136,7 +136,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationWhenKeyLocationAndIssuerUriPresentShouldUseIssuerUri() throws Exception {
+	void autoConfigurationWhenKeyLocationAndIssuerUriPresentShouldUseIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
@@ -155,12 +155,12 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationWhenJwkSetUriNullShouldNotFail() {
+	void autoConfigurationWhenJwkSetUriNullShouldNotFail() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
 	}
 
 	@Test
-	public void jwtDecoderBeanIsConditionalOnMissingBean() {
+	void jwtDecoderBeanIsConditionalOnMissingBean() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
@@ -168,7 +168,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void jwtDecoderByIssuerUriBeanIsConditionalOnMissingBean() {
+	void jwtDecoderByIssuerUriBeanIsConditionalOnMissingBean() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
@@ -177,7 +177,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldBeConditionalOnBearerTokenAuthenticationTokenClass() {
+	void autoConfigurationShouldBeConditionalOnBearerTokenAuthenticationTokenClass() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
@@ -186,7 +186,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldBeConditionalOnReactiveJwtDecoderClass() {
+	void autoConfigurationShouldBeConditionalOnReactiveJwtDecoderClass() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
@@ -195,7 +195,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
+	void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(SecurityWebFilterChainConfig.class).run((context) -> {

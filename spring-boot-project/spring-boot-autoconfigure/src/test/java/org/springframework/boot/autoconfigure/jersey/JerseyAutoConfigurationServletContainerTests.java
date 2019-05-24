@@ -55,10 +55,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @ExtendWith(OutputCaptureExtension.class)
-public class JerseyAutoConfigurationServletContainerTests {
+class JerseyAutoConfigurationServletContainerTests {
 
 	@Test
-	public void existingJerseyServletIsAmended(CapturedOutput output) {
+	void existingJerseyServletIsAmended(CapturedOutput output) {
 		assertThat(output).contains("Configuring existing registration for Jersey servlet");
 		assertThat(output).contains("Servlet " + Application.class.getName() + " was not registered");
 	}

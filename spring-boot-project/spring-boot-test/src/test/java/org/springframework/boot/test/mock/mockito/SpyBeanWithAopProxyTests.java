@@ -46,13 +46,13 @@ import static org.mockito.Mockito.verify;
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanWithAopProxyTests {
+class SpyBeanWithAopProxyTests {
 
 	@SpyBean
 	private DateService dateService;
 
 	@Test
-	public void verifyShouldUseProxyTarget() throws Exception {
+	void verifyShouldUseProxyTarget() throws Exception {
 		Long d1 = this.dateService.getDate(false);
 		Thread.sleep(200);
 		Long d2 = this.dateService.getDate(false);

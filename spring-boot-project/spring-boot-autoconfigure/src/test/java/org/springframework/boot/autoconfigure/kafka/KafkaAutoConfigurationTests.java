@@ -85,13 +85,13 @@ import static org.mockito.Mockito.verify;
  * @author Eddú Meléndez
  * @author Nakul Mishra
  */
-public class KafkaAutoConfigurationTests {
+class KafkaAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class));
 
 	@Test
-	public void consumerProperties() {
+	void consumerProperties() {
 		this.contextRunner.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
 				"spring.kafka.properties.foo=bar", "spring.kafka.properties.baz=qux",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz", "spring.kafka.ssl.key-password=p1",
@@ -145,7 +145,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void producerProperties() {
+	void producerProperties() {
 		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz", "spring.kafka.producer.acks=all",
 				"spring.kafka.producer.batch-size=2KB", "spring.kafka.producer.bootstrap-servers=bar:1234", // test
@@ -195,7 +195,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void adminProperties() {
+	void adminProperties() {
 		this.contextRunner
 				.withPropertyValues("spring.kafka.clientId=cid", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
 						"spring.kafka.admin.fail-fast=true", "spring.kafka.admin.properties.fiz.buz=fix.fox",
@@ -230,7 +230,7 @@ public class KafkaAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void streamsProperties() {
+	void streamsProperties() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class).withPropertyValues(
 				"spring.kafka.client-id=cid", "spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
 				"spring.application.name=appName", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
@@ -273,7 +273,7 @@ public class KafkaAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void streamsApplicationIdUsesMainApplicationNameByDefault() {
+	void streamsApplicationIdUsesMainApplicationNameByDefault() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
 				.withPropertyValues("spring.application.name=my-test-app",
 						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
@@ -290,7 +290,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void streamsWithCustomKafkaConfiguration() {
+	void streamsWithCustomKafkaConfiguration() {
 		this.contextRunner
 				.withUserConfiguration(EnableKafkaStreamsConfiguration.class, TestKafkaStreamsConfiguration.class)
 				.withPropertyValues("spring.application.name=my-test-app",
@@ -309,7 +309,7 @@ public class KafkaAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void streamsWithSeveralStreamsBuilderFactoryBeans() {
+	void streamsWithSeveralStreamsBuilderFactoryBeans() {
 		this.contextRunner
 				.withUserConfiguration(EnableKafkaStreamsConfiguration.class,
 						TestStreamsBuilderFactoryBeanConfiguration.class)
@@ -331,7 +331,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void streamsApplicationIdIsMandatory() {
+	void streamsApplicationIdIsMandatory() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure().hasMessageContaining("spring.kafka.streams.application-id")
@@ -342,7 +342,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void streamsApplicationIdIsNotMandatoryIfEnableKafkaStreamsIsNotSet() {
+	void streamsApplicationIdIsNotMandatoryIfEnableKafkaStreamsIsNotSet() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasNotFailed();
 			assertThat(context).doesNotHaveBean(StreamsBuilder.class);
@@ -351,7 +351,7 @@ public class KafkaAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void listenerProperties() {
+	void listenerProperties() {
 		this.contextRunner
 				.withPropertyValues("spring.kafka.template.default-topic=testTopic",
 						"spring.kafka.listener.ack-mode=MANUAL", "spring.kafka.listener.client-id=client",
@@ -400,7 +400,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void listenerPropertiesMatchDefaults() {
+	void listenerPropertiesMatchDefaults() {
 		this.contextRunner.run((context) -> {
 			Listener listenerProperties = new KafkaProperties().getListener();
 			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
@@ -411,7 +411,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testKafkaTemplateRecordMessageConverters() {
+	void testKafkaTemplateRecordMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
 					KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
@@ -420,7 +420,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverter() {
+	void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverter() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -430,7 +430,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryInBatchModeWithCustomMessageConverter() {
+	void testConcurrentKafkaListenerContainerFactoryInBatchModeWithCustomMessageConverter() {
 		this.contextRunner
 				.withUserConfiguration(BatchMessageConverterConfiguration.class, MessageConverterConfiguration.class)
 				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
@@ -442,7 +442,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryInBatchModeWrapsCustomMessageConverter() {
+	void testConcurrentKafkaListenerContainerFactoryInBatchModeWrapsCustomMessageConverter() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
@@ -456,7 +456,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryInBatchModeWithNoMessageConverter() {
+	void testConcurrentKafkaListenerContainerFactoryInBatchModeWithNoMessageConverter() {
 		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -467,7 +467,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithCustomErrorHandler() {
+	void testConcurrentKafkaListenerContainerFactoryWithCustomErrorHandler() {
 		this.contextRunner.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -476,7 +476,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void concurrentKafkaListenerContainerFactoryInBatchModeShouldUseBatchErrorHandler() {
+	void concurrentKafkaListenerContainerFactoryInBatchModeShouldUseBatchErrorHandler() {
 		this.contextRunner.withUserConfiguration(BatchErrorHandlerConfiguration.class)
 				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -487,7 +487,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void concurrentKafkaListenerContainerFactoryInBatchModeWhenBatchErrorHandlerNotAvailableShouldBeNull() {
+	void concurrentKafkaListenerContainerFactoryInBatchModeWhenBatchErrorHandlerNotAvailableShouldBeNull() {
 		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -496,7 +496,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void concurrentKafkaListenerContainerFactoryInBatchModeAndSimpleErrorHandlerShouldBeNull() {
+	void concurrentKafkaListenerContainerFactoryInBatchModeAndSimpleErrorHandlerShouldBeNull() {
 		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch")
 				.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -506,7 +506,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithDefaultTransactionManager() {
+	void testConcurrentKafkaListenerContainerFactoryWithDefaultTransactionManager() {
 		this.contextRunner.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
 			assertThat(context).hasSingleBean(KafkaAwareTransactionManager.class);
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -517,7 +517,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithCustomTransactionManager() {
+	void testConcurrentKafkaListenerContainerFactoryWithCustomTransactionManager() {
 		this.contextRunner.withUserConfiguration(TransactionManagerConfiguration.class)
 				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -528,7 +528,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithCustomAfterRollbackProcessor() {
+	void testConcurrentKafkaListenerContainerFactoryWithCustomAfterRollbackProcessor() {
 		this.contextRunner.withUserConfiguration(AfterRollbackProcessorConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -538,7 +538,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithCustomRebalanceListener() {
+	void testConcurrentKafkaListenerContainerFactoryWithCustomRebalanceListener() {
 		this.contextRunner.withUserConfiguration(RebalanceListenerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -548,7 +548,7 @@ public class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testConcurrentKafkaListenerContainerFactoryWithKafkaTemplate() {
+	void testConcurrentKafkaListenerContainerFactoryWithKafkaTemplate() {
 		this.contextRunner.run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);

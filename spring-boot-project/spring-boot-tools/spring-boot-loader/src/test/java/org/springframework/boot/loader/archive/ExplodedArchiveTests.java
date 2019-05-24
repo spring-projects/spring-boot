@@ -26,13 +26,13 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
@@ -47,16 +47,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ExplodedArchiveTests {
+class ExplodedArchiveTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File rootFolder;
 
 	private ExplodedArchive archive;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		createArchive();
 	}
@@ -66,11 +66,11 @@ public class ExplodedArchiveTests {
 	}
 
 	private void createArchive(String folderName) throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 
-		this.rootFolder = (StringUtils.hasText(folderName) ? this.temporaryFolder.newFolder(folderName)
-				: this.temporaryFolder.newFolder());
+		this.rootFolder = (StringUtils.hasText(folderName) ? new File(this.tempDir, folderName)
+				: new File(this.tempDir, UUID.randomUUID().toString()));
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
@@ -98,36 +98,36 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getManifest() throws Exception {
+	void getManifest() throws Exception {
 		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
 
 	@Test
-	public void getEntries() {
+	void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
 		assertThat(entries.size()).isEqualTo(12);
 	}
 
 	@Test
-	public void getUrl() throws Exception {
+	void getUrl() throws Exception {
 		assertThat(this.archive.getUrl()).isEqualTo(this.rootFolder.toURI().toURL());
 	}
 
 	@Test
-	public void getUrlWithSpaceInPath() throws Exception {
+	void getUrlWithSpaceInPath() throws Exception {
 		createArchive("spaces in the name");
 		assertThat(this.archive.getUrl()).isEqualTo(this.rootFolder.toURI().toURL());
 	}
 
 	@Test
-	public void getNestedArchive() throws Exception {
+	void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString()).isEqualTo(this.rootFolder.toURI() + "nested.jar");
 	}
 
 	@Test
-	public void nestedDirArchive() throws Exception {
+	void nestedDirArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("d/");
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
@@ -136,14 +136,14 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getNonRecursiveEntriesForRoot() {
+	void getNonRecursiveEntriesForRoot() {
 		ExplodedArchive archive = new ExplodedArchive(new File("/"), false);
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size()).isGreaterThan(1);
 	}
 
 	@Test
-	public void getNonRecursiveManifest() throws Exception {
+	void getNonRecursiveManifest() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
 		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
@@ -151,7 +151,7 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
+	void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"), false);
 		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
@@ -159,7 +159,7 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getResourceAsStream() throws Exception {
+	void getResourceAsStream() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
 		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
@@ -168,7 +168,7 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getResourceAsStreamNonRecursive() throws Exception {
+	void getResourceAsStreamNonRecursive() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"), false);
 		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });

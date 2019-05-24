@@ -85,14 +85,14 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
  */
-public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
+class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
 	public HibernateJpaAutoConfigurationTests() {
 		super(HibernateJpaAutoConfiguration.class);
 	}
 
 	@Test
-	public void testDataScriptWithMissingDdl() {
+	void testDataScriptWithMissingDdl() {
 		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql",
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
@@ -103,7 +103,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testDataScript() {
+	void testDataScript() {
 		// This can't succeed because the data SQL is executed immediately after the
 		// schema
 		// and Hibernate hasn't initialized yet at that point
@@ -114,7 +114,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testDataScriptRunsEarly() {
+	void testDataScriptRunsEarly() {
 		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
 				.withClassLoader(new HideDataScriptClassLoader())
 				.withPropertyValues("spring.jpa.show-sql=true", "spring.jpa.hibernate.ddl-auto:create-drop",
@@ -123,7 +123,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testFlywaySwitchOffDdlAuto() {
+	void testFlywaySwitchOffDdlAuto() {
 		contextRunner()
 				.withPropertyValues("spring.datasource.initialization-mode:never",
 						"spring.flyway.locations:classpath:db/city")
@@ -132,7 +132,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testFlywayPlusValidation() {
+	void testFlywayPlusValidation() {
 		contextRunner()
 				.withPropertyValues("spring.datasource.initialization-mode:never",
 						"spring.flyway.locations:classpath:db/city", "spring.jpa.hibernate.ddl-auto:validate")
@@ -141,7 +141,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testLiquibasePlusValidation() {
+	void testLiquibasePlusValidation() {
 		contextRunner()
 				.withPropertyValues("spring.datasource.initialization-mode:never",
 						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
@@ -151,20 +151,20 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void hibernateDialectIsNotSetByDefault() {
+	void hibernateDialectIsNotSetByDefault() {
 		contextRunner().run(assertJpaVendorAdapter(
 				(adapter) -> assertThat(adapter.getJpaPropertyMap()).doesNotContainKeys("hibernate.dialect")));
 	}
 
 	@Test
-	public void hibernateDialectIsSetWhenDatabaseIsSet() {
+	void hibernateDialectIsSetWhenDatabaseIsSet() {
 		contextRunner().withPropertyValues("spring.jpa.database=H2")
 				.run(assertJpaVendorAdapter((adapter) -> assertThat(adapter.getJpaPropertyMap())
 						.contains(entry("hibernate.dialect", H2Dialect.class.getName()))));
 	}
 
 	@Test
-	public void hibernateDialectIsSetWhenDatabasePlatformIsSet() {
+	void hibernateDialectIsSetWhenDatabasePlatformIsSet() {
 		String databasePlatform = TestH2Dialect.class.getName();
 		contextRunner().withPropertyValues("spring.jpa.database-platform=" + databasePlatform)
 				.run(assertJpaVendorAdapter((adapter) -> assertThat(adapter.getJpaPropertyMap())
@@ -181,13 +181,13 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void jtaDefaultPlatform() {
+	void jtaDefaultPlatform() {
 		contextRunner().withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
 				.run(assertJtaPlatform(SpringJtaPlatform.class));
 	}
 
 	@Test
-	public void jtaCustomPlatform() {
+	void jtaCustomPlatform() {
 		contextRunner()
 				.withPropertyValues(
 						"spring.jpa.properties.hibernate.transaction.jta.platform:" + TestJtaPlatform.class.getName())
@@ -196,7 +196,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void jtaNotUsedByTheApplication() {
+	void jtaNotUsedByTheApplication() {
 		contextRunner().run(assertJtaPlatform(NoJtaPlatform.class));
 	}
 
@@ -209,7 +209,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void jtaCustomTransactionManagerUsingProperties() {
+	void jtaCustomTransactionManagerUsingProperties() {
 		contextRunner().withPropertyValues("spring.transaction.default-timeout:30",
 				"spring.transaction.rollback-on-commit-failure:true").run((context) -> {
 					JpaTransactionManager transactionManager = context.getBean(JpaTransactionManager.class);
@@ -219,7 +219,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void autoConfigurationBacksOffWithSeveralDataSources() {
+	void autoConfigurationBacksOffWithSeveralDataSources() {
 		contextRunner()
 				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
 						XADataSourceAutoConfiguration.class, JtaAutoConfiguration.class))
@@ -230,7 +230,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void providerDisablesAutoCommitIsConfigured() {
+	void providerDisablesAutoCommitIsConfigured() {
 		contextRunner().withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
 				"spring.datasource.hikari.auto-commit:false").run((context) -> {
 					Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
@@ -241,7 +241,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void providerDisablesAutoCommitIsNotConfiguredIfAutoCommitIsEnabled() {
+	void providerDisablesAutoCommitIsNotConfiguredIfAutoCommitIsEnabled() {
 		contextRunner().withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
 				"spring.datasource.hikari.auto-commit:true").run((context) -> {
 					Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
@@ -251,7 +251,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
+	void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
 		contextRunner()
 				.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
 						"spring.datasource.hikari.auto-commit:false",
@@ -265,7 +265,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void providerDisablesAutoCommitIsNotConfiguredWithJta() {
+	void providerDisablesAutoCommitIsNotConfiguredWithJta() {
 		contextRunner().withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
 						"spring.datasource.hikari.auto-commit:false")
@@ -277,7 +277,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void customResourceMapping() {
+	void customResourceMapping() {
 		contextRunner().withClassLoader(new HideDataScriptClassLoader())
 				.withPropertyValues("spring.datasource.data:classpath:/db/non-annotated-data.sql",
 						"spring.jpa.mapping-resources=META-INF/mappings/non-annotated.xml")
@@ -290,7 +290,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void physicalNamingStrategyCanBeUsed() {
+	void physicalNamingStrategyCanBeUsed() {
 		contextRunner().withUserConfiguration(TestPhysicalNamingStrategyConfiguration.class).run((context) -> {
 			Map<String, Object> hibernateProperties = context.getBean(HibernateJpaConfiguration.class)
 					.getVendorProperties();
@@ -301,7 +301,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void implicitNamingStrategyCanBeUsed() {
+	void implicitNamingStrategyCanBeUsed() {
 		contextRunner().withUserConfiguration(TestImplicitNamingStrategyConfiguration.class).run((context) -> {
 			Map<String, Object> hibernateProperties = context.getBean(HibernateJpaConfiguration.class)
 					.getVendorProperties();
@@ -312,7 +312,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties() {
+	void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties() {
 		contextRunner()
 				.withUserConfiguration(TestPhysicalNamingStrategyConfiguration.class,
 						TestImplicitNamingStrategyConfiguration.class)
@@ -329,7 +329,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void hibernatePropertiesCustomizerTakesPrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
+	void hibernatePropertiesCustomizerTakesPrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
 		contextRunner()
 				.withUserConfiguration(TestHibernatePropertiesCustomizerConfiguration.class,
 						TestPhysicalNamingStrategyConfiguration.class, TestImplicitNamingStrategyConfiguration.class)
@@ -348,7 +348,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void eventListenerCanBeRegisteredAsBeans() {
+	void eventListenerCanBeRegisteredAsBeans() {
 		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
 				.withClassLoader(new HideDataScriptClassLoader()).withPropertyValues("spring.jpa.show-sql=true",
 						"spring.jpa.hibernate.ddl-auto:create-drop", "spring.datasource.data:classpath:/city.sql")
@@ -360,13 +360,13 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void hibernatePropertiesCustomizerCanDisableBeanContainer() {
+	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
 		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(City.class));
 	}
 
 	@Test
-	public void withSyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
+	void withSyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
 		contextRunner().withUserConfiguration(JpaUsingApplicationListenerConfiguration.class)
 				.withPropertyValues("spring.datasource.initialization-mode=never").run((context) -> {
 					assertThat(context).hasNotFailed();
@@ -376,7 +376,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void withAsyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
+	void withAsyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
 		contextRunner()
 				.withUserConfiguration(AsyncBootstrappingConfiguration.class,
 						JpaUsingApplicationListenerConfiguration.class)

@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class BuildPropertiesTests {
+class BuildPropertiesTests {
 
 	@Test
-	public void basicInfo() {
+	void basicInfo() {
 		Instant instant = Instant.now();
 		BuildProperties properties = new BuildProperties(
 				createProperties("com.example", "demo", "0.0.1", DateTimeFormatter.ISO_INSTANT.format(instant)));
@@ -45,7 +45,7 @@ public class BuildPropertiesTests {
 	}
 
 	@Test
-	public void noInfo() {
+	void noInfo() {
 		BuildProperties properties = new BuildProperties(new Properties());
 		assertThat(properties.getGroup()).isNull();
 		assertThat(properties.getArtifact()).isNull();

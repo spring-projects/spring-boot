@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ThreadDumpEndpointTests {
+class ThreadDumpEndpointTests {
 
 	@Test
-	public void dumpThreads() {
+	void dumpThreads() {
 		assertThat(new ThreadDumpEndpoint().threadDump().getThreads().size()).isGreaterThan(0);
 	}
 

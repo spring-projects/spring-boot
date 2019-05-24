@@ -40,10 +40,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class ManagementContextAutoConfigurationTests {
+class ManagementContextAutoConfigurationTests {
 
 	@Test
-	public void childManagementContextShouldStartForEmbeddedServer(CapturedOutput capturedOutput) {
+	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput capturedOutput) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,

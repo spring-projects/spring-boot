@@ -64,7 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryActuatorAutoConfigurationTests {
+class CloudFoundryActuatorAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
@@ -75,7 +75,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 					WebEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
-	public void cloudFoundryPlatformActive() {
+	void cloudFoundryPlatformActive() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
@@ -93,7 +93,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void cloudfoundryapplicationProducesActuatorMediaType() throws Exception {
+	void cloudfoundryapplicationProducesActuatorMediaType() throws Exception {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -103,7 +103,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void cloudFoundryPlatformActiveSetsApplicationId() {
+	void cloudFoundryPlatformActiveSetsApplicationId() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
@@ -114,7 +114,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void cloudFoundryPlatformActiveSetsCloudControllerUrl() {
+	void cloudFoundryPlatformActiveSetsCloudControllerUrl() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
@@ -128,7 +128,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void skipSslValidation() {
+	void skipSslValidation() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:https://my-cloud-controller.com",
 				"management.cloudfoundry.skip-ssl-validation:true").run((context) -> {
@@ -144,7 +144,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent() {
+	void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
@@ -156,7 +156,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void cloudFoundryPathsIgnoredBySpringSecurity() {
+	void cloudFoundryPathsIgnoredBySpringSecurity() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 				.run((context) -> {
 					FilterChainProxy securityFilterChain = (FilterChainProxy) context
@@ -172,20 +172,20 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void cloudFoundryPlatformInactive() {
+	void cloudFoundryPlatformInactive() {
 		this.contextRunner.withPropertyValues()
 				.run((context) -> assertThat(context.containsBean("cloudFoundryWebEndpointServletHandlerMapping"))
 						.isFalse());
 	}
 
 	@Test
-	public void cloudFoundryManagementEndpointsDisabled() {
+	void cloudFoundryManagementEndpointsDisabled() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false")
 				.run((context) -> assertThat(context.containsBean("cloudFoundryEndpointHandlerMapping")).isFalse());
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb() {
+	void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb() {
 		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
 				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
@@ -198,7 +198,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void endpointPathCustomizationIsNotApplied() {
+	void endpointPathCustomizationIsNotApplied() {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com",
@@ -216,7 +216,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void healthEndpointInvokerShouldBeCloudFoundryWebExtension() {
+	void healthEndpointInvokerShouldBeCloudFoundryWebExtension() {
 		this.contextRunner
 				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com")

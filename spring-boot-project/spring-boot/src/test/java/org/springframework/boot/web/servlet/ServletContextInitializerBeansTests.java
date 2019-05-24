@@ -25,7 +25,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -39,12 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ServletContextInitializerBeansTests {
+class ServletContextInitializerBeansTests {
 
 	private ConfigurableApplicationContext context;
 
 	@Test
-	public void servletThatImplementsServletContextInitializerIsOnlyRegisteredOnce() {
+	void servletThatImplementsServletContextInitializerIsOnlyRegisteredOnce() {
 		load(ServletConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
@@ -53,7 +53,7 @@ public class ServletContextInitializerBeansTests {
 	}
 
 	@Test
-	public void filterThatImplementsServletContextInitializerIsOnlyRegisteredOnce() {
+	void filterThatImplementsServletContextInitializerIsOnlyRegisteredOnce() {
 		load(FilterConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
@@ -62,7 +62,7 @@ public class ServletContextInitializerBeansTests {
 	}
 
 	@Test
-	public void looksForInitializerBeansOfSpecifiedType() {
+	void looksForInitializerBeansOfSpecifiedType() {
 		load(TestConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory(), TestServletContextInitializer.class);

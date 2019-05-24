@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @TestPropertySource(
 		properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/")
-public class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final FieldDescriptor activeProfiles = fieldWithPath("activeProfiles")
 			.description("Names of the active profiles, if any.");
@@ -69,7 +69,7 @@ public class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocume
 			.description("Name of the property source.");
 
 	@Test
-	public void env() throws Exception {
+	void env() throws Exception {
 		this.mockMvc.perform(get("/actuator/env")).andExpect(status().isOk())
 				.andDo(document("env/all", preprocessResponse(replacePattern(
 						Pattern.compile("org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
@@ -84,7 +84,7 @@ public class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocume
 	}
 
 	@Test
-	public void singlePropertyFromEnv() throws Exception {
+	void singlePropertyFromEnv() throws Exception {
 		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size")).andExpect(status().isOk()).andDo(document(
 				"env/single",
 				preprocessResponse(replacePattern(

@@ -39,13 +39,13 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  */
-public class ClientHttpConnectorAutoConfigurationTests {
+class ClientHttpConnectorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class));
 
 	@Test
-	public void shouldCreateHttpClientBeans() {
+	void shouldCreateHttpClientBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(ReactorResourceFactory.class);
 			assertThat(context).hasSingleBean(ReactorClientHttpConnector.class);
@@ -57,7 +57,7 @@ public class ClientHttpConnectorAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotOverrideCustomClientConnector() {
+	void shouldNotOverrideCustomClientConnector() {
 		this.contextRunner.withUserConfiguration(CustomClientHttpConnectorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(ClientHttpConnector.class).hasBean("customConnector")
 					.doesNotHaveBean(ReactorResourceFactory.class);
@@ -69,7 +69,7 @@ public class ClientHttpConnectorAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldUseCustomReactorResourceFactory() {
+	void shouldUseCustomReactorResourceFactory() {
 		this.contextRunner.withUserConfiguration(CustomReactorResourceConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(ReactorClientHttpConnector.class)
 						.hasSingleBean(ReactorResourceFactory.class).hasBean("customReactorResourceFactory"));

@@ -41,7 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  * @author Dave Syer
  */
-public class SpringApplicationHierarchyTests {
+class SpringApplicationHierarchyTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -51,14 +51,14 @@ public class SpringApplicationHierarchyTests {
 	}
 
 	@Test
-	public void testParent() {
+	void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
 		builder.parent(Parent.class);
 		this.context = builder.run("--server.port=0", "--management.metrics.use-global-registry=false");
 	}
 
 	@Test
-	public void testChild() {
+	void testChild() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Parent.class);
 		builder.child(Child.class);
 		this.context = builder.run("--server.port=0", "--management.metrics.use-global-registry=false");

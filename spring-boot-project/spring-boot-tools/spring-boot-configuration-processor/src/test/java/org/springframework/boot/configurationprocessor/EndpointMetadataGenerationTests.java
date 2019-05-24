@@ -18,7 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -37,10 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void simpleEndpoint() {
+	void simpleEndpoint() {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", true));
@@ -49,7 +49,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void disableEndpoint() {
+	void disableEndpoint() {
 		ConfigurationMetadata metadata = compile(DisabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled").fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
@@ -57,7 +57,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void enabledEndpoint() {
+	void enabledEndpoint() {
 		ConfigurationMetadata metadata = compile(EnabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled").fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
@@ -65,7 +65,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void customPropertiesEndpoint() {
+	void customPropertiesEndpoint() {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.customprops").fromSource(CustomPropertiesEndpoint.class));
@@ -77,7 +77,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void specificEndpoint() {
+	void specificEndpoint() {
 		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
@@ -86,7 +86,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void camelCaseEndpoint() {
+	void camelCaseEndpoint() {
 		ConfigurationMetadata metadata = compile(CamelCaseEndpoint.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.pascal-case").fromSource(CamelCaseEndpoint.class));
@@ -95,8 +95,8 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, IncrementalEndpoint.class);
+	void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
+		TestProject project = new TestProject(this.tempDir, IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
@@ -114,8 +114,8 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void incrementalEndpointBuildChangeCacheFlag() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, IncrementalEndpoint.class);
+	void incrementalEndpointBuildChangeCacheFlag() throws Exception {
+		TestProject project = new TestProject(this.tempDir, IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
@@ -131,8 +131,8 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 	}
 
 	@Test
-	public void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, SpecificEndpoint.class);
+	void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
+		TestProject project = new TestProject(this.tempDir, SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));

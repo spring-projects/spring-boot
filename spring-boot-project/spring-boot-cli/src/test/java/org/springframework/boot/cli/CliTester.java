@@ -19,11 +19,13 @@ package org.springframework.boot.cli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -31,36 +33,37 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.junit.Assume;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link TestRule} that can be used to invoke CLI commands.
+ * JUnit 5 {@link Extension} that can be used to invoke CLI commands.
  *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class CliTester implements TestRule {
+public class CliTester implements BeforeEachCallback, AfterEachCallback {
 
-	private final TemporaryFolder temp = new TemporaryFolder();
+	private final File temp;
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private final OutputCaptureRule outputCapture = new OutputCaptureRule();
+	private final CapturedOutput capturedOutput;
 
 	private String previousOutput = "";
 
@@ -72,8 +75,15 @@ public class CliTester implements TestRule {
 
 	private File serverPortFile;
 
-	public CliTester(String prefix) {
+	public CliTester(String prefix, CapturedOutput capturedOutput) {
 		this.prefix = prefix;
+		try {
+			this.temp = Files.createTempDirectory("cli-tester").toFile();
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to create temp directory");
+		}
+		this.capturedOutput = capturedOutput;
 	}
 
 	public void setTimeout(long timeout) {
@@ -110,6 +120,10 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
+	public File getTemp() {
+		return this.temp;
+	}
+
 	private <T extends OptionParsingCommand> Future<T> submitCommand(T command, String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
@@ -118,7 +132,7 @@ public class CliTester implements TestRule {
 			System.setProperty("server.port", "0");
 			System.setProperty("spring.application.class.name",
 					"org.springframework.boot.cli.CliTesterSpringApplication");
-			this.serverPortFile = new File(this.temp.newFolder(), "server.port");
+			this.serverPortFile = new File(this.temp, "server.port");
 			System.setProperty("portfile", this.serverPortFile.getAbsolutePath());
 			try {
 				command.run(sources);
@@ -168,25 +182,27 @@ public class CliTester implements TestRule {
 	}
 
 	private String getOutput() {
-		String output = this.outputCapture.toString().substring(this.previousOutput.length());
+		String output = this.capturedOutput.toString().substring(this.previousOutput.length());
 		this.previousOutput = output;
 		return output;
 	}
 
 	@Override
-	public Statement apply(Statement base, Description description) {
-		final Statement statement = this.temp
-				.apply(this.outputCapture.apply(new RunLauncherStatement(base), description), description);
-		return new Statement() {
+	public void beforeEach(ExtensionContext extensionContext) {
+		Assumptions.assumeTrue(System.getProperty("spring.profiles.active", "integration").contains("integration"),
+				"Not running sample integration tests because integration profile not active");
+		System.setProperty("disableSpringSnapshotRepos", "false");
+	}
 
-			@Override
-			public void evaluate() throws Throwable {
-				Assume.assumeTrue("Not running sample integration tests because integration profile not active",
-						System.getProperty("spring.profiles.active", "integration").contains("integration"));
-				statement.evaluate();
+	@Override
+	public void afterEach(ExtensionContext extensionContext) {
+		for (AbstractCommand command : this.commands) {
+			if (command != null && command instanceof RunCommand) {
+				((RunCommand) command).stop();
 			}
-
-		};
+		}
+		System.clearProperty("disableSpringSnapshotRepos");
+		FileSystemUtils.deleteRecursively(this.temp);
 	}
 
 	public String getHttpOutput() {
@@ -203,37 +219,6 @@ public class CliTester implements TestRule {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	private final class RunLauncherStatement extends Statement {
-
-		private final Statement base;
-
-		private RunLauncherStatement(Statement base) {
-			this.base = base;
-		}
-
-		@Override
-		public void evaluate() throws Throwable {
-			System.setProperty("disableSpringSnapshotRepos", "false");
-			try {
-				try {
-					this.base.evaluate();
-				}
-				finally {
-					for (AbstractCommand command : CliTester.this.commands) {
-						if (command != null && command instanceof RunCommand) {
-							((RunCommand) command).stop();
-						}
-					}
-					System.clearProperty("disableSpringSnapshotRepos");
-				}
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
 	}
 
 }

@@ -35,24 +35,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ManagementContextConfigurationImportSelectorTests {
+class ManagementContextConfigurationImportSelectorTests {
 
 	@Test
-	public void selectImportsShouldOrderResult() {
+	void selectImportsShouldOrderResult() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(C.class, A.class, D.class, B.class)
 				.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactly(A.class.getName(), B.class.getName(), C.class.getName(), D.class.getName());
 	}
 
 	@Test
-	public void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext() {
+	void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(ChildOnly.class, SameOnly.class,
 				A.class).selectImports(AnnotationMetadata.introspect(EnableSameContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(SameOnly.class.getName(), A.class.getName());
 	}
 
 	@Test
-	public void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext() {
+	void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(ChildOnly.class, SameOnly.class,
 				A.class).selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(ChildOnly.class.getName(), A.class.getName());

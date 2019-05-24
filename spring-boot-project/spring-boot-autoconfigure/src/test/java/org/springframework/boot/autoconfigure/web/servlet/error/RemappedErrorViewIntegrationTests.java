@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.mvc.servlet.path:/spring/")
 @DirtiesContext
-public class RemappedErrorViewIntegrationTests {
+class RemappedErrorViewIntegrationTests {
 
 	@LocalServerPort
 	private int port;
@@ -54,14 +54,14 @@ public class RemappedErrorViewIntegrationTests {
 	private TestRestTemplate template = new TestRestTemplate();
 
 	@Test
-	public void directAccessToErrorPage() {
+	void directAccessToErrorPage() {
 		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/error", String.class);
 		assertThat(content).contains("error");
 		assertThat(content).contains("999");
 	}
 
 	@Test
-	public void forwardToErrorPage() {
+	void forwardToErrorPage() {
 		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/", String.class);
 		assertThat(content).contains("error");
 		assertThat(content).contains("500");

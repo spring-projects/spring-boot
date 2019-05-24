@@ -41,25 +41,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Christian Carriere-Tisseur
  */
-public class LogFileWebEndpointAutoConfigurationTests {
+class LogFileWebEndpointAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
 
 	@Test
-	public void runWithOnlyExposedShouldNotHaveEndpointBean() {
+	void runWithOnlyExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void runWhenLoggingFileIsSetAndNotExposedShouldNotHaveEndpointBean() {
+	void runWhenLoggingFileIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.name:test.log")
 				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void runWhenLoggingFileIsSetAndExposedShouldHaveEndpointBean() {
+	void runWhenLoggingFileIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("logging.file.name:test.log", "management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
@@ -67,20 +67,20 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	public void runWhenLoggingFileIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
+	void runWhenLoggingFileIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("logging.file:test.log", "management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void runWhenLoggingPathIsSetAndNotExposedShouldNotHaveEndpointBean() {
+	void runWhenLoggingPathIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.path:test/logs")
 				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void runWhenLoggingPathIsSetAndExposedShouldHaveEndpointBean() {
+	void runWhenLoggingPathIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("logging.file.path:test/logs", "management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
@@ -88,14 +88,14 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	public void runWhenLoggingPathIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
+	void runWhenLoggingPathIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("logging.path:test/logs", "management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
+	void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.logfile.external-file:external.log",
 						"management.endpoints.web.exposure.include=logfile")
@@ -103,13 +103,13 @@ public class LogFileWebEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void logFileWebEndpointCanBeDisabled() {
+	void logFileWebEndpointCanBeDisabled() {
 		this.contextRunner.withPropertyValues("logging.file.name:test.log", "management.endpoint.logfile.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp) throws IOException {
+	void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp) throws IOException {
 		File file = new File(temp.toFile(), "logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile",

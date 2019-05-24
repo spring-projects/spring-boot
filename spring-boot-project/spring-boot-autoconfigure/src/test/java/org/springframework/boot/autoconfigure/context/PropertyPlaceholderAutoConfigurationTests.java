@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class PropertyPlaceholderAutoConfigurationTests {
+class PropertyPlaceholderAutoConfigurationTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -46,7 +46,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertyPlaceholders() {
+	void propertyPlaceholders() {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class, PlaceholderConfig.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
@@ -54,7 +54,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertyPlaceholdersOverride() {
+	void propertyPlaceholdersOverride() {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class, PlaceholderConfig.class,
 				PlaceholdersOverride.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);

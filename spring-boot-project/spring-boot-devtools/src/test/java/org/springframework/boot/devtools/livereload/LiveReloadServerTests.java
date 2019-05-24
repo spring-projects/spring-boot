@@ -26,10 +26,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.tomcat.websocket.WsWebSocketContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class LiveReloadServerTests {
+class LiveReloadServerTests {
 
 	private static final String HANDSHAKE = "{command: 'hello', "
 			+ "protocols: ['http://livereload.com/protocols/official-7']}";
@@ -59,20 +59,20 @@ public class LiveReloadServerTests {
 
 	private MonitoredLiveReloadServer server;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		this.server = new MonitoredLiveReloadServer(0);
 		this.port = this.server.start();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		this.server.stop();
 	}
 
 	@Test
-	@Ignore
-	public void servesLivereloadJs() throws Exception {
+	@Disabled
+	void servesLivereloadJs() throws Exception {
 		RestTemplate template = new RestTemplate();
 		URI uri = new URI("http://localhost:" + this.port + "/livereload.js");
 		String script = template.getForObject(uri, String.class);
@@ -80,7 +80,7 @@ public class LiveReloadServerTests {
 	}
 
 	@Test
-	public void triggerReload() throws Exception {
+	void triggerReload() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.triggerReload();
 		Thread.sleep(200);
@@ -90,7 +90,7 @@ public class LiveReloadServerTests {
 	}
 
 	@Test
-	public void pingPong() throws Exception {
+	void pingPong() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.sendMessage(new PingMessage());
 		Thread.sleep(200);
@@ -99,7 +99,7 @@ public class LiveReloadServerTests {
 	}
 
 	@Test
-	public void clientClose() throws Exception {
+	void clientClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.close();
 		awaitClosedException();
@@ -114,7 +114,7 @@ public class LiveReloadServerTests {
 	}
 
 	@Test
-	public void serverClose() throws Exception {
+	void serverClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.stop();
 		Thread.sleep(200);

@@ -34,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @SpringBootTest("spring.config.name=enableother")
 @ActiveProfiles("override")
-public class SpringBootTestActiveProfileTests {
+class SpringBootTestActiveProfileTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void profiles() {
+	void profiles() {
 		assertThat(this.context.getEnvironment().getActiveProfiles()).containsExactly("override");
 	}
 

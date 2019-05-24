@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Oliver Gierke
  * @author Andy Wilkinson
  */
-public class HypermediaAutoConfigurationTests {
+class HypermediaAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -64,7 +64,7 @@ public class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	public void linkDiscoverersCreated() {
+	void linkDiscoverersCreated() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
@@ -76,7 +76,7 @@ public class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	public void entityLinksCreated() {
+	void entityLinksCreated() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
@@ -86,7 +86,7 @@ public class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	public void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
+	void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EnableHypermediaSupportConfig.class, BaseConfig.class);
@@ -97,7 +97,7 @@ public class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	public void supportedMediaTypesOfTypeConstrainedConvertersIsCustomized() {
+	void supportedMediaTypesOfTypeConstrainedConvertersIsCustomized() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
@@ -112,7 +112,7 @@ public class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizationOfSupportedMediaTypesCanBeDisabled() {
+	void customizationOfSupportedMediaTypesCanBeDisabled() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);

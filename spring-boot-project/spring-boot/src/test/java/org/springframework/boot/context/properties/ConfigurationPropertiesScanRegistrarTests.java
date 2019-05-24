@@ -17,8 +17,8 @@ package org.springframework.boot.context.properties;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -38,19 +38,19 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Madhura Bhave
  */
-public class ConfigurationPropertiesScanRegistrarTests {
+class ConfigurationPropertiesScanRegistrarTests {
 
 	private final ConfigurationPropertiesScanRegistrar registrar = new ConfigurationPropertiesScanRegistrar();
 
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.registrar.setEnvironment(new MockEnvironment());
 	}
 
 	@Test
-	public void registerBeanDefintionsShouldScanForConfigurationProperties() throws IOException {
+	void registerBeanDefintionsShouldScanForConfigurationProperties() throws IOException {
 		this.registrar.registerBeanDefinitions(getAnnotationMetadata(ConfigurationPropertiesScanConfiguration.class),
 				this.beanFactory);
 		BeanDefinition bingDefinition = this.beanFactory.getBeanDefinition(
@@ -65,7 +65,7 @@ public class ConfigurationPropertiesScanRegistrarTests {
 	}
 
 	@Test
-	public void scanWhenBeanDefinitionExistsShouldSkip() throws IOException {
+	void scanWhenBeanDefinitionExistsShouldSkip() throws IOException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		this.registrar.registerBeanDefinitions(
@@ -76,7 +76,7 @@ public class ConfigurationPropertiesScanRegistrarTests {
 	}
 
 	@Test
-	public void scanWhenBasePackagesAndBasePackcageClassesProvidedShouldUseThat() throws IOException {
+	void scanWhenBasePackagesAndBasePackcageClassesProvidedShouldUseThat() throws IOException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		this.registrar.registerBeanDefinitions(
@@ -94,7 +94,7 @@ public class ConfigurationPropertiesScanRegistrarTests {
 	}
 
 	@Test
-	public void scanWhenComponentAnnotationPresentShouldThrowException() {
+	void scanWhenComponentAnnotationPresentShouldThrowException() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		assertThatExceptionOfType(InvalidConfigurationPropertiesException.class)
@@ -105,7 +105,7 @@ public class ConfigurationPropertiesScanRegistrarTests {
 	}
 
 	@Test
-	public void scanWhenOtherComponentAnnotationPresentShouldThrowException() {
+	void scanWhenOtherComponentAnnotationPresentShouldThrowException() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		assertThatExceptionOfType(InvalidConfigurationPropertiesException.class)

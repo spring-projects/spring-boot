@@ -71,7 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class BasicErrorControllerIntegrationTests {
+class BasicErrorControllerIntegrationTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -84,7 +84,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClient() {
+	void testErrorForMachineClient() {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "Expected!", "/");
@@ -92,17 +92,17 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	public void testErrorForMachineClientTraceParamTrue() {
+	void testErrorForMachineClientTraceParamTrue() {
 		errorForMachineClientOnTraceParam("?trace=true", true);
 	}
 
 	@Test
-	public void testErrorForMachineClientTraceParamFalse() {
+	void testErrorForMachineClientTraceParamFalse() {
 		errorForMachineClientOnTraceParam("?trace=false", false);
 	}
 
 	@Test
-	public void testErrorForMachineClientTraceParamAbsent() {
+	void testErrorForMachineClientTraceParamAbsent() {
 		errorForMachineClientOnTraceParam("", false);
 	}
 
@@ -117,7 +117,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientNoStacktrace() {
+	void testErrorForMachineClientNoStacktrace() {
 		load("--server.error.include-stacktrace=never");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "Expected!", "/");
@@ -126,7 +126,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientAlwaysStacktrace() {
+	void testErrorForMachineClientAlwaysStacktrace() {
 		load("--server.error.include-stacktrace=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=false"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "Expected!", "/");
@@ -135,7 +135,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForAnnotatedException() {
+	void testErrorForAnnotatedException() {
 		load("--server.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
@@ -144,7 +144,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForAnnotatedNoReasonException() {
+	void testErrorForAnnotatedNoReasonException() {
 		load("--server.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
@@ -153,7 +153,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testBindingExceptionForMachineClient() {
+	void testBindingExceptionForMachineClient() {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind"))).accept(MediaType.APPLICATION_JSON)
 				.build();
@@ -167,7 +167,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testRequestBodyValidationForMachineClient() {
+	void testRequestBodyValidationForMachineClient() {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).body("{}");
@@ -181,7 +181,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testNoExceptionByDefaultForMachineClient() {
+	void testNoExceptionByDefaultForMachineClient() {
 		load();
 		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind"))).accept(MediaType.APPLICATION_JSON)
 				.build();
@@ -191,7 +191,7 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	public void testConventionTemplateMapping() {
+	void testConventionTemplateMapping() {
 		load();
 		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage"))).accept(MediaType.TEXT_HTML)
 				.build();

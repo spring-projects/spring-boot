@@ -37,7 +37,7 @@ import static org.mockito.BDDMockito.given;
  * @author Mattias Severson
  * @author Stephane Nicoll
  */
-public class DiskSpaceHealthIndicatorTests {
+class DiskSpaceHealthIndicatorTests {
 
 	private static final DataSize THRESHOLD = DataSize.ofKilobytes(1);
 
@@ -57,7 +57,7 @@ public class DiskSpaceHealthIndicatorTests {
 	}
 
 	@Test
-	public void diskSpaceIsUp() {
+	void diskSpaceIsUp() {
 		long freeSpace = THRESHOLD.toBytes() + 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
@@ -69,7 +69,7 @@ public class DiskSpaceHealthIndicatorTests {
 	}
 
 	@Test
-	public void diskSpaceIsDown() {
+	void diskSpaceIsDown() {
 		long freeSpace = THRESHOLD.toBytes() - 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());

@@ -20,8 +20,8 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -33,7 +33,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Stephane Nicoll
  */
-public class CompositeDataSourcePoolMetadataProviderTests {
+class CompositeDataSourcePoolMetadataProviderTests {
 
 	@Mock
 	private DataSourcePoolMetadataProvider firstProvider;
@@ -56,7 +56,7 @@ public class CompositeDataSourcePoolMetadataProviderTests {
 	@Mock
 	private DataSource unknownDataSource;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.firstProvider.getDataSourcePoolMetadata(this.firstDataSource)).willReturn(this.first);
@@ -64,7 +64,7 @@ public class CompositeDataSourcePoolMetadataProviderTests {
 	}
 
 	@Test
-	public void createWithProviders() {
+	void createWithProviders() {
 		CompositeDataSourcePoolMetadataProvider provider = new CompositeDataSourcePoolMetadataProvider(
 				Arrays.asList(this.firstProvider, this.secondProvider));
 		assertThat(provider.getDataSourcePoolMetadata(this.firstDataSource)).isSameAs(this.first);

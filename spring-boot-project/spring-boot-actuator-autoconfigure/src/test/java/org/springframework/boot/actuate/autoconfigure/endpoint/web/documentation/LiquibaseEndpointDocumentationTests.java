@@ -43,10 +43,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void liquibase() throws Exception {
+	void liquibase() throws Exception {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
 				.description("Change sets made by the Liquibase beans, keyed by " + "bean name.");
 		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())

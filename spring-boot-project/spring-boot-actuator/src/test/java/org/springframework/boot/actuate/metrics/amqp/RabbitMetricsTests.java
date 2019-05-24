@@ -29,10 +29,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class RabbitMetricsTests {
+class RabbitMetricsTests {
 
 	@Test
-	public void connectionFactoryIsInstrumented() {
+	void connectionFactoryIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, null).bindTo(registry);
@@ -40,7 +40,7 @@ public class RabbitMetricsTests {
 	}
 
 	@Test
-	public void connectionFactoryWithTagsIsInstrumented() {
+	void connectionFactoryWithTagsIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, Tags.of("env", "prod")).bindTo(registry);

@@ -47,18 +47,18 @@ import static org.mockito.Mockito.mock;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
-public class MongoReactiveAutoConfigurationTests {
+class MongoReactiveAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoReactiveAutoConfiguration.class));
 
 	@Test
-	public void clientExists() {
+	void clientExists() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
 	@Test
-	public void optionsAdded() {
+	void optionsAdded() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
 				.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(getSettings(context).getSocketSettings().getReadTimeout(TimeUnit.SECONDS))
@@ -66,7 +66,7 @@ public class MongoReactiveAutoConfigurationTests {
 	}
 
 	@Test
-	public void optionsAddedButNoHost() {
+	void optionsAddedButNoHost() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
 				.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(getSettings(context).getReadPreference())
@@ -74,7 +74,7 @@ public class MongoReactiveAutoConfigurationTests {
 	}
 
 	@Test
-	public void optionsSslConfig() {
+	void optionsSslConfig() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
 				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
@@ -85,7 +85,7 @@ public class MongoReactiveAutoConfigurationTests {
 	}
 
 	@Test
-	public void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
+	void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
 		AtomicReference<EventLoopGroup> eventLoopGroupReference = new AtomicReference<>();
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MongoClient.class);
@@ -99,7 +99,7 @@ public class MongoReactiveAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizerOverridesAutoConfig() {
+	void customizerOverridesAutoConfig() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
 				.withUserConfiguration(SimpleCustomizerConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);

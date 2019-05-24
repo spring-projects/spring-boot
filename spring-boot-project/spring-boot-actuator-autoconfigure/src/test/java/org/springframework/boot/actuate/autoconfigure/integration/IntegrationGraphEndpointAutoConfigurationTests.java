@@ -33,20 +33,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Tim Ysewyn
  * @author Stephane Nicoll
  */
-public class IntegrationGraphEndpointAutoConfigurationTests {
+class IntegrationGraphEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
 					IntegrationGraphEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=integrationgraph")
 				.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.integrationgraph.enabled:false").run((context) -> {
 			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
 			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);
@@ -54,7 +54,7 @@ public class IntegrationGraphEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
 			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);
@@ -62,7 +62,7 @@ public class IntegrationGraphEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
+	void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
 		ApplicationContextRunner noSpringIntegrationRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class));
 		noSpringIntegrationRunner.run((context) -> {

@@ -44,18 +44,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Madhura Bhave
  */
-public class AuditAutoConfigurationTests {
+class AuditAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(AuditAutoConfiguration.class));
 
 	@Test
-	public void autoConfigurationIsDisabledByDefault() {
+	void autoConfigurationIsDisabledByDefault() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(AuditAutoConfiguration.class));
 	}
 
 	@Test
-	public void autoConfigurationIsEnabledWhenAuditEventRepositoryBeanPresent() {
+	void autoConfigurationIsEnabledWhenAuditEventRepositoryBeanPresent() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class).run((context) -> {
 			assertThat(context.getBean(AuditEventRepository.class)).isNotNull();
 			assertThat(context.getBean(AuthenticationAuditListener.class)).isNotNull();
@@ -64,7 +64,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuthenticationAuditListener() {
+	void ownAuthenticationAuditListener() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withUserConfiguration(CustomAuthenticationAuditListenerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(AbstractAuthenticationAuditListener.class))
@@ -72,7 +72,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuthorizationAuditListener() {
+	void ownAuthorizationAuditListener() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withUserConfiguration(CustomAuthorizationAuditListenerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(AbstractAuthorizationAuditListener.class))
@@ -80,7 +80,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuditListener() {
+	void ownAuditListener() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withUserConfiguration(CustomAuditListenerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(AbstractAuditListener.class))
@@ -88,7 +88,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void backsOffWhenDisabled() {
+	void backsOffWhenDisabled() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withPropertyValues("management.auditevents.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(AuditListener.class)

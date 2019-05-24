@@ -36,7 +36,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Phillip Webb
  */
-public class MockServerRestTemplateCustomizerTests {
+class MockServerRestTemplateCustomizerTests {
 
 	private MockServerRestTemplateCustomizer customizer;
 
@@ -46,7 +46,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void createShouldUseSimpleRequestExpectationManager() {
+	void createShouldUseSimpleRequestExpectationManager() {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
 		customizer.customize(new RestTemplate());
 		assertThat(customizer.getServer()).extracting("expectationManager")
@@ -54,13 +54,13 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void createWhenExpectationManagerClassIsNullShouldThrowException() {
+	void createWhenExpectationManagerClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
 				.withMessageContaining("ExpectationManager must not be null");
 	}
 
 	@Test
-	public void createShouldUseExpectationManagerClass() {
+	void createShouldUseExpectationManagerClass() {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplate());
@@ -69,7 +69,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void detectRootUriShouldDefaultToTrue() {
+	void detectRootUriShouldDefaultToTrue() {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
@@ -78,7 +78,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void setDetectRootUriShouldDisableRootUriDetection() {
+	void setDetectRootUriShouldDisableRootUriDetection() {
 		this.customizer.setDetectRootUri(false);
 		this.customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
@@ -87,7 +87,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void customizeShouldBindServer() {
+	void customizeShouldBindServer() {
 		RestTemplate template = new RestTemplateBuilder(this.customizer).build();
 		this.customizer.getServer().expect(requestTo("/test")).andRespond(withSuccess());
 		template.getForEntity("/test", String.class);
@@ -95,14 +95,14 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void getServerWhenNoServersAreBoundShouldThrowException() {
+	void getServerWhenNoServersAreBoundShouldThrowException() {
 		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
 				.withMessageContaining("Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 	}
 
 	@Test
-	public void getServerWhenMultipleServersAreBoundShouldThrowException() {
+	void getServerWhenMultipleServersAreBoundShouldThrowException() {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
 		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
@@ -111,14 +111,14 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void getServerWhenSingleServerIsBoundShouldReturnServer() {
+	void getServerWhenSingleServerIsBoundShouldReturnServer() {
 		RestTemplate template = new RestTemplate();
 		this.customizer.customize(template);
 		assertThat(this.customizer.getServer()).isEqualTo(this.customizer.getServer(template));
 	}
 
 	@Test
-	public void getServerWhenRestTemplateIsFoundShouldReturnServer() {
+	void getServerWhenRestTemplateIsFoundShouldReturnServer() {
 		RestTemplate template1 = new RestTemplate();
 		RestTemplate template2 = new RestTemplate();
 		this.customizer.customize(template1);
@@ -128,7 +128,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void getServerWhenRestTemplateIsNotFoundShouldReturnNull() {
+	void getServerWhenRestTemplateIsNotFoundShouldReturnNull() {
 		RestTemplate template1 = new RestTemplate();
 		RestTemplate template2 = new RestTemplate();
 		this.customizer.customize(template1);
@@ -137,7 +137,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void getServersShouldReturnServers() {
+	void getServersShouldReturnServers() {
 		RestTemplate template1 = new RestTemplate();
 		RestTemplate template2 = new RestTemplate();
 		this.customizer.customize(template1);
@@ -146,7 +146,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void getExpectationManagersShouldReturnExpectationManagers() {
+	void getExpectationManagersShouldReturnExpectationManagers() {
 		RestTemplate template1 = new RestTemplate();
 		RestTemplate template2 = new RestTemplate();
 		this.customizer.customize(template1);

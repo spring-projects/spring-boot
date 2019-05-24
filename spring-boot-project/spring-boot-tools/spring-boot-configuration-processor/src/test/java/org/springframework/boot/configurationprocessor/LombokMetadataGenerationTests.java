@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -38,56 +38,56 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void lombokDataProperties() {
+	void lombokDataProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleDataProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleDataProperties.class, "data");
 	}
 
 	@Test
-	public void lombokSimpleProperties() {
+	void lombokSimpleProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleProperties.class, "simple");
 	}
 
 	@Test
-	public void lombokExplicitProperties() {
+	void lombokExplicitProperties() {
 		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
 		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
 		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
-	public void lombokAccessLevelProperties() {
+	void lombokAccessLevelProperties() {
 		ConfigurationMetadata metadata = compile(LombokAccessLevelProperties.class);
 		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class, "accesslevel", 2);
 	}
 
 	@Test
-	public void lombokAccessLevelOverwriteDataProperties() {
+	void lombokAccessLevelOverwriteDataProperties() {
 		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteDataProperties.class);
 		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteDataProperties.class,
 				"accesslevel.overwrite.data");
 	}
 
 	@Test
-	public void lombokAccessLevelOverwriteExplicitProperties() {
+	void lombokAccessLevelOverwriteExplicitProperties() {
 		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteExplicitProperties.class);
 		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteExplicitProperties.class,
 				"accesslevel.overwrite.explicit");
 	}
 
 	@Test
-	public void lombokAccessLevelOverwriteDefaultProperties() {
+	void lombokAccessLevelOverwriteDefaultProperties() {
 		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteDefaultProperties.class);
 		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteDefaultProperties.class,
 				"accesslevel.overwrite.default");
 	}
 
 	@Test
-	public void lombokInnerClassProperties() {
+	void lombokInnerClassProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(LombokInnerClassProperties.Foo.class)
@@ -111,7 +111,7 @@ public class LombokMetadataGenerationTests extends AbstractMetadataGenerationTes
 	}
 
 	@Test
-	public void lombokInnerClassWithGetterProperties() {
+	void lombokInnerClassWithGetterProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassWithGetterProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata)

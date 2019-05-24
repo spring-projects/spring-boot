@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseRepositoriesAutoConfigurationTests {
+class CouchbaseRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -51,31 +51,31 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void couchbaseNotAvailable() {
+	void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() {
+	void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(1);
 	}
 
 	@Test
-	public void reactiveRepositories() {
+	void reactiveRepositories() {
 		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=reactive");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void disabledRepositories() {
+	void disabledRepositories() {
 		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void noRepositoryAvailable() {
+	void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}

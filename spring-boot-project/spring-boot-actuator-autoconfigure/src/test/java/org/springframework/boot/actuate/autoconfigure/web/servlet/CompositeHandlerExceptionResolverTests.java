@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CompositeHandlerExceptionResolverTests {
+class CompositeHandlerExceptionResolverTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -48,7 +48,7 @@ public class CompositeHandlerExceptionResolverTests {
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
-	public void resolverShouldDelegateToOtherResolversInContext() {
+	void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
@@ -58,7 +58,7 @@ public class CompositeHandlerExceptionResolverTests {
 	}
 
 	@Test
-	public void resolverShouldAddDefaultResolverIfNonePresent() {
+	void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);

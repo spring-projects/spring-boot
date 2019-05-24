@@ -24,9 +24,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -49,20 +49,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class BindValidationFailureAnalyzerTests {
+class BindValidationFailureAnalyzerTests {
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		LocaleContextHolder.setLocale(Locale.US);
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		LocaleContextHolder.resetLocaleContext();
 	}
 
 	@Test
-	public void bindExceptionWithFieldErrorsDueToValidationFailure() {
+	void bindExceptionWithFieldErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class);
 		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"));
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "0", "at least five"));
@@ -70,19 +70,19 @@ public class BindValidationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void bindExceptionWithOriginDueToValidationFailure() {
+	void bindExceptionWithOriginDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class, "test.foo.value=4");
 		assertThat(analysis.getDescription()).contains("Origin: \"test.foo.value\" from property source \"test\"");
 	}
 
 	@Test
-	public void bindExceptionWithObjectErrorsDueToValidationFailure() {
+	void bindExceptionWithObjectErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(ObjectValidationFailureConfiguration.class);
 		assertThat(analysis.getDescription()).contains("Reason: This object could not be bound.");
 	}
 
 	@Test
-	public void otherBindExceptionShouldReturnAnalysis() {
+	void otherBindExceptionShouldReturnAnalysis() {
 		BindException cause = new BindException(new FieldValidationFailureProperties(),
 				"fieldValidationFailureProperties");
 		cause.addError(new FieldError("test", "value", "must not be null"));

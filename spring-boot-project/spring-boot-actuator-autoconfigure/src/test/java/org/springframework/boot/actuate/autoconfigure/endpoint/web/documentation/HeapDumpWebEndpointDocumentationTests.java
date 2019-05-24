@@ -39,10 +39,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void heapDump() throws Exception {
+	void heapDump() throws Exception {
 		this.mockMvc.perform(get("/actuator/heapdump")).andExpect(status().isOk())
 				.andDo(document("heapdump", new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
 

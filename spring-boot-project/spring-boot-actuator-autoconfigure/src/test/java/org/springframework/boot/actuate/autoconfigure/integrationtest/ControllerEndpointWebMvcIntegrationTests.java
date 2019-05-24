@@ -58,7 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ControllerEndpointWebMvcIntegrationTests {
+class ControllerEndpointWebMvcIntegrationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -69,7 +69,7 @@ public class ControllerEndpointWebMvcIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureByDefault() throws Exception {
+	void endpointsAreSecureByDefault() throws Exception {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -78,7 +78,7 @@ public class ControllerEndpointWebMvcIntegrationTests {
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() throws Exception {
 		TestSecurityContextHolder.getContext()
 				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();

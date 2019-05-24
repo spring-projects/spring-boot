@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class InfluxPropertiesTests extends StepRegistryPropertiesTests {
+class InfluxPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		InfluxProperties properties = new InfluxProperties();
 		InfluxConfig config = InfluxConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);

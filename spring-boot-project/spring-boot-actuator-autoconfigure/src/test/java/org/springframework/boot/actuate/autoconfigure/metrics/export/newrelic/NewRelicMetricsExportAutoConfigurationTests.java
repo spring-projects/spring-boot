@@ -35,32 +35,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class NewRelicMetricsExportAutoConfigurationTests {
+class NewRelicMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(NewRelicMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(NewRelicMeterRegistry.class));
 	}
 
 	@Test
-	public void failsWithoutAnApiKey() {
+	void failsWithoutAnApiKey() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.account-id=12345")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	public void failsWithoutAnAccountId() {
+	void failsWithoutAnAccountId() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	public void autoConfiguresWithAccountIdAndApiKey() {
+	void autoConfiguresWithAccountIdAndApiKey() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345")
@@ -69,7 +69,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(NewRelicMeterRegistry.class)
@@ -77,7 +77,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsConfigToBeCustomized() {
+	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345")
@@ -85,7 +85,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsRegistryToBeCustomized() {
+	void allowsRegistryToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345")
@@ -94,7 +94,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=abcde")

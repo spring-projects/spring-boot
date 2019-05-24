@@ -68,7 +68,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class WebMvcEndpointIntegrationTests {
+class WebMvcEndpointIntegrationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -79,7 +79,7 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureByDefault() throws Exception {
+	void endpointsAreSecureByDefault() throws Exception {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -87,7 +87,7 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureByDefaultWithCustomBasePath() throws Exception {
+	void endpointsAreSecureByDefaultWithCustomBasePath() throws Exception {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.base-path:/management").applyTo(this.context);
@@ -97,7 +97,7 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void endpointsAreSecureWithActuatorRoleWithCustomBasePath() throws Exception {
+	void endpointsAreSecureWithActuatorRoleWithCustomBasePath() throws Exception {
 		TestSecurityContextHolder.getContext()
 				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();
@@ -110,7 +110,7 @@ public class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+	void linksAreProvidedToAllEndpointTypes() throws Exception {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);

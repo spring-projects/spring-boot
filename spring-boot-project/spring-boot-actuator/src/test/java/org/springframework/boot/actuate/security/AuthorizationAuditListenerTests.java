@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link AuthorizationAuditListener}.
  */
-public class AuthorizationAuditListenerTests {
+class AuthorizationAuditListenerTests {
 
 	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
@@ -51,7 +51,7 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testAuthenticationCredentialsNotFound() {
+	void testAuthenticationCredentialsNotFound() {
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthenticationCredentialsNotFoundEvent(this, Collections.singletonList(new SecurityConfig("USER")),
 						new AuthenticationCredentialsNotFoundException("Bad user")));
@@ -59,7 +59,7 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testAuthorizationFailure() {
+	void testAuthorizationFailure() {
 		AuditApplicationEvent event = handleAuthorizationEvent(new AuthorizationFailureEvent(this,
 				Collections.singletonList(new SecurityConfig("USER")),
 				new UsernamePasswordAuthenticationToken("user", "password"), new AccessDeniedException("Bad user")));
@@ -67,7 +67,7 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testDetailsAreIncludedInAuditEvent() {
+	void testDetailsAreIncludedInAuditEvent() {
 		Object details = new Object();
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
 				"password");

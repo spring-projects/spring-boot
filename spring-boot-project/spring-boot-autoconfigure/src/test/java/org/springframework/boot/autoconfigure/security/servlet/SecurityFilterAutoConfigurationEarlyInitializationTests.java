@@ -52,10 +52,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class SecurityFilterAutoConfigurationEarlyInitializationTests {
+class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@Test
-	public void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
+	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);

@@ -39,18 +39,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  */
-public class InfluxDbAutoConfigurationTests {
+class InfluxDbAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(InfluxDbAutoConfiguration.class));
 
 	@Test
-	public void influxDbRequiresUrl() {
+	void influxDbRequiresUrl() {
 		this.contextRunner.run((context) -> assertThat(context.getBeansOfType(InfluxDB.class)).isEmpty());
 	}
 
 	@Test
-	public void influxDbCanBeCustomized() {
+	void influxDbCanBeCustomized() {
 		this.contextRunner
 				.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.password:password",
 						"spring.influx.user:user")
@@ -58,7 +58,7 @@ public class InfluxDbAutoConfigurationTests {
 	}
 
 	@Test
-	public void influxDbCanBeCreatedWithoutCredentials() {
+	void influxDbCanBeCreatedWithoutCredentials() {
 		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
 			assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
 			int readTimeout = getReadTimeoutProperty(context);
@@ -67,7 +67,7 @@ public class InfluxDbAutoConfigurationTests {
 	}
 
 	@Test
-	public void influxDbWithOkHttpClientBuilderProvider() {
+	void influxDbWithOkHttpClientBuilderProvider() {
 		this.contextRunner.withUserConfiguration(CustomOkHttpClientBuilderProviderConfig.class)
 				.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
 					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);

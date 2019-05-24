@@ -56,7 +56,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Madhura Bhave
  */
-public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
+class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
 
 	@Override
 	protected WebApplicationContextRunner getContextRunner() {
@@ -71,7 +71,7 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 	}
 
 	@Test
-	public void toLinksWhenApplicationPathSetShouldMatch() {
+	void toLinksWhenApplicationPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
@@ -80,7 +80,7 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 	}
 
 	@Test
-	public void toEndpointWhenApplicationPathSetShouldMatch() {
+	void toEndpointWhenApplicationPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/admin/actuator/e1").exchange().expectStatus().isOk();
@@ -88,7 +88,7 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 	}
 
 	@Test
-	public void toAnyEndpointWhenApplicationPathSetShouldMatch() {
+	void toAnyEndpointWhenApplicationPathSetShouldMatch() {
 		getContextRunner()
 				.withPropertyValues("spring.jersey.application-path=/admin", "spring.security.user.password=password")
 				.run((context) -> {

@@ -44,13 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class TestRestTemplateContextCustomizerIntegrationTests {
+class TestRestTemplateContextCustomizerIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void test() {
+	void test() {
 		assertThat(this.restTemplate.getForObject("/", String.class)).contains("hello");
 	}
 

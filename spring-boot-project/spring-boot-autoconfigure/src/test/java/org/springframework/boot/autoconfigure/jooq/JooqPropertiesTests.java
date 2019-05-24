@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class JooqPropertiesTests {
+class JooqPropertiesTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -54,7 +54,7 @@ public class JooqPropertiesTests {
 	}
 
 	@Test
-	public void determineSqlDialectNoCheckIfDialectIsSet() throws SQLException {
+	void determineSqlDialectNoCheckIfDialectIsSet() throws SQLException {
 		JooqProperties properties = load("spring.jooq.sql-dialect=postgres");
 		DataSource dataSource = mockStandaloneDataSource();
 		SQLDialect sqlDialect = properties.determineSqlDialect(dataSource);
@@ -63,21 +63,21 @@ public class JooqPropertiesTests {
 	}
 
 	@Test
-	public void determineSqlDialectWithKnownUrl() {
+	void determineSqlDialectWithKnownUrl() {
 		JooqProperties properties = load();
 		SQLDialect sqlDialect = properties.determineSqlDialect(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(sqlDialect).isEqualTo(SQLDialect.H2);
 	}
 
 	@Test
-	public void determineSqlDialectWithKnownUrlAndUserConfig() {
+	void determineSqlDialectWithKnownUrlAndUserConfig() {
 		JooqProperties properties = load("spring.jooq.sql-dialect=mysql");
 		SQLDialect sqlDialect = properties.determineSqlDialect(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(sqlDialect).isEqualTo(SQLDialect.MYSQL);
 	}
 
 	@Test
-	public void determineSqlDialectWithUnknownUrl() {
+	void determineSqlDialectWithUnknownUrl() {
 		JooqProperties properties = load();
 		SQLDialect sqlDialect = properties.determineSqlDialect(mockDataSource("jdbc:unknown://localhost"));
 		assertThat(sqlDialect).isEqualTo(SQLDialect.DEFAULT);

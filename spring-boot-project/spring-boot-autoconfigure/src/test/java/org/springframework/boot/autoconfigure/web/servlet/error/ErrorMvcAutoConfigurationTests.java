@@ -39,13 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class ErrorMvcAutoConfigurationTests {
+class ErrorMvcAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class));
 
 	@Test
-	public void renderContainsViewWithExceptionDetails() throws Exception {
+	void renderContainsViewWithExceptionDetails() throws Exception {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
@@ -63,7 +63,7 @@ public class ErrorMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void renderWhenAlreadyCommittedLogsMessage(CapturedOutput capturedOutput) {
+	void renderWhenAlreadyCommittedLogsMessage(CapturedOutput capturedOutput) {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);

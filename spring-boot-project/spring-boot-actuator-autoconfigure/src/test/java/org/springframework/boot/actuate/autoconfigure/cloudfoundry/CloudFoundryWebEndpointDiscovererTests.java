@@ -50,10 +50,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryWebEndpointDiscovererTests {
+class CloudFoundryWebEndpointDiscovererTests {
 
 	@Test
-	public void getEndpointsShouldAddCloudFoundryHealthExtension() {
+	void getEndpointsShouldAddCloudFoundryHealthExtension() {
 		load(TestConfiguration.class, (discoverer) -> {
 			Collection<ExposableWebEndpoint> endpoints = discoverer.getEndpoints();
 			assertThat(endpoints.size()).isEqualTo(2);

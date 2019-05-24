@@ -23,9 +23,9 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-public class SpringApplicationAdminMXBeanRegistrarTests {
+class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private static final String OBJECT_NAME = "org.springframework.boot:type=Test,name=SpringApplication";
 
@@ -54,12 +54,12 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private ConfigurableApplicationContext context;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 	}
 
-	@After
+	@AfterEach
 	public void closeContext() {
 		if (this.context != null) {
 			this.context.close();
@@ -67,7 +67,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void validateReadyFlag() {
+	void validateReadyFlag() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -84,7 +84,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void eventsFromOtherContextsAreIgnored() throws MalformedObjectNameException {
+	void eventsFromOtherContextsAreIgnored() throws MalformedObjectNameException {
 		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
@@ -100,7 +100,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void environmentIsExposed() {
+	void environmentIsExposed() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -112,7 +112,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void shutdownApp() throws InstanceNotFoundException {
+	void shutdownApp() throws InstanceNotFoundException {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);

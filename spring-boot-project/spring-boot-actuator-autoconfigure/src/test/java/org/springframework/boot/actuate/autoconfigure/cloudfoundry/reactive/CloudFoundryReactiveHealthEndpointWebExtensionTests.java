@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryReactiveHealthEndpointWebExtensionTests {
+class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withPropertyValues("VCAP_APPLICATION={}")
@@ -57,7 +57,7 @@ public class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 					ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
-	public void healthDetailsAlwaysPresent() {
+	void healthDetailsAlwaysPresent() {
 		this.contextRunner.run((context) -> {
 			CloudFoundryReactiveHealthEndpointWebExtension extension = context
 					.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);

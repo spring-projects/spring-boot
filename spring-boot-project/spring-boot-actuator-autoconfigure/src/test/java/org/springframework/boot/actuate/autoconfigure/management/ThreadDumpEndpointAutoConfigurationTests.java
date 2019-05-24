@@ -29,24 +29,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ThreadDumpEndpointAutoConfigurationTests {
+class ThreadDumpEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ThreadDumpEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=threaddump")
 				.run((context) -> assertThat(context).hasSingleBean(ThreadDumpEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withPropertyValues("management.endpoint.threaddump.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class));

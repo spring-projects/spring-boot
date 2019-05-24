@@ -19,11 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.SkippableContainer;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -38,20 +37,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Michael Simons
  */
-@Testcontainers
+@DisabledWithoutDockerTestcontainers
 @ContextConfiguration(initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
-public class DataNeo4jTestWithIncludeFilterIntegrationTests {
+class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
-			() -> new Neo4jContainer<>().withAdminPassword(null));
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withAdminPassword(null);
 
 	@Autowired
 	private ExampleService service;
 
 	@Test
-	public void testService() {
+	void testService() {
 		assertThat(this.service.hasNode(ExampleGraph.class)).isFalse();
 	}
 
@@ -59,7 +57,7 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

@@ -22,7 +22,7 @@ import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.annotation.WebListener;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
@@ -33,14 +33,14 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
  *
  * @author Andy Wilkinson
  */
-public class WebListenerHandlerTests {
+class WebListenerHandlerTests {
 
 	private final WebListenerHandler handler = new WebListenerHandler();
 
 	private final SimpleBeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
 
 	@Test
-	public void listener() throws IOException {
+	void listener() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
 				new SimpleMetadataReaderFactory().getMetadataReader(TestListener.class.getName()));
 		this.handler.handle(scanned, this.registry);

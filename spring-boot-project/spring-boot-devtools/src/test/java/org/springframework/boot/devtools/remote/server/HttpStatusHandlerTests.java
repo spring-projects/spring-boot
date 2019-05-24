@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.devtools.remote.server;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class HttpStatusHandlerTests {
+class HttpStatusHandlerTests {
 
 	private MockHttpServletRequest servletRequest;
 
@@ -45,7 +45,7 @@ public class HttpStatusHandlerTests {
 
 	private ServerHttpRequest request;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletResponse = new MockHttpServletResponse();
@@ -54,20 +54,20 @@ public class HttpStatusHandlerTests {
 	}
 
 	@Test
-	public void statusMustNotBeNull() {
+	void statusMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpStatusHandler(null))
 				.withMessageContaining("Status must not be null");
 	}
 
 	@Test
-	public void respondsOk() throws Exception {
+	void respondsOk() throws Exception {
 		HttpStatusHandler handler = new HttpStatusHandler();
 		handler.handle(this.request, this.response);
 		assertThat(this.servletResponse.getStatus()).isEqualTo(200);
 	}
 
 	@Test
-	public void respondsWithStatus() throws Exception {
+	void respondsWithStatus() throws Exception {
 		HttpStatusHandler handler = new HttpStatusHandler(HttpStatus.I_AM_A_TEAPOT);
 		handler.handle(this.request, this.response);
 		assertThat(this.servletResponse.getStatus()).isEqualTo(418);

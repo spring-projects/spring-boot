@@ -45,21 +45,17 @@ public class FreeMarkerAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
 
 	@Test
-	public void renderNonWebAppTemplate() {
+	void renderNonWebAppTemplate() {
 		this.contextRunner.run((context) -> {
 			freemarker.template.Configuration freemarker = context.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
-			freemarker.getTemplate("message.ftl").process(this, writer);
+			freemarker.getTemplate("message.ftl").process(new DataModel(), writer);
 			assertThat(writer.toString()).contains("Hello World");
 		});
 	}
 
-	public String getGreeting() {
-		return "Hello World";
-	}
-
 	@Test
-	public void nonExistentTemplateLocation(CapturedOutput capturedOutput) {
+	void nonExistentTemplateLocation(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
@@ -67,7 +63,7 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	@Test
-	public void emptyTemplateLocation(CapturedOutput capturedOutput) {
+	void emptyTemplateLocation(CapturedOutput capturedOutput) {
 		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory");
 		emptyDirectory.mkdirs();
 		this.contextRunner
@@ -77,12 +73,20 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	@Test
-	public void nonExistentLocationAndEmptyLocation(CapturedOutput capturedOutput) {
+	void nonExistentLocationAndEmptyLocation(CapturedOutput capturedOutput) {
 		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/empty-templates/empty-directory/")
 				.run((context) -> assertThat(capturedOutput).doesNotContain("Cannot find template location"));
+	}
+
+	public static class DataModel {
+
+		public String getGreeting() {
+			return "Hello World";
+		}
+
 	}
 
 }

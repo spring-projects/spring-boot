@@ -43,19 +43,19 @@ import static org.mockito.Mockito.verify;
  *
  * @author Vedran Pavic
  */
-public class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
 			.withUserConfiguration(HazelcastConfiguration.class);
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast").run(this::validateDefaultConfig);
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(JdbcOperationsSessionRepository.class,
 						RedisOperationsSessionRepository.class, MongoOperationsSessionRepository.class))
@@ -69,7 +69,7 @@ public class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoC
 	}
 
 	@Test
-	public void customMapName() {
+	void customMapName() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
 				"spring.session.hazelcast.map-name=foo:bar:biz").run((context) -> {
 					validateSessionRepository(context, HazelcastSessionRepository.class);
@@ -79,7 +79,7 @@ public class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoC
 	}
 
 	@Test
-	public void customFlushMode() {
+	void customFlushMode() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
 				"spring.session.hazelcast.flush-mode=immediate").run((context) -> {
 					HazelcastSessionRepository repository = validateSessionRepository(context,

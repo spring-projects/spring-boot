@@ -63,14 +63,14 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryMvcWebEndpointIntegrationTests {
+class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	private static TokenValidator tokenValidator = mock(TokenValidator.class);
 
 	private static CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() {
+	void operationWithSecurityInterceptorForbidden() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() {
+	void operationWithSecurityInterceptorSuccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void responseToOptionsRequestIncludesCorsHeaders() {
+	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
 				(client) -> client.options().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
 						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
@@ -98,7 +98,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithFullAccess() {
+	void linksToOtherEndpointsWithFullAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsForbidden() {
+	void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
@@ -123,7 +123,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithRestrictedAccess() {
+	void linksToOtherEndpointsWithRestrictedAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)

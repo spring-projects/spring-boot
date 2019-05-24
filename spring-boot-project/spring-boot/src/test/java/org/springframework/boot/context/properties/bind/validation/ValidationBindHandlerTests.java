@@ -24,8 +24,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ValidationBindHandlerTests {
+class ValidationBindHandlerTests {
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class ValidationBindHandlerTests {
 
 	private LocalValidatorFactoryBean validator;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.binder = new Binder(this.sources);
 		this.validator = new LocalValidatorFactoryBean();
@@ -71,14 +71,14 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldBindWithoutHandler() {
+	void bindShouldBindWithoutHandler() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
 		ExampleValidatedBean bean = this.binder.bind("foo", Bindable.of(ExampleValidatedBean.class)).get();
 		assertThat(bean.getAge()).isEqualTo(4);
 	}
 
 	@Test
-	public void bindShouldFailWithHandler() {
+	void bindShouldFailWithHandler() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bind("foo", Bindable.of(ExampleValidatedBean.class), this.handler))
@@ -86,7 +86,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldValidateNestedProperties() {
+	void bindShouldValidateNestedProperties() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", 4));
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(
@@ -95,7 +95,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailWithAccessToOrigin() {
+	void bindShouldFailWithAccessToOrigin() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4, "file"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
 				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedBean.class), this.handler));
@@ -104,7 +104,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailWithAccessToBoundProperties() {
+	void bindShouldFailWithAccessToBoundProperties() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.name", "baz");
 		source.put("foo.nested.age", "4");
@@ -118,7 +118,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailWithAccessToName() {
+	void bindShouldFailWithAccessToName() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
@@ -127,7 +127,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailIfExistingValueIsInvalid() {
+	void bindShouldFailIfExistingValueIsInvalid() {
 		ExampleValidatedBean existingValue = new ExampleValidatedBean();
 		BindValidationException cause = bindAndExpectValidationError(
 				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
@@ -137,14 +137,14 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldValidateWithoutAnnotation() {
+	void bindShouldValidateWithoutAnnotation() {
 		ExampleNonValidatedBean existingValue = new ExampleNonValidatedBean();
 		bindAndExpectValidationError(() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
 				Bindable.of(ExampleNonValidatedBean.class).withExistingValue(existingValue), this.handler));
 	}
 
 	@Test
-	public void bindShouldNotValidateDepthGreaterThanZero() {
+	void bindShouldNotValidateDepthGreaterThanZero() {
 		// gh-12227
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "baz");
@@ -156,7 +156,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldNotValidateIfOtherHandlersInChainThrowError() {
+	void bindShouldNotValidateIfOtherHandlersInChainThrowError() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
 		ExampleValidatedBean bean = new ExampleValidatedBean();
 		assertThatExceptionOfType(BindException.class)
@@ -166,7 +166,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldValidateIfOtherHandlersInChainIgnoreError() {
+	void bindShouldValidateIfOtherHandlersInChainIgnoreError() {
 		TestHandler testHandler = new TestHandler();
 		this.handler = new ValidationBindHandler(testHandler, this.validator);
 		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));

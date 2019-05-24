@@ -77,7 +77,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
  */
-public class WebFluxAutoConfigurationTests {
+class WebFluxAutoConfigurationTests {
 
 	private static final MockReactiveWebServerFactory mockReactiveWebServerFactory = new MockReactiveWebServerFactory();
 
@@ -86,7 +86,7 @@ public class WebFluxAutoConfigurationTests {
 			.withUserConfiguration(Config.class);
 
 	@Test
-	public void shouldNotProcessIfExistingWebReactiveConfiguration() {
+	void shouldNotProcessIfExistingWebReactiveConfiguration() {
 		this.contextRunner.withUserConfiguration(WebFluxConfigurationSupport.class).run((context) -> {
 			assertThat(context).getBeans(RequestMappingHandlerMapping.class).hasSize(1);
 			assertThat(context).getBeans(RequestMappingHandlerAdapter.class).hasSize(1);
@@ -94,7 +94,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateDefaultBeans() {
+	void shouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(RequestMappingHandlerMapping.class).hasSize(1);
 			assertThat(context).getBeans(RequestMappingHandlerAdapter.class).hasSize(1);
@@ -105,7 +105,7 @@ public class WebFluxAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldRegisterCustomHandlerMethodArgumentResolver() {
+	void shouldRegisterCustomHandlerMethodArgumentResolver() {
 		this.contextRunner.withUserConfiguration(CustomArgumentResolvers.class).run((context) -> {
 			RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
 			List<HandlerMethodArgumentResolver> customResolvers = (List<HandlerMethodArgumentResolver>) ReflectionTestUtils
@@ -116,7 +116,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeCodecs() {
+	void shouldCustomizeCodecs() {
 		this.contextRunner.withUserConfiguration(CustomCodecCustomizers.class).run((context) -> {
 			CodecCustomizer codecCustomizer = context.getBean("firstCodecCustomizer", CodecCustomizer.class);
 			assertThat(codecCustomizer).isNotNull();
@@ -125,7 +125,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldRegisterResourceHandlerMapping() {
+	void shouldRegisterResourceHandlerMapping() {
 		this.contextRunner.run((context) -> {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
@@ -140,7 +140,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldMapResourcesToCustomPath() {
+	void shouldMapResourcesToCustomPath() {
 		this.contextRunner.withPropertyValues("spring.webflux.static-path-pattern:/static/**").run((context) -> {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/static/**")).isInstanceOf(ResourceWebHandler.class);
@@ -150,14 +150,14 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotMapResourcesWhenDisabled() {
+	void shouldNotMapResourcesWhenDisabled() {
 		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
 				.run((context) -> assertThat(context.getBean("resourceHandlerMapping"))
 						.isNotInstanceOf(SimpleUrlHandlerMapping.class));
 	}
 
 	@Test
-	public void resourceHandlerChainEnabled() {
+	void resourceHandlerChainEnabled() {
 		this.contextRunner.withPropertyValues("spring.resources.chain.enabled:true").run((context) -> {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
@@ -170,7 +170,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldRegisterViewResolvers() {
+	void shouldRegisterViewResolvers() {
 		this.contextRunner.withUserConfiguration(ViewResolvers.class).run((context) -> {
 			ViewResolutionResultHandler resultHandler = context.getBean(ViewResolutionResultHandler.class);
 			assertThat(resultHandler.getViewResolvers()).containsExactly(
@@ -180,7 +180,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void noDateFormat() {
+	void noDateFormat() {
 		this.contextRunner.run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
@@ -190,7 +190,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideDateFormat() {
+	void overrideDateFormat() {
 		this.contextRunner.withPropertyValues("spring.webflux.date-format:dd*MM*yyyy").run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
@@ -199,7 +199,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWhenNoValidatorShouldUseDefault() {
+	void validatorWhenNoValidatorShouldUseDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
 			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
@@ -208,7 +208,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWhenNoCustomizationShouldUseAutoConfigured() {
+	void validatorWhenNoCustomizationShouldUseAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).getBeanNames(javax.validation.Validator.class)
@@ -226,7 +226,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWithConfigurerShouldUseSpringValidator() {
+	void validatorWithConfigurerShouldUseSpringValidator() {
 		this.contextRunner.withUserConfiguration(ValidatorWebFluxConfigurer.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
 			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
@@ -237,7 +237,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWithConfigurerDoesNotExposeJsr303() {
+	void validatorWithConfigurerDoesNotExposeJsr303() {
 		this.contextRunner.withUserConfiguration(ValidatorJsr303WebFluxConfigurer.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
 			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
@@ -250,7 +250,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationCustomConfigurerTakesPrecedence() {
+	void validationCustomConfigurerTakesPrecedence() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(ValidatorWebFluxConfigurer.class).run((context) -> {
 					assertThat(context).getBeans(ValidatorFactory.class).hasSize(1);
@@ -267,7 +267,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWithCustomSpringValidatorIgnored() {
+	void validatorWithCustomSpringValidatorIgnored() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(CustomSpringValidator.class).run((context) -> {
 					assertThat(context).getBeanNames(javax.validation.Validator.class)
@@ -285,7 +285,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWithCustomJsr303ValidatorExposedAsSpringValidator() {
+	void validatorWithCustomJsr303ValidatorExposedAsSpringValidator() {
 		this.contextRunner.withUserConfiguration(CustomJsr303Validator.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
 			assertThat(context).getBeanNames(javax.validation.Validator.class).containsExactly("customValidator");
@@ -298,12 +298,12 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void hiddenHttpMethodFilterIsAutoConfigured() {
+	void hiddenHttpMethodFilterIsAutoConfigured() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
 	}
 
 	@Test
-	public void hiddenHttpMethodFilterCanBeOverridden() {
+	void hiddenHttpMethodFilterCanBeOverridden() {
 		this.contextRunner.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
 			assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
@@ -311,27 +311,27 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void hiddenHttpMethodFilterCanBeDisabled() {
+	void hiddenHttpMethodFilterCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
-	public void customRequestMappingHandlerMapping() {
+	void customRequestMappingHandlerMapping() {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class)
 				.run((context) -> assertThat(context).getBean(RequestMappingHandlerMapping.class)
 						.isInstanceOf(MyRequestMappingHandlerMapping.class));
 	}
 
 	@Test
-	public void customRequestMappingHandlerAdapter() {
+	void customRequestMappingHandlerAdapter() {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class)
 				.run((context) -> assertThat(context).getBean(RequestMappingHandlerAdapter.class)
 						.isInstanceOf(MyRequestMappingHandlerAdapter.class));
 	}
 
 	@Test
-	public void multipleWebFluxRegistrations() {
+	void multipleWebFluxRegistrations() {
 		this.contextRunner.withUserConfiguration(MultipleWebFluxRegistrations.class).run((context) -> {
 			assertThat(context.getBean(RequestMappingHandlerMapping.class))
 					.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
@@ -341,7 +341,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void cachePeriod() {
+	void cachePeriod() {
 		Assertions.setExtractBareNamePropertyMethods(false);
 		this.contextRunner.withPropertyValues("spring.resources.cache.period:5").run((context) -> {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
@@ -357,7 +357,7 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	public void cacheControl() {
+	void cacheControl() {
 		Assertions.setExtractBareNamePropertyMethods(false);
 		this.contextRunner.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 				"spring.resources.cache.cachecontrol.proxy-revalidate:true").run((context) -> {

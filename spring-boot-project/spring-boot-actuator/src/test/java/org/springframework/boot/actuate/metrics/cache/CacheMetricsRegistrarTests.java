@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CacheMetricsRegistrarTests {
+class CacheMetricsRegistrarTests {
 
 	private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
 	@Test
-	public void bindToSupportedCache() {
+	void bindToSupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
@@ -46,7 +46,7 @@ public class CacheMetricsRegistrarTests {
 	}
 
 	@Test
-	public void bindToSupportedCacheWrappedInTransactionProxy() {
+	void bindToSupportedCacheWrappedInTransactionProxy() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
@@ -55,7 +55,7 @@ public class CacheMetricsRegistrarTests {
 	}
 
 	@Test
-	public void bindToUnsupportedCache() {
+	void bindToUnsupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry, Collections.emptyList());
 		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
 		assertThat(this.meterRegistry.find("cache.gets").tags("name", "test").meter()).isNull();

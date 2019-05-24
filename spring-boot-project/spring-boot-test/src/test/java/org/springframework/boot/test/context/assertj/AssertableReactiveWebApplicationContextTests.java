@@ -29,10 +29,10 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @see ApplicationContextAssertProviderTests
  */
-public class AssertableReactiveWebApplicationContextTests {
+class AssertableReactiveWebApplicationContextTests {
 
 	@Test
-	public void getShouldReturnProxy() {
+	void getShouldReturnProxy() {
 		AssertableReactiveWebApplicationContext context = AssertableReactiveWebApplicationContext
 				.get(() -> mock(ConfigurableReactiveWebApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableReactiveWebApplicationContext.class);

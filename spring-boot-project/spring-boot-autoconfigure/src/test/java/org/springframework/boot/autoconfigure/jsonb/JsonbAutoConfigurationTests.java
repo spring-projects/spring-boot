@@ -30,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-public class JsonbAutoConfigurationTests {
+class JsonbAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
 
 	@Test
-	public void jsonbRegistration() {
+	void jsonbRegistration() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Jsonb.class);
 			Jsonb jsonb = context.getBean(Jsonb.class);

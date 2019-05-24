@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.mongo.country.CountryReposito
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -51,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Oliver Gierke
  */
-public class MixedMongoRepositoriesAutoConfigurationTests {
+class MixedMongoRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -61,7 +60,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
@@ -70,7 +69,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMixedRepositoryConfiguration() {
+	void testMixedRepositoryConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
@@ -80,7 +79,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoTemplate() {
+	void testJpaRepositoryConfigurationWithMongoTemplate() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
@@ -89,7 +88,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoOverlap() {
+	void testJpaRepositoryConfigurationWithMongoOverlap() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
@@ -98,7 +97,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled() {
+	void testJpaRepositoryConfigurationWithMongoOverlapDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.datasource.initialization-mode:never", "spring.data.mongodb.repositories.type:none")
@@ -109,7 +108,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	// Not this package or its parent
 	@EnableMongoRepositories(basePackageClasses = Country.class)
 	protected static class TestConfiguration {
@@ -117,7 +116,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	@EnableMongoRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
@@ -126,7 +125,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
 	protected static class JpaConfiguration {

@@ -17,7 +17,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryInfoEndpointWebExtensionTests {
+class CloudFoundryInfoEndpointWebExtensionTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withPropertyValues("VCAP_APPLICATION={}")
@@ -61,7 +61,7 @@ public class CloudFoundryInfoEndpointWebExtensionTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void gitFullDetailsAlwaysPresent() {
+	void gitFullDetailsAlwaysPresent() {
 		this.contextRunner.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 				.run((context) -> {
 					CloudFoundryInfoEndpointWebExtension extension = context

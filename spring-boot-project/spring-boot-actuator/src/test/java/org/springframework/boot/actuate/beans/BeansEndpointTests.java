@@ -42,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class BeansEndpointTests {
+class BeansEndpointTests {
 
 	@Test
-	public void beansAreFound() {
+	void beansAreFound() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
@@ -59,7 +59,7 @@ public class BeansEndpointTests {
 	}
 
 	@Test
-	public void infrastructureBeansAreOmitted() {
+	void infrastructureBeansAreOmitted() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
@@ -78,7 +78,7 @@ public class BeansEndpointTests {
 	}
 
 	@Test
-	public void lazyBeansAreOmitted() {
+	void lazyBeansAreOmitted() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class, LazyBeanConfiguration.class);
 		contextRunner.run((context) -> {
@@ -90,7 +90,7 @@ public class BeansEndpointTests {
 	}
 
 	@Test
-	public void beansInParentContextAreFound() {
+	void beansInParentContextAreFound() {
 		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
 				.withUserConfiguration(BeanConfiguration.class);
 		parentRunner.run((parent) -> {

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.context.properties;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration;
@@ -36,16 +36,16 @@ import static org.mockito.BDDMockito.willCallRealMethod;
  * @author Madhura Bhave
  * @author Johnny Lim
  */
-public class ConfigurationPropertiesScanTests {
+class ConfigurationPropertiesScanTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.context = new AnnotationConfigApplicationContext();
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		if (this.context != null) {
 			this.context.close();
@@ -53,7 +53,7 @@ public class ConfigurationPropertiesScanTests {
 	}
 
 	@Test
-	public void scanImportBeanRegistrarShouldBeEnvironmentAwareWithRequiredProfile() {
+	void scanImportBeanRegistrarShouldBeEnvironmentAwareWithRequiredProfile() {
 		this.context.getEnvironment().addActiveProfile("test");
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
@@ -62,7 +62,7 @@ public class ConfigurationPropertiesScanTests {
 	}
 
 	@Test
-	public void scanImportBeanRegistrarShouldBeEnvironmentAwareWithoutRequiredProfile() {
+	void scanImportBeanRegistrarShouldBeEnvironmentAwareWithoutRequiredProfile() {
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
 				"profile-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyProfileProperties"))
@@ -70,7 +70,7 @@ public class ConfigurationPropertiesScanTests {
 	}
 
 	@Test
-	public void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithRequiredResource() {
+	void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithRequiredResource() {
 		DefaultResourceLoader resourceLoader = Mockito.mock(DefaultResourceLoader.class);
 		this.context.setResourceLoader(resourceLoader);
 		willCallRealMethod().given(resourceLoader).getClassLoader();
@@ -82,7 +82,7 @@ public class ConfigurationPropertiesScanTests {
 	}
 
 	@Test
-	public void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithoutRequiredResource() {
+	void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithoutRequiredResource() {
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
 				"resource-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyResourceProperties"))

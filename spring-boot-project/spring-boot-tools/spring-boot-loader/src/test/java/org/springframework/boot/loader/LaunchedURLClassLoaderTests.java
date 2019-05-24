@@ -19,9 +19,8 @@ package org.springframework.boot.loader;
 import java.io.File;
 import java.net.URL;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.jar.JarFile;
 
@@ -35,42 +34,42 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @SuppressWarnings("resource")
-public class LaunchedURLClassLoaderTests {
+class LaunchedURLClassLoaderTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void resolveResourceFromArchive() throws Exception {
+	void resolveResourceFromArchive() throws Exception {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResource("demo/Application.java")).isNotNull();
 	}
 
 	@Test
-	public void resolveResourcesFromArchive() throws Exception {
+	void resolveResourcesFromArchive() throws Exception {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
 	}
 
 	@Test
-	public void resolveRootPathFromArchive() throws Exception {
+	void resolveRootPathFromArchive() throws Exception {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResource("")).isNotNull();
 	}
 
 	@Test
-	public void resolveRootResourcesFromArchive() throws Exception {
+	void resolveRootResourcesFromArchive() throws Exception {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResources("").hasMoreElements()).isTrue();
 	}
 
 	@Test
-	public void resolveFromNested() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void resolveFromNested() throws Exception {
+		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 		JarFile jarFile = new JarFile(file);
 		URL url = jarFile.getUrl();
@@ -81,8 +80,8 @@ public class LaunchedURLClassLoaderTests {
 	}
 
 	@Test
-	public void resolveFromNestedWhileThreadIsInterrupted() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void resolveFromNestedWhileThreadIsInterrupted() throws Exception {
+		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 		JarFile jarFile = new JarFile(file);
 		URL url = jarFile.getUrl();

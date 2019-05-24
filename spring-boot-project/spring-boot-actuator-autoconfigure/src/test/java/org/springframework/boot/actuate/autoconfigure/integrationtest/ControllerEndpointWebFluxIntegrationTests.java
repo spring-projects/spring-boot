@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Phillip Webb
  */
-public class ControllerEndpointWebFluxIntegrationTests {
+class ControllerEndpointWebFluxIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
@@ -56,7 +56,7 @@ public class ControllerEndpointWebFluxIntegrationTests {
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() throws Exception {
 		TestSecurityContextHolder.getContext()
 				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();

@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AtlasPropertiesTests {
+class AtlasPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		AtlasProperties properties = new AtlasProperties();
 		AtlasConfig config = (key) -> null;
 		assertThat(properties.getStep()).isEqualTo(config.step());

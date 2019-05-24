@@ -27,10 +27,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HealthIndicatorReactiveAdapterTests {
+class HealthIndicatorReactiveAdapterTests {
 
 	@Test
-	public void delegateReturnsHealth() {
+	void delegateReturnsHealth() {
 		HealthIndicator delegate = mock(HealthIndicator.class);
 		HealthIndicatorReactiveAdapter adapter = new HealthIndicatorReactiveAdapter(delegate);
 		Health status = Health.up().build();
@@ -39,7 +39,7 @@ public class HealthIndicatorReactiveAdapterTests {
 	}
 
 	@Test
-	public void delegateThrowError() {
+	void delegateThrowError() {
 		HealthIndicator delegate = mock(HealthIndicator.class);
 		HealthIndicatorReactiveAdapter adapter = new HealthIndicatorReactiveAdapter(delegate);
 		given(delegate.health()).willThrow(new IllegalStateException("Expected"));
@@ -47,7 +47,7 @@ public class HealthIndicatorReactiveAdapterTests {
 	}
 
 	@Test
-	public void delegateRunsOnTheElasticScheduler() {
+	void delegateRunsOnTheElasticScheduler() {
 		String currentThread = Thread.currentThread().getName();
 		HealthIndicator delegate = () -> Health
 				.status(Thread.currentThread().getName().equals(currentThread) ? Status.DOWN : Status.UP).build();

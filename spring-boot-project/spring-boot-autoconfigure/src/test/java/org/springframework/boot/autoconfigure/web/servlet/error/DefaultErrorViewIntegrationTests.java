@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @DirtiesContext
-public class DefaultErrorViewIntegrationTests {
+class DefaultErrorViewIntegrationTests {
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -66,7 +66,7 @@ public class DefaultErrorViewIntegrationTests {
 	}
 
 	@Test
-	public void testErrorForBrowserClient() throws Exception {
+	void testErrorForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
@@ -75,7 +75,7 @@ public class DefaultErrorViewIntegrationTests {
 	}
 
 	@Test
-	public void testErrorWithHtmlEscape() throws Exception {
+	void testErrorWithHtmlEscape() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/error")
 						.requestAttr("javax.servlet.error.exception",
@@ -89,7 +89,7 @@ public class DefaultErrorViewIntegrationTests {
 	}
 
 	@Test
-	public void testErrorWithSpelEscape() throws Exception {
+	void testErrorWithSpelEscape() throws Exception {
 		String spel = "${T(" + getClass().getName() + ").injectCall()}";
 		MvcResult response = this.mockMvc.perform(get("/error")
 				.requestAttr("javax.servlet.error.exception", new RuntimeException(spel)).accept(MediaType.TEXT_HTML))

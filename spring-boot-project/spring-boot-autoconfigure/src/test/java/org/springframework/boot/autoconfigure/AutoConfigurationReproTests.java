@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class AutoConfigurationReproTests {
+class AutoConfigurationReproTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -45,7 +45,7 @@ public class AutoConfigurationReproTests {
 	}
 
 	@Test
-	public void doesNotEarlyInitializeFactoryBeans() {
+	void doesNotEarlyInitializeFactoryBeans() {
 		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
 				PropertySourcesPlaceholderConfigurer.class, ServletWebServerFactoryAutoConfiguration.class);
 		this.context = application.run("--server.port=0");

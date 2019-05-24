@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -29,17 +29,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ManagementContextConfigurationTests {
+class ManagementContextConfigurationTests {
 
 	@Test
-	public void proxyBeanMethodsIsEnabledByDefault() {
+	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(DefaultManagementContextConfiguration.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
 	}
 
 	@Test
-	public void proxyBeanMethodsCanBeDisabled() {
+	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(
 				NoBeanMethodProxyingManagementContextConfiguration.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);

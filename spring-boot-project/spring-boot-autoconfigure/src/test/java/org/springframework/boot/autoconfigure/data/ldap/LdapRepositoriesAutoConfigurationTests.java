@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-public class LdapRepositoriesAutoConfigurationTests {
+class LdapRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -50,19 +50,19 @@ public class LdapRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		load(EmptyConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(PersonRepository.class)).isEmpty();
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBean(PersonLdapRepository.class)).isNotNull();
 	}

@@ -16,15 +16,15 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 
@@ -35,20 +35,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class AutoConfigureAnnotationProcessorTests {
+class AutoConfigureAnnotationProcessorTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private TestCompiler compiler;
 
-	@Before
+	@BeforeEach
 	public void createCompiler() throws IOException {
-		this.compiler = new TestCompiler(this.temporaryFolder);
+		this.compiler = new TestCompiler(this.tempDir);
 	}
 
 	@Test
-	public void annotatedClass() throws Exception {
+	void annotatedClass() throws Exception {
 		Properties properties = compile(TestClassConfiguration.class);
 		assertThat(properties).hasSize(6);
 		assertThat(properties).containsEntry(
@@ -71,7 +71,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
-	public void annotatedClassWithOnBeanThatHasName() throws Exception {
+	void annotatedClassWithOnBeanThatHasName() throws Exception {
 		Properties properties = compile(TestOnBeanWithNameClassConfiguration.class);
 		assertThat(properties).hasSize(3);
 		assertThat(properties).containsEntry(
@@ -80,7 +80,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
-	public void annotatedMethod() throws Exception {
+	void annotatedMethod() throws Exception {
 		Properties properties = compile(TestMethodConfiguration.class);
 		List<String> matching = new ArrayList<>();
 		for (Object key : properties.keySet()) {
@@ -94,7 +94,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
-	public void annotatedClassWithOrder() throws Exception {
+	void annotatedClassWithOrder() throws Exception {
 		Properties properties = compile(TestOrderedClassConfiguration.class);
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.ConditionalOnClass",

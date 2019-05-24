@@ -30,6 +30,8 @@ import liquibase.integration.spring.SpringLiquibase;
 import liquibase.logging.core.Slf4jLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -45,7 +47,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -65,7 +66,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Dominic Gunn
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class LiquibaseAutoConfigurationTests {
+class LiquibaseAutoConfigurationTests {
 
 	@BeforeEach
 	public void init() {
@@ -78,12 +79,12 @@ public class LiquibaseAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void backsOffWithNoDataSourceBeanAndNoLiquibaseUrl() {
+	void backsOffWithNoDataSourceBeanAndNoLiquibaseUrl() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
 	}
 
 	@Test
-	public void createsDataSourceWithNoDataSourceBeanAndLiquibaseUrl() {
+	void createsDataSourceWithNoDataSourceBeanAndLiquibaseUrl() {
 		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
 				.run(assertLiquibase((liquibase) -> {
 					DataSource dataSource = liquibase.getDataSource();
@@ -93,7 +94,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultSpringLiquibase() {
+	void defaultSpringLiquibase() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.run(assertLiquibase((liquibase) -> {
 					assertThat(liquibase.getChangeLog()).isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
@@ -104,7 +105,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void changelogXml() {
+	void changelogXml() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
@@ -112,7 +113,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void changelogJson() {
+	void changelogJson() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.json")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
@@ -120,8 +121,8 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void changelogSql() {
-		Assume.javaEight();
+	@EnabledOnJre(JRE.JAVA_8)
+	void changelogSql() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
@@ -129,7 +130,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultValues() {
+	void defaultValues() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.run(assertLiquibase((liquibase) -> {
 					LiquibaseProperties properties = new LiquibaseProperties();
@@ -142,21 +143,21 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideContexts() {
+	void overrideContexts() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.contexts:test, production")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getContexts()).isEqualTo("test, production")));
 	}
 
 	@Test
-	public void overrideDefaultSchema() {
+	void overrideDefaultSchema() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.default-schema:public")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getDefaultSchema()).isEqualTo("public")));
 	}
 
 	@Test
-	public void overrideLiquibaseInfrastructure() {
+	void overrideLiquibaseInfrastructure() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.liquibase-schema:public",
 						"spring.liquibase.liquibase-tablespace:infra",
@@ -177,14 +178,14 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideDropFirst() {
+	void overrideDropFirst() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.drop-first:true")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.isDropFirst()).isTrue()));
 	}
 
 	@Test
-	public void overrideDataSource() {
+	void overrideDataSource() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
 				.run(assertLiquibase((liquibase) -> {
@@ -195,7 +196,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideUser() {
+	void overrideUser() {
 		String jdbcUrl = "jdbc:hsqldb:mem:normal";
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.url:" + jdbcUrl, "spring.datasource.username:not-sa",
@@ -209,7 +210,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideTestRollbackOnUpdate() {
+	void overrideTestRollbackOnUpdate() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.test-rollback-on-update:true").run((context) -> {
 					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
@@ -218,7 +219,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void changeLogDoesNotExist() {
+	void changeLogDoesNotExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.change-log:classpath:/no-such-changelog.yaml").run((context) -> {
 					assertThat(context).hasFailed();
@@ -227,7 +228,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void logging(CapturedOutput output) {
+	void logging(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.run(assertLiquibase((liquibase) -> {
 					Object log = ReflectionTestUtils.getField(liquibase, "log");
@@ -237,7 +238,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideLabels() {
+	void overrideLabels() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.labels:test, production")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabels()).isEqualTo("test, production")));
@@ -245,7 +246,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testOverrideParameters() {
+	void testOverrideParameters() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.parameters.foo:bar").run(assertLiquibase((liquibase) -> {
 					Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils.getField(liquibase,
@@ -256,7 +257,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void rollbackFile(@TempDir Path temp) throws IOException {
+	void rollbackFile(@TempDir Path temp) throws IOException {
 		File file = Files.createTempFile(temp, "rollback-file", "sql").toFile();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.rollbackFile:" + file.getAbsolutePath()).run((context) -> {
@@ -268,7 +269,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void liquibaseDataSource() {
+	void liquibaseDataSource() {
 		this.contextRunner
 				.withUserConfiguration(LiquibaseDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
@@ -278,7 +279,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void liquibaseDataSourceWithoutDataSourceAutoConfiguration() {
+	void liquibaseDataSourceWithoutDataSourceAutoConfiguration() {
 		this.contextRunner.withUserConfiguration(LiquibaseDataSourceConfiguration.class).run((context) -> {
 			SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 			assertThat(liquibase.getDataSource()).isEqualTo(context.getBean("liquibaseDataSource"));

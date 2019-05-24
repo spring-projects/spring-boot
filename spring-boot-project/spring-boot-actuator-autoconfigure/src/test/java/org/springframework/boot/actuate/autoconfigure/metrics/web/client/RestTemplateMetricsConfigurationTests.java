@@ -48,14 +48,14 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Raheela Aslam
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class RestTemplateMetricsConfigurationTests {
+class RestTemplateMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
 					HttpClientMetricsAutoConfiguration.class));
 
 	@Test
-	public void restTemplateCreatedWithBuilderIsInstrumented() {
+	void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
@@ -64,7 +64,7 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateCanBeCustomizedManually() {
+	void restTemplateCanBeCustomizedManually() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
 			RestTemplateBuilder customBuilder = new RestTemplateBuilder()
@@ -75,7 +75,7 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
@@ -85,7 +85,7 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
@@ -96,7 +96,7 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	public void autoTimeRequestsCanBeConfigured() {
+	void autoTimeRequestsCanBeConfigured() {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
 				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
 				"management.metrics.web.client.request.autotime.percentiles-histogram=true").run((context) -> {
@@ -110,7 +110,7 @@ public class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	public void backsOffWhenRestTemplateBuilderIsMissing() {
+	void backsOffWhenRestTemplateBuilderIsMissing() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)

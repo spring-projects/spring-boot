@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class WebMvcMetricsFilterAutoTimedTests {
+class WebMvcMetricsFilterAutoTimedTests {
 
 	@Autowired
 	private MeterRegistry registry;
@@ -73,7 +73,7 @@ public class WebMvcMetricsFilterAutoTimedTests {
 	}
 
 	@Test
-	public void metricsCanBeAutoTimed() throws Exception {
+	void metricsCanBeAutoTimed() throws Exception {
 		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
 		Timer timer = this.registry.get("http.server.requests").tags("status", "200").timer();
 		assertThat(timer.count()).isEqualTo(1L);

@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class HikariDriverConfigurationFailureAnalyzerTests {
+class HikariDriverConfigurationFailureAnalyzerTests {
 
 	@Test
-	public void failureAnalysisIsPerformed() {
+	void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis).isNotNull();
 		assertThat(failureAnalysis.getDescription()).isEqualTo(
@@ -45,7 +45,7 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void unrelatedIllegalStateExceptionIsSkipped() {
+	void unrelatedIllegalStateExceptionIsSkipped() {
 		FailureAnalysis failureAnalysis = new HikariDriverConfigurationFailureAnalyzer()
 				.analyze(new RuntimeException("foo", new IllegalStateException("bar")));
 		assertThat(failureAnalysis).isNull();

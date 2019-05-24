@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> levelFields = Arrays.asList(
 			fieldWithPath("configuredLevel").description("Configured level of the logger, if any.").optional(),
@@ -58,7 +58,7 @@ public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	private LoggingSystem loggingSystem;
 
 	@Test
-	public void allLoggers() throws Exception {
+	void allLoggers() throws Exception {
 		given(this.loggingSystem.getSupportedLogLevels()).willReturn(EnumSet.allOf(LogLevel.class));
 		given(this.loggingSystem.getLoggerConfigurations())
 				.willReturn(Arrays.asList(new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
@@ -71,7 +71,7 @@ public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	}
 
 	@Test
-	public void logger() throws Exception {
+	void logger() throws Exception {
 		given(this.loggingSystem.getLoggerConfiguration("com.example"))
 				.willReturn(new LoggerConfiguration("com.example", LogLevel.INFO, LogLevel.INFO));
 		this.mockMvc.perform(get("/actuator/loggers/com.example")).andExpect(status().isOk())
@@ -79,7 +79,7 @@ public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	}
 
 	@Test
-	public void setLogLevel() throws Exception {
+	void setLogLevel() throws Exception {
 		this.mockMvc
 				.perform(post("/actuator/loggers/com.example").content("{\"configuredLevel\":\"debug\"}")
 						.contentType(MediaType.APPLICATION_JSON))
@@ -90,7 +90,7 @@ public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	}
 
 	@Test
-	public void clearLogLevel() throws Exception {
+	void clearLogLevel() throws Exception {
 		this.mockMvc
 				.perform(post("/actuator/loggers/com.example").content("{}").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent()).andDo(MockMvcRestDocumentation.document("loggers/clear"));

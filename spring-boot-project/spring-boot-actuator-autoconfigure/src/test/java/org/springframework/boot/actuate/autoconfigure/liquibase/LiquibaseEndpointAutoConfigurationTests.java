@@ -34,32 +34,32 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class LiquibaseEndpointAutoConfigurationTests {
+class LiquibaseEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
 				.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
 				.run((context) -> assertThat(context).hasSingleBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
 				.withPropertyValues("management.endpoint.liquibase.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
-	public void disablesCloseOfDataSourceWhenEndpointIsEnabled() {
+	void disablesCloseOfDataSourceWhenEndpointIsEnabled() {
 		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=liquibase").run((context) -> {
 					assertThat(context).hasSingleBean(LiquibaseEndpoint.class);
@@ -69,7 +69,7 @@ public class LiquibaseEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void doesNotDisableCloseOfDataSourceWhenEndpointIsDisabled() {
+	void doesNotDisableCloseOfDataSourceWhenEndpointIsDisabled() {
 		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
 				.withPropertyValues("management.endpoint.liquibase.enabled:false").run((context) -> {
 					assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class);

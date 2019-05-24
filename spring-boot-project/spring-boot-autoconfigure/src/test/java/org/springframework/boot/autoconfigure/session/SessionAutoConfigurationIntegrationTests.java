@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -45,7 +45,7 @@ public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAut
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void severalCandidatesWithNoSessionStore() {
+	void severalCandidatesWithNoSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure().hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
@@ -57,7 +57,7 @@ public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAut
 	}
 
 	@Test
-	public void severalCandidatesWithWrongSessionStore() {
+	void severalCandidatesWithWrongSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
 					assertThat(context).hasFailed();
@@ -69,7 +69,7 @@ public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAut
 	}
 
 	@Test
-	public void severalCandidatesWithValidSessionStore() {
+	void severalCandidatesWithValidSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=jdbc")
 				.run((context) -> validateSessionRepository(context, JdbcOperationsSessionRepository.class));

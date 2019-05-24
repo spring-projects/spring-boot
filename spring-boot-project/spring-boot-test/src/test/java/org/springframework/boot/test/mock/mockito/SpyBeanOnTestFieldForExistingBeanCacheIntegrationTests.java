@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = SpyBeanOnTestFieldForExistingBeanConfig.class)
-public class SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests {
+class SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests {
 
 	@SpyBean
 	private ExampleService exampleService;
@@ -48,7 +48,7 @@ public class SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
 		verify(this.caller.getService()).greeting();
 	}

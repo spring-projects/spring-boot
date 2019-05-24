@@ -40,13 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ContextConfiguration(initializers = CustomInitializer.class)
-public class SpringBootTestContextBootstrapperWithInitializersTests {
+class SpringBootTestContextBootstrapperWithInitializersTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void foundConfiguration() {
+	void foundConfiguration() {
 		Object bean = this.context.getBean(SpringBootTestContextBootstrapperExampleConfig.class);
 		assertThat(bean).isNotNull();
 	}

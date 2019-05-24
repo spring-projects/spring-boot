@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class AliasedIterableConfigurationPropertySourceTests extends AliasedConfigurationPropertySourceTests {
+class AliasedIterableConfigurationPropertySourceTests extends AliasedConfigurationPropertySourceTests {
 
 	@Test
-	public void streamShouldIncludeAliases() {
+	void streamShouldIncludeAliases() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");

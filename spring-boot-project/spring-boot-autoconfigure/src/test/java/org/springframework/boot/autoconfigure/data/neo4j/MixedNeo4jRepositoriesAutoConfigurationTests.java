@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vince Bickers
  * @author Stephane Nicoll
  */
-public class MixedNeo4jRepositoriesAutoConfigurationTests {
+class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -61,33 +61,33 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testMixedRepositoryConfiguration() {
+	void testMixedRepositoryConfiguration() {
 		load(MixedConfiguration.class);
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithNeo4jTemplate() {
+	void testJpaRepositoryConfigurationWithNeo4jTemplate() {
 		load(JpaConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
 	@Disabled
-	public void testJpaRepositoryConfigurationWithNeo4jOverlap() {
+	void testJpaRepositoryConfigurationWithNeo4jOverlap() {
 		load(OverlapConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled() {
+	void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled() {
 		load(OverlapConfiguration.class, "spring.data.neo4j.repositories.enabled:false");
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}

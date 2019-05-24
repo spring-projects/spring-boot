@@ -58,7 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @TestPropertySource(properties = "security.ignored=/**")
-public class WebMvcMetricsIntegrationTests {
+class WebMvcMetricsIntegrationTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -77,14 +77,14 @@ public class WebMvcMetricsIntegrationTests {
 	}
 
 	@Test
-	public void handledExceptionIsRecordedInMetricTag() throws Exception {
+	void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
 		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception1", "status", "500").timer()
 				.count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void rethrownExceptionIsRecordedInMetricTag() {
+	void rethrownExceptionIsRecordedInMetricTag() {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError")).andExpect(status().is5xxServerError()));
 		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception2", "status", "500").timer()
 				.count()).isEqualTo(1L);

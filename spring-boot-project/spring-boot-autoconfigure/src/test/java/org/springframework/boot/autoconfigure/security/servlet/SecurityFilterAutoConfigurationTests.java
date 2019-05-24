@@ -39,10 +39,10 @@ import org.springframework.mock.web.MockServletContext;
  *
  * @author Andy Wilkinson
  */
-public class SecurityFilterAutoConfigurationTests {
+class SecurityFilterAutoConfigurationTests {
 
 	@Test
-	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() {
+	void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() {
 		try (AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext()) {
 			context.setServletContext(new MockServletContext());
 			context.register(Config.class);

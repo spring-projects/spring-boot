@@ -38,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "value=123" })
-public class SpringBootTestWebEnvironmentRandomPortTests extends AbstractSpringBootTestWebServerWebEnvironmentTests {
+class SpringBootTestWebEnvironmentRandomPortTests extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
-	public void testRestTemplateShouldUseBuilder() {
+	void testRestTemplateShouldUseBuilder() {
 		assertThat(getRestTemplate().getRestTemplate().getMessageConverters())
 				.hasAtLeastOneElementOfType(MyConverter.class);
 	}

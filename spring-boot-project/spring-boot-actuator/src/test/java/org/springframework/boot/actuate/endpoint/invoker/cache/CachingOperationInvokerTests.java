@@ -40,22 +40,22 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Stephane Nicoll
  */
-public class CachingOperationInvokerTests {
+class CachingOperationInvokerTests {
 
 	@Test
-	public void createInstanceWithTtlSetToZero() {
+	void createInstanceWithTtlSetToZero() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
 				.withMessageContaining("TimeToLive");
 	}
 
 	@Test
-	public void cacheInTtlRangeWithNoParameter() {
+	void cacheInTtlRangeWithNoParameter() {
 		assertCacheIsUsed(Collections.emptyMap());
 	}
 
 	@Test
-	public void cacheInTtlWithNullParameters() {
+	void cacheInTtlWithNullParameters() {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("first", null);
 		parameters.put("second", null);
@@ -77,7 +77,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetAlwaysInvokedWithParameters() {
+	void targetAlwaysInvokedWithParameters() {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("test", "value");
@@ -92,7 +92,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetAlwaysInvokedWithPrincipal() {
+	void targetAlwaysInvokedWithPrincipal() {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		SecurityContext securityContext = mock(SecurityContext.class);
@@ -107,7 +107,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetInvokedWhenCacheExpires() throws InterruptedException {
+	void targetInvokedWhenCacheExpires() throws InterruptedException {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), parameters);

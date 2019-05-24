@@ -33,13 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
-public class SpringBootTestDefaultConfigurationTests {
+class SpringBootTestDefaultConfigurationTests {
 
 	@Autowired
 	private Config config;
 
 	@Test
-	public void nestedConfigClasses() {
+	void nestedConfigClasses() {
 		assertThat(this.config).isNotNull();
 	}
 

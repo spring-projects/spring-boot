@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.filtersample.ExampleComponent;
@@ -37,11 +37,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-public class TypeExcludeFilterTests {
+class TypeExcludeFilterTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
@@ -49,7 +49,7 @@ public class TypeExcludeFilterTests {
 	}
 
 	@Test
-	public void loadsTypeExcludeFilters() {
+	void loadsTypeExcludeFilters() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.getBeanFactory().registerSingleton("filter1", new WithoutMatchOverrideFilter());
 		this.context.getBeanFactory().registerSingleton("filter2", new SampleTypeExcludeFilter());

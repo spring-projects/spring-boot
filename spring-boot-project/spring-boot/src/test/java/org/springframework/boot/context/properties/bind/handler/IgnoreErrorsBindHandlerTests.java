@@ -19,8 +19,8 @@ package org.springframework.boot.context.properties.bind.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -37,13 +37,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class IgnoreErrorsBindHandlerTests {
+class IgnoreErrorsBindHandlerTests {
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
@@ -52,13 +52,13 @@ public class IgnoreErrorsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenNotIgnoringErrorsShouldFail() {
+	void bindWhenNotIgnoringErrorsShouldFail() {
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test
-	public void bindWhenIgnoringErrorsShouldBind() {
+	void bindWhenIgnoringErrorsShouldBind() {
 		Example bound = this.binder.bind("example", Bindable.of(Example.class), new IgnoreErrorsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo(0);
 	}

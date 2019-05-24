@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ConfigurationPropertiesAutoConfigurationTests {
+class ConfigurationPropertiesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -45,13 +45,13 @@ public class ConfigurationPropertiesAutoConfigurationTests {
 	}
 
 	@Test
-	public void processAnnotatedBean() {
+	void processAnnotatedBean() {
 		load(new Class[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
 		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
 	}
 
 	@Test
-	public void processAnnotatedBeanNoAutoConfig() {
+	void processAnnotatedBeanNoAutoConfig() {
 		load(new Class[] { SampleBean.class }, "foo.name:test");
 		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
 	}

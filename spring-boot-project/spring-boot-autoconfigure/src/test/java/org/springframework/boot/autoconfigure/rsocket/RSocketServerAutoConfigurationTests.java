@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
@@ -38,24 +38,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class RSocketServerAutoConfigurationTests {
+class RSocketServerAutoConfigurationTests {
 
 	@Test
-	public void shouldNotCreateBeansByDefault() {
+	void shouldNotCreateBeansByDefault() {
 		ApplicationContextRunner contextRunner = createContextRunner();
 		contextRunner.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
 				.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
-	public void shouldNotCreateDefaultBeansForReactiveWebAppWithoutMapping() {
+	void shouldNotCreateDefaultBeansForReactiveWebAppWithoutMapping() {
 		ReactiveWebApplicationContextRunner contextRunner = createReactiveWebContextRunner();
 		contextRunner.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
 				.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
-	public void shouldNotCreateDefaultBeansForReactiveWebAppWithWrongTransport() {
+	void shouldNotCreateDefaultBeansForReactiveWebAppWithWrongTransport() {
 		ReactiveWebApplicationContextRunner contextRunner = createReactiveWebContextRunner();
 		contextRunner
 				.withPropertyValues("spring.rsocket.server.transport=tcp",
@@ -65,7 +65,7 @@ public class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateDefaultBeansForReactiveWebApp() {
+	void shouldCreateDefaultBeansForReactiveWebApp() {
 		ReactiveWebApplicationContextRunner contextRunner = createReactiveWebContextRunner();
 		contextRunner
 				.withPropertyValues("spring.rsocket.server.transport=websocket",
@@ -74,7 +74,7 @@ public class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateDefaultBeansForRSocketServerWhenPortIsSet() {
+	void shouldCreateDefaultBeansForRSocketServerWhenPortIsSet() {
 		ReactiveWebApplicationContextRunner contextRunner = createReactiveWebContextRunner();
 		contextRunner.withPropertyValues("spring.rsocket.server.port=0").run((context) -> assertThat(context)
 				.hasSingleBean(RSocketServerFactory.class).hasSingleBean(RSocketServerBootstrap.class));

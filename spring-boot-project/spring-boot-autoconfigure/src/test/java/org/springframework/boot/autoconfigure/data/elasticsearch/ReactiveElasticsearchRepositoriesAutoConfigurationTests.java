@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -27,7 +28,6 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories;
@@ -45,28 +45,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
-	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class,
 					ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
-			.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints=localhost:"
-					+ elasticsearch.getMappedHttpPort());
+			.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints="
+					+ elasticsearch.getContainerIpAddress() + ":" + elasticsearch.getFirstMappedPort());
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(ReactiveCityRepository.class).hasSingleBean(ReactiveElasticsearchTemplate.class));
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchTemplate.class));
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(CityReactiveElasticsearchDbRepository.class));
 	}

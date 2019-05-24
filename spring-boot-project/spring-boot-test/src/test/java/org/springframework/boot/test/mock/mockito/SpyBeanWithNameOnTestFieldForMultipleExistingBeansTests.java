@@ -36,13 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
+class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 
 	@SpyBean(name = "two")
 	private SimpleExampleStringGenericService spy;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		MockingDetails mockingDetails = Mockito.mockingDetails(this.spy);
 		assertThat(mockingDetails.isSpy()).isTrue();
 		assertThat(mockingDetails.getMockCreationSettings().getMockName().toString()).isEqualTo("two");

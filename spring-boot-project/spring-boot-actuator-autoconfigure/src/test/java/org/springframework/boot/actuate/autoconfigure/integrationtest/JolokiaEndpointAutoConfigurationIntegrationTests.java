@@ -58,13 +58,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = "management.endpoints.web.exposure.include=jolokia")
 @DirtiesContext
-public class JolokiaEndpointAutoConfigurationIntegrationTests {
+class JolokiaEndpointAutoConfigurationIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void jolokiaIsExposed() {
+	void jolokiaIsExposed() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/actuator/jolokia", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("\"agent\"");
@@ -72,7 +72,7 @@ public class JolokiaEndpointAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void search() {
+	void search() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/actuator/jolokia/search/java.lang:*",
 				String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -80,7 +80,7 @@ public class JolokiaEndpointAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void read() {
+	void read() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/actuator/jolokia/read/java.lang:type=Memory",
 				String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -88,7 +88,7 @@ public class JolokiaEndpointAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void list() {
+	void list() {
 		ResponseEntity<String> response = this.restTemplate
 				.getForEntity("/actuator/jolokia/list/java.lang/type=Memory/attr", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

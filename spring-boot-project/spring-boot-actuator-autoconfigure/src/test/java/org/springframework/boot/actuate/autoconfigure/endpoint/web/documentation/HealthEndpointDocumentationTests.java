@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> componentFields = Arrays.asList(
 			fieldWithPath("status").description("Status of a specific part of the application"),
@@ -63,7 +63,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 					.description("Details of the health of a specific part of the" + " application."));
 
 	@Test
-	public void health() throws Exception {
+	void health() throws Exception {
 		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk()).andDo(document("health",
 				responseFields(fieldWithPath("status").description("Overall status of the application."),
 						fieldWithPath("details")
@@ -75,13 +75,13 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	}
 
 	@Test
-	public void healthComponent() throws Exception {
+	void healthComponent() throws Exception {
 		this.mockMvc.perform(get("/actuator/health/db")).andExpect(status().isOk())
 				.andDo(document("health/component", responseFields(componentFields)));
 	}
 
 	@Test
-	public void healthComponentInstance() throws Exception {
+	void healthComponentInstance() throws Exception {
 		this.mockMvc.perform(get("/actuator/health/broker/us1")).andExpect(status().isOk())
 				.andDo(document("health/instance", responseFields(componentFields)));
 	}

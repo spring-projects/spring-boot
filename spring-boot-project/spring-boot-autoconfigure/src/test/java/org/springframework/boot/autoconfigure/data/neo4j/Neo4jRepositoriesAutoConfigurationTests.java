@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Vince Bickers
  * @author Stephane Nicoll
  */
-public class Neo4jRepositoriesAutoConfigurationTests {
+class Neo4jRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -55,7 +55,7 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		prepareApplicationContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
@@ -63,19 +63,19 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		prepareApplicationContext(EmptyConfiguration.class);
 		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
 		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(CityRepository.class));

@@ -50,10 +50,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class DataSourceJsonSerializationTests {
+class DataSourceJsonSerializationTests {
 
 	@Test
-	public void serializerFactory() throws Exception {
+	void serializerFactory() throws Exception {
 		DataSource dataSource = new DataSource();
 		SerializerFactory factory = BeanSerializerFactory.instance
 				.withSerializerModifier(new GenericSerializerModifier());
@@ -64,7 +64,7 @@ public class DataSourceJsonSerializationTests {
 	}
 
 	@Test
-	public void serializerWithMixin() throws Exception {
+	void serializerWithMixin() throws Exception {
 		DataSource dataSource = new DataSource();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);

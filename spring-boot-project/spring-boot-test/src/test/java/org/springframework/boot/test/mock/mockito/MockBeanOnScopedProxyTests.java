@@ -40,7 +40,7 @@ import static org.mockito.BDDMockito.given;
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5724">gh-5724</a>
  */
 @ExtendWith(SpringExtension.class)
-public class MockBeanOnScopedProxyTests {
+class MockBeanOnScopedProxyTests {
 
 	@MockBean
 	private ExampleService exampleService;
@@ -49,7 +49,7 @@ public class MockBeanOnScopedProxyTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		given(this.caller.getService().greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}

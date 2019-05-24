@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class KairosPropertiesTests extends StepRegistryPropertiesTests {
+class KairosPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		KairosProperties properties = new KairosProperties();
 		KairosConfig config = KairosConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);

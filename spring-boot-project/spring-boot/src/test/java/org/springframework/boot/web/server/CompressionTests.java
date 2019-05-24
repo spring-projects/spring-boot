@@ -17,10 +17,7 @@
 package org.springframework.boot.web.server;
 
 import org.apache.coyote.http11.Http11NioProtocol;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,11 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
-public class CompressionTests {
+class CompressionTests {
 
 	@Test
-	public void defaultCompressableMimeTypesMatchesTomcatsDefault() {
+	void defaultCompressableMimeTypesMatchesTomcatsDefault() {
 		assertThat(new Compression().getMimeTypes()).containsExactlyInAnyOrder(getTomcatDefaultCompressableMimeTypes());
 	}
 

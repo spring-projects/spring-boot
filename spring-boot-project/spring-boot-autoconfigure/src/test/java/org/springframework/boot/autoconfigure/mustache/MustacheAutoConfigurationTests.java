@@ -34,14 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class MustacheAutoConfigurationTests {
+class MustacheAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext webContext;
 
 	private AnnotationConfigReactiveWebApplicationContext reactiveWebContext;
 
 	@Test
-	public void registerBeansForServletApp() {
+	void registerBeansForServletApp() {
 		loadWithServlet(null);
 		assertThat(this.webContext.getBeansOfType(Mustache.Compiler.class)).hasSize(1);
 		assertThat(this.webContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
@@ -49,7 +49,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerCompilerForServletApp() {
+	void registerCompilerForServletApp() {
 		loadWithServlet(CustomCompilerConfiguration.class);
 		assertThat(this.webContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
 		assertThat(this.webContext.getBeansOfType(MustacheViewResolver.class)).hasSize(1);
@@ -58,7 +58,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerBeansForReactiveApp() {
+	void registerBeansForReactiveApp() {
 		loadWithReactive(null);
 		assertThat(this.reactiveWebContext.getBeansOfType(Mustache.Compiler.class)).hasSize(1);
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
@@ -69,7 +69,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerCompilerForReactiveApp() {
+	void registerCompilerForReactiveApp() {
 		loadWithReactive(CustomCompilerConfiguration.class);
 		assertThat(this.reactiveWebContext.getBeansOfType(Mustache.Compiler.class)).hasSize(1);
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);

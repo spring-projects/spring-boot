@@ -63,13 +63,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class ArtemisAutoConfigurationTests {
+class ArtemisAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class));
 
 	@Test
-	public void connectionFactoryIsCachedByDefault() {
+	void connectionFactoryIsCachedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ConnectionFactory.class);
 			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
@@ -82,7 +82,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void connectionFactoryCachingCanBeCustomized() {
+	void connectionFactoryCachingCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.consumers=true", "spring.jms.cache.producers=false",
 						"spring.jms.cache.session-cache-size=10")
@@ -97,7 +97,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void connectionFactoryCachingCanBeDisabled() {
+	void connectionFactoryCachingCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.enabled=false").run((context) -> {
 					assertThat(context).hasSingleBean(ConnectionFactory.class);
@@ -107,7 +107,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void nativeConnectionFactory() {
+	void nativeConnectionFactory() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native").run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
@@ -122,7 +122,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void nativeConnectionFactoryCustomHost() {
+	void nativeConnectionFactoryCustomHost() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
 						"spring.artemis.port:9876")
@@ -131,7 +131,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void nativeConnectionFactoryCredentials() {
+	void nativeConnectionFactoryCredentials() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.user:user",
 						"spring.artemis.password:secret")
@@ -148,7 +148,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactory() {
+	void embeddedConnectionFactory() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:embedded").run((context) -> {
 					ArtemisProperties properties = context.getBean(ArtemisProperties.class);
@@ -163,7 +163,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactoryByDefault() {
+	void embeddedConnectionFactoryByDefault() {
 		// No mode is specified
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(EmbeddedJMS.class);
@@ -176,7 +176,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void nativeConnectionFactoryIfEmbeddedServiceDisabledExplicitly() {
+	void nativeConnectionFactoryIfEmbeddedServiceDisabledExplicitly() {
 		// No mode is specified
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.enabled:false").run((context) -> {
@@ -187,7 +187,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
+	void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:embedded", "spring.artemis.embedded.enabled:false")
@@ -198,7 +198,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedServerWithDestinations() {
+	void embeddedServerWithDestinations() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1,Queue2",
 						"spring.artemis.embedded.topics=Topic1")
@@ -213,7 +213,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedServerWithDestinationConfig() {
+	void embeddedServerWithDestinationConfig() {
 		this.contextRunner.withUserConfiguration(DestinationConfiguration.class).run((context) -> {
 			DestinationChecker checker = new DestinationChecker(context);
 			checker.checkQueue("sampleQueue", true);
@@ -222,7 +222,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedServiceWithCustomJmsConfiguration() {
+	void embeddedServiceWithCustomJmsConfiguration() {
 		// Ignored with custom config
 		this.contextRunner.withUserConfiguration(CustomJmsConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1,Queue2").run((context) -> {
@@ -234,7 +234,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedServiceWithCustomArtemisConfiguration() {
+	void embeddedServiceWithCustomArtemisConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomArtemisConfiguration.class)
 				.run((context) -> assertThat(
 						context.getBean(org.apache.activemq.artemis.core.config.Configuration.class).getName())
@@ -242,7 +242,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedWithPersistentMode(@TempDir Path temp) throws IOException {
+	void embeddedWithPersistentMode(@TempDir Path temp) throws IOException {
 		File dataFolder = Files.createTempDirectory(temp, null).toFile();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
@@ -263,7 +263,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void severalEmbeddedBrokers() {
+	void severalEmbeddedBrokers() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1").run((first) -> {
 					this.contextRunner.withPropertyValues("spring.artemis.embedded.queues=Queue2").run((second) -> {
@@ -282,7 +282,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void connectToASpecificEmbeddedBroker() {
+	void connectToASpecificEmbeddedBroker() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.serverId=93", "spring.artemis.embedded.queues=Queue1")
 				.run((first) -> {
@@ -302,7 +302,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPoolConnectionFactoryIsApplied() {
+	void defaultPoolConnectionFactoryIsApplied() {
 		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled=true").run((context) -> {
 			assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
 			JmsPoolConnectionFactory connectionFactory = context.getBean(JmsPoolConnectionFactory.class);
@@ -323,7 +323,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPoolConnectionFactoryIsApplied() {
+	void customPoolConnectionFactoryIsApplied() {
 		this.contextRunner
 				.withPropertyValues("spring.artemis.pool.enabled=true", "spring.artemis.pool.blockIfFull=false",
 						"spring.artemis.pool.blockIfFullTimeout=64", "spring.artemis.pool.idleTimeout=512",
@@ -344,7 +344,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void poolConnectionFactoryConfiguration() {
+	void poolConnectionFactoryConfiguration() {
 		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled:true").run((context) -> {
 			ConnectionFactory factory = context.getBean(ConnectionFactory.class);
 			assertThat(factory).isInstanceOf(JmsPoolConnectionFactory.class);

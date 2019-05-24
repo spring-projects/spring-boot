@@ -40,16 +40,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class EntityScannerTests {
+class EntityScannerTests {
 
 	@Test
-	public void createWhenContextIsNullShouldThrowException() {
+	void createWhenContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EntityScanner(null))
 				.withMessageContaining("Context must not be null");
 	}
 
 	@Test
-	public void scanShouldScanFromSinglePackage() throws Exception {
+	void scanShouldScanFromSinglePackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
@@ -58,7 +58,7 @@ public class EntityScannerTests {
 	}
 
 	@Test
-	public void scanShouldScanFromMultiplePackages() throws Exception {
+	void scanShouldScanFromMultiplePackages() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanAConfig.class,
 				ScanBConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
@@ -68,7 +68,7 @@ public class EntityScannerTests {
 	}
 
 	@Test
-	public void scanShouldFilterOnAnnotation() throws Exception {
+	void scanShouldFilterOnAnnotation() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
 		assertThat(scanner.scan(Entity.class)).containsOnly(EntityA.class, EntityB.class, EntityC.class);

@@ -44,10 +44,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class JettyMetricsAutoConfigurationTests {
+class JettyMetricsAutoConfigurationTests {
 
 	@Test
-	public void autoConfiguresThreadPoolMetricsWithEmbeddedServletJetty() {
+	void autoConfiguresThreadPoolMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 						ServletWebServerFactoryAutoConfiguration.class))
@@ -62,7 +62,7 @@ public class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguresThreadPoolMetricsWithEmbeddedReactiveJetty() {
+	void autoConfiguresThreadPoolMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 						ReactiveWebServerFactoryAutoConfiguration.class))
@@ -76,7 +76,7 @@ public class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomJettyServerThreadPoolMetricsBinderToBeUsed() {
+	void allowsCustomJettyServerThreadPoolMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
 				.withUserConfiguration(CustomJettyServerThreadPoolMetricsBinder.class, MeterRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class)

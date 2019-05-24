@@ -27,17 +27,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link MissingRequiredConfigurationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-public class MissingRequiredConfigurationFailureAnalyzerTests {
+class MissingRequiredConfigurationFailureAnalyzerTests {
 
 	@Test
-	public void analyzesMissingRequiredConfiguration() {
+	void analyzesMissingRequiredConfiguration() {
 		FailureAnalysis analysis = new MissingRequiredConfigurationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdConfiguration.class));
 		assertThat(analysis).isNotNull();

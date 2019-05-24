@@ -42,14 +42,14 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Stephane Nicoll
  */
-public class HealthWebEndpointResponseMapperTests {
+class HealthWebEndpointResponseMapperTests {
 
 	private final HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 
 	private Set<String> authorizedRoles = Collections.singleton("ACTUATOR");
 
 	@Test
-	public void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
+	void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.NEVER);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mock(SecurityContext.class);
@@ -60,7 +60,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithUnauthorizedUserDoesNotInvokeSupplier() {
+	void mapDetailsWithUnauthorizedUserDoesNotInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mockSecurityContext("USER");
@@ -72,7 +72,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithAuthorizedUserInvokeSupplier() {
+	void mapDetailsWithAuthorizedUserInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
@@ -85,7 +85,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithUnavailableHealth() {
+	void mapDetailsWithUnavailableHealth() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.ALWAYS);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mock(SecurityContext.class);

@@ -26,30 +26,30 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class LinkTests {
+class LinkTests {
 
 	@Test
-	public void createWhenHrefIsNullShouldThrowException() {
+	void createWhenHrefIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Link(null))
 				.withMessageContaining("HREF must not be null");
 	}
 
 	@Test
-	public void getHrefShouldReturnHref() {
+	void getHrefShouldReturnHref() {
 		String href = "https://example.com";
 		Link link = new Link(href);
 		assertThat(link.getHref()).isEqualTo(href);
 	}
 
 	@Test
-	public void isTemplatedWhenContainsPlaceholderShouldReturnTrue() {
+	void isTemplatedWhenContainsPlaceholderShouldReturnTrue() {
 		String href = "https://example.com/{path}";
 		Link link = new Link(href);
 		assertThat(link.isTemplated()).isTrue();
 	}
 
 	@Test
-	public void isTemplatedWhenContainsNoPlaceholderShouldReturnFalse() {
+	void isTemplatedWhenContainsNoPlaceholderShouldReturnFalse() {
 		String href = "https://example.com/path";
 		Link link = new Link(href);
 		assertThat(link.isTemplated()).isFalse();

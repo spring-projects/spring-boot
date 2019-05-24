@@ -35,13 +35,13 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CassandraAutoConfigurationTests {
+class CassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
 
 	@Test
-	public void createClusterWithDefault() {
+	void createClusterWithDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			assertThat(context.getBean(Cluster.class).getClusterName()).startsWith("cluster");
@@ -49,7 +49,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void createClusterWithOverrides() {
+	void createClusterWithOverrides() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			assertThat(context.getBean(Cluster.class).getClusterName()).isEqualTo("testcluster");
@@ -57,7 +57,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void createCustomizeCluster() {
+	void createCustomizeCluster() {
 		this.contextRunner.withUserConfiguration(MockCustomizerConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			assertThat(context).hasSingleBean(ClusterBuilderCustomizer.class);
@@ -65,7 +65,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizerOverridesAutoConfig() {
+	void customizerOverridesAutoConfig() {
 		this.contextRunner.withUserConfiguration(SimpleCustomizerConfig.class)
 				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
 					assertThat(context).hasSingleBean(Cluster.class);
@@ -74,7 +74,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPoolOptions() {
+	void defaultPoolOptions() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			PoolingOptions poolingOptions = context.getBean(Cluster.class).getConfiguration().getPoolingOptions();
@@ -87,7 +87,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizePoolOptions() {
+	void customizePoolOptions() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.pool.idle-timeout=42",
 				"spring.data.cassandra.pool.pool-timeout=52", "spring.data.cassandra.pool.heartbeat-interval=62",
 				"spring.data.cassandra.pool.max-queue-size=72").run((context) -> {
@@ -102,7 +102,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void clusterFactoryIsCalledToCreateCluster() {
+	void clusterFactoryIsCalledToCreateCluster() {
 		this.contextRunner.withUserConfiguration(ClusterFactoryConfig.class)
 				.run((context) -> assertThat(context.getBean(TestClusterFactory.class).initializer).isNotNull());
 	}

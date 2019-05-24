@@ -52,13 +52,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private HttpTraceRepository repository;
 
 	@Test
-	public void traces() throws Exception {
+	void traces() throws Exception {
 		TraceableRequest request = mock(TraceableRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");

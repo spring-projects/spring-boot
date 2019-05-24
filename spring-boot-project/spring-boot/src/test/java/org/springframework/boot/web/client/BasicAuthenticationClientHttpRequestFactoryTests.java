@@ -19,8 +19,8 @@ package org.springframework.boot.web.client;
 import java.io.IOException;
 import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dmytro Nosan
  */
-public class BasicAuthenticationClientHttpRequestFactoryTests {
+class BasicAuthenticationClientHttpRequestFactoryTests {
 
 	private final HttpHeaders headers = new HttpHeaders();
 
@@ -45,7 +45,7 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 
 	private ClientHttpRequestFactory requestFactory;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
@@ -55,13 +55,13 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 	}
 
 	@Test
-	public void shouldAddAuthorizationHeader() throws IOException {
+	void shouldAddAuthorizationHeader() throws IOException {
 		ClientHttpRequest request = createRequest();
 		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
 
 	@Test
-	public void shouldNotAddAuthorizationHeaderAuthorizationAlreadySet() throws IOException {
+	void shouldNotAddAuthorizationHeaderAuthorizationAlreadySet() throws IOException {
 		this.headers.setBasicAuth("boot", "spring");
 		ClientHttpRequest request = createRequest();
 		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).doesNotContain("Basic c3ByaW5nOmJvb3Q=");

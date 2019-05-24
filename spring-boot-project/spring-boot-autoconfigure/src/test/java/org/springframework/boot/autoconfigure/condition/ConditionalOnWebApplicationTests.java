@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class ConditionalOnWebApplicationTests {
+class ConditionalOnWebApplicationTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -53,7 +53,7 @@ public class ConditionalOnWebApplicationTests {
 	}
 
 	@Test
-	public void testWebApplicationWithServletContext() {
+	void testWebApplicationWithServletContext() {
 		AnnotationConfigServletWebApplicationContext ctx = new AnnotationConfigServletWebApplicationContext();
 		ctx.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
@@ -65,7 +65,7 @@ public class ConditionalOnWebApplicationTests {
 	}
 
 	@Test
-	public void testWebApplicationWithReactiveContext() {
+	void testWebApplicationWithReactiveContext() {
 		AnnotationConfigReactiveWebApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
 		context.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
@@ -76,7 +76,7 @@ public class ConditionalOnWebApplicationTests {
 	}
 
 	@Test
-	public void testNonWebApplication() {
+	void testNonWebApplication() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);

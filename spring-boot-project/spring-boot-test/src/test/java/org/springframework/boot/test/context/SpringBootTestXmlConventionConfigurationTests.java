@@ -30,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest
-public class SpringBootTestXmlConventionConfigurationTests {
+class SpringBootTestXmlConventionConfigurationTests {
 
 	@Autowired
 	private String foo;
 
 	@Test
-	public void xmlConfigLoaded() {
+	void xmlConfigLoaded() {
 		assertThat(this.foo).isEqualTo("World");
 	}
 

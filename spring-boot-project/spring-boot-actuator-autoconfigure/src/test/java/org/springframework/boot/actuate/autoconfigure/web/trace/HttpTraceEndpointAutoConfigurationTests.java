@@ -35,26 +35,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class HttpTraceEndpointAutoConfigurationTests {
+class HttpTraceEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(HttpTraceAutoConfiguration.class, HttpTraceEndpointAutoConfiguration.class));
 
 	@Test
-	public void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {
+	void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
 				.run((context) -> assertThat(context).hasSingleBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
 				.withPropertyValues("management.endpoint.httptrace.enabled:false")
@@ -62,7 +62,7 @@ public class HttpTraceEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void endpointBacksOffWhenRepositoryIsNotAvailable() {
+	void endpointBacksOffWhenRepositoryIsNotAvailable() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
 				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}

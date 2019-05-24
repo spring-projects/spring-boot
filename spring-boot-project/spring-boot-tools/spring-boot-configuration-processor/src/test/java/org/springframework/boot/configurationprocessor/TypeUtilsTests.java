@@ -16,13 +16,13 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.function.BiConsumer;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.TypeUtils.TypeDescriptor;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -39,13 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class TypeUtilsTests {
+class TypeUtilsTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void resolveTypeDescriptorOnConcreteClass() throws IOException {
+	void resolveTypeDescriptorOnConcreteClass() throws IOException {
 		process(SimpleGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 					.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
@@ -59,7 +59,7 @@ public class TypeUtilsTests {
 	}
 
 	@Test
-	public void resolveTypeDescriptorOnIntermediateClass() throws IOException {
+	void resolveTypeDescriptorOnIntermediateClass() throws IOException {
 		process(AbstractIntermediateGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
@@ -72,7 +72,7 @@ public class TypeUtilsTests {
 	}
 
 	@Test
-	public void resolveTypeDescriptorWithOnlyGenerics() throws IOException {
+	void resolveTypeDescriptorWithOnlyGenerics() throws IOException {
 		process(AbstractGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));
@@ -84,7 +84,7 @@ public class TypeUtilsTests {
 
 	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) throws IOException {
 		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(consumer, TypeUtils::new);
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		compiler.getTask(target).call(processor);
 	}
 

@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class JsonMarshallerTests {
+class JsonMarshallerTests {
 
 	@Test
-	public void marshallAndUnmarshal() throws Exception {
+	void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(), InputStream.class.getName(),
 				"sourceMethod", "desc", "x", new ItemDeprecation("Deprecation comment", "b.c.d")));
@@ -69,7 +69,7 @@ public class JsonMarshallerTests {
 	}
 
 	@Test
-	public void marshallOrderItems() throws IOException {
+	void marshallOrderItems() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemHint.newHint("fff"));
 		metadata.add(ItemHint.newHint("eee"));
@@ -89,7 +89,7 @@ public class JsonMarshallerTests {
 	}
 
 	@Test
-	public void marshallPutDeprecatedItemsAtTheEnd() throws IOException {
+	void marshallPutDeprecatedItemsAtTheEnd() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null));
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null,

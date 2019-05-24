@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Christian Dupuis
  * @author Artsiom Yudovin
  */
-public class JmxAutoConfigurationTests {
+class JmxAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -59,7 +59,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultMBeanExport() {
+	void testDefaultMBeanExport() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
@@ -68,7 +68,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testEnabledMBeanExport() {
+	void testEnabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		this.context = new AnnotationConfigApplicationContext();
@@ -79,7 +79,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisabledMBeanExport() {
+	void testDisabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "false");
 		this.context = new AnnotationConfigApplicationContext();
@@ -91,7 +91,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultDomainConfiguredOnMBeanExport() {
+	void testDefaultDomainConfiguredOnMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		env.setProperty("spring.jmx.default-domain", "my-test-domain");
@@ -109,7 +109,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testBasicParentContext() {
+	void testBasicParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
@@ -121,7 +121,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testParentContext() {
+	void testParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -133,7 +133,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void customJmxDomain() {
+	void customJmxDomain() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomJmxDomainConfiguration.class, JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);

@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ThymeleafTemplateAvailabilityProviderTests {
+class ThymeleafTemplateAvailabilityProviderTests {
 
 	private final TemplateAvailabilityProvider provider = new ThymeleafTemplateAvailabilityProvider();
 
@@ -39,26 +39,26 @@ public class ThymeleafTemplateAvailabilityProviderTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void availabilityOfTemplateInDefaultLocation() {
+	void availabilityOfTemplateInDefaultLocation() {
 		assertThat(this.provider.isTemplateAvailable("home", this.environment, getClass().getClassLoader(),
 				this.resourceLoader)).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateThatDoesNotExist() {
+	void availabilityOfTemplateThatDoesNotExist() {
 		assertThat(this.provider.isTemplateAvailable("whatever", this.environment, getClass().getClassLoader(),
 				this.resourceLoader)).isFalse();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomPrefix() {
+	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.thymeleaf.prefix", "classpath:/custom-templates/");
 		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
 				this.resourceLoader)).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomSuffix() {
+	void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.thymeleaf.suffix", ".thymeleaf");
 		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment, getClass().getClassLoader(),
 				this.resourceLoader)).isTrue();

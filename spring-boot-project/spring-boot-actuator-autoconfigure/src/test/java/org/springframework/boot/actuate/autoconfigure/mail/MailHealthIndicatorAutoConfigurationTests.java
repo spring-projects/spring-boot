@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MailHealthIndicatorAutoConfigurationTests {
+class MailHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class,
@@ -40,13 +40,13 @@ public class MailHealthIndicatorAutoConfigurationTests {
 			.withPropertyValues("spring.mail.host:smtp.example.com");
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MailHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.mail.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(MailHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));

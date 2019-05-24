@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andrew McGhie
  */
-public class TomcatWebServerFactoryCustomizerTests {
+class TomcatWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
 
@@ -70,7 +70,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultsAreConsistent() {
+	void defaultsAreConsistent() {
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
 						.getMaxSwallowSize())
@@ -78,7 +78,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customAcceptCount() {
+	void customAcceptCount() {
 		bind("server.tomcat.accept-count=10");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getAcceptCount())
@@ -86,7 +86,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customProcessorCache() {
+	void customProcessorCache() {
 		bind("server.tomcat.processor-cache=100");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
@@ -94,7 +94,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void unlimitedProcessorCache() {
+	void unlimitedProcessorCache() {
 		bind("server.tomcat.processor-cache=-1");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
@@ -102,20 +102,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customBackgroundProcessorDelay() {
+	void customBackgroundProcessorDelay() {
 		bind("server.tomcat.background-processor-delay=5");
 		TomcatWebServer server = customizeAndGetServer();
 		assertThat(server.getTomcat().getEngine().getBackgroundProcessorDelay()).isEqualTo(5);
 	}
 
 	@Test
-	public void customDisableMaxHttpPostSize() {
+	void customDisableMaxHttpPostSize() {
 		bind("server.tomcat.max-http-post-size=-1");
 		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
 	}
 
 	@Test
-	public void customMaxConnections() {
+	void customMaxConnections() {
 		bind("server.tomcat.max-connections=5");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getMaxConnections())
@@ -123,14 +123,14 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpPostSize() {
+	void customMaxHttpPostSize() {
 		bind("server.tomcat.max-http-post-size=10000");
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
 	}
 
 	@Test
-	public void customMaxHttpHeaderSize() {
+	void customMaxHttpHeaderSize() {
 		bind("server.max-http-header-size=1KB");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
@@ -138,7 +138,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+	void customMaxHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-header-size=-1");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
@@ -146,7 +146,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+	void customMaxHttpHeaderSizeIgnoredIfZero() {
 		bind("server.max-http-header-size=0");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
@@ -154,7 +154,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxSwallowSize() {
+	void customMaxSwallowSize() {
 		bind("server.tomcat.max-swallow-size=10MB");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
@@ -162,7 +162,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customRemoteIpValve() {
+	void customRemoteIpValve() {
 		bind("server.tomcat.remote-ip-header=x-my-remote-ip-header",
 				"server.tomcat.protocol-header=x-my-protocol-header", "server.tomcat.internal-proxies=192.168.0.1",
 				"server.tomcat.port-header=x-my-forward-port", "server.tomcat.protocol-header-https-value=On");
@@ -179,7 +179,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customStaticResourceAllowCaching() {
+	void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");
 		customizeAndRunServer((server) -> {
 			Tomcat tomcat = server.getTomcat();
@@ -189,7 +189,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customStaticResourceCacheTtl() {
+	void customStaticResourceCacheTtl() {
 		bind("server.tomcat.resource.cache-ttl=10000");
 		customizeAndRunServer((server) -> {
 			Tomcat tomcat = server.getTomcat();
@@ -199,20 +199,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeaders() {
+	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		testRemoteIpValveConfigured();
 	}
 
 	@Test
-	public void defaultRemoteIpValve() {
+	void defaultRemoteIpValve() {
 		// Since 1.1.7 you need to specify at least the protocol
 		bind("server.tomcat.protocol-header=X-Forwarded-Proto", "server.tomcat.remote-ip-header=X-Forwarded-For");
 		testRemoteIpValveConfigured();
 	}
 
 	@Test
-	public void setUseForwardHeaders() {
+	void setUseForwardHeaders() {
 		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
 		this.serverProperties.setUseForwardHeaders(true);
 		testRemoteIpValveConfigured();
@@ -238,20 +238,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultBackgroundProcessorDelay() {
+	void defaultBackgroundProcessorDelay() {
 		TomcatWebServer server = customizeAndGetServer();
 		assertThat(server.getTomcat().getEngine().getBackgroundProcessorDelay()).isEqualTo(10);
 	}
 
 	@Test
-	public void disableRemoteIpValve() {
+	void disableRemoteIpValve() {
 		bind("server.tomcat.remote-ip-header=", "server.tomcat.protocol-header=");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
 	@Test
-	public void errorReportValveIsConfiguredToNotReportStackTraces() {
+	void errorReportValveIsConfiguredToNotReportStackTraces() {
 		TomcatWebServer server = customizeAndGetServer();
 		Valve[] valves = server.getTomcat().getHost().getPipeline().getValves();
 		assertThat(valves).hasAtLeastOneElementOfType(ErrorReportValve.class);
@@ -265,20 +265,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeMinSpareThreads() {
+	void testCustomizeMinSpareThreads() {
 		bind("server.tomcat.min-spare-threads=10");
 		assertThat(this.serverProperties.getTomcat().getMinSpareThreads()).isEqualTo(10);
 	}
 
 	@Test
-	public void accessLogBufferingCanBeDisabled() {
+	void accessLogBufferingCanBeDisabled() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.buffered=false");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).isBuffered()).isFalse();
 	}
 
 	@Test
-	public void accessLogCanBeEnabled() {
+	void accessLogCanBeEnabled() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).hasSize(1);
@@ -286,7 +286,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogFileDateFormatByDefault() {
+	void accessLogFileDateFormatByDefault() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getFileDateFormat())
@@ -294,7 +294,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogFileDateFormatCanBeRedefined() {
+	void accessLogFileDateFormatCanBeRedefined() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.file-date-format=yyyy-MM-dd.HH");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getFileDateFormat())
@@ -302,20 +302,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogIsBufferedByDefault() {
+	void accessLogIsBufferedByDefault() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).isBuffered()).isTrue();
 	}
 
 	@Test
-	public void accessLogIsDisabledByDefault() {
+	void accessLogIsDisabledByDefault() {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
 	@Test
-	public void accessLogMaxDaysDefault() {
+	void accessLogMaxDaysDefault() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getMaxDays())
@@ -323,7 +323,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogConditionCanBeSpecified() {
+	void accessLogConditionCanBeSpecified() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.conditionIf=foo",
 				"server.tomcat.accesslog.conditionUnless=bar");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
@@ -336,21 +336,21 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogEncodingIsNullWhenNotSpecified() {
+	void accessLogEncodingIsNullWhenNotSpecified() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getEncoding()).isNull();
 	}
 
 	@Test
-	public void accessLogEncodingCanBeSpecified() {
+	void accessLogEncodingCanBeSpecified() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.encoding=UTF-8");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getEncoding()).isEqualTo("UTF-8");
 	}
 
 	@Test
-	public void accessLogWithDefaultLocale() {
+	void accessLogWithDefaultLocale() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getLocale())
@@ -358,7 +358,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogLocaleCanBeSpecified() {
+	void accessLogLocaleCanBeSpecified() {
 		String locale = "en_AU".equals(Locale.getDefault().toString()) ? "en_US" : "en_AU";
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.locale=" + locale);
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
@@ -366,42 +366,42 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void accessLogCheckExistsDefault() {
+	void accessLogCheckExistsDefault() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).isCheckExists()).isFalse();
 	}
 
 	@Test
-	public void accessLogCheckExistsSpecified() {
+	void accessLogCheckExistsSpecified() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.check-exists=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).isCheckExists()).isTrue();
 	}
 
 	@Test
-	public void accessLogMaxDaysCanBeRedefined() {
+	void accessLogMaxDaysCanBeRedefined() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.max-days=20");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getMaxDays()).isEqualTo(20);
 	}
 
 	@Test
-	public void accessLogDoesNotUseIpv6CanonicalFormatByDefault() {
+	void accessLogDoesNotUseIpv6CanonicalFormatByDefault() {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getIpv6Canonical()).isFalse();
 	}
 
 	@Test
-	public void accessLogwithIpv6CanonicalSet() {
+	void accessLogwithIpv6CanonicalSet() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.ipv6-canonical=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getIpv6Canonical()).isTrue();
 	}
 
 	@Test
-	public void ajpConnectorCanBeCustomized() {
+	void ajpConnectorCanBeCustomized() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		factory.setProtocol("AJP/1.3");
 		this.customizer.customize(factory);

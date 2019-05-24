@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void simpleMethodConfig() {
+	void simpleMethodConfig() {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
 		assertThat(metadata)
@@ -46,7 +46,7 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 	}
 
 	@Test
-	public void invalidMethodConfig() {
+	void invalidMethodConfig() {
 		ConfigurationMetadata metadata = compile(InvalidMethodConfig.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("something.name", String.class).fromSource(InvalidMethodConfig.class));
@@ -54,7 +54,7 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 	}
 
 	@Test
-	public void methodAndClassConfig() {
+	void methodAndClassConfig() {
 		ConfigurationMetadata metadata = compile(MethodAndClassConfig.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("conflict.name", String.class).fromSource(MethodAndClassConfig.Foo.class));
@@ -65,13 +65,13 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 	}
 
 	@Test
-	public void emptyTypeMethodConfig() {
+	void emptyTypeMethodConfig() {
 		ConfigurationMetadata metadata = compile(EmptyTypeMethodConfig.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("something.foo"));
 	}
 
 	@Test
-	public void deprecatedMethodConfig() {
+	void deprecatedMethodConfig() {
 		Class<DeprecatedMethodConfig> type = DeprecatedMethodConfig.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
@@ -83,7 +83,7 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void deprecatedMethodConfigOnClass() {
+	void deprecatedMethodConfigOnClass() {
 		Class<?> type = org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));

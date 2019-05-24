@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.http;
 
+import org.junit.After;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -38,7 +38,7 @@ public class HttpMessageConvertersAutoConfigurationWithoutJacksonTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@AfterEach
+	@After
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

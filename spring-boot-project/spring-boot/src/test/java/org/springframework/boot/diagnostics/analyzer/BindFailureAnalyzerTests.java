@@ -23,7 +23,7 @@ import java.util.Set;
 
 import javax.validation.constraints.Min;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -42,30 +42,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class BindFailureAnalyzerTests {
+class BindFailureAnalyzerTests {
 
 	@Test
-	public void analysisForUnboundElementsIsNull() {
+	void analysisForUnboundElementsIsNull() {
 		FailureAnalysis analysis = performAnalysis(UnboundElementsFailureConfiguration.class,
 				"test.foo.listValue[0]=hello", "test.foo.listValue[2]=world");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void analysisForValidationExceptionIsNull() {
+	void analysisForValidationExceptionIsNull() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class, "test.foo.value=1");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void bindExceptionDueToOtherFailure() {
+	void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class, "test.foo.value=alpha");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "alpha",
 				"\"test.foo.value\" from property source \"test\"", "failed to convert java.lang.String to int"));
 	}
 
 	@Test
-	public void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
+	void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
 		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class, "test.foo.fruit=apple,strawberry");
 		for (Fruit fruit : Fruit.values()) {
 			assertThat(analysis.getAction()).contains(fruit.name());
@@ -73,7 +73,7 @@ public class BindFailureAnalyzerTests {
 	}
 
 	@Test
-	public void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
+	void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
 		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class, "test.foo.value=hello");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
 				"\"test.foo.value\" from property source \"test\"", "This is a failure"));

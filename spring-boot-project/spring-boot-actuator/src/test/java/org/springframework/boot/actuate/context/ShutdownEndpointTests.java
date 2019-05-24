@@ -42,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ShutdownEndpointTests {
+class ShutdownEndpointTests {
 
 	@Test
-	public void shutdown() {
+	void shutdown() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfig.class);
 		contextRunner.run((context) -> {
@@ -67,7 +67,7 @@ public class ShutdownEndpointTests {
 	}
 
 	@Test
-	public void shutdownChild() throws Exception {
+	void shutdownChild() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(EmptyConfig.class)
 				.child(EndpointConfig.class).web(WebApplicationType.NONE).run();
 		CountDownLatch latch = context.getBean(EndpointConfig.class).latch;
@@ -77,7 +77,7 @@ public class ShutdownEndpointTests {
 	}
 
 	@Test
-	public void shutdownParent() throws Exception {
+	void shutdownParent() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(EndpointConfig.class)
 				.child(EmptyConfig.class).web(WebApplicationType.NONE).run();
 		CountDownLatch parentLatch = context.getBean(EndpointConfig.class).latch;

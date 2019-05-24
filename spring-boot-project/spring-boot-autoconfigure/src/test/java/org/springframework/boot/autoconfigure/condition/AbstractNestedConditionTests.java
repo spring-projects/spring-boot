@@ -30,18 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Razib Shahriar
  */
-public class AbstractNestedConditionTests {
+class AbstractNestedConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void validPhase() {
+	void validPhase() {
 		this.contextRunner.withUserConfiguration(ValidConfig.class)
 				.run((context) -> assertThat(context).hasBean("myBean"));
 	}
 
 	@Test
-	public void invalidMemberPhase() {
+	void invalidMemberPhase() {
 		this.contextRunner.withUserConfiguration(InvalidConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
@@ -52,7 +52,7 @@ public class AbstractNestedConditionTests {
 	}
 
 	@Test
-	public void invalidNestedMemberPhase() {
+	void invalidNestedMemberPhase() {
 		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)

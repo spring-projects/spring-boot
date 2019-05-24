@@ -45,10 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointProxyTests {
+class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
-	public void testWithProxyClass() {
+	void testWithProxyClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class,
 				SqlExecutor.class);
 		contextRunner.run((context) -> {

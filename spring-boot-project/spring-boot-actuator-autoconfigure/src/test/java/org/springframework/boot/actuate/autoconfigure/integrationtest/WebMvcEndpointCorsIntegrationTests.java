@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  * @see WebMvcEndpointManagementContextConfiguration
  */
-public class WebMvcEndpointCorsIntegrationTests {
+class WebMvcEndpointCorsIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
@@ -59,7 +59,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 			.withPropertyValues("management.endpoints.web.exposure.include:*");
 
 	@Test
-	public void corsIsDisabledByDefault() {
+	void corsIsDisabledByDefault() {
 		this.contextRunner.run(withMockMvc((mockMvc) -> mockMvc
 				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
@@ -67,7 +67,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void settingAllowedOriginsEnablesCors() {
+	void settingAllowedOriginsEnablesCors() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.run(withMockMvc((mockMvc) -> {
 					mockMvc.perform(options("/actuator/beans").header("Origin", "bar.example.com")
@@ -78,14 +78,14 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void maxAgeDefaultsTo30Minutes() {
+	void maxAgeDefaultsTo30Minutes() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.run(withMockMvc((mockMvc) -> performAcceptedCorsRequest(mockMvc)
 						.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"))));
 	}
 
 	@Test
-	public void maxAgeCanBeConfigured() {
+	void maxAgeCanBeConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 						"management.endpoints.web.cors.max-age: 2400")
@@ -94,7 +94,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void requestsWithDisallowedHeadersAreRejected() {
+	void requestsWithDisallowedHeadersAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.run(withMockMvc((mockMvc) ->
 
@@ -105,7 +105,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void allowedHeadersCanBeConfigured() {
+	void allowedHeadersCanBeConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 						"management.endpoints.web.cors.allowed-headers:Alpha,Bravo")
@@ -118,7 +118,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void requestsWithDisallowedMethodsAreRejected() {
+	void requestsWithDisallowedMethodsAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.run(withMockMvc((mockMvc) -> mockMvc
 						.perform(options("/actuator/beans").header(HttpHeaders.ORIGIN, "foo.example.com")
@@ -127,7 +127,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void allowedMethodsCanBeConfigured() {
+	void allowedMethodsCanBeConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 						"management.endpoints.web.cors.allowed-methods:GET,HEAD")
@@ -139,7 +139,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void credentialsCanBeAllowed() {
+	void credentialsCanBeAllowed() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 						"management.endpoints.web.cors.allow-credentials:true")
@@ -148,7 +148,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
-	public void credentialsCanBeDisabled() {
+	void credentialsCanBeDisabled() {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 						"management.endpoints.web.cors.allow-credentials:false")

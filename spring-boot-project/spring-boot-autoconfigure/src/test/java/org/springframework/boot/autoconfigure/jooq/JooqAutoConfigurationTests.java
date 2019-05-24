@@ -63,19 +63,19 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  * @author Dmytro Nosan
  */
-public class JooqAutoConfigurationTests {
+class JooqAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.name:jooqtest");
 
 	@Test
-	public void noDataSource() {
+	void noDataSource() {
 		this.contextRunner.run((context) -> assertThat(context.getBeansOfType(DSLContext.class)).isEmpty());
 	}
 
 	@Test
-	public void jooqWithoutTx() {
+	void jooqWithoutTx() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(PlatformTransactionManager.class);
 			assertThat(context).doesNotHaveBean(SpringTransactionProvider.class);
@@ -92,7 +92,7 @@ public class JooqAutoConfigurationTests {
 	}
 
 	@Test
-	public void jooqWithTx() {
+	void jooqWithTx() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(PlatformTransactionManager.class);
@@ -111,7 +111,7 @@ public class JooqAutoConfigurationTests {
 	}
 
 	@Test
-	public void customProvidersArePickedUp() {
+	void customProvidersArePickedUp() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
 				TestRecordMapperProvider.class, TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
 				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
@@ -133,7 +133,7 @@ public class JooqAutoConfigurationTests {
 	}
 
 	@Test
-	public void relaxedBindingOfSqlDialect() {
+	void relaxedBindingOfSqlDialect() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class)
 				.withPropertyValues("spring.jooq.sql-dialect:PoSTGrES")
 				.run((context) -> assertThat(context.getBean(org.jooq.Configuration.class).dialect())

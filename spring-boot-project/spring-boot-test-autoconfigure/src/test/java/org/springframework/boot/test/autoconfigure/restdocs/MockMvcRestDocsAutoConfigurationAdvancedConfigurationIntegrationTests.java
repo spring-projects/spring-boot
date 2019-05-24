@@ -18,9 +18,8 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,7 +30,6 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
 
@@ -50,11 +48,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestDocsTestController.class)
 @WithMockUser
 @AutoConfigureRestDocs
-public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
+class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Autowired
 	private MockMvc mvc;
@@ -64,14 +61,14 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 
 	private File generatedSnippets;
 
-	@Before
+	@BeforeEach
 	public void deleteSnippets() {
 		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
 	@Test
-	public void snippetGeneration() throws Exception {
+	void snippetGeneration() throws Exception {
 		this.mvc.perform(get("/")).andDo(this.documentationHandler
 				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "snippet-generation");

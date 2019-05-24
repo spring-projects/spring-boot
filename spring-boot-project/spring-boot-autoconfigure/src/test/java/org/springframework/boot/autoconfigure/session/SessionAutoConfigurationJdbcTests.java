@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -53,12 +53,12 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc").run(this::validateDefaultConfig);
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
 						MongoOperationsSessionRepository.class, RedisOperationsSessionRepository.class))
@@ -78,7 +78,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void filterOrderCanBeCustomized() {
+	void filterOrderCanBeCustomized() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.servlet.filter-order=123")
 				.run((context) -> {
@@ -88,7 +88,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void disableDataSourceInitializer() {
+	void disableDataSourceInitializer() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.initialize-schema=never")
 				.run((context) -> {
@@ -103,7 +103,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void customTableName() {
+	void customTableName() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.table-name=FOO_BAR",
 						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
@@ -118,7 +118,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void customCleanupCron() {
+	void customCleanupCron() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.cleanup-cron=0 0 12 * * *")
 				.run((context) -> {

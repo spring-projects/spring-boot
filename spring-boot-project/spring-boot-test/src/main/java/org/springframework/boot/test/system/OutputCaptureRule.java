@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.allOf;
  */
 public class OutputCaptureRule implements TestRule {
 
-	private final org.springframework.boot.test.system.OutputCapture delegate = new org.springframework.boot.test.system.OutputCapture();
+	private final OutputCapture delegate = new OutputCapture();
 
 	private List<Matcher<? super String>> matchers = new ArrayList<>();
 

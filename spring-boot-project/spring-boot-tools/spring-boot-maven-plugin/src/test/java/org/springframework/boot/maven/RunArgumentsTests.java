@@ -16,7 +16,7 @@
 
 package org.springframework.boot.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,45 +25,45 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class RunArgumentsTests {
+class RunArgumentsTests {
 
 	@Test
-	public void parseNull() {
+	void parseNull() {
 		String[] args = parseArgs(null);
 		assertThat(args).isNotNull();
 		assertThat(args.length).isEqualTo(0);
 	}
 
 	@Test
-	public void parseNullArray() {
+	void parseNullArray() {
 		String[] args = new RunArguments((String[]) null).asArray();
 		assertThat(args).isNotNull();
 		assertThat(args.length).isEqualTo(0);
 	}
 
 	@Test
-	public void parseArrayContainingNullValue() {
+	void parseArrayContainingNullValue() {
 		String[] args = new RunArguments(new String[] { "foo", null, "bar" }).asArray();
 		assertThat(args).isNotNull();
 		assertThat(args).containsOnly("foo", "bar");
 	}
 
 	@Test
-	public void parseArrayContainingEmptyValue() {
+	void parseArrayContainingEmptyValue() {
 		String[] args = new RunArguments(new String[] { "foo", "", "bar" }).asArray();
 		assertThat(args).isNotNull();
 		assertThat(args).containsOnly("foo", "", "bar");
 	}
 
 	@Test
-	public void parseEmpty() {
+	void parseEmpty() {
 		String[] args = parseArgs("   ");
 		assertThat(args).isNotNull();
 		assertThat(args.length).isEqualTo(0);
 	}
 
 	@Test
-	public void parseDebugFlags() {
+	void parseDebugFlags() {
 		String[] args = parseArgs("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Xdebug");
@@ -71,7 +71,7 @@ public class RunArgumentsTests {
 	}
 
 	@Test
-	public void parseWithExtraSpaces() {
+	void parseWithExtraSpaces() {
 		String[] args = parseArgs("     -Dfoo=bar        -Dfoo2=bar2  ");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Dfoo=bar");
@@ -79,7 +79,7 @@ public class RunArgumentsTests {
 	}
 
 	@Test
-	public void parseWithNewLinesAndTabs() {
+	void parseWithNewLinesAndTabs() {
 		String[] args = parseArgs("     -Dfoo=bar \n" + "\t\t -Dfoo2=bar2  ");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Dfoo=bar");
@@ -87,7 +87,7 @@ public class RunArgumentsTests {
 	}
 
 	@Test
-	public void quoteHandledProperly() {
+	void quoteHandledProperly() {
 		String[] args = parseArgs("-Dvalue=\"My Value\"    ");
 		assertThat(args.length).isEqualTo(1);
 		assertThat(args[0]).isEqualTo("-Dvalue=My Value");

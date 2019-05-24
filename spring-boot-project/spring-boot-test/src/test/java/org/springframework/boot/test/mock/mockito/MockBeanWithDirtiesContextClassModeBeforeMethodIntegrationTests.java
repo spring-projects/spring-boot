@@ -39,7 +39,7 @@ import static org.mockito.BDDMockito.given;
  */
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MockBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
+class MockBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
 
 	@MockBean
 	private ExampleService exampleService;
@@ -48,7 +48,7 @@ public class MockBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() throws Exception {
+	void testMocking() throws Exception {
 		given(this.exampleService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}

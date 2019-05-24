@@ -56,13 +56,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class SecurityAutoConfigurationTests {
+class SecurityAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(SecurityAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
-	public void testWebConfiguration() {
+	void testWebConfiguration() {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 			assertThat(context.getBean(FilterChainProxy.class).getFilterChains()).hasSize(1);
@@ -70,7 +70,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultFilterOrderWithSecurityAdapter() {
+	void testDefaultFilterOrderWithSecurityAdapter() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(WebSecurity.class, SecurityFilterAutoConfiguration.class))
 				.run((context) -> assertThat(
@@ -79,7 +79,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testFilterIsNotRegisteredInNonWeb() {
+	void testFilterIsNotRegisteredInNonWeb() {
 		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext()) {
 			customContext.register(SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
@@ -89,20 +89,20 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultAuthenticationEventPublisherRegistered() {
+	void defaultAuthenticationEventPublisherRegistered() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(AuthenticationEventPublisher.class))
 				.isInstanceOf(DefaultAuthenticationEventPublisher.class));
 	}
 
 	@Test
-	public void defaultAuthenticationEventPublisherIsConditionalOnMissingBean() {
+	void defaultAuthenticationEventPublisherIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(AuthenticationEventPublisherConfiguration.class)
 				.run((context) -> assertThat(context.getBean(AuthenticationEventPublisher.class)).isInstanceOf(
 						AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class));
 	}
 
 	@Test
-	public void testDefaultFilterOrder() {
+	void testDefaultFilterOrder() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
 				.run((context) -> assertThat(
 						context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
@@ -110,7 +110,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomFilterOrder() {
+	void testCustomFilterOrder() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
 				.withPropertyValues("spring.security.filter.order:12345")
 				.run((context) -> assertThat(
@@ -119,7 +119,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaCoexistsHappily() {
+	void testJpaCoexistsHappily() {
 		this.contextRunner
 				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
 						"spring.datasource.initialization-mode:never")
@@ -132,13 +132,13 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testSecurityEvaluationContextExtensionSupport() {
+	void testSecurityEvaluationContextExtensionSupport() {
 		this.contextRunner
 				.run((context) -> assertThat(context).getBean(SecurityEvaluationContextExtension.class).isNotNull());
 	}
 
 	@Test
-	public void defaultFilterDispatcherTypes() {
+	void defaultFilterDispatcherTypes() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
 				.run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
@@ -152,7 +152,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFilterDispatcherTypes() {
+	void customFilterDispatcherTypes() {
 		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
 				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",

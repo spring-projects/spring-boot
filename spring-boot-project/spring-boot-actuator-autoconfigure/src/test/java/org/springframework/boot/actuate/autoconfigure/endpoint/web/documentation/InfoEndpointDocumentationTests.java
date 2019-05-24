@@ -44,10 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void info() throws Exception {
+	void info() throws Exception {
 		this.mockMvc.perform(get("/actuator/info")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("info",
 						responseFields(beneathPath("git"),

@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
@@ -45,16 +45,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-public class DevToolPropertiesIntegrationTests {
+class DevToolPropertiesIntegrationTests {
 
 	private ConfigurableApplicationContext context;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		Restarter.initialize(new String[] {}, false, new MockInitializer(), false);
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
@@ -63,7 +63,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void classPropertyConditionIsAffectedByDevToolProperties() throws Exception {
+	void classPropertyConditionIsAffectedByDevToolProperties() throws Exception {
 		SpringApplication application = new SpringApplication(ClassConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
@@ -71,7 +71,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void beanMethodPropertyConditionIsAffectedByDevToolProperties() throws Exception {
+	void beanMethodPropertyConditionIsAffectedByDevToolProperties() throws Exception {
 		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
@@ -79,7 +79,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() throws Exception {
+	void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
@@ -90,7 +90,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() throws Exception {
+	void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
@@ -101,7 +101,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void postProcessEnablesIncludeStackTraceProperty() throws Exception {
+	void postProcessEnablesIncludeStackTraceProperty() throws Exception {
 		SpringApplication application = new SpringApplication(TestConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);

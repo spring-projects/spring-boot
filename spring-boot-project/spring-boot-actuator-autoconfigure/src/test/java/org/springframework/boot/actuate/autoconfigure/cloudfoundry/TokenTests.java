@@ -31,16 +31,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Madhura Bhave
  */
-public class TokenTests {
+class TokenTests {
 
 	@Test
-	public void invalidJwtShouldThrowException() {
+	void invalidJwtShouldThrowException() {
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class).isThrownBy(() -> new Token("invalid-token"))
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
 	}
 
 	@Test
-	public void invalidJwtClaimsShouldThrowException() {
+	void invalidJwtClaimsShouldThrowException() {
 		String header = "{\"alg\": \"RS256\", \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "invalid-claims";
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
@@ -50,7 +50,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void invalidJwtHeaderShouldThrowException() {
+	void invalidJwtHeaderShouldThrowException() {
 		String header = "invalid-header";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
@@ -60,7 +60,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void emptyJwtSignatureShouldThrowException() {
+	void emptyJwtSignatureShouldThrowException() {
 		String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwu"
 				+ "Y29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ.";
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class).isThrownBy(() -> new Token(token))
@@ -68,7 +68,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void validJwt() {
+	void validJwt() {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		String content = Base64Utils.encodeToString(header.getBytes()) + "."
@@ -84,7 +84,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getSignatureAlgorithmWhenAlgIsNullShouldThrowException() {
+	void getSignatureAlgorithmWhenAlgIsNullShouldThrowException() {
 		String header = "{\"kid\": \"key-id\",  \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		Token token = createToken(header, claims);
@@ -93,7 +93,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getIssuerWhenIssIsNullShouldThrowException() {
+	void getIssuerWhenIssIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\", \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
@@ -102,7 +102,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getKidWhenKidIsNullShouldThrowException() {
+	void getKidWhenKidIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
@@ -111,7 +111,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getExpiryWhenExpIsNullShouldThrowException() {
+	void getExpiryWhenExpIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"iss\": \"http://localhost:8080/uaa/oauth/token\"" + "}";
 		Token token = createToken(header, claims);

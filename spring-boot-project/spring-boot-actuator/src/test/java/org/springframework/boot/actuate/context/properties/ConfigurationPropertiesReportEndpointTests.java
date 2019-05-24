@@ -47,10 +47,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class ConfigurationPropertiesReportEndpointTests {
+class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
-	public void configurationPropertiesAreReturned() {
+	void configurationPropertiesAreReturned() {
 		load((context, properties) -> {
 			assertThat(properties.getBeans().size()).isGreaterThan(0);
 			ConfigurationPropertiesBeanDescriptor nestedProperties = properties.getBeans().get("testProperties");
@@ -61,7 +61,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void entriesWithNullValuesAreNotIncluded() {
+	void entriesWithNullValuesAreNotIncluded() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).doesNotContainKey("nullValue");
@@ -69,7 +69,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void defaultKeySanitization() {
+	void defaultKeySanitization() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
@@ -79,7 +79,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customKeySanitization() {
+	void customKeySanitization() {
 		load("property", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
@@ -89,7 +89,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customPatternKeySanitization() {
+	void customPatternKeySanitization() {
 		load(".*pass.*", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
@@ -100,7 +100,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void keySanitizationWithCustomPatternUsingCompositeKeys() {
+	void keySanitizationWithCustomPatternUsingCompositeKeys() {
 		// gh-4415
 		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"), (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
@@ -114,7 +114,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void nonCamelCaseProperty() {
+	void nonCamelCaseProperty() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("myURL")).isEqualTo("https://example.com");
@@ -122,7 +122,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void simpleBoolean() {
+	void simpleBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("simpleBoolean")).isEqualTo(true);
@@ -130,7 +130,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void mixedBoolean() {
+	void mixedBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
@@ -138,7 +138,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void mixedCase() {
+	void mixedCase() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("mIxedCase")).isEqualTo("mixed");
@@ -146,7 +146,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void duration() {
+	void duration() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString());
@@ -154,7 +154,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void singleLetterProperty() {
+	void singleLetterProperty() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("z")).isEqualTo("zzz");
@@ -163,7 +163,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsAreSanitized() {
+	void listsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
@@ -176,7 +176,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsOfListsAreSanitized() {
+	void listsOfListsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);

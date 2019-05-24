@@ -22,8 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -40,28 +40,28 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class WebServerFactoryCustomizerBeanPostProcessorTests {
+class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	private WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock
 	private ListableBeanFactory beanFactory;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.processor.setBeanFactory(this.beanFactory);
 	}
 
 	@Test
-	public void setBeanFactoryWhenNotListableShouldThrowException() {
+	void setBeanFactoryWhenNotListableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
 				.withMessageContaining(
 						"WebServerCustomizerBeanPostProcessor can only " + "be used with a ListableBeanFactory");
 	}
 
 	@Test
-	public void postProcessBeforeShouldReturnBean() {
+	void postProcessBeforeShouldReturnBean() {
 		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessBeforeInitialization(bean, "foo");
@@ -69,7 +69,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldReturnBean() {
+	void postProcessAfterShouldReturnBean() {
 		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessAfterInitialization(bean, "foo");
@@ -77,7 +77,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldCallInterfaceCustomizers() {
+	void postProcessAfterShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactory.class);
@@ -87,7 +87,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryOneShouldCallInterfaceCustomizers() {
+	void postProcessAfterWhenWebServerFactoryOneShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactoryOne.class);
@@ -97,7 +97,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryTwoShouldCallInterfaceCustomizers() {
+	void postProcessAfterWhenWebServerFactoryTwoShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactoryTwo.class);
@@ -118,7 +118,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldCallLambdaCustomizers() {
+	void postProcessAfterShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactory.class);
@@ -126,7 +126,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryOneShouldCallLambdaCustomizers() {
+	void postProcessAfterWhenWebServerFactoryOneShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactoryOne.class);
@@ -134,7 +134,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryTwoShouldCallLambdaCustomizers() {
+	void postProcessAfterWhenWebServerFactoryTwoShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactoryTwo.class);

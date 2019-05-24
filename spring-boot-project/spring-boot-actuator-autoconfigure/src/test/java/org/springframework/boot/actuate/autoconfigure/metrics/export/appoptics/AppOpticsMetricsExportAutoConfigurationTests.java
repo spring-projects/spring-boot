@@ -34,25 +34,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AppOpticsMetricsExportAutoConfigurationTests {
+class AppOpticsMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(AppOpticsMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresItsConfigAndMeterRegistry() {
+	void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withPropertyValues("management.metrics.export.appoptics.api-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 						.hasSingleBean(AppOpticsMeterRegistry.class).hasSingleBean(AppOpticsConfig.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.appoptics.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class)
@@ -60,14 +60,14 @@ public class AppOpticsMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
 						.hasSingleBean(AppOpticsConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withPropertyValues("management.metrics.export.appoptics.api-token=abcde")
 				.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
@@ -75,7 +75,7 @@ public class AppOpticsMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withPropertyValues("management.metrics.export.appoptics.api-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 					AppOpticsMeterRegistry registry = context.getBean(AppOpticsMeterRegistry.class);

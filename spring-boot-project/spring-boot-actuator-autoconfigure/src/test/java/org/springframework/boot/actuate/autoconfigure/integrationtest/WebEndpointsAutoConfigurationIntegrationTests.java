@@ -51,16 +51,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class WebEndpointsAutoConfigurationIntegrationTests {
+class WebEndpointsAutoConfigurationIntegrationTests {
 
 	@Test
-	public void healthEndpointWebExtensionIsAutoConfigured() {
+	void healthEndpointWebExtensionIsAutoConfigured() {
 		servletWebRunner().run((context) -> context.getBean(WebEndpointTestApplication.class));
 		servletWebRunner().run((context) -> assertThat(context).hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void healthEndpointReactiveWebExtensionIsAutoConfigured() {
+	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
 				.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}

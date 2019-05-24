@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class MetricsWebFilterTests {
+class MetricsWebFilterTests {
 
 	private static final String REQUEST_METRICS_NAME = "http.server.requests";
 
@@ -55,7 +55,7 @@ public class MetricsWebFilterTests {
 	}
 
 	@Test
-	public void filterAddsTagsToRegistry() {
+	void filterAddsTagsToRegistry() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
 				.block(Duration.ofSeconds(30));
@@ -64,7 +64,7 @@ public class MetricsWebFilterTests {
 	}
 
 	@Test
-	public void filterAddsTagsToRegistryForExceptions() {
+	void filterAddsTagsToRegistryForExceptions() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(new IllegalStateException("test error")))
 				.onErrorResume((t) -> {
@@ -77,7 +77,7 @@ public class MetricsWebFilterTests {
 	}
 
 	@Test
-	public void filterAddsNonEmptyTagsToRegistryForAnonymousExceptions() {
+	void filterAddsNonEmptyTagsToRegistryForAnonymousExceptions() {
 		final Exception anonymous = new Exception("test error") {
 		};
 
@@ -92,7 +92,7 @@ public class MetricsWebFilterTests {
 	}
 
 	@Test
-	public void filterAddsTagsToRegistryForExceptionsAndCommittedResponse() {
+	void filterAddsTagsToRegistryForExceptionsAndCommittedResponse() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> {
 			exchange.getResponse().setStatusCodeValue(500);

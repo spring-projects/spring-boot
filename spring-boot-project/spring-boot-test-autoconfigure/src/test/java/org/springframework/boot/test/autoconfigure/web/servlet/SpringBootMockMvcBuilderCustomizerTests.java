@@ -24,7 +24,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
@@ -42,13 +42,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class SpringBootMockMvcBuilderCustomizerTests {
+class SpringBootMockMvcBuilderCustomizerTests {
 
 	private SpringBootMockMvcBuilderCustomizer customizer;
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void customizeShouldAddFilters() {
+	void customizeShouldAddFilters() {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		MockServletContext servletContext = new MockServletContext();
 		context.setServletContext(servletContext);

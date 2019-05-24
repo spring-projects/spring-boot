@@ -23,12 +23,10 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,9 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class SpringBootDependencyInjectionTestExecutionListenerPostConstructIntegrationTests {
+class SpringBootDependencyInjectionTestExecutionListenerPostConstructIntegrationTests {
 
 	private List<String> calls = new ArrayList<>();
 
@@ -51,7 +48,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerPostConstructInte
 	}
 
 	@Test
-	public void postConstructShouldBeInvokedOnlyOnce() {
+	void postConstructShouldBeInvokedOnlyOnce() {
 		// gh-6874
 		assertThat(this.calls).hasSize(1);
 	}

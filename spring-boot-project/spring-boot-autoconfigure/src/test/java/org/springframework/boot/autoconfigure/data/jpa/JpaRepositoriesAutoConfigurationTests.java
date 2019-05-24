@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Oliver Gierke
  */
-public class JpaRepositoriesAutoConfigurationTests {
+class JpaRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class,
@@ -60,7 +60,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class);
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CityRepository.class);
 			assertThat(context).hasSingleBean(PlatformTransactionManager.class);
@@ -70,7 +70,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOverrideRepositoryConfiguration() {
+	void testOverrideRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CityJpaRepository.class);
 			assertThat(context).hasSingleBean(PlatformTransactionManager.class);
@@ -79,13 +79,13 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
-	public void whenBootstrappingModeIsLazyWithMultipleAsyncExecutorBootstrapExecutorIsConfigured() {
+	void whenBootstrappingModeIsLazyWithMultipleAsyncExecutorBootstrapExecutorIsConfigured() {
 		this.contextRunner.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
 						TaskSchedulingAutoConfiguration.class))
@@ -96,7 +96,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenBootstrappingModeIsLazyWithSingleAsyncExecutorBootstrapExecutorIsConfigured() {
+	void whenBootstrappingModeIsLazyWithSingleAsyncExecutorBootstrapExecutorIsConfigured() {
 		this.contextRunner.withUserConfiguration(SingleAsyncTaskExecutorConfiguration.class)
 				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
 				.run((context) -> assertThat(
@@ -105,7 +105,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenBootstrappingModeIsDeferredBootstrapExecutorIsConfigured() {
+	void whenBootstrappingModeIsDeferredBootstrapExecutorIsConfigured() {
 		this.contextRunner.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
 						TaskSchedulingAutoConfiguration.class))
@@ -116,7 +116,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenBootstrappingModeIsDefaultBootstrapExecutorIsNotConfigured() {
+	void whenBootstrappingModeIsDefaultBootstrapExecutorIsNotConfigured() {
 		this.contextRunner.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
 						TaskSchedulingAutoConfiguration.class))

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class DataSourceHealthIndicatorTests {
+class DataSourceHealthIndicatorTests {
 
 	private final DataSourceHealthIndicator indicator = new DataSourceHealthIndicator();
 
@@ -65,7 +65,7 @@ public class DataSourceHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthIndicatorWithDefaultSettings() {
+	void healthIndicatorWithDefaultSettings() {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -74,7 +74,7 @@ public class DataSourceHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthIndicatorWithCustomValidationQuery() {
+	void healthIndicatorWithCustomValidationQuery() {
 		String customValidationQuery = "SELECT COUNT(*) from FOO";
 		new JdbcTemplate(this.dataSource).execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
 		this.indicator.setDataSource(this.dataSource);
@@ -86,7 +86,7 @@ public class DataSourceHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthIndicatorWithInvalidValidationQuery() {
+	void healthIndicatorWithInvalidValidationQuery() {
 		String invalidValidationQuery = "SELECT COUNT(*) from BAR";
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery(invalidValidationQuery);
@@ -98,7 +98,7 @@ public class DataSourceHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthIndicatorCloseConnection() throws Exception {
+	void healthIndicatorCloseConnection() throws Exception {
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
 		given(connection.getMetaData()).willReturn(this.dataSource.getConnection().getMetaData());

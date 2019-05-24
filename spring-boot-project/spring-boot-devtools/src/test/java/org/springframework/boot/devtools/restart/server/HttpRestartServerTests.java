@@ -20,8 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Phillip Webb
  */
-public class HttpRestartServerTests {
+class HttpRestartServerTests {
 
 	@Mock
 	private RestartServer delegate;
@@ -55,26 +55,26 @@ public class HttpRestartServerTests {
 	@Captor
 	private ArgumentCaptor<ClassLoaderFiles> filesCaptor;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.server = new HttpRestartServer(this.delegate);
 	}
 
 	@Test
-	public void sourceFolderUrlFilterMustNotBeNull() {
+	void sourceFolderUrlFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
 				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
 	@Test
-	public void restartServerMustNotBeNull() {
+	void restartServerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((RestartServer) null))
 				.withMessageContaining("RestartServer must not be null");
 	}
 
 	@Test
-	public void sendClassLoaderFiles() throws Exception {
+	void sendClassLoaderFiles() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		ClassLoaderFiles files = new ClassLoaderFiles();
@@ -88,7 +88,7 @@ public class HttpRestartServerTests {
 	}
 
 	@Test
-	public void sendNoContent() throws Exception {
+	void sendNoContent() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
@@ -98,7 +98,7 @@ public class HttpRestartServerTests {
 	}
 
 	@Test
-	public void sendBadData() throws Exception {
+	void sendBadData() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		request.setContent(new byte[] { 0, 0, 0 });

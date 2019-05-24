@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  * @author Artsiom Yudovin
  * @author Filip Hrisafov
  */
-public class ElasticsearchRestHealthIndicatorTest {
+class ElasticsearchRestHealthIndicatorTest {
 
 	private final RestClient restClient = mock(RestClient.class);
 
@@ -50,7 +50,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 			this.restClient);
 
 	@Test
-	public void elasticsearchIsUp() throws IOException {
+	void elasticsearchIsUp() throws IOException {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
 		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "green").getBytes()));
 		Response response = mock(Response.class);
@@ -65,7 +65,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchWithYellowStatusIsUp() throws IOException {
+	void elasticsearchWithYellowStatusIsUp() throws IOException {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
 		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()));
 		Response response = mock(Response.class);
@@ -80,7 +80,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchIsDown() throws IOException {
+	void elasticsearchIsDown() throws IOException {
 		given(this.restClient.performRequest(any(Request.class))).willThrow(new IOException("Couldn't connect"));
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -88,7 +88,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchIsDownByResponseCode() throws IOException {
+	void elasticsearchIsDownByResponseCode() throws IOException {
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 		given(statusLine.getStatusCode()).willReturn(500);
@@ -102,7 +102,7 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchIsOutOfServiceByStatus() throws IOException {
+	void elasticsearchIsOutOfServiceByStatus() throws IOException {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
 		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "red").getBytes()));
 		Response response = mock(Response.class);

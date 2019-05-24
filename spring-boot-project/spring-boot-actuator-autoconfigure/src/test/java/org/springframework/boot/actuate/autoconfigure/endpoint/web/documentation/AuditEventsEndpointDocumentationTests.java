@@ -47,13 +47,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private AuditEventRepository repository;
 
 	@Test
-	public void allAuditEvents() throws Exception {
+	void allAuditEvents() throws Exception {
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any()))
 				.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
@@ -66,7 +66,7 @@ public class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocume
 	}
 
 	@Test
-	public void filteredAuditEvents() throws Exception {
+	void filteredAuditEvents() throws Exception {
 		OffsetDateTime now = OffsetDateTime.now();
 		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
 		given(this.repository.find("alice", now.toInstant(), "logout"))

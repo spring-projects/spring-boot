@@ -53,13 +53,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = "spring.jackson.default-property-inclusion=non_null")
 @DirtiesContext
-public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
+class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat("{\"subject\":\"Jersey\"}").isEqualTo(response.getBody());

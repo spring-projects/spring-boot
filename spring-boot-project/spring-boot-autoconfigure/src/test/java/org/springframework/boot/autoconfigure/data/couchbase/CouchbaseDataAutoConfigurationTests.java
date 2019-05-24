@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CouchbaseDataAutoConfigurationTests {
+class CouchbaseDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -65,26 +65,26 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void disabledIfCouchbaseIsNotConfigured() {
+	void disabledIfCouchbaseIsNotConfigured() {
 		load(null);
 		assertThat(this.context.getBeansOfType(IndexManager.class)).isEmpty();
 	}
 
 	@Test
-	public void customConfiguration() {
+	void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
 		CouchbaseTemplate couchbaseTemplate = this.context.getBean(CouchbaseTemplate.class);
 		assertThat(couchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
 
 	@Test
-	public void validatorIsPresent() {
+	void validatorIsPresent() {
 		load(CouchbaseTestConfigurer.class);
 		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).hasSize(1);
 	}
 
 	@Test
-	public void autoIndexIsDisabledByDefault() {
+	void autoIndexIsDisabledByDefault() {
 		load(CouchbaseTestConfigurer.class);
 		IndexManager indexManager = this.context.getBean(IndexManager.class);
 		assertThat(indexManager.isIgnoreViews()).isTrue();
@@ -93,7 +93,7 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableAutoIndex() {
+	void enableAutoIndex() {
 		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.auto-index=true");
 		IndexManager indexManager = this.context.getBean(IndexManager.class);
 		assertThat(indexManager.isIgnoreViews()).isFalse();
@@ -102,7 +102,7 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void changeConsistency() {
+	void changeConsistency() {
 		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.consistency=eventually-consistent");
 		SpringBootCouchbaseDataConfiguration configuration = this.context
 				.getBean(SpringBootCouchbaseDataConfiguration.class);
@@ -111,7 +111,7 @@ public class CouchbaseDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
 		CouchbaseMappingContext mappingContext = this.context.getBean(CouchbaseMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
@@ -120,7 +120,7 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConversions() {
+	void customConversions() {
 		load(CustomConversionsConfig.class);
 		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))

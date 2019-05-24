@@ -83,7 +83,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class,
 		properties = "management.metrics.use-global-registry=false")
-public class MetricsIntegrationTests {
+class MetricsIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -99,7 +99,7 @@ public class MetricsIntegrationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void restTemplateIsInstrumented() {
+	void restTemplateIsInstrumented() {
 		MockRestServiceServer server = MockRestServiceServer.bindTo(this.external).build();
 		server.expect(once(), requestTo("/api/external")).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess("{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
@@ -108,20 +108,20 @@ public class MetricsIntegrationTests {
 	}
 
 	@Test
-	public void requestMappingIsInstrumented() {
+	void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
 		assertThat(this.registry.get("http.server.requests").timer().count()).isEqualTo(1);
 	}
 
 	@Test
-	public void automaticallyRegisteredBinders() {
+	void automaticallyRegisteredBinders() {
 		assertThat(this.context.getBeansOfType(MeterBinder.class).values())
 				.hasAtLeastOneElementOfType(LogbackMetrics.class).hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
 	}
 
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void metricsFilterRegisteredForAsyncDispatches() {
+	void metricsFilterRegisteredForAsyncDispatches() {
 		Map<String, FilterRegistrationBean> filterRegistrations = this.context
 				.getBeansOfType(FilterRegistrationBean.class);
 		assertThat(filterRegistrations).containsKey("webMvcMetricsFilter");

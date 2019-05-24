@@ -23,15 +23,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -43,55 +41,55 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
-public class HealthEndpointWebIntegrationTests {
+class HealthEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	private static ConfigurableApplicationContext context;
-
-	@Test
-	public void whenHealthIsUp200ResponseIsReturned() {
+	@WebEndpointTest
+	void whenHealthIsUp200ResponseIsReturned(WebTestClient client) {
 		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody().jsonPath("status")
 				.isEqualTo("UP").jsonPath("details.alpha.status").isEqualTo("UP").jsonPath("details.bravo.status")
 				.isEqualTo("UP");
 	}
 
-	@Test
-	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
-		withHealthIndicator("charlie", () -> Health.down().build(), () -> Mono.just(Health.down().build()), () -> {
-			client.get().uri("/actuator/health").exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
-					.expectBody().jsonPath("status").isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("UP")
-					.jsonPath("details.bravo.status").isEqualTo("UP").jsonPath("details.charlie.status")
-					.isEqualTo("DOWN");
-			return null;
-		});
+	@WebEndpointTest
+	void whenHealthIsDown503ResponseIsReturned(ApplicationContext context, WebTestClient client) throws Exception {
+		withHealthIndicator(context, "charlie", () -> Health.down().build(), () -> Mono.just(Health.down().build()),
+				() -> {
+					client.get().uri("/actuator/health").exchange().expectStatus()
+							.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status").isEqualTo("DOWN")
+							.jsonPath("details.alpha.status").isEqualTo("UP").jsonPath("details.bravo.status")
+							.isEqualTo("UP").jsonPath("details.charlie.status").isEqualTo("DOWN");
+					return null;
+				});
 	}
 
-	@Test
-	public void whenComponentHealthIsDown503ResponseIsReturned() throws Exception {
-		withHealthIndicator("charlie", () -> Health.down().build(), () -> Mono.just(Health.down().build()), () -> {
-			client.get().uri("/actuator/health/charlie").exchange().expectStatus()
-					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status").isEqualTo("DOWN");
-			return null;
-		});
+	@WebEndpointTest
+	void whenComponentHealthIsDown503ResponseIsReturned(ApplicationContext context, WebTestClient client)
+			throws Exception {
+		withHealthIndicator(context, "charlie", () -> Health.down().build(), () -> Mono.just(Health.down().build()),
+				() -> {
+					client.get().uri("/actuator/health/charlie").exchange().expectStatus()
+							.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
+							.isEqualTo("DOWN");
+					return null;
+				});
 	}
 
-	@Test
-	public void whenComponentInstanceHealthIsDown503ResponseIsReturned() throws Exception {
+	@WebEndpointTest
+	void whenComponentInstanceHealthIsDown503ResponseIsReturned(ApplicationContext context, WebTestClient client)
+			throws Exception {
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(new OrderedHealthAggregator(),
 				Collections.singletonMap("one", () -> Health.down().build()));
 		CompositeReactiveHealthIndicator reactiveComposite = new CompositeReactiveHealthIndicator(
 				new OrderedHealthAggregator(), new DefaultReactiveHealthIndicatorRegistry(
 						Collections.singletonMap("one", () -> Mono.just(Health.down().build()))));
-		withHealthIndicator("charlie", composite, reactiveComposite, () -> {
+		withHealthIndicator(context, "charlie", composite, reactiveComposite, () -> {
 			client.get().uri("/actuator/health/charlie/one").exchange().expectStatus()
 					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status").isEqualTo("DOWN");
 			return null;
 		});
 	}
 
-	private void withHealthIndicator(String name, HealthIndicator healthIndicator,
+	private void withHealthIndicator(ApplicationContext context, String name, HealthIndicator healthIndicator,
 			ReactiveHealthIndicator reactiveHealthIndicator, Callable<Void> action) throws Exception {
 		Consumer<String> unregister;
 		Consumer<String> reactiveUnregister;
@@ -116,8 +114,8 @@ public class HealthEndpointWebIntegrationTests {
 		}
 	}
 
-	@Test
-	public void whenHealthIndicatorIsRemovedResponseIsAltered() {
+	@WebEndpointTest
+	void whenHealthIndicatorIsRemovedResponseIsAltered(WebTestClient client, ApplicationContext context) {
 		Consumer<String> reactiveRegister = null;
 		try {
 			ReactiveHealthIndicatorRegistry registry = context.getBean(ReactiveHealthIndicatorRegistry.class);

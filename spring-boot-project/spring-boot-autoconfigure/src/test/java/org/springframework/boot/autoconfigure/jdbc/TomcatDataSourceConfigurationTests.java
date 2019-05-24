@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class TomcatDataSourceConfigurationTests {
+class TomcatDataSourceConfigurationTests {
 
 	private static final String PREFIX = "spring.datasource.tomcat.";
 
@@ -54,7 +54,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceExists() {
+	void testDataSourceExists() {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
@@ -63,7 +63,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourcePropertiesOverridden() throws Exception {
+	void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues
 				.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
@@ -95,7 +95,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceDefaultsPreserved() {
+	void testDataSourceDefaultsPreserved() {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();

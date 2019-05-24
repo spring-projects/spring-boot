@@ -60,13 +60,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sebastien Deleuze
  * @author Eddú Meléndez
  */
-public class HttpMessageConvertersAutoConfigurationTests {
+class HttpMessageConvertersAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
 
 	@Test
-	public void jacksonNotAvailable() {
+	void jacksonNotAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(ObjectMapper.class);
 			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
@@ -75,31 +75,31 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void jacksonDefaultConverter() {
+	void jacksonDefaultConverter() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperConfig.class)
 				.run(assertConverter(MappingJackson2HttpMessageConverter.class, "mappingJackson2HttpMessageConverter"));
 	}
 
 	@Test
-	public void jacksonConverterWithBuilder() {
+	void jacksonConverterWithBuilder() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class)
 				.run(assertConverter(MappingJackson2HttpMessageConverter.class, "mappingJackson2HttpMessageConverter"));
 	}
 
 	@Test
-	public void jacksonXmlConverterWithBuilder() {
+	void jacksonXmlConverterWithBuilder() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class).run(assertConverter(
 				MappingJackson2XmlHttpMessageConverter.class, "mappingJackson2XmlHttpMessageConverter"));
 	}
 
 	@Test
-	public void jacksonCustomConverter() {
+	void jacksonCustomConverter() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperConfig.class, JacksonConverterConfig.class)
 				.run(assertConverter(MappingJackson2HttpMessageConverter.class, "customJacksonMessageConverter"));
 	}
 
 	@Test
-	public void gsonNotAvailable() {
+	void gsonNotAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(Gson.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
@@ -107,20 +107,20 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void gsonDefaultConverter() {
+	void gsonDefaultConverter() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
 				.run(assertConverter(GsonHttpMessageConverter.class, "gsonHttpMessageConverter"));
 	}
 
 	@Test
-	public void gsonCustomConverter() {
+	void gsonCustomConverter() {
 		this.contextRunner.withUserConfiguration(GsonConverterConfig.class)
 				.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
 				.run(assertConverter(GsonHttpMessageConverter.class, "customGsonMessageConverter"));
 	}
 
 	@Test
-	public void gsonCanBePreferred() {
+	void gsonCanBePreferred() {
 		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:gson").run((context) -> {
 			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
@@ -130,7 +130,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void jsonbNotAvailable() {
+	void jsonbNotAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(Jsonb.class);
 			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
@@ -138,20 +138,20 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void jsonbDefaultConverter() {
+	void jsonbDefaultConverter() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
 				.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
 	}
 
 	@Test
-	public void jsonbCustomConverter() {
+	void jsonbCustomConverter() {
 		this.contextRunner.withUserConfiguration(JsonbConverterConfig.class)
 				.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
 				.run(assertConverter(JsonbHttpMessageConverter.class, "customJsonbMessageConverter"));
 	}
 
 	@Test
-	public void jsonbCanBePreferred() {
+	void jsonbCanBePreferred() {
 		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:jsonb").run((context) -> {
 			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
@@ -161,18 +161,18 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void stringDefaultConverter() {
+	void stringDefaultConverter() {
 		this.contextRunner.run(assertConverter(StringHttpMessageConverter.class, "stringHttpMessageConverter"));
 	}
 
 	@Test
-	public void stringCustomConverter() {
+	void stringCustomConverter() {
 		this.contextRunner.withUserConfiguration(StringConverterConfig.class)
 				.run(assertConverter(StringHttpMessageConverter.class, "customStringMessageConverter"));
 	}
 
 	@Test
-	public void typeConstrainedConverterDoesNotPreventAutoConfigurationOfJacksonConverter() {
+	void typeConstrainedConverterDoesNotPreventAutoConfigurationOfJacksonConverter() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class,
 				TypeConstrainedConverterConfiguration.class).run((context) -> {
 					BeanDefinition beanDefinition = ((GenericApplicationContext) context.getSourceApplicationContext())
@@ -183,7 +183,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void typeConstrainedConverterFromSpringDataDoesNotPreventAutoConfigurationOfJacksonConverter() {
+	void typeConstrainedConverterFromSpringDataDoesNotPreventAutoConfigurationOfJacksonConverter() {
 		this.contextRunner
 				.withUserConfiguration(JacksonObjectMapperBuilderConfig.class, RepositoryRestMvcConfiguration.class)
 				.run((context) -> {
@@ -195,7 +195,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void jacksonIsPreferredByDefault() {
+	void jacksonIsPreferredByDefault() {
 		allOptionsRunner().run((context) -> {
 			assertConverterBeanExists(context, MappingJackson2HttpMessageConverter.class,
 					"mappingJackson2HttpMessageConverter");
@@ -206,7 +206,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void gsonIsPreferredIfJacksonIsNotAvailable() {
+	void gsonIsPreferredIfJacksonIsNotAvailable() {
 		allOptionsRunner().withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName()))
 				.run((context) -> {
 					assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
@@ -216,7 +216,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void jsonbIsPreferredIfJacksonAndGsonAreNotAvailable() {
+	void jsonbIsPreferredIfJacksonAndGsonAreNotAvailable() {
 		allOptionsRunner()
 				.withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName(),
 						Gson.class.getPackage().getName()))
@@ -224,14 +224,14 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenServletWebApplicationHttpMessageConvertersIsConfigured() {
+	void whenServletWebApplicationHttpMessageConvertersIsConfigured() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(HttpMessageConverters.class));
 	}
 
 	@Test
-	public void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
+	void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(HttpMessageConverters.class));

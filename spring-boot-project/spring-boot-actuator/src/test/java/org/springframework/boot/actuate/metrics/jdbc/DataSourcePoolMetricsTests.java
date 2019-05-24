@@ -38,10 +38,10 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  * @author Andy Wilkinson
  */
-public class DataSourcePoolMetricsTests {
+class DataSourcePoolMetricsTests {
 
 	@Test
-	public void dataSourceIsInstrumented() {
+	void dataSourceIsInstrumented() {
 		new ApplicationContextRunner().withUserConfiguration(DataSourceConfig.class, MetricsApp.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true", "metrics.use-global-registry=false")

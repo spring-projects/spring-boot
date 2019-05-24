@@ -33,26 +33,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class DiskSpaceHealthIndicatorAutoConfigurationTests {
+class DiskSpaceHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
 			.of(DiskSpaceHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void thresholdMustBePositive() {
+	void thresholdMustBePositive() {
 		this.contextRunner.withPropertyValues("management.health.diskspace.threshold=-10MB")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasMessageContaining("Failed to bind properties under 'management.health.diskspace'"));
 	}
 
 	@Test
-	public void thresholdCanBeCustomized() {
+	void thresholdCanBeCustomized() {
 		this.contextRunner.withPropertyValues("management.health.diskspace.threshold=20MB").run((context) -> {
 			assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class);
 			assertThat(context.getBean(DiskSpaceHealthIndicator.class)).hasFieldOrPropertyWithValue("threshold",
@@ -61,7 +61,7 @@ public class DiskSpaceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.diskspace.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DiskSpaceHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));

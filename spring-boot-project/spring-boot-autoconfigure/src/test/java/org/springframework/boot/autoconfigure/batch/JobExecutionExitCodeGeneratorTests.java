@@ -28,18 +28,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class JobExecutionExitCodeGeneratorTests {
+class JobExecutionExitCodeGeneratorTests {
 
 	private final JobExecutionExitCodeGenerator generator = new JobExecutionExitCodeGenerator();
 
 	@Test
-	public void testExitCodeForRunning() {
+	void testExitCodeForRunning() {
 		this.generator.onApplicationEvent(new JobExecutionEvent(new JobExecution(0L)));
 		assertThat(this.generator.getExitCode()).isEqualTo(1);
 	}
 
 	@Test
-	public void testExitCodeForCompleted() {
+	void testExitCodeForCompleted() {
 		JobExecution execution = new JobExecution(0L);
 		execution.setStatus(BatchStatus.COMPLETED);
 		this.generator.onApplicationEvent(new JobExecutionEvent(execution));
@@ -47,7 +47,7 @@ public class JobExecutionExitCodeGeneratorTests {
 	}
 
 	@Test
-	public void testExitCodeForFailed() {
+	void testExitCodeForFailed() {
 		JobExecution execution = new JobExecution(0L);
 		execution.setStatus(BatchStatus.FAILED);
 		this.generator.onApplicationEvent(new JobExecutionEvent(execution));

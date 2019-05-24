@@ -40,10 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void threadDump() throws Exception {
+	void threadDump() throws Exception {
 		ReentrantLock lock = new ReentrantLock();
 		CountDownLatch latch = new CountDownLatch(1);
 		new Thread(() -> {

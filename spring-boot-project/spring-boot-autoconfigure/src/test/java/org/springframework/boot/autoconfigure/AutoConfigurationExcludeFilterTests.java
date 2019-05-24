@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-public class AutoConfigurationExcludeFilterTests {
+class AutoConfigurationExcludeFilterTests {
 
 	private static final Class<?> FILTERED = ExampleFilteredAutoConfiguration.class;
 
@@ -52,7 +52,7 @@ public class AutoConfigurationExcludeFilterTests {
 	}
 
 	@Test
-	public void filterExcludeAutoConfiguration() {
+	void filterExcludeAutoConfiguration() {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertThat(this.context.getBeansOfType(String.class)).hasSize(1);
 		assertThat(this.context.getBean(String.class)).isEqualTo("test");

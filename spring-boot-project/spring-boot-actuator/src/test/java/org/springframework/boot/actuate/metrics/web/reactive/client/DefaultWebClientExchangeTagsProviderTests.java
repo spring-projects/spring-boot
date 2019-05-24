@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Nishant Raut
  */
-public class DefaultWebClientExchangeTagsProviderTests {
+class DefaultWebClientExchangeTagsProviderTests {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
@@ -58,14 +58,14 @@ public class DefaultWebClientExchangeTagsProviderTests {
 	}
 
 	@Test
-	public void tagsShouldBePopulated() {
+	void tagsShouldBePopulated() {
 		Iterable<Tag> tags = this.tagsProvider.tags(this.request, this.response, null);
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"), Tag.of("uri", "/projects/{project}"),
 				Tag.of("clientName", "example.org"), Tag.of("status", "200"), Tag.of("outcome", "SUCCESS"));
 	}
 
 	@Test
-	public void tagsWhenNoUriTemplateShouldProvideUriPath() {
+	void tagsWhenNoUriTemplateShouldProvideUriPath() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot")).build();
 		Iterable<Tag> tags = this.tagsProvider.tags(request, this.response, null);
@@ -74,14 +74,14 @@ public class DefaultWebClientExchangeTagsProviderTests {
 	}
 
 	@Test
-	public void tagsWhenIoExceptionShouldReturnIoErrorStatus() {
+	void tagsWhenIoExceptionShouldReturnIoErrorStatus() {
 		Iterable<Tag> tags = this.tagsProvider.tags(this.request, null, new IOException());
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"), Tag.of("uri", "/projects/{project}"),
 				Tag.of("clientName", "example.org"), Tag.of("status", "IO_ERROR"));
 	}
 
 	@Test
-	public void tagsWhenExceptionShouldReturnClientErrorStatus() {
+	void tagsWhenExceptionShouldReturnClientErrorStatus() {
 		Iterable<Tag> tags = this.tagsProvider.tags(this.request, null, new IllegalArgumentException());
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"), Tag.of("uri", "/projects/{project}"),
 				Tag.of("clientName", "example.org"), Tag.of("status", "CLIENT_ERROR"));

@@ -56,14 +56,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class WelcomePageHandlerMappingTests {
+class WelcomePageHandlerMappingTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(HandlerMappingConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
-	public void isOrderedAtLowPriority() {
+	void isOrderedAtLowPriority() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class).run((context) -> {
 			WelcomePageHandlerMapping handler = context.getBean(WelcomePageHandlerMapping.class);
 			assertThat(handler.getOrder()).isEqualTo(2);
@@ -71,7 +71,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void handlesRequestForStaticPageThatAcceptsTextHtml() {
+	void handlesRequestForStaticPageThatAcceptsTextHtml() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 						.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
@@ -79,7 +79,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void handlesRequestForStaticPageThatAcceptsAll() {
+	void handlesRequestForStaticPageThatAcceptsAll() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 						.perform(get("/").accept(MediaType.ALL)).andExpect(status().isOk())
@@ -87,21 +87,21 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void doesNotHandleRequestThatDoesNotAcceptTextHtml() {
+	void doesNotHandleRequestThatDoesNotAcceptTextHtml() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 						.perform(get("/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound()));
 	}
 
 	@Test
-	public void handlesRequestWithNoAcceptHeader() {
+	void handlesRequestWithNoAcceptHeader() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build().perform(get("/"))
 						.andExpect(status().isOk()).andExpect(forwardedUrl("index.html")));
 	}
 
 	@Test
-	public void handlesRequestWithEmptyAcceptHeader() {
+	void handlesRequestWithEmptyAcceptHeader() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 						.perform(get("/").header(HttpHeaders.ACCEPT, "")).andExpect(status().isOk())
@@ -110,7 +110,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void rootHandlerIsNotRegisteredWhenStaticPathPatternIsNotSlashStarStar() {
+	void rootHandlerIsNotRegisteredWhenStaticPathPatternIsNotSlashStarStar() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.withPropertyValues("static-path-pattern=/foo/**")
 				.run((context) -> assertThat(context.getBean(WelcomePageHandlerMapping.class).getRootHandler())
@@ -118,13 +118,13 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void producesNotFoundResponseWhenThereIsNoWelcomePage() {
+	void producesNotFoundResponseWhenThereIsNoWelcomePage() {
 		this.contextRunner.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 				.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound()));
 	}
 
 	@Test
-	public void handlesRequestForTemplateThatAcceptsTextHtml() {
+	void handlesRequestForTemplateThatAcceptsTextHtml() {
 		this.contextRunner.withUserConfiguration(TemplateConfiguration.class).run((context) -> {
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
@@ -133,7 +133,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void handlesRequestForTemplateThatAcceptsAll() {
+	void handlesRequestForTemplateThatAcceptsAll() {
 		this.contextRunner.withUserConfiguration(TemplateConfiguration.class).run((context) -> {
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 			mockMvc.perform(get("/").accept(MediaType.ALL)).andExpect(status().isOk())
@@ -142,7 +142,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void prefersAStaticResourceToATemplate() {
+	void prefersAStaticResourceToATemplate() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class, TemplateConfiguration.class)
 				.run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();

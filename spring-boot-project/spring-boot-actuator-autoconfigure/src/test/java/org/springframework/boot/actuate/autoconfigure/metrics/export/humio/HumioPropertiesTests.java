@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class HumioPropertiesTests extends StepRegistryPropertiesTests {
+class HumioPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		HumioProperties properties = new HumioProperties();
 		HumioConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

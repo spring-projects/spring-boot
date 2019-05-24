@@ -55,7 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
-public class FreeMarkerAutoConfigurationServletIntegrationTests {
+class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -67,7 +67,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void defaultConfiguration() {
+	void defaultConfiguration() {
 		load();
 		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class)).isNotNull();
@@ -76,7 +76,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void defaultViewResolution() throws Exception {
+	void defaultViewResolution() throws Exception {
 		load();
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
@@ -85,7 +85,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void customContentType() throws Exception {
+	void customContentType() throws Exception {
 		load("spring.freemarker.contentType:application/json");
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
@@ -94,7 +94,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void customPrefix() throws Exception {
+	void customPrefix() throws Exception {
 		load("spring.freemarker.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
@@ -102,7 +102,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void customSuffix() throws Exception {
+	void customSuffix() throws Exception {
 		load("spring.freemarker.suffix:.freemarker");
 		MockHttpServletResponse response = render("suffixed");
 		String result = response.getContentAsString();
@@ -110,7 +110,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void customTemplateLoaderPath() throws Exception {
+	void customTemplateLoaderPath() throws Exception {
 		load("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
@@ -118,13 +118,13 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void disableCache() {
+	void disableCache() {
 		load("spring.freemarker.cache:false");
 		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit()).isEqualTo(0);
 	}
 
 	@Test
-	public void allowSessionOverride() {
+	void allowSessionOverride() {
 		load("spring.freemarker.allow-session-override:true");
 		AbstractTemplateViewResolver viewResolver = this.context.getBean(FreeMarkerViewResolver.class);
 		assertThat(viewResolver).hasFieldOrPropertyWithValue("allowSessionOverride", true);
@@ -132,29 +132,29 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 	@SuppressWarnings("deprecation")
 	@Test
-	public void customFreeMarkerSettings() {
+	void customFreeMarkerSettings() {
 		load("spring.freemarker.settings.boolean_format:yup,nope");
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
 				.isEqualTo("yup,nope");
 	}
 
 	@Test
-	public void renderTemplate() throws Exception {
+	void renderTemplate() throws Exception {
 		load();
 		FreeMarkerConfigurer freemarker = this.context.getBean(FreeMarkerConfigurer.class);
 		StringWriter writer = new StringWriter();
-		freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
+		freemarker.getConfiguration().getTemplate("message.ftl").process(new DataModel(), writer);
 		assertThat(writer.toString()).contains("Hello World");
 	}
 
 	@Test
-	public void registerResourceHandlingFilterDisabledByDefault() {
+	void registerResourceHandlingFilterDisabledByDefault() {
 		load();
 		assertThat(this.context.getBeansOfType(FilterRegistrationBean.class)).isEmpty();
 	}
 
 	@Test
-	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
+	void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
 		load("spring.resources.chain.enabled:true");
 		FilterRegistrationBean<?> registration = this.context.getBean(FilterRegistrationBean.class);
 		assertThat(registration.getFilter()).isInstanceOf(ResourceUrlEncodingFilter.class);
@@ -164,7 +164,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void registerResourceHandlingFilterWithOtherRegistrationBean() {
+	void registerResourceHandlingFilterWithOtherRegistrationBean() {
 		// gh-14897
 		load(FilterRegistrationOtherConfiguration.class, "spring.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context.getBeansOfType(FilterRegistrationBean.class);
@@ -177,7 +177,7 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void registerResourceHandlingFilterWithResourceRegistrationBean() {
+	void registerResourceHandlingFilterWithResourceRegistrationBean() {
 		// gh-14926
 		load(FilterRegistrationResourceConfiguration.class, "spring.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context.getBeansOfType(FilterRegistrationBean.class);
@@ -197,10 +197,6 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 		TestPropertyValues.of(env).applyTo(this.context);
 		this.context.register(config);
 		this.context.refresh();
-	}
-
-	public String getGreeting() {
-		return "Hello World";
 	}
 
 	private MockHttpServletResponse render(String viewName) throws Exception {
@@ -241,6 +237,14 @@ public class FreeMarkerAutoConfigurationServletIntegrationTests {
 		@Bean
 		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
 			return new FilterRegistrationBean<>(new OrderedCharacterEncodingFilter());
+		}
+
+	}
+
+	public static class DataModel {
+
+		public String getGreeting() {
+			return "Hello World";
 		}
 
 	}

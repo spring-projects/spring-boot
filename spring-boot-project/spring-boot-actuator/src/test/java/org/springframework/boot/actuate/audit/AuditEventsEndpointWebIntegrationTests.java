@@ -20,10 +20,8 @@ import java.time.Instant;
 import java.util.Collections;
 
 import net.minidev.json.JSONArray;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -35,35 +33,32 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Vedran Pavic
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
-public class AuditEventsEndpointWebIntegrationTests {
+class AuditEventsEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void allEvents() {
+	@WebEndpointTest
+	void allEvents(WebTestClient client) {
 		client.get().uri((builder) -> builder.path("/actuator/auditevents").build()).exchange().expectStatus().isOk()
 				.expectBody().jsonPath("events.[*].principal")
 				.isEqualTo(new JSONArray().appendElement("admin").appendElement("admin").appendElement("user"));
 	}
 
-	@Test
-	public void eventsAfter() {
+	@WebEndpointTest
+	void eventsAfter(WebTestClient client) {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("events").isEmpty();
 	}
 
-	@Test
-	public void eventsWithPrincipal() {
+	@WebEndpointTest
+	void eventsWithPrincipal(WebTestClient client) {
 		client.get().uri((builder) -> builder.path("/actuator/auditevents").queryParam("principal", "user").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("events.[*].principal")
 				.isEqualTo(new JSONArray().appendElement("user"));
 	}
 
-	@Test
-	public void eventsWithType() {
+	@WebEndpointTest
+	void eventsWithType(WebTestClient client) {
 		client.get().uri((builder) -> builder.path("/actuator/auditevents").queryParam("type", "logout").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("events.[*].principal")
 				.isEqualTo(new JSONArray().appendElement("admin")).jsonPath("events.[*].type")

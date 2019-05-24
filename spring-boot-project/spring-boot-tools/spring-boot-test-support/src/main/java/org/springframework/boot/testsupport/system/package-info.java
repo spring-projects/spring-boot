@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
-
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
 /**
- * A test suite for probing weird ordering problems in the tests.
- *
- * @author Dave Syer
+ * Classes for {@link java.lang.System System}-related testing.
  */
-@RunWith(Suite.class)
-@SuiteClasses({})
-@Ignore
-public class AdhocTestSuite {
-
-}
+package org.springframework.boot.testsupport.system;

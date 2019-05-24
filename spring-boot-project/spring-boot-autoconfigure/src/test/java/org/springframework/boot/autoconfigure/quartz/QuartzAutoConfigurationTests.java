@@ -69,14 +69,14 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class QuartzAutoConfigurationTests {
+class QuartzAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
 			.withConfiguration(AutoConfigurations.of(QuartzAutoConfiguration.class));
 
 	@Test
-	public void withNoDataSource() {
+	void withNoDataSource() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Scheduler.class);
 			Scheduler scheduler = context.getBean(Scheduler.class);
@@ -85,7 +85,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withDataSourceUseMemoryByDefault() {
+	void withDataSourceUseMemoryByDefault() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class)).run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -95,7 +95,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withDataSource() {
+	void withDataSource() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
@@ -103,14 +103,14 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withDataSourceNoTransactionManager() {
+	void withDataSourceNoTransactionManager() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.quartz.job-store-type=jdbc").run(assertDataSourceJobStore("dataSource"));
 	}
 
 	@Test
-	public void dataSourceWithQuartzDataSourceQualifierUsedWhenMultiplePresent() {
+	void dataSourceWithQuartzDataSourceQualifierUsedWhenMultiplePresent() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class, MultipleDataSourceConfiguration.class)
 				.withPropertyValues("spring.quartz.job-store-type=jdbc")
 				.run(assertDataSourceJobStore("quartzDataSource"));
@@ -130,7 +130,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withTaskExecutor() {
+	void withTaskExecutor() {
 		this.contextRunner.withUserConfiguration(MockExecutorConfiguration.class)
 				.withPropertyValues("spring.quartz.properties.org.quartz.threadPool.threadCount=50").run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -142,7 +142,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withOverwriteExistingJobs() {
+	void withOverwriteExistingJobs() {
 		this.contextRunner.withUserConfiguration(OverwriteTriggerConfiguration.class)
 				.withPropertyValues("spring.quartz.overwrite-existing-jobs=true").run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -154,7 +154,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withConfiguredJobAndTrigger(CapturedOutput capturedOutput) {
+	void withConfiguredJobAndTrigger(CapturedOutput capturedOutput) {
 		this.contextRunner.withUserConfiguration(QuartzFullConfiguration.class)
 				.withPropertyValues("test-name=withConfiguredJobAndTrigger").run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -167,7 +167,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withConfiguredCalendars() {
+	void withConfiguredCalendars() {
 		this.contextRunner.withUserConfiguration(QuartzCalendarsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Scheduler.class);
 			Scheduler scheduler = context.getBean(Scheduler.class);
@@ -177,7 +177,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withQuartzProperties() {
+	void withQuartzProperties() {
 		this.contextRunner.withPropertyValues("spring.quartz.properties.org.quartz.scheduler.instanceId=FOO")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -187,7 +187,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withCustomizer() {
+	void withCustomizer() {
 		this.contextRunner.withUserConfiguration(QuartzCustomConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Scheduler.class);
 			Scheduler scheduler = context.getBean(Scheduler.class);
@@ -196,7 +196,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void validateDefaultProperties() {
+	void validateDefaultProperties() {
 		this.contextRunner.withUserConfiguration(ManualSchedulerConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
 			SchedulerFactoryBean schedulerFactory = context.getBean(SchedulerFactoryBean.class);
@@ -214,7 +214,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withCustomConfiguration() {
+	void withCustomConfiguration() {
 		this.contextRunner.withPropertyValues("spring.quartz.auto-startup=false", "spring.quartz.startup-delay=1m",
 				"spring.quartz.wait-for-jobs-to-complete-on-shutdown=true",
 				"spring.quartz.overwrite-existing-jobs=true").run((context) -> {
@@ -228,20 +228,20 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void schedulerNameWithDedicatedProperty() {
+	void schedulerNameWithDedicatedProperty() {
 		this.contextRunner.withPropertyValues("spring.quartz.scheduler-name=testScheduler")
 				.run(assertSchedulerName("testScheduler"));
 	}
 
 	@Test
-	public void schedulerNameWithQuartzProperty() {
+	void schedulerNameWithQuartzProperty() {
 		this.contextRunner
 				.withPropertyValues("spring.quartz.properties.org.quartz.scheduler.instanceName=testScheduler")
 				.run(assertSchedulerName("testScheduler"));
 	}
 
 	@Test
-	public void schedulerNameWithDedicatedPropertyTakesPrecedence() {
+	void schedulerNameWithDedicatedPropertyTakesPrecedence() {
 		this.contextRunner
 				.withPropertyValues("spring.quartz.scheduler-name=specificTestScheduler",
 						"spring.quartz.properties.org.quartz.scheduler.instanceName=testScheduler")
@@ -249,7 +249,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void schedulerNameUseBeanNameByDefault() {
+	void schedulerNameUseBeanNameByDefault() {
 		this.contextRunner.withPropertyValues().run(assertSchedulerName("quartzScheduler"));
 	}
 

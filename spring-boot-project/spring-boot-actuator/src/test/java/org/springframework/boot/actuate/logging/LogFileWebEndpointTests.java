@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class LogFileWebEndpointTests {
+class LogFileWebEndpointTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -55,18 +55,18 @@ public class LogFileWebEndpointTests {
 	}
 
 	@Test
-	public void nullResponseWithoutLogFile() {
+	void nullResponseWithoutLogFile() {
 		assertThat(this.endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void nullResponseWithMissingLogFile() {
+	void nullResponseWithMissingLogFile() {
 		this.environment.setProperty("logging.file.name", "no_test.log");
 		assertThat(this.endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void resourceResponseWithLogFile() throws Exception {
+	void resourceResponseWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
@@ -75,7 +75,7 @@ public class LogFileWebEndpointTests {
 
 	@Test
 	@Deprecated
-	public void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
+	void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
@@ -83,7 +83,7 @@ public class LogFileWebEndpointTests {
 	}
 
 	@Test
-	public void resourceResponseWithExternalLogFile() throws Exception {
+	void resourceResponseWithExternalLogFile() throws Exception {
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();

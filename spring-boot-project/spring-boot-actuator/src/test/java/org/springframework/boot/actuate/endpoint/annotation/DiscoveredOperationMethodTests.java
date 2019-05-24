@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class DiscoveredOperationMethodTests {
+class DiscoveredOperationMethodTests {
 
 	@Test
-	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
+	void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
@@ -43,7 +43,7 @@ public class DiscoveredOperationMethodTests {
 	}
 
 	@Test
-	public void getProducesMediaTypesShouldReturnMediaTypes() {
+	void getProducesMediaTypesShouldReturnMediaTypes() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };

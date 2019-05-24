@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationdocs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 

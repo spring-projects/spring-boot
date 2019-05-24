@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private MockMvc mockMvc;
 
@@ -64,7 +64,7 @@ public class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointD
 	}
 
 	@Test
-	public void conditions() throws Exception {
+	void conditions() throws Exception {
 		List<FieldDescriptor> positiveMatchFields = Arrays.asList(
 				fieldWithPath("").description("Classes and methods with conditions that were " + "matched."),
 				fieldWithPath(".*.[].condition").description("Name of the condition."),

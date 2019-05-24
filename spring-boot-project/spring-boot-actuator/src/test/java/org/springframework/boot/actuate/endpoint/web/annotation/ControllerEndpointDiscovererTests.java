@@ -47,18 +47,18 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ControllerEndpointDiscovererTests {
+class ControllerEndpointDiscovererTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
+	void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> assertThat(discoverer.getEndpoints()).isEmpty()));
 	}
 
 	@Test
-	public void getEndpointsShouldIncludeControllerEndpoints() {
+	void getEndpointsShouldIncludeControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestControllerEndpoint.class).run(assertDiscoverer((discoverer) -> {
 			Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
 			assertThat(endpoints).hasSize(1);
@@ -70,7 +70,7 @@ public class ControllerEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldDiscoverProxyControllerEndpoints() {
+	void getEndpointsShouldDiscoverProxyControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestProxyControllerEndpoint.class)
 				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
@@ -84,7 +84,7 @@ public class ControllerEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldIncludeRestControllerEndpoints() {
+	void getEndpointsShouldIncludeRestControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestRestControllerEndpoint.class)
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
@@ -96,7 +96,7 @@ public class ControllerEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldDiscoverProxyRestControllerEndpoints() {
+	void getEndpointsShouldDiscoverProxyRestControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestProxyRestControllerEndpoint.class)
 				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
@@ -110,7 +110,7 @@ public class ControllerEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldNotDiscoverRegularEndpoints() {
+	void getEndpointsShouldNotDiscoverRegularEndpoints() {
 		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
@@ -121,7 +121,7 @@ public class ControllerEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
+	void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
 				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
 						.isThrownBy(discoverer::getEndpoints)

@@ -44,12 +44,12 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class ValidatorAdapterTests {
+class ValidatorAdapterTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void wrapLocalValidatorFactoryBean() {
+	void wrapLocalValidatorFactoryBean() {
 		this.contextRunner.withUserConfiguration(LocalValidatorFactoryBeanConfig.class).run((context) -> {
 			ValidatorAdapter wrapper = context.getBean(ValidatorAdapter.class);
 			assertThat(wrapper.supports(SampleData.class)).isTrue();
@@ -60,7 +60,7 @@ public class ValidatorAdapterTests {
 	}
 
 	@Test
-	public void wrapperInvokesCallbackOnNonManagedBean() {
+	void wrapperInvokesCallbackOnNonManagedBean() {
 		this.contextRunner.withUserConfiguration(NonManagedBeanConfig.class).run((context) -> {
 			LocalValidatorFactoryBean validator = context.getBean(NonManagedBeanConfig.class).validator;
 			verify(validator, times(1)).setApplicationContext(any(ApplicationContext.class));
@@ -72,7 +72,7 @@ public class ValidatorAdapterTests {
 	}
 
 	@Test
-	public void wrapperDoesNotInvokeCallbackOnManagedBean() {
+	void wrapperDoesNotInvokeCallbackOnManagedBean() {
 		this.contextRunner.withUserConfiguration(ManagedBeanConfig.class).run((context) -> {
 			LocalValidatorFactoryBean validator = context.getBean(ManagedBeanConfig.class).validator;
 			verify(validator, never()).setApplicationContext(any(ApplicationContext.class));
@@ -84,7 +84,7 @@ public class ValidatorAdapterTests {
 	}
 
 	@Test
-	public void wrapperWhenValidationProviderNotPresentShouldNotThrowException() {
+	void wrapperWhenValidationProviderNotPresentShouldNotThrowException() {
 		ClassPathResource hibernateValidator = new ClassPathResource(
 				"META-INF/services/javax.validation.spi.ValidationProvider");
 		this.contextRunner

@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.xnio.channels.UnsupportedOptionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -63,11 +63,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = ErrorPageFilterIntegrationTests.TomcatConfig.class,
 		loader = EmbeddedWebContextLoader.class)
-public class ErrorPageFilterIntegrationTests {
+class ErrorPageFilterIntegrationTests {
 
 	@Autowired
 	private HelloWorldController controller;
@@ -75,19 +75,19 @@ public class ErrorPageFilterIntegrationTests {
 	@Autowired
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void init() {
 		this.controller.reset();
 	}
 
 	@Test
-	public void created() throws Exception {
+	void created() throws Exception {
 		doTest(this.context, "/create", HttpStatus.CREATED);
 		assertThat(this.controller.getStatus()).isEqualTo(201);
 	}
 
 	@Test
-	public void ok() throws Exception {
+	void ok() throws Exception {
 		doTest(this.context, "/hello", HttpStatus.OK);
 		assertThat(this.controller.getStatus()).isEqualTo(200);
 	}

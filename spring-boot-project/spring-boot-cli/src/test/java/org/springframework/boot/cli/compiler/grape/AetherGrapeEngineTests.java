@@ -30,7 +30,7 @@ import groovy.lang.GroovyClassLoader;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Andy Wilkinson
  */
-public class AetherGrapeEngineTests {
+class AetherGrapeEngineTests {
 
 	private final GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
@@ -62,7 +62,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void dependencyResolution() {
+	void dependencyResolution() {
 		Map<String, Object> args = new HashMap<>();
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
@@ -70,7 +70,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void proxySelector() {
+	void proxySelector() {
 		doWithCustomUserHome(() -> {
 			AetherGrapeEngine grapeEngine = createGrapeEngine();
 			DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
@@ -81,7 +81,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void repositoryMirrors() {
+	void repositoryMirrors() {
 		doWithCustomUserHome(() -> {
 			List<RemoteRepository> repositories = getRepositories();
 			assertThat(repositories).hasSize(1);
@@ -90,7 +90,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void repositoryAuthentication() {
+	void repositoryAuthentication() {
 		doWithCustomUserHome(() -> {
 			List<RemoteRepository> repositories = getRepositories();
 			assertThat(repositories).hasSize(1);
@@ -100,7 +100,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void dependencyResolutionWithExclusions() {
+	void dependencyResolutionWithExclusions() {
 		Map<String, Object> args = new HashMap<>();
 		args.put("excludes", Arrays.asList(createExclusion("org.springframework", "spring-core")));
 
@@ -112,7 +112,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void nonTransitiveDependencyResolution() {
+	void nonTransitiveDependencyResolution() {
 		Map<String, Object> args = new HashMap<>();
 
 		createGrapeEngine().grab(args, createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE", false));
@@ -121,7 +121,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void dependencyResolutionWithCustomClassLoader() {
+	void dependencyResolutionWithCustomClassLoader() {
 		Map<String, Object> args = new HashMap<>();
 		GroovyClassLoader customClassLoader = new GroovyClassLoader();
 		args.put("classLoader", customClassLoader);
@@ -134,7 +134,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void resolutionWithCustomResolver() {
+	void resolutionWithCustomResolver() {
 		Map<String, Object> args = new HashMap<>();
 		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
 		grapeEngine.addResolver(createResolver("spring-releases", "https://repo.spring.io/release"));
@@ -146,7 +146,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void differingTypeAndExt() {
+	void differingTypeAndExt() {
 		Map<String, Object> dependency = createDependency("org.grails", "grails-dependencies", "2.4.0");
 		dependency.put("type", "foo");
 		dependency.put("ext", "bar");
@@ -155,7 +155,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void pomDependencyResolutionViaType() {
+	void pomDependencyResolutionViaType() {
 		Map<String, Object> args = new HashMap<>();
 		Map<String, Object> dependency = createDependency("org.springframework", "spring-framework-bom",
 				"4.0.5.RELEASE");
@@ -167,7 +167,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void pomDependencyResolutionViaExt() {
+	void pomDependencyResolutionViaExt() {
 		Map<String, Object> args = new HashMap<>();
 		Map<String, Object> dependency = createDependency("org.springframework", "spring-framework-bom",
 				"4.0.5.RELEASE");
@@ -179,7 +179,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	@Test
-	public void resolutionWithClassifier() {
+	void resolutionWithClassifier() {
 		Map<String, Object> args = new HashMap<>();
 
 		Map<String, Object> dependency = createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE", false);

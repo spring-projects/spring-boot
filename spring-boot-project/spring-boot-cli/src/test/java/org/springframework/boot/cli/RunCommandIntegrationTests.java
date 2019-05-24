@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,15 @@ package org.springframework.boot.cli;
 
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.cli.command.run.RunCommand;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,25 +35,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class RunCommandIntegrationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class RunCommandIntegrationTests {
 
-	@Rule
-	public CliTester cli = new CliTester("src/it/resources/run-command/");
+	@RegisterExtension
+	private CliTester cli;
+
+	RunCommandIntegrationTests(CapturedOutput capturedOutput) {
+		this.cli = new CliTester("src/it/resources/run-command/", capturedOutput);
+	}
 
 	private Properties systemProperties = new Properties();
 
-	@Before
+	@BeforeEach
 	public void captureSystemProperties() {
 		this.systemProperties.putAll(System.getProperties());
 	}
 
-	@After
+	@AfterEach
 	public void restoreSystemProperties() {
 		System.setProperties(this.systemProperties);
 	}
 
 	@Test
-	public void bannerAndLoggingIsOutputByDefault() throws Exception {
+	void bannerAndLoggingIsOutputByDefault() throws Exception {
 		String output = this.cli.run("quiet.groovy");
 		assertThat(output).contains(" :: Spring Boot ::");
 		assertThat(output).contains("Starting application");
@@ -58,7 +66,7 @@ public class RunCommandIntegrationTests {
 	}
 
 	@Test
-	public void quietModeSuppressesAllCliOutput() throws Exception {
+	void quietModeSuppressesAllCliOutput() throws Exception {
 		this.cli.run("quiet.groovy");
 		String output = this.cli.run("quiet.groovy", "-q");
 		assertThat(output).isEqualTo("Ssshh");

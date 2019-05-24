@@ -49,13 +49,13 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  */
-public class HttpTraceWebFilterIntegrationTests {
+class HttpTraceWebFilterIntegrationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withUserConfiguration(Config.class);
 
 	@Test
-	public void traceForNotFoundResponseHas404Status() {
+	void traceForNotFoundResponseHas404Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/").exchange().expectStatus()
 					.isNotFound();
@@ -66,7 +66,7 @@ public class HttpTraceWebFilterIntegrationTests {
 	}
 
 	@Test
-	public void traceForMonoErrorWithRuntimeExceptionHas500Status() {
+	void traceForMonoErrorWithRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/mono-error").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,7 +77,7 @@ public class HttpTraceWebFilterIntegrationTests {
 	}
 
 	@Test
-	public void traceForThrownRuntimeExceptionHas500Status() {
+	void traceForThrownRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

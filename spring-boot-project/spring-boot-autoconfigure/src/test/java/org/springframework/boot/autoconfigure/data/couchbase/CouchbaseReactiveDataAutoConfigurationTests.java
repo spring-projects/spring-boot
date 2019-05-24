@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Alex Derkach
  */
-public class CouchbaseReactiveDataAutoConfigurationTests {
+class CouchbaseReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -65,27 +65,27 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void disabledIfCouchbaseIsNotConfigured() {
+	void disabledIfCouchbaseIsNotConfigured() {
 		load(null);
 		assertThat(this.context.getBeansOfType(IndexManager.class)).isEmpty();
 	}
 
 	@Test
-	public void customConfiguration() {
+	void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
 		RxJavaCouchbaseTemplate rxJavaCouchbaseTemplate = this.context.getBean(RxJavaCouchbaseTemplate.class);
 		assertThat(rxJavaCouchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
 
 	@Test
-	public void validatorIsPresent() {
+	void validatorIsPresent() {
 		load(CouchbaseTestConfigurer.class);
 		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
 		CouchbaseMappingContext mappingContext = this.context.getBean(CouchbaseMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
@@ -94,7 +94,7 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConversions() {
+	void customConversions() {
 		load(CustomConversionsConfig.class);
 		RxJavaCouchbaseTemplate template = this.context.getBean(RxJavaCouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))

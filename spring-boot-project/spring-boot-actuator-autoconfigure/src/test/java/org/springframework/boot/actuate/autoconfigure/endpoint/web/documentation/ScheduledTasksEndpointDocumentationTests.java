@@ -48,10 +48,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void scheduledTasks() throws Exception {
+	void scheduledTasks() throws Exception {
 		this.mockMvc.perform(get("/actuator/scheduledtasks")).andExpect(status().isOk()).andDo(document(
 				"scheduled-tasks",
 				preprocessResponse(replacePattern(

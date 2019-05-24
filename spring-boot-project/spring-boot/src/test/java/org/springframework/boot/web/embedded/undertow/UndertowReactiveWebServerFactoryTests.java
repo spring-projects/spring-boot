@@ -23,9 +23,8 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import io.undertow.Undertow;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
@@ -47,10 +46,10 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Override
 	protected UndertowReactiveWebServerFactory getFactory() {
@@ -58,14 +57,14 @@ public class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebSe
 	}
 
 	@Test
-	public void setNullBuilderCustomizersShouldThrowException() {
+	void setNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setBuilderCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void addNullBuilderCustomizersShouldThrowException() {
+	void addNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
@@ -73,7 +72,7 @@ public class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebSe
 	}
 
 	@Test
-	public void builderCustomizersShouldBeInvoked() {
+	void builderCustomizersShouldBeInvoked() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
@@ -88,19 +87,19 @@ public class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebSe
 	}
 
 	@Test
-	public void useForwardedHeaders() {
+	void useForwardedHeaders() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Test
-	public void accessLogCanBeEnabled() throws IOException, URISyntaxException, InterruptedException {
+	void accessLogCanBeEnabled() throws IOException, URISyntaxException, InterruptedException {
 		testAccessLog(null, null, "access_log.log");
 	}
 
 	@Test
-	public void accessLogCanBeCustomized() throws IOException, URISyntaxException, InterruptedException {
+	void accessLogCanBeCustomized() throws IOException, URISyntaxException, InterruptedException {
 		testAccessLog("my_access.", "logz", "my_access.logz");
 	}
 
@@ -110,7 +109,7 @@ public class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebSe
 		factory.setAccessLogEnabled(true);
 		factory.setAccessLogPrefix(prefix);
 		factory.setAccessLogSuffix(suffix);
-		File accessLogDirectory = this.temporaryFolder.getRoot();
+		File accessLogDirectory = this.tempDir;
 		factory.setAccessLogDirectory(accessLogDirectory);
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.webServer = factory.getWebServer(new EchoHandler());

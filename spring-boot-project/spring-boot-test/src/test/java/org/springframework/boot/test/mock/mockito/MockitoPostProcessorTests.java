@@ -40,10 +40,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Andreas Neiser
  */
-public class MockitoPostProcessorTests {
+class MockitoPostProcessorTests {
 
 	@Test
-	public void cannotMockMultipleBeans() {
+	void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
@@ -53,7 +53,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void cannotMockMultipleQualifiedBeans() {
+	void cannotMockMultipleQualifiedBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
@@ -63,7 +63,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
+	void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
@@ -75,7 +75,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canMockPrimaryBean() {
+	void canMockPrimaryBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MockPrimaryBean.class);
@@ -88,7 +88,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canMockQualifiedBeanWithPrimaryBeanPresent() {
+	void canMockQualifiedBeanWithPrimaryBeanPresent() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MockQualifiedBean.class);
@@ -100,7 +100,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canSpyPrimaryBean() {
+	void canSpyPrimaryBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(SpyPrimaryBean.class);
@@ -112,7 +112,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canSpyQualifiedBeanWithPrimaryBeanPresent() {
+	void canSpyQualifiedBeanWithPrimaryBeanPresent() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(SpyQualifiedBean.class);

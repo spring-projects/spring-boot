@@ -40,26 +40,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class HealthIndicatorAutoConfigurationTests {
+class HealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runWhenNoOtherIndicatorsShouldCreateDefaultApplicationHealthIndicator() {
+	void runWhenNoOtherIndicatorsShouldCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 				.isInstanceOf(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenHasDefinedIndicatorShouldNotCreateDefaultApplicationHealthIndicator() {
+	void runWhenHasDefinedIndicatorShouldNotCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 						.isInstanceOf(CustomHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledShouldCreateDefaultApplicationHealthIndicator() {
+	void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledShouldCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.withPropertyValues("management.health.defaults.enabled:false").run((context) -> assertThat(context)
 						.getBean(HealthIndicator.class).isInstanceOf(ApplicationHealthIndicator.class));
@@ -67,7 +67,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledShouldCreateEnabledIndicator() {
+	void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledShouldCreateEnabledIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.withPropertyValues("management.health.defaults.enabled:false", "management.health.custom.enabled:true")
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
@@ -76,13 +76,13 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runShouldCreateOrderedHealthAggregator() {
+	void runShouldCreateOrderedHealthAggregator() {
 		this.contextRunner.run((context) -> assertThat(context).getBean(HealthAggregator.class)
 				.isInstanceOf(OrderedHealthAggregator.class));
 	}
 
 	@Test
-	public void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator() {
+	void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator() {
 		this.contextRunner.withPropertyValues("management.health.status.order:UP,DOWN").run((context) -> {
 			OrderedHealthAggregator aggregator = context.getBean(OrderedHealthAggregator.class);
 			Map<String, Health> healths = new LinkedHashMap<>();
@@ -94,7 +94,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenHasCustomHealthAggregatorShouldNotCreateOrderedHealthAggregator() {
+	void runWhenHasCustomHealthAggregatorShouldNotCreateOrderedHealthAggregator() {
 		this.contextRunner.withUserConfiguration(CustomHealthAggregatorConfiguration.class)
 				.run((context) -> assertThat(context).getBean(HealthAggregator.class)
 						.isNotInstanceOf(OrderedHealthAggregator.class));

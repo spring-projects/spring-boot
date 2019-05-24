@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  * @author Sebastien Deleuze
  */
-public class BasicErrorControllerDirectMockMvcTests {
+class BasicErrorControllerDirectMockMvcTests {
 
 	private ConfigurableWebApplicationContext wac;
 
@@ -78,7 +78,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorPageAvailableWithParentContext() throws Exception {
+	void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(ParentConfiguration.class)
 				.child(ChildConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
@@ -88,7 +88,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorPageAvailableWithMvcIncluded() throws Exception {
+	void errorPageAvailableWithMvcIncluded() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
@@ -98,7 +98,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
+	void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 				.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
 		assertThatExceptionOfType(ServletException.class)
@@ -106,7 +106,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorControllerWithAop() throws Exception {
+	void errorControllerWithAop() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WithAopConfiguration.class)
 				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))

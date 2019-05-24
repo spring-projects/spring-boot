@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class BackCompatibilityBinderIntegrationTests {
+class BackCompatibilityBinderIntegrationTests {
 
 	@Test
-	public void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore() {
+	void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore() {
 		// gh-10873
 		MockEnvironment environment = new MockEnvironment();
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
@@ -48,7 +48,7 @@ public class BackCompatibilityBinderIntegrationTests {
 	}
 
 	@Test
-	public void bindWhenUsingSystemEnvironmentToOverride() {
+	void bindWhenUsingSystemEnvironmentToOverride() {
 		MockEnvironment environment = new MockEnvironment();
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource("override",
 				Collections.singletonMap("foo.password", "test"));

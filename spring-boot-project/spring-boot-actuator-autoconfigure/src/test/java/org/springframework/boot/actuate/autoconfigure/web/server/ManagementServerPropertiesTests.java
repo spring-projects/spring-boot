@@ -26,17 +26,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ManagementServerPropertiesTests {
+class ManagementServerPropertiesTests {
 
 	@Test
-	public void defaultManagementServerProperties() {
+	void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort()).isNull();
 		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
 	}
 
 	@Test
-	public void definedManagementServerProperties() {
+	void definedManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setPort(123);
 		properties.getServlet().setContextPath("/foo");
@@ -45,14 +45,14 @@ public class ManagementServerPropertiesTests {
 	}
 
 	@Test
-	public void trailingSlashOfContextPathIsRemoved() {
+	void trailingSlashOfContextPathIsRemoved() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.getServlet().setContextPath("/foo/");
 		assertThat(properties.getServlet().getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void slashOfContextPathIsDefaultValue() {
+	void slashOfContextPathIsDefaultValue() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.getServlet().setContextPath("/");
 		assertThat(properties.getServlet().getContextPath()).isEqualTo("");

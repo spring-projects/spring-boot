@@ -48,14 +48,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Tadaya Tsuyukubo
  */
-public class DataSourceJmxConfigurationTests {
+class DataSourceJmxConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.url=" + "jdbc:hsqldb:mem:test-" + UUID.randomUUID())
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class));
 
 	@Test
-	public void hikariAutoConfiguredCanUseRegisterMBeans() {
+	void hikariAutoConfiguredCanUseRegisterMBeans() {
 		String poolName = UUID.randomUUID().toString();
 		this.contextRunner
 				.withPropertyValues("spring.jmx.enabled=true",
@@ -70,7 +70,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void hikariAutoConfiguredWithoutDataSourceName() throws MalformedObjectNameException {
+	void hikariAutoConfiguredWithoutDataSourceName() throws MalformedObjectNameException {
 		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 		Set<ObjectInstance> existingInstances = mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"),
 				null);
@@ -87,7 +87,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void hikariAutoConfiguredUsesJmsFlag() {
+	void hikariAutoConfiguredUsesJmsFlag() {
 		String poolName = UUID.randomUUID().toString();
 		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
 				"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
@@ -100,7 +100,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void hikariProxiedCanUseRegisterMBeans() {
+	void hikariProxiedCanUseRegisterMBeans() {
 		String poolName = UUID.randomUUID().toString();
 		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
 				.withPropertyValues("spring.jmx.enabled=true",
@@ -125,13 +125,13 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void tomcatDoesNotExposeMBeanPoolByDefault() {
+	void tomcatDoesNotExposeMBeanPoolByDefault() {
 		this.contextRunner.withPropertyValues("spring.datasource.type=" + DataSource.class.getName())
 				.run((context) -> assertThat(context).doesNotHaveBean(ConnectionPool.class));
 	}
 
 	@Test
-	public void tomcatAutoConfiguredCanExposeMBeanPool() {
+	void tomcatAutoConfiguredCanExposeMBeanPool() {
 		this.contextRunner.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
 				"spring.datasource.tomcat.jmx-enabled=true").run((context) -> {
 					assertThat(context).hasBean("dataSourceMBean");
@@ -142,7 +142,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void tomcatProxiedCanExposeMBeanPool() {
+	void tomcatProxiedCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
 				.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
 						"spring.datasource.tomcat.jmx-enabled=true")
@@ -153,7 +153,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void tomcatDelegateCanExposeMBeanPool() {
+	void tomcatDelegateCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceDelegateConfiguration.class)
 				.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
 						"spring.datasource.tomcat.jmx-enabled=true")

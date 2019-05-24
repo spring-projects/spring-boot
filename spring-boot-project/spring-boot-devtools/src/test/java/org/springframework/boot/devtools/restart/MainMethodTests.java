@@ -18,8 +18,8 @@ package org.springframework.boot.devtools.restart;
 
 import java.lang.reflect.Method;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -32,38 +32,38 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  */
-public class MainMethodTests {
+class MainMethodTests {
 
 	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
 	private Method actualMain;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		this.actualMain = Valid.class.getMethod("main", String[].class);
 	}
 
 	@Test
-	public void threadMustNotBeNull() {
+	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
 				.withMessageContaining("Thread must not be null");
 	}
 
 	@Test
-	public void validMainMethod() throws Exception {
+	void validMainMethod() throws Exception {
 		MainMethod method = new TestThread(Valid::main).test();
 		assertThat(method.getMethod()).isEqualTo(this.actualMain);
 		assertThat(method.getDeclaringClassName()).isEqualTo(this.actualMain.getDeclaringClass().getName());
 	}
 
 	@Test
-	public void missingArgsMainMethod() throws Exception {
+	void missingArgsMainMethod() throws Exception {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(MissingArgs::main).test())
 				.withMessageContaining("Unable to find main method");
 	}
 
 	@Test
-	public void nonStatic() throws Exception {
+	void nonStatic() throws Exception {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
 				.withMessageContaining("Unable to find main method");
 	}

@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Alex Derkach
  */
-public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
+class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -53,37 +53,37 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void couchbaseNotAvailable() {
+	void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() {
+	void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(1);
 	}
 
 	@Test
-	public void imperativeRepositories() {
+	void imperativeRepositories() {
 		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=imperative");
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void disabledRepositories() {
+	void disabledRepositories() {
 		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void noRepositoryAvailable() {
+	void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityCouchbaseRepository.class)).isEmpty();
 	}

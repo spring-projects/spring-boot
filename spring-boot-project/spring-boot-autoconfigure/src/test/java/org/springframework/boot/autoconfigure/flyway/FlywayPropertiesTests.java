@@ -41,10 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class FlywayPropertiesTests {
+class FlywayPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
@@ -87,7 +87,7 @@ public class FlywayPropertiesTests {
 	}
 
 	@Test
-	public void expectedPropertiesAreManaged() {
+	void expectedPropertiesAreManaged() {
 		Map<String, PropertyDescriptor> properties = indexProperties(
 				PropertyAccessorFactory.forBeanPropertyAccess(new FlywayProperties()));
 		Map<String, PropertyDescriptor> configuration = indexProperties(

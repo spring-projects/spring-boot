@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class QuartzDataSourceInitializerTests {
+class QuartzDataSourceInitializerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
@@ -48,7 +48,7 @@ public class QuartzDataSourceInitializerTests {
 					"jdbc:h2:mem:test-%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", UUID.randomUUID().toString()));
 
 	@Test
-	public void commentPrefixCanBeCustomized() {
+	void commentPrefixCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
 				"spring.quartz.jdbc.comment-prefix=##",
 				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_@@platform@@.sql")

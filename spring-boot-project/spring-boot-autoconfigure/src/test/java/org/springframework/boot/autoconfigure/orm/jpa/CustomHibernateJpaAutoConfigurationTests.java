@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CustomHibernateJpaAutoConfigurationTests {
+class CustomHibernateJpaAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
@@ -61,7 +61,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class));
 
 	@Test
-	public void namingStrategyDelegatorTakesPrecedence() {
+	void namingStrategyDelegatorTakesPrecedence() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
 				+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator").run((context) -> {
 					JpaProperties jpaProperties = context.getBean(JpaProperties.class);
@@ -73,7 +73,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void namingStrategyBeansAreUsed() {
+	void namingStrategyBeansAreUsed() {
 		this.contextRunner.withUserConfiguration(NamingStrategyConfiguration.class)
 				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:naming-strategy-beans").run((context) -> {
 					HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
@@ -86,7 +86,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void hibernatePropertiesCustomizersAreAppliedInOrder() {
+	void hibernatePropertiesCustomizersAreAppliedInOrder() {
 		this.contextRunner.withUserConfiguration(HibernatePropertiesCustomizerConfiguration.class).run((context) -> {
 			HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
 			Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
@@ -95,7 +95,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultDatabaseIsSet() {
+	void defaultDatabaseIsSet() {
 		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb",
 				"spring.datasource.initialization-mode:never").run((context) -> {
 					HibernateJpaVendorAdapter bean = context.getBean(HibernateJpaVendorAdapter.class);

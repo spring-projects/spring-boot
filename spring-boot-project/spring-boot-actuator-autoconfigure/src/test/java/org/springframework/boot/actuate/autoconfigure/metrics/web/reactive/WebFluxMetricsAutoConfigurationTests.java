@@ -45,13 +45,13 @@ import static org.mockito.Mockito.mock;
  * @author Dmytro Nosan
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class WebFluxMetricsAutoConfigurationTests {
+class WebFluxMetricsAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
 	@Test
-	public void shouldProvideWebFluxMetricsBeans() {
+	void shouldProvideWebFluxMetricsBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(MetricsWebFilter.class).hasSize(1);
 			assertThat(context).getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
@@ -59,14 +59,14 @@ public class WebFluxMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotOverrideCustomTagsProvider() {
+	void shouldNotOverrideCustomTagsProvider() {
 		this.contextRunner.withUserConfiguration(CustomWebFluxTagsProviderConfig.class)
 				.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class).hasSize(1)
 						.containsKey("customWebFluxTagsProvider"));
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
@@ -78,7 +78,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
@@ -90,7 +90,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void metricsAreNotRecordedIfAutoTimeRequestsIsDisabled() {
+	void metricsAreNotRecordedIfAutoTimeRequestsIsDisabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
 				.withPropertyValues("management.metrics.web.server.request.autotime.enabled=false").run((context) -> {
@@ -101,7 +101,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	public void metricsAreNotRecordedIfAutoTimeRequestsIsDisabledWithDeprecatedProperty() {
+	void metricsAreNotRecordedIfAutoTimeRequestsIsDisabledWithDeprecatedProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
 				.withPropertyValues("management.metrics.web.server.auto-time-requests=false").run((context) -> {

@@ -34,33 +34,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ImportAutoConfigurationTests {
+class ImportAutoConfigurationTests {
 
 	@Test
-	public void multipleAnnotationsShouldMergeCorrectly() {
+	void multipleAnnotationsShouldMergeCorrectly() {
 		assertThat(getImportedConfigBeans(Config.class)).containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD");
 		assertThat(getImportedConfigBeans(AnotherConfig.class)).containsExactly("ConfigA", "ConfigB", "ConfigC",
 				"ConfigD");
 	}
 
 	@Test
-	public void classesAsAnAlias() {
+	void classesAsAnAlias() {
 		assertThat(getImportedConfigBeans(AnotherConfigUsingClasses.class)).containsExactly("ConfigA", "ConfigB",
 				"ConfigC", "ConfigD");
 	}
 
 	@Test
-	public void excluding() {
+	void excluding() {
 		assertThat(getImportedConfigBeans(ExcludingConfig.class)).containsExactly("ConfigA", "ConfigB", "ConfigD");
 	}
 
 	@Test
-	public void excludeAppliedGlobally() {
+	void excludeAppliedGlobally() {
 		assertThat(getImportedConfigBeans(ExcludeDConfig.class, ImportADConfig.class)).containsExactly("ConfigA");
 	}
 
 	@Test
-	public void excludeWithRedundancy() {
+	void excludeWithRedundancy() {
 		assertThat(getImportedConfigBeans(ExcludeADConfig.class, ExcludeDConfig.class, ImportADConfig.class)).isEmpty();
 	}
 

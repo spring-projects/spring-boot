@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ResourceConditionTests {
+class ResourceConditionTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -45,19 +45,19 @@ public class ResourceConditionTests {
 	}
 
 	@Test
-	public void defaultResourceAndNoExplicitKey() {
+	void defaultResourceAndNoExplicitKey() {
 		load(DefaultLocationConfiguration.class);
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void unknownDefaultLocationAndNoExplicitKey() {
+	void unknownDefaultLocationAndNoExplicitKey() {
 		load(UnknownDefaultLocationConfiguration.class);
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void unknownDefaultLocationAndExplicitKeyToResource() {
+	void unknownDefaultLocationAndExplicitKeyToResource() {
 		load(UnknownDefaultLocationConfiguration.class, "spring.foo.test.config=logging.properties");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}

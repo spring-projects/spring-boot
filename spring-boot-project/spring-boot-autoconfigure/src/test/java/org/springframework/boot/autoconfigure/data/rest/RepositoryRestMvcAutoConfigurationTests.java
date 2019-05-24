@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class RepositoryRestMvcAutoConfigurationTests {
+class RepositoryRestMvcAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -65,13 +65,13 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 	}
 
 	@Test
-	public void testWithCustomBasePath() {
+	void testWithCustomBasePath() {
 		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
@@ -82,7 +82,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testWithCustomSettings() {
+	void testWithCustomSettings() {
 		load(TestConfiguration.class, "spring.data.rest.default-page-size:42", "spring.data.rest.max-page-size:78",
 				"spring.data.rest.page-param-name:_page", "spring.data.rest.limit-param-name:_limit",
 				"spring.data.rest.sort-param-name:_sort", "spring.data.rest.detection-strategy=visibility",
@@ -104,7 +104,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testWithCustomConfigurer() {
+	void testWithCustomConfigurer() {
 		load(TestConfigurationWithConfigurer.class, "spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json");
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
@@ -115,7 +115,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffWithCustomConfiguration() {
+	void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);

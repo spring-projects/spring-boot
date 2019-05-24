@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class LiquibaseEndpointTests {
+class LiquibaseEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
@@ -50,7 +50,7 @@ public class LiquibaseEndpointTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void liquibaseReportIsReturned() {
+	void liquibaseReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
 			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
 					.getContexts().get(context.getId()).getLiquibaseBeans();
@@ -59,7 +59,7 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Test
-	public void invokeWithCustomSchema() {
+	void invokeWithCustomSchema() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA",
 						"spring.datasource.schema=classpath:/db/create-custom-schema.sql")
@@ -71,7 +71,7 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Test
-	public void invokeWithCustomTables() {
+	void invokeWithCustomTables() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
 						"spring.liquibase.database-change-log-table=liquibase_database_changelog")
@@ -83,7 +83,7 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Test
-	public void connectionAutoCommitPropertyIsReset() {
+	void connectionAutoCommitPropertyIsReset() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(getAutoCommit(dataSource)).isTrue();

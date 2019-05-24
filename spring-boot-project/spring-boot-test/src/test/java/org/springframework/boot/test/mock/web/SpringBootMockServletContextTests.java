@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.nullValue;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration("src/test/webapp")
-public class SpringBootMockServletContextTests implements ServletContextAware {
+class SpringBootMockServletContextTests implements ServletContextAware {
 
 	private ServletContext servletContext;
 
@@ -56,7 +56,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 	}
 
 	@Test
-	public void getResourceLocation() throws Exception {
+	void getResourceLocation() throws Exception {
 		testResource("/inwebapp", "src/test/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");
@@ -72,7 +72,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 
 	// gh-2654
 	@Test
-	public void getRootUrlExistsAndIsEmpty() throws Exception {
+	void getRootUrlExistsAndIsEmpty() throws Exception {
 		SpringBootMockServletContext context = new SpringBootMockServletContext("src/test/doesntexist") {
 			@Override
 			protected String getResourceLocation(String path) {

@@ -38,13 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  */
-public class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
+class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
@@ -52,7 +52,7 @@ public class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionA
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoOperationsSessionRepository.class))
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
@@ -60,7 +60,7 @@ public class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionA
 	}
 
 	@Test
-	public void redisSessionStoreWithCustomizations() {
+	void redisSessionStoreWithCustomizations() {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))

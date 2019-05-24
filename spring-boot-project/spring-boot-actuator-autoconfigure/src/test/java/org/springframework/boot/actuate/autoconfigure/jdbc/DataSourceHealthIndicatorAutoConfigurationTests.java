@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class DataSourceHealthIndicatorAutoConfigurationTests {
+class DataSourceHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -53,7 +53,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.initialization-mode=never");
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> {
 			context.getBean(DataSourceHealthIndicator.class);
 			assertThat(context).hasSingleBean(DataSourceHealthIndicator.class)
@@ -62,7 +62,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenMultipleDataSourceBeansShouldCreateCompositeIndicator() {
+	void runWhenMultipleDataSourceBeansShouldCreateCompositeIndicator() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, DataSourceConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(HealthIndicator.class);
@@ -72,14 +72,14 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runShouldFilterRoutingDataSource() {
+	void runShouldFilterRoutingDataSource() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(DataSourceHealthIndicator.class)
 						.doesNotHaveBean(CompositeHealthIndicator.class));
 	}
 
 	@Test
-	public void runWithValidationQueryPropertyShouldUseCustomQuery() {
+	void runWithValidationQueryPropertyShouldUseCustomQuery() {
 		this.contextRunner
 				.withUserConfiguration(DataSourceConfig.class, DataSourcePoolMetadataProvidersConfiguration.class)
 				.withPropertyValues("spring.datasource.test.validation-query:SELECT from FOOBAR").run((context) -> {
@@ -90,7 +90,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("management.health.db.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DataSourceHealthIndicator.class)

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -31,11 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void incrementalBuild() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class, BarProperties.class);
+	void incrementalBuild() throws Exception {
+		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isTrue();
@@ -61,8 +61,8 @@ public class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGen
 	}
 
 	@Test
-	public void incrementalBuildAnnotationRemoved() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class, BarProperties.class);
+	void incrementalBuildAnnotationRemoved() throws Exception {
+		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
@@ -73,8 +73,8 @@ public class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGen
 	}
 
 	@Test
-	public void incrementalBuildTypeRenamed() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class, BarProperties.class);
+	void incrementalBuildTypeRenamed() throws Exception {
+		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));

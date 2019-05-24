@@ -37,23 +37,23 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class DiscovererEndpointFilterTests {
+class DiscovererEndpointFilterTests {
 
 	@Test
-	public void createWhenDiscovererIsNullShouldThrowException() {
+	void createWhenDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestDiscovererEndpointFilter(null))
 				.withMessageContaining("Discoverer must not be null");
 	}
 
 	@Test
-	public void matchWhenDiscoveredByDiscovererShouldReturnTrue() {
+	void matchWhenDiscoveredByDiscovererShouldReturnTrue() {
 		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(TestDiscovererA.class);
 		DiscoveredEndpoint<?> endpoint = mockDiscoveredEndpoint(TestDiscovererA.class);
 		assertThat(filter.match(endpoint)).isTrue();
 	}
 
 	@Test
-	public void matchWhenNotDiscoveredByDiscovererShouldReturnFalse() {
+	void matchWhenNotDiscoveredByDiscovererShouldReturnFalse() {
 		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(TestDiscovererA.class);
 		DiscoveredEndpoint<?> endpoint = mockDiscoveredEndpoint(TestDiscovererB.class);
 		assertThat(filter.match(endpoint)).isFalse();

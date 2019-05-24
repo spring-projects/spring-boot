@@ -22,8 +22,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Phillip Webb
  */
-public class DispatcherFilterTests {
+class DispatcherFilterTests {
 
 	@Mock
 	private Dispatcher dispatcher;
@@ -65,20 +65,20 @@ public class DispatcherFilterTests {
 
 	private DispatcherFilter filter;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.filter = new DispatcherFilter(this.dispatcher);
 	}
 
 	@Test
-	public void dispatcherMustNotBeNull() {
+	void dispatcherMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DispatcherFilter(null))
 				.withMessageContaining("Dispatcher must not be null");
 	}
 
 	@Test
-	public void ignoresNotServletRequests() throws Exception {
+	void ignoresNotServletRequests() throws Exception {
 		ServletRequest request = mock(ServletRequest.class);
 		ServletResponse response = mock(ServletResponse.class);
 		this.filter.doFilter(request, response, this.chain);
@@ -87,7 +87,7 @@ public class DispatcherFilterTests {
 	}
 
 	@Test
-	public void ignoredByDispatcher() throws Exception {
+	void ignoredByDispatcher() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/hello");
 		HttpServletResponse response = new MockHttpServletResponse();
 		this.filter.doFilter(request, response, this.chain);
@@ -95,7 +95,7 @@ public class DispatcherFilterTests {
 	}
 
 	@Test
-	public void handledByDispatcher() throws Exception {
+	void handledByDispatcher() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/hello");
 		HttpServletResponse response = new MockHttpServletResponse();
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class SolrHealthIndicatorTests {
+class SolrHealthIndicatorTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -51,7 +51,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void solrIsUp() throws Exception {
+	void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
@@ -61,7 +61,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void solrIsUpAndRequestFailed() throws Exception {
+	void solrIsUpAndRequestFailed() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
@@ -71,7 +71,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void solrIsDown() throws Exception {
+	void solrIsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new IOException("Connection failed"));

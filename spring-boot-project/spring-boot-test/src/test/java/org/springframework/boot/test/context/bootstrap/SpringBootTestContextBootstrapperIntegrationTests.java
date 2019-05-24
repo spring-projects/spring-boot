@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
-public class SpringBootTestContextBootstrapperIntegrationTests {
+class SpringBootTestContextBootstrapperIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -48,22 +48,22 @@ public class SpringBootTestContextBootstrapperIntegrationTests {
 	boolean defaultTestExecutionListenersPostProcessorCalled = false;
 
 	@Test
-	public void findConfigAutomatically() {
+	void findConfigAutomatically() {
 		assertThat(this.config).isNotNull();
 	}
 
 	@Test
-	public void contextWasCreatedViaSpringApplication() {
+	void contextWasCreatedViaSpringApplication() {
 		assertThat(this.context.getId()).startsWith("application");
 	}
 
 	@Test
-	public void testConfigurationWasApplied() {
+	void testConfigurationWasApplied() {
 		assertThat(this.context.getBean(ExampleBean.class)).isNotNull();
 	}
 
 	@Test
-	public void defaultTestExecutionListenersPostProcessorShouldBeCalled() {
+	void defaultTestExecutionListenersPostProcessorShouldBeCalled() {
 		assertThat(this.defaultTestExecutionListenersPostProcessorCalled).isTrue();
 	}
 

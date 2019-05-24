@@ -47,13 +47,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ScheduledTasksEndpointTests {
+class ScheduledTasksEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
-	public void cronScheduledMethodIsReported() {
+	void cronScheduledMethodIsReported() {
 		run(CronScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
@@ -66,7 +66,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void cronTriggerIsReported() {
+	void cronTriggerIsReported() {
 		run(CronTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -79,7 +79,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedDelayScheduledMethodIsReported() {
+	void fixedDelayScheduledMethodIsReported() {
 		run(FixedDelayScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
@@ -94,7 +94,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedDelayTriggerIsReported() {
+	void fixedDelayTriggerIsReported() {
 		run(FixedDelayTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
@@ -108,7 +108,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedRateScheduledMethodIsReported() {
+	void fixedRateScheduledMethodIsReported() {
 		run(FixedRateScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -123,7 +123,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedRateTriggerIsReported() {
+	void fixedRateTriggerIsReported() {
 		run(FixedRateTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -137,7 +137,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void taskWithCustomTriggerIsReported() {
+	void taskWithCustomTriggerIsReported() {
 		run(CustomTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();

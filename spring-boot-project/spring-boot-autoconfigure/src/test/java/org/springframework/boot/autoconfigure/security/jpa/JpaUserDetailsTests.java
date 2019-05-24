@@ -39,10 +39,10 @@ import org.springframework.test.context.ContextConfiguration;
  */
 @ContextConfiguration(classes = JpaUserDetailsTests.Main.class, loader = SpringBootContextLoader.class)
 @DirtiesContext
-public class JpaUserDetailsTests {
+class JpaUserDetailsTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 	public static void main(String[] args) {

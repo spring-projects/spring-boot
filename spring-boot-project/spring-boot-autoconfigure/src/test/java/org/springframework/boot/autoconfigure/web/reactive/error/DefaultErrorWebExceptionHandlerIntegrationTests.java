@@ -57,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class DefaultErrorWebExceptionHandlerIntegrationTests {
+class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
 
@@ -72,7 +72,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			.withUserConfiguration(Application.class);
 
 	@Test
-	public void jsonError(CapturedOutput capturedOutput) {
+	void jsonError(CapturedOutput capturedOutput) {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/").exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
@@ -86,7 +86,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void notFound() {
+	void notFound() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/notFound").exchange().expectStatus().isNotFound().expectBody().jsonPath("status")
@@ -97,7 +97,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void htmlError() {
+	void htmlError() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			String body = client.get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus()
@@ -108,7 +108,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void bindingResultError() {
+	void bindingResultError() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.post().uri("/bind").contentType(MediaType.APPLICATION_JSON).syncBody("{}").exchange().expectStatus()
@@ -120,7 +120,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void includeStackTraceOnParam() {
+	void includeStackTraceOnParam() {
 		this.contextRunner.withPropertyValues("server.error.include-exception=true",
 				"server.error.include-stacktrace=on-trace-param").run((context) -> {
 					WebTestClient client = getWebClient(context);
@@ -134,7 +134,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void alwaysIncludeStackTrace() {
+	void alwaysIncludeStackTrace() {
 		this.contextRunner
 				.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=always")
 				.run((context) -> {
@@ -149,7 +149,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void neverIncludeStackTrace() {
+	void neverIncludeStackTrace() {
 		this.contextRunner
 				.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=never")
 				.run((context) -> {
@@ -164,7 +164,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void statusException() {
+	void statusException() {
 		this.contextRunner.withPropertyValues("server.error.include-exception=true").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/badRequest").exchange().expectStatus().isBadRequest().expectBody().jsonPath("status")
@@ -175,7 +175,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void defaultErrorView() {
+	void defaultErrorView() {
 		this.contextRunner.withPropertyValues("spring.mustache.prefix=classpath:/unknown/",
 				"server.error.include-stacktrace=always").run((context) -> {
 					WebTestClient client = getWebClient(context);
@@ -189,7 +189,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void escapeHtmlInDefaultErrorView() {
+	void escapeHtmlInDefaultErrorView() {
 		this.contextRunner.withPropertyValues("spring.mustache.prefix=classpath:/unknown/").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			String body = client.get().uri("/html").accept(MediaType.TEXT_HTML).exchange().expectStatus()
@@ -201,7 +201,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void testExceptionWithNullMessage() {
+	void testExceptionWithNullMessage() {
 		this.contextRunner.withPropertyValues("spring.mustache.prefix=classpath:/unknown/").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			String body = client.get().uri("/notfound").accept(MediaType.TEXT_HTML).exchange().expectStatus()
@@ -213,7 +213,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void responseCommitted() {
+	void responseCommitted() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			assertThatExceptionOfType(RuntimeException.class)
@@ -223,7 +223,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void whitelabelDisabled() {
+	void whitelabelDisabled() {
 		this.contextRunner.withPropertyValues("server.error.whitelabel.enabled=false",
 				"spring.mustache.prefix=classpath:/unknown/").run((context) -> {
 					WebTestClient client = getWebClient(context);
@@ -233,7 +233,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void exactStatusTemplateErrorPage() {
+	void exactStatusTemplateErrorPage() {
 		this.contextRunner.withPropertyValues("server.error.whitelabel.enabled=false",
 				"spring.mustache.prefix=" + getErrorTemplatesLocation()).run((context) -> {
 					WebTestClient client = getWebClient(context);
@@ -244,7 +244,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void seriesStatusTemplateErrorPage() {
+	void seriesStatusTemplateErrorPage() {
 		this.contextRunner.withPropertyValues("server.error.whitelabel.enabled=false",
 				"spring.mustache.prefix=" + getErrorTemplatesLocation()).run((context) -> {
 					WebTestClient client = getWebClient(context);
@@ -255,7 +255,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void invalidAcceptMediaType() {
+	void invalidAcceptMediaType() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/notfound").header("Accept", "v=3.0").exchange().expectStatus()

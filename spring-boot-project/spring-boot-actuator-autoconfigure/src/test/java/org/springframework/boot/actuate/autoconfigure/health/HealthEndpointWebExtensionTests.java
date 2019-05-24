@@ -49,25 +49,25 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class HealthEndpointWebExtensionTests {
+class HealthEndpointWebExtensionTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(HealthIndicatorsConfiguration.class).withConfiguration(AutoConfigurations
 					.of(HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateExtensionBeans() {
+	void runShouldCreateExtensionBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void runWhenHealthEndpointIsDisabledShouldNotCreateExtensionBeans() {
+	void runWhenHealthEndpointIsDisabledShouldNotCreateExtensionBeans() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void runWithCustomHealthMappingShouldMapStatusCode() {
+	void runWithCustomHealthMappingShouldMapStatusCode() {
 		this.contextRunner.withPropertyValues("management.health.status.http-mapping.CUSTOM=500").run((context) -> {
 			Object extension = context.getBean(HealthEndpointWebExtension.class);
 			HealthWebEndpointResponseMapper responseMapper = (HealthWebEndpointResponseMapper) ReflectionTestUtils
@@ -82,7 +82,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void unauthenticatedUsersAreNotShownDetailsByDefault() {
+	void unauthenticatedUsersAreNotShownDetailsByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertThat(extension.health(mock(SecurityContext.class)).getBody().getDetails()).isEmpty();
@@ -90,7 +90,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersAreNotShownDetailsByDefault() {
+	void authenticatedUsersAreNotShownDetailsByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			SecurityContext securityContext = mock(SecurityContext.class);
@@ -100,7 +100,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersWhenAuthorizedCanBeShownDetails() {
+	void authenticatedUsersWhenAuthorizedCanBeShownDetails() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized")
 				.run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -111,7 +111,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void unauthenticatedUsersCanBeShownDetails() {
+	void unauthenticatedUsersCanBeShownDetails() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertThat(extension.health(null).getBody().getDetails()).isNotEmpty();
@@ -119,7 +119,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void detailsCanBeHiddenFromAuthenticatedUsers() {
+	void detailsCanBeHiddenFromAuthenticatedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=never").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertThat(extension.health(mock(SecurityContext.class)).getBody().getDetails()).isEmpty();
@@ -127,7 +127,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void detailsCanBeHiddenFromUnauthorizedUsers() {
+	void detailsCanBeHiddenFromUnauthorizedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -139,7 +139,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void detailsCanBeShownToAuthorizedUsers() {
+	void detailsCanBeShownToAuthorizedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -151,7 +151,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void unauthenticatedUsersAreNotShownComponentByDefault() {
+	void unauthenticatedUsersAreNotShownComponentByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertDetailsNotFound(extension.healthForComponent(mock(SecurityContext.class), "simple"));
@@ -159,7 +159,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersAreNotShownComponentByDefault() {
+	void authenticatedUsersAreNotShownComponentByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			SecurityContext securityContext = mock(SecurityContext.class);
@@ -169,7 +169,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersWhenAuthorizedCanBeShownComponent() {
+	void authenticatedUsersWhenAuthorizedCanBeShownComponent() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized")
 				.run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -180,7 +180,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void unauthenticatedUsersCanBeShownComponent() {
+	void unauthenticatedUsersCanBeShownComponent() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertSimpleComponent(extension.healthForComponent(null, "simple"));
@@ -188,7 +188,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentCanBeHiddenFromAuthenticatedUsers() {
+	void componentCanBeHiddenFromAuthenticatedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=never").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertDetailsNotFound(extension.healthForComponent(mock(SecurityContext.class), "simple"));
@@ -196,7 +196,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentCanBeHiddenFromUnauthorizedUsers() {
+	void componentCanBeHiddenFromUnauthorizedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -208,7 +208,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentCanBeShownToAuthorizedUsers() {
+	void componentCanBeShownToAuthorizedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -220,7 +220,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentThatDoesNotExistMapTo404() {
+	void componentThatDoesNotExistMapTo404() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertDetailsNotFound(extension.healthForComponent(null, "does-not-exist"));
@@ -228,7 +228,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void unauthenticatedUsersAreNotShownComponentInstanceByDefault() {
+	void unauthenticatedUsersAreNotShownComponentInstanceByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertDetailsNotFound(
@@ -237,7 +237,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersAreNotShownComponentInstanceByDefault() {
+	void authenticatedUsersAreNotShownComponentInstanceByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			SecurityContext securityContext = mock(SecurityContext.class);
@@ -247,7 +247,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersWhenAuthorizedCanBeShownComponentInstance() {
+	void authenticatedUsersWhenAuthorizedCanBeShownComponentInstance() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized")
 				.run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -258,7 +258,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void unauthenticatedUsersCanBeShownComponentInstance() {
+	void unauthenticatedUsersCanBeShownComponentInstance() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertSimpleComponent(extension.healthForComponentInstance(null, "composite", "one"));
@@ -266,7 +266,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentInstanceCanBeHiddenFromAuthenticatedUsers() {
+	void componentInstanceCanBeHiddenFromAuthenticatedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=never").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertDetailsNotFound(
@@ -275,7 +275,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentInstanceCanBeHiddenFromUnauthorizedUsers() {
+	void componentInstanceCanBeHiddenFromUnauthorizedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -287,7 +287,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentInstanceCanBeShownToAuthorizedUsers() {
+	void componentInstanceCanBeShownToAuthorizedUsers() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
@@ -299,7 +299,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void componentInstanceThatDoesNotExistMapTo404() {
+	void componentInstanceThatDoesNotExistMapTo404() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);
 			assertDetailsNotFound(extension.healthForComponentInstance(null, "composite", "does-not-exist"));
@@ -317,7 +317,7 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void roleCanBeCustomized() {
+	void roleCanBeCustomized() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=when-authorized",
 				"management.endpoint.health.roles=ADMIN").run((context) -> {
 					HealthEndpointWebExtension extension = context.getBean(HealthEndpointWebExtension.class);

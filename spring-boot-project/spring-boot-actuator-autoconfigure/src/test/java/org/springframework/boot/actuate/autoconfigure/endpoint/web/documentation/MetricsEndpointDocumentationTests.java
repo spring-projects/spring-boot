@@ -39,16 +39,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void metricNames() throws Exception {
+	void metricNames() throws Exception {
 		this.mockMvc.perform(get("/actuator/metrics")).andExpect(status().isOk()).andDo(document("metrics/names",
 				responseFields(fieldWithPath("names").description("Names of the known metrics."))));
 	}
 
 	@Test
-	public void metric() throws Exception {
+	void metric() throws Exception {
 		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max")).andExpect(status().isOk())
 				.andDo(document("metrics/metric",
 						responseFields(fieldWithPath("name").description("Name of the metric"),
@@ -64,7 +64,7 @@ public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	}
 
 	@Test
-	public void metricWithTags() throws Exception {
+	void metricWithTags() throws Exception {
 		this.mockMvc
 				.perform(get("/actuator/metrics/jvm.memory.max").param("tag", "area:nonheap").param("tag",
 						"id:Compressed Class Space"))

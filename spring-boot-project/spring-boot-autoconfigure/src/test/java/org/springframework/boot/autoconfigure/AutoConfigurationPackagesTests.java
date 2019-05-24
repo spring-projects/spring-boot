@@ -40,21 +40,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 public class AutoConfigurationPackagesTests {
 
 	@Test
-	public void setAndGet() {
+	void setAndGet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConfigWithRegistrar.class);
 		assertThat(AutoConfigurationPackages.get(context.getBeanFactory()))
 				.containsExactly(getClass().getPackage().getName());
 	}
 
 	@Test
-	public void getWithoutSet() {
+	void getWithoutSet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(EmptyConfig.class);
 		assertThatIllegalStateException().isThrownBy(() -> AutoConfigurationPackages.get(context.getBeanFactory()))
 				.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
 	}
 
 	@Test
-	public void detectsMultipleAutoConfigurationPackages() {
+	void detectsMultipleAutoConfigurationPackages() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(FirstConfiguration.class,
 				SecondConfiguration.class);
 		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());

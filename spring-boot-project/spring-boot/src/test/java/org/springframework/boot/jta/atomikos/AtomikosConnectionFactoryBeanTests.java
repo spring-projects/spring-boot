@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jta.atomikos;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -28,10 +28,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class AtomikosConnectionFactoryBeanTests {
+class AtomikosConnectionFactoryBeanTests {
 
 	@Test
-	public void beanMethods() throws Exception {
+	void beanMethods() throws Exception {
 		MockAtomikosConnectionFactoryBean bean = spy(new MockAtomikosConnectionFactoryBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();

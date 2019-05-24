@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ValidationAutoConfigurationTests {
+class ValidationAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -63,7 +63,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationShouldConfigureDefaultValidator() {
+	void validationAutoConfigurationShouldConfigureDefaultValidator() {
 		load(Config.class);
 		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
 		String[] springValidatorNames = this.context
@@ -79,7 +79,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenUserProvidesValidatorShouldBackOff() {
+	void validationAutoConfigurationWhenUserProvidesValidatorShouldBackOff() {
 		load(UserDefinedValidatorConfig.class);
 		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
 		String[] springValidatorNames = this.context
@@ -95,7 +95,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenUserProvidesDefaultValidatorShouldNotEnablePrimary() {
+	void validationAutoConfigurationWhenUserProvidesDefaultValidatorShouldNotEnablePrimary() {
 		load(UserDefinedDefaultValidatorConfig.class);
 		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
 		String[] springValidatorNames = this.context
@@ -106,7 +106,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenUserProvidesJsrValidatorShouldBackOff() {
+	void validationAutoConfigurationWhenUserProvidesJsrValidatorShouldBackOff() {
 		load(UserDefinedJsrValidatorConfig.class);
 		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
 		String[] springValidatorNames = this.context
@@ -117,7 +117,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenUserProvidesSpringValidatorShouldCreateJsrValidator() {
+	void validationAutoConfigurationWhenUserProvidesSpringValidatorShouldCreateJsrValidator() {
 		load(UserDefinedSpringValidatorConfig.class);
 		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
 		String[] springValidatorNames = this.context
@@ -134,7 +134,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenUserProvidesPrimarySpringValidatorShouldRemovePrimaryFlag() {
+	void validationAutoConfigurationWhenUserProvidesPrimarySpringValidatorShouldRemovePrimaryFlag() {
 		load(UserDefinedPrimarySpringValidatorConfig.class);
 		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
 		String[] springValidatorNames = this.context
@@ -151,7 +151,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationIsEnabled() {
+	void validationIsEnabled() {
 		load(SampleService.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
@@ -160,7 +160,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationUsesCglibProxy() {
+	void validationUsesCglibProxy() {
 		load(DefaultAnotherSampleService.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		DefaultAnotherSampleService service = this.context.getBean(DefaultAnotherSampleService.class);
@@ -169,7 +169,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationCanBeConfiguredToUseJdkProxy() {
+	void validationCanBeConfiguredToUseJdkProxy() {
 		load(AnotherSampleServiceConfiguration.class, "spring.aop.proxy-target-class=false");
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(DefaultAnotherSampleService.class)).isEmpty();
@@ -179,7 +179,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
+	void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		load(SampleConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Object userMethodValidationPostProcessor = this.context.getBean("testMethodValidationPostProcessor");
@@ -191,7 +191,7 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void methodValidationPostProcessorValidatorDependencyDoesNotTriggerEarlyInitialization() {
+	void methodValidationPostProcessorValidatorDependencyDoesNotTriggerEarlyInitialization() {
 		load(CustomValidatorConfiguration.class);
 		assertThat(this.context.getBean(TestBeanPostProcessor.class).postProcessed).contains("someService");
 	}

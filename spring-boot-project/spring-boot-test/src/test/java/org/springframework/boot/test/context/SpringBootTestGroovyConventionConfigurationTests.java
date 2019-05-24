@@ -30,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @DirtiesContext
-public class SpringBootTestGroovyConventionConfigurationTests {
+class SpringBootTestGroovyConventionConfigurationTests {
 
 	@Autowired
 	private String foo;
 
 	@Test
-	public void groovyConfigLoaded() {
+	void groovyConfigLoaded() {
 		assertThat(this.foo).isEqualTo("World");
 	}
 

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class QualifierDefinitionTests {
+class QualifierDefinitionTests {
 
 	@Mock
 	private ConfigurableListableBeanFactory beanFactory;
@@ -57,31 +57,31 @@ public class QualifierDefinitionTests {
 	}
 
 	@Test
-	public void forElementFieldIsNullShouldReturnNull() {
+	void forElementFieldIsNullShouldReturnNull() {
 		assertThat(QualifierDefinition.forElement((Field) null)).isNull();
 	}
 
 	@Test
-	public void forElementWhenElementIsNotFieldShouldReturnNull() {
+	void forElementWhenElementIsNotFieldShouldReturnNull() {
 		assertThat(QualifierDefinition.forElement(getClass())).isNull();
 	}
 
 	@Test
-	public void forElementWhenElementIsFieldWithNoQualifiersShouldReturnNull() {
+	void forElementWhenElementIsFieldWithNoQualifiersShouldReturnNull() {
 		QualifierDefinition definition = QualifierDefinition
 				.forElement(ReflectionUtils.findField(ConfigA.class, "noQualifier"));
 		assertThat(definition).isNull();
 	}
 
 	@Test
-	public void forElementWhenElementIsFieldWithQualifierShouldReturnDefinition() {
+	void forElementWhenElementIsFieldWithQualifierShouldReturnDefinition() {
 		QualifierDefinition definition = QualifierDefinition
 				.forElement(ReflectionUtils.findField(ConfigA.class, "directQualifier"));
 		assertThat(definition).isNotNull();
 	}
 
 	@Test
-	public void matchesShouldCallBeanFactory() {
+	void matchesShouldCallBeanFactory() {
 		Field field = ReflectionUtils.findField(ConfigA.class, "directQualifier");
 		QualifierDefinition qualifierDefinition = QualifierDefinition.forElement(field);
 		qualifierDefinition.matches(this.beanFactory, "bean");
@@ -90,7 +90,7 @@ public class QualifierDefinitionTests {
 	}
 
 	@Test
-	public void applyToShouldSetQualifierElement() {
+	void applyToShouldSetQualifierElement() {
 		Field field = ReflectionUtils.findField(ConfigA.class, "directQualifier");
 		QualifierDefinition qualifierDefinition = QualifierDefinition.forElement(field);
 		RootBeanDefinition definition = new RootBeanDefinition();
@@ -99,7 +99,7 @@ public class QualifierDefinitionTests {
 	}
 
 	@Test
-	public void hashCodeAndEqualsShouldWorkOnDifferentClasses() {
+	void hashCodeAndEqualsShouldWorkOnDifferentClasses() {
 		QualifierDefinition directQualifier1 = QualifierDefinition
 				.forElement(ReflectionUtils.findField(ConfigA.class, "directQualifier"));
 		QualifierDefinition directQualifier2 = QualifierDefinition
