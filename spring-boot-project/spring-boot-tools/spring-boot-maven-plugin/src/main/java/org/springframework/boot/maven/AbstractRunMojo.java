@@ -287,7 +287,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		addClasspath(args);
 		args.add(startClassName);
 		addArgs(args);
-		runWithForkedJvm(this.workingDirectory, args, determineEnvironmentVariables());
+		runWithForkedJvm(
+				(this.workingDirectory != null) ? this.workingDirectory
+						: this.project.getBasedir(),
+				args, determineEnvironmentVariables());
 	}
 
 	/**
