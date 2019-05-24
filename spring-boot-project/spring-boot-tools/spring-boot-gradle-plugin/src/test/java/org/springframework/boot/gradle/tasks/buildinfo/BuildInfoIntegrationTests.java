@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ import java.util.Properties;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,13 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class BuildInfoIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void defaultValues() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -56,7 +54,7 @@ public class BuildInfoIntegrationTests {
 		assertThat(buildInfoProperties).containsEntry("build.version", "unspecified");
 	}
 
-	@Test
+	@TestTemplate
 	public void basicExecution() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -69,7 +67,7 @@ public class BuildInfoIntegrationTests {
 		assertThat(buildInfoProperties).containsEntry("build.version", "1.0");
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenExecutedTwiceAsTimeChanges() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -77,7 +75,7 @@ public class BuildInfoIntegrationTests {
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void upToDateWhenExecutedTwiceWithFixedTime() {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -85,7 +83,7 @@ public class BuildInfoIntegrationTests {
 				.getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ import java.util.jar.JarOutputStream;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,74 +36,73 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class JavaPluginActionIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void noBootJarTaskWithoutJavaPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootJar").getOutput())
 				.contains("bootJar exists = false");
 	}
 
-	@Test
+	@TestTemplate
 	public void applyingJavaPluginCreatesBootJarTask() {
 		assertThat(this.gradleBuild
 				.build("taskExists", "-PtaskName=bootJar", "-PapplyJavaPlugin")
 				.getOutput()).contains("bootJar exists = true");
 	}
 
-	@Test
+	@TestTemplate
 	public void noBootRunTaskWithoutJavaPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootRun").getOutput())
 				.contains("bootRun exists = false");
 	}
 
-	@Test
+	@TestTemplate
 	public void applyingJavaPluginCreatesBootRunTask() {
 		assertThat(this.gradleBuild
 				.build("taskExists", "-PtaskName=bootRun", "-PapplyJavaPlugin")
 				.getOutput()).contains("bootRun exists = true");
 	}
 
-	@Test
+	@TestTemplate
 	public void javaCompileTasksUseUtf8Encoding() {
 		assertThat(this.gradleBuild.build("javaCompileEncoding", "-PapplyJavaPlugin")
 				.getOutput()).contains("compileJava = UTF-8")
 						.contains("compileTestJava = UTF-8");
 	}
 
-	@Test
+	@TestTemplate
 	public void javaCompileTasksUseParametersCompilerFlagByDefault() {
 		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
 				.contains("compileJava compiler args: [-parameters]")
 				.contains("compileTestJava compiler args: [-parameters]");
 	}
 
-	@Test
+	@TestTemplate
 	public void javaCompileTasksUseParametersAndAdditionalCompilerFlags() {
 		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
 				.contains("compileJava compiler args: [-parameters, -Xlint:all]")
 				.contains("compileTestJava compiler args: [-parameters, -Xlint:all]");
 	}
 
-	@Test
+	@TestTemplate
 	public void javaCompileTasksCanOverrideDefaultParametersCompilerFlag() {
 		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
 				.contains("compileJava compiler args: [-Xlint:all]")
 				.contains("compileTestJava compiler args: [-Xlint:all]");
 	}
 
-	@Test
+	@TestTemplate
 	public void assembleRunsBootJarAndJarIsSkipped() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
 	}
 
-	@Test
+	@TestTemplate
 	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyJavaPlugin");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
@@ -112,7 +110,7 @@ public class JavaPluginActionIntegrationTests {
 				"Main class name has not been configured and it could not be resolved");
 	}
 
-	@Test
+	@TestTemplate
 	public void jarAndBootJarCanBothBeBuilt() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -124,7 +122,7 @@ public class JavaPluginActionIntegrationTests {
 						this.gradleBuild.getProjectDir().getName() + "-boot.jar"));
 	}
 
-	@Test
+	@TestTemplate
 	public void additionalMetadataLocationsConfiguredWhenProcessorIsPresent()
 			throws IOException {
 		createMinimalMainSource();
@@ -142,7 +140,7 @@ public class JavaPluginActionIntegrationTests {
 								.getCanonicalPath());
 	}
 
-	@Test
+	@TestTemplate
 	public void additionalMetadataLocationsNotConfiguredWhenProcessorIsAbsent()
 			throws IOException {
 		createMinimalMainSource();

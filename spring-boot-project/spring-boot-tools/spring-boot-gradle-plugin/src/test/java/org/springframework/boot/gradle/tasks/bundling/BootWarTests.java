@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,7 +75,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	public void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath()
 			throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		getTask().providedClasspath(newFile("spring-boot-devtools-0.1.2.jar"));
 		executeTask();
 		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
@@ -103,7 +103,8 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Test
 	public void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged()
 			throws IOException {
-		File webappFolder = this.temp.newFolder("src", "main", "webapp");
+		File webappFolder = new File(this.temp, "src/main/webapp");
+		webappFolder.mkdirs();
 		File orgFolder = new File(webappFolder, "org");
 		orgFolder.mkdir();
 		new File(orgFolder, "foo.txt").createNewFile();

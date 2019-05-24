@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.util.FileSystemUtils;
 
@@ -36,13 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class BootRunIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void basicExecution() throws IOException {
 		copyApplication();
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
@@ -56,7 +54,7 @@ public class BootRunIntegrationTests {
 				.doesNotContain(canonicalPathOf("src/main/resources"));
 	}
 
-	@Test
+	@TestTemplate
 	public void sourceResourcesCanBeUsed() throws IOException {
 		copyApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
@@ -69,7 +67,7 @@ public class BootRunIntegrationTests {
 				.doesNotContain(canonicalPathOf("build/resources/main"));
 	}
 
-	@Test
+	@TestTemplate
 	public void springBootExtensionMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome())
@@ -78,7 +76,7 @@ public class BootRunIntegrationTests {
 				.contains("Main class name = com.example.CustomMainClass");
 	}
 
-	@Test
+	@TestTemplate
 	public void applicationPluginMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome())
@@ -87,7 +85,7 @@ public class BootRunIntegrationTests {
 				.contains("Main class name = com.example.CustomMainClass");
 	}
 
-	@Test
+	@TestTemplate
 	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
 		copyApplication();
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
@@ -97,7 +95,7 @@ public class BootRunIntegrationTests {
 				.contains("Main class name = com.example.BootRunApplication");
 	}
 
-	@Test
+	@TestTemplate
 	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoJvmArguments");
 		assertThat(result.task(":echoJvmArguments").getOutcome())

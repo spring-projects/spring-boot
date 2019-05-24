@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.testkit.GradleBuildExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,10 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@ExtendWith(GradleBuildExtension.class)
 public class BuildInfoDslIntegrationTests {
 
-	@Rule
-	public final GradleBuild gradleBuild = new GradleBuild();
+	final GradleBuild gradleBuild = new GradleBuild();
 
 	@Test
 	public void basicJar() throws IOException {

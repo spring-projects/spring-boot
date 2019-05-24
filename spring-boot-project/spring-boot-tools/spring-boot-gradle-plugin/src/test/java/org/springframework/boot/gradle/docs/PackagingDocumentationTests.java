@@ -27,12 +27,10 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
-import org.springframework.boot.gradle.testkit.Dsl;
+import org.springframework.boot.gradle.junit.GradleMultiDslExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.util.FileCopyUtils;
 
@@ -44,21 +42,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-@RunWith(GradleMultiDslSuite.class)
+@ExtendWith(GradleMultiDslExtension.class)
 public class PackagingDocumentationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	public Dsl dsl;
-
-	@Test
+	@TestTemplate
 	public void warContainerDependencyEvaluatesSuccessfully() {
 		this.gradleBuild.script("src/main/gradle/packaging/war-container-dependency")
 				.build();
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarMainClass() throws IOException {
 		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-main-class")
 				.build("bootJar");
@@ -71,7 +66,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarManifestMainClass() throws IOException {
 		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-manifest-main-class")
 				.build("bootJar");
@@ -84,7 +79,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void applicationPluginMainClass() throws IOException {
 		this.gradleBuild.script("src/main/gradle/packaging/application-plugin-main-class")
 				.build("bootJar");
@@ -97,7 +92,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void springBootDslMainClass() throws IOException {
 		this.gradleBuild.script("src/main/gradle/packaging/spring-boot-dsl-main-class")
 				.build("bootJar");
@@ -110,7 +105,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void bootWarIncludeDevtools() throws IOException {
 		jarFile(new File(this.gradleBuild.getProjectDir(),
 				"spring-boot-devtools-1.2.3.RELEASE.jar"));
@@ -125,7 +120,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarRequiresUnpack() throws IOException {
 		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-requires-unpack")
 				.build("bootJar");
@@ -139,7 +134,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarIncludeLaunchScript() throws IOException {
 		this.gradleBuild
 				.script("src/main/gradle/packaging/boot-jar-include-launch-script")
@@ -151,7 +146,7 @@ public class PackagingDocumentationTests {
 				.startsWith("#!/bin/bash");
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarLaunchScriptProperties() throws IOException {
 		this.gradleBuild
 				.script("src/main/gradle/packaging/boot-jar-launch-script-properties")
@@ -163,7 +158,7 @@ public class PackagingDocumentationTests {
 				.contains("example-app.log");
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarCustomLaunchScript() throws IOException {
 		File customScriptFile = new File(this.gradleBuild.getProjectDir(),
 				"src/custom.script");
@@ -177,7 +172,7 @@ public class PackagingDocumentationTests {
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).startsWith("custom");
 	}
 
-	@Test
+	@TestTemplate
 	public void bootWarPropertiesLauncher() throws IOException {
 		this.gradleBuild.script("src/main/gradle/packaging/boot-war-properties-launcher")
 				.build("bootWar");
@@ -190,7 +185,7 @@ public class PackagingDocumentationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void bootJarAndJar() {
 		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-and-jar")
 				.build("assemble");

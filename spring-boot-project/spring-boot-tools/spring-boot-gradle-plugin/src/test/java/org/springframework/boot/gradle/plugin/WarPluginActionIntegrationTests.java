@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.io.File;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,33 +33,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class WarPluginActionIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void noBootWarTaskWithoutWarPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar").getOutput())
 				.contains("bootWar exists = false");
 	}
 
-	@Test
+	@TestTemplate
 	public void applyingWarPluginCreatesBootWarTask() {
 		assertThat(this.gradleBuild
 				.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin")
 				.getOutput()).contains("bootWar exists = true");
 	}
 
-	@Test
+	@TestTemplate
 	public void assembleRunsBootWarAndWarIsSkipped() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
 	}
 
-	@Test
+	@TestTemplate
 	public void warAndBootWarCanBothBeBuilt() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -72,7 +70,7 @@ public class WarPluginActionIntegrationTests {
 						this.gradleBuild.getProjectDir().getName() + "-boot.war"));
 	}
 
-	@Test
+	@TestTemplate
 	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyWarPlugin");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.FAILED);

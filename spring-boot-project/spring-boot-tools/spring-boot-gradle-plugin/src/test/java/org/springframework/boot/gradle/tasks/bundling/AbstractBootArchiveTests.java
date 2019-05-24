@@ -41,10 +41,9 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 
@@ -58,8 +57,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File temp;
 
 	private final Class<T> taskClass;
 
@@ -81,11 +80,12 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.classesPath = classesPath;
 	}
 
-	@Before
+	@BeforeEach
 	public void createTask() {
 		try {
-			this.project = ProjectBuilder.builder().withProjectDir(this.temp.newFolder())
-					.build();
+			File projectDir = new File(this.temp, "project");
+			projectDir.mkdirs();
+			this.project = ProjectBuilder.builder().withProjectDir(projectDir).build();
 			this.project
 					.setDescription("Test project for " + this.taskClass.getSimpleName());
 			this.task = configure(
@@ -130,7 +130,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void classpathFoldersArePackagedBeneathClassesPath() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		File classpathFolder = this.temp.newFolder();
+		File classpathFolder = new File(this.temp, "classes");
 		File applicationClass = new File(classpathFolder,
 				"com/example/Application.class");
 		applicationClass.getParentFile().mkdirs();
@@ -147,7 +147,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void moduleInfoClassIsPackagedInTheRootOfTheArchive() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		File classpathFolder = this.temp.newFolder();
+		File classpathFolder = new File(this.temp, "classes");
 		File moduleInfoClass = new File(classpathFolder, "module-info.class");
 		moduleInfoClass.getParentFile().mkdirs();
 		moduleInfoClass.createNewFile();
@@ -195,7 +195,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void filesOnTheClasspathThatAreNotZipFilesAreSkipped() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("test.pom"));
+		this.task.classpath(new File("test.pom"));
 		this.task.execute();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry(this.libPath + "/test.pom")).isNull();
@@ -279,7 +279,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void customLaunchScriptCanBePrepended() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		File customScript = this.temp.newFile("custom.script");
+		File customScript = new File(this.temp, "custom.script");
 		Files.write(customScript.toPath(), Arrays.asList("custom script"),
 				StandardOpenOption.CREATE);
 		this.task.launchScript((configuration) -> configuration.setScript(customScript));
@@ -357,8 +357,8 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void reproducibleOrderingCanBeEnabled() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.from(this.temp.newFile("bravo.txt"), this.temp.newFile("alpha.txt"),
-				this.temp.newFile("charlie.txt"));
+		this.task.from(newFile("bravo.txt"), newFile("alpha.txt"),
+				newFile("charlie.txt"));
 		this.task.setReproducibleFileOrder(true);
 		executeTask();
 		assertThat(this.task.getArchivePath()).exists();
@@ -378,7 +378,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	public void devtoolsJarIsExcludedByDefault() throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		this.task.classpath(newFile("spring-boot-devtools-0.1.2.jar"));
 		executeTask();
 		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
@@ -404,7 +404,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	public void allEntriesUseUnixPlatformAndUtf8NameEncoding() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.setMetadataCharset("UTF-8");
-		File classpathFolder = this.temp.newFolder();
+		File classpathFolder = new File(this.temp, "classes");
 		File resource = new File(classpathFolder, "some-resource.xml");
 		resource.getParentFile().mkdirs();
 		resource.createNewFile();
@@ -425,7 +425,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	public void loaderIsWrittenFirstThenApplicationClassesThenLibraries()
 			throws IOException {
 		this.task.setMainClassName("com.example.Main");
-		File classpathFolder = this.temp.newFolder();
+		File classpathFolder = new File(this.temp, "classes");
 		File applicationClass = new File(classpathFolder,
 				"com/example/Application.class");
 		applicationClass.getParentFile().mkdirs();
@@ -442,7 +442,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	protected File jarFile(String name) throws IOException {
-		File file = this.temp.newFile(name);
+		File file = newFile(name);
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
 			new Manifest().write(jar);
@@ -454,7 +454,9 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	private T configure(T task) throws IOException {
 		AbstractArchiveTask archiveTask = task;
 		archiveTask.setBaseName("test");
-		archiveTask.setDestinationDir(this.temp.newFolder());
+		File destination = new File(this.temp, "destination");
+		destination.mkdirs();
+		archiveTask.setDestinationDir(destination);
 		return task;
 	}
 
@@ -473,6 +475,12 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			}
 		}
 		return entryNames;
+	}
+
+	protected File newFile(String name) throws IOException {
+		File file = new File(this.temp, name);
+		file.createNewFile();
+		return file;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,8 @@ import java.util.Properties;
 
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BuildInfoTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File temp;
 
 	@Test
 	public void basicExecution() {
@@ -126,14 +125,9 @@ public class BuildInfoTests {
 	}
 
 	private Project createProject(String projectName) {
-		try {
-			File projectDir = this.temp.newFolder(projectName);
-			return ProjectBuilder.builder().withProjectDir(projectDir)
-					.withName(projectName).build();
-		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		File projectDir = new File(this.temp, projectName);
+		return ProjectBuilder.builder().withProjectDir(projectDir).withName(projectName)
+				.build();
 	}
 
 	private BuildInfo createTask(Project project) {

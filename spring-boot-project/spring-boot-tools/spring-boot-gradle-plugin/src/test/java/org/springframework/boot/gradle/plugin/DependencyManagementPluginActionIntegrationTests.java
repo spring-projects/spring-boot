@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.util.FileSystemUtils;
 
@@ -37,20 +36,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class DependencyManagementPluginActionIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void noDependencyManagementIsAppliedByDefault() {
 		assertThat(this.gradleBuild.build("doesNotHaveDependencyManagement")
 				.task(":doesNotHaveDependencyManagement").getOutcome())
 						.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void bomIsImportedWhenDependencyManagementPluginIsApplied() {
 		assertThat(this.gradleBuild
 				.build("hasDependencyManagement", "-PapplyDependencyManagementPlugin")
@@ -58,7 +56,7 @@ public class DependencyManagementPluginActionIntegrationTests {
 						.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void helpfulErrorWhenVersionlessDependencyFailsToResolve() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(),
 				"src/main/java/com/example");
