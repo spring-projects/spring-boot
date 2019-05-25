@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +54,12 @@ public class RunMojo extends AbstractRunMojo {
 	 */
 	private Boolean hasDevtools;
 
+	/**
+	 * Whether the JVM's launch should be optimized.
+	 * @since 2.2.0
+	 */
 	@Parameter(property = "optimizedLaunch", defaultValue = "true")
-	private boolean optimizedLaunch = true;
+	private boolean optimizedLaunch;
 
 	@Override
 	@Deprecated
@@ -73,12 +76,18 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	protected RunArguments resolveJvmArguments() {
+		RunArguments jvmArguments = super.resolveJvmArguments();
+		if (isFork() && this.optimizedLaunch) {
+			jvmArguments.getArgs().addFirst("-XX:TieredStopAtLevel=1");
+			jvmArguments.getArgs().addFirst("-Xverify:none");
+		}
+		return jvmArguments;
+	}
+
+	@Override
 	protected void runWithForkedJvm(File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException {
-		if (this.optimizedLaunch) {
-			String[] optimizedLaunchArgs = { "-Xverify:none", "-XX:TieredStopAtLevel=1" };
-			Collections.addAll(args, optimizedLaunchArgs);
-		}
 		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
 		if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
 			return;
