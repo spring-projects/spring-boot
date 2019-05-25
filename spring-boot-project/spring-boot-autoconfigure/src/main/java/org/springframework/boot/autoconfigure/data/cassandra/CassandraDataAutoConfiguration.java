@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
@@ -59,6 +60,7 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, CassandraAdminOperations.class })
+@ConditionalOnBean(Cluster.class)
 @EnableConfigurationProperties(CassandraProperties.class)
 @AutoConfigureAfter(CassandraAutoConfiguration.class)
 public class CassandraDataAutoConfiguration {
@@ -67,8 +69,8 @@ public class CassandraDataAutoConfiguration {
 
 	private final Cluster cluster;
 
-	public CassandraDataAutoConfiguration(BeanFactory beanFactory,
-			CassandraProperties properties, Cluster cluster, Environment environment) {
+	public CassandraDataAutoConfiguration(CassandraProperties properties,
+			Cluster cluster) {
 		this.properties = properties;
 		this.cluster = cluster;
 	}
@@ -107,7 +109,7 @@ public class CassandraDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(Session.class)
 	public CassandraSessionFactoryBean cassandraSession(Environment environment,
-			CassandraConverter converter) throws Exception {
+			CassandraConverter converter) {
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
@@ -121,7 +123,7 @@ public class CassandraDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CassandraTemplate cassandraTemplate(Session session,
-			CassandraConverter converter) throws Exception {
+			CassandraConverter converter) {
 		return new CassandraTemplate(session, converter);
 	}
 
