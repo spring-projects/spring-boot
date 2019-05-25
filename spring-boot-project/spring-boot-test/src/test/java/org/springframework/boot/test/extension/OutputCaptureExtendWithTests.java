@@ -29,21 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(OutputCapture.class)
 @ExtendWith(OutputCaptureExtendWithTests.BeforeAllExtension.class)
-public class OutputCaptureExtendWithTests {
+class OutputCaptureExtendWithTests {
 
 	@Test
 	void captureShouldReturnOutputCapturedBeforeTestMethod(OutputCapture output) {
-		assertThat(output).contains("Before all");
-		assertThat(output).doesNotContain("Hello");
+		assertThat(output).contains("Before all").doesNotContain("Hello");
 	}
 
 	@Test
 	void captureShouldReturnAllCapturedOutput(OutputCapture output) {
 		System.out.println("Hello World");
 		System.err.println("Error!!!");
-		assertThat(output).contains("Before all");
-		assertThat(output).contains("Hello World");
-		assertThat(output).contains("Error!!!");
+		assertThat(output).contains("Before all").contains("Hello World")
+				.contains("Error!!!");
 	}
 
 	static class BeforeAllExtension implements BeforeAllCallback {
