@@ -60,6 +60,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @author Dmytro Nosan
+ * @author Kevin Strijbos
  * @since 1.4.0
  */
 public class RestTemplateBuilder {
@@ -507,6 +508,22 @@ public class RestTemplateBuilder {
 	}
 
 	/**
+	 * Sets the bufferrequestbody value on the underlying
+	 * {@link ClientHttpRequestFactory}.
+	 * @param bufferRequestBody value of the bufferRequestBody parameter
+	 * @return a new builder instance.
+	 * @since 2.1.0
+	 */
+	public RestTemplateBuilder setBufferRequestBody(boolean bufferRequestBody) {
+		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
+				this.messageConverters, this.requestFactorySupplier,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.restTemplateCustomizers,
+				this.requestFactoryCustomizer.bufferRequestBody(bufferRequestBody),
+				this.interceptors);
+	}
+
+	/**
 	 * Build a new {@link RestTemplate} instance and configure it using this builder.
 	 * @return a configured {@link RestTemplate} instance.
 	 * @see #build(Class)
@@ -617,21 +634,35 @@ public class RestTemplateBuilder {
 
 		private final Duration readTimeout;
 
+		private final boolean bufferRequestBody;
+
+		private final boolean bufferRequestBodyFlag;
+
 		RequestFactoryCustomizer() {
-			this(null, null);
+			this(null, null, true, false);
 		}
 
-		private RequestFactoryCustomizer(Duration connectTimeout, Duration readTimeout) {
+		private RequestFactoryCustomizer(Duration connectTimeout, Duration readTimeout,
+				boolean bufferRequestBody, boolean bufferRequestBodyFlag) {
 			this.connectTimeout = connectTimeout;
 			this.readTimeout = readTimeout;
+			this.bufferRequestBody = bufferRequestBody;
+			this.bufferRequestBodyFlag = bufferRequestBodyFlag;
 		}
 
 		public RequestFactoryCustomizer connectTimeout(Duration connectTimeout) {
-			return new RequestFactoryCustomizer(connectTimeout, this.readTimeout);
+			return new RequestFactoryCustomizer(connectTimeout, this.readTimeout,
+					this.bufferRequestBody, this.bufferRequestBodyFlag);
 		}
 
 		public RequestFactoryCustomizer readTimeout(Duration readTimeout) {
-			return new RequestFactoryCustomizer(this.connectTimeout, readTimeout);
+			return new RequestFactoryCustomizer(this.connectTimeout, readTimeout,
+					this.bufferRequestBody, this.bufferRequestBodyFlag);
+		}
+
+		public RequestFactoryCustomizer bufferRequestBody(boolean bufferRequestBody) {
+			return new RequestFactoryCustomizer(this.connectTimeout, this.readTimeout,
+					bufferRequestBody, true);
 		}
 
 		@Override
@@ -645,6 +676,10 @@ public class RestTemplateBuilder {
 			if (this.readTimeout != null) {
 				new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout")
 						.customize(unwrappedRequestFactory);
+			}
+			if (this.bufferRequestBodyFlag) {
+				new BufferRequestBodyFactoryCustomizer(this.bufferRequestBody,
+						"setBufferRequestBody").customize(unwrappedRequestFactory);
 			}
 		}
 
@@ -691,6 +726,39 @@ public class RestTemplateBuilder {
 				}
 				throw new IllegalStateException("Request factory " + factory.getClass()
 						+ " does not have a " + this.methodName + "(int) method");
+			}
+
+		}
+
+		/**
+		 * {@link ClientHttpRequestFactory} customizer to call a "set buffer request body"
+		 * method.
+		 */
+		private static final class BufferRequestBodyFactoryCustomizer {
+
+			private final boolean bufferRequestBody;
+
+			private final String methodName;
+
+			BufferRequestBodyFactoryCustomizer(boolean bufferRequestBody,
+					String methodName) {
+				this.bufferRequestBody = bufferRequestBody;
+				this.methodName = methodName;
+			}
+
+			void customize(ClientHttpRequestFactory factory) {
+				ReflectionUtils.invokeMethod(findMethod(factory), factory,
+						this.bufferRequestBody);
+			}
+
+			private Method findMethod(ClientHttpRequestFactory factory) {
+				Method method = ReflectionUtils.findMethod(factory.getClass(),
+						this.methodName, boolean.class);
+				if (method != null) {
+					return method;
+				}
+				throw new IllegalStateException("Request factory " + factory.getClass()
+						+ " does not have a " + this.methodName + "(boolean) method");
 			}
 
 		}
