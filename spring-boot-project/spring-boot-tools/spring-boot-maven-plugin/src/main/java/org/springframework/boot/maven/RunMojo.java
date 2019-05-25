@@ -26,6 +26,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
@@ -53,6 +54,13 @@ public class RunMojo extends AbstractRunMojo {
 	 */
 	private Boolean hasDevtools;
 
+	/**
+	 * Whether the JVM's launch should be optimized.
+	 * @since 2.2.0
+	 */
+	@Parameter(property = "optimizedLaunch", defaultValue = "true")
+	private boolean optimizedLaunch;
+
 	@Override
 	@Deprecated
 	protected boolean enableForkByDefault() {
@@ -65,6 +73,16 @@ public class RunMojo extends AbstractRunMojo {
 		if (hasDevtools()) {
 			getLog().warn("Fork mode disabled, devtools will be disabled");
 		}
+	}
+
+	@Override
+	protected RunArguments resolveJvmArguments() {
+		RunArguments jvmArguments = super.resolveJvmArguments();
+		if (isFork() && this.optimizedLaunch) {
+			jvmArguments.getArgs().addFirst("-XX:TieredStopAtLevel=1");
+			jvmArguments.getArgs().addFirst("-Xverify:none");
+		}
+		return jvmArguments;
 	}
 
 	@Override
