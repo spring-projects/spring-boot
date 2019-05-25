@@ -53,7 +53,7 @@
 						<configuration>
 							<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
 							<unpack>true</unpack>
-							<outputDirectory>${refdocs.build.directory}</outputDirectory>
+							<outputDirectory>${refdocs.build.directory}/asciidoc</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
@@ -99,10 +99,26 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${refdocs.build.directory}</outputDirectory>
+							<outputDirectory>${refdocs.build.directory}/asciidoc</outputDirectory>
 							<resources>
 								<resource>
 									<directory>src/main/asciidoc</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-gradle-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${refdocs.build.directory}/gradle</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/gradle</directory>
 									<filtering>false</filtering>
 								</resource>
 							</resources>
@@ -315,6 +331,12 @@
 										<stylesdir>css/</stylesdir>
 										<stylesheet>style.css</stylesheet>
 									</attributes>
+									<logHandler>
+										<outputToConsole>true</outputToConsole>
+										<failIf>
+											<severity>DEBUG</severity>
+										</failIf>
+									</logHandler>
 								</configuration>
 							</execution>
 							<execution>
@@ -330,7 +352,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<sourceDirectory>${refdocs.build.directory}/asciidoc</sourceDirectory>
 							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
 								<github-tag>${github-tag}</github-tag>
