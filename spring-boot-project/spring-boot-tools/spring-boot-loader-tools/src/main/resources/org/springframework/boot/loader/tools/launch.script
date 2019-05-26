@@ -128,6 +128,11 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 # shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
+# Force run as informed user (from environment variable)
+if [[ -n "$RUN_AS" ]]; then
+    run_user="$RUN_AS"
+fi
+
 # Issue a warning if the application will run as root
 [[ $(id -u ${run_user}) == "0" ]] && { echoYellow "Application is running as root (UID 0). This is considered insecure."; }
 

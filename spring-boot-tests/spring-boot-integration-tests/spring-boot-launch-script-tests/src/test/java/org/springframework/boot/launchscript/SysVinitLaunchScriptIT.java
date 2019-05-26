@@ -267,6 +267,13 @@ public class SysVinitLaunchScriptIT {
 		assertThat(output).contains("Log written");
 	}
 
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAs(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as.sh");
+		assertThat(output).contains("wagner root");
+	}
+
 	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
