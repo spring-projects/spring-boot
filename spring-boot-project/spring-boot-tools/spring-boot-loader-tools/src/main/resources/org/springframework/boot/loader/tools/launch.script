@@ -130,6 +130,7 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 
 # Force run as informed user (from environment variable)
 if [[ -n "$RUN_AS" ]]; then
+    id -u "$RUN_AS" || { echoRed "Cannot run as '$RUN_AS': no such user"; exit 5; }
     run_user="$RUN_AS"
 fi
 

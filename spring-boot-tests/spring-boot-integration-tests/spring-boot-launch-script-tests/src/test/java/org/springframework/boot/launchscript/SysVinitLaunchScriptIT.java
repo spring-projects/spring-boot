@@ -276,6 +276,14 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
+	public void launchWithRunAsInvalidUser(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-invalid-user.sh");
+		assertThat(output).contains("Status: 5");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'johndoe': no such user"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
 	public void launchWithRunAsPreferUserInformed(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-prefer-user-informed.sh");
 		assertThat(output).contains("wagner root");
