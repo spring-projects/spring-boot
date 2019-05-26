@@ -267,6 +267,36 @@ public class SysVinitLaunchScriptIT {
 		assertThat(output).contains("Log written");
 	}
 
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAs(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as.sh");
+		assertThat(output).contains("wagner root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAsInvalidUser(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-invalid-user.sh");
+		assertThat(output).contains("Status: 5");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'johndoe': no such user"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAsPreferUserInformed(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-prefer-user-informed.sh");
+		assertThat(output).contains("wagner root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAsRootRequired(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-root-required.sh");
+		assertThat(output).contains("Status: 6");
+		assertThat(output).has(coloredString(AnsiColor.RED, "root required to run as 'wagner'"));
+	}
+
 	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {

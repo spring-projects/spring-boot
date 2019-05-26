@@ -708,6 +708,11 @@ The following environment properties are supported with the default script:
   The default depends on the way the jar was built but is usually `auto` (meaning it tries to guess if it is an init script by checking if it is a symlink in a directory called `init.d`).
   You can explicitly set it to `service` so that the `stop\|start\|status\|restart` commands work or to `run` if you want to run the script in the foreground.
 
+| `RUN_AS_USER`
+| If set, the application will be executed as the informed user.
+  For security reasons, you should never run an user space application as `root`, therefore it's recommended to set this property.
+  Defaults to the user who owns the jar file.
+
 | `USE_START_STOP_DAEMON`
 | Whether the `start-stop-daemon` command, when it's available, should be used to control the process.
   Defaults to `true`.
