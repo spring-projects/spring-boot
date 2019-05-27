@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
@@ -65,9 +66,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(
-				ReactorResourceFactory resourceFactory) {
+				ReactorResourceFactory resourceFactory,
+				ObjectProvider<NettyRouteProvider> routes) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
+			routes.orderedStream()
+					.forEach((route) -> serverFactory.addRouteProviders(route));
 			return serverFactory;
 		}
 

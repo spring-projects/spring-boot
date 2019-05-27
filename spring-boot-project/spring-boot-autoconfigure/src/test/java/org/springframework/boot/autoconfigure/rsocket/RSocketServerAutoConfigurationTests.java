@@ -77,8 +77,7 @@ public class RSocketServerAutoConfigurationTests {
 				.withPropertyValues("spring.rsocket.server.transport=websocket",
 						"spring.rsocket.server.mapping-path=/rsocket")
 				.run((context) -> assertThat(context)
-						.getBeanNames(WebServerFactoryCustomizer.class).hasSize(1)
-						.containsOnly("rSocketWebsocketCustomizer"));
+						.hasSingleBean(RSocketWebSocketNettyRouteProvider.class));
 	}
 
 	@Test

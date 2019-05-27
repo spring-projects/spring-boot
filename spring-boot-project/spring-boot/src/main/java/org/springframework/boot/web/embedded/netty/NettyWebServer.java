@@ -17,6 +17,8 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +52,8 @@ public class NettyWebServer implements WebServer {
 
 	private final Duration lifecycleTimeout;
 
+	private List<NettyRouteProvider> routeProviders = Collections.emptyList();
+
 	private DisposableServer disposableServer;
 
 	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
@@ -59,6 +63,10 @@ public class NettyWebServer implements WebServer {
 		this.httpServer = httpServer;
 		this.handlerAdapter = handlerAdapter;
 		this.lifecycleTimeout = lifecycleTimeout;
+	}
+
+	public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
+		this.routeProviders = routeProviders;
 	}
 
 	@Override
@@ -80,11 +88,20 @@ public class NettyWebServer implements WebServer {
 	}
 
 	private DisposableServer startHttpServer() {
-		if (this.lifecycleTimeout != null) {
-			return this.httpServer.handle(this.handlerAdapter)
-					.bindNow(this.lifecycleTimeout);
+		HttpServer server = this.httpServer;
+		if (this.routeProviders.isEmpty()) {
+			server = server.handle(this.handlerAdapter);
 		}
-		return this.httpServer.handle(this.handlerAdapter).bindNow();
+		else {
+			server = server.route((routes) -> {
+				this.routeProviders.forEach((provider) -> provider.apply(routes));
+				routes.route((r) -> true, this.handlerAdapter);
+			});
+		}
+		if (this.lifecycleTimeout != null) {
+			return server.bindNow(this.lifecycleTimeout);
+		}
+		return server.bindNow();
 	}
 
 	private ChannelBindException findBindException(Exception ex) {

@@ -38,8 +38,6 @@ import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
-import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -70,12 +68,11 @@ public class RSocketServerAutoConfiguration {
 	static class WebFluxServerAutoConfiguration {
 
 		@Bean
-		public WebServerFactoryCustomizer<NettyReactiveWebServerFactory> rSocketWebsocketCustomizer(
+		public RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(
 				RSocketProperties properties,
 				MessageHandlerAcceptor messageHandlerAcceptor) {
-			RSocketNettyServerCustomizer customizer = new RSocketNettyServerCustomizer(
+			return new RSocketWebSocketNettyRouteProvider(
 					properties.getServer().getMappingPath(), messageHandlerAcceptor);
-			return (factory) -> factory.addServerCustomizers(customizer);
 		}
 
 	}

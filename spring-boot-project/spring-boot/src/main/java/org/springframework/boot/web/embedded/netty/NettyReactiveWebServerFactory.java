@@ -45,6 +45,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
 
+	private List<NettyRouteProvider> routeProviders = new ArrayList<>();
+
 	private Duration lifecycleTimeout;
 
 	private boolean useForwardHeaders;
@@ -63,7 +65,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
 				httpHandler);
-		return new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
+		NettyWebServer webServer = new NettyWebServer(httpServer, handlerAdapter,
+				this.lifecycleTimeout);
+		webServer.setRouteProviders(this.routeProviders);
+		return webServer;
 	}
 
 	/**
@@ -93,6 +98,16 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
 		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	}
+
+	/**
+	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the the
+	 * handler for the Spring application.
+	 * @param routeProviders the route providers to add
+	 */
+	public void addRouteProviders(NettyRouteProvider... routeProviders) {
+		Assert.notNull(routeProviders, "NettyRouteProvider must not be null");
+		this.routeProviders.addAll(Arrays.asList(routeProviders));
 	}
 
 	/**
