@@ -56,6 +56,8 @@ public class ErrorMvcAutoConfigurationTests {
 					new IllegalStateException("Exception message"), false);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
+			assertThat(webRequest.getResponse().getContentType())
+					.isEqualTo("text/html;charset=UTF-8");
 			String responseString = ((MockHttpServletResponse) webRequest.getResponse())
 					.getContentAsString();
 			assertThat(responseString).contains(

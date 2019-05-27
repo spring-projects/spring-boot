@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
+import java.nio.charset.StandardCharsets;
+
 import javax.validation.Valid;
 
 import org.junit.jupiter.api.Test;
@@ -54,6 +56,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Brian Clozel
  */
 public class DefaultErrorWebExceptionHandlerIntegrationTests {
+
+	private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html",
+			StandardCharsets.UTF_8);
 
 	private final LogIdFilter logIdFilter = new LogIdFilter();
 
@@ -106,8 +111,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			WebTestClient client = getWebClient(context);
 			String body = client.get().uri("/").accept(MediaType.TEXT_HTML).exchange()
 					.expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-					.expectHeader().contentType(MediaType.TEXT_HTML)
-					.expectBody(String.class).returnResult().getResponseBody();
+					.expectHeader().contentType(TEXT_HTML_UTF8).expectBody(String.class)
+					.returnResult().getResponseBody();
 			assertThat(body).contains("status: 500").contains("message: Expected!");
 		});
 	}
@@ -201,7 +206,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					String body = client.get().uri("/").accept(MediaType.TEXT_HTML)
 							.exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader()
-							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
+							.contentType(TEXT_HTML_UTF8).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
 							.contains(this.logIdFilter.getLogId())
@@ -219,7 +224,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					String body = client.get().uri("/html").accept(MediaType.TEXT_HTML)
 							.exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader()
-							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
+							.contentType(TEXT_HTML_UTF8).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
 							.contains(this.logIdFilter.getLogId())
@@ -235,7 +240,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/notfound")
 							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
-							.isNotFound().expectHeader().contentType(MediaType.TEXT_HTML)
+							.isNotFound().expectHeader().contentType(TEXT_HTML_UTF8)
 							.expectBody(String.class).returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
 							.contains(this.logIdFilter.getLogId())
