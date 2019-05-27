@@ -33,6 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.codec.CharSequenceEncoder;
+import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.cbor.Jackson2CborDecoder;
@@ -62,6 +64,8 @@ public class RSocketStrategiesAutoConfiguration {
 		builder.reactiveAdapterStrategy(ReactiveAdapterRegistry.getSharedInstance());
 		customizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(builder));
+		builder.decoder(StringDecoder.textPlainOnly());
+		builder.encoder(CharSequenceEncoder.textPlainOnly());
 		builder.dataBufferFactory(
 				new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT));
 		return builder.build();
