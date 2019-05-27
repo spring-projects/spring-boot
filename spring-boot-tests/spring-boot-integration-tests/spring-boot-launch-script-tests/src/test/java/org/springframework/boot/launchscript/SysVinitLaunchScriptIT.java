@@ -289,6 +289,14 @@ public class SysVinitLaunchScriptIT {
 		assertThat(output).contains("wagner root");
 	}
 
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAsRootRequired(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-root-required.sh");
+		assertThat(output).contains("Status: 6");
+		assertThat(output).has(coloredString(AnsiColor.RED, "root required to run as 'wagner'"));
+	}
+
 	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
