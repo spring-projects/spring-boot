@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,6 +67,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
@@ -202,6 +204,9 @@ public class ErrorMvcAutoConfiguration {
 	 */
 	private static class StaticView implements View {
 
+		private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html",
+				StandardCharsets.UTF_8);
+
 		private static final Log logger = LogFactory.getLog(StaticView.class);
 
 		@Override
@@ -212,6 +217,7 @@ public class ErrorMvcAutoConfiguration {
 				logger.error(message);
 				return;
 			}
+			response.setContentType(TEXT_HTML_UTF8.toString());
 			StringBuilder builder = new StringBuilder();
 			Date timestamp = (Date) model.get("timestamp");
 			Object message = model.get("message");

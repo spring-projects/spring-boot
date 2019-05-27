@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -73,6 +74,9 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  */
 public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
+	private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html",
+			StandardCharsets.UTF_8);
+
 	private static final Map<HttpStatus.Series, String> SERIES_VIEWS;
 
 	static {
@@ -115,7 +119,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		HttpStatus errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
-				.contentType(MediaType.TEXT_HTML);
+				.contentType(TEXT_HTML_UTF8);
 		return Flux
 				.just("error/" + errorStatus.value(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
