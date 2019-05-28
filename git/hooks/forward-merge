@@ -84,5 +84,5 @@ password = config['github']['credentials']['password']
 dry_run = config['dry_run']
 new_issue_number = create_issue(username, password, repository, forward_merge.issue, title, labels, milestone, forward_merge.milestone, dry_run)
 puts "Created gh-#{new_issue_number} for forward port of gh-#{forward_merge.issue} into #{forward_merge.milestone}"
-rewritten_message = forward_merge.message.sub(forward_merge.line, "Closes gh-#{new_issue_number}")
+rewritten_message = forward_merge.message.sub(forward_merge.line, "Closes gh-#{new_issue_number}\n")
 File.write(message_file, rewritten_message)
