@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Properties;
+
+import org.springframework.core.CollectionFactory;
 
 /**
  * A {@code BuildPropertiesWriter} writes the {@code build-info.properties} for
@@ -68,7 +70,7 @@ public final class BuildPropertiesWriter {
 	}
 
 	protected Properties createBuildInfo(ProjectDetails project) {
-		Properties properties = new Properties();
+		Properties properties = CollectionFactory.createSortedProperties(true);
 		properties.put("build.group", project.getGroup());
 		properties.put("build.artifact", project.getArtifact());
 		properties.put("build.name", project.getName());
