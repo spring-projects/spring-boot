@@ -44,8 +44,8 @@ public class WebMvcTestHateoasIntegrationTests {
 
 	@Test
 	public void plainResponse() throws Exception {
-		this.mockMvc.perform(get("/hateoas/plain")).andExpect(header()
-				.string(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8"));
+		this.mockMvc.perform(get("/hateoas/plain"))
+				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/json"));
 	}
 
 	@Test

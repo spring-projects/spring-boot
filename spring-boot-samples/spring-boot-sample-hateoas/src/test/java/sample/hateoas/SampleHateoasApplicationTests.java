@@ -56,7 +56,7 @@ class SampleHateoasApplicationTests {
 				HttpMethod.GET, request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getHeaders().getContentType())
-				.isEqualTo(MediaType.parseMediaType("application/json;charset=UTF-8"));
+				.isEqualTo(MediaType.parseMediaType("application/json"));
 	}
 
 }
