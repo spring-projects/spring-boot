@@ -1401,6 +1401,15 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	}
 
+	public static class FailingServletContextListener implements ServletContextListener {
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+			throw new FailingServletException();
+		}
+
+	}
+
 	private static class FailingServletException extends RuntimeException {
 
 		FailingServletException() {

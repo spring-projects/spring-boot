@@ -523,6 +523,27 @@ public class TomcatServletWebServerFactoryTests
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
+	@Test
+	public void exceptionThrownOnContextListenerDestroysServer() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0) {
+
+			@Override
+			protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
+				try {
+					return super.getTomcatWebServer(tomcat);
+				}
+				finally {
+					assertThat(tomcat.getServer().getState())
+							.isEqualTo(LifecycleState.DESTROYED);
+				}
+			}
+
+		};
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(() -> factory.getWebServer((context) -> context
+						.addListener(new FailingServletContextListener())));
+	}
+
 	@Override
 	protected JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
