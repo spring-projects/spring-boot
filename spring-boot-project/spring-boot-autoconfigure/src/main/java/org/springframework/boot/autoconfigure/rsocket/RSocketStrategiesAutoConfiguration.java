@@ -83,7 +83,7 @@ public class RSocketStrategiesAutoConfiguration {
 			return (strategy) -> {
 				ObjectMapper objectMapper = builder.factory(new CBORFactory()).build();
 				MediaType[] supportedTypes = new MediaType[] {
-						new MediaType("application", "cbor") };
+						MediaType.APPLICATION_CBOR };
 				strategy.decoder(new Jackson2CborDecoder(objectMapper, supportedTypes));
 				strategy.encoder(new Jackson2CborEncoder(objectMapper, supportedTypes));
 			};
