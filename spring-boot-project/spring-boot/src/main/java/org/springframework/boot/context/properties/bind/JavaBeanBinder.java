@@ -192,14 +192,6 @@ class JavaBeanBinder implements BeanBinder {
 			});
 		}
 
-		private boolean isOfDifferentType(ResolvableType targetType) {
-			if (this.type.hasGenerics() || targetType.hasGenerics()) {
-				return !this.type.equals(targetType);
-			}
-			return this.resolvedType == null
-					|| !this.resolvedType.equals(targetType.resolve());
-		}
-
 		@SuppressWarnings("unchecked")
 		public static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
 			ResolvableType type = bindable.getType();
@@ -214,7 +206,7 @@ class JavaBeanBinder implements BeanBinder {
 				return null;
 			}
 			Bean<?> bean = Bean.cached;
-			if (bean == null || bean.isOfDifferentType(type)) {
+			if (bean == null || !bean.isOfType(type, resolvedType)) {
 				bean = new Bean<>(type, resolvedType);
 				cached = bean;
 			}
@@ -232,6 +224,13 @@ class JavaBeanBinder implements BeanBinder {
 			catch (Exception ex) {
 				return false;
 			}
+		}
+
+		private boolean isOfType(ResolvableType type, Class<?> resolvedType) {
+			if (this.type.hasGenerics() || type.hasGenerics()) {
+				return this.type.equals(type);
+			}
+			return this.resolvedType != null && this.resolvedType.equals(resolvedType);
 		}
 
 	}
