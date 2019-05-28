@@ -27,7 +27,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.KotlinDetector;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
@@ -48,16 +48,17 @@ final class ConfigurationPropertiesBeanDefinitionRegistrar {
 
 	public static void register(BeanDefinitionRegistry registry,
 			ConfigurableListableBeanFactory beanFactory, Class<?> type) {
-		String name = getName(type);
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
+				.from(type, SearchStrategy.EXHAUSTIVE).get(ConfigurationProperties.class);
+		String name = getName(type, annotation);
 		if (!containsBeanDefinition(beanFactory, name)) {
-			registerBeanDefinition(registry, beanFactory, name, type);
+			registerBeanDefinition(registry, beanFactory, name, type, annotation);
 		}
 	}
 
-	private static String getName(Class<?> type) {
-		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
-				ConfigurationProperties.class);
-		String prefix = (annotation != null) ? annotation.prefix() : "";
+	private static String getName(Class<?> type,
+			MergedAnnotation<ConfigurationProperties> annotation) {
+		String prefix = annotation.isPresent() ? annotation.getString("prefix") : "";
 		return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
 				: type.getName());
 	}
@@ -75,18 +76,13 @@ final class ConfigurationPropertiesBeanDefinitionRegistrar {
 	}
 
 	private static void registerBeanDefinition(BeanDefinitionRegistry registry,
-			ConfigurableListableBeanFactory beanFactory, String name, Class<?> type) {
-		assertHasAnnotation(type);
-		registry.registerBeanDefinition(name,
-				createBeanDefinition(beanFactory, name, type));
-	}
-
-	private static void assertHasAnnotation(Class<?> type) {
-		Assert.isTrue(
-				MergedAnnotations.from(type, SearchStrategy.EXHAUSTIVE)
-						.isPresent(ConfigurationProperties.class),
+			ConfigurableListableBeanFactory beanFactory, String name, Class<?> type,
+			MergedAnnotation<ConfigurationProperties> annotation) {
+		Assert.isTrue(annotation.isPresent(),
 				() -> "No " + ConfigurationProperties.class.getSimpleName()
 						+ " annotation found on  '" + type.getName() + "'.");
+		registry.registerBeanDefinition(name,
+				createBeanDefinition(beanFactory, name, type));
 	}
 
 	private static BeanDefinition createBeanDefinition(
