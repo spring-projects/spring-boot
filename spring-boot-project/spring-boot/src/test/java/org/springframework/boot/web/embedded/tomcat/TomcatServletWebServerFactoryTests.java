@@ -526,6 +526,7 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void exceptionThrownOnContextListenerDestroysServer() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0) {
+
 			@Override
 			protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
 				try {
@@ -536,6 +537,7 @@ public class TomcatServletWebServerFactoryTests
 							.isEqualTo(LifecycleState.DESTROYED);
 				}
 			}
+
 		};
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(() -> factory.getWebServer((context) -> context
