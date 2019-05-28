@@ -105,6 +105,13 @@ public class CassandraDataAutoConfigurationTests {
 
 	}
 
+	@Test
+	public void clusterDoesNotExist() {
+		this.context = new AnnotationConfigApplicationContext(
+				CassandraDataAutoConfiguration.class);
+		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
+	}
+
 	public void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
