@@ -106,12 +106,10 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	void clusterDoesNotExist() {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(CassandraDataAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
-		assertThat(ctx.getBeansOfType(Session.class)).isEmpty();
+	public void clusterDoesNotExist() {
+		this.context = new AnnotationConfigApplicationContext(
+				CassandraDataAutoConfiguration.class);
+		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
 	}
 
 	public void load(Class<?>... config) {
