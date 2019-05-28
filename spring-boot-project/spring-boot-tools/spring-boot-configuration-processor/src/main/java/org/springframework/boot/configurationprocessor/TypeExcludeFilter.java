@@ -34,6 +34,7 @@ class TypeExcludeFilter {
 
 	TypeExcludeFilter() {
 		add("com.zaxxer.hikari.IConnectionCustomizer");
+		add("groovy.lang.MetaClass");
 		add("groovy.text.markup.MarkupTemplateEngine");
 		add("java.io.Writer");
 		add("java.io.PrintWriter");
