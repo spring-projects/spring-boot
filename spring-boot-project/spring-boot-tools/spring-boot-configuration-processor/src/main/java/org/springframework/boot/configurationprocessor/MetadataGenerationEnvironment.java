@@ -54,6 +54,7 @@ class MetadataGenerationEnvironment {
 	static {
 		Set<String> excludes = new HashSet<>();
 		excludes.add("com.zaxxer.hikari.IConnectionCustomizer");
+		excludes.add("groovy.lang.MetaClass");
 		excludes.add("groovy.text.markup.MarkupTemplateEngine");
 		excludes.add("java.io.Writer");
 		excludes.add("java.io.PrintWriter");
