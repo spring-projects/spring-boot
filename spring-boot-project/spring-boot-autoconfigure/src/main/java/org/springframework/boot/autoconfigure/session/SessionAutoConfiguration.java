@@ -23,9 +23,7 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -55,7 +53,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
@@ -64,6 +61,7 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -87,6 +85,8 @@ import org.springframework.util.StringUtils;
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
+	private static final String REMEMBER_ME_SERVICES_CLASS = "org.springframework.security.web.authentication.RememberMeServices";
+
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class,
@@ -107,6 +107,11 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer
 					.setCookieMaxAge((int) maxAge.getSeconds()));
+			if (ClassUtils.isPresent(REMEMBER_ME_SERVICES_CLASS,
+					getClass().getClassLoader())) {
+				new RememberMeServicesCookieSerializerCustomizer()
+						.apply(cookieSerializer);
+			}
 			return cookieSerializer;
 		}
 
@@ -115,33 +120,6 @@ public class SessionAutoConfiguration {
 		@Import({ ServletSessionRepositoryImplementationValidator.class,
 				ServletSessionConfigurationImportSelector.class })
 		static class ServletSessionRepositoryConfiguration {
-
-		}
-
-		@Configuration
-		@ConditionalOnClass(RememberMeServices.class)
-		static class RememberMeServicesConfiguration {
-
-			@Bean
-			public BeanPostProcessor rememberMeServicesBeanPostProcessor(
-					ObjectProvider<SpringSessionRememberMeServices> springSessionRememberMeServices) {
-				return new BeanPostProcessor() {
-
-					@Override
-					public Object postProcessBeforeInitialization(Object bean,
-							String beanName) throws BeansException {
-						if (bean instanceof DefaultCookieSerializer) {
-							DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) bean;
-							springSessionRememberMeServices
-									.ifAvailable((rememberMeServices) -> cookieSerializer
-											.setRememberMeRequestAttribute(
-													SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR));
-						}
-						return bean;
-					}
-
-				};
-			}
 
 		}
 
@@ -158,6 +136,19 @@ public class SessionAutoConfiguration {
 				ReactiveSessionConfigurationImportSelector.class })
 		static class ReactiveSessionRepositoryConfiguration {
 
+		}
+
+	}
+
+	/**
+	 * Customization log for {@link SpringSessionRememberMeServices} that is only
+	 * instantiated when Spring Security is on the classpath.
+	 */
+	static class RememberMeServicesCookieSerializerCustomizer {
+
+		public void apply(DefaultCookieSerializer cookieSerializer) {
+			cookieSerializer.setRememberMeRequestAttribute(
+					SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 		}
 
 	}
