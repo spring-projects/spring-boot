@@ -96,8 +96,9 @@ public class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	public void reproducibleOutputWithFixedTime() throws InvalidRunnerConfigurationException,
-			UnexpectedBuildFailure, IOException, InterruptedException {
+	public void reproducibleOutputWithFixedTime()
+			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure,
+			IOException, InterruptedException {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(),
@@ -105,8 +106,8 @@ public class BuildInfoIntegrationTests {
 		String firstHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(buildInfoProperties.delete()).isTrue();
 		Thread.sleep(1500);
-		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime")
-				.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String secondHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(firstHash).isEqualTo(secondHash);
 	}
