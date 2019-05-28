@@ -32,8 +32,11 @@ import kotlin.reflect.jvm.ReflectJvmMapping;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.KotlinDetector;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 
 /**
  * {@link BeanBinder} for constructor based binding.
@@ -164,9 +167,12 @@ class ConstructorParametersBinder implements BeanBinder {
 	}
 
 	/**
-	 * A simple bean provider that uses `-parameters` to extract the parameter names.
+	 * A simple bean provider that uses {@link DefaultParameterNameDiscoverer} to extract
+	 * the parameter names.
 	 */
 	private static class SimpleBeanProvider {
+
+		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
 		public static Bean get(Class<?> type) {
 			Constructor<?>[] constructors = type.getDeclaredConstructors();
@@ -182,19 +188,25 @@ class ConstructorParametersBinder implements BeanBinder {
 
 		private static Map<String, ConstructorParameter> parseParameters(
 				Constructor<?> constructor) {
-			Map<String, ConstructorParameter> parameters = new LinkedHashMap<>();
-			for (Parameter parameter : constructor.getParameters()) {
-				String name = parameter.getName();
+			String[] parameterNames = PARAMETER_NAME_DISCOVERER
+					.getParameterNames(constructor);
+			Assert.state(parameterNames != null,
+					() -> "Failed to extract parameter names for " + constructor);
+			Map<String, ConstructorParameter> parametersByName = new LinkedHashMap<>();
+			Parameter[] parameters = constructor.getParameters();
+			for (int i = 0; i < parameterNames.length; i++) {
+				String name = parameterNames[i];
+				Parameter parameter = parameters[i];
 				DefaultValue[] annotationsByType = parameter
 						.getAnnotationsByType(DefaultValue.class);
 				String[] defaultValue = (annotationsByType.length > 0)
 						? annotationsByType[0].value() : null;
-				parameters.computeIfAbsent(name,
+				parametersByName.computeIfAbsent(name,
 						(key) -> new ConstructorParameter(name,
 								ResolvableType.forClass(parameter.getType()),
 								parameter.getDeclaredAnnotations(), defaultValue));
 			}
-			return parameters;
+			return parametersByName;
 		}
 
 	}
