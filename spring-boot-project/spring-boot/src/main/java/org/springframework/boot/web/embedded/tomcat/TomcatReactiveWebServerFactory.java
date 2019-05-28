@@ -36,6 +36,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
+import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
 import org.springframework.boot.util.LambdaSafe;
@@ -82,6 +83,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private int backgroundProcessorDelay;
 
+	private boolean disableMBeanRegistry = true;
+
 	/**
 	 * Create a new {@link TomcatServletWebServerFactory} instance.
 	 */
@@ -106,6 +109,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
+		if (this.disableMBeanRegistry) {
+			Registry.disableRegistry();
+		}
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
 				: createTempDir("tomcat");
@@ -411,6 +417,16 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	public void setProtocol(String protocol) {
 		Assert.hasLength(protocol, "Protocol must not be empty");
 		this.protocol = protocol;
+	}
+
+	/**
+	 * Set whether the factory should disable Tomcat's MBean registry prior to creating
+	 * the server.
+	 * @param disableMBeanRegistry whether to disable the MBean registry
+	 * @since 2.2.0
+	 */
+	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
+		this.disableMBeanRegistry = disableMBeanRegistry;
 	}
 
 }

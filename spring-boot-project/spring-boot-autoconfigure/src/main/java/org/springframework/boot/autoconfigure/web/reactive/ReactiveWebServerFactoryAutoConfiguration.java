@@ -65,6 +65,14 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties);
 	}
 
+
+	@Bean
+	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
+	public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
+			ServerProperties serverProperties) {
+		return new TomcatReactiveWebServerFactoryCustomizer(serverProperties);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(value = "server.forward-headers-strategy",

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.apache.tomcat.util.modeler.Registry;
-
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -40,9 +38,8 @@ public class TomcatReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		if (!this.serverProperties.getTomcat().getMbeanregistry().isEnabled()) {
-			Registry.disableRegistry();
-		}
+		factory.setDisableMBeanRegistry(
+				!this.serverProperties.getTomcat().getMbeanregistry().isEnabled());
 	}
 
 }
