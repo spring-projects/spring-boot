@@ -45,6 +45,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -77,17 +78,21 @@ public class OAuth2AuthorizationServerConfiguration
 
 	private final AccessTokenConverter tokenConverter;
 
+	private final OAuth2RequestValidator requestValidator;
+
 	private final AuthorizationServerProperties properties;
 
 	public OAuth2AuthorizationServerConfiguration(BaseClientDetails details,
 			AuthenticationManager authenticationManager,
 			ObjectProvider<TokenStore> tokenStore,
 			ObjectProvider<AccessTokenConverter> tokenConverter,
+			ObjectProvider<OAuth2RequestValidator> requestValidator,
 			AuthorizationServerProperties properties) {
 		this.details = details;
 		this.authenticationManager = authenticationManager;
 		this.tokenStore = tokenStore.getIfAvailable();
 		this.tokenConverter = tokenConverter.getIfAvailable();
+		this.requestValidator = requestValidator.getIfAvailable();
 		this.properties = properties;
 	}
 
@@ -133,6 +138,9 @@ public class OAuth2AuthorizationServerConfiguration
 		}
 		if (this.details.getAuthorizedGrantTypes().contains("password")) {
 			endpoints.authenticationManager(this.authenticationManager);
+		}
+		if (this.requestValidator != null) {
+			endpoints.requestValidator(this.requestValidator);
 		}
 	}
 

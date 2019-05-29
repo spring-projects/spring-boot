@@ -82,6 +82,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.approval.ApprovalStoreUserApprovalHandler;
 import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
@@ -318,6 +319,21 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
 		verifyAuthentication(config);
+	}
+
+	@Test
+	public void testRequestValidatorOverride() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(RequestValidatorConfiguration.class,
+				AuthorizationServerConfiguration.class,
+				MinimalSecureWebApplication.class);
+		this.context.refresh();
+		AuthorizationEndpoint endpoint = this.context
+				.getBean(AuthorizationEndpoint.class);
+		OAuth2RequestValidator requestValidator = (OAuth2RequestValidator) ReflectionTestUtils
+				.getField(endpoint, "oauth2RequestValidator");
+		assertThat(requestValidator)
+				.isSameAs(this.context.getBean(OAuth2RequestValidator.class));
 	}
 
 	@Test
@@ -675,6 +691,16 @@ public class OAuth2AutoConfigurationTests {
 		@Bean
 		public PermissionEvaluator permissionEvaluator() {
 			return mock(PermissionEvaluator.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class RequestValidatorConfiguration {
+
+		@Bean
+		public OAuth2RequestValidator requestValidator() {
+			return mock(OAuth2RequestValidator.class);
 		}
 
 	}
