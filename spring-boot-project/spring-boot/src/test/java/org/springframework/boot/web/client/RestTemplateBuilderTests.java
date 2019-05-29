@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.client;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
@@ -35,7 +36,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -324,12 +324,13 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void basicAuthenticationShouldApply() {
-		RestTemplate template = this.builder.basicAuthentication("spring", "boot")
+		BasicAuthentication basicAuthentication = new BasicAuthentication("spring",
+				"boot", StandardCharsets.UTF_8);
+		RestTemplate template = this.builder.basicAuthentication(basicAuthentication)
 				.build();
-		ClientHttpRequestInterceptor interceptor = template.getInterceptors().get(0);
-		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
-		assertThat(interceptor).extracting("username").containsExactly("spring");
-		assertThat(interceptor).extracting("password").containsExactly("boot");
+		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("authentication",
+				basicAuthentication);
 	}
 
 	@Test
@@ -406,19 +407,19 @@ public class RestTemplateBuilderTests {
 				.messageConverters(this.messageConverter).rootUri("http://localhost:8080")
 				.errorHandler(errorHandler).basicAuthentication("spring", "boot")
 				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
-					assertThat(restTemplate.getInterceptors()).hasSize(2)
-							.contains(this.interceptor).anyMatch(
-									(ic) -> ic instanceof BasicAuthenticationInterceptor);
+					assertThat(restTemplate.getInterceptors()).hasSize(1);
 					assertThat(restTemplate.getMessageConverters())
 							.contains(this.messageConverter);
 					assertThat(restTemplate.getUriTemplateHandler())
 							.isInstanceOf(RootUriTemplateHandler.class);
 					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
-					ClientHttpRequestFactory actualRequestFactory = restTemplate
+					ClientHttpRequestFactory interceptingRequestFactory = restTemplate
 							.getRequestFactory();
-					assertThat(actualRequestFactory)
+					assertThat(interceptingRequestFactory)
 							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-					assertThat(actualRequestFactory).hasFieldOrPropertyWithValue(
+					Object basicAuthRequestFactory = ReflectionTestUtils
+							.getField(interceptingRequestFactory, "requestFactory");
+					assertThat(basicAuthRequestFactory).hasFieldOrPropertyWithValue(
 							"requestFactory", requestFactory);
 				}).build();
 	}

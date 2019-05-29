@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
-import java.util.List;
 
 import org.apache.http.client.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.web.client.BasicAuthenticationClientHttpRequestFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -35,12 +35,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
@@ -150,7 +147,7 @@ public class TestRestTemplateTests {
 	public void authenticated() {
 		assertThat(new TestRestTemplate("user", "password").getRestTemplate()
 				.getRequestFactory())
-						.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+						.isInstanceOf(BasicAuthenticationClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -227,7 +224,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthAddsBasicAuthInterceptorWhenNotAlreadyPresent() {
+	public void withBasicAuthAddsBasicAuthClientFactoryWhenNotAlreadyPresent() {
 		TestRestTemplate originalTemplate = new TestRestTemplate();
 		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user",
 				"password");
@@ -235,20 +232,19 @@ public class TestRestTemplateTests {
 				.containsExactlyElementsOf(
 						originalTemplate.getRestTemplate().getMessageConverters());
 		assertThat(basicAuthTemplate.getRestTemplate().getRequestFactory())
-				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+				.isInstanceOf(BasicAuthenticationClientHttpRequestFactory.class);
 		assertThat(ReflectionTestUtils.getField(
 				basicAuthTemplate.getRestTemplate().getRequestFactory(),
 				"requestFactory"))
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuthTemplate.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(originalTemplate.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors()).hasSize(1);
-		assertBasicAuthorizationInterceptorCredentials(basicAuthTemplate, "user",
-				"password");
+		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors()).isEmpty();
+		assertBasicAuthorizationCredentials(basicAuthTemplate, "user", "password");
 	}
 
 	@Test
-	public void withBasicAuthReplacesBasicAuthInterceptorWhenAlreadyPresent() {
+	public void withBasicAuthReplacesBasicAuthClientFactoryWhenAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate("foo", "bar")
 				.withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
@@ -256,14 +252,14 @@ public class TestRestTemplateTests {
 				.containsExactlyElementsOf(
 						original.getRestTemplate().getMessageConverters());
 		assertThat(basicAuth.getRestTemplate().getRequestFactory())
-				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+				.isInstanceOf(BasicAuthenticationClientHttpRequestFactory.class);
 		assertThat(ReflectionTestUtils.getField(
 				basicAuth.getRestTemplate().getRequestFactory(), "requestFactory"))
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuth.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(original.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuth.getRestTemplate().getInterceptors()).hasSize(1);
-		assertBasicAuthorizationInterceptorCredentials(basicAuth, "user", "password");
+		assertThat(basicAuth.getRestTemplate().getInterceptors()).isEmpty();
+		assertBasicAuthorizationCredentials(basicAuth, "user", "password");
 	}
 
 	@Test
@@ -394,17 +390,14 @@ public class TestRestTemplateTests {
 		verify(requestFactory).createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}
 
-	private void assertBasicAuthorizationInterceptorCredentials(
-			TestRestTemplate testRestTemplate, String username, String password) {
-		@SuppressWarnings("unchecked")
-		List<ClientHttpRequestInterceptor> requestFactoryInterceptors = (List<ClientHttpRequestInterceptor>) ReflectionTestUtils
-				.getField(testRestTemplate.getRestTemplate().getRequestFactory(),
-						"interceptors");
-		assertThat(requestFactoryInterceptors).hasSize(1);
-		ClientHttpRequestInterceptor interceptor = requestFactoryInterceptors.get(0);
-		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
-		assertThat(interceptor).hasFieldOrPropertyWithValue("username", username);
-		assertThat(interceptor).hasFieldOrPropertyWithValue("password", password);
+	private void assertBasicAuthorizationCredentials(TestRestTemplate testRestTemplate,
+			String username, String password) {
+		ClientHttpRequestFactory requestFactory = testRestTemplate.getRestTemplate()
+				.getRequestFactory();
+		Object authentication = ReflectionTestUtils.getField(requestFactory,
+				"authentication");
+		assertThat(authentication).hasFieldOrPropertyWithValue("username", username);
+		assertThat(authentication).hasFieldOrPropertyWithValue("password", password);
 
 	}
 
