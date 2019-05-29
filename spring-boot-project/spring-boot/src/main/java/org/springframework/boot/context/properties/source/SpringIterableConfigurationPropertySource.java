@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,8 +44,6 @@ import org.springframework.util.ObjectUtils;
  */
 class SpringIterableConfigurationPropertySource extends SpringConfigurationPropertySource
 		implements IterableConfigurationPropertySource {
-
-	private volatile Object cacheKey;
 
 	private volatile Cache cache;
 
@@ -131,13 +130,23 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private Cache getCache() {
-		CacheKey cacheKey = CacheKey.get(getPropertySource());
-		if (ObjectUtils.nullSafeEquals(cacheKey, this.cacheKey)) {
-			return this.cache;
+		CacheKey key = CacheKey.get(getPropertySource());
+		if (key == null) {
+			return null;
 		}
-		this.cache = new Cache();
-		this.cacheKey = cacheKey.copy();
-		return this.cache;
+		Cache cache = this.cache;
+		try {
+			if (cache != null && cache.hasKeyEqualTo(key)) {
+				return cache;
+			}
+			cache = new Cache(key.copy());
+			this.cache = cache;
+			return cache;
+		}
+		catch (ConcurrentModificationException ex) {
+			// Not fatal at this point, we can continue without a cache
+			return null;
+		}
 	}
 
 	@Override
@@ -147,9 +156,19 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private static class Cache {
 
+		private final CacheKey key;
+
 		private List<ConfigurationPropertyName> names;
 
 		private PropertyMapping[] mappings;
+
+		Cache(CacheKey key) {
+			this.key = key;
+		}
+
+		public boolean hasKeyEqualTo(CacheKey key) {
+			return this.key.equals(key);
+		}
 
 		public List<ConfigurationPropertyName> getNames() {
 			return this.names;
