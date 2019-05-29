@@ -133,9 +133,9 @@ class JavaBeanBinder implements BeanBinder {
 			}
 			for (Method method : declaredMethods) {
 				addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
+				addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
 			}
 			for (Method method : declaredMethods) {
-				addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
 				addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
 			}
 			for (Field field : declaredFields) {
