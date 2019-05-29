@@ -16,8 +16,12 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -169,6 +173,21 @@ public class SpringIterableConfigurationPropertySourceTests {
 		assertThat(adapter.stream().count()).isEqualTo(3);
 	}
 
+	@Test
+	public void concurrentModificationExceptionInvalidatesCache() {
+		// gh-17013
+		ConcurrentModificationThrowingMap<String, Object> map = new ConcurrentModificationThrowingMap<>();
+		map.put("key1", "value1");
+		map.put("key2", "value2");
+		EnumerablePropertySource<?> source = new MapPropertySource("test", map);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				source, DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.stream().count()).isEqualTo(2);
+		map.setThrowException(true);
+		map.put("key3", "value3");
+		assertThat(adapter.stream().count()).isEqualTo(3);
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 */
@@ -202,6 +221,39 @@ public class SpringIterableConfigurationPropertySourceTests {
 				}
 
 			};
+		}
+
+	}
+
+	private static class ConcurrentModificationThrowingMap<K, V>
+			extends LinkedHashMap<K, V> {
+
+		private boolean throwException;
+
+		public void setThrowException(boolean throwException) {
+			this.throwException = throwException;
+		}
+
+		@Override
+		public Set<K> keySet() {
+			return new KeySet(super.keySet());
+		}
+
+		private class KeySet extends LinkedHashSet<K> {
+
+			KeySet(Set<K> keySet) {
+				super(keySet);
+			}
+
+			@Override
+			public Iterator<K> iterator() {
+				if (ConcurrentModificationThrowingMap.this.throwException) {
+					ConcurrentModificationThrowingMap.this.throwException = false;
+					throw new ConcurrentModificationException();
+				}
+				return super.iterator();
+			}
+
 		}
 
 	}
