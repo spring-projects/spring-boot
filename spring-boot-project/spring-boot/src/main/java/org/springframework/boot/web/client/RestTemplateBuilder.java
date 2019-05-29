@@ -33,7 +33,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -58,6 +58,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Dmytro Nosan
  * @since 1.4.0
  */
 public class RestTemplateBuilder {
@@ -74,7 +75,7 @@ public class RestTemplateBuilder {
 
 	private final ResponseErrorHandler errorHandler;
 
-	private final BasicAuthenticationInterceptor basicAuthentication;
+	private final BasicAuthentication basicAuthentication;
 
 	private final Set<RestTemplateCustomizer> restTemplateCustomizers;
 
@@ -106,7 +107,7 @@ public class RestTemplateBuilder {
 			Set<HttpMessageConverter<?>> messageConverters,
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier,
 			UriTemplateHandler uriTemplateHandler, ResponseErrorHandler errorHandler,
-			BasicAuthenticationInterceptor basicAuthentication,
+			BasicAuthentication basicAuthentication,
 			Set<RestTemplateCustomizer> restTemplateCustomizers,
 			RequestFactoryCustomizer requestFactoryCustomizer,
 			Set<ClientHttpRequestInterceptor> interceptors) {
@@ -372,17 +373,28 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Add HTTP basic authentication to requests. See
-	 * {@link BasicAuthenticationInterceptor} for details.
+	 * {@link BasicAuthenticationClientHttpRequestFactory} for details.
 	 * @param username the user name
 	 * @param password the password
 	 * @return a new builder instance
 	 * @since 2.1.0
 	 */
 	public RestTemplateBuilder basicAuthentication(String username, String password) {
+		return basicAuthentication(new BasicAuthentication(username, password));
+	}
+
+	/**
+	 * Add HTTP basic authentication to requests. See
+	 * {@link BasicAuthenticationClientHttpRequestFactory} for details.
+	 * @param basicAuthentication the authentication
+	 * @return a new builder instance
+	 * @since 2.2.0
+	 */
+	public RestTemplateBuilder basicAuthentication(
+			BasicAuthentication basicAuthentication) {
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.requestFactorySupplier,
-				this.uriTemplateHandler, this.errorHandler,
-				new BasicAuthenticationInterceptor(username, password),
+				this.uriTemplateHandler, this.errorHandler, basicAuthentication,
 				this.restTemplateCustomizers, this.requestFactoryCustomizer,
 				this.interceptors);
 	}
@@ -534,7 +546,7 @@ public class RestTemplateBuilder {
 			RootUriTemplateHandler.addTo(restTemplate, this.rootUri);
 		}
 		if (this.basicAuthentication != null) {
-			restTemplate.getInterceptors().add(this.basicAuthentication);
+			configureBasicAuthentication(restTemplate);
 		}
 		restTemplate.getInterceptors().addAll(this.interceptors);
 		if (!CollectionUtils.isEmpty(this.restTemplateCustomizers)) {
@@ -559,6 +571,25 @@ public class RestTemplateBuilder {
 			}
 			restTemplate.setRequestFactory(requestFactory);
 		}
+	}
+
+	private void configureBasicAuthentication(RestTemplate restTemplate) {
+		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
+		while (requestFactory instanceof InterceptingClientHttpRequestFactory
+				|| requestFactory instanceof BasicAuthenticationClientHttpRequestFactory) {
+			requestFactory = unwrapRequestFactory(
+					((AbstractClientHttpRequestFactoryWrapper) requestFactory));
+		}
+		restTemplate.setRequestFactory(new BasicAuthenticationClientHttpRequestFactory(
+				this.basicAuthentication, requestFactory));
+	}
+
+	private static ClientHttpRequestFactory unwrapRequestFactory(
+			AbstractClientHttpRequestFactoryWrapper requestFactory) {
+		Field field = ReflectionUtils.findField(
+				AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
+		ReflectionUtils.makeAccessible(field);
+		return (ClientHttpRequestFactory) ReflectionUtils.getField(field, requestFactory);
 	}
 
 	private <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
@@ -607,18 +638,11 @@ public class RestTemplateBuilder {
 
 		private ClientHttpRequestFactory unwrapRequestFactoryIfNecessary(
 				ClientHttpRequestFactory requestFactory) {
-			if (!(requestFactory instanceof AbstractClientHttpRequestFactoryWrapper)) {
-				return requestFactory;
-			}
 			ClientHttpRequestFactory unwrappedRequestFactory = requestFactory;
-			Field field = ReflectionUtils.findField(
-					AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
-			ReflectionUtils.makeAccessible(field);
-			do {
-				unwrappedRequestFactory = (ClientHttpRequestFactory) ReflectionUtils
-						.getField(field, unwrappedRequestFactory);
+			while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper) {
+				unwrappedRequestFactory = unwrapRequestFactory(
+						((AbstractClientHttpRequestFactoryWrapper) unwrappedRequestFactory));
 			}
-			while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper);
 			return unwrappedRequestFactory;
 		}
 

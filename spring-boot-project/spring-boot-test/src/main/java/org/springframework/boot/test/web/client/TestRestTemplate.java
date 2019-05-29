@@ -19,11 +19,8 @@ package org.springframework.boot.test.web.client;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -41,6 +38,8 @@ import org.apache.http.ssl.SSLContextBuilder;
 
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.web.client.BasicAuthentication;
+import org.springframework.boot.web.client.BasicAuthenticationClientHttpRequestFactory;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
@@ -50,12 +49,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -86,6 +84,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kristine Jetzke
+ * @author Dmytro Nosan
  * @since 1.4.0
  */
 public class TestRestTemplate {
@@ -154,31 +153,35 @@ public class TestRestTemplate {
 
 	private Class<? extends ClientHttpRequestFactory> getRequestFactoryClass(
 			RestTemplate restTemplate) {
+		return getRequestFactory(restTemplate).getClass();
+	}
+
+	private ClientHttpRequestFactory getRequestFactory(RestTemplate restTemplate) {
 		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
-		if (InterceptingClientHttpRequestFactory.class
-				.isAssignableFrom(requestFactory.getClass())) {
-			Field requestFactoryField = ReflectionUtils.findField(RestTemplate.class,
-					"requestFactory");
-			ReflectionUtils.makeAccessible(requestFactoryField);
-			requestFactory = (ClientHttpRequestFactory) ReflectionUtils
-					.getField(requestFactoryField, restTemplate);
+		while (requestFactory instanceof InterceptingClientHttpRequestFactory
+				|| requestFactory instanceof BasicAuthenticationClientHttpRequestFactory) {
+			requestFactory = unwrapRequestFactory(
+					((AbstractClientHttpRequestFactoryWrapper) requestFactory));
 		}
-		return requestFactory.getClass();
+		return requestFactory;
+	}
+
+	private ClientHttpRequestFactory unwrapRequestFactory(
+			AbstractClientHttpRequestFactoryWrapper requestFactory) {
+		Field field = ReflectionUtils.findField(
+				AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
+		ReflectionUtils.makeAccessible(field);
+		return (ClientHttpRequestFactory) ReflectionUtils.getField(field, requestFactory);
 	}
 
 	private void addAuthentication(RestTemplate restTemplate, String username,
 			String password) {
-		if (username == null) {
+		if (username == null || password == null) {
 			return;
 		}
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (interceptors == null) {
-			interceptors = Collections.emptyList();
-		}
-		interceptors = new ArrayList<>(interceptors);
-		interceptors.removeIf(BasicAuthenticationInterceptor.class::isInstance);
-		interceptors.add(new BasicAuthenticationInterceptor(username, password));
-		restTemplate.setInterceptors(interceptors);
+		ClientHttpRequestFactory requestFactory = getRequestFactory(restTemplate);
+		restTemplate.setRequestFactory(new BasicAuthenticationClientHttpRequestFactory(
+				new BasicAuthentication(username, password), requestFactory));
 	}
 
 	/**
