@@ -30,11 +30,8 @@ import org.springframework.util.Assert;
  * @author Marcel Overdijk
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = LiquibaseProperties.PROPERTIES_PREFIX,
-		ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
 public class LiquibaseProperties {
-
-	public static final String PROPERTIES_PREFIX = "spring.liquibase";
 
 	/**
 	 * Change log configuration path.
@@ -217,10 +214,6 @@ public class LiquibaseProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public boolean isCreateDataSource() {
-		return this.url != null || this.user != null;
 	}
 
 	public String getUrl() {

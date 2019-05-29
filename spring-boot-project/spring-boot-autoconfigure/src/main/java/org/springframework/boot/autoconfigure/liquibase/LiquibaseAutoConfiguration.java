@@ -28,6 +28,7 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,10 +38,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcOperationsDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
@@ -65,8 +68,9 @@ import org.springframework.util.Assert;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
-@ConditionalOnProperty(prefix = LiquibaseProperties.PROPERTIES_PREFIX, name = "enabled",
+@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled",
 		matchIfMissing = true)
+@Conditional(LiquibaseDataSourceCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
@@ -140,12 +144,9 @@ public class LiquibaseAutoConfiguration {
 				liquibase.setDataSource(liquibaseDataSource);
 				return liquibase;
 			}
-			else if (this.properties.isCreateDataSource()) {
-				SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
-				liquibase.setDataSource(createNewDataSource(dataSourceProperties));
-				return liquibase;
-			}
-			throw new LiquibaseDataSourceMissingException();
+			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
+			liquibase.setDataSource(createNewDataSource(dataSourceProperties));
+			return liquibase;
 		}
 
 		private DataSource getDataSource(DataSource liquibaseDataSource,
@@ -153,7 +154,7 @@ public class LiquibaseAutoConfiguration {
 			if (liquibaseDataSource != null) {
 				return liquibaseDataSource;
 			}
-			if (!this.properties.isCreateDataSource()) {
+			if (this.properties.getUrl() == null && this.properties.getUser() == null) {
 				return dataSource;
 			}
 			return null;
@@ -223,6 +224,25 @@ public class LiquibaseAutoConfiguration {
 
 		public LiquibaseNamedParameterJdbcOperationsDependencyConfiguration() {
 			super("liquibase");
+		}
+
+	}
+
+	static final class LiquibaseDataSourceCondition extends AnyNestedCondition {
+
+		LiquibaseDataSourceCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(DataSource.class)
+		private static final class DataSourceBeanCondition {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.liquibase", name = "url",
+				matchIfMissing = false)
+		private static final class LiquibaseUrlCondition {
+
 		}
 
 	}

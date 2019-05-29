@@ -79,19 +79,13 @@ public class FlywayAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void noDataSource() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
-			assertThat(context).getFailure()
-					.hasRootCauseInstanceOf(FlywayDataSourceMissingException.class);
-			assertThat(context).getFailure()
-					.hasMessageContaining("Flyway is present in classpath and enabled");
-		});
+	public void backsOffWithNoDataSourceBeanAndNoFlywayUrl() {
+		this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
 	}
 
 	@Test
-	public void noDataSourceCreateOneWithUrl() {
+	public void createsDataSourceWithNoDataSourceBeanAndFlywayUrl() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())

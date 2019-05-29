@@ -35,10 +35,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = FlywayProperties.PROPERTIES_PREFIX)
+@ConfigurationProperties(prefix = "spring.flyway")
 public class FlywayProperties {
-
-	public static final String PROPERTIES_PREFIX = "spring.flyway";
 
 	/**
 	 * Whether to enable flyway.

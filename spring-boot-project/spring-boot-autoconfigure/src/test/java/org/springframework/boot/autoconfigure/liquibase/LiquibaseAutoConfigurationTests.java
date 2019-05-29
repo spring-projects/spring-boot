@@ -78,19 +78,13 @@ public class LiquibaseAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void noDataSource() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
-			assertThat(context).getFailure()
-					.hasRootCauseInstanceOf(LiquibaseDataSourceMissingException.class);
-			assertThat(context).getFailure().hasMessageContaining(
-					"Liquibase is present in classpath and enabled");
-		});
+	public void backsOffWithNoDataSourceBeanAndNoLiquibaseUrl() {
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
 	}
 
 	@Test
-	public void noDataSourceCreateOneWithUrl() {
+	public void createsDataSourceWithNoDataSourceBeanAndLiquibaseUrl() {
 		this.contextRunner
 				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
 				.run(assertLiquibase((liquibase) -> {
