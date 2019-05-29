@@ -511,6 +511,7 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getBooleans().get("b").getValue()).isEqualTo(true);
 	}
 
+	@Test
 	public void bindToClassWithOverloadedSetterShouldUseSetterThatMatchesField() {
 		// gh-16206
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -522,9 +523,8 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void beanProperiesPreferMatchingType() {
+	public void beanPropertiesPreferMatchingType() {
 		// gh-16206
-
 		ResolvableType type = ResolvableType.forClass(PropertyWithOverloadedSetter.class);
 		Bean<PropertyWithOverloadedSetter> bean = new Bean<PropertyWithOverloadedSetter>(
 				type, type.resolve()) {
