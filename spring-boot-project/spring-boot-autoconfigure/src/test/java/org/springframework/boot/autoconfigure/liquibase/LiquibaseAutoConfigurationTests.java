@@ -78,9 +78,21 @@ public class LiquibaseAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void noDataSource() {
+	public void backsOffWithNoDataSourceBeanAndNoLiquibaseUrl() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
+	}
+
+	@Test
+	public void createsDataSourceWithNoDataSourceBeanAndLiquibaseUrl() {
+		this.contextRunner
+				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
+							.isEqualTo("jdbc:hsqldb:mem:liquibase");
+				}));
 	}
 
 	@Test
