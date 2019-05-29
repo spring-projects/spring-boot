@@ -19,6 +19,13 @@
 				value="${main.basedir}/src/checkstyle/import-control.xml" />
 			<property name="path" value="^.*[\\/]src[\\/]main[\\/].*$" />
 		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0"/>
+			<property name="format" value="org\.junit\.Assert\.assert" />
+			<property name="message"
+				value="Please use AssertJ imports." />
+			<property name="ignoreComments" value="true" />
+		</module>
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
 			<property name="maximum" value="0" />
