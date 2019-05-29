@@ -101,6 +101,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
 	}
 
+	@Test
 	public void customMaxHttpHeaderSizeIgnoredIfZero() {
 		bind("server.max-http-header-size=0");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
