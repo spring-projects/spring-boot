@@ -135,6 +135,19 @@ public final class TestPropertyValues {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TestPropertyValues values = (TestPropertyValues) o;
+		return Objects.equals(properties, values.properties);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(properties);
+	}
+
 	@SuppressWarnings("unchecked")
 	private <E extends Throwable> void rethrow(Throwable e) throws E {
 		throw (E) e;
