@@ -48,6 +48,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
@@ -470,6 +472,17 @@ public class FlywayAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void customFlywayClassLoader() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				ResourceLoaderConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getConfiguration().getClassLoader())
+							.isInstanceOf(CustomClassLoader.class);
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class FlywayDataSourceConfiguration {
 
@@ -485,6 +498,18 @@ public class FlywayAutoConfigurationTests {
 		public DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest")
 					.username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class ResourceLoaderConfiguration {
+
+		@Bean
+		@Primary
+		public ResourceLoader customClassLoader() {
+			return new DefaultResourceLoader(
+					new CustomClassLoader(getClass().getClassLoader()));
 		}
 
 	}
@@ -600,6 +625,14 @@ public class FlywayAutoConfigurationTests {
 		public FlywayConfigurationCustomizer customizerTwo() {
 			return (configuration) -> configuration.connectRetries(10)
 					.ignoreMissingMigrations(true);
+		}
+
+	}
+
+	private static final class CustomClassLoader extends ClassLoader {
+
+		private CustomClassLoader(ClassLoader parent) {
+			super(parent);
 		}
 
 	}
