@@ -113,7 +113,8 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<Callback> callbacks,
 				ObjectProvider<FlywayCallback> flywayCallbacks) {
-			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
+			FluentConfiguration configuration = new FluentConfiguration(
+					resourceLoader.getClassLoader());
 			DataSource dataSourceToMigrate = configureDataSource(configuration,
 					properties, dataSourceProperties, flywayDataSource.getIfAvailable(),
 					dataSource.getIfAvailable());

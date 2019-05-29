@@ -36,7 +36,6 @@ import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import org.mockito.internal.util.MockUtil;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -56,7 +55,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -478,10 +476,11 @@ public class FlywayAutoConfigurationTests {
 	public void customFlywayClassLoader() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				ResourceLoaderConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(Flyway.class);
-			Flyway flyway = context.getBean(Flyway.class);
-			assertTrue(MockUtil.isMock(flyway.getConfiguration().getClassLoader()));
-		});
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getConfiguration().getClassLoader())
+							.isInstanceOf(CustomClassLoader.class);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -509,7 +508,8 @@ public class FlywayAutoConfigurationTests {
 		@Bean
 		@Primary
 		public ResourceLoader customClassLoader() {
-			return new DefaultResourceLoader(mock(ClassLoader.class));
+			return new DefaultResourceLoader(
+					new CustomClassLoader(getClass().getClassLoader()));
 		}
 
 	}
@@ -625,6 +625,14 @@ public class FlywayAutoConfigurationTests {
 		public FlywayConfigurationCustomizer customizerTwo() {
 			return (configuration) -> configuration.connectRetries(10)
 					.ignoreMissingMigrations(true);
+		}
+
+	}
+
+	private static final class CustomClassLoader extends ClassLoader {
+
+		private CustomClassLoader(ClassLoader parent) {
+			super(parent);
 		}
 
 	}
