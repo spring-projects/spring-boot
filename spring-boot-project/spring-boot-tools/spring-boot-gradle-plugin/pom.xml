@@ -15,7 +15,6 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<gradle.executable>./gradlew</gradle.executable>
 		<gradle.task>build</gradle.task>
-		<skip.gradle.build>false</skip.gradle.build>
 		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<dependencies>
@@ -142,7 +141,6 @@
 								<argument>-Pdescription=${project.description}</argument>
 								<argument>-S</argument>
 							</arguments>
-							<skip>${skip.gradle.build}</skip>
 						</configuration>
 						<goals>
 							<goal>exec</goal>
@@ -177,7 +175,6 @@
 									<classifier>sources</classifier>
 								</artifact>
 							</artifacts>
-							<skipAttach>${skip.gradle.build}</skipAttach>
 						</configuration>
 					</execution>
 				</executions>
@@ -250,9 +247,6 @@
 								<version>3.2.10</version>
 							</dependency>
 						</dependencies>
-						<configuration>
-							<skip>${skip.gradle.build}</skip>
-						</configuration>
 						<executions>
 							<execution>
 								<id>set-up-maven-properties</id>
@@ -391,22 +385,12 @@
 											<classifier>docs</classifier>
 										</artifact>
 									</artifacts>
-									<skipAttach>${skip.gradle.build}</skipAttach>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>java9</id>
-			<activation>
-				<jdk>[9,)</jdk>
-			</activation>
-			<properties>
-				<skip.gradle.build>true</skip.gradle.build>
-			</properties>
 		</profile>
 	</profiles>
 </project>
