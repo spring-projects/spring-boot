@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 
@@ -28,13 +30,18 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisFlushMode;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Redis specific tests for {@link SessionAutoConfiguration}.
@@ -81,6 +88,34 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 				.run(validateSpringSessionUsesRedis("foo:event:0:created:", RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
 	}
 
+	@Test
+	void redisSessionConfigureNoStrategy() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=redis",
+						"spring.session.redis.configuration-strategy=no_op",
+						"spring.redis.port=" + redis.getFirstMappedPort())
+				.run(validateStrategy(ConfigureRedisAction.NO_OP.getClass()));
+	}
+
+	@Test
+	void redisSessionConfigureDefaultStrategy() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=redis",
+						"spring.redis.port=" + redis.getFirstMappedPort())
+				.run(validateStrategy(ConfigureNotifyKeyspaceEventsAction.class,
+						entry("notify-keyspace-events", "gxE")));
+	}
+
+	@Test
+	void redisSessionConfigureCustomStrategy() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.withUserConfiguration(MaxEntriesRedisAction.class)
+				.withPropertyValues("spring.session.store-type=redis",
+						"spring.redis.port=" + redis.getFirstMappedPort())
+				.run(validateStrategy(MaxEntriesRedisAction.class, entry("set-max-intset-entries", "1024")));
+
+	}
+
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
 			String sessionCreatedChannelPrefix, RedisFlushMode flushMode, String cleanupCron) {
 		return (context) -> {
@@ -92,6 +127,27 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 					.getBean(SpringBootRedisHttpSessionConfiguration.class);
 			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
 		};
+	}
+
+	private ContextConsumer<AssertableWebApplicationContext> validateStrategy(
+			Class<? extends ConfigureRedisAction> actionClass, Map.Entry... values) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(ConfigureRedisAction.class).hasSingleBean(RedisConnectionFactory.class);
+			assertThat(context.getBean(ConfigureRedisAction.class)).isInstanceOf(actionClass);
+			RedisConnection connection = context.getBean(RedisConnectionFactory.class).getConnection();
+			if (values.length > 0) {
+				assertThat(connection.getConfig("*")).contains(values);
+			}
+		};
+	}
+
+	static class MaxEntriesRedisAction implements ConfigureRedisAction {
+
+		@Override
+		public void configure(RedisConnection connection) {
+			connection.setConfig("set-max-intset-entries", "1024");
+		}
+
 	}
 
 }
