@@ -7,12 +7,19 @@ import org.springframework.boot.test.util.TestPropertyValues;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+/**
+ * Integration test for {@link DynamicTestProperty}
+ *
+ * @author Anatoliy Korovin
+ */
 @SpringBootTest(classes = DynamicTestPropertyTests.class)
 class DynamicTestPropertyTests {
 
 	@DynamicTestProperty
 	private static TestPropertyValues dynamicProperties() {
-		return TestPropertyValues.of("a=123", "b=456");
+		return TestPropertyValues.of("a=123",
+									 String.format("b=%d", 456));
 	}
 
 	@Value("${a}")

@@ -5,17 +5,24 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
+/**
+ * {@link ContextCustomizer} to allow using the {@link DynamicTestProperty} in tests.
+ *
+ * @author Anatoliy Korovin
+ */
 public class DynamicTestPropertyContextCustomizer implements ContextCustomizer {
 
 
-	private List<TestPropertyValues> properties;
+	private Set<TestPropertyValues> properties;
 
 	public DynamicTestPropertyContextCustomizer(List<TestPropertyValues> properties) {
-		this.properties = properties;
+		this.properties =  new HashSet<>(properties);
 	}
 
 	@Override
