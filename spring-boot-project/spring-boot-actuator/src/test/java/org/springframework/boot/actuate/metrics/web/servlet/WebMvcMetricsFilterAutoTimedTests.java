@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
-import java.util.Arrays;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
@@ -30,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -108,7 +105,8 @@ public class WebMvcMetricsFilterAutoTimedTests {
 				MeterRegistry registry) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
 					"http.server.requests",
-					new Autotime(true, true, Arrays.asList(0.5, 0.95)));
+					(builder) -> builder.publishPercentiles(0.5, 0.95)
+							.publishPercentileHistogram(true));
 		}
 
 	}

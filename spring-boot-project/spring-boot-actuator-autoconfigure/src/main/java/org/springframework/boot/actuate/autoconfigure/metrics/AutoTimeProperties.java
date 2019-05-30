@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.List;
+import io.micrometer.core.instrument.Timer.Builder;
+
+import org.springframework.boot.actuate.metrics.AutoTimer;
 
 /**
- * Settings for requests that are automatically timed.
+ * Nested configuration properties for items that are automatically timed.
  *
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.2.0
  */
-public final class Autotime {
+public final class AutoTimeProperties implements AutoTimer {
 
 	private boolean enabled = true;
 
@@ -36,24 +39,10 @@ public final class Autotime {
 	/**
 	 * Create an instance that automatically time requests with no percentiles.
 	 */
-	public Autotime() {
+	public AutoTimeProperties() {
 	}
 
-	/**
-	 * Create an instance with the specified settings.
-	 * @param enabled whether requests should be automatically timed
-	 * @param percentilesHistogram whether percentile histograms should be published
-	 * @param percentiles computed non-aggregable percentiles to publish (can be
-	 * {@code null})
-	 */
-	public Autotime(boolean enabled, boolean percentilesHistogram,
-			List<Double> percentiles) {
-		this.enabled = enabled;
-		this.percentilesHistogram = percentilesHistogram;
-		this.percentiles = (percentiles != null)
-				? percentiles.stream().mapToDouble(Double::doubleValue).toArray() : null;
-	}
-
+	@Override
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -78,12 +67,10 @@ public final class Autotime {
 		this.percentiles = percentiles;
 	}
 
-	/**
-	 * Create an instance that disable auto-timed requests.
-	 * @return an instance that disable auto-timed requests
-	 */
-	public static Autotime disabled() {
-		return new Autotime(false, false, null);
+	@Override
+	public void apply(Builder builder) {
+		builder.publishPercentileHistogram(this.percentilesHistogram)
+				.publishPercentiles(this.percentiles);
 	}
 
 }

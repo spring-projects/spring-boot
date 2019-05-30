@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 
-import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -51,7 +51,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private final String metricName;
 
-	private final Autotime autotime;
+	private final AutoTimer autoTimer;
 
 	/**
 	 * Create a new {@code MetricsClientHttpRequestInterceptor}.
@@ -59,11 +59,12 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	 * @param tagProvider provider for metrics tags
 	 * @param metricName name of the metric to record
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsClientHttpRequestInterceptor(MeterRegistry, RestTemplateExchangeTagsProvider, String, Autotime)}
+	 * {@link #MetricsClientHttpRequestInterceptor(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
 	 */
+	@Deprecated
 	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
-		this(meterRegistry, tagProvider, metricName, new Autotime());
+		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
 	/**
@@ -71,21 +72,24 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	 * @param meterRegistry the registry to which metrics are recorded
 	 * @param tagProvider provider for metrics tags
 	 * @param metricName name of the metric to record
-	 * @param autotime auto timed request settings
+	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
 	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			Autotime autotime) {
+			AutoTimer autoTimer) {
 		this.tagProvider = tagProvider;
 		this.meterRegistry = meterRegistry;
 		this.metricName = metricName;
-		this.autotime = (autotime != null) ? autotime : Autotime.disabled();
+		this.autoTimer = (autoTimer != null) ? autoTimer : AutoTimer.DISABLED;
 	}
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 			ClientHttpRequestExecution execution) throws IOException {
+		if (!this.autoTimer.isEnabled()) {
+			return execution.execute(request, body);
+		}
 		long startTime = System.nanoTime();
 		ClientHttpResponse response = null;
 		try {
@@ -93,10 +97,8 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 			return response;
 		}
 		finally {
-			if (this.autotime.isEnabled()) {
-				getTimeBuilder(request, response).register(this.meterRegistry)
-						.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
-			}
+			getTimeBuilder(request, response).register(this.meterRegistry)
+					.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
 			urlTemplate.remove();
 		}
 	}
@@ -121,9 +123,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
-		return Timer.builder(this.metricName)
-				.publishPercentiles(this.autotime.getPercentiles())
-				.publishPercentileHistogram(this.autotime.isPercentilesHistogram())
+		return this.autoTimer.builder(this.metricName)
 				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
 				.description("Timer of RestTemplate operation");
 	}

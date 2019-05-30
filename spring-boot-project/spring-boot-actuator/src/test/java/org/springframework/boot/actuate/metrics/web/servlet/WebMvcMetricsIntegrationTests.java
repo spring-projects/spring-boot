@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -112,7 +112,7 @@ public class WebMvcMetricsIntegrationTests {
 		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
 				WebApplicationContext ctx) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", new Autotime());
+					"http.server.requests", AutoTimer.ENABLED);
 		}
 
 		@Configuration(proxyBeanMethods = false)

@@ -21,7 +21,7 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
-import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
@@ -47,29 +47,30 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, Autotime)}
+	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
 	 */
+	@Deprecated
 	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
-		this(meterRegistry, tagProvider, metricName, new Autotime());
+		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
 	/**
 	 * Creates a new {@code MetricsRestTemplateInterceptor}. When {@code autoTimeRequests}
 	 * is set to {@code true}, the interceptor records metrics using the given
 	 * {@code meterRegistry} with tags provided by the given {@code tagProvider} and with
-	 * {@link Autotime auto-timed request configuration}.
+	 * {@link AutoTimer auto-timed configuration}.
 	 * @param meterRegistry the meter registry
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
-	 * @param autotime auto-timed request settings
+	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
 	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			Autotime autotime) {
+			AutoTimer autoTimer) {
 		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry,
-				tagProvider, metricName, autotime);
+				tagProvider, metricName, autoTimer);
 	}
 
 	@Override
