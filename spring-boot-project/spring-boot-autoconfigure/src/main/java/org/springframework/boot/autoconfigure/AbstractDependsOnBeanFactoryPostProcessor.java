@@ -17,8 +17,9 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -39,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dmytro Nosan
  * @since 1.3.0
  * @see BeanDefinition#setDependsOn(String[])
  */
@@ -48,10 +50,24 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 
 	private final Class<? extends FactoryBean<?>> factoryBeanClass;
 
-	private final String[] dependsOn;
+	private final Object[] dependsOn;
 
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
 			Class<? extends FactoryBean<?>> factoryBeanClass, String... dependsOn) {
+		this.beanClass = beanClass;
+		this.factoryBeanClass = factoryBeanClass;
+		this.dependsOn = dependsOn;
+	}
+
+	/**
+	 * Create an instance with target bean and factory bean classes and dependency types.
+	 * @param beanClass target bean class
+	 * @param factoryBeanClass target factory bean class
+	 * @param dependsOn dependency types
+	 * @since 2.2.0
+	 */
+	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
+			Class<? extends FactoryBean<?>> factoryBeanClass, Class<?>... dependsOn) {
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
 		this.dependsOn = dependsOn;
@@ -67,29 +83,49 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 		this(beanClass, null, dependsOn);
 	}
 
+	/**
+	 * Create an instance with target bean class and dependency types.
+	 * @param beanClass target bean class
+	 * @param dependsOn dependency types
+	 * @since 2.2.0
+	 */
+	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass, Class<?>... dependsOn) {
+		this(beanClass, null, dependsOn);
+	}
+
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanName : getBeanNames(beanFactory)) {
 			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
 			String[] dependencies = definition.getDependsOn();
-			for (String bean : this.dependsOn) {
+			for (String bean : getDependsOn(beanFactory)) {
 				dependencies = StringUtils.addStringToArray(dependencies, bean);
 			}
 			definition.setDependsOn(dependencies);
 		}
 	}
 
-	private Iterable<String> getBeanNames(ListableBeanFactory beanFactory) {
-		Set<String> names = new HashSet<>();
-		names.addAll(Arrays
-				.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, this.beanClass, true, false)));
+	private Set<String> getDependsOn(ListableBeanFactory beanFactory) {
+		if (this.dependsOn instanceof Class[]) {
+			return Arrays.stream(((Class[]) this.dependsOn))
+					.flatMap((beanClass) -> getBeanNames(beanFactory, beanClass).stream())
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+		}
+		return Arrays.stream(this.dependsOn).map(String::valueOf).collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private Set<String> getBeanNames(ListableBeanFactory beanFactory) {
+		Set<String> names = getBeanNames(beanFactory, this.beanClass);
 		if (this.factoryBeanClass != null) {
-			for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
-					this.factoryBeanClass, true, false)) {
-				names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
-			}
+			names.addAll(getBeanNames(beanFactory, this.factoryBeanClass));
 		}
 		return names;
+	}
+
+	private static Set<String> getBeanNames(ListableBeanFactory beanFactory, Class<?> beanClass) {
+		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
+		return Arrays.stream(names).map(BeanFactoryUtils::transformedBeanName)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
