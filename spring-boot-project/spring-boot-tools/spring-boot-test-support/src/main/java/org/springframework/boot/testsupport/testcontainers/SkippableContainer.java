@@ -31,7 +31,7 @@ import org.testcontainers.lifecycle.Startable;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class SkippableContainer<T extends GenericContainer> implements Startable {
+public class SkippableContainer<T extends GenericContainer<?>> implements Startable {
 
 	private final Supplier<T> containerFactory;
 

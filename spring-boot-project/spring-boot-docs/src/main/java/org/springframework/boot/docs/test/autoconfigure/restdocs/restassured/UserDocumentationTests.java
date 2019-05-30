@@ -29,7 +29,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
 @RunWith(SpringRunner.class)

@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfigurat
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.ApplicationContextTestUtils;
@@ -73,8 +72,7 @@ public class SpringApplicationHierarchyTests {
 			MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
 			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
-			FlywayAutoConfiguration.class, JestAutoConfiguration.class,
-			MetricsAutoConfiguration.class },
+			FlywayAutoConfiguration.class, MetricsAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
@@ -87,8 +85,7 @@ public class SpringApplicationHierarchyTests {
 			MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
 			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
-			FlywayAutoConfiguration.class, JestAutoConfiguration.class,
-			MetricsAutoConfiguration.class },
+			FlywayAutoConfiguration.class, MetricsAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {

@@ -134,7 +134,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	/**
 	 * Configure the SSL connection.
-	 * @param factory the Jetty {@link SslContextFactory.Server}.
+	 * @param factory the Jetty {@link Server SslContextFactory.Server}.
 	 * @param ssl the ssl details.
 	 * @param sslStoreProvider the ssl store provider
 	 */

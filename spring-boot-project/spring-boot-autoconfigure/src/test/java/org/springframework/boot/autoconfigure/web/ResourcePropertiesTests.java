@@ -25,7 +25,7 @@ import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.Matchers.endsWith;
 
 /**
  * Tests for {@link ResourceProperties}.

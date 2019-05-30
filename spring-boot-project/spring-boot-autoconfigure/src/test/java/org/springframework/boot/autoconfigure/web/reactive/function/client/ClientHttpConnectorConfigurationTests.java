@@ -46,8 +46,7 @@ public class ClientHttpConnectorConfigurationTests {
 		jettyResourceFactory.setExecutor(executor);
 		jettyResourceFactory.setByteBufferPool(byteBufferPool);
 		jettyResourceFactory.setScheduler(scheduler);
-		JettyClientHttpConnector connector = new ClientHttpConnectorConfiguration.JettyClient()
-				.jettyClientHttpConnector(jettyResourceFactory);
+		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector,
 				"httpClient");
 		assertThat(httpClient.getExecutor()).isSameAs(executor);
@@ -59,11 +58,18 @@ public class ClientHttpConnectorConfigurationTests {
 	public void JettyResourceFactoryHasSslContextFactory() {
 		// gh-16810
 		JettyResourceFactory jettyResourceFactory = new JettyResourceFactory();
-		JettyClientHttpConnector connector = new ClientHttpConnectorConfiguration.JettyClient()
-				.jettyClientHttpConnector(jettyResourceFactory);
+		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector,
 				"httpClient");
 		assertThat(httpClient.getSslContextFactory()).isNotNull();
+	}
+
+	private JettyClientHttpConnector getClientHttpConnector(
+			JettyResourceFactory jettyResourceFactory) {
+		ClientHttpConnectorConfiguration.JettyClient jettyClient = new ClientHttpConnectorConfiguration.JettyClient();
+		// We shouldn't usually call this method directly since it's on a non-proxy config
+		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnector",
+				jettyResourceFactory);
 	}
 
 }

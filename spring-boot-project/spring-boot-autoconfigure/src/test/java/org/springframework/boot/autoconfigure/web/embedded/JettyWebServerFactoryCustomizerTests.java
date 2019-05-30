@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -88,7 +87,6 @@ public class JettyWebServerFactoryCustomizerTests {
 	@Test
 	public void accessLogCanBeCustomized() throws IOException {
 		File logFile = File.createTempFile("jetty_log", ".log");
-		String timezone = TimeZone.getDefault().getID();
 		bind("server.jetty.accesslog.enabled=true",
 				"server.jetty.accesslog.format=extended_ncsa",
 				"server.jetty.accesslog.filename="

@@ -75,6 +75,8 @@ public class RSocketStrategiesAutoConfiguration {
 	@ConditionalOnClass({ ObjectMapper.class, CBORFactory.class })
 	protected static class JacksonCborStrategyConfiguration {
 
+		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_CBOR };
+
 		@Bean
 		@Order(0)
 		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
@@ -82,10 +84,8 @@ public class RSocketStrategiesAutoConfiguration {
 				Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
 				ObjectMapper objectMapper = builder.factory(new CBORFactory()).build();
-				MediaType[] supportedTypes = new MediaType[] {
-						MediaType.APPLICATION_CBOR };
-				strategy.decoder(new Jackson2CborDecoder(objectMapper, supportedTypes));
-				strategy.encoder(new Jackson2CborEncoder(objectMapper, supportedTypes));
+				strategy.decoder(new Jackson2CborDecoder(objectMapper, SUPPORTED_TYPES));
+				strategy.encoder(new Jackson2CborEncoder(objectMapper, SUPPORTED_TYPES));
 			};
 		}
 
@@ -95,16 +95,17 @@ public class RSocketStrategiesAutoConfiguration {
 	@ConditionalOnClass(ObjectMapper.class)
 	protected static class JacksonJsonStrategyConfiguration {
 
+		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_JSON,
+				new MediaType("application", "*+json") };
+
 		@Bean
 		@Order(1)
 		@ConditionalOnBean(ObjectMapper.class)
 		public RSocketStrategiesCustomizer jacksonJsonStrategyCustomizer(
 				ObjectMapper objectMapper) {
 			return (strategy) -> {
-				MediaType[] supportedTypes = new MediaType[] { MediaType.APPLICATION_JSON,
-						new MediaType("application", "*+json") };
-				strategy.decoder(new Jackson2JsonDecoder(objectMapper, supportedTypes));
-				strategy.encoder(new Jackson2JsonEncoder(objectMapper, supportedTypes));
+				strategy.decoder(new Jackson2JsonDecoder(objectMapper, SUPPORTED_TYPES));
+				strategy.encoder(new Jackson2JsonEncoder(objectMapper, SUPPORTED_TYPES));
 			};
 		}
 

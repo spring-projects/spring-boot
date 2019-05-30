@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutputCapture} when used via {@link ExtendWith}.
+ * Tests for {@link OutputCapture} when used via {@link ExtendWith @ExtendWith}.
  *
  * @author Madhura Bhave
  */

@@ -19,12 +19,15 @@ package org.springframework.boot.web.embedded.netty;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import reactor.netty.ChannelBindException;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerRoutes;
 
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
@@ -43,6 +46,8 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 public class NettyWebServer implements WebServer {
+
+	private static final Predicate<HttpServerRequest> ALWAYS = (r) -> true;
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
@@ -93,15 +98,17 @@ public class NettyWebServer implements WebServer {
 			server = server.handle(this.handlerAdapter);
 		}
 		else {
-			server = server.route((routes) -> {
-				this.routeProviders.forEach((provider) -> provider.apply(routes));
-				routes.route((r) -> true, this.handlerAdapter);
-			});
+			server = server.route(this::applyRouteProviders);
 		}
 		if (this.lifecycleTimeout != null) {
 			return server.bindNow(this.lifecycleTimeout);
 		}
 		return server.bindNow();
+	}
+
+	private void applyRouteProviders(HttpServerRoutes routes) {
+		this.routeProviders.forEach((provider) -> provider.apply(routes));
+		routes.route(ALWAYS, this.handlerAdapter);
 	}
 
 	private ChannelBindException findBindException(Exception ex) {

@@ -63,7 +63,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link BasicErrorController} using {@link MockMvc} and {@link SpringRunner}.
+ * Tests for {@link BasicErrorController} using {@link MockMvc} and
+ * {@link SpringBootTest @SpringBootTest}.
  *
  * @author Dave Syer
  */

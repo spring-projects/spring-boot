@@ -133,8 +133,10 @@ public class WebSocketMessagingAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private List<MessageConverter> getDefaultConverters() {
-		CompositeMessageConverter compositeDefaultConverter = new DelegatingWebSocketMessageBrokerConfiguration()
-				.brokerMessageConverter();
+		DelegatingWebSocketMessageBrokerConfiguration configuration = new DelegatingWebSocketMessageBrokerConfiguration();
+		// We shouldn't usually call this method directly since it's on a non-proxy config
+		CompositeMessageConverter compositeDefaultConverter = ReflectionTestUtils
+				.invokeMethod(configuration, "brokerMessageConverter");
 		return (List<MessageConverter>) ReflectionTestUtils
 				.getField(compositeDefaultConverter, "converters");
 	}

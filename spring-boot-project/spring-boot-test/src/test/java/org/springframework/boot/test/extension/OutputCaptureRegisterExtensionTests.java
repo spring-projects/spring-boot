@@ -21,7 +21,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutputCapture} when used via {@link RegisterExtension}.
+ * Tests for {@link OutputCapture} when used via
+ * {@link RegisterExtension @RegisterExtension}.
  *
  * @author Madhura Bhave
  */

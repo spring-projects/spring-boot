@@ -54,14 +54,6 @@ public final class Autotime {
 				? percentiles.stream().mapToDouble(Double::doubleValue).toArray() : null;
 	}
 
-	/**
-	 * Create an instance that disable auto-timed requests.
-	 * @return an instance that disable auto-timed requests
-	 */
-	public static Autotime disabled() {
-		return new Autotime(false, false, null);
-	}
-
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -84,6 +76,14 @@ public final class Autotime {
 
 	public void setPercentiles(double[] percentiles) {
 		this.percentiles = percentiles;
+	}
+
+	/**
+	 * Create an instance that disable auto-timed requests.
+	 * @return an instance that disable auto-timed requests
+	 */
+	public static Autotime disabled() {
+		return new Autotime(false, false, null);
 	}
 
 }

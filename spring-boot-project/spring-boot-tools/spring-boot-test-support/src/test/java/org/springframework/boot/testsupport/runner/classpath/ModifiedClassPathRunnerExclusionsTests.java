@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.Matchers.isA;
 
 /**
  * Tests for {@link ModifiedClassPathRunner} excluding entries from the class path.
