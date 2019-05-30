@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,11 @@ public class RedisSessionProperties {
 	private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
 
 	/**
+	 * Allows specifying a strategy for configuring and validating Redis.
+	 */
+	private ConfigurationStrategy configurationStrategy = ConfigurationStrategy.NOTIFY_KEYSPACE_EVENTS;
+
+	/**
 	 * Cron expression for expired session cleanup job.
 	 */
 	private String cleanupCron = DEFAULT_CLEANUP_CRON;
@@ -67,6 +72,31 @@ public class RedisSessionProperties {
 
 	public void setCleanupCron(String cleanupCron) {
 		this.cleanupCron = cleanupCron;
+	}
+
+	public ConfigurationStrategy getConfigurationStrategy() {
+		return this.configurationStrategy;
+	}
+
+	public void setConfigurationStrategy(ConfigurationStrategy configurationStrategy) {
+		this.configurationStrategy = configurationStrategy;
+	}
+
+	/**
+	 * Allows specifying a strategy for configuring and validating Redis.
+	 */
+	public enum ConfigurationStrategy {
+
+		/**
+		 * Do nothing.
+		 */
+		NO_OP,
+		/**
+		 * Ensures that Redis Keyspace events for Generic commands and Expired events are
+		 * enabled.
+		 */
+		NOTIFY_KEYSPACE_EVENTS
+
 	}
 
 }
