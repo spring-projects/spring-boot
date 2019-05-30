@@ -137,15 +137,19 @@ public final class TestPropertyValues {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		TestPropertyValues values = (TestPropertyValues) o;
-		return Objects.equals(properties, values.properties);
+		return Objects.equals(this.properties, values.properties);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(properties);
+		return Objects.hash(this.properties);
 	}
 
 	@SuppressWarnings("unchecked")

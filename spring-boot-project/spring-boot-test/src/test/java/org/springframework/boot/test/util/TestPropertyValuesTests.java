@@ -17,6 +17,7 @@
 package org.springframework.boot.test.util;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
@@ -31,48 +32,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class TestPropertyValuesTests {
+class TestPropertyValuesTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void applyToEnvironmentShouldAttachConfigurationPropertySource() {
+	void applyToEnvironmentShouldAttachConfigurationPropertySource() {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment);
 		PropertySource<?> source = this.environment.getPropertySources()
-												   .get("configurationProperties");
+				.get("configurationProperties");
 		assertThat(source).isNotNull();
 	}
 
 	@Test
-	public void applyToDefaultPropertySource() {
+	void applyToDefaultPropertySource() {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 	}
 
 	@Test
-	public void applyToSystemPropertySource() {
+	void applyToSystemPropertySource() {
 		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment,
-													 Type.SYSTEM_ENVIRONMENT);
+				Type.SYSTEM_ENVIRONMENT);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
 		assertThat(this.environment.getPropertySources().contains(
 				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME))
-				.isTrue();
+						.isTrue();
 	}
 
 	@Test
-	public void applyToWithSpecificName() {
+	void applyToWithSpecificName() {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment, Type.MAP, "other");
 		assertThat(this.environment.getPropertySources().get("other")).isNotNull();
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne() {
+	void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne() {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
-																	   Type.MAP, "other");
+				Type.MAP, "other");
 		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment,
-													 Type.SYSTEM_ENVIRONMENT, "other");
+				Type.SYSTEM_ENVIRONMENT, "other");
 		assertThat(this.environment.getPropertySources().get("other"))
 				.isInstanceOf(SystemEnvironmentPropertySource.class);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
@@ -80,25 +81,25 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToExistingNameAndSameTypeShouldMerge() {
+	void applyToExistingNameAndSameTypeShouldMerge() {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
-																	   Type.MAP);
+				Type.MAP);
 		TestPropertyValues.of("foo.bar=new").applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("new");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 	}
 
 	@Test
-	public void andShouldChainAndAddSingleKeyValue() {
+	void andShouldChainAndAddSingleKeyValue() {
 		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing")
-						  .applyTo(this.environment, Type.MAP);
+				.applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
 	}
 
 	@Test
-	public void applyToSystemPropertiesShouldSetSystemProperties() {
+	void applyToSystemPropertiesShouldSetSystemProperties() {
 		TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
 			assertThat(System.getProperty("foo")).isEqualTo("bar");
 			return null;
@@ -106,7 +107,7 @@ public class TestPropertyValuesTests {
 	}
 
 	@Test
-	public void applyToSystemPropertiesShouldRestoreSystemProperties() {
+	void applyToSystemPropertiesShouldRestoreSystemProperties() {
 		System.setProperty("foo", "bar1");
 		System.clearProperty("baz");
 		try {
@@ -117,13 +118,14 @@ public class TestPropertyValuesTests {
 			});
 			assertThat(System.getProperty("foo")).isEqualTo("bar1");
 			assertThat(System.getProperties()).doesNotContainKey("baz");
-		} finally {
+		}
+		finally {
 			System.clearProperty("foo");
 		}
 	}
 
 	@Test
-	public void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
+	void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
 		System.setProperty("foo", "bar1");
 		try {
 			TestPropertyValues.of("foo").applyToSystemProperties(() -> {
@@ -131,16 +133,24 @@ public class TestPropertyValuesTests {
 				return null;
 			});
 			assertThat(System.getProperty("foo")).isEqualTo("bar1");
-		} finally {
+		}
+		finally {
 			System.clearProperty("foo");
 		}
 	}
 
-
 	@Test
-	void equalsOfDifferentTestPropertyValues() {
+	void equalsOfSameTestPropertyValues() {
 		TestPropertyValues first = TestPropertyValues.of("a=123", "b=456");
 		TestPropertyValues second = TestPropertyValues.of("b=456", "a=123");
 		assertThat(first).isEqualTo(second);
 	}
+
+	@Test
+	void notEqualsOfDifferentTestPropertyValues() {
+		TestPropertyValues first = TestPropertyValues.of("a=123", "b=456");
+		TestPropertyValues second = TestPropertyValues.of("b=456", "a=000");
+		assertThat(first).isNotEqualTo(second);
+	}
+
 }
