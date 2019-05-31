@@ -324,13 +324,13 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void basicAuthenticationShouldApply() {
-		BasicAuthentication basicAuthentication = new BasicAuthentication("spring",
-				"boot", StandardCharsets.UTF_8);
-		RestTemplate template = this.builder.basicAuthentication(basicAuthentication)
-				.build();
+		RestTemplate template = this.builder
+				.basicAuthentication("spring", "boot", StandardCharsets.UTF_8).build();
 		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("authentication",
-				basicAuthentication);
+		Object authentication = ReflectionTestUtils.getField(requestFactory,
+				"authentication");
+		assertThat(authentication).extracting("username", "password", "charset")
+				.containsExactly("spring", "boot", StandardCharsets.UTF_8);
 	}
 
 	@Test
@@ -413,13 +413,15 @@ public class RestTemplateBuilderTests {
 					assertThat(restTemplate.getUriTemplateHandler())
 							.isInstanceOf(RootUriTemplateHandler.class);
 					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
-					ClientHttpRequestFactory interceptingRequestFactory = restTemplate
+					ClientHttpRequestFactory actualRequestFactory = restTemplate
 							.getRequestFactory();
-					assertThat(interceptingRequestFactory)
+					assertThat(actualRequestFactory)
 							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-					Object basicAuthRequestFactory = ReflectionTestUtils
-							.getField(interceptingRequestFactory, "requestFactory");
-					assertThat(basicAuthRequestFactory).hasFieldOrPropertyWithValue(
+					ClientHttpRequestFactory authRequestFactory = (ClientHttpRequestFactory) ReflectionTestUtils
+							.getField(actualRequestFactory, "requestFactory");
+					assertThat(authRequestFactory).isInstanceOf(
+							BasicAuthenticationClientHttpRequestFactory.class);
+					assertThat(authRequestFactory).hasFieldOrPropertyWithValue(
 							"requestFactory", requestFactory);
 				}).build();
 	}

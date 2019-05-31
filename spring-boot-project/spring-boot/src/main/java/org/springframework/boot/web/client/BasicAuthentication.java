@@ -18,6 +18,8 @@ package org.springframework.boot.web.client;
 
 import java.nio.charset.Charset;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.util.Assert;
 
 /**
@@ -25,10 +27,9 @@ import org.springframework.util.Assert;
  * {@link BasicAuthenticationClientHttpRequestFactory}.
  *
  * @author Dmytro Nosan
- * @since 2.2.0
  * @see BasicAuthenticationClientHttpRequestFactory
  */
-public class BasicAuthentication {
+class BasicAuthentication {
 
 	private final String username;
 
@@ -36,22 +37,7 @@ public class BasicAuthentication {
 
 	private final Charset charset;
 
-	/**
-	 * Create a new {@link BasicAuthentication}.
-	 * @param username the username to use
-	 * @param password the password to use
-	 */
-	public BasicAuthentication(String username, String password) {
-		this(username, password, null);
-	}
-
-	/**
-	 * Create a new {@link BasicAuthentication}.
-	 * @param username the username to use
-	 * @param password the password to use
-	 * @param charset the charset to use
-	 */
-	public BasicAuthentication(String username, String password, Charset charset) {
+	BasicAuthentication(String username, String password, Charset charset) {
 		Assert.notNull(username, "Username must not be null");
 		Assert.notNull(password, "Password must not be null");
 		this.username = username;
@@ -59,28 +45,11 @@ public class BasicAuthentication {
 		this.charset = charset;
 	}
 
-	/**
-	 * The username to use.
-	 * @return the username, never {@code null} or {@code empty}.
-	 */
-	public String getUsername() {
-		return this.username;
-	}
-
-	/**
-	 * The password to use.
-	 * @return the password, never {@code null} or {@code empty}.
-	 */
-	public String getPassword() {
-		return this.password;
-	}
-
-	/**
-	 * The charset to use.
-	 * @return the charset, or {@code null}.
-	 */
-	public Charset getCharset() {
-		return this.charset;
+	void applyTo(ClientHttpRequest request) {
+		HttpHeaders headers = request.getHeaders();
+		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
+			headers.setBasicAuth(this.username, this.password, this.charset);
+		}
 	}
 
 }

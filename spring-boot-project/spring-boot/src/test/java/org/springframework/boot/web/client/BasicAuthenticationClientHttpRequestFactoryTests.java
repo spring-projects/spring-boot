@@ -29,7 +29,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -42,7 +42,7 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 	private final HttpHeaders headers = new HttpHeaders();
 
 	private final BasicAuthentication authentication = new BasicAuthentication("spring",
-			"boot");
+			"boot", null);
 
 	private ClientHttpRequestFactory requestFactory;
 
@@ -50,8 +50,8 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 	public void setUp() throws IOException {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
-		when(requestFactory.createRequest(any(), any())).thenReturn(request);
-		when(request.getHeaders()).thenReturn(this.headers);
+		given(requestFactory.createRequest(any(), any())).willReturn(request);
+		given(request.getHeaders()).willReturn(this.headers);
 		this.requestFactory = new BasicAuthenticationClientHttpRequestFactory(
 				this.authentication, requestFactory);
 	}
@@ -74,7 +74,7 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 	}
 
 	private ClientHttpRequest createRequest() throws IOException {
-		return this.requestFactory.createRequest(URI.create("http://localhost:8080"),
+		return this.requestFactory.createRequest(URI.create("https://localhost:8080"),
 				HttpMethod.POST);
 	}
 

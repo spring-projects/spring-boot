@@ -19,7 +19,6 @@ package org.springframework.boot.web.client;
 import java.io.IOException;
 import java.net.URI;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
@@ -31,20 +30,13 @@ import org.springframework.util.Assert;
  * username/password pair, unless a custom Authorization header has been set before.
  *
  * @author Dmytro Nosan
- * @since 2.2.0
  */
-public class BasicAuthenticationClientHttpRequestFactory
+class BasicAuthenticationClientHttpRequestFactory
 		extends AbstractClientHttpRequestFactoryWrapper {
 
 	private final BasicAuthentication authentication;
 
-	/**
-	 * Create a new {@link BasicAuthenticationClientHttpRequestFactory} which adds
-	 * {@link HttpHeaders#AUTHORIZATION} header for the given authentication.
-	 * @param authentication the authentication to use
-	 * @param clientHttpRequestFactory the factory to use
-	 */
-	public BasicAuthenticationClientHttpRequestFactory(BasicAuthentication authentication,
+	BasicAuthenticationClientHttpRequestFactory(BasicAuthentication authentication,
 			ClientHttpRequestFactory clientHttpRequestFactory) {
 		super(clientHttpRequestFactory);
 		Assert.notNull(authentication, "Authentication must not be null");
@@ -54,13 +46,8 @@ public class BasicAuthenticationClientHttpRequestFactory
 	@Override
 	protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
 			ClientHttpRequestFactory requestFactory) throws IOException {
-		BasicAuthentication authentication = this.authentication;
 		ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
-		HttpHeaders headers = request.getHeaders();
-		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
-			headers.setBasicAuth(authentication.getUsername(),
-					authentication.getPassword(), authentication.getCharset());
-		}
+		this.authentication.applyTo(request);
 		return request;
 	}
 
