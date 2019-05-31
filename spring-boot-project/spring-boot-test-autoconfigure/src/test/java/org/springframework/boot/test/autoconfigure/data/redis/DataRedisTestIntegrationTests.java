@@ -26,13 +26,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.context.dynamic.property.DynamicTestProperty;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,14 +39,19 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Integration test for {@link DataRedisTest @DataRedisTest}.
  *
  * @author Jayaram Pradhan
+ * @author Anatoliy Korovin
  */
 @Testcontainers
-@ContextConfiguration(initializers = DataRedisTestIntegrationTests.Initializer.class)
 @DataRedisTest
-public class DataRedisTestIntegrationTests {
+class DataRedisTestIntegrationTests {
 
 	@Container
-	public static RedisContainer redis = new RedisContainer();
+	private static RedisContainer redis = new RedisContainer();
+
+	@DynamicTestProperty
+	private static TestPropertyValues setContainerProperties() {
+		return TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort());
+	}
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;
@@ -62,7 +65,7 @@ public class DataRedisTestIntegrationTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Test
-	public void testRepository() {
+	void testRepository() {
 		PersonHash personHash = new PersonHash();
 		personHash.setDescription("Look, new @DataRedisTest!");
 		assertThat(personHash.getId()).isNull();
@@ -74,21 +77,9 @@ public class DataRedisTestIntegrationTests {
 	}
 
 	@Test
-	public void didNotInjectExampleService() {
+	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
-	}
-
-	static class Initializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-		@Override
-		public void initialize(
-				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
-					.applyTo(configurableApplicationContext.getEnvironment());
-		}
-
 	}
 
 }
