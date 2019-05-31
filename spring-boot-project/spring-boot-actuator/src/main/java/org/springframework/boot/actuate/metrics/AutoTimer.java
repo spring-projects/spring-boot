@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.actuate.metrics;
-/**
- * @author pwebb
- */
 
 import java.util.function.Supplier;
 
