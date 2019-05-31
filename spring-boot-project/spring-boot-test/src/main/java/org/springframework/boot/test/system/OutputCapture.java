@@ -276,7 +276,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * Save disable and restore AnsiOutput without it needing to be on the classpath.
+	 * Save, disable and restore AnsiOutput without it needing to be on the classpath.
 	 */
 	private static class AnsiOutputState {
 
