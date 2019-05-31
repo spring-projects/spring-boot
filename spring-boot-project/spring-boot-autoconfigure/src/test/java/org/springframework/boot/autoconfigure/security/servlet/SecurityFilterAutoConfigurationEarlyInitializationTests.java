@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -30,8 +30,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -51,19 +51,18 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Phillip Webb
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	public void testSecurityFilterDoesNotCauseEarlyInitialization() {
+	public void testSecurityFilterDoesNotCauseEarlyInitialization(
+			CapturedOutput capturedOutput) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = this.output.toString()
+			String password = capturedOutput.toString()
 					.split("Using generated security password: ")[1].split("\n")[0]
 							.trim();
 			new TestRestTemplate("user", password)

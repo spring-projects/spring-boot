@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -50,7 +50,7 @@ public class RestartApplicationListenerTests {
 	private static final String[] ARGS = new String[] { "a", "b", "c" };
 
 	@Rule
-	public final OutputCapture output = new OutputCapture();
+	public final OutputCaptureRule output = new OutputCaptureRule();
 
 	@Before
 	@After
@@ -86,7 +86,6 @@ public class RestartApplicationListenerTests {
 	@Test
 	public void disableWithSystemProperty() {
 		System.setProperty(ENABLED_PROPERTY, "false");
-		this.output.reset();
 		testInitialize(false);
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", false);
 		assertThat(this.output.toString())

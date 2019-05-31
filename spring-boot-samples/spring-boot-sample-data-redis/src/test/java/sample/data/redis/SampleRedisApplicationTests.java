@@ -17,10 +17,10 @@
 package sample.data.redis;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,13 +30,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
+@ExtendWith(OutputCaptureExtension.class)
 class SampleRedisApplicationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	void testDefaultSettings() {
+	void testDefaultSettings(CapturedOutput capturedOutput) {
 		try {
 			SampleRedisApplication.main(new String[0]);
 		}
@@ -45,7 +43,7 @@ class SampleRedisApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output).contains("Found key spring.boot.redis.test");
+		assertThat(capturedOutput).contains("Found key spring.boot.redis.test");
 	}
 
 	private boolean redisServerRunning(Throwable ex) {

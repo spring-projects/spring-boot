@@ -43,8 +43,8 @@ import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationList
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +64,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Stephane Nicoll
  * @author Dominic Gunn
  */
-@ExtendWith(OutputExtension.class)
+@ExtendWith(OutputCaptureExtension.class)
 public class LiquibaseAutoConfigurationTests {
 
 	@BeforeEach

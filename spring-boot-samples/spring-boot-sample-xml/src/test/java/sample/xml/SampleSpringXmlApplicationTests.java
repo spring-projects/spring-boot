@@ -17,23 +17,20 @@
 package sample.xml;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(OutputCaptureExtension.class)
 class SampleSpringXmlApplicationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	void testDefaultSettings() throws Exception {
+	void testDefaultSettings(CapturedOutput capturedOutput) throws Exception {
 		SampleSpringXmlApplication.main(new String[0]);
-		String output = this.output.toString();
-		assertThat(output).contains("Hello World");
+		assertThat(capturedOutput).contains("Hello World");
 	}
 
 }

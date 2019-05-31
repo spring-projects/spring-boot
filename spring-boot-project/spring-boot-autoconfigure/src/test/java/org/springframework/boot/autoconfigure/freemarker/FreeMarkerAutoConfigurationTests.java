@@ -20,12 +20,12 @@ import java.io.File;
 import java.io.StringWriter;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,10 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class FreeMarkerAutoConfigurationTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
@@ -62,33 +60,33 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	@Test
-	public void nonExistentTemplateLocation() {
+	public void nonExistentTemplateLocation(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
-				.run((context) -> assertThat(this.output)
+				.run((context) -> assertThat(capturedOutput)
 						.contains("Cannot find template location"));
 	}
 
 	@Test
-	public void emptyTemplateLocation() {
+	public void emptyTemplateLocation(CapturedOutput capturedOutput) {
 		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(),
 				"empty-templates/empty-directory");
 		emptyDirectory.mkdirs();
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(this.output.toString())
+				.run((context) -> assertThat(capturedOutput)
 						.doesNotContain("Cannot find template location"));
 	}
 
 	@Test
-	public void nonExistentLocationAndEmptyLocation() {
+	public void nonExistentLocationAndEmptyLocation(CapturedOutput capturedOutput) {
 		new File(this.buildOutput.getTestResourcesLocation(),
 				"empty-templates/empty-directory").mkdirs();
 		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
 				+ "classpath:/does-not-exist/,classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(this.output.toString())
+				.run((context) -> assertThat(capturedOutput)
 						.doesNotContain("Cannot find template location"));
 	}
 

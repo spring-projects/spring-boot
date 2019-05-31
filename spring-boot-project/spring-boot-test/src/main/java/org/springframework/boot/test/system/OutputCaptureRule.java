@@ -14,42 +14,64 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.rule;
+package org.springframework.boot.test.system;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hamcrest.Matcher;
+import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.springframework.boot.test.system.OutputCaptureRule;
+import static org.hamcrest.Matchers.allOf;
 
 /**
  * JUnit {@code @Rule} to capture output from System.out and System.err.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.4.0
- * @deprecated since 2.2.0 in favor of {@link OutputCaptureRule}
+ * @since 2.2.0
  */
-@Deprecated
-public class OutputCapture implements TestRule {
+public class OutputCaptureRule implements TestRule {
 
-	private final OutputCaptureRule delegate = new OutputCaptureRule();
+	private final org.springframework.boot.test.system.OutputCapture delegate = new org.springframework.boot.test.system.OutputCapture();
+
+	private List<Matcher<? super String>> matchers = new ArrayList<>();
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		return this.delegate.apply(base, description);
+		return new Statement() {
+			@Override
+			public void evaluate() throws Throwable {
+				OutputCaptureRule.this.delegate.push();
+				try {
+					base.evaluate();
+				}
+				finally {
+					try {
+						if (!OutputCaptureRule.this.matchers.isEmpty()) {
+							String output = OutputCaptureRule.this.delegate.toString();
+							Assert.assertThat(output,
+									allOf(OutputCaptureRule.this.matchers));
+						}
+					}
+					finally {
+						OutputCaptureRule.this.delegate.pop();
+					}
+				}
+			}
+		};
 	}
 
 	/**
-	 * Discard all currently accumulated output.
+	 * Resets the current capture session, clearing its captured output.
+	 * @deprecated since 2.2 with no replacement
 	 */
+	@Deprecated
 	public void reset() {
-		this.delegate.reset();
-	}
-
-	public void flush() {
-		// Flushing is no longer necessary
+		OutputCaptureRule.this.delegate.reset();
 	}
 
 	@Override
@@ -63,7 +85,7 @@ public class OutputCapture implements TestRule {
 	 * @param matcher the matcher
 	 */
 	public void expect(Matcher<? super String> matcher) {
-		this.delegate.expect(matcher);
+		this.matchers.add(matcher);
 	}
 
 }

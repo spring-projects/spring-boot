@@ -17,10 +17,10 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,10 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class EndpointIdTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void ofWhenNullThrowsException() {
@@ -88,10 +86,10 @@ public class EndpointIdTests {
 	}
 
 	@Test
-	public void ofWhenContainsDeprecatedCharsLogsWarning() {
+	public void ofWhenContainsDeprecatedCharsLogsWarning(CapturedOutput capturedOutput) {
 		EndpointId.resetLoggedWarnings();
 		EndpointId.of("foo-bar");
-		assertThat(this.output.toString()).contains(
+		assertThat(capturedOutput.toString()).contains(
 				"Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
 	}
 

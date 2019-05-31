@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.system;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,41 +27,32 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.junit.jupiter.api.extension.Extension;
-
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Provides access to {@link System#out System.out} and {@link System#err System.err}
- * output that has been capture by the {@link OutputExtension}. Can be used to apply
- * assertions either using AssertJ or standard JUnit assertions. For example:
- * <pre class="code">
- * assertThat(output).contains("started"); // Checks all output
- * assertThat(output.getErr()).contains("failed"); // Only checks System.err
- * assertThat(output.getOut()).contains("ok"); // Only checks System.put
- * </pre>
+ * Provides support for capturing {@link System#out System.out} and {@link System#err
+ * System.err}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 2.2.0
- * @see OutputExtension
+ * @see OutputCaptureExtension
+ * @see OutputCaptureRule
  */
-public class CapturedOutput implements CharSequence, Extension {
+class OutputCapture implements CapturedOutput {
 
 	private final Deque<SystemCapture> systemCaptures = new ArrayDeque<>();
 
 	private AnsiOutputState ansiOutputState;
 
-	protected CapturedOutput() {
-	}
-
 	/**
 	 * Push a new system capture session onto the stack.
 	 */
-	protected final void push() {
+	final void push() {
 		if (this.systemCaptures.isEmpty()) {
 			this.ansiOutputState = AnsiOutputState.saveAndDisable();
 		}
@@ -71,27 +62,12 @@ public class CapturedOutput implements CharSequence, Extension {
 	/**
 	 * Pop the last system capture session from the stack.
 	 */
-	protected final void pop() {
+	final void pop() {
 		this.systemCaptures.removeLast().release();
 		if (this.systemCaptures.isEmpty() && this.ansiOutputState != null) {
 			this.ansiOutputState.restore();
 			this.ansiOutputState = null;
 		}
-	}
-
-	@Override
-	public int length() {
-		return toString().length();
-	}
-
-	@Override
-	public char charAt(int index) {
-		return toString().charAt(index);
-	}
-
-	@Override
-	public CharSequence subSequence(int start, int end) {
-		return toString().subSequence(start, end);
 	}
 
 	@Override
@@ -120,6 +96,7 @@ public class CapturedOutput implements CharSequence, Extension {
 	 * System.err}) in the order that it was was captured.
 	 * @return all captured output
 	 */
+	@Override
 	public String getAll() {
 		return get((type) -> true);
 	}
@@ -128,6 +105,7 @@ public class CapturedOutput implements CharSequence, Extension {
 	 * Return {@link System#out System.out} content in the order that it was was captured.
 	 * @return {@link System#out System.out} captured output
 	 */
+	@Override
 	public String getOut() {
 		return get(Type.OUT::equals);
 	}
@@ -136,8 +114,16 @@ public class CapturedOutput implements CharSequence, Extension {
 	 * Return {@link System#err System.err} content in the order that it was was captured.
 	 * @return {@link System#err System.err} captured output
 	 */
+	@Override
 	public String getErr() {
 		return get(Type.ERR::equals);
+	}
+
+	/**
+	 * Resets the current capture session, clearing its captured output.
+	 */
+	void reset() {
+		this.systemCaptures.peek().reset();
 	}
 
 	private String get(Predicate<Type> filter) {
@@ -190,6 +176,10 @@ public class CapturedOutput implements CharSequence, Extension {
 					builder.append(stringCapture);
 				}
 			}
+		}
+
+		public void reset() {
+			this.capturedStrings.clear();
 		}
 
 	}
@@ -303,7 +293,7 @@ public class CapturedOutput implements CharSequence, Extension {
 
 		public static AnsiOutputState saveAndDisable() {
 			if (!ClassUtils.isPresent("org.springframework.boot.ansi.AnsiOutput",
-					CapturedOutput.class.getClassLoader())) {
+					OutputCapture.class.getClassLoader())) {
 				return null;
 			}
 			return new AnsiOutputState();

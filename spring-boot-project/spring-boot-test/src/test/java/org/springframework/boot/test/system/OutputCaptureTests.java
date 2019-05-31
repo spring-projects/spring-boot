@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.system;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,11 +28,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link CapturedOutput}.
+ * Tests for {@link OutputCapture}.
  *
  * @author Phillip Webb
  */
-class CapturedOutputTests {
+class OutputCaptureTests {
 
 	private PrintStream originalOut;
 
@@ -42,7 +42,7 @@ class CapturedOutputTests {
 
 	private TestPrintStream systemErr;
 
-	private CapturedOutput output = new CapturedOutput();
+	private OutputCapture output = new OutputCapture();
 
 	@BeforeEach
 	void replaceSystemStreams() {

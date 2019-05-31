@@ -17,21 +17,19 @@
 package sample.data.solr;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(OutputCaptureExtension.class)
 class SampleSolrApplicationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	void testDefaultSettings() throws Exception {
+	void testDefaultSettings(CapturedOutput capturedOutput) throws Exception {
 		try {
 			SampleSolrApplication.main(new String[0]);
 		}
@@ -40,7 +38,7 @@ class SampleSolrApplicationTests {
 				return;
 			}
 		}
-		assertThat(this.output).contains("name=Sony Playstation");
+		assertThat(capturedOutput).contains("name=Sony Playstation");
 	}
 
 	@SuppressWarnings("serial")

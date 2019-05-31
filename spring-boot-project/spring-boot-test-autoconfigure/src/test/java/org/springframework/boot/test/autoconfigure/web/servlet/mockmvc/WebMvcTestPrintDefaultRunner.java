@@ -20,7 +20,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.containsString;
@@ -41,7 +41,7 @@ public class WebMvcTestPrintDefaultRunner extends SpringJUnit4ClassRunner {
 	protected Statement methodBlock(FrameworkMethod frameworkMethod) {
 		Statement statement = super.methodBlock(frameworkMethod);
 		statement = new AlwaysPassStatement(statement);
-		OutputCapture outputCapture = new OutputCapture();
+		OutputCaptureRule outputCapture = new OutputCaptureRule();
 		if (frameworkMethod.getName().equals("shouldPrint")) {
 			outputCapture.expect(containsString("HTTP Method"));
 		}

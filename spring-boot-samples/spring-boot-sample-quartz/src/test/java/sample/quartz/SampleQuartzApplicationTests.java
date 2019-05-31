@@ -17,11 +17,11 @@
 package sample.quartz;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,21 +31,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
+@ExtendWith(OutputCaptureExtension.class)
 class SampleQuartzApplicationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	void quartzJobIsTriggered() throws InterruptedException {
+	void quartzJobIsTriggered(CapturedOutput capturedOutput) throws InterruptedException {
 		try (ConfigurableApplicationContext context = SpringApplication
 				.run(SampleQuartzApplication.class)) {
 			long end = System.currentTimeMillis() + 5000;
-			while ((!this.output.toString().contains("Hello World!"))
+			while ((!capturedOutput.toString().contains("Hello World!"))
 					&& System.currentTimeMillis() < end) {
 				Thread.sleep(100);
 			}
-			assertThat(this.output).contains("Hello World!");
+			assertThat(capturedOutput).contains("Hello World!");
 		}
 	}
 

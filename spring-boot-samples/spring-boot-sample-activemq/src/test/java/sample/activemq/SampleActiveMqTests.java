@@ -17,12 +17,12 @@
 package sample.activemq;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,19 +32,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  */
 @SpringBootTest
+@ExtendWith(OutputCaptureExtension.class)
 class SampleActiveMqTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	@Autowired
 	private Producer producer;
 
 	@Test
-	void sendSimpleMessage() throws InterruptedException {
+	void sendSimpleMessage(CapturedOutput capturedOutput) throws InterruptedException {
 		this.producer.send("Test message");
 		Thread.sleep(1000L);
-		assertThat(this.output.toString().contains("Test message")).isTrue();
+		assertThat(capturedOutput).contains("Test message");
 	}
 
 }

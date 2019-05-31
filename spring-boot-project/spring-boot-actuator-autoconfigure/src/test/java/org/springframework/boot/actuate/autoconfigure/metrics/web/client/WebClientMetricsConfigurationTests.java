@@ -22,7 +22,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -51,15 +51,13 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class WebClientMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class,
 					HttpClientMetricsAutoConfiguration.class));
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void webClientCreatedWithBuilderIsInstrumented() {
@@ -79,26 +77,26 @@ public class WebClientMetricsConfigurationTests {
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+	public void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.output.toString()).contains(
+					assertThat(capturedOutput).contains(
 							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.contains("Are you using 'uriVariables'?");
 				});
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
+	public void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.output.toString()).doesNotContain(
+					assertThat(capturedOutput).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.client.requests'.")
 							.doesNotContain("Are you using 'uriVariables'?");
 				});

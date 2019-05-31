@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -60,7 +60,9 @@ public class CliTester implements TestRule {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private final OutputCapture outputCapture = new OutputCapture();
+	private final OutputCaptureRule outputCapture = new OutputCaptureRule();
+
+	private String previousOutput = "";
 
 	private long timeout = TimeUnit.MINUTES.toMillis(6);
 
@@ -170,8 +172,9 @@ public class CliTester implements TestRule {
 	}
 
 	private String getOutput() {
-		String output = this.outputCapture.toString();
-		this.outputCapture.reset();
+		String output = this.outputCapture.toString()
+				.substring(this.previousOutput.length());
+		this.previousOutput = output;
 		return output;
 	}
 

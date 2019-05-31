@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PropertiesMigrationListenerTests {
 
 	@Rule
-	public final OutputCapture output = new OutputCapture();
+	public final OutputCaptureRule output = new OutputCaptureRule();
 
 	private ConfigurableApplicationContext context;
 

@@ -18,11 +18,11 @@ package sample.data.elasticsearch;
 
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,13 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Artur Konczak
  */
+@ExtendWith(OutputCaptureExtension.class)
 class SampleElasticsearchApplicationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	void testDefaultSettings() {
+	void testDefaultSettings(CapturedOutput capturedOutput) {
 		try {
 			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		}
@@ -47,7 +45,7 @@ class SampleElasticsearchApplicationTests {
 			}
 			throw ex;
 		}
-		assertThat(this.output).contains("firstName='Alice', lastName='Smith'");
+		assertThat(capturedOutput).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean elasticsearchRunning(Exception ex) {

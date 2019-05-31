@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.system;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -25,74 +25,62 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
- * JUnit5 {@code @Extension} to capture output {@link System#out System.out} and
+ * JUnit 5 {@code @Extension} to capture {@link System#out System.out} and
  * {@link System#err System.err}. Can be used on a test class via
- * {@link ExtendWith @ExtendWith}, or on field using
- * {@link RegisterExtension @RegisterExtension}. This extension provides access to
- * {@link CapturedOutput} instances which can be used to assert that the correct output
- * was written.
+ * {@link ExtendWith @ExtendWith}. This extension provides {@link ParameterResolver
+ * parameter resolution} for a {@link CapturedOutput} instance which can be used to assert
+ * that the correct output was written.
  * <p>
- * To use with {@link ExtendWith @ExtendWith}, inject the {@link CapturedOutput} as a test
- * argument: <pre class="code">
+ * To use with {@link ExtendWith @ExtendWith}, inject the {@link CapturedOutput} as an
+ * argument to your test class constructor or test method:
+ *
+ * <pre class="code">
  * &#064;ExtendWith(OutputExtension.class)
  * class MyTest {
  *
- *   &#064;Test
- *   void test(CapturedOutput output) {
- *       assertThat(output).contains("ok");
- *   }
- *
- * }
- * </pre>
- * <p>
- * To use with {@link RegisterExtension @RegisterExtension}, use the {@link #capture()
- * capture} factory method: argument: <pre class="code">
- * class MyTest {
- *
- *   &#064;RegisterExtension
- *   CapturedOutput output = OutputExtension.capture();
- *
- *   &#064;Test
- *   void test() {
- *       assertThat(output).contains("ok");
- *   }
+ *     &#064;Test
+ *     void test(CapturedOutput output) {
+ *         assertThat(output).contains("ok");
+ *     }
  *
  * }
  * </pre>
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 2.2.0
  * @see CapturedOutput
  */
-public class OutputExtension extends CapturedOutput implements BeforeAllCallback,
-		AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
+public class OutputCaptureExtension implements BeforeAllCallback, AfterAllCallback,
+		BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-	OutputExtension() {
+	private final OutputCapture outputCapture = new OutputCapture();
+
+	OutputCaptureExtension() {
 		// Package private to prevent users from directly creating an instance.
 	}
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
-		push();
+		this.outputCapture.push();
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) throws Exception {
-		pop();
+		this.outputCapture.pop();
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		push();
+		this.outputCapture.push();
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		pop();
+		this.outputCapture.pop();
 	}
 
 	@Override
@@ -104,15 +92,7 @@ public class OutputExtension extends CapturedOutput implements BeforeAllCallback
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext,
 			ExtensionContext extensionContext) throws ParameterResolutionException {
-		return this;
-	}
-
-	/**
-	 * Factory method for use with {@link RegisterExtension @RegisterExtension} fields.
-	 * @return a new {@link CapturedOutput} instance
-	 */
-	public static CapturedOutput capture() {
-		return new OutputExtension();
+		return this.outputCapture;
 	}
 
 }

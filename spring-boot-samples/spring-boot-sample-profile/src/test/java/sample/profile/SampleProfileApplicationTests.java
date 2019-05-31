@@ -19,17 +19,15 @@ package sample.profile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(OutputCaptureExtension.class)
 class SampleProfileApplicationTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	private String profiles;
 
@@ -49,20 +47,20 @@ class SampleProfileApplicationTests {
 	}
 
 	@Test
-	void testDefaultProfile() throws Exception {
+	void testDefaultProfile(CapturedOutput capturedOutput) {
 		SampleProfileApplication.main(new String[0]);
-		assertThat(this.output).contains("Hello Phil");
+		assertThat(capturedOutput).contains("Hello Phil");
 	}
 
 	@Test
-	void testGoodbyeProfile() throws Exception {
+	void testGoodbyeProfile(CapturedOutput capturedOutput) {
 		System.setProperty("spring.profiles.active", "goodbye");
 		SampleProfileApplication.main(new String[0]);
-		assertThat(this.output).contains("Goodbye Everyone");
+		assertThat(capturedOutput).contains("Goodbye Everyone");
 	}
 
 	@Test
-	void testGenericProfile() throws Exception {
+	void testGenericProfile(CapturedOutput capturedOutput) {
 		/*
 		 * This is a profile that requires a new environment property, and one which is
 		 * only overridden in the current working directory. That file also only contains
@@ -71,14 +69,14 @@ class SampleProfileApplicationTests {
 		 */
 		System.setProperty("spring.profiles.active", "generic");
 		SampleProfileApplication.main(new String[0]);
-		assertThat(this.output).contains("Bonjour Phil");
+		assertThat(capturedOutput).contains("Bonjour Phil");
 	}
 
 	@Test
-	void testGoodbyeProfileFromCommandline() throws Exception {
+	void testGoodbyeProfileFromCommandline(CapturedOutput capturedOutput) {
 		SampleProfileApplication
 				.main(new String[] { "--spring.profiles.active=goodbye" });
-		assertThat(this.output).contains("Goodbye Everyone");
+		assertThat(capturedOutput).contains("Goodbye Everyone");
 	}
 
 }

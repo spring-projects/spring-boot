@@ -17,13 +17,13 @@
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -38,15 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ErrorMvcAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
 							ErrorMvcAutoConfiguration.class));
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void renderContainsViewWithExceptionDetails() throws Exception {
@@ -69,7 +67,7 @@ public class ErrorMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void renderWhenAlreadyCommittedLogsMessage() {
+	public void renderWhenAlreadyCommittedLogsMessage(CapturedOutput capturedOutput) {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
@@ -77,7 +75,7 @@ public class ErrorMvcAutoConfigurationTests {
 					new IllegalStateException("Exception message"), true);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
-			assertThat(this.output)
+			assertThat(capturedOutput)
 					.contains("Cannot render error page for request [/path] "
 							+ "and exception [Exception message] as the response has "
 							+ "already been committed. As a result, the response may "

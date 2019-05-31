@@ -17,31 +17,29 @@
 package sample.logback;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(OutputCaptureExtension.class)
 class SampleLogbackApplicationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	void testLoadedCustomLogbackConfig() throws Exception {
+	void testLoadedCustomLogbackConfig(CapturedOutput capturedOutput) throws Exception {
 		SampleLogbackApplication.main(new String[0]);
-		assertThat(this.output).contains("Sample Debug Message");
-		assertThat(this.output).doesNotContain("Sample Trace Message");
+		assertThat(capturedOutput).contains("Sample Debug Message")
+				.doesNotContain("Sample Trace Message");
 	}
 
 	@Test
-	void testProfile() throws Exception {
+	void testProfile(CapturedOutput capturedOutput) throws Exception {
 		SampleLogbackApplication
 				.main(new String[] { "--spring.profiles.active=staging" });
-		assertThat(this.output).contains("Sample Debug Message");
-		assertThat(this.output).contains("Sample Trace Message");
+		assertThat(capturedOutput).contains("Sample Debug Message")
+				.contains("Sample Trace Message");
 	}
 
 }

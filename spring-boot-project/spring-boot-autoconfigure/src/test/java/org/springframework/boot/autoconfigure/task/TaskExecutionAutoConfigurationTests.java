@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.TaskExecutorBuilder;
@@ -29,8 +29,8 @@ import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -53,14 +53,12 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Camille Vienot
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class TaskExecutionAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {
@@ -113,15 +111,14 @@ public class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorAutoConfigured() {
+	public void taskExecutorAutoConfigured(CapturedOutput capturedOutput) {
 		this.contextRunner.run((context) -> {
-			assertThat(this.output.toString())
-					.doesNotContain("Initializing ExecutorService");
+			assertThat(capturedOutput).doesNotContain("Initializing ExecutorService");
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context).hasBean("applicationTaskExecutor");
 			assertThat(context).getBean("applicationTaskExecutor")
 					.isInstanceOf(ThreadPoolTaskExecutor.class);
-			assertThat(this.output.toString()).contains("Initializing ExecutorService");
+			assertThat(capturedOutput).contains("Initializing ExecutorService");
 		});
 	}
 

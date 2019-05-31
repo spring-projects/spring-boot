@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.system;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -23,11 +23,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutputExtension} when used via {@link ExtendWith @ExtendWith}.
+ * Tests for {@link OutputCaptureExtension} when used via {@link ExtendWith @ExtendWith}.
  *
  * @author Madhura Bhave
  */
-@ExtendWith(OutputExtension.class)
+@ExtendWith(OutputCaptureExtension.class)
 @ExtendWith(OutputExtensionExtendWithTests.BeforeAllExtension.class)
 class OutputExtensionExtendWithTests {
 

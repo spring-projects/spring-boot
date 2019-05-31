@@ -23,7 +23,7 @@ import java.util.Locale;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingRespectLayoutTitleStrategy;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
@@ -37,8 +37,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,10 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ThymeleafReactiveAutoConfigurationTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
@@ -187,21 +185,21 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateLocationDoesNotExist() {
+	public void templateLocationDoesNotExist(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.thymeleaf.prefix:classpath:/no-such-directory/")
-				.run((context) -> assertThat(this.output)
+				.run((context) -> assertThat(capturedOutput)
 						.contains("Cannot find template location"));
 	}
 
 	@Test
-	public void templateLocationEmpty() {
+	public void templateLocationEmpty(CapturedOutput capturedOutput) {
 		new File(this.buildOutput.getTestResourcesLocation(),
 				"empty-templates/empty-directory").mkdirs();
 		this.contextRunner.withPropertyValues(
 				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(this.output.toString())
+				.run((context) -> assertThat(capturedOutput)
 						.doesNotContain("Cannot find template location"));
 	}
 

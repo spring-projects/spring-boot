@@ -19,10 +19,10 @@ package sample.aop;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,10 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@ExtendWith(OutputCaptureExtension.class)
 class SampleAopApplicationTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	private String profiles;
 
@@ -55,15 +53,15 @@ class SampleAopApplicationTests {
 	}
 
 	@Test
-	void testDefaultSettings() throws Exception {
+	void testDefaultSettings(CapturedOutput capturedOutput) throws Exception {
 		SampleAopApplication.main(new String[0]);
-		assertThat(this.output).contains("Hello Phil");
+		assertThat(capturedOutput).contains("Hello Phil");
 	}
 
 	@Test
-	void testCommandLineOverrides() throws Exception {
+	void testCommandLineOverrides(CapturedOutput capturedOutput) throws Exception {
 		SampleAopApplication.main(new String[] { "--name=Gordon" });
-		assertThat(this.output).contains("Hello Gordon");
+		assertThat(capturedOutput).contains("Hello Gordon");
 	}
 
 }

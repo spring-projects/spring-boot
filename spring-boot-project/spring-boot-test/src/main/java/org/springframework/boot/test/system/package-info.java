@@ -15,6 +15,6 @@
  */
 
 /**
- * JUnit 5 {@link org.junit.jupiter.api.extension.Extension Extensions}.
+ * Classes for {@link java.lang.System System}-related testing.
  */
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.system;

@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -27,8 +27,8 @@ import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagem
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,13 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ManagementContextAutoConfigurationTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
-
 	@Test
-	public void childManagementContextShouldStartForEmbeddedServer() {
+	public void childManagementContextShouldStartForEmbeddedServer(
+			CapturedOutput capturedOutput) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(
@@ -54,12 +53,12 @@ public class ManagementContextAutoConfigurationTests {
 								ServletManagementContextAutoConfiguration.class,
 								WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class));
-		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run(
-				(context) -> assertThat(tomcatStartedOccurencesIn(this.output.toString()))
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
+				.run((context) -> assertThat(tomcatStartedOccurencesIn(capturedOutput))
 						.isEqualTo(2));
 	}
 
-	private int tomcatStartedOccurencesIn(String output) {
+	private int tomcatStartedOccurencesIn(CharSequence output) {
 		int matches = 0;
 		Matcher matcher = Pattern.compile("Tomcat started on port").matcher(output);
 		while (matcher.find()) {

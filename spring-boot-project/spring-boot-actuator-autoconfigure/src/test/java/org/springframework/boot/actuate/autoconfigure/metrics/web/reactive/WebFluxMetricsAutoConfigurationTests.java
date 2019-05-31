@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
@@ -29,8 +29,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -44,14 +44,12 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Dmytro Nosan
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class WebFluxMetricsAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.with(MetricsRun.simple()).withConfiguration(
 					AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void shouldProvideWebFluxMetricsBeans() {
@@ -69,7 +67,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+	public void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
@@ -77,14 +75,14 @@ public class WebFluxMetricsAutoConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
-					assertThat(this.output.toString())
+					assertThat(capturedOutput)
 							.contains("Reached the maximum number of URI tags "
 									+ "for 'http.server.requests'");
 				});
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
+	public void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
@@ -92,7 +90,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-					assertThat(this.output.toString()).doesNotContain(
+					assertThat(capturedOutput).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}

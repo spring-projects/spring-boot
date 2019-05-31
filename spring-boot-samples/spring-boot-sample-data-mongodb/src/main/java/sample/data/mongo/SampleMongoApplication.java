@@ -16,10 +16,14 @@
 
 package sample.data.mongo;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class SampleMongoApplication implements CommandLineRunner {
@@ -53,6 +57,13 @@ public class SampleMongoApplication implements CommandLineRunner {
 		for (Customer customer : this.repository.findByLastName("Smith")) {
 			System.out.println(customer);
 		}
+	}
+
+	@Bean
+	public MongoClientSettingsBuilderCustomizer customizer() {
+		return (builder) -> builder
+				.applyToConnectionPoolSettings((connectionPool) -> connectionPool
+						.maxConnectionIdleTime(5, TimeUnit.MINUTES));
 	}
 
 	public static void main(String[] args) {

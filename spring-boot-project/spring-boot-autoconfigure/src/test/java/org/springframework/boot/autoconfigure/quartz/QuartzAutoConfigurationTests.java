@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -45,8 +45,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -68,10 +68,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class QuartzAutoConfigurationTests {
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
@@ -176,7 +174,7 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withConfiguredJobAndTrigger() {
+	public void withConfiguredJobAndTrigger(CapturedOutput capturedOutput) {
 		this.contextRunner.withUserConfiguration(QuartzFullConfiguration.class)
 				.withPropertyValues("test-name=withConfiguredJobAndTrigger")
 				.run((context) -> {
@@ -187,8 +185,8 @@ public class QuartzAutoConfigurationTests {
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger")))
 							.isNotNull();
 					Thread.sleep(1000L);
-					assertThat(this.output).contains("withConfiguredJobAndTrigger");
-					assertThat(this.output).contains("jobDataValue");
+					assertThat(capturedOutput).contains("withConfiguredJobAndTrigger")
+							.contains("jobDataValue");
 				});
 	}
 

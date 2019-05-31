@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.test.extension;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+package org.springframework.boot.test.system;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutputExtension} when used via
- * {@link RegisterExtension @RegisterExtension}.
+ * Tests for {@link OutputCaptureRule}.
  *
- * @author Madhura Bhave
+ * @author Roland Weisleder
  */
-class OutputExtensionRegisterExtensionTests {
+public class OutputCaptureRuleTests {
 
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
+	@Rule
+	public OutputCaptureRule outputCapture = new OutputCaptureRule();
 
 	@Test
-	void captureShouldReturnAllCapturedOutput() {
+	public void toStringShouldReturnAllCapturedOutput() {
 		System.out.println("Hello World");
-		System.err.println("Error!!!");
-		assertThat(this.output).contains("Hello World").contains("Error!!!");
+		assertThat(this.outputCapture.toString()).contains("Hello World");
 	}
 
 }

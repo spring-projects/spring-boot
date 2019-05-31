@@ -79,6 +79,7 @@ public class MongoProperties {
 	/**
 	 * Login user of the mongo server. Cannot be set with URI.
 	 */
+
 	private String username;
 
 	/**

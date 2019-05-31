@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 public class HttpTunnelConnectionTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public OutputCaptureRule outputCapture = new OutputCaptureRule();
 
 	private String url;
 
