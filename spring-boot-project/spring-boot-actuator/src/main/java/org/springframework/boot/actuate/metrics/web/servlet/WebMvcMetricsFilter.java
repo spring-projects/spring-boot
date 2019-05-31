@@ -25,6 +25,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -101,12 +102,16 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+
+		StatusHttpServletResponseWrapper httpStatusResponse = new StatusHttpServletResponseWrapper(
+				response);
+
 		TimingContext timingContext = TimingContext.get(request);
 		if (timingContext == null) {
 			timingContext = startAndAttachTimingContext(request);
 		}
 		try {
-			filterChain.doFilter(request, response);
+			filterChain.doFilter(request, httpStatusResponse);
 			if (!request.isAsyncStarted()) {
 				// Only record when async processing has finished or never been started.
 				// If async was started by something further down the chain we wait
@@ -118,7 +123,9 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			}
 		}
 		catch (NestedServletException ex) {
-			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			if (!httpStatusResponse.hasStatus()) {
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
 			record(timingContext, request, response, ex.getCause());
 			throw ex;
 		}
@@ -210,6 +217,50 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 		public static TimingContext get(HttpServletRequest request) {
 			return (TimingContext) request.getAttribute(ATTRIBUTE);
+		}
+
+	}
+
+	/**
+	 * {@link HttpServletResponseWrapper} to catch whether the {@code status} has been set
+	 * or not.
+	 */
+	@SuppressWarnings("deprecation")
+	private static final class StatusHttpServletResponseWrapper
+			extends HttpServletResponseWrapper {
+
+		private boolean alreadySet;
+
+		StatusHttpServletResponseWrapper(HttpServletResponse response) {
+			super(response);
+		}
+
+		@Override
+		public void sendError(int sc, String msg) throws IOException {
+			this.alreadySet = true;
+			super.sendError(sc, msg);
+		}
+
+		@Override
+		public void sendError(int sc) throws IOException {
+			this.alreadySet = true;
+			super.sendError(sc);
+		}
+
+		@Override
+		public void setStatus(int sc) {
+			this.alreadySet = true;
+			super.setStatus(sc);
+		}
+
+		@Override
+		public void setStatus(int sc, String sm) {
+			this.alreadySet = true;
+			super.setStatus(sc, sm);
+		}
+
+		boolean hasStatus() {
+			return this.alreadySet;
 		}
 
 	}

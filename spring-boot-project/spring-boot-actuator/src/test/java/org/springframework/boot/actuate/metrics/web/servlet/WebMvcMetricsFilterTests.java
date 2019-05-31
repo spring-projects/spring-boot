@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Tag;
@@ -207,9 +208,23 @@ public class WebMvcMetricsFilterTests {
 		}
 		catch (Throwable ignore) {
 		}
-		assertThat(this.registry.get("http.server.requests")
-				.tag("uri", "/api/c1/anonymousError/{id}").timer().getId()
-				.getTag("exception")).endsWith("$1");
+		Id id = this.registry.get("http.server.requests")
+				.tag("uri", "/api/c1/anonymousError/{id}").timer().getId();
+		assertThat(id.getTag("exception")).contains("$Controller1$");
+		assertThat(id.getTag("status")).isEqualTo("500");
+	}
+
+	@Test
+	public void anonymousErrorCustomStatus() {
+		try {
+			this.mvc.perform(get("/api/c1/customAnonymousError/10"));
+		}
+		catch (Throwable ignore) {
+		}
+		Id id = this.registry.get("http.server.requests")
+				.tag("uri", "/api/c1/customAnonymousError/{id}").timer().getId();
+		assertThat(id.getTag("status")).isEqualTo("503");
+		assertThat(id.getTag("exception")).contains("$Controller1$");
 	}
 
 	@Test
@@ -454,6 +469,15 @@ public class WebMvcMetricsFilterTests {
 		public String alwaysThrowsAnonymousException(@PathVariable Long id)
 				throws Exception {
 			throw new Exception("this exception won't have a simple class name") {
+			};
+		}
+
+		@Timed
+		@GetMapping("/customAnonymousError/{id}")
+		public String alwaysThrowsCustomStatusAnonymousException(@PathVariable Long id,
+				HttpServletResponse httpServletResponse) throws Exception {
+			httpServletResponse.setStatus(503);
+			throw new Exception("this is a custom exception") {
 			};
 		}
 
