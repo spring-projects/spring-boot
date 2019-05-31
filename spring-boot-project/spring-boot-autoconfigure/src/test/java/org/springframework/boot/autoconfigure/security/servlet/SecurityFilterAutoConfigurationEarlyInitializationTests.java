@@ -30,7 +30,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -53,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() {

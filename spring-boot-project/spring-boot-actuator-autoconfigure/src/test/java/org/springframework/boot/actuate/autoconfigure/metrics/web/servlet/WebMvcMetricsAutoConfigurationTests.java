@@ -42,7 +42,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +70,7 @@ public class WebMvcMetricsAutoConfigurationTests {
 					AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
 
 	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void backsOffWhenMeterRegistryIsMissing() {

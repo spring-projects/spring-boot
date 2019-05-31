@@ -22,7 +22,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -45,7 +46,7 @@ public class ErrorMvcAutoConfigurationTests {
 							ErrorMvcAutoConfiguration.class));
 
 	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void renderContainsViewWithExceptionDetails() throws Exception {

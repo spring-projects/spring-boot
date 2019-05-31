@@ -29,7 +29,8 @@ import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -59,7 +60,7 @@ public class TaskExecutionAutoConfigurationTests {
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
 	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	CapturedOutput output = OutputExtension.capture();
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {

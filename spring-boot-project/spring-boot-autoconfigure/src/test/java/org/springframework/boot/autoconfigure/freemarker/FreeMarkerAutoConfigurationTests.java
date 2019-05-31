@@ -24,7 +24,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FreeMarkerAutoConfigurationTests {
 
 	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	CapturedOutput output = OutputExtension.capture();
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 

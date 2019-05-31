@@ -25,7 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
 
@@ -36,14 +37,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS,
 		listeners = { OrderedCassandraTestExecutionListener.class })
-@ExtendWith(OutputCapture.class)
+@ExtendWith(OutputExtension.class)
 @SpringBootTest
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
 @EmbeddedCassandra(timeout = 60000)
 class SampleCassandraApplicationTests {
 
 	@Test
-	void testDefaultSettings(OutputCapture output) {
+	void testDefaultSettings(CapturedOutput output) {
 		Assumptions.assumeFalse(this::runningOnWindows);
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}

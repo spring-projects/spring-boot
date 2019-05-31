@@ -27,7 +27,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -37,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleWsApplicationTests {
 
 	@RegisterExtension
-	OutputCapture output = new OutputCapture();
+	CapturedOutput output = OutputExtension.capture();
 
 	private WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 

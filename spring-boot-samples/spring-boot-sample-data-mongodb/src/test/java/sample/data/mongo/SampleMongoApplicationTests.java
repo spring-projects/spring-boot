@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.extension.CapturedOutput;
+import org.springframework.boot.test.extension.OutputExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,12 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ExtendWith(OutputCapture.class)
+@ExtendWith(OutputExtension.class)
 @SpringBootTest
 class SampleMongoApplicationTests {
 
 	@Test
-	void testDefaultSettings(OutputCapture output) {
+	void testDefaultSettings(CapturedOutput output) {
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 

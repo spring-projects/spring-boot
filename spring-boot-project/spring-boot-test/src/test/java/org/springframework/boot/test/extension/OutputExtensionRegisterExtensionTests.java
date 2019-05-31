@@ -16,41 +16,26 @@
 package org.springframework.boot.test.extension;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutputCapture} when used via {@link ExtendWith @ExtendWith}.
+ * Tests for {@link OutputExtension} when used via
+ * {@link RegisterExtension @RegisterExtension}.
  *
  * @author Madhura Bhave
  */
-@ExtendWith(OutputCapture.class)
-@ExtendWith(OutputCaptureExtendWithTests.BeforeAllExtension.class)
-class OutputCaptureExtendWithTests {
+class OutputExtensionRegisterExtensionTests {
+
+	@RegisterExtension
+	CapturedOutput output = OutputExtension.capture();
 
 	@Test
-	void captureShouldReturnOutputCapturedBeforeTestMethod(OutputCapture output) {
-		assertThat(output).contains("Before all").doesNotContain("Hello");
-	}
-
-	@Test
-	void captureShouldReturnAllCapturedOutput(OutputCapture output) {
+	void captureShouldReturnAllCapturedOutput() {
 		System.out.println("Hello World");
 		System.err.println("Error!!!");
-		assertThat(output).contains("Before all").contains("Hello World")
-				.contains("Error!!!");
-	}
-
-	static class BeforeAllExtension implements BeforeAllCallback {
-
-		@Override
-		public void beforeAll(ExtensionContext context) {
-			System.out.println("Before all");
-		}
-
+		assertThat(this.output).contains("Hello World").contains("Error!!!");
 	}
 
 }
