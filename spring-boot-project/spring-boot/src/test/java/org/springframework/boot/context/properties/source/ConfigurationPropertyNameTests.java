@@ -632,6 +632,7 @@ public class ConfigurationPropertyNameTests {
 		ConfigurationPropertyName n2 = ConfigurationPropertyName
 				.of("management.metrics.web.server.auto-time-requests");
 		assertThat(n1).isNotEqualTo(n2);
+		assertThat(n2).isNotEqualTo(n1);
 	}
 
 	@Test
