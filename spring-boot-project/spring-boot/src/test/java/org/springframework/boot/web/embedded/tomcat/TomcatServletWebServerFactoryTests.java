@@ -68,7 +68,6 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.WebServerException;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.core.io.ByteArrayResource;
@@ -538,25 +537,19 @@ public class TomcatServletWebServerFactoryTests
 			throws IOException, URISyntaxException {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		AtomicReference<ServletContext> servletContextReference = new AtomicReference<>();
-		factory.addInitializers(new ServletContextInitializer() {
+		factory.addInitializers((servletContext) -> {
+			servletContextReference.set(servletContext);
+			Dynamic servlet = servletContext.addServlet("upload", new HttpServlet() {
 
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContextReference.set(servletContext);
-				Dynamic servlet = servletContext.addServlet("upload", new HttpServlet() {
+				@Override
+				protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+						throws ServletException, IOException {
+					req.getParts();
+				}
 
-					@Override
-					protected void doPost(HttpServletRequest req,
-							HttpServletResponse resp)
-							throws ServletException, IOException {
-						req.getParts();
-					}
-
-				});
-				servlet.addMapping("/upload");
-				servlet.setMultipartConfig(new MultipartConfigElement((String) null));
-			}
-
+			});
+			servlet.addMapping("/upload");
+			servlet.setMultipartConfig(new MultipartConfigElement((String) null));
 		});
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
