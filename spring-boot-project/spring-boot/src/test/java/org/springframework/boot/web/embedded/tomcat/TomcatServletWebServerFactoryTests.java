@@ -538,25 +538,20 @@ public class TomcatServletWebServerFactoryTests
 			throws IOException, URISyntaxException {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		AtomicReference<ServletContext> servletContextReference = new AtomicReference<>();
-		factory.addInitializers(new ServletContextInitializer() {
+		factory.addInitializers((ServletContextInitializer) servletContext -> {
+			servletContextReference.set(servletContext);
+			Dynamic servlet = servletContext.addServlet("upload", new HttpServlet() {
 
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContextReference.set(servletContext);
-				Dynamic servlet = servletContext.addServlet("upload", new HttpServlet() {
+				@Override
+				protected void doPost(HttpServletRequest req,
+						HttpServletResponse resp)
+						throws ServletException, IOException {
+					req.getParts();
+				}
 
-					@Override
-					protected void doPost(HttpServletRequest req,
-							HttpServletResponse resp)
-							throws ServletException, IOException {
-						req.getParts();
-					}
-
-				});
-				servlet.addMapping("/upload");
-				servlet.setMultipartConfig(new MultipartConfigElement((String) null));
-			}
-
+			});
+			servlet.addMapping("/upload");
+			servlet.setMultipartConfig(new MultipartConfigElement((String) null));
 		});
 		this.webServer = factory.getWebServer();
 		this.webServer.start();

@@ -503,16 +503,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
 						.loadKeyMaterial(keyStore, "secret".toCharArray(),
-								new PrivateKeyStrategy() {
-
-									@Override
-									public String chooseAlias(
-											Map<String, PrivateKeyDetails> aliases,
-											Socket socket) {
-										return "spring-boot";
-									}
-
-								})
+								(aliases, socket) -> "spring-boot")
 						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
@@ -538,15 +529,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
 						.loadKeyMaterial(keyStore, "password".toCharArray(),
-								new PrivateKeyStrategy() {
-
-									@Override
-									public String chooseAlias(
-											Map<String, PrivateKeyDetails> aliases,
-											Socket socket) {
-										return "spring-boot";
-									}
-								})
+								(aliases, socket) -> "spring-boot")
 						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
@@ -639,15 +622,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
 						.loadKeyMaterial(keyStore, "password".toCharArray(),
-								new PrivateKeyStrategy() {
-
-									@Override
-									public String chooseAlias(
-											Map<String, PrivateKeyDetails> aliases,
-											Socket socket) {
-										return "spring-boot";
-									}
-								})
+								(aliases, socket) -> "spring-boot")
 						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
