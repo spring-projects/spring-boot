@@ -360,11 +360,17 @@ public final class ConfigurationPropertyName
 				i2++;
 			}
 		}
-		while (i2 < l2) {
-			char ch2 = Character.toLowerCase(e2.charAt(i, i2++));
-			if (indexed2 || ElementsParser.isAlphaNumeric(ch2)) {
+		if (i2 < l2) {
+			if (indexed2) {
 				return false;
 			}
+			do {
+				char ch2 = Character.toLowerCase(e2.charAt(i, i2++));
+				if (ElementsParser.isAlphaNumeric(ch2)) {
+					return false;
+				}
+			}
+			while (i2 < l2);
 		}
 		return true;
 	}
@@ -399,7 +405,8 @@ public final class ConfigurationPropertyName
 				return false;
 			}
 			do {
-				if (e2.charAt(i, i2++) != '-') {
+				char ch2 = e2.charAt(i, i2++);
+				if (ch2 != '-') {
 					return false;
 				}
 			}
