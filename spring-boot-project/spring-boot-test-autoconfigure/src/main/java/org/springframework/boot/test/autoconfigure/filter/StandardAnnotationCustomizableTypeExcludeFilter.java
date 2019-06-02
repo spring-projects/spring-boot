@@ -28,7 +28,7 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
  * {@link AnnotationCustomizableTypeExcludeFilter} that can be used to any test annotation
- * that uses the standard {code includeFilters}, {code excludeFilters} and
+ * that uses the standard {@code includeFilters}, {@code excludeFilters} and
  * {@code useDefaultFilters} attributes.
  *
  * @param <A> the annotation type
