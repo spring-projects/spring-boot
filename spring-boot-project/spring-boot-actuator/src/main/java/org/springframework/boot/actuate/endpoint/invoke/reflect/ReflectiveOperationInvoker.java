@@ -48,7 +48,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	private final ParameterValueMapper parameterValueMapper;
 
 	/**
-	 * Creates a new {code ReflectiveOperationInvoker} that will invoke the given
+	 * Creates a new {@code ReflectiveOperationInvoker} that will invoke the given
 	 * {@code method} on the given {@code target}. The given {@code parameterMapper} will
 	 * be used to map parameters to the required types and the given
 	 * {@code parameterNameMapper} will be used map parameters by name.
