@@ -202,14 +202,16 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeRequestLog(CustomRequestLog requestLog) {
 			if (requestLog.getWriter() instanceof RequestLogWriter) {
-				RequestLogWriter writer = (RequestLogWriter) requestLog.getWriter();
-				String filename = writer.getFileName();
-				if (StringUtils.hasLength(filename)) {
-					File file = new File(filename);
-					file = new File(file.getParentFile(),
-							customizePrefix(file.getName()));
-					writer.setFilename(file.getPath());
-				}
+				customizeRequestLogWriter((RequestLogWriter) requestLog.getWriter());
+			}
+		}
+
+		private void customizeRequestLogWriter(RequestLogWriter writer) {
+			String filename = writer.getFileName();
+			if (StringUtils.hasLength(filename)) {
+				File file = new File(filename);
+				file = new File(file.getParentFile(), customizePrefix(file.getName()));
+				writer.setFilename(file.getPath());
 			}
 		}
 
