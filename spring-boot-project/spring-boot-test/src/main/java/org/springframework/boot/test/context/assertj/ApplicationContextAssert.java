@@ -32,6 +32,8 @@ import org.assertj.core.error.BasicErrorMessageFactory;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @param <C> the application context type
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dmytro Nosan
  * @since 2.0.0
  * @see ApplicationContextRunner
  * @see AssertableApplicationContext
@@ -412,6 +415,114 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		}
 		return Assertions.assertThat(scope.getBeansOfType(getApplicationContext(), type))
 				.as("Beans of type <%s> from <%s>", type, getApplicationContext());
+	}
+
+	/**
+	 * Verifies that the application context contains a bean definition with the given
+	 * name. Considers bean definitions in ancestor factories as well.
+	 * <p>
+	 * Example: <pre class="code">
+	 * assertThat(context).hasBeanDefinition("foo"); </pre>
+	 * @param name the name of the definition
+	 * @return {@code this} assertion object.
+	 * @throws AssertionError if the application context did not start
+	 * @throws AssertionError if the application context does not contain a bean
+	 * definition with the given name
+	 * @since 2.2.0
+	 * @see #getBeanDefinition(String)
+	 * @see #doesNotHaveBeanDefinition(String)
+	 */
+	public ApplicationContextAssert<C> hasBeanDefinition(String name) {
+		if (this.startupFailure != null) {
+			throwAssertionError(contextFailedToStartWhenExpecting("to have bean definition named:%n <%s>", name));
+		}
+		if (findBeanDefinition(name) == null) {
+			throwAssertionError(new BasicErrorMessageFactory(
+					"%nExpecting:%n <%s>%nto have bean definition named:%n <%s>%nbut found no such bean definition",
+					getApplicationContext(), name));
+		}
+		return this;
+	}
+
+	/**
+	 * Verifies that the application context does not contain a bean definition with the
+	 * given name. Considers bean definitions in ancestor factories as well.
+	 * <p>
+	 * Example: <pre class="code">
+	 * assertThat(context).doestNotHaveBeanDefinition("foo"); </pre>
+	 * @param name the name of the definition
+	 * @return {@code this} assertion object.
+	 * @throws AssertionError if the application context did not start
+	 * @throws AssertionError if the application context contains a bean definition with
+	 * the given name
+	 * @since 2.2.0
+	 * @see #getBeanDefinition(String)
+	 * @see #hasBeanDefinition(String)
+	 */
+	public ApplicationContextAssert<C> doesNotHaveBeanDefinition(String name) {
+		if (this.startupFailure != null) {
+			throwAssertionError(
+					contextFailedToStartWhenExpecting("not to have any bean definitions of name:%n <%s>", name));
+		}
+		BeanDefinition bd = findBeanDefinition(name);
+		if (bd != null) {
+			throwAssertionError(new BasicErrorMessageFactory(
+					"%nExpecting:%n <%s>%nnot to have a bean definition of name:%n <%s>%nbut found:%n <%s>",
+					getApplicationContext(), name, bd));
+		}
+		return this;
+	}
+
+	/**
+	 * Obtain a bean definition of the given name from the application context. Considers
+	 * bean definitions in ancestor factories as well. If no bean definition of the
+	 * specified name can be found an assert on null is returned.
+	 * <p>
+	 * Example: <pre class="code">
+	 * assertThat(context).getBeanDefinition("foo").dependsOn("bean",
+	 * "bean1");
+	 * assertThat(context).getBeanDefinition("foo").isSingleton();
+	 * </pre>
+	 * @param name the name of the bean definition.
+	 * @return {@code BeanDefinitionAssert} for the bean definition, or an assert on
+	 * {@code null} if the no bean definition is found
+	 * @throws AssertionError if the application context did not start
+	 * @since 2.2.0
+	 * @see #hasBeanDefinition(String)
+	 * @see #doesNotHaveBeanDefinition(String)
+	 */
+	public BeanDefinitionAssert<?> getBeanDefinition(String name) {
+		if (this.startupFailure != null) {
+			throwAssertionError(contextFailedToStartWhenExpecting("to have bean definition named:%n <%s>", name));
+		}
+		return new BeanDefinitionAssert<>(findBeanDefinition(name)).as("Bean definition of name <%s> from <%s>", name,
+				getApplicationContext());
+	}
+
+	private BeanDefinition findBeanDefinition(String name) {
+		AutowireCapableBeanFactory beanFactory = getApplicationContext().getAutowireCapableBeanFactory();
+		if (beanFactory instanceof ConfigurableListableBeanFactory) {
+			return findBeanDefinition(name, ((ConfigurableListableBeanFactory) beanFactory));
+		}
+		return null;
+	}
+
+	private BeanDefinition findBeanDefinition(String name, ConfigurableListableBeanFactory beanFactory) {
+		try {
+			// todo beanFactory.getBeanDefinition(name) ?
+			return beanFactory.getMergedBeanDefinition(name);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			/*
+			 * TODO. in case if use beanFactory.getBeanDefinition(name);
+			 *
+			 * BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory(); if
+			 * (parentBeanFactory instanceof ConfigurableListableBeanFactory) { return
+			 * findBeanDefinition(name, (ConfigurableListableBeanFactory)
+			 * parentBeanFactory); }
+			 */
+			return null;
+		}
 	}
 
 	/**

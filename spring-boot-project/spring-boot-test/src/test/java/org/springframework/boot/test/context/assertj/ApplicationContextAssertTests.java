@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssert.Scope;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dmytro Nosan
  */
 class ApplicationContextAssertTests {
 
@@ -394,6 +396,87 @@ class ApplicationContextAssertTests {
 	@Test
 	void hasNotFailedWhenNotFailedShouldPass() {
 		assertThat(getAssert(this.context)).hasNotFailed();
+	}
+
+	@Test
+	void hasBeanDefinitionWhenParentContextHasBeanDefinitionShouldPass() {
+		this.parent.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
+		assertThat(getAssert(this.context)).hasBeanDefinition("foo");
+	}
+
+	@Test
+	void hasBeanDefinitionWhenHasBeanDefinitionShouldPass() {
+		this.context.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
+		assertThat(getAssert(this.context)).hasBeanDefinition("foo");
+	}
+
+	@Test
+	void hasBeanDefinitionWhenHasBeanDefinitionShouldFail() {
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.context)).hasBeanDefinition("foo"))
+				.withMessageContaining("no such bean definition");
+	}
+
+	@Test
+	void hasBeanDefinitionWhenNotStartedShouldFail() {
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).hasBeanDefinition("foo"))
+				.withMessageContaining(String.format("but context failed to start:%n java.lang.RuntimeException"));
+	}
+
+	@Test
+	void doesNotHaveBeanDefinitionWhenHasBeanDefinitionShouldPass() {
+		assertThat(getAssert(this.context)).doesNotHaveBeanDefinition("foo");
+	}
+
+	@Test
+	void doesNotHaveBeanDefinitionWhenParentHasBeanDefinitionShouldFail() {
+		this.parent.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.context)).doesNotHaveBeanDefinition("foo"))
+				.withMessageContaining("not to have a bean definition of");
+	}
+
+	@Test
+	void doesNotHaveBeanDefinitionWhenHasBeanDefinitionShouldFail() {
+		this.context.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.context)).doesNotHaveBeanDefinition("foo"))
+				.withMessageContaining("not to have a bean definition of");
+	}
+
+	@Test
+	void doesNotHaveBeanDefinitionWhenNotStartedShouldFail() {
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).doesNotHaveBeanDefinition("foo"))
+				.withMessageContaining(String.format("but context failed to start:%n java.lang.RuntimeException"));
+	}
+
+	@Test
+	void getBeanDefinitionWhenNotStartedShouldFail() {
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).getBeanDefinition("foo"))
+				.withMessageContaining("to have bean definition named")
+				.withMessageContaining(String.format("but context failed to start:%n java.lang.RuntimeException"));
+	}
+
+	@Test
+	void getBeanDefinitionWhenParentContextHasBeanDefinitionShouldPass() {
+		this.parent.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
+		assertThat(getAssert(this.context)).getBeanDefinition("foo");
+	}
+
+	@Test
+	void getBeanDefinitionWhenHasBeanDefinitionShouldPass() {
+		this.context.registerBeanDefinition("foo", new RootBeanDefinition(Foo.class));
+		assertThat(getAssert(this.context)).getBeanDefinition("foo").isNotNull();
+	}
+
+	@Test
+	void getBeanDefinitionWhenHasBeanShouldFail() {
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.context)).getBeanDefinition("foo").isNotNull())
+				.withMessageContaining("actual not to be null");
 	}
 
 	private AssertableApplicationContext getAssert(ConfigurableApplicationContext applicationContext) {
