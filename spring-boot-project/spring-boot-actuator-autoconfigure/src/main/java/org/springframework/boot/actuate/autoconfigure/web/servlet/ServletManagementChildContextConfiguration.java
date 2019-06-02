@@ -22,8 +22,9 @@ import javax.servlet.Filter;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
-import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.server.RequestLogWriter;
 import org.eclipse.jetty.server.Server;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -194,17 +195,23 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeServer(Server server) {
 			RequestLog requestLog = server.getRequestLog();
-			if (requestLog != null && requestLog instanceof NCSARequestLog) {
-				customizeRequestLog((NCSARequestLog) requestLog);
+			if (requestLog != null && requestLog instanceof CustomRequestLog) {
+				customizeRequestLog((CustomRequestLog) requestLog);
 			}
 		}
 
-		private void customizeRequestLog(NCSARequestLog requestLog) {
-			String filename = requestLog.getFilename();
+		private void customizeRequestLog(CustomRequestLog requestLog) {
+			if (requestLog.getWriter() instanceof RequestLogWriter) {
+				customizeRequestLogWriter((RequestLogWriter) requestLog.getWriter());
+			}
+		}
+
+		private void customizeRequestLogWriter(RequestLogWriter writer) {
+			String filename = writer.getFileName();
 			if (StringUtils.hasLength(filename)) {
 				File file = new File(filename);
 				file = new File(file.getParentFile(), customizePrefix(file.getName()));
-				requestLog.setFilename(file.getPath());
+				writer.setFilename(file.getPath());
 			}
 		}
 
