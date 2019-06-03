@@ -27,14 +27,14 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 /**
- * JUnit 5 {@code @Extension} to capture {@link System#out System.out} and
- * {@link System#err System.err}. Can be used on a test class via
- * {@link ExtendWith @ExtendWith}. This extension provides {@link ParameterResolver
- * parameter resolution} for a {@link CapturedOutput} instance which can be used to assert
- * that the correct output was written.
+ * JUnit Jupiter {@code @Extension} to capture {@link System#out System.out} and
+ * {@link System#err System.err}. Can be registered for an entire test class or for an
+ * individual test method via {@link ExtendWith @ExtendWith}. This extension provides
+ * {@linkplain ParameterResolver parameter resolution} for a {@link CapturedOutput}
+ * instance which can be used to assert that the correct output was written.
  * <p>
  * To use with {@link ExtendWith @ExtendWith}, inject the {@link CapturedOutput} as an
- * argument to your test class constructor or test method:
+ * argument to your test class constructor, test method, or lifecycle methods:
  *
  * <pre class="code">
  * &#064;ExtendWith(OutputCaptureExtension.class)
@@ -42,7 +42,15 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  *
  *     &#064;Test
  *     void test(CapturedOutput output) {
+ *         System.out.println("ok");
  *         assertThat(output).contains("ok");
+ *         System.err.println("error");
+ *     }
+ *
+ *     &#064;AfterEach
+ *     void after(CapturedOutput output) {
+ *         assertThat(output.getOut()).contains("ok");
+ *         assertThat(output.getErr()).contains("error");
  *     }
  *
  * }
@@ -51,6 +59,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Sam Brannen
  * @since 2.2.0
  * @see CapturedOutput
  */
