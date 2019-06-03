@@ -130,20 +130,22 @@ Usage
 mvn spring-boot:run
 ---
 
-  By default the application is executed in a forked process. Although this is not
-  recommended, it is possible to execute the application directly from the Maven JVM by
-  disabling the <<<fork>>> property. Doing so means that <<<jvmArguments>>>,
-  <<<systemPropertyVariables>>>, <<<environmentVariables>>> and <<<agent>>> options are
-  ignored.
-
-  If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
-  the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details. There is also explicit support for
-  {{{./examples/run-system-properties.html}system properties}} and
+  By default the application is executed in a forked process and setting properties on the
+  command-line will not affect the application. If you need to specify some JVM arguments
+  (i.e. for debugging purposes), you can use the <<<jvmArguments>>> parameter, see
+  {{{./examples/run-debug.html}Debug the application}} for more details. There is also
+  explicit support for {{{./examples/run-system-properties.html}system properties}} and
   {{{./examples/run-env-variables.html}environment variables}}.
 
-  As a convenience, the profiles to enable are handled by a specific property (
-  <<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
+  As enabling a profile is quite common, there is dedicated <<<profiles>>> property that
+  offers a shortcut for
+  <<<-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev">>>,
+  see {{{./examples/run-profiles.html}Specify active profiles}}.
+
+  Although this is not recommended, it is possible to execute the application directly
+  from the Maven JVM by disabling the <<<fork>>> property. Doing so means that the
+  <<<jvmArguments>>>, <<<systemPropertyVariables>>>, <<<environmentVariables>>> and
+  <<<agents>>> options are ignored.
 
   Spring Boot 1.3 has introduced <<<devtools>>>, a module to improve the development-time
   experience when working on Spring Boot applications. To enable it, just add the following
