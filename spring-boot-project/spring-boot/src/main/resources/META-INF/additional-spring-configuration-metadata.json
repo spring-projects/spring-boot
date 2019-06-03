@@ -702,6 +702,12 @@
       "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
     },
     {
+      "name": "spring.profiles",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Comma-separated list of profile expressions that at least one should match for the document to be included."
+    },
+    {
       "name": "spring.profiles.active",
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
