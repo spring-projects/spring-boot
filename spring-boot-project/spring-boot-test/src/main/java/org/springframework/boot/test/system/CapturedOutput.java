@@ -23,7 +23,7 @@ package org.springframework.boot.test.system;
  * standard JUnit assertions. For example: <pre class="code">
  * assertThat(output).contains("started"); // Checks all output
  * assertThat(output.getErr()).contains("failed"); // Only checks System.err
- * assertThat(output.getOut()).contains("ok"); // Only checks System.put
+ * assertThat(output.getOut()).contains("ok"); // Only checks System.out
  * </pre>
  *
  * @author Madhura Bhave

@@ -38,6 +38,8 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Sam Brannen
+ * @since 2.2.0
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */
@@ -125,7 +127,12 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	private String get(Predicate<Type> filter) {
-		Assert.state(!this.systemCaptures.isEmpty(), "No system captures found. Check that you have used @ExtendWith.");
+		Assert.state(!this.systemCaptures.isEmpty(),
+				"No system captures found. When using JUnit 4, ensure that you have "
+						+ "registered the OutputCaptureRule via @ClassRule or @Rule "
+						+ "and that the field is public. "
+						+ "When using JUnit Jupiter, ensure that you have registered "
+						+ "the OutputCaptureExtension via @ExtendWith.");
 		StringBuilder builder = new StringBuilder();
 		for (SystemCapture systemCapture : this.systemCaptures) {
 			systemCapture.append(builder, filter);
