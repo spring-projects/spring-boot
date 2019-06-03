@@ -16,97 +16,102 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ElasticsearchDataAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Artur Konczak
+ * @author Brian Clozel
  */
-@SuppressWarnings("deprecation")
 @Testcontainers
 public class ElasticsearchDataAutoConfigurationTests {
 
 	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
-	private AnnotationConfigApplicationContext context;
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
+					RestClientAutoConfiguration.class,
+					ElasticsearchDataAutoConfiguration.class));
 
-	@AfterEach
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
+	@Test
+	public void defaultTransportBeansAreRegistered() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.data.elasticsearch.cluster-nodes:localhost:"
+								+ elasticsearch.getMappedTransportPort(),
+						"spring.data.elasticsearch.cluster-name:docker-cluster")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ElasticsearchTemplate.class)
+						.hasSingleBean(SimpleElasticsearchMappingContext.class)
+						.hasSingleBean(ElasticsearchConverter.class));
+	}
+
+	@Test
+	public void defaultTransportBeansNotRegisteredIfNoTransportClient() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.doesNotHaveBean(ElasticsearchTemplate.class));
+	}
+
+	@Test
+	public void defaultRestBeansRegistered() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(ElasticsearchRestTemplate.class)
+				.hasSingleBean(ElasticsearchConverter.class));
+	}
+
+	@Test
+	public void customTransportTemplateShouldBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class)
+				.run((context) -> assertThat(context)
+						.getBeanNames(ElasticsearchTemplate.class).hasSize(1)
+						.contains("elasticsearchTemplate"));
+	}
+
+	@Test
+	public void customRestTemplateShouldBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomRestTemplate.class)
+				.run((context) -> assertThat(context)
+						.getBeanNames(ElasticsearchRestTemplate.class).hasSize(1)
+						.contains("elasticsearchTemplate"));
+	}
+
+	@Configuration
+	static class CustomTransportTemplate {
+
+		@Bean
+		ElasticsearchTemplate elasticsearchTemplate() {
+			return mock(ElasticsearchTemplate.class);
 		}
+
 	}
 
-	@Test
-	public void templateBackOffWithNoClient() {
-		this.context = new AnnotationConfigApplicationContext(
-				ElasticsearchDataAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(ElasticsearchTemplate.class)).isEmpty();
-	}
+	@Configuration
+	static class CustomRestTemplate {
 
-	@Test
-	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.data.elasticsearch.cluster-nodes:localhost:"
-						+ elasticsearch.getMappedTransportPort(),
-						"spring.data.elasticsearch.cluster-name:docker-cluster")
-				.applyTo(this.context);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class);
-		this.context.refresh();
-		assertHasSingleBean(ElasticsearchTemplate.class);
-	}
+		@Bean
+		ElasticsearchRestTemplate elasticsearchTemplate() {
+			return mock(ElasticsearchRestTemplate.class);
+		}
 
-	@Test
-	public void mappingContextExists() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.data.elasticsearch.cluster-nodes:localhost:"
-						+ elasticsearch.getMappedTransportPort(),
-						"spring.data.elasticsearch.cluster-name:docker-cluster")
-				.applyTo(this.context);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class);
-		this.context.refresh();
-		assertHasSingleBean(SimpleElasticsearchMappingContext.class);
-	}
-
-	@Test
-	public void converterExists() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.data.elasticsearch.cluster-nodes:localhost:"
-						+ elasticsearch.getMappedTransportPort(),
-						"spring.data.elasticsearch.cluster-name:docker-cluster")
-				.applyTo(this.context);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class);
-		this.context.refresh();
-		assertHasSingleBean(ElasticsearchConverter.class);
-	}
-
-	private void assertHasSingleBean(Class<?> type) {
-		assertThat(this.context.getBeanNamesForType(type)).hasSize(1);
 	}
 
 }

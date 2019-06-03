@@ -16,7 +16,8 @@
 
 package sample.data.elasticsearch;
 
-import org.elasticsearch.client.transport.NoNodeAvailableException;
+import java.net.ConnectException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -51,7 +52,7 @@ class SampleElasticsearchApplicationTests {
 	private boolean elasticsearchRunning(Exception ex) {
 		Throwable candidate = ex;
 		while (candidate != null) {
-			if (candidate instanceof NoNodeAvailableException) {
+			if (candidate instanceof ConnectException) {
 				return false;
 			}
 			candidate = candidate.getCause();

@@ -4932,15 +4932,16 @@ To take full control over the registration, define a `JestClient` bean.
 
 [[boot-features-connecting-to-elasticsearch-spring-data]]
 ==== Connecting to Elasticsearch by Using Spring Data
-To connect to Elasticsearch, you must provide the address of one or more cluster nodes.
-The address can be specified by setting the `spring.data.elasticsearch.cluster-nodes`
+
+To connect to Elasticsearch, you must provide the address of one or more Elasticsearch
+instances. The address can be specified by setting the `spring.elasticsearch.rest.uris`
 property to a comma-separated `host:port` list. With this configuration in place, an
-`ElasticsearchTemplate` or `TransportClient` can be injected like any other Spring bean,
+`ElasticsearchRestTemplate` or `RestHighLevelClient` can be injected like any other Spring bean,
 as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	spring.data.elasticsearch.cluster-nodes=localhost:9300
+	spring.elasticsearch.rest.uris=localhost:9200
 ----
 
 [source,java,indent=0]
@@ -4948,9 +4949,9 @@ as shown in the following example:
 	@Component
 	public class MyBean {
 
-		private final ElasticsearchTemplate template;
+		private final ElasticsearchRestTemplate template;
 
-		public MyBean(ElasticsearchTemplate template) {
+		public MyBean(ElasticsearchRestTemplate template) {
 			this.template = template;
 		}
 
@@ -4959,8 +4960,8 @@ as shown in the following example:
 	}
 ----
 
-If you add your own `ElasticsearchTemplate` or `TransportClient` `@Bean`, it replaces the
-default.
+If you add your own `ElasticsearchRestTemplate` or `ElasticsearchOperations` `@Bean`,
+it replaces the default given it is named `"elasticsearchTemplate""`.
 
 
 
