@@ -21,9 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.Producer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -35,7 +36,7 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.messaging.handler.annotation.Header;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,17 +53,26 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
-	@ClassRule
-	public static final EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true,
-			TEST_TOPIC);
+	public static final EmbeddedKafkaBroker embeddedKafka = new EmbeddedKafkaBroker(1,
+			true, TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
+
+	@BeforeAll
+	public static void setUp() {
+		embeddedKafka.afterPropertiesSet();
+	}
 
 	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
+	}
+
+	@AfterAll
+	public static void tearDown() {
+		embeddedKafka.destroy();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -110,7 +120,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	}
 
 	private String getEmbeddedKafkaBrokersAsString() {
-		return embeddedKafka.getEmbeddedKafka().getBrokersAsString();
+		return embeddedKafka.getBrokersAsString();
 	}
 
 	@Configuration(proxyBeanMethods = false)
