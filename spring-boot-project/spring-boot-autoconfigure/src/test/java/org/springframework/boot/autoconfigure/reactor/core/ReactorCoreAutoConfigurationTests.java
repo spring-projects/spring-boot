@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.reactor.core;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Hooks;
@@ -39,6 +40,7 @@ class ReactorCoreAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(ReactorCoreAutoConfiguration.class));
 
 	@BeforeEach
+	@AfterEach
 	void resetDebugFlag() {
 		Hooks.resetOnOperatorDebug();
 	}
