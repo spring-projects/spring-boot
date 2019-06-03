@@ -47,6 +47,7 @@ import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -63,6 +64,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Dmytro Nosan
+ * @author Kevin Strijbos
  */
 public class RestTemplateBuilderTests {
 
@@ -481,6 +483,23 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void bufferRequestBodyCanBeConfiguredOnHttpComponentsRequestFactory() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
+				.setBufferRequestBody(false).build().getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody",
+				false);
+		requestFactory = this.builder
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
+				.setBufferRequestBody(true).build().getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
+		requestFactory = this.builder
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class).build()
+				.getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
+	}
+
+	@Test
 	public void connectTimeoutCanBeConfiguredOnSimpleRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
@@ -494,6 +513,21 @@ public class RestTemplateBuilderTests {
 				.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
+	}
+
+	@Test
+	public void bufferRequestBodyCanBeConfiguredOnSimpleRequestFactory() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setBufferRequestBody(false).build().getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody",
+				false);
+		requestFactory = this.builder.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setBufferRequestBody(true).build().getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
+		requestFactory = this.builder.requestFactory(SimpleClientHttpRequestFactory.class)
+				.build().getRequestFactory();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
 	}
 
 	@Test
@@ -517,6 +551,15 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void bufferRequestBodyCanNotBeConfiguredOnOkHttp3RequestFactory() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.builder
+						.requestFactory(OkHttp3ClientHttpRequestFactory.class)
+						.setBufferRequestBody(false).build().getRequestFactory())
+				.withMessageContaining(OkHttp3ClientHttpRequestFactory.class.getName());
+	}
+
+	@Test
 	public void connectTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		this.builder
@@ -534,6 +577,27 @@ public class RestTemplateBuilderTests {
 						() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setReadTimeout(Duration.ofMillis(1234)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
+	}
+
+	@Test
+	public void bufferRequestBodyCanBeConfiguredOnAWrappedRequestFactory() {
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		this.builder
+				.requestFactory(
+						() -> new BufferingClientHttpRequestFactory(requestFactory))
+				.setBufferRequestBody(false).build();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody",
+				false);
+		this.builder
+				.requestFactory(
+						() -> new BufferingClientHttpRequestFactory(requestFactory))
+				.setBufferRequestBody(true).build();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
+		this.builder
+				.requestFactory(
+						() -> new BufferingClientHttpRequestFactory(requestFactory))
+				.build();
+		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
 	}
 
 	@Test
