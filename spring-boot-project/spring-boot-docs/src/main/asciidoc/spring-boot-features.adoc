@@ -2361,9 +2361,9 @@ https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[reg
 a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes
 it easier to directly register Spring Beans.
 
-You can use the `@JsonComponent` annotation directly on `JsonSerializer` or
-`JsonDeserializer` implementations. You can also use it on classes that contain
-serializers/deserializers as inner classes, as shown in the following example:
+You can use the `@JsonComponent` annotation directly on `JsonSerializer`,
+`JsonDeserializer` or `KeyDeserializer` implementations. You can also use it on classes
+that contain serializers/deserializers as inner classes, as shown in the following example:
 
 [source,java,indent=0]
 ----
