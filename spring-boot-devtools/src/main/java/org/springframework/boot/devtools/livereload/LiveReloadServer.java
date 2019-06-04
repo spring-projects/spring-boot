@@ -36,11 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
- * A <a href="http://livereload.com">livereload</a> server.
+ * A <a href="https://github.com/livereload">livereload</a> server.
  *
  * @author Phillip Webb
  * @since 1.3.0
- * @see <a href="http://livereload.com">livereload.com</a>
  */
 public class LiveReloadServer {
 
