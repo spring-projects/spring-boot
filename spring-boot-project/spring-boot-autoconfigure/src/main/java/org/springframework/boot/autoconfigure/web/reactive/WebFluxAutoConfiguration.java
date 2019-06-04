@@ -38,6 +38,8 @@ import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceCh
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.convert.ParserConverter;
+import org.springframework.boot.convert.PrinterConverter;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +50,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
@@ -184,6 +188,17 @@ public class WebFluxAutoConfiguration {
 			}
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
+			}
+			for (Printer<?> printer : getBeansOfType(Printer.class)) {
+				if (!(printer instanceof Formatter<?>)) {
+					registry.addConverter(new PrinterConverter(printer));
+
+				}
+			}
+			for (Parser<?> parser : getBeansOfType(Parser.class)) {
+				if (!(parser instanceof Formatter<?>)) {
+					registry.addConverter(new ParserConverter(parser));
+				}
 			}
 		}
 

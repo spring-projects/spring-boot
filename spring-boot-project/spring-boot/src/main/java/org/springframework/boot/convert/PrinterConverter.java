@@ -1,0 +1,85 @@
+/*
+ * Copyright 2012-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.convert;
+
+import java.util.Collections;
+import java.util.Set;
+
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.DecoratingProxy;
+import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.format.Printer;
+import org.springframework.util.Assert;
+
+/**
+ * {@link Converter} to convert {@code <T>} to a {@link String} using the underlying
+ * {@link Printer}{@code <T>}.
+ *
+ * @author Dmytro Nosan
+ * @since 2.2.0
+ */
+public class PrinterConverter implements GenericConverter {
+
+	private final Printer printer;
+
+	private final Class<?> type;
+
+	/**
+	 * Creates a {@code Converter} to convert {@code T} to a {@code String} via printer.
+	 * @param printer prints {@code T} to a {@code String}
+	 */
+	public PrinterConverter(Printer<?> printer) {
+		Assert.notNull(printer, "Printer must not be null");
+		this.type = getType(printer);
+		this.printer = printer;
+	}
+
+	@Override
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return Collections.singleton(new ConvertiblePair(this.type, String.class));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (source == null) {
+			return "";
+		}
+		return this.printer.print(source, LocaleContextHolder.getLocale());
+	}
+
+	public String toString() {
+		return this.type.getName() + " -> " + String.class.getName() + " : " + this.printer;
+	}
+
+	private static Class<?> getType(Printer<?> printer) {
+		Class<?> type = GenericTypeResolver.resolveTypeArgument(printer.getClass(), Printer.class);
+		if (type == null && printer instanceof DecoratingProxy) {
+			type = GenericTypeResolver.resolveTypeArgument(((DecoratingProxy) printer).getDecoratedClass(),
+					Printer.class);
+		}
+		if (type == null) {
+			throw new IllegalArgumentException("Unable to extract the parameterized type from Printer: '"
+					+ printer.getClass().getName() + "'. Does the class parameterize the <T> generic type?");
+		}
+		return type;
+	}
+
+}
