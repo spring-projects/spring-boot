@@ -60,7 +60,9 @@
 									<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 									<includeTestSourceDirectory>true</includeTestSourceDirectory>
 									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
-									<resourceIncludes>**\/*.*</resourceIncludes>
+									<sourceDirectories>./</sourceDirectories>
+									<includes>**/*</includes>
+									<excludes>.git/**/*,target/**/*</excludes>
 								</configuration>
 								<goals>
 									<goal>check</goal>
