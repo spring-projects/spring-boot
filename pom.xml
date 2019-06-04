@@ -25,6 +25,7 @@
 			</activation>
 			<properties>
 				<spring-javaformat.version>0.0.9</spring-javaformat.version>
+				<nohttp-checkstyle.version>0.0.1.RELEASE</nohttp-checkstyle.version>
 			</properties>
 			<build>
 				<plugins>
@@ -43,6 +44,11 @@
 								<artifactId>spring-javaformat-checkstyle</artifactId>
 								<version>${spring-javaformat.version}</version>
 							</dependency>
+							<dependency>
+								<groupId>io.spring.nohttp</groupId>
+								<artifactId>nohttp-checkstyle</artifactId>
+								<version>${nohttp-checkstyle.version}</version>
+							</dependency>
 						</dependencies>
 						<executions>
 							<execution>
@@ -54,6 +60,7 @@
 									<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 									<includeTestSourceDirectory>true</includeTestSourceDirectory>
 									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
+									<resourceIncludes>**\/*.*</resourceIncludes>
 								</configuration>
 								<goals>
 									<goal>check</goal>

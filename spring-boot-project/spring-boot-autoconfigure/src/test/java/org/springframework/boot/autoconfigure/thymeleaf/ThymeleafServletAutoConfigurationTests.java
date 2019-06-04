@@ -95,7 +95,7 @@ public class ThymeleafServletAutoConfigurationTests {
 					TemplateEngine engine = context.getBean(TemplateEngine.class);
 					Context attrs = new Context(Locale.UK,
 							Collections.singletonMap("foo", "bar"));
-					String result = engine.process("template.html", attrs);
+					String result = engine.process("template.html", attrs).trim();
 					assertThat(result).isEqualTo("<html>bar</html>");
 				});
 	}
@@ -222,7 +222,7 @@ public class ThymeleafServletAutoConfigurationTests {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
 			Context attrs = new Context(Locale.UK,
 					Collections.singletonMap("foo", "bar"));
-			String result = engine.process("data-dialect", attrs);
+			String result = engine.process("data-dialect", attrs).trim();
 			assertThat(result).isEqualTo("<html><body data-foo=\"bar\"></body></html>");
 		});
 	}
@@ -232,7 +232,7 @@ public class ThymeleafServletAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
 			Context attrs = new Context(Locale.UK);
-			String result = engine.process("java8time-dialect", attrs);
+			String result = engine.process("java8time-dialect", attrs).trim();
 			assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
 		});
 	}
@@ -262,7 +262,7 @@ public class ThymeleafServletAutoConfigurationTests {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
 			Context attrs = new Context(Locale.UK,
 					Collections.singletonMap("foo", "bar"));
-			String result = engine.process("home", attrs);
+			String result = engine.process("home", attrs).trim();
 			assertThat(result).isEqualTo("<html><body>bar</body></html>");
 		});
 	}
