@@ -1,1 +1,2 @@
-^http://livereload.com/protocols/official-7$
+^http://livereload.com/protocols/official-7.*
+^http://exslt.org/common.*
