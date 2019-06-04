@@ -56,6 +56,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -773,6 +775,17 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void customPrinterAndParserShouldBeRegisteredAsConverters() {
+		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
+				.run((context) -> {
+					Foo foo = new Foo("bar");
+					ConversionService conversionService = context.getBean(ConversionService.class);
+					assertThat(conversionService.convert(foo, String.class)).isEqualTo("bar");
+					assertThat(conversionService.convert("bar", Foo.class)).extracting(Foo::toString).isEqualTo("bar");
+				});
+	}
+
 	private void assertCacheControl(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
@@ -1089,6 +1102,59 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		public FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
 			return new FilterRegistrationBean<>(new RequestContextFilter());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrinterConfiguration {
+
+		@Bean
+		public Printer<Foo> fooPrinter() {
+			return new FooPrinter();
+		}
+
+		private static class FooPrinter implements Printer<Foo> {
+
+			@Override
+			public String print(Foo foo, Locale locale) {
+				return foo.toString();
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ParserConfiguration {
+
+		@Bean
+		public Parser<Foo> fooParser() {
+			return new FooParser();
+		}
+
+		private static class FooParser implements Parser<Foo> {
+
+			@Override
+			public Foo parse(String source, Locale locale) {
+				return new Foo(source);
+			}
+
+		}
+
+	}
+
+	static class Foo {
+
+		private final String name;
+
+		Foo(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 	}

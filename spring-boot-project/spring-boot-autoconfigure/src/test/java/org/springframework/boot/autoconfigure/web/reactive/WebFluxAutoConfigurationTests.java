@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -373,6 +377,17 @@ class WebFluxAutoConfigurationTests {
 		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
+	@Test
+	void customPrinterAndParserShouldBeRegisteredAsConverters() {
+		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
+				.run((context) -> {
+					Foo foo = new Foo("bar");
+					ConversionService conversionService = context.getBean(ConversionService.class);
+					assertThat(conversionService.convert(foo, String.class)).isEqualTo("bar");
+					assertThat(conversionService.convert("bar", Foo.class)).extracting(Foo::toString).isEqualTo("bar");
+				});
+	}
+
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
 		HandlerMapping mapping = context.getBean("resourceHandlerMapping", HandlerMapping.class);
 		if (mapping instanceof SimpleUrlHandlerMapping) {
@@ -542,6 +557,59 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	private static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrinterConfiguration {
+
+		@Bean
+		public Printer<Foo> fooPrinter() {
+			return new FooPrinter();
+		}
+
+		private static class FooPrinter implements Printer<Foo> {
+
+			@Override
+			public String print(Foo foo, Locale locale) {
+				return foo.toString();
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ParserConfiguration {
+
+		@Bean
+		public Parser<Foo> fooParser() {
+			return new FooParser();
+		}
+
+		private static class FooParser implements Parser<Foo> {
+
+			@Override
+			public Foo parse(String source, Locale locale) {
+				return new Foo(source);
+			}
+
+		}
+
+	}
+
+	static class Foo {
+
+		private final String name;
+
+		Foo(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
 
 	}
 

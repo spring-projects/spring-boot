@@ -55,6 +55,8 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.convert.ParserConverter;
+import org.springframework.boot.convert.PrinterConverter;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
@@ -74,6 +76,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -306,6 +310,16 @@ public class WebMvcAutoConfiguration {
 			}
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
+			}
+			for (Printer<?> printer : getBeansOfType(Printer.class)) {
+				if (!(printer instanceof Formatter<?>)) {
+					registry.addConverter(new PrinterConverter(printer));
+				}
+			}
+			for (Parser<?> parser : getBeansOfType(Parser.class)) {
+				if (!(parser instanceof Formatter<?>)) {
+					registry.addConverter(new ParserConverter(parser));
+				}
 			}
 		}
 
