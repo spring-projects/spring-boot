@@ -64,7 +64,7 @@ public class MustacheViewTests {
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("World", "Spring"), this.request,
 				this.response);
-		assertThat(this.response.getContentAsString()).isEqualTo("Hello Spring");
+		assertThat(this.response.getContentAsString().trim()).isEqualTo("Hello Spring");
 	}
 
 }
