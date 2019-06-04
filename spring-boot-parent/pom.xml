@@ -17,7 +17,7 @@
 		<url>https://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>..</main.basedir>
+		<main.basedir>${basedir}/..</main.basedir>
 		<disable.checks>false</disable.checks>
 		<java.version>1.6</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
@@ -25,6 +25,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
 		<spring-javaformat.version>0.0.9</spring-javaformat.version>
+		<nohttp-checkstyle.version>0.0.1.RELEASE</nohttp-checkstyle.version>
 	</properties>
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
@@ -318,6 +319,11 @@
 							<artifactId>spring-javaformat-checkstyle</artifactId>
 							<version>${spring-javaformat.version}</version>
 						</dependency>
+						<dependency>
+							<groupId>io.spring.nohttp</groupId>
+							<artifactId>nohttp-checkstyle</artifactId>
+							<version>${nohttp-checkstyle.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -533,6 +539,8 @@
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
+							<resourceIncludes>**\/*.*</resourceIncludes>
 						</configuration>
 						<goals>
 							<goal>check</goal>
