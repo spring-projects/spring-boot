@@ -4,6 +4,7 @@
 		"https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
 	<suppress files="\.DS_Store" checks=".*" />
+	<suppress files="[\\/]spring-boot-gradle-plugin[\\/]build" checks=".*" />
 	<suppress files="[\\/]\.flattened-pom\.xml" checks=".*" />
 	<suppress files="[\\/]transaction-logs[\\/]" checks=".*" />
 	<suppress files="[\\/]target[\\/]" checks=".*" />
