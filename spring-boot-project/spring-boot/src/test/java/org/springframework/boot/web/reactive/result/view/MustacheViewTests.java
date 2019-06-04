@@ -62,7 +62,7 @@ public class MustacheViewTests {
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML,
 				this.exchange).block(Duration.ofSeconds(30));
 		assertThat(this.exchange.getResponse().getBodyAsString()
-				.block(Duration.ofSeconds(30))).isEqualTo("Hello Spring");
+				.block(Duration.ofSeconds(30)).trim()).isEqualTo("Hello Spring");
 	}
 
 }

@@ -73,7 +73,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		load(BaseConfiguration.class, "spring.thymeleaf.suffix:.html");
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
-		String result = engine.process("template", attrs);
+		String result = engine.process("template", attrs).trim();
 		assertThat(result).isEqualTo("<html>bar</html>");
 	}
 
@@ -176,7 +176,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		ISpringWebFluxTemplateEngine engine = this.context
 				.getBean(ISpringWebFluxTemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
-		String result = engine.process("data-dialect", attrs);
+		String result = engine.process("data-dialect", attrs).trim();
 		assertThat(result).isEqualTo("<html><body data-foo=\"bar\"></body></html>");
 	}
 
@@ -186,7 +186,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		ISpringWebFluxTemplateEngine engine = this.context
 				.getBean(ISpringWebFluxTemplateEngine.class);
 		Context attrs = new Context(Locale.UK);
-		String result = engine.process("java8time-dialect", attrs);
+		String result = engine.process("java8time-dialect", attrs).trim();
 		assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
 	}
 
@@ -196,7 +196,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		ISpringWebFluxTemplateEngine engine = this.context
 				.getBean(ISpringWebFluxTemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
-		String result = engine.process("home", attrs);
+		String result = engine.process("home", attrs).trim();
 		assertThat(result).isEqualTo("<html><body>bar</body></html>");
 	}
 
