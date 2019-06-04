@@ -201,6 +201,20 @@ public class SpringIterableConfigurationPropertySourceTests {
 		assertThat(adapter.stream().count()).isEqualTo(3);
 	}
 
+	public void readOnlyOriginTrackedMapPropertySourceKeyAdditionDoesNotInvalidateCache() {
+		// gh-16717
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("key1", "value1");
+		map.put("key2", "value2");
+		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test",
+				map, true);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				source, DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.stream().count()).isEqualTo(2);
+		map.put("key3", "value3");
+		assertThat(adapter.stream().count()).isEqualTo(2);
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 */

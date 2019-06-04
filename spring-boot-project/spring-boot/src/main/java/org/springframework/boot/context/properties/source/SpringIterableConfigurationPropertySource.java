@@ -29,6 +29,7 @@ import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.ObjectUtils;
 
@@ -191,37 +192,27 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private static final class CacheKey {
 
+		private static final CacheKey IMMUTABLE_PROPERTY_SOURCE = new CacheKey(
+				new Object[0]);
+
 		private final Object key;
 
-		private final int size;
-
-		private final boolean unmodifiableKey;
-
-		private CacheKey(Object key, boolean unmodifiableKey) {
+		private CacheKey(Object key) {
 			this.key = key;
-			this.size = calculateSize(key);
-			this.unmodifiableKey = unmodifiableKey;
 		}
 
 		public CacheKey copy() {
-			return new CacheKey(copyKey(this.key), this.unmodifiableKey);
+			if (this == IMMUTABLE_PROPERTY_SOURCE) {
+				return IMMUTABLE_PROPERTY_SOURCE;
+			}
+			return new CacheKey(copyKey(this.key));
 		}
 
 		private Object copyKey(Object key) {
-			if (this.unmodifiableKey) {
-				return key;
-			}
 			if (key instanceof Set) {
 				return new HashSet<Object>((Set<?>) key);
 			}
 			return ((String[]) key).clone();
-		}
-
-		private int calculateSize(Object key) {
-			if (key instanceof Set) {
-				return ((Set<?>) key).size();
-			}
-			return ((String[]) key).length;
 		}
 
 		@Override
@@ -233,9 +224,6 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				return false;
 			}
 			CacheKey otherCacheKey = (CacheKey) obj;
-			if (this.size != otherCacheKey.size) {
-				return false;
-			}
 			return ObjectUtils.nullSafeEquals(this.key, otherCacheKey.key);
 		}
 
@@ -245,11 +233,25 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		public static CacheKey get(EnumerablePropertySource<?> source) {
-			if (source instanceof MapPropertySource) {
-				return new CacheKey(((MapPropertySource) source).getSource().keySet(),
-						source instanceof OriginTrackedMapPropertySource);
+			if (isImmutable(source)) {
+				return IMMUTABLE_PROPERTY_SOURCE;
 			}
-			return new CacheKey(source.getPropertyNames(), false);
+			if (source instanceof MapPropertySource) {
+				MapPropertySource mapPropertySource = (MapPropertySource) source;
+				return new CacheKey(mapPropertySource.getSource().keySet());
+			}
+			return new CacheKey(source.getPropertyNames());
+		}
+
+		private static boolean isImmutable(EnumerablePropertySource<?> source) {
+			if (source instanceof OriginTrackedMapPropertySource) {
+				return ((OriginTrackedMapPropertySource) source).isImmutable();
+			}
+			if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME
+					.equals(source.getName())) {
+				return source.getSource() == System.getenv();
+			}
+			return false;
 		}
 
 	}
