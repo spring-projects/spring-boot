@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.EntityMapper;
+import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
@@ -50,6 +52,7 @@ public class ElasticsearchDataAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
 					RestClientAutoConfiguration.class,
+					ReactiveRestClientAutoConfiguration.class,
 					ElasticsearchDataAutoConfiguration.class));
 
 	@Test
@@ -75,6 +78,10 @@ public class ElasticsearchDataAutoConfigurationTests {
 	public void defaultRestBeansRegistered() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(ElasticsearchRestTemplate.class)
+				.hasSingleBean(ReactiveElasticsearchTemplate.class)
+				.hasSingleBean(ElasticsearchConverter.class)
+				.hasSingleBean(SimpleElasticsearchMappingContext.class)
+				.hasSingleBean(EntityMapper.class)
 				.hasSingleBean(ElasticsearchConverter.class));
 	}
 
@@ -94,6 +101,14 @@ public class ElasticsearchDataAutoConfigurationTests {
 						.contains("elasticsearchTemplate"));
 	}
 
+	@Test
+	public void customReactiveRestTemplateShouldBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
+				.run((context) -> assertThat(context)
+						.getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
+						.contains("reactiveElasticsearchTemplate"));
+	}
+
 	@Configuration
 	static class CustomTransportTemplate {
 
@@ -110,6 +125,16 @@ public class ElasticsearchDataAutoConfigurationTests {
 		@Bean
 		ElasticsearchRestTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchRestTemplate.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomReactiveRestTemplate {
+
+		@Bean
+		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
+			return mock(ReactiveElasticsearchTemplate.class);
 		}
 
 	}

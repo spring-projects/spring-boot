@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.autoconfigure.data.elasticsearch.city;
+
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
 /**
- * Auto-configuration for Spring Data Elasticsearch.
+ * @author Brian Clozel
  */
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+public interface ReactiveCityRepository extends ReactiveCrudRepository<City, String> {
+
+}

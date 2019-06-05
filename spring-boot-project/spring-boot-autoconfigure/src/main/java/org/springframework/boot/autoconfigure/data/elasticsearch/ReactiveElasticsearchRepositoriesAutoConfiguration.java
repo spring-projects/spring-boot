@@ -16,38 +16,32 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories;
+import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Elasticsearch
- * support.
- * <p>
- * Registers an {@link ElasticsearchTemplate} if no other bean of the same type and the
- * same name {@code "elasticsearchTemplate"} is configured.
+ * Reactive Repositories.
  *
  * @author Brian Clozel
- * @author Artur Konczak
- * @author Mohsin Husen
- * @see EnableElasticsearchRepositories
  * @see EnableReactiveElasticsearchRepositories
- * @since 1.1.0
+ * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ ElasticsearchTemplate.class })
-@AutoConfigureAfter({ ElasticsearchAutoConfiguration.class,
-		RestClientAutoConfiguration.class, ReactiveRestClientAutoConfiguration.class })
-@Import({ ElasticsearchDataConfiguration.BaseConfiguration.class,
-		ElasticsearchDataConfiguration.TransportClientConfiguration.class,
-		ElasticsearchDataConfiguration.RestClientConfiguration.class,
-		ElasticsearchDataConfiguration.ReactiveRestClientConfiguration.class })
-public class ElasticsearchDataAutoConfiguration {
+@ConditionalOnClass({ ReactiveElasticsearchClient.class,
+		ReactiveElasticsearchRepository.class })
+@ConditionalOnProperty(prefix = "spring.data.elasticsearch.repositories",
+		name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnMissingBean(ReactiveElasticsearchRepositoryFactoryBean.class)
+@Import(ReactiveElasticsearchRepositoriesRegistrar.class)
+public class ReactiveElasticsearchRepositoriesAutoConfiguration {
 
 }
