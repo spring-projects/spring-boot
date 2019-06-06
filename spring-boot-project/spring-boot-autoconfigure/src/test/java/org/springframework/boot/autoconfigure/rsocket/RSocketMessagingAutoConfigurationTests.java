@@ -26,6 +26,7 @@ import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,8 +44,11 @@ public class RSocketMessagingAutoConfigurationTests {
 
 	@Test
 	public void shouldCreateDefaultBeans() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.getBeans(MessageHandlerAcceptor.class).hasSize(1));
+		this.contextRunner.run((context) -> {
+			assertThat(context).getBeans(MessageHandlerAcceptor.class).hasSize(1);
+			assertThat(context.getBean(MessageHandlerAcceptor.class).getRouteMatcher())
+					.isInstanceOf(PathPatternRouteMatcher.class);
+		});
 	}
 
 	@Test
