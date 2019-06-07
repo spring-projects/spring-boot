@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ServletEndpointDiscoverer}.
@@ -105,30 +105,29 @@ public class ServletEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
-		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
-				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
-						.isThrownBy(discoverer::getEndpoints)
+		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class).run(
+				assertDiscoverer((discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("ServletEndpoints must not declare operations")));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointNotASupplierShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
-				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
+				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
 						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must be a supplier")));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointSuppliesWrongTypeShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
-				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
+				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
 						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must supply an EndpointServlet")));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
-				.run(assertDiscoverer((discoverer) -> assertThatExceptionOfType(IllegalStateException.class)
+				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
 						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must not supply null")));
 	}
 
