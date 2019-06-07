@@ -122,9 +122,8 @@ class ControllerEndpointDiscovererTests {
 
 	@Test
 	void getEndpointWhenEndpointHasOperationsShouldThrowException() {
-		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
-				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
-						.isThrownBy(discoverer::getEndpoints)
+		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class).run(
+				assertDiscoverer((discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("ControllerEndpoints must not declare operations")));
 	}
 

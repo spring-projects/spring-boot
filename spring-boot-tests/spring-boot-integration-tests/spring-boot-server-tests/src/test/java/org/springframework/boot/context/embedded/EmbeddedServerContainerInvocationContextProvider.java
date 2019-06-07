@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,15 +75,17 @@ class EmbeddedServerContainerInvocationContextProvider
 		EmbeddedServletContainerTest annotation = context.getRequiredTestClass()
 				.getAnnotation(EmbeddedServletContainerTest.class);
 		return CONTAINERS.stream()
-				.map((container) -> new ApplicationBuilder(this.tempDir, annotation.packaging(), container))
-				.flatMap((builder) -> {
-					return Stream.of(annotation.launchers())
-							.map((launcherClass) -> ReflectionUtils.newInstance(launcherClass, builder, buildOutput))
-							.map((launcher) -> new EmbeddedServletContainerInvocationContext(
-									StringUtils.capitalize(builder.getContainer()) + ": "
-											+ launcher.getDescription(builder.getPackaging()),
-									launcher));
-				});
+				.map((container) -> new ApplicationBuilder(this.tempDir, annotation.packaging(),
+						container))
+				.flatMap(
+						(builder) -> Stream
+								.of(annotation.launchers()).map(
+										(launcherClass) -> ReflectionUtils.newInstance(launcherClass, builder,
+												buildOutput))
+								.map((launcher) -> new EmbeddedServletContainerInvocationContext(
+										StringUtils.capitalize(builder.getContainer()) + ": "
+												+ launcher.getDescription(builder.getPackaging()),
+										launcher)));
 	}
 
 	@Override
@@ -135,7 +137,7 @@ class EmbeddedServerContainerInvocationContextProvider
 
 	}
 
-	private static class RestTemplateParameterResolver implements ParameterResolver {
+	private static final class RestTemplateParameterResolver implements ParameterResolver {
 
 		private final AbstractApplicationLauncher launcher;
 
